@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2010
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "opensea-parser", "opensea-parser.vcxproj", "{D7A121F5-30B5-4CA9-A272-3B6469FF8F46}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|ARM = Debug|ARM
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|ARM = Release|ARM
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+		Static-Debug|ARM = Static-Debug|ARM
+		Static-Debug|x64 = Static-Debug|x64
+		Static-Debug|x86 = Static-Debug|x86
+		Static-Release|ARM = Static-Release|ARM
+		Static-Release|x64 = Static-Release|x64
+		Static-Release|x86 = Static-Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D7A121F5-30B5-4CA9-A272-3B6469FF8F46}.Debug|ARM.ActiveCfg = Debug|ARM
+		{D7A121F5-30B5-4CA9-A272-3B6469FF8F46}.Debug|ARM.Build.0 = Debug|ARM
+		{D7A121F5-30B5-4CA9-A272-3B6469FF8F46}.Debug|x64.ActiveCfg = Debug|x64
+		{D7A121F5-30B5-4CA9-A272-3B6469FF8F46}.Debug|x64.Build.0 = Debug|x64
+		{D7A121F5-30B5-4CA9-A272-3B6469FF8F46}.Debug|x86.ActiveCfg = Debug|Win32
+		{D7A121F5-30B5-4CA9-A272-3B6469FF8F46}.Debug|x86.Build.0 = Debug|Win32
+		{D7A121F5-30B5-4CA9-A272-3B6469FF8F46}.Release|ARM.ActiveCfg = Release|ARM
+		{D7A121F5-30B5-4CA9-A272-3B6469FF8F46}.Release|ARM.Build.0 = Release|ARM
+		{D7A121F5-30B5-4CA9-A272-3B6469FF8F46}.Release|x64.ActiveCfg = Release|x64
+		{D7A121F5-30B5-4CA9-A272-3B6469FF8F46}.Release|x64.Build.0 = Release|x64
+		{D7A121F5-30B5-4CA9-A272-3B6469FF8F46}.Release|x86.ActiveCfg = Release|Win32
+		{D7A121F5-30B5-4CA9-A272-3B6469FF8F46}.Release|x86.Build.0 = Release|Win32
+		{D7A121F5-30B5-4CA9-A272-3B6469FF8F46}.Static-Debug|ARM.ActiveCfg = Static-Debug|ARM
+		{D7A121F5-30B5-4CA9-A272-3B6469FF8F46}.Static-Debug|ARM.Build.0 = Static-Debug|ARM
+		{D7A121F5-30B5-4CA9-A272-3B6469FF8F46}.Static-Debug|x64.ActiveCfg = Static-Debug|x64
+		{D7A121F5-30B5-4CA9-A272-3B6469FF8F46}.Static-Debug|x64.Build.0 = Static-Debug|x64
+		{D7A121F5-30B5-4CA9-A272-3B6469FF8F46}.Static-Debug|x86.ActiveCfg = Static-Debug|Win32
+		{D7A121F5-30B5-4CA9-A272-3B6469FF8F46}.Static-Debug|x86.Build.0 = Static-Debug|Win32
+		{D7A121F5-30B5-4CA9-A272-3B6469FF8F46}.Static-Release|ARM.ActiveCfg = Static-Release|ARM
+		{D7A121F5-30B5-4CA9-A272-3B6469FF8F46}.Static-Release|ARM.Build.0 = Static-Release|ARM
+		{D7A121F5-30B5-4CA9-A272-3B6469FF8F46}.Static-Release|x64.ActiveCfg = Static-Release|x64
+		{D7A121F5-30B5-4CA9-A272-3B6469FF8F46}.Static-Release|x64.Build.0 = Static-Release|x64
+		{D7A121F5-30B5-4CA9-A272-3B6469FF8F46}.Static-Release|x86.ActiveCfg = Static-Release|Win32
+		{D7A121F5-30B5-4CA9-A272-3B6469FF8F46}.Static-Release|x86.Build.0 = Static-Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6A601820-17AE-4AC9-BD11-6073FE6CA375}
+	EndGlobalSection
+EndGlobal
