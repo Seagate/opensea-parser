@@ -310,7 +310,10 @@ eReturnValues CATA_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint3
     set_json_64bit(pageInfo, "Logical Sector Size", check_Status_Strip_Status(vFarmFrame[page].driveInfo.lsecSize), false);                                  //!< Logical Sector Size in Bytes
     set_json_64bit(pageInfo, "Device Buffer Size", check_Status_Strip_Status(vFarmFrame[page].driveInfo.deviceBufferSize), false);                           //!< Device Buffer Size in Bytes
     set_json_64bit(pageInfo, "Number of heads", check_Status_Strip_Status(vFarmFrame[page].driveInfo.heads), false);                                         //!< Number of Heads
-	m_heads = check_Status_Strip_Status(vFarmFrame[page].driveInfo.heads);
+	if (check_Status_Strip_Status(vFarmFrame[page].driveInfo.heads) != 0)
+	{
+		m_heads = check_Status_Strip_Status(vFarmFrame[page].driveInfo.heads);
+	}
     set_json_64bit(pageInfo, "Device form factor", check_Status_Strip_Status(vFarmFrame[page].driveInfo.factor), false);                                     //!< Device Form Factor (ID Word 168)
     set_json_64bit(pageInfo, "Rotation Rate", check_Status_Strip_Status(vFarmFrame[page].driveInfo.rotationRate), false);                                    //!< Rotational Rate of Device (ID Word 217)
        
