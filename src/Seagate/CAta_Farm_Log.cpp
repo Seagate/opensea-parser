@@ -742,13 +742,13 @@ eReturnValues CATA_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint32
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         snprintf((char*)myHeader.c_str(), BASIC, "Disc Slip in micro-inches by Head %d", loopCount); // Head count
-        snprintf((char*)myStr.c_str(), BASIC, "%0.04f", (std::abs((double)vFarmFrame[page].reliPage.discSlip[loopCount].wholePartofFloat + ((double)vFarmFrame[page].reliPage.discSlip[loopCount].decimalPartofFloat) / 10000))); //!< Disc Slip in micro-inches by Head
+        snprintf((char*)myStr.c_str(), BASIC, "%0.04f", (std::abs((double)vFarmFrame[page].reliPage.discSlip[loopCount].wholePartofFloat) + ((double)vFarmFrame[page].reliPage.discSlip[loopCount].decimalPartofFloat) / 10000)); //!< Disc Slip in micro-inches by Head
         json_push_back(pageInfo, json_new_a((char*)myHeader.c_str(), (char*)myStr.c_str()));
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         snprintf((char*)myHeader.c_str(), BASIC, "Bit Error Rate of Zone 0 by Head %d", loopCount); // Head count
-		snprintf((char*)myStr.c_str(), BASIC, "%0.04f",((std::abs((double)vFarmFrame[page].reliPage.bitErrorRate[loopCount].wholePartofFloat + ((double)vFarmFrame[page].reliPage.bitErrorRate[loopCount].decimalPartofFloat) / 10000)) ) * -1);
+		snprintf((char*)myStr.c_str(), BASIC, "%0.04f",((std::abs((double)vFarmFrame[page].reliPage.bitErrorRate[loopCount].wholePartofFloat) + ((double)vFarmFrame[page].reliPage.bitErrorRate[loopCount].decimalPartofFloat) / 10000))  * -1);
 
 		json_push_back(pageInfo, json_new_a((char*)myHeader.c_str(), (char*)myStr.c_str()));
     }
@@ -790,7 +790,6 @@ eReturnValues CATA_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint32
         snprintf((char *)myHeader.c_str(), BASIC, "Skip Write Detect Threshold Exceeded Head  %" PRId32"", loopCount);
         set_json_64bit(pageInfo, (char*)myHeader.c_str(), check_Status_Strip_Status(vFarmFrame[page].reliPage.skipWriteDetectThresExceeded[loopCount]), false);   //!< [24] Skip Write Detect Threshold Exceeded Count by Head7
     }
-    //set_json_64bit(pageInfo, "Number of RAW Operations", vFarmFrame[page].reliPage.numberRAWops & 0x00FFFFFFFFFFFFFFLL, false);                        //!< Number of RAW Operations
     set_json_64bit(pageInfo, "Error Rate (SMART Attribute 1 Raw)", check_Status_Strip_Status(vFarmFrame[page].reliPage.attrErrorRateRaw), false);           //!< Error Rate (SMART Attribute 1 Raw)
     set_json_64bit(pageInfo, "Error Rate (SMART Attribute 1 Normalized)", check_Status_Strip_Status(vFarmFrame[page].reliPage.attrErrorRateNormal), false);             //!< Error Rate (SMART Attribute 1 Normalized)
     set_json_64bit(pageInfo, "Error Rate (SMART Attribute 1 Worst)", check_Status_Strip_Status(vFarmFrame[page].reliPage.attrErrorRateWorst), false);     //!< Error Rate (SMART Attribute 1 Worst)
