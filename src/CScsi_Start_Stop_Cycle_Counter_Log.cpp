@@ -68,7 +68,7 @@ CScsiStartStop::CScsiStartStop(uint8_t * buffer, size_t bufferSize, JSONNODE *ma
 		}
 		else
 		{
-			m_StartStatus = BAD_PARAMETER;
+			m_StartStatus = static_cast<eReturnValues>(INVALID_LENGTH);
 		}
 	}
 	else
@@ -115,7 +115,7 @@ eReturnValues CScsiStartStop::parse_Start_Stop_Log(JSONNODE *masterData)
 	std::string myStr = "";
 	myStr.resize(BASIC);
 	eReturnValues status = IN_PROGRESS;
-	eReturnParserValues retStatus = OPENSEA_PARSER_IN_PROGRESS;
+	eReturnValues retStatus = IN_PROGRESS;
 	JSONNODE *pageInfo = json_new(JSON_NODE);
 	json_set_name(pageInfo, "Scsi Start Stop Cycle Counter Log");
 	byte_Swap_16(&m_Page->manufatureParamCode);
@@ -125,7 +125,7 @@ eReturnValues CScsiStartStop::parse_Start_Stop_Log(JSONNODE *masterData)
 	}
 	else
 	{
-		retStatus = OPENSEA_PARSER_BAD_PARAMETER;
+		retStatus = BAD_PARAMETER;
 	}
 	byte_Swap_16(&m_Page->accountParamCode);
 	if (accountingDate == m_Page->accountParamCode)
@@ -134,7 +134,7 @@ eReturnValues CScsiStartStop::parse_Start_Stop_Log(JSONNODE *masterData)
 	}
 	else
 	{
-		retStatus = OPENSEA_PARSER_BAD_PARAMETER;
+		retStatus = BAD_PARAMETER;
 	}
 	byte_Swap_16(&m_Page->specCycleParamCode);
 	if (specLifetime == m_Page->specCycleParamCode)
@@ -143,7 +143,7 @@ eReturnValues CScsiStartStop::parse_Start_Stop_Log(JSONNODE *masterData)
 	}
 	else
 	{
-		retStatus = OPENSEA_PARSER_BAD_PARAMETER;
+		retStatus = BAD_PARAMETER;
 	}
 	byte_Swap_16(&m_Page->AccumulatedParamCode);
 	if (accumulated == m_Page->AccumulatedParamCode)
@@ -152,7 +152,7 @@ eReturnValues CScsiStartStop::parse_Start_Stop_Log(JSONNODE *masterData)
 	}
 	else
 	{
-		retStatus = OPENSEA_PARSER_BAD_PARAMETER;
+		retStatus = BAD_PARAMETER;
 	}
 	byte_Swap_16(&m_Page->loadUnloadParamCode);
 	if (loadUnload == m_Page->loadUnloadParamCode)
@@ -161,7 +161,7 @@ eReturnValues CScsiStartStop::parse_Start_Stop_Log(JSONNODE *masterData)
 	}
 	else
 	{
-		retStatus = OPENSEA_PARSER_BAD_PARAMETER;
+		retStatus = BAD_PARAMETER;
 	}
 	byte_Swap_16(&m_Page->accLoadUnloadParamCode);
 	if (accumulatedLU == m_Page->accLoadUnloadParamCode)
@@ -170,11 +170,11 @@ eReturnValues CScsiStartStop::parse_Start_Stop_Log(JSONNODE *masterData)
 	}
 	else
 	{
-		retStatus = OPENSEA_PARSER_BAD_PARAMETER;
+		retStatus = BAD_PARAMETER;
 	}
 	json_push_back(masterData, pageInfo);
 
-	if (retStatus == OPENSEA_PARSER_BAD_PARAMETER || retStatus ==  OPENSEA_PARSER_IN_PROGRESS)
+	if (retStatus == BAD_PARAMETER || retStatus ==  IN_PROGRESS)
 	{
 		status = BAD_PARAMETER;
 	}
@@ -207,7 +207,7 @@ eReturnValues CScsiStartStop::parse_Start_Stop_Log(JSONNODE *masterData)
 //!   \return eReturnParserValues
 //
 //---------------------------------------------------------------------------
-eReturnParserValues CScsiStartStop::week_Year_Print(JSONNODE *data,uint16_t param, uint8_t paramlength, uint8_t paramConByte, uint32_t year, uint16_t week,const std::string strHeader, const std::string strYear, const std::string strWeek)
+eReturnValues CScsiStartStop::week_Year_Print(JSONNODE *data,uint16_t param, uint8_t paramlength, uint8_t paramConByte, uint32_t year, uint16_t week,const std::string strHeader, const std::string strYear, const std::string strWeek)
 {
 #define YEARSIZE 4
 #define WEEKSIZE 2
@@ -233,7 +233,7 @@ eReturnParserValues CScsiStartStop::week_Year_Print(JSONNODE *data,uint16_t para
 	json_push_back(dateInfo, json_new_a((char *)strWeek.c_str(), (char*)myStr.c_str()));
 
 	json_push_back(data, dateInfo);
-	return OPENSEA_PARSER_SUCCESS;
+	return SUCCESS;
 }
 //-----------------------------------------------------------------------------
 //
@@ -249,7 +249,7 @@ eReturnParserValues CScsiStartStop::week_Year_Print(JSONNODE *data,uint16_t para
 //!   \return eReturnParserValues
 //
 //---------------------------------------------------------------------------
-eReturnParserValues CScsiStartStop::get_Count(JSONNODE *countData, uint16_t param, uint8_t paramlength, uint8_t paramConByte, uint32_t count, const std::string strHeader, const std::string strCount)
+eReturnValues CScsiStartStop::get_Count(JSONNODE *countData, uint16_t param, uint8_t paramlength, uint8_t paramConByte, uint32_t count, const std::string strHeader, const std::string strCount)
 {
 	std::string myStr = "";
 	myStr.resize(BASIC);
@@ -267,5 +267,5 @@ eReturnParserValues CScsiStartStop::get_Count(JSONNODE *countData, uint16_t para
 	json_push_back(countInfo, json_new_i((char *)strCount.c_str(),  count )); 
 
 	json_push_back(countData, countInfo);
-	return OPENSEA_PARSER_SUCCESS;
+	return SUCCESS;
 }

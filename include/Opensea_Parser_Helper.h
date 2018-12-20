@@ -31,23 +31,7 @@ namespace opensea_parser {
 #define MODEL_NUMBER_LEN        20
 #define FIRMWARE_REV_LEN        4
 #define BASIC                   80
-
-
-	
-	
-	typedef enum _eReturnParserValues
-	{
-		OPENSEA_PARSER_SUCCESS = 0,
-		OPENSEA_PARSER_FAILURE = 1,
-		OPENSEA_PARSER_NOT_SUPPORTED = 2,
-		OPENSEA_PARSER_PARSER_FAILURE = 3,
-		OPENSEA_PARSER_IN_PROGRESS = 4,			//another command is in progress, or a command has started and is now in progress in the background
-		OPENSEA_PARSER_ABORTED = 5,				//something bad happend and we need to aborted
-		OPENSEA_PARSER_BAD_PARAMETER = 6,			//within a structure or log where the parameters don't match the spec 
-		OPENSEA_PARSER_MEMORY_FAILURE = 7,			//could not allocate memory
-		OPENSEA_PARSER_INVALID_LENGTH = 9,			//log size is invalid, a spec issue or a parameter issue on the lengths of the data.
-		OPENSEA_PARSER_FILE_OPEN_ERROR = 10,
-	}eReturnParserValues;
+#define INVALID_LENGTH          50
 
     // output file types
     enum eOpensea_print_Types

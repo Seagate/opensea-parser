@@ -148,7 +148,7 @@ eReturnValues CSAtaDevicStatisticsTempLogs::parse_SCT_Temp_Log()
 	if (m_dataSize > 0 && m_dataSize < (34 + CBIndex))   // check the size fo the data
 	{
 		json_push_back(JsonData, sctTemp);
-		return BAD_PARAMETER;
+		return static_cast<eReturnValues>(INVALID_LENGTH);
 	}
     SamplePeriod = ((uint16_t)pData[3] << 8) | ((uint16_t)pData[2] << 0);
     Interval = ((uint16_t)pData[5] << 8) | ((uint16_t)pData[4] << 0);
