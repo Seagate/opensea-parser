@@ -72,17 +72,24 @@ CScsiLog::CScsiLog(const std::string fileName, JSONNODE *masterData)
     , m_name("SCSI Log")
 	, m_ScsiStatus(IN_PROGRESS)
 {
-	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+	if (CLog::get_Log_Status() == SUCCESS)
 	{
-		printf("%s \n", m_name.c_str());
-	}
-	if (m_bufferData != NULL)
-	{
-		m_ScsiStatus = get_Log_Parsed(masterData);							// init the data for getting the log
+		if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+		{
+			printf("%s \n", m_name.c_str());
+		}
+		if (m_bufferData != NULL)
+		{
+			m_ScsiStatus = get_Log_Parsed(masterData);							// init the data for getting the log
+		}
+		else
+		{
+			m_ScsiStatus = FAILURE;
+		}
 	}
 	else
 	{
-		m_ScsiStatus = FAILURE;
+		m_ScsiStatus = CLog::get_Log_Status();
 	}
 
 }
@@ -106,15 +113,19 @@ CScsiLog::~CScsiLog()
 
 }
 
-bool CScsiLog::IsScsiLogPage(uint16_t Length, uint8_t code)
+bool CScsiLog::IsScsiLogPage(uint16_t length, uint8_t code)
 {
-	if (Length != 0)
+	if (length != 0)
 	{
-		for (int i = 0; i < (sizeof(pageCodes) / sizeof(*pageCodes));  i++)
+		uint32_t remainder = length % 512;
+		if (remainder != 0)
 		{
-			if (pageCodes[i] == code)
+			for (int i = 0; i < (sizeof(pageCodes) / sizeof(*pageCodes)); i++)
 			{
-				return true;
+				if (pageCodes[i] == code)
+				{
+					return true;
+				}
 			}
 		}
 	}
@@ -144,7 +155,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 
 		m_Page = (sLogPageStruct *)m_bufferData;				// set a buffer to the point to the log page info
 		byte_Swap_16(&m_Page->pageLength);
-		if (IsScsiLogPage(m_Page->pageLength , m_Page->pageCode) == true)
+		if (IsScsiLogPage(m_Page->pageLength , M_GETBITRANGE(m_Page->pageCode, 5, 0)) == true)
 		{
 			uint8_t pageCode = 0;
 			switch (M_GETBITRANGE(m_Page->pageCode, 5, 0))
