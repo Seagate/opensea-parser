@@ -29,7 +29,6 @@ using namespace opensea_parser;
 CAta_Ext_DST_Log::CAta_Ext_DST_Log(const std::string &fileName, JSONNODE *masterData)
     :CLog(fileName)
     , m_name("Ext DST Log")                                         //!< name of the class
-    , m_jData(masterData)
     , m_status(IN_PROGRESS)
 {
     m_logSize = 0;
@@ -40,7 +39,7 @@ CAta_Ext_DST_Log::CAta_Ext_DST_Log(const std::string &fileName, JSONNODE *master
         {
             m_status = IN_PROGRESS;
             m_logSize = CLog::get_Size();
-            m_status = parse_Ext_Self_Test_Log(DSTData);
+            m_status = parse_Ext_Self_Test_Log((uint8_t *)m_bufferData, masterData);
         }
     }
     else
@@ -65,11 +64,10 @@ CAta_Ext_DST_Log::CAta_Ext_DST_Log(const std::string &fileName, JSONNODE *master
 CAta_Ext_DST_Log::CAta_Ext_DST_Log(uint8_t *pBufferData, JSONNODE *masterData)
     :CLog()
     , m_name("Ext DST Log")                                         //!< name of the class
-    , m_jData(masterData)
     , m_status(IN_PROGRESS)
 {
     m_logSize = 0;
-    m_status = parse_Ext_Self_Test_Log(pBufferData);
+    m_status = parse_Ext_Self_Test_Log(pBufferData, masterData);
 }
 //-----------------------------------------------------------------------------
 //
@@ -101,7 +99,7 @@ CAta_Ext_DST_Log::~CAta_Ext_DST_Log()
 //!   \return eReturnValues success
 //
 //---------------------------------------------------------------------------
-eReturnValues CAta_Ext_DST_Log::parse_Ext_Self_Test_Log(uint8_t *DSTData)
+eReturnValues CAta_Ext_DST_Log::parse_Ext_Self_Test_Log(uint8_t *DSTData, JSONNODE *masterData)
 {
     std::string myStr = "Start of Ext DST";
     JSONNODE *DstJson = json_new(JSON_NODE);
@@ -148,7 +146,7 @@ eReturnValues CAta_Ext_DST_Log::parse_Ext_Self_Test_Log(uint8_t *DSTData)
         json_push_back(DstJson, runInfo);
     }
 
-    json_push_back(m_jData, DstJson);
+    json_push_back(masterData, DstJson);
 
     return SUCCESS;
 }

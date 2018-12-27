@@ -29,10 +29,9 @@ namespace opensea_parser {
     protected:
         enum m_DST_Enum { DST_HAS_NOT_BEEN_RUN, DST_HAS_BEEN_RUN, DST_INCOMPLETE, DST_HAS_FAILED, DST_HAS_TIMEDOUT };
         std::string                 m_name;                                         //!< name of the class
-        size_t						m_logSize;                                      //!< log size in bytes
-        JSONNODE                    *m_jData;                                       //!< pointer to the json structures                                  
+        size_t						m_logSize;                                      //!< log size in bytes                             
         eReturnValues               m_status;                                       //!< holds the status so 
-        eReturnValues parse_Ext_Self_Test_Log(uint8_t *DSTData);
+        eReturnValues parse_Ext_Self_Test_Log(uint8_t *DSTData,JSONNODE *masterData);
 
     public:
         CAta_Ext_DST_Log(const std::string &fileName, JSONNODE *masterData);
