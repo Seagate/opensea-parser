@@ -46,7 +46,7 @@ namespace opensea_parser {
         typedef struct _sStatusResponse
         {
             uint16_t    formatVersion;                                  //!< Status Response format version number.                         0 - 1 
-            uint16_t    SCTversion;                                     //!< Manufacturer’s vendor specific implementation version number   2 - 3
+            uint16_t    SCTversion;                                     //!< Manufacturerï¿½s vendor specific implementation version number   2 - 3
             uint16_t    SCTspec;                                        //!< Highest level of SCT Technical Report supported                4 - 5
             uint32_t    statusFlag;                                     //!< Bit 0: Segment Initialized Flag.                               6 - 9
             uint8_t     driveStatus;                                    //!< drive status                                                   10
@@ -121,10 +121,9 @@ namespace opensea_parser {
 		eReturnValues                       m_status;                                                   //!< holds the status of the class
         uint8_t                             *pData;                                                     //!< pointer to the data
         size_t                              m_deviceLogSize;                                            //!< Log size 
-        sDeviceLog3                         m_sSCT3;                                                    //!< SCT device log 3
-        sDeviceLog6                         m_sSCT6;                                                    //!< SCR device log 6
         sStatusResponse                     m_Response;                                                 //!< status response
 
+	eReturnValues ParseSCTDeviceStatLog(JSONNODE *masterData);
         bool isBit63Set(uint64_t *value);
         bool isBit62Set(uint64_t *value);
         bool isBit61Set(uint64_t *value);
@@ -194,7 +193,6 @@ namespace opensea_parser {
         CAtaDeviceStatisticsLogs(const std::string &fileName, JSONNODE *masterData);
         CAtaDeviceStatisticsLogs(uint32_t logSize, JSONNODE *masterData, uint8_t *buffer);
         virtual ~CAtaDeviceStatisticsLogs();
-        eReturnValues ParseSCTDeviceStatLog(JSONNODE *masterData);
         eReturnValues get_Device_Stat_Status(){ return m_status; };
     };
 #endif  //ATADEVICESTAT
