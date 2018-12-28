@@ -28,7 +28,6 @@ namespace opensea_parser {
         sLogPageStruct*				m_Page;					//<! page code for the log lpage format
 
 		eReturnValues get_Log_Parsed(JSONNODE *masterData);
-		bool IsScsiLogPage(uint16_t Length, uint8_t code);
 	public:
 		CScsiLog();
         CScsiLog(const std::string fileName, JSONNODE *masterData);
