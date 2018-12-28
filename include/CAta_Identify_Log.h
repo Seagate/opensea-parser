@@ -737,14 +737,15 @@ namespace opensea_parser {
         eReturnValues get_Log_Page08(uint8_t *pData, JSONNODE *masterData);
     };
 
-    class CAta_Identify_Log_30 : virtual public CLog
+    class CAta_Identify_Log_30 
     {
 
     protected:
         std::string                         m_name;                             //<! name of the class
         eReturnValues                       m_status;                           //<! the status of the class   
+uint8_t * pData;
 
-        int get_Interface_Type(uint8_t *pData);
+        eReturnValues get_Interface_Type();
         
     public:
         CAta_Identify_Log_30( const std::string & fileName);
