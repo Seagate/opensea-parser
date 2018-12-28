@@ -379,7 +379,6 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 					std::cout << "Power Condition Transitions Log Pages Found" << std::endl;
 				}
 				CScsiPowerConditiontLog *cPower;
-				byte_Swap_16(&m_Page->pageLength);
 				cPower = new CScsiPowerConditiontLog((uint8_t *)&m_bufferData[4], m_size, m_Page->pageLength);
 				retStatus = cPower->parse_Power_Condition_Transitions_Log(masterData);
 				delete(cPower);
