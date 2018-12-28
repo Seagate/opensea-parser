@@ -140,5 +140,23 @@ namespace opensea_parser {
         }
         return static_cast<uint32_t>(count);
     }
+	inline bool IsScsiLogPage(uint16_t length, uint8_t code)
+	{
+		if (length != 0)
+		{
+			uint32_t remainder = length % 512;
+			if (remainder != 0)
+			{
+				for (int i = 0; i < (sizeof(pageCodes) / sizeof(*pageCodes)); i++)
+				{
+					if (pageCodes[i] == code)
+					{
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
 }
 
