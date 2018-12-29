@@ -72,8 +72,8 @@ inline bool check_For_Active_Status(uint64_t *value)
 
 // *****************************************************************************
 CAta_Identify_log::CAta_Identify_log()
-    :CLog()
-    , m_name("ATA Identify Log")
+    : m_name("ATA Identify Log")
+	, m_status(IN_PROGRESS)
 {
     //m_sDriveInfo = {};
 }
@@ -94,8 +94,8 @@ CAta_Identify_log::CAta_Identify_log()
 //
 //---------------------------------------------------------------------------
 CAta_Identify_log::CAta_Identify_log(uint8_t *buffer)
-    :CLog()
-    , m_name("ATA Identify Log")
+    : m_name("ATA Identify Log")
+	, m_status(IN_PROGRESS)
 {
     pData = buffer;
     if (pData != NULL)
@@ -124,18 +124,34 @@ CAta_Identify_log::CAta_Identify_log(uint8_t *buffer)
 //
 //---------------------------------------------------------------------------
 CAta_Identify_log::CAta_Identify_log( const std::string & fileName)
-    :CLog(fileName)
-    , m_name("ATA Identify Log")
+    : m_name("ATA Identify Log")
     , m_status(IN_PROGRESS)
 {
-    if (CLog::get_Log_Status() == SUCCESS)
+	CLog *cCLog;
+	cCLog = new CLog(fileName);
+    if (cCLog->get_Log_Status() == SUCCESS)
     {
-        pData = CLog::get_Buffer();
-        if (pData != NULL)
-        {
-
-            parse_Device_Info();
-            m_status = SUCCESS;
+		if (cCLog->get_Buffer() != NULL)
+		{
+			size_t bufferSize = cCLog->get_Size();
+			pData = new uint8_t[cCLog->get_Size()];								// new a buffer to the point				
+#ifdef __linux__ //To make old gcc compilers happy
+			memcpy(pData, cCLog->get_Buffer(), bufferSize);
+#else
+			memcpy_s(pData, bufferSize, cCLog->get_Buffer(), bufferSize);// copy the buffer data to the class member pBuf
+#endif
+			sLogPageStruct *idCheck;
+			idCheck = (sLogPageStruct *)&pData[0];
+			byte_Swap_16(&idCheck->pageLength);
+			if (IsScsiLogPage(idCheck->pageLength, idCheck->pageCode) == false)
+			{
+				parse_Device_Info();
+				m_status = SUCCESS;
+			}
+			else
+			{
+				m_status = BAD_PARAMETER;
+			}
         }
         else
         {
@@ -144,8 +160,9 @@ CAta_Identify_log::CAta_Identify_log( const std::string & fileName)
     }
     else
     {
-        m_status = CLog::get_Log_Status();
+        m_status = cCLog->get_Log_Status();
     }
+	delete(cCLog);
 }
 
 //-----------------------------------------------------------------------------
@@ -651,7 +668,7 @@ eReturnValues CAta_Identify_log::parse_Device_Info()
 }
 //-----------------------------------------------------------------------------
 //
-//! \fn CAta_Identify_log::Print_Identify_Information()
+//! \fn CAta_Identify_log::print_Identify_Information()
 //
 //! \brief
 //!   Description:  takes the parsed infromation in the struct and prints it out into a json object 
@@ -4693,18 +4710,34 @@ eReturnValues CAta_Identify_Log_08::get_Log_Page08(uint8_t *pData, JSONNODE *mas
 //
 //---------------------------------------------------------------------------
 CAta_Identify_Log_30::CAta_Identify_Log_30( const std::string & fileName)
-    :m_name("log page 30")
+    :pData()
+	, m_name("log page 30")
     , m_status(IN_PROGRESS)
 {
     CLog *cCLog;
     cCLog = new CLog(fileName);
     if (cCLog->get_Log_Status() == SUCCESS)
     {
-	pData = cCLog->get_Buffer();
-        if (pData != NULL)
+        if (cCLog->get_Buffer() != NULL)
         {
-
-            m_status = SUCCESS;
+			size_t bufferSize = cCLog->get_Size();
+			pData = new uint8_t[cCLog->get_Size()];								// new a buffer to the point				
+#ifdef __linux__ //To make old gcc compilers happy
+			memcpy(pData, cCLog->get_Buffer(), bufferSize);
+#else
+			memcpy_s(pData, bufferSize, cCLog->get_Buffer(), bufferSize);// copy the buffer data to the class member pBuf
+#endif
+			sLogPageStruct *idCheck;
+			idCheck = (sLogPageStruct *)&pData[0];
+			byte_Swap_16(&idCheck->pageLength);
+			if (IsScsiLogPage(idCheck->pageLength, idCheck->pageCode) == false)
+			{
+				m_status = SUCCESS;
+			}
+			else
+			{
+				m_status - BAD_PARAMETER;
+			}
         }
         else
         {
@@ -4716,7 +4749,7 @@ CAta_Identify_Log_30::CAta_Identify_Log_30( const std::string & fileName)
     {
         m_status = cCLog->get_Log_Status();
     } 
-
+	delete (cCLog);
 }
 //-----------------------------------------------------------------------------
 //
@@ -4780,12 +4813,11 @@ eReturnValues CAta_Identify_Log_30::get_Interface_Type()
 
 eReturnValues CAta_Identify_Log_30::parse_Identify_Log_30(JSONNODE *masterData)
 {
-    //uint8_t *pData = (uint8_t *)CLog::get_Buffer();                             //<! pointer to the data 
     // Parse the log page 00.
     CAta_Identify_Log_00 *cLogPage00;
     cLogPage00 = new CAta_Identify_Log_00(&pData[0x000]);
     cLogPage00->get_Log_Page00(&pData[0x000], masterData);
-
+	
     // Parse the Log page 01h
     if (cLogPage00->is_Page_Supported(1))
     {
@@ -4850,7 +4882,8 @@ eReturnValues CAta_Identify_Log_30::parse_Identify_Log_30(JSONNODE *masterData)
         cLogPage08->get_Log_Page08(&pData[0x1000], masterData);
         delete (cLogPage08);
     }
-    get_Interface_Type();    
+    get_Interface_Type();  
+	
     delete (cLogPage00);
     return SUCCESS;
 };

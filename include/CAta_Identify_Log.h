@@ -29,7 +29,7 @@ namespace opensea_parser {
 #define LEGACY_DRIVE_SEC_SIZE 512
 #define MAX_48_BIT_LBA                (0xFFFFFFFFFFFFULL)
 
-    class CAta_Identify_log : virtual public CLog
+    class CAta_Identify_log
     {
     protected:
 #pragma pack(push, 1)
@@ -741,9 +741,9 @@ namespace opensea_parser {
     {
 
     protected:
+		uint8_t								* pData;							//<! pointer to the buffer data
         std::string                         m_name;                             //<! name of the class
         eReturnValues                       m_status;                           //<! the status of the class   
-uint8_t * pData;
 
         eReturnValues get_Interface_Type();
         
