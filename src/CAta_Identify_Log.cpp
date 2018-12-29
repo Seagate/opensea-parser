@@ -4736,7 +4736,7 @@ CAta_Identify_Log_30::CAta_Identify_Log_30( const std::string & fileName)
 			}
 			else
 			{
-				m_status - BAD_PARAMETER;
+				m_status = BAD_PARAMETER;
 			}
         }
         else
