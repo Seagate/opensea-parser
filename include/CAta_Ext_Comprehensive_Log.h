@@ -23,18 +23,20 @@ namespace opensea_parser {
 #ifndef ATAEXTCOMPLOG
 #define ATAEXTCOMPLOG
 
-    class CExtComp : virtual public CLog 
+    class CExtComp 
     {
     private:
-    protected:
+    protected:			
+		uint8_t								* pData;													//<! pointer to the buffer
         std::string                         m_name;                                                     //!< name of the class
         eReturnValues                       m_status;                                                   //!< holds the status of the class
 
     public:
         CExtComp();
+		CExtComp(uint8_t *buffer, JSONNODE *masterData);
         CExtComp(const std::string &fileName, JSONNODE *masterData);
         virtual ~CExtComp();
-        eReturnValues ParseExtCompLog(uint8_t *pData, JSONNODE *masterData);
+        eReturnValues ParseExtCompLog(JSONNODE *masterData);
         eReturnValues get_EC_Status(){ return m_status; };
 
     };

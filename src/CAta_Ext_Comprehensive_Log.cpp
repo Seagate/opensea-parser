@@ -26,8 +26,7 @@ using namespace opensea_parser;
 //
 //---------------------------------------------------------------------------
 CExtComp::CExtComp()
-    :CLog()
-    , m_name("Ext Comp Log")
+    : m_name("Ext Comp Log")
 {
 
 }
@@ -40,27 +39,74 @@ CExtComp::CExtComp()
 //
 //
 //---------------------------------------------------------------------------
+CExtComp::CExtComp(uint8_t *buffer, JSONNODE *masterData)
+	:pData(buffer)
+	, m_name("Ext Comp Log")
+	, m_status(IN_PROGRESS)
+{
+
+	if (buffer != NULL)                           // if the buffer is null then exit something did go right
+	{
+		m_status = IN_PROGRESS;
+		m_status = ParseExtCompLog( masterData);
+	}
+	else
+	{
+		m_status = FAILURE;
+	}
+
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn CExtComp::CExtComp()
+//
+//! \brief
+//!   Description: Class constructor
+//
+//
+//---------------------------------------------------------------------------
 CExtComp::CExtComp(const std::string &fileName, JSONNODE *masterData)
-    :CLog(fileName)
+    :pData()
     , m_name("Ext Comp Log")
     , m_status(IN_PROGRESS)
 {
-    if (CLog::get_Log_Status() == SUCCESS)
-    {
-        if (m_bufferData != NULL)                           // if the buffer is null then exit something did go right
-        {
-            m_status = IN_PROGRESS;
-            m_status = ParseExtCompLog(CLog::get_Buffer(), masterData);
-        }
-        else
-        {
-            m_status = FAILURE;
-        }
-    }
-    else
-    {
-        m_status = CLog::get_Log_Status();
-    }
+	CLog *cCLog;
+	cCLog = new CLog(fileName);
+	if (cCLog->get_Log_Status() == SUCCESS)
+	{
+		if (cCLog->get_Buffer() != NULL)
+		{
+			size_t bufferSize = cCLog->get_Size();
+			pData = new uint8_t[cCLog->get_Size()];								// new a buffer to the point				
+#ifdef __linux__ //To make old gcc compilers happy
+			memcpy(pData, cCLog->get_Buffer(), bufferSize);
+#else
+			memcpy_s(pData, bufferSize, cCLog->get_Buffer(), bufferSize);// copy the buffer data to the class member pBuf
+#endif
+			sLogPageStruct *idCheck;
+			idCheck = (sLogPageStruct *)&pData[0];
+			byte_Swap_16(&idCheck->pageLength);
+			if (IsScsiLogPage(idCheck->pageLength, idCheck->pageCode) == false)
+			{
+				m_status = ParseExtCompLog(masterData);
+				m_status = SUCCESS;
+			}
+			else
+			{
+				m_status = BAD_PARAMETER;
+			}
+		}
+		else
+		{
+
+			m_status = FAILURE;
+		}
+	}
+	else
+	{
+		m_status = cCLog->get_Log_Status();
+	}
+	delete (cCLog);
 }
 //-----------------------------------------------------------------------------
 //
@@ -89,7 +135,7 @@ CExtComp::~CExtComp()
 //!   \return eReturnValues success
 //
 //---------------------------------------------------------------------------
-eReturnValues CExtComp::ParseExtCompLog(uint8_t *pData, JSONNODE *masterData)
+eReturnValues CExtComp::ParseExtCompLog( JSONNODE *masterData)
 {
     std::string myStr = "Parse Ext Comp Log";
     uint8_t  deviceControl = 0;
@@ -115,14 +161,19 @@ eReturnValues CExtComp::ParseExtCompLog(uint8_t *pData, JSONNODE *masterData)
     JSONNODE *EComp = json_new(JSON_NODE);
     json_set_name(EComp, "Ext Comp SMART log");
 
-    json_push_back(EComp, json_new_i("Ext Comp SMART log Version", static_cast<uint32_t>(pData[0])));
+    json_push_back(EComp, json_new_i("Ext Comp SMART Log Version", static_cast<int>(pData[0])));
 
     COMPIndex = pData[2];
-    json_push_back(EComp, json_new_i("Ext Comp Index", static_cast<uint32_t>(COMPIndex)));
+    json_push_back(EComp, json_new_i("Ext Comp Log Index", static_cast<int>(COMPIndex)));
 
+	deviceErrorCount = pData[500];
+	json_push_back(EComp, json_new_i("Ext Comp Device Error Count", static_cast<int>(deviceErrorCount)));
 
-    for (int z = 0; z < 4; z++)
+    for (uint16_t z = 1; z < 5; z++)
     {
+		snprintf((char*)myStr.c_str(), BASIC, "Opcode Content %" PRId16"", z);
+		JSONNODE *opcode = json_new(JSON_NODE);
+		json_set_name(opcode, (char*)myStr.c_str());
         for (int cmddata = 1; cmddata < 6; cmddata++)
         {
             deviceControl = pData[wOffset];
@@ -180,57 +231,57 @@ eReturnValues CExtComp::ParseExtCompLog(uint8_t *pData, JSONNODE *masterData)
             lifeTime);
 #endif
 
+		snprintf((char*)myStr.c_str(), BASIC, "0x%x", errorField);
+		json_push_back(opcode, json_new_a("Error", (char*)myStr.c_str()));
+
+		snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx16"", countField);
+		json_push_back(opcode, json_new_a("Count", (char*)myStr.c_str()));
+
+		opensea_parser::set_json_64bit(opcode, "LBA", LBA, false);
+
+		json_push_back(opcode, json_new_i("Device", static_cast<uint32_t>(deviceControl)));
+
+		snprintf((char*)myStr.c_str(), BASIC, "0x%x", status);
+		json_push_back(opcode, json_new_a("Status", (char*)myStr.c_str()));
+		if (State == 0x0)
+		{
+			stateStr = "Unknown:";
+		}
+		else if (State == 0x1)
+		{
+			stateStr = "Sleep:";
+		}
+		else if (State == 0x2)
+		{
+			stateStr = "Standby:";
+		}
+		else if (State == 0x3)
+		{
+			stateStr = "Active/Idle:";
+		}
+		else if (State >= 0x4)
+		{
+			snprintf((char*)myStr.c_str(), BASIC, "%x", State);
+			json_push_back(opcode, json_new_a("Vendor Specific", (char*)myStr.c_str()));
+		}
+		else
+		{
+			stateStr = "    null:            ";
+		}
+		json_push_back(opcode, json_new_a("Ext Comp Error Log State", (char*)stateStr.c_str()));
+
+		snprintf((char*)myStr.c_str(), BASIC, "%" PRId16"", lifeTime);
+		json_push_back(opcode, json_new_a("Ext Comp Error Log Life Timestamp", (char*)myStr.c_str()));
+
+
+		json_push_back(EComp, opcode);
     }
-    deviceErrorCount = pData[500];
-    if (State == 0x0)
-    {
-        stateStr =  "Unknown:";
-    }
-    else if (State == 0x1)
-    {
-        stateStr = "Sleep:";
-    }
-    else if (State == 0x2)
-    {
-        stateStr =  "Standby:";
-    }
-    else if (State == 0x3)
-    {
-        stateStr =  "Active/Idle:";
-    }
-    else if (State >= 0x4)
-    {
-        snprintf((char*)myStr.c_str(), BASIC, "%x", State);
-        json_push_back(EComp, json_new_a("Vendor Specific", (char*)myStr.c_str()));
-    }
-    else
-    {
-        stateStr = "    null:            ";
-    }
-    json_push_back(EComp, json_new_a("Ext Comp Error Log State", (char*)stateStr.c_str()));
+    
+    
 
-    snprintf((char*)myStr.c_str(), BASIC, "%" PRId16"", lifeTime);
-    json_push_back(EComp, json_new_a("Ext Comp Error Log Life Timestamp", (char*)myStr.c_str()));
+    
 
-    JSONNODE *opcode = json_new(JSON_NODE);
-    json_set_name(opcode, "Opcode Content");
-
-    snprintf((char*)myStr.c_str(), BASIC, "0x%x", errorField);
-    json_push_back(opcode, json_new_a("Error", (char*)myStr.c_str()));
-
-    snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx16"", countField);
-    json_push_back(opcode, json_new_a("Count", (char*)myStr.c_str()));
-
-    opensea_parser::set_json_64bit(opcode, "LBA", LBA , false);
-
-    json_push_back(opcode, json_new_i("Device", static_cast<uint32_t>(deviceControl)));
-
-    snprintf((char*)myStr.c_str(), BASIC, "0x%x", status);
-    json_push_back(opcode, json_new_a("Status", (char*)myStr.c_str()));
-
-    json_push_back(opcode, json_new_i("Comp Error count", static_cast<uint32_t>(deviceErrorCount)));
-
-    json_push_back(masterData, opcode);
+    json_push_back(masterData, EComp);
 
     if (status == 0x51 && errorField == 0x40)
     {
