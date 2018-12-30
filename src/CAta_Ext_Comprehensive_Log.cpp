@@ -192,6 +192,7 @@ eReturnValues CExtComp::get_State_Meaning(std::string *stateMeaning, uint8_t sta
 eReturnValues CExtComp::parse_Ext_Comp_Structure(uint32_t structNumber, uint32_t sector, JSONNODE *structureData)
 {
     std::string myStr = "Parse Ext Comp Log";
+	myStr.resize(BASIC);
     uint8_t  deviceControl = 0;
     uint16_t featureField = 0;
     uint16_t countField = 0;
