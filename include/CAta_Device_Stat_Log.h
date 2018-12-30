@@ -21,11 +21,12 @@
 namespace opensea_parser {
 #ifndef ATADEVICESTAT
 #define ATADEVICESTAT
-    class CSAtaDevicStatisticsTempLogs : virtual public CLog
+    class CSAtaDevicStatisticsTempLogs 
     {
     protected:
         std::string                         m_name;                                                     //!< name of the class
         uint8_t                             *pData;                                                     //!< pointer to the data
+		size_t								m_logSize;													//!< size fo the log
         eReturnValues                       m_status;                                                   //!< holds the status of the class 
 		size_t								m_dataSize;													//!< data size read in form the clog
         JSONNODE                            *JsonData;                                                  //!< json master data
@@ -38,7 +39,7 @@ namespace opensea_parser {
         eReturnValues get_Status(){ return m_status; };
     };
 
-    class CAtaDeviceStatisticsLogs : virtual public CLog
+    class CAtaDeviceStatisticsLogs 
     {
     protected:
         

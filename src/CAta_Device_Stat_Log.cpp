@@ -36,8 +36,11 @@ using namespace std;
 //
 //---------------------------------------------------------------------------
 CSAtaDevicStatisticsTempLogs::CSAtaDevicStatisticsTempLogs()
-    :CLog()
-    , m_name("SCT Temp Log")
+    :m_name("SCT Temp Log")
+	, pData()
+	, m_logSize(0)
+	, m_status(IN_PROGRESS)
+	, m_dataSize(0)
     , JsonData(NULL)
 {
 }
@@ -55,9 +58,9 @@ CSAtaDevicStatisticsTempLogs::CSAtaDevicStatisticsTempLogs()
 //
 //---------------------------------------------------------------------------
 CSAtaDevicStatisticsTempLogs::CSAtaDevicStatisticsTempLogs(uint8_t *buffer,JSONNODE *masterData)
-    :CLog()
-    , m_name("SCT Temp Log")
+    :m_name("SCT Temp Log")
     , pData(buffer)
+	, m_logSize(0)
     , m_status(IN_PROGRESS)
 	, m_dataSize(0)
     , JsonData(masterData)
@@ -82,22 +85,51 @@ CSAtaDevicStatisticsTempLogs::CSAtaDevicStatisticsTempLogs(uint8_t *buffer,JSONN
 //
 //---------------------------------------------------------------------------
 CSAtaDevicStatisticsTempLogs::CSAtaDevicStatisticsTempLogs(const std::string &fileName, JSONNODE *masterData)
-    :CLog(fileName)
-    , m_name("SCT Temp Log")
+    : m_name("SCT Temp Log")
 	, pData()
+	, m_logSize(0)
 	, m_status(IN_PROGRESS)
 	, m_dataSize(0)
     , JsonData(masterData)
 {
-	if (m_bufferData != NULL)
+
+	CLog *cCLog;
+	cCLog = new CLog(fileName);
+	if (cCLog->get_Log_Status() == SUCCESS)
 	{
-		pData = CLog::get_Buffer();
-		m_status = IN_PROGRESS;
+		if (cCLog->get_Buffer() != NULL)
+		{
+			m_logSize = cCLog->get_Size();
+			pData = new uint8_t[m_logSize];								// new a buffer to the point				
+#ifdef __linux__ //To make old gcc compilers happy
+			memcpy(pData, cCLog->get_Buffer(), m_logSize);
+#else
+			memcpy_s(pData, m_logSize, cCLog->get_Buffer(), m_logSize);// copy the buffer data to the class member pBuf
+#endif
+			sLogPageStruct *idCheck;
+			idCheck = (sLogPageStruct *)&pData[0];
+			byte_Swap_16(&idCheck->pageLength);
+			if (IsScsiLogPage(idCheck->pageLength, idCheck->pageCode) == false)
+			{
+				byte_Swap_16(&idCheck->pageLength);  // now that we know it's not scsi we need to flip the bytes back
+				m_status = SUCCESS;
+			}
+			else
+			{
+				m_status = BAD_PARAMETER;
+			}
+		}
+		else
+		{
+
+			m_status = FAILURE;
+		}
 	}
 	else
 	{
-		m_status = BAD_PARAMETER;
+		m_status = cCLog->get_Log_Status();
 	}
+	delete (cCLog);
 }
 //-----------------------------------------------------------------------------
 //
@@ -217,8 +249,7 @@ eReturnValues CSAtaDevicStatisticsTempLogs::parse_SCT_Temp_Log()
 //
 //---------------------------------------------------------------------------
 CAtaDeviceStatisticsLogs::CAtaDeviceStatisticsLogs()
-    :CLog()
-    , m_name("Device Stat Log")
+    :m_name("Device Stat Log")
     , m_status(IN_PROGRESS)
 {
     m_deviceLogSize = 0;
@@ -240,8 +271,7 @@ CAtaDeviceStatisticsLogs::CAtaDeviceStatisticsLogs()
 //
 //---------------------------------------------------------------------------
 CAtaDeviceStatisticsLogs::CAtaDeviceStatisticsLogs(uint32_t logSize, JSONNODE *masterData, uint8_t *buffer)
-    :CLog()
-    , m_name("Device Stat Log")
+    : m_name("Device Stat Log")
     , m_status(IN_PROGRESS)
     , pData(buffer)
     , m_deviceLogSize(logSize)
@@ -271,28 +301,49 @@ CAtaDeviceStatisticsLogs::CAtaDeviceStatisticsLogs(uint32_t logSize, JSONNODE *m
 //
 //---------------------------------------------------------------------------
 CAtaDeviceStatisticsLogs::CAtaDeviceStatisticsLogs(const std::string &fileName, JSONNODE *masterData)
-    :CLog(fileName)
-    , m_name("Device Stat Log")
-    , m_status(SUCCESS)
+    : m_name("Device Stat Log")
+	, m_status(IN_PROGRESS)
+	, pData()
+	, m_deviceLogSize(0)
 {
-    m_deviceLogSize = 0;
-    if (CLog::get_Log_Status() == SUCCESS )
-    {
-        pData = CLog::get_Buffer();
-        if (pData != NULL)
-        {
-            m_deviceLogSize = CLog::get_Size();
-            m_status = ParseSCTDeviceStatLog(masterData);
-        }
-        else
-        {
-            m_status = FAILURE;
-        }
-    }
-    else
-    {
-        m_status = CLog::get_Log_Status();
-    }
+	CLog *cCLog;
+	cCLog = new CLog(fileName);
+	if (cCLog->get_Log_Status() == SUCCESS)
+	{
+		if (cCLog->get_Buffer() != NULL)
+		{
+			m_deviceLogSize = cCLog->get_Size();
+			pData = new uint8_t[m_deviceLogSize];								// new a buffer to the point				
+#ifdef __linux__ //To make old gcc compilers happy
+			memcpy(pData, cCLog->get_Buffer(), m_logSize);
+#else
+			memcpy_s(pData, m_deviceLogSize, cCLog->get_Buffer(), m_deviceLogSize);// copy the buffer data to the class member pBuf
+#endif
+			sLogPageStruct *idCheck;
+			idCheck = (sLogPageStruct *)&pData[0];
+			byte_Swap_16(&idCheck->pageLength);
+			if (IsScsiLogPage(idCheck->pageLength, idCheck->pageCode) == false)
+			{
+				byte_Swap_16(&idCheck->pageLength);  // now that we know it's not scsi we need to flip the bytes back
+				m_status = ParseSCTDeviceStatLog(masterData);
+				m_status = SUCCESS;
+			}
+			else
+			{
+				m_status = BAD_PARAMETER;
+			}
+		}
+		else
+		{
+
+			m_status = FAILURE;
+		}
+	}
+	else
+	{
+		m_status = cCLog->get_Log_Status();
+	}
+	delete (cCLog);
 }
 //-----------------------------------------------------------------------------
 //
