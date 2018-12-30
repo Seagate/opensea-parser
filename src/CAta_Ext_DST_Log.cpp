@@ -58,7 +58,7 @@ CAta_Ext_DST_Log::CAta_Ext_DST_Log(const std::string &fileName, JSONNODE *master
         m_status = IN_PROGRESS;
         m_logSize = 0;
     }
-    
+	delete (cCLog);
 }
 //-----------------------------------------------------------------------------
 //
