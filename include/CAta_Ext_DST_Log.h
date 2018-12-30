@@ -24,14 +24,15 @@ namespace opensea_parser {
 #ifndef ATAEXTDST
 #define ATAEXTDST
 
-    class CAta_Ext_DST_Log : virtual public CLog
+    class CAta_Ext_DST_Log 
     {
     protected:
         enum m_DST_Enum { DST_HAS_NOT_BEEN_RUN, DST_HAS_BEEN_RUN, DST_INCOMPLETE, DST_HAS_FAILED, DST_HAS_TIMEDOUT };
         std::string                 m_name;                                         //!< name of the class
+		uint8_t						*pData;											//!< pointer the the data
         size_t						m_logSize;                                      //!< log size in bytes                             
         eReturnValues               m_status;                                       //!< holds the status so 
-        eReturnValues parse_Ext_Self_Test_Log(uint8_t *DSTData,JSONNODE *masterData);
+        eReturnValues parse_Ext_Self_Test_Log(JSONNODE *masterData);
 
     public:
         CAta_Ext_DST_Log(const std::string &fileName, JSONNODE *masterData);

@@ -27,19 +27,30 @@ using namespace opensea_parser;
 //
 //---------------------------------------------------------------------------
 CAta_Ext_DST_Log::CAta_Ext_DST_Log(const std::string &fileName, JSONNODE *masterData)
-    :CLog(fileName)
-    , m_name("Ext DST Log")                                         //!< name of the class
+    :m_name("Ext DST Log")                                         //!< name of the class
     , m_status(IN_PROGRESS)
 {
-    m_logSize = 0;
-    if (CLog::get_Log_Status() == SUCCESS)
-    {
-        uint8_t *DSTData= CLog::get_Buffer();
-        if (m_bufferData != NULL && DSTData != NULL)                           // if the buffer is null then exit something did go right
-        {
-            m_status = IN_PROGRESS;
-            m_logSize = CLog::get_Size();
-            m_status = parse_Ext_Self_Test_Log((uint8_t *)m_bufferData, masterData);
+	CLog *cCLog;
+	cCLog = new CLog(fileName);
+	if (cCLog->get_Log_Status() == SUCCESS)
+	{
+		if (cCLog->get_Buffer() != NULL)
+		{
+			m_logSize = cCLog->get_Size();
+			pData = new uint8_t[m_logSize];								// new a buffer to the point				
+#ifdef __linux__ //To make old gcc compilers happy
+			memcpy(pData, cCLog->get_Buffer(), m_logSize);
+#else
+			memcpy_s(pData, m_logSize, cCLog->get_Buffer(), m_logSize);// copy the buffer data to the class member pBuf
+#endif
+			sLogPageStruct *idCheck;
+			idCheck = (sLogPageStruct *)&pData[0];
+			byte_Swap_16(&idCheck->pageLength);
+			if (IsScsiLogPage(idCheck->pageLength, idCheck->pageCode) == false)
+			{
+				byte_Swap_16(&idCheck->pageLength);  // now that we know it's not scsi we need to flip the bytes back
+				m_status = parse_Ext_Self_Test_Log( masterData);
+			}
         }
     }
     else
@@ -62,12 +73,12 @@ CAta_Ext_DST_Log::CAta_Ext_DST_Log(const std::string &fileName, JSONNODE *master
 //
 //---------------------------------------------------------------------------
 CAta_Ext_DST_Log::CAta_Ext_DST_Log(uint8_t *pBufferData, JSONNODE *masterData)
-    :CLog()
-    , m_name("Ext DST Log")                                         //!< name of the class
+    :m_name("Ext DST Log")                                         //!< name of the class
     , m_status(IN_PROGRESS)
 {
+	pData = pBufferData;
     m_logSize = 0;
-    m_status = parse_Ext_Self_Test_Log(pBufferData, masterData);
+    m_status = parse_Ext_Self_Test_Log( masterData);
 }
 //-----------------------------------------------------------------------------
 //
@@ -99,7 +110,7 @@ CAta_Ext_DST_Log::~CAta_Ext_DST_Log()
 //!   \return eReturnValues success
 //
 //---------------------------------------------------------------------------
-eReturnValues CAta_Ext_DST_Log::parse_Ext_Self_Test_Log(uint8_t *DSTData, JSONNODE *masterData)
+eReturnValues CAta_Ext_DST_Log::parse_Ext_Self_Test_Log( JSONNODE *masterData)
 {
     std::string myStr = "Start of Ext DST";
     JSONNODE *DstJson = json_new(JSON_NODE);
@@ -111,23 +122,23 @@ eReturnValues CAta_Ext_DST_Log::parse_Ext_Self_Test_Log(uint8_t *DSTData, JSONNO
     uint64_t LBA = 0;
 
     json_set_name(DstJson, "DST Log");
-	uint16_t index = ((uint16_t)DSTData[3] << 8) | ((uint16_t)DSTData[2] << 0);
+	uint16_t index = ((uint16_t)pData[3] << 8) | ((uint16_t)pData[2] << 0);
 	json_push_back(DstJson, json_new_i("Self Test Index", static_cast<uint32_t>(index)));
     DSTIndex += 4;
     for (int i = 1; i <= 19; i++)
     {
 
         
-        StatusByte = DSTData[DSTIndex + 1];
-        timeStamp = ((uint16_t)DSTData[DSTIndex + 3] << 8) | ((uint16_t)DSTData[DSTIndex + 2] << 0);
-        compTime = ((uint16_t)DSTData[DSTIndex + 13] << 8) | ((uint16_t)DSTData[DSTIndex + 12] << 0);
-        checkPointByte = DSTData[DSTIndex + 4];
-        LBA = ((uint64_t)DSTData[DSTIndex + 10] << 40) |
-            ((uint64_t)DSTData[DSTIndex + 9] << 32) |
-            ((uint64_t)DSTData[DSTIndex + 8] << 24) |
-            ((uint64_t)DSTData[DSTIndex + 7] << 16) |
-            ((uint64_t)DSTData[DSTIndex + 6] << 8) |
-            ((uint64_t)DSTData[DSTIndex + 5] << 0);
+        StatusByte = pData[DSTIndex + 1];
+        timeStamp = ((uint16_t)pData[DSTIndex + 3] << 8) | ((uint16_t)pData[DSTIndex + 2] << 0);
+        compTime = ((uint16_t)pData[DSTIndex + 13] << 8) | ((uint16_t)pData[DSTIndex + 12] << 0);
+        checkPointByte = pData[DSTIndex + 4];
+        LBA = ((uint64_t)pData[DSTIndex + 10] << 40) |
+            ((uint64_t)pData[DSTIndex + 9] << 32) |
+            ((uint64_t)pData[DSTIndex + 8] << 24) |
+            ((uint64_t)pData[DSTIndex + 7] << 16) |
+            ((uint64_t)pData[DSTIndex + 6] << 8) |
+            ((uint64_t)pData[DSTIndex + 5] << 0);
         
         JSONNODE *runInfo = json_new(JSON_NODE);
         snprintf((char*)myStr.c_str(), BASIC, "Run %3d ", i);
