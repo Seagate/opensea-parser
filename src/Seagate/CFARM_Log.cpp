@@ -51,7 +51,6 @@ CFARMLog::CFARMLog()
 CFARMLog::CFARMLog(const std::string & fileName)
     : m_status(IN_PROGRESS)
 {
-
 	CLog *cCLog;
 	cCLog = new CLog(fileName);
 	if (cCLog->get_Log_Status() == SUCCESS)

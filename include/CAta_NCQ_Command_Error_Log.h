@@ -21,7 +21,7 @@
 namespace opensea_parser {
 #ifndef ATANCQCMDERROR
 #define ATANCQCMDERROR
-    class CAta_NCQ_Command_Error_Log : virtual public CLog
+    class CAta_NCQ_Command_Error_Log 
     {
     private:
 #define MAX_QUEUE           32

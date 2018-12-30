@@ -21,7 +21,7 @@
 namespace opensea_parser {
 #ifndef ATAPOWERCOND
 #define ATAPOWERCOND
-	class CAtaPowerConditionsLog : virtual public CLog
+	class CAtaPowerConditionsLog 
 	{
 	protected:
 #pragma pack(push,1)
