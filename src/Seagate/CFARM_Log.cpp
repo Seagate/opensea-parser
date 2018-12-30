@@ -65,14 +65,8 @@ CFARMLog::CFARMLog(const std::string & fileName)
 #else
 			memcpy_s(bufferData, m_LogSize, cCLog->get_Buffer(), m_LogSize);// copy the buffer data to the class member pBuf
 #endif
-			sLogPageStruct *idCheck;
-			idCheck = (sLogPageStruct *)&bufferData[0];
-			byte_Swap_16(&idCheck->pageLength);
-			m_isScsi = IsScsiLogPage(idCheck->pageLength, idCheck->pageCode);
-			if (m_isScsi)
-			{
-				byte_Swap_16(&idCheck->pageLength);  // now that we know it's not scsi we need to flip the bytes back
-			}
+			m_isScsi = is_Device_Scsi();
+
 			m_status = IN_PROGRESS;
 		}
 		else
