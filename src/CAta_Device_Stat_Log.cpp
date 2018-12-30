@@ -315,7 +315,7 @@ CAtaDeviceStatisticsLogs::CAtaDeviceStatisticsLogs(const std::string &fileName, 
 			m_deviceLogSize = cCLog->get_Size();
 			pData = new uint8_t[m_deviceLogSize];								// new a buffer to the point				
 #ifdef __linux__ //To make old gcc compilers happy
-			memcpy(pData, cCLog->get_Buffer(), m_logSize);
+			memcpy(pData, cCLog->get_Buffer(), m_deviceLogSize);
 #else
 			memcpy_s(pData, m_deviceLogSize, cCLog->get_Buffer(), m_deviceLogSize);// copy the buffer data to the class member pBuf
 #endif
