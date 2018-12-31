@@ -28,14 +28,19 @@ using namespace opensea_parser;
 //
 //---------------------------------------------------------------------------
 CSCSI_Farm_Log::CSCSI_Farm_Log()
+	: m_totalPages()
+	, m_logSize(0)
+	, m_pageSize(0)
+	, m_heads(0)
+	, m_MaxHeads(0)
+	, m_copies(0)
+	, m_pHeader()
+	, m_logParam()
+	, m_alreadySet(false)
+	, m_MinorRev(0)
 {
-    m_totalPages = 0;
-    m_logSize = 0;
-    m_pageSize = 0;
-    m_heads = 1;                   // has to always be greater then one
-    m_copies = 0;
-    m_status = IN_PROGRESS;
-	m_MinorRev = 0;
+	m_status = IN_PROGRESS;
+
 }
 //-----------------------------------------------------------------------------
 //
@@ -57,7 +62,8 @@ CSCSI_Farm_Log::CSCSI_Farm_Log( uint8_t *bufferData, size_t bufferSize)
 	: m_totalPages()
 	, m_logSize(0)
 	, m_pageSize(0)
-	, m_heads(1)
+	, m_heads(0)
+	, m_MaxHeads(0)
 	, m_copies(0)
 	, m_pHeader()
 	, m_logParam()
@@ -139,6 +145,7 @@ eReturnValues CSCSI_Farm_Log::init_Header_Data()
 			if ((m_pHeader->headsSupported & 0x00FFFFFFFFFFFFFF) > 0)
 			{
 				m_heads = M_DoubleWord0(m_pHeader->headsSupported);
+				m_MaxHeads = M_DoubleWord0(m_pHeader->headsSupported);
 			}
 		}
 		m_copies = M_DoubleWord0(m_pHeader->copies);						// finish up with the number of copies (not supported "YET" in SAS)
@@ -1078,6 +1085,10 @@ eReturnValues CSCSI_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint
     set_json_64bit(pageInfo, "Logical Sector Size", check_Status_Strip_Status(vFarmFrame[page].driveInfo.lsecSize),false);                                    //!< Logical Sector Size in Bytes
     set_json_64bit(pageInfo, "Device Buffer Size", check_Status_Strip_Status(vFarmFrame[page].driveInfo.deviceBufferSize),false);                             //!< Device Buffer Size in Bytes
     set_json_64bit(pageInfo, "Number of heads", check_Status_Strip_Status(vFarmFrame[page].driveInfo.heads),false);                                           //!< Number of Heads
+	if (check_Status_Strip_Status(vFarmFrame[page].driveInfo.heads) != 0)
+	{
+		m_heads = check_Status_Strip_Status(vFarmFrame[page].driveInfo.heads);
+	}
     set_json_64bit(pageInfo, "Device form factor" , check_Status_Strip_Status(vFarmFrame[page].driveInfo.factor),false);                                      //!< Device Form Factor (ID Word 168)
 
     set_json_64bit(pageInfo, "Rotation Rate", check_Status_Strip_Status(vFarmFrame[page].driveInfo.rotationRate),false);                                      //!< Rotational Rate of Device (ID Word 217)
@@ -1415,8 +1426,11 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
             printf("\tDisc Slip in micro-inches by Head by Head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].discSlipPerHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Disc Slip in micro-inches
 
 #endif
+			uint64_t dsHead = check_Status_Strip_Status(vFarmFrame[page].discSlipPerHead.headValue[loopCount]);
+			int16_t whole = M_BytesTo2ByteValue(*((uint8_t*)&dsHead + 5), *((uint8_t*)&dsHead + 4));							// get 5:4 whole part of the float
+			uint32_t decimal  = M_BytesTo4ByteValue(*((uint8_t*)&dsHead + 3), *((uint8_t*)&dsHead + 2) , *((uint8_t*)&dsHead + 1), *((uint8_t*)&dsHead + 0));  // get 3:0 for the Deciaml Part of the float
             snprintf((char*)myHeader.c_str(), BASIC, "Disc Slip in micro-inches Head %d", loopCount); // Head count
-            set_json_64bit(headPage, (char*)myHeader.c_str(), check_Status_Strip_Status(vFarmFrame[page].discSlipPerHead.headValue[loopCount]), false);  //!< Disc Slip in micro-inches
+			snprintf((char*)myStr.c_str(), BASIC, "%0.04f", (std::abs((double)whole) + ((double)decimal / 10000))); //!< Disc Slip in micro-inches by Head
 
         }
         break;
@@ -1426,8 +1440,11 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
 #if defined( _DEBUG)
             printf("\tBit Error Rate of Zone 0 by Head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].bitErrorRateByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Bit Error Rate of Zone 0 by Drive Head
 #endif
+			uint64_t beHead = check_Status_Strip_Status(vFarmFrame[page].bitErrorRateByHead.headValue[loopCount]);
+			int16_t whole = M_BytesTo2ByteValue(*((uint8_t*)&beHead + 5), *((uint8_t*)&beHead + 4));							// get 5:4 whole part of the float
+			uint32_t decimal = M_BytesTo4ByteValue(*((uint8_t*)&beHead + 3), *((uint8_t*)&beHead + 2), *((uint8_t*)&beHead + 1), *((uint8_t*)&beHead + 0));  // get 3:0 for the Deciaml Part of the float
             snprintf((char*)myHeader.c_str(), BASIC, "Bit Error Rate of Zone 0 Head number %d", loopCount); // Head count
-            set_json_64bit(headPage, (char*)myHeader.c_str(), check_Status_Strip_Status(vFarmFrame[page].bitErrorRateByHead.headValue[loopCount]), false);  //!< Bit Error Rate of Zone 0 by Drive Head
+			snprintf((char*)myStr.c_str(), BASIC, "%0.04f", ((std::abs((double)whole) + ((double)decimal / 10000)) * -1));  //!< Bit Error Rate of Zone 0 by Drive Head
         }
         break;
     case DOS_WRITE_REFRESH_COUNT:

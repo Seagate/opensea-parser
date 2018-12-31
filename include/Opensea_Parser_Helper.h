@@ -31,23 +31,7 @@ namespace opensea_parser {
 #define MODEL_NUMBER_LEN        20
 #define FIRMWARE_REV_LEN        4
 #define BASIC                   80
-
-
-	
-	
-	typedef enum _eReturnParserValues
-	{
-		OPENSEA_PARSER_SUCCESS = 0,
-		OPENSEA_PARSER_FAILURE = 1,
-		OPENSEA_PARSER_NOT_SUPPORTED = 2,
-		OPENSEA_PARSER_PARSER_FAILURE = 3,
-		OPENSEA_PARSER_IN_PROGRESS = 4,			//another command is in progress, or a command has started and is now in progress in the background
-		OPENSEA_PARSER_ABORTED = 5,				//something bad happend and we need to aborted
-		OPENSEA_PARSER_BAD_PARAMETER = 6,			//within a structure or log where the parameters don't match the spec 
-		OPENSEA_PARSER_MEMORY_FAILURE = 7,			//could not allocate memory
-		OPENSEA_PARSER_INVALID_LENGTH = 9,			//log size is invalid, a spec issue or a parameter issue on the lengths of the data.
-		OPENSEA_PARSER_FILE_OPEN_ERROR = 10,
-	}eReturnParserValues;
+#define INVALID_LENGTH          50
 
     // output file types
     enum eOpensea_print_Types
@@ -65,6 +49,14 @@ namespace opensea_parser {
 		OPENSEA_SCSI_LOG_BOUNDED_DATA_COUNTER_OR_UNBOUNDED_DATA_COUNTER,
 		OPENSEA_SCSI_LOG_BINARY_FORMAT_LIST,
 	};
+
+	typedef struct _sLogPageStruct
+	{
+		uint8_t			pageCode;							//<! page code for the log lpage format
+		uint8_t			subPage;							//<! subpage code for the log page format
+		uint16_t		pageLength;							//<! this is different from size, see SCSI SPC Spec. 
+		_sLogPageStruct() : pageCode(0), subPage(0), pageLength(0) {};
+	}sLogPageStruct;
 
 	typedef enum _eLogPageNames
 	{
@@ -89,14 +81,14 @@ namespace opensea_parser {
 		FACTORY_LOG = 0x3E,
 	}eLogPageNames;
 
+	const int pageCodes[] = { SUPPORTED_LOG_PAGES,	WRITE_ERROR_COUNTER,
+		READ_ERROR_COUNTER ,VERIFY_ERROR_COUNTER, NON_MEDIUM_ERROR ,
+		FORMAT_STATUS ,	LOGICAL_BLOCK_PROVISIONING ,ENVIRONMENTAL,
+		START_STOP_CYCLE_COUNTER ,	APPLICATION_CLIENT,	SELF_TEST_RESULTS,
+		SOLID_STATE_MEDIA ,	BACKGROUND_SCAN , PROTOCOL_SPECIFIC_PORT,
+		POWER_CONDITION_TRANSITIONS , INFORMATIONAL_EXCEPTIONS,
+		CACHE_STATISTICS ,	SEAGATE_FARM_LOG , 	FACTORY_LOG };
 
-	typedef struct _sLogPageStruct
-	{
-		uint8_t			pageCode;							//<! page code for the log lpage format
-		uint8_t			subPage;							//<! subpage code for the log page format
-		uint16_t		pageLength;							//<! this is different from size, see SCSI SPC Spec. 
-        _sLogPageStruct(): pageCode(0),subPage(0),pageLength(0){};
-	}sLogPageStruct;
 
     inline void set_json_64bit(JSONNODE *nowNode, const std::string & myStr, uint64_t value, bool hexPrint)
     {
@@ -148,5 +140,19 @@ namespace opensea_parser {
         }
         return static_cast<uint32_t>(count);
     }
+	inline bool IsScsiLogPage(uint16_t length, uint8_t code)
+	{
+		if (length != 0)
+		{
+			for (size_t i = 0; i < (sizeof(pageCodes) / sizeof(*pageCodes)); i++)
+			{
+				if (pageCodes[i] == code)
+				{
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 }
 

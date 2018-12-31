@@ -36,8 +36,11 @@ using namespace std;
 //
 //---------------------------------------------------------------------------
 CSAtaDevicStatisticsTempLogs::CSAtaDevicStatisticsTempLogs()
-    :CLog()
-    , m_name("SCT Temp Log")
+    :m_name("SCT Temp Log")
+	, pData()
+	, m_logSize(0)
+	, m_status(IN_PROGRESS)
+	, m_dataSize(0)
     , JsonData(NULL)
 {
 }
@@ -55,9 +58,9 @@ CSAtaDevicStatisticsTempLogs::CSAtaDevicStatisticsTempLogs()
 //
 //---------------------------------------------------------------------------
 CSAtaDevicStatisticsTempLogs::CSAtaDevicStatisticsTempLogs(uint8_t *buffer,JSONNODE *masterData)
-    :CLog()
-    , m_name("SCT Temp Log")
+    :m_name("SCT Temp Log")
     , pData(buffer)
+	, m_logSize(0)
     , m_status(IN_PROGRESS)
 	, m_dataSize(0)
     , JsonData(masterData)
@@ -82,22 +85,51 @@ CSAtaDevicStatisticsTempLogs::CSAtaDevicStatisticsTempLogs(uint8_t *buffer,JSONN
 //
 //---------------------------------------------------------------------------
 CSAtaDevicStatisticsTempLogs::CSAtaDevicStatisticsTempLogs(const std::string &fileName, JSONNODE *masterData)
-    :CLog(fileName)
-    , m_name("SCT Temp Log")
+    : m_name("SCT Temp Log")
 	, pData()
+	, m_logSize(0)
 	, m_status(IN_PROGRESS)
 	, m_dataSize(0)
     , JsonData(masterData)
 {
-	if (m_bufferData != NULL)
+
+	CLog *cCLog;
+	cCLog = new CLog(fileName);
+	if (cCLog->get_Log_Status() == SUCCESS)
 	{
-		pData = CLog::get_Buffer();
-		m_status = IN_PROGRESS;
+		if (cCLog->get_Buffer() != NULL)
+		{
+			m_logSize = cCLog->get_Size();
+			pData = new uint8_t[m_logSize];								// new a buffer to the point				
+#ifdef __linux__ //To make old gcc compilers happy
+			memcpy(pData, cCLog->get_Buffer(), m_logSize);
+#else
+			memcpy_s(pData, m_logSize, cCLog->get_Buffer(), m_logSize);// copy the buffer data to the class member pBuf
+#endif
+			sLogPageStruct *idCheck;
+			idCheck = (sLogPageStruct *)&pData[0];
+			byte_Swap_16(&idCheck->pageLength);
+			if (IsScsiLogPage(idCheck->pageLength, idCheck->pageCode) == false)
+			{
+				byte_Swap_16(&idCheck->pageLength);  // now that we know it's not scsi we need to flip the bytes back
+				m_status = SUCCESS;
+			}
+			else
+			{
+				m_status = BAD_PARAMETER;
+			}
+		}
+		else
+		{
+
+			m_status = FAILURE;
+		}
 	}
 	else
 	{
-		m_status = BAD_PARAMETER;
+		m_status = cCLog->get_Log_Status();
 	}
+	delete (cCLog);
 }
 //-----------------------------------------------------------------------------
 //
@@ -148,7 +180,7 @@ eReturnValues CSAtaDevicStatisticsTempLogs::parse_SCT_Temp_Log()
 	if (m_dataSize > 0 && m_dataSize < (34 + CBIndex))   // check the size fo the data
 	{
 		json_push_back(JsonData, sctTemp);
-		return BAD_PARAMETER;
+		return static_cast<eReturnValues>(INVALID_LENGTH);
 	}
     SamplePeriod = ((uint16_t)pData[3] << 8) | ((uint16_t)pData[2] << 0);
     Interval = ((uint16_t)pData[5] << 8) | ((uint16_t)pData[4] << 0);
@@ -217,11 +249,8 @@ eReturnValues CSAtaDevicStatisticsTempLogs::parse_SCT_Temp_Log()
 //
 //---------------------------------------------------------------------------
 CAtaDeviceStatisticsLogs::CAtaDeviceStatisticsLogs()
-    :CLog()
-    , m_name("Device Stat Log")
+    :m_name("Device Stat Log")
     , m_status(IN_PROGRESS)
-    , m_sSCT3( )
-    , m_sSCT6( )
 {
     m_deviceLogSize = 0;
 }
@@ -242,13 +271,10 @@ CAtaDeviceStatisticsLogs::CAtaDeviceStatisticsLogs()
 //
 //---------------------------------------------------------------------------
 CAtaDeviceStatisticsLogs::CAtaDeviceStatisticsLogs(uint32_t logSize, JSONNODE *masterData, uint8_t *buffer)
-    :CLog()
-    , m_name("Device Stat Log")
+    : m_name("Device Stat Log")
     , m_status(IN_PROGRESS)
     , pData(buffer)
     , m_deviceLogSize(logSize)
-    , m_sSCT3()
-    , m_sSCT6()
 {
     if (pData != NULL)
     {
@@ -275,30 +301,49 @@ CAtaDeviceStatisticsLogs::CAtaDeviceStatisticsLogs(uint32_t logSize, JSONNODE *m
 //
 //---------------------------------------------------------------------------
 CAtaDeviceStatisticsLogs::CAtaDeviceStatisticsLogs(const std::string &fileName, JSONNODE *masterData)
-    :CLog(fileName)
-    , m_name("Device Stat Log")
-    , m_status(SUCCESS)
-    , m_sSCT3()
-    , m_sSCT6()
+    : m_name("Device Stat Log")
+	, m_status(IN_PROGRESS)
+	, pData()
+	, m_deviceLogSize(0)
 {
-    m_deviceLogSize = 0;
-    if (CLog::get_Log_Status() == SUCCESS )
-    {
-        pData = CLog::get_Buffer();
-        if (pData != NULL)
-        {
-            m_deviceLogSize = CLog::get_Size();
-            m_status = ParseSCTDeviceStatLog(masterData);
-        }
-        else
-        {
-            m_status = FAILURE;
-        }
-    }
-    else
-    {
-        m_status = CLog::get_Log_Status();
-    }
+	CLog *cCLog;
+	cCLog = new CLog(fileName);
+	if (cCLog->get_Log_Status() == SUCCESS)
+	{
+		if (cCLog->get_Buffer() != NULL)
+		{
+			m_deviceLogSize = cCLog->get_Size();
+			pData = new uint8_t[m_deviceLogSize];								// new a buffer to the point				
+#ifdef __linux__ //To make old gcc compilers happy
+			memcpy(pData, cCLog->get_Buffer(), m_deviceLogSize);
+#else
+			memcpy_s(pData, m_deviceLogSize, cCLog->get_Buffer(), m_deviceLogSize);// copy the buffer data to the class member pBuf
+#endif
+			sLogPageStruct *idCheck;
+			idCheck = (sLogPageStruct *)&pData[0];
+			byte_Swap_16(&idCheck->pageLength);
+			if (IsScsiLogPage(idCheck->pageLength, idCheck->pageCode) == false)
+			{
+				byte_Swap_16(&idCheck->pageLength);  // now that we know it's not scsi we need to flip the bytes back
+				m_status = ParseSCTDeviceStatLog(masterData);
+				m_status = SUCCESS;
+			}
+			else
+			{
+				m_status = BAD_PARAMETER;
+			}
+		}
+		else
+		{
+
+			m_status = FAILURE;
+		}
+	}
+	else
+	{
+		m_status = cCLog->get_Log_Status();
+	}
+	delete (cCLog);
 }
 //-----------------------------------------------------------------------------
 //
@@ -333,79 +378,66 @@ CAtaDeviceStatisticsLogs::~CAtaDeviceStatisticsLogs()
 //---------------------------------------------------------------------------
 eReturnValues CAtaDeviceStatisticsLogs::ParseSCTDeviceStatLog(JSONNODE *masterData)
 {
-    std::string myStr = "Device Statistics";
-    myStr.resize(BASIC);
-    sHeader *pDeviceHeader = { 0 };
+    sHeader *pDeviceHeader = {0};
     uint64_t *pLogPage = {0};
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
+    if (VERBOSITY_DEFAULT < g_verbosity)
+    {
+        printf("\nStarting Device Statistics Parsing \n");
+    }                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
 
     //Device Statistics information header 
-    JSONNODE *JsonData = json_new(JSON_NODE);
-    json_set_name(JsonData, "Device Statistics log");
-    int Lgpage = 0;
+    JSONNODE *deviceData = json_new(JSON_NODE);
+    json_set_name(deviceData, "Device Statistics log");
+
+    //Define each valid log page.
     for (uint32_t offset = 0; offset < m_deviceLogSize; offset += 512)
-    {
+    {	
         pDeviceHeader = (sHeader*)&pData[offset];
-        if (pDeviceHeader->Reserved != 0x00000000 || pDeviceHeader->Reserved != 0xffffffff)
+        pLogPage = (uint64_t*)&pData[offset];
+        if (pDeviceHeader->Reserved != 0x0000 && pDeviceHeader->Reserved != 0xffff)
         {
-            pDeviceHeader = (sHeader*)&pData[offset - 16];
+	    if (offset != 0)
+            {
+               pDeviceHeader = (sHeader*)&pData[offset - 16];
+            }
         }
         if (pDeviceHeader->RevNum == 0x0001)
         {
 #if defined( _DEBUG)
             printf("\t%s%02x \n", "Log page number :  ", pDeviceHeader->LogPageNum);
 #endif 
-            Lgpage = Lgpage + 1;
-        }
-
-    }
-#if defined( _DEBUG)
-    printf("\t%s%d \n\n", "Totol supporting log page : ", Lgpage);
-#endif 
-
-    //Define each valid log page.
-    for (uint32_t offset = 0; offset < m_deviceLogSize; offset += 512)
-    {	
-        pDeviceHeader = (sHeader*)&pData[offset];
-        pLogPage = (uint64_t*)&pDeviceHeader[0];
-        if (pDeviceHeader->Reserved != 0x00000000 && pDeviceHeader->Reserved != 0xffffffff)
-        {
-            pDeviceHeader = (sHeader*)&pData[offset - 16];
-        }
-        if (pDeviceHeader->RevNum == 0x0001)
-        {
             switch (pDeviceHeader->LogPageNum)
             {
             case 00:
-                logPage00(&pLogPage[0]);
+                logPage00(pLogPage);
                 break;
             case 01:
-                logPage01(&pLogPage[0], JsonData);
+                logPage01(pLogPage, deviceData);
                 break;
             case 02:
-                logPage02(&pLogPage[0], JsonData);
+                logPage02(pLogPage, deviceData);
                 break;
             case 03:
-                logPage03(&pLogPage[0], JsonData);
+                logPage03(pLogPage, deviceData);
                 break;
             case 04:
-                logPage04(&pLogPage[0], JsonData);
+                logPage04(pLogPage, deviceData);
                 break;
             case 05:
-                logPage05(&pLogPage[0], JsonData);
+                logPage05(pLogPage, deviceData);
                 break;
             case 06:
-                logPage06(&pLogPage[0], JsonData);
+                logPage06(pLogPage, deviceData);
                 break;
             case 07:
-                logPage07(&pLogPage[0], JsonData);
+                logPage07(pLogPage, deviceData);
                 break;
             }
 
         }
 
     }
-    json_push_back(masterData, JsonData);
+    json_push_back(masterData, deviceData);
     return SUCCESS;
 }
 //-----------------------------------------------------------------------------
@@ -686,9 +718,9 @@ void CAtaDeviceStatisticsLogs::logPage01(uint64_t *value, JSONNODE *masterData)
 	dsLog = (sLogPage01 *)&value[0];
     string myStr = "Statistics";
     JSONNODE *sctStat = json_new(JSON_NODE);
-
-#if defined( _DEBUG)
     json_set_name(sctStat, "General Statistics(log Page 01h)");
+#if defined( _DEBUG)
+    
     printf("\t%s \n", "*****General Statistics(log Page 01h)*****");
 #endif
     json_push_back(sctStat, json_new_i("Number of processed Power-On Reset", static_cast<uint32_t>(check_Status_Strip_Status(dsLog->lifeTimePWRResets))));
@@ -732,9 +764,9 @@ void CAtaDeviceStatisticsLogs::logPage02(uint64_t *value, JSONNODE *masterData)
 
 
     JSONNODE *sctFreeFall = json_new(JSON_NODE);
-
-#if defined( _DEBUG)
     json_set_name(sctFreeFall, "Free Fall Statistics(log Page 02h)");
+#if defined( _DEBUG)
+ 
     printf("\t%s ", "*****Free Fall Statistics(log Page 02h)*****");
 
 #endif
@@ -762,6 +794,7 @@ void CAtaDeviceStatisticsLogs::logPage02(uint64_t *value, JSONNODE *masterData)
 //---------------------------------------------------------------------------
 void CAtaDeviceStatisticsLogs::logPage03(uint64_t *value, JSONNODE *masterData)
 {
+    sDeviceLog3  m_sSCT3;
     sDeviceLog3 *pSCT3 = &m_sSCT3;
     //Rotating Media Statistics(log page 03)
     uint64_t *cData = &value[0];
@@ -785,8 +818,8 @@ void CAtaDeviceStatisticsLogs::logPage03(uint64_t *value, JSONNODE *masterData)
     pSCT3->UnloadEvent = UnloadEvent;
 
     JSONNODE *sctRotat = json_new(JSON_NODE);
-#if defined( _DEBUG)
     json_set_name(sctRotat, "Rotating Media Statistics(log Page 03h)");
+#if defined( _DEBUG)
     printf("\t%s \n", "*****Rotating Media Statistics(log Page 03h)*****");
 #endif
     json_push_back(sctRotat, json_new_i("Spindle Motor Power-on Hours(hrs)", pSCT3->SpdPoh));
@@ -835,8 +868,9 @@ void CAtaDeviceStatisticsLogs::logPage04(uint64_t *value, JSONNODE *masterData)
 	sDeviceLog04 *dslog04 = (sDeviceLog04*)&value[0];
 
     JSONNODE *sctError = json_new(JSON_NODE);
-#if defined( _DEBUG)
     json_set_name(sctError, "General Errors Statistics(log Page 04h)");
+#if defined( _DEBUG)
+    
     printf("\t%s \n", "*****General Errors Statistics(log Page 04h)*****");
 #endif
 	json_push_back(sctError, json_new_i("Number of Reported Uncorrectable Errors", (uint32_t)check_Status_Strip_Status(dslog04->numberReportedECC)));
@@ -894,8 +928,9 @@ void CAtaDeviceStatisticsLogs::logPage05(uint64_t *value, JSONNODE *masterData)
 
     string myStr = "Temperature Statistics";
     JSONNODE *sctTemp = json_new(JSON_NODE);
-#if defined( _DEBUG)
     json_set_name(sctTemp, "Temperature Statistics(log Page 05h)");
+#if defined( _DEBUG)
+    
     printf("\t%s \n", "*****Temperature Statistics(log Page 05h)*****");
 #endif
     json_push_back(sctTemp, json_new_i("Current Temperature(Degrees Celsius)", static_cast<uint32_t>(CurrentTemp)));
@@ -959,15 +994,18 @@ void CAtaDeviceStatisticsLogs::logPage06(uint64_t *value, JSONNODE *masterData)
 {
     //Transport Statistics(log page 06) contains contains interface transport information about the device.
     uint64_t *cData = &value[0];
+sDeviceLog6  m_sSCT6;
     sDeviceLog6 *pSCT6 = &m_sSCT6;
+//sDeviceLog6 *pSCT6 = {0};
 
     pSCT6->HwReset = CheckStatusAndValid_32(&cData[1]);
     pSCT6->ASREvent = CheckStatusAndValid_32(&cData[2]);
     pSCT6->CRCError = CheckStatusAndValid_32(&cData[3]);
 
     JSONNODE *sctGen = json_new(JSON_NODE);
-#if defined( _DEBUG)
     json_set_name(sctGen, "Gerneral Statistics(log Page 06h)");
+#if defined( _DEBUG)
+    
     printf("\t%s \n", "*****General Statistics(log Page 06h)*****");
 #endif
     json_push_back(sctGen, json_new_i("Number of hardware resets", pSCT6->HwReset));
@@ -979,7 +1017,6 @@ void CAtaDeviceStatisticsLogs::logPage06(uint64_t *value, JSONNODE *masterData)
     //DeviceStatFlag(&cData[3]);
 
     json_push_back(masterData, sctGen);
-
 }
 //-----------------------------------------------------------------------------
 //
@@ -1003,9 +1040,11 @@ void CAtaDeviceStatisticsLogs::logPage07(uint64_t *value, JSONNODE *masterData)
     PercentUsed = CheckStatusAndValid_8(&cData[1]);
 
     JSONNODE *sctError = json_new(JSON_NODE);
-#if defined( _DEBUG)
     json_set_name(sctError, "Solid State Device Statistics(log Page 07h)");
+#if defined( _DEBUG)
+
     printf("\t%s \n", "*****Solid State Device Statistics(log Page 07h)*****");
+
 #endif
     json_push_back(sctError, json_new_i("Percentage Used Endurance Indicator", static_cast<uint32_t>(PercentUsed)));
 

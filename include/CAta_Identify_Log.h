@@ -29,7 +29,7 @@ namespace opensea_parser {
 #define LEGACY_DRIVE_SEC_SIZE 512
 #define MAX_48_BIT_LBA                (0xFFFFFFFFFFFFULL)
 
-    class CAta_Identify_log : virtual public CLog
+    class CAta_Identify_log
     {
     protected:
 #pragma pack(push, 1)
@@ -737,17 +737,19 @@ namespace opensea_parser {
         eReturnValues get_Log_Page08(uint8_t *pData, JSONNODE *masterData);
     };
 
-    class CAta_Identify_Log_30 : virtual public CLog
+    class CAta_Identify_Log_30 
     {
 
     protected:
+		uint8_t								* pData;							//<! pointer to the buffer data
         std::string                         m_name;                             //<! name of the class
         eReturnValues                       m_status;                           //<! the status of the class   
 
-        int get_Interface_Type(uint8_t *pData);
+        eReturnValues get_Interface_Type();
         
     public:
         CAta_Identify_Log_30( const std::string & fileName);
+		CAta_Identify_Log_30(uint8_t *pData);
         virtual ~CAta_Identify_Log_30();
         eReturnValues get_identify_Status(){ return m_status; };
         eReturnValues parse_Identify_Log_30(JSONNODE *masterData);

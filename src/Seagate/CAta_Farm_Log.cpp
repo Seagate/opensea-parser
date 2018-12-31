@@ -32,6 +32,7 @@ CATA_Farm_Log::CATA_Farm_Log()
     , m_logSize(0)
     , m_pageSize(0)
     , m_heads(0)
+	, m_MaxHeads(0)
     , m_copies(0)
     , m_status(IN_PROGRESS)
     , m_pHeader()
@@ -59,6 +60,7 @@ CATA_Farm_Log::CATA_Farm_Log( uint8_t *bufferData, size_t bufferSize)
     , m_logSize(0)
     , m_pageSize(0)
     , m_heads(0)
+	, m_MaxHeads(0)
     , m_copies(0)
     , m_status(IN_PROGRESS)
     , m_pHeader()
@@ -84,6 +86,7 @@ CATA_Farm_Log::CATA_Farm_Log( uint8_t *bufferData, size_t bufferSize)
             m_logSize = m_pHeader->logSize & 0x00FFFFFFFFFFFFFFLL;
             m_pageSize = m_pHeader->pageSize & 0x00FFFFFFFFFFFFFFLL;
             m_heads = m_pHeader->headsSupported & 0x00FFFFFFFFFFFFFFLL;
+			m_MaxHeads = m_pHeader->headsSupported & 0x00FFFFFFFFFFFFFFLL;
             m_copies = m_pHeader->copies & 0x00FFFFFFFFFFFFFFLL;
             m_status = IN_PROGRESS;
         }
@@ -307,7 +310,10 @@ eReturnValues CATA_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint3
     set_json_64bit(pageInfo, "Logical Sector Size", check_Status_Strip_Status(vFarmFrame[page].driveInfo.lsecSize), false);                                  //!< Logical Sector Size in Bytes
     set_json_64bit(pageInfo, "Device Buffer Size", check_Status_Strip_Status(vFarmFrame[page].driveInfo.deviceBufferSize), false);                           //!< Device Buffer Size in Bytes
     set_json_64bit(pageInfo, "Number of heads", check_Status_Strip_Status(vFarmFrame[page].driveInfo.heads), false);                                         //!< Number of Heads
-        
+	if (check_Status_Strip_Status(vFarmFrame[page].driveInfo.heads) != 0)
+	{
+		m_heads = check_Status_Strip_Status(vFarmFrame[page].driveInfo.heads);
+	}
     set_json_64bit(pageInfo, "Device form factor", check_Status_Strip_Status(vFarmFrame[page].driveInfo.factor), false);                                     //!< Device Form Factor (ID Word 168)
     set_json_64bit(pageInfo, "Rotation Rate", check_Status_Strip_Status(vFarmFrame[page].driveInfo.rotationRate), false);                                    //!< Rotational Rate of Device (ID Word 217)
        
@@ -604,14 +610,17 @@ eReturnValues CATA_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint32
         whole = vFarmFrame[page].reliPage.discSlip[loopCount].wholePartofFloat;
         remander = vFarmFrame[page].reliPage.discSlip[loopCount].decimalPartofFloat;
         remander = remander / 10000;
-        printf("\tDisc Slip in micro-inches by Head %d:      %" PRId16".%" PRIu32" \n", loopCount, whole, remander);  //!< Disc Slip in micro-inches by Head
+        printf("\tDisc Slip in micro-inches by Head %d:      %f \n", loopCount, (std::abs((double)whole + (double)remander)));  //!< Disc Slip in micro-inches by Head
+		
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
-        whole = vFarmFrame[page].reliPage.bitErrorRate[loopCount].wholePartofFloat;
-        remander = vFarmFrame[page].reliPage.bitErrorRate[loopCount].decimalPartofFloat;
-        remander = remander / 10000;
-        printf("\tBit Error Rate of Zone 0 by Head %d:      %" PRId16".%" PRIu32" \n", loopCount, whole, remander);  //!< Bit Error Rate of Zone 0 by Drive Head
+		double myWhole = 0;
+		double myRemander = 0;
+		myWhole = (double) std::abs(vFarmFrame[page].reliPage.bitErrorRate[loopCount].wholePartofFloat);
+		myRemander = (double) vFarmFrame[page].reliPage.bitErrorRate[loopCount].decimalPartofFloat;
+		myRemander = myRemander / 10000;
+        printf("\tBit Error Rate of Zone 0 by Head %d:      %f\n", loopCount, (std::abs((double)vFarmFrame[page].reliPage.bitErrorRate[loopCount].wholePartofFloat + ((double)vFarmFrame[page].reliPage.bitErrorRate[loopCount].decimalPartofFloat) / 10000)) * -1);  //!< Bit Error Rate of Zone 0 by Drive Head
     }
     printf( "\tNumber of G-List Reclamations:            %" PRIu64" \n", vFarmFrame[page].reliPage.gListReclamed & 0x00FFFFFFFFFFFFFFLL);                   //!< Number of G-List Reclamations 
     printf( "\tServo Status:                             %" PRIu64" \n", vFarmFrame[page].reliPage.servoStatus & 0x00FFFFFFFFFFFFFFLL);                     //!< Servo Status (follows standard DST error code definitions)
@@ -732,19 +741,16 @@ eReturnValues CATA_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint32
     set_json_64bit(pageInfo, "Sub-command of last IDD test", check_Status_Strip_Status(vFarmFrame[page].reliPage.cmdLastIDDTest), false);                 //!< Sub-command of last IDD test
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
-        byte_Swap_16((uint16_t *)&vFarmFrame[page].reliPage.discSlip[loopCount].wholePartofFloat);
-        byte_Swap_32(&vFarmFrame[page].reliPage.discSlip[loopCount].decimalPartofFloat);
         snprintf((char*)myHeader.c_str(), BASIC, "Disc Slip in micro-inches by Head %d", loopCount); // Head count
-        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%" PRIu32"", vFarmFrame[page].reliPage.discSlip[loopCount].wholePartofFloat, vFarmFrame[page].reliPage.discSlip[loopCount].decimalPartofFloat);  //!< Disc Slip in micro-inches by Head
+        snprintf((char*)myStr.c_str(), BASIC, "%0.04f", (std::abs((double)vFarmFrame[page].reliPage.discSlip[loopCount].wholePartofFloat) + ((double)vFarmFrame[page].reliPage.discSlip[loopCount].decimalPartofFloat) / 10000)); //!< Disc Slip in micro-inches by Head
         json_push_back(pageInfo, json_new_a((char*)myHeader.c_str(), (char*)myStr.c_str()));
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
-        byte_Swap_16((uint16_t *)&vFarmFrame[page].reliPage.bitErrorRate[loopCount].wholePartofFloat);
-        byte_Swap_32(&vFarmFrame[page].reliPage.bitErrorRate[loopCount].decimalPartofFloat);
         snprintf((char*)myHeader.c_str(), BASIC, "Bit Error Rate of Zone 0 by Head %d", loopCount); // Head count
-        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%" PRIu32"", vFarmFrame[page].reliPage.bitErrorRate[loopCount].wholePartofFloat, vFarmFrame[page].reliPage.bitErrorRate[loopCount].decimalPartofFloat);  //!< Bit Error Rate of Zone 0 by Drive Head
-        json_push_back(pageInfo, json_new_a((char*)myHeader.c_str(), (char*)myStr.c_str()));
+		snprintf((char*)myStr.c_str(), BASIC, "%0.04f",((std::abs((double)vFarmFrame[page].reliPage.bitErrorRate[loopCount].wholePartofFloat) + ((double)vFarmFrame[page].reliPage.bitErrorRate[loopCount].decimalPartofFloat) / 10000))  * -1);
+
+		json_push_back(pageInfo, json_new_a((char*)myHeader.c_str(), (char*)myStr.c_str()));
     }
     set_json_64bit(pageInfo, "Number of G-List Reclamations", check_Status_Strip_Status(vFarmFrame[page].reliPage.gListReclamed), false);                   //!< Number of G-List Reclamations 
     set_json_64bit(pageInfo, "Servo Status", check_Status_Strip_Status(vFarmFrame[page].reliPage.servoStatus), false);                                     //!< Servo Status (follows standard DST error code definitions)
@@ -784,7 +790,6 @@ eReturnValues CATA_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint32
         snprintf((char *)myHeader.c_str(), BASIC, "Skip Write Detect Threshold Exceeded Head  %" PRId32"", loopCount);
         set_json_64bit(pageInfo, (char*)myHeader.c_str(), check_Status_Strip_Status(vFarmFrame[page].reliPage.skipWriteDetectThresExceeded[loopCount]), false);   //!< [24] Skip Write Detect Threshold Exceeded Count by Head7
     }
-    //set_json_64bit(pageInfo, "Number of RAW Operations", vFarmFrame[page].reliPage.numberRAWops & 0x00FFFFFFFFFFFFFFLL, false);                        //!< Number of RAW Operations
     set_json_64bit(pageInfo, "Error Rate (SMART Attribute 1 Raw)", check_Status_Strip_Status(vFarmFrame[page].reliPage.attrErrorRateRaw), false);           //!< Error Rate (SMART Attribute 1 Raw)
     set_json_64bit(pageInfo, "Error Rate (SMART Attribute 1 Normalized)", check_Status_Strip_Status(vFarmFrame[page].reliPage.attrErrorRateNormal), false);             //!< Error Rate (SMART Attribute 1 Normalized)
     set_json_64bit(pageInfo, "Error Rate (SMART Attribute 1 Worst)", check_Status_Strip_Status(vFarmFrame[page].reliPage.attrErrorRateWorst), false);     //!< Error Rate (SMART Attribute 1 Worst)

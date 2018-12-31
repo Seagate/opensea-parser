@@ -28,8 +28,7 @@ using namespace opensea_parser;
 //
 //---------------------------------------------------------------------------
 CAta_NCQ_Command_Error_Log::CAta_NCQ_Command_Error_Log()
-    :CLog()
-    , m_name("ATA NCQ Command Error Log")
+    : m_name("ATA NCQ Command Error Log")
     , m_status(IN_PROGRESS)
 {
 
@@ -48,27 +47,46 @@ CAta_NCQ_Command_Error_Log::CAta_NCQ_Command_Error_Log()
 //
 //---------------------------------------------------------------------------
 CAta_NCQ_Command_Error_Log::CAta_NCQ_Command_Error_Log(const std::string & fileName)
-    :CLog(fileName)
-    , m_name("ATA NCQ Command Error Log")
+    :  m_name("ATA NCQ Command Error Log")
     , m_status(IN_PROGRESS)
 {
-    if (CLog::get_Log_Status() == SUCCESS)
-    {
-        pBuf = CLog::get_Buffer();
-        if (pBuf != NULL)
-        {
+	CLog *cCLog;
+	cCLog = new CLog(fileName);
+	if (cCLog->get_Log_Status() == SUCCESS)
+	{
+		if (cCLog->get_Buffer() != NULL)
+		{
+			size_t logSize = cCLog->get_Size();
+			pBuf = new uint8_t[logSize];								// new a buffer to the point				
+#ifdef __linux__ //To make old gcc compilers happy
+			memcpy(pBuf, cCLog->get_Buffer(), logSize);
+#else
+			memcpy_s(pBuf, logSize, cCLog->get_Buffer(), logSize);// copy the buffer data to the class member pBuf
+#endif
+			sLogPageStruct *idCheck;
+			idCheck = (sLogPageStruct *)&pBuf[0];
+			byte_Swap_16(&idCheck->pageLength);
+			if (IsScsiLogPage(idCheck->pageLength, idCheck->pageCode) == false)
+			{
+				byte_Swap_16(&idCheck->pageLength);  // now that we know it's not scsi we need to flip the bytes back
+				m_status = IN_PROGRESS;
+			}
+			else
+			{
+				m_status = BAD_PARAMETER;
+			}
+		}
+		else
+		{
 
-            m_status = IN_PROGRESS;
-        }
-        else
-        {
-            m_status = FAILURE;
-        }
-    }
-    else
-    {
-        m_status = CLog::get_Log_Status();
-    }
+			m_status = FAILURE;
+		}
+	}
+	else
+	{
+		m_status = cCLog->get_Log_Status();
+	}
+	delete (cCLog);
 }
 //-----------------------------------------------------------------------------
 //
@@ -84,8 +102,7 @@ CAta_NCQ_Command_Error_Log::CAta_NCQ_Command_Error_Log(const std::string & fileN
 //
 //---------------------------------------------------------------------------
 CAta_NCQ_Command_Error_Log::CAta_NCQ_Command_Error_Log(uint8_t *buffer)
-    :CLog()
-    , m_name("ATA NCQ Command Error Log")
+    : m_name("ATA NCQ Command Error Log")
     , m_status(IN_PROGRESS)
 {
     pBuf = buffer;

@@ -75,8 +75,8 @@ namespace opensea_parser {
 	
 
 		eReturnValues parse_Start_Stop_Log(JSONNODE *masterData);
-		eReturnParserValues week_Year_Print(JSONNODE *Data, uint16_t param, uint8_t paramlength, uint8_t paramConByte, uint32_t year, uint16_t week, const std::string strHeader,const std::string strYear, const std::string strWeek);
-		eReturnParserValues get_Count(JSONNODE *countData, uint16_t param, uint8_t paramlength, uint8_t paramConByte, uint32_t count, const std::string strHeader, const std::string strCount);
+		eReturnValues week_Year_Print(JSONNODE *Data, uint16_t param, uint8_t paramlength, uint8_t paramConByte, uint32_t year, uint16_t week, const std::string strHeader,const std::string strYear, const std::string strWeek);
+		eReturnValues get_Count(JSONNODE *countData, uint16_t param, uint8_t paramlength, uint8_t paramConByte, uint32_t count, const std::string strHeader, const std::string strCount);
 	public:
 		CScsiStartStop();
 		CScsiStartStop(uint8_t *bufferData, size_t bufferSize, JSONNODE *masterData);

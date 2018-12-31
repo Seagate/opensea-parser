@@ -19,13 +19,16 @@ namespace opensea_parser {
 #ifndef SCSILOG
 #define SCSILOG
 
-    class CScsiLog : public CLog
+    class CScsiLog 
 	{
 	private:
     protected:
+		uint8_t						* bufferData;				//<! pointer to the data from the log
+		size_t						m_LogSize;					//<! log size
         std::string					m_name;						//<! class name	
 		eReturnValues				m_ScsiStatus;			    //!< status of the class
-        sLogPageStruct*				m_Page;					//<! page code for the log lpage format
+        sLogPageStruct*				m_Page;						//<! page code for the log lpage format
+
 
 		eReturnValues get_Log_Parsed(JSONNODE *masterData);
 	public:

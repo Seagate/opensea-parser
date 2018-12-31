@@ -16,6 +16,7 @@
 #pragma once
 #include <vector>
 #include <string>
+#include <stdlib.h>
 #include "common.h"
 #include "libjson.h"
 #include "Opensea_Parser_Helper.h"
@@ -241,7 +242,8 @@ namespace opensea_parser {
             uint64_t                    m_totalPages;                       //!< number of pages supported
             uint64_t                    m_logSize;                          //!< log size in bytes
             uint64_t                    m_pageSize;                         //!< page size in bytes
-            uint64_t                    m_heads;                            //!< Maximum Drive Heads Supported
+            uint64_t                    m_heads;                            //!< number of heads - first fill in with header information then changed to heads reported on the drive
+			uint64_t					m_MaxHeads;							//!< Maximum Drive Heads Supported
             uint64_t                    m_copies;                           //!< Number of Historical Copies  
             eReturnValues               m_status;                           //!< status of the class
             sFarmHeader                 *m_pHeader;                         //!< Member pointer to the header of the farm log  

@@ -39,8 +39,7 @@ using namespace opensea_parser;
 //
 //---------------------------------------------------------------------------
 CAtaPowerConditionsLog::CAtaPowerConditionsLog()
-:CLog()
-, m_powerConditionLog(NULL)
+: m_powerConditionLog(NULL)
 , m_powerFlags(NULL)
 , m_status(IN_PROGRESS)
 , m_idleAPowerConditions(NULL), m_idleBPowerConditions(NULL), m_idleCPowerConditions(NULL)
@@ -62,8 +61,7 @@ CAtaPowerConditionsLog::CAtaPowerConditionsLog()
 //
 //---------------------------------------------------------------------------
 CAtaPowerConditionsLog::CAtaPowerConditionsLog(std::string filename)
-:CLog(filename)
-, m_powerConditionLog(NULL)
+: m_powerConditionLog(NULL)
 , m_powerFlags(NULL)
 , m_status(IN_PROGRESS)
 , m_idleAPowerConditions(NULL), m_idleBPowerConditions(NULL), m_idleCPowerConditions(NULL)
@@ -71,27 +69,45 @@ CAtaPowerConditionsLog::CAtaPowerConditionsLog(std::string filename)
 , conditionFlags()
 {
 
-    if (CLog::get_Log_Status() == SUCCESS)
+	CLog *cCLog;
+	cCLog = new CLog(filename);
+	if (cCLog->get_Log_Status() == SUCCESS)
 	{
-
-        m_powerConditionLog = CLog::get_Buffer();
-		
-
-		if (m_powerConditionLog != NULL)
+		if (cCLog->get_Buffer() != NULL)
 		{
-			m_conditionFlags = &conditionFlags;
-			get_Power_Condition_Log();
-			m_status = SUCCESS;
+			size_t logSize = cCLog->get_Size();
+			m_powerConditionLog = new uint8_t[logSize];								// new a buffer to the point				
+#ifdef __linux__ //To make old gcc compilers happy
+			memcpy(m_powerConditionLog, cCLog->get_Buffer(), logSize);
+#else
+			memcpy_s(m_powerConditionLog, logSize, cCLog->get_Buffer(), logSize);// copy the buffer data to the class member pBuf
+#endif
+			sLogPageStruct *idCheck;
+			idCheck = (sLogPageStruct *)&m_powerConditionLog[0];
+			byte_Swap_16(&idCheck->pageLength);
+			if (IsScsiLogPage(idCheck->pageLength, idCheck->pageCode) == false)
+			{
+				byte_Swap_16(&idCheck->pageLength);  // now that we know it's not scsi we need to flip the bytes back
+				m_conditionFlags = &conditionFlags;
+				get_Power_Condition_Log();
+				m_status = SUCCESS;
+			}
+			else
+			{
+				m_status = BAD_PARAMETER;
+			}
 		}
 		else
 		{
+
 			m_status = FAILURE;
 		}
 	}
 	else
 	{
-        m_status = CLog::get_Log_Status();
+		m_status = cCLog->get_Log_Status();
 	}
+	delete (cCLog);
 }
 
 //-----------------------------------------------------------------------------
@@ -108,13 +124,12 @@ CAtaPowerConditionsLog::CAtaPowerConditionsLog(std::string filename)
 //
 //---------------------------------------------------------------------------
 CAtaPowerConditionsLog::CAtaPowerConditionsLog(tDataPtr pData, JSONNODE *masterData)
-    :CLog()
-, m_powerConditionLog(NULL)
-, m_powerFlags(NULL)
-, m_status(IN_PROGRESS)
-, m_idleAPowerConditions(NULL), m_idleBPowerConditions(NULL), m_idleCPowerConditions(NULL)
-, m_standbyYPowerConditions(NULL), m_standbyZPowerConditions(NULL)
-, conditionFlags()
+	: m_powerConditionLog(NULL)
+	, m_powerFlags(NULL)
+	, m_status(IN_PROGRESS)
+	, m_idleAPowerConditions(NULL), m_idleBPowerConditions(NULL), m_idleCPowerConditions(NULL)
+	, m_standbyYPowerConditions(NULL), m_standbyZPowerConditions(NULL)
+	, conditionFlags()
 {
 
     m_powerConditionLog = (uint8_t*)pData.pData;
