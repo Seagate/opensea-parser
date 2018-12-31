@@ -50,7 +50,6 @@ using namespace opensea_parser;
 CScsiLog::CScsiLog()
 	: m_name("SCSI Log")
 	, m_ScsiStatus(IN_PROGRESS)
-	, m_Page()
 	, bufferData()
 	, m_LogSize(0)
 {
@@ -72,9 +71,9 @@ CScsiLog::CScsiLog()
 CScsiLog::CScsiLog(const std::string fileName, JSONNODE *masterData)
     : m_name("SCSI Log")
 	, m_ScsiStatus(IN_PROGRESS)
-	, m_Page()
 	, bufferData()
 	, m_LogSize(0)
+
 {
 	CLog *cCLog;
 	cCLog = new CLog(fileName);
@@ -90,7 +89,6 @@ CScsiLog::CScsiLog(const std::string fileName, JSONNODE *masterData)
 			memcpy_s(bufferData, m_LogSize, cCLog->get_Buffer(), m_LogSize);// copy the buffer data to the class member pBuf
 #endif
 			m_ScsiStatus = get_Log_Parsed(masterData);							// init the data for getting the log
-			m_ScsiStatus = IN_PROGRESS;
 		}
 		else
 		{
@@ -121,7 +119,9 @@ CScsiLog::CScsiLog(const std::string fileName, JSONNODE *masterData)
 //---------------------------------------------------------------------------
 CScsiLog::~CScsiLog()
 {
-
+	if (bufferData != NULL) {
+		safe_Free(bufferData);
+	}
 }
 //-----------------------------------------------------------------------------
 //
