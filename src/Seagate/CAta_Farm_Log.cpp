@@ -610,17 +610,17 @@ eReturnValues CATA_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint32
         whole = vFarmFrame[page].reliPage.discSlip[loopCount].wholePartofFloat;
         remander = vFarmFrame[page].reliPage.discSlip[loopCount].decimalPartofFloat;
         remander = remander / 10000;
-        printf("\tDisc Slip in micro-inches by Head %d:      %f \n", loopCount, (std::abs((double)whole + (double)remander)));  //!< Disc Slip in micro-inches by Head
+        printf("\tDisc Slip in micro-inches by Head %d:      %f \n", loopCount, (std::fabs((double)whole + (double)remander)));  //!< Disc Slip in micro-inches by Head
 		
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
 		double myWhole = 0;
 		double myRemander = 0;
-		myWhole = (double) std::abs(vFarmFrame[page].reliPage.bitErrorRate[loopCount].wholePartofFloat);
+		myWhole = (double) std::fabs(vFarmFrame[page].reliPage.bitErrorRate[loopCount].wholePartofFloat);
 		myRemander = (double) vFarmFrame[page].reliPage.bitErrorRate[loopCount].decimalPartofFloat;
 		myRemander = myRemander / 10000;
-        printf("\tBit Error Rate of Zone 0 by Head %d:      %f\n", loopCount, (std::abs((double)vFarmFrame[page].reliPage.bitErrorRate[loopCount].wholePartofFloat + ((double)vFarmFrame[page].reliPage.bitErrorRate[loopCount].decimalPartofFloat) / 10000)) * -1);  //!< Bit Error Rate of Zone 0 by Drive Head
+        printf("\tBit Error Rate of Zone 0 by Head %d:      %f\n", loopCount, (std::fabs((double)vFarmFrame[page].reliPage.bitErrorRate[loopCount].wholePartofFloat + ((double)vFarmFrame[page].reliPage.bitErrorRate[loopCount].decimalPartofFloat) / 10000)) * -1);  //!< Bit Error Rate of Zone 0 by Drive Head
     }
     printf( "\tNumber of G-List Reclamations:            %" PRIu64" \n", vFarmFrame[page].reliPage.gListReclamed & 0x00FFFFFFFFFFFFFFLL);                   //!< Number of G-List Reclamations 
     printf( "\tServo Status:                             %" PRIu64" \n", vFarmFrame[page].reliPage.servoStatus & 0x00FFFFFFFFFFFFFFLL);                     //!< Servo Status (follows standard DST error code definitions)
@@ -742,13 +742,13 @@ eReturnValues CATA_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint32
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         snprintf((char*)myHeader.c_str(), BASIC, "Disc Slip in micro-inches by Head %d", loopCount); // Head count
-        snprintf((char*)myStr.c_str(), BASIC, "%0.04f", (std::abs((double)vFarmFrame[page].reliPage.discSlip[loopCount].wholePartofFloat) + ((double)vFarmFrame[page].reliPage.discSlip[loopCount].decimalPartofFloat) / 10000)); //!< Disc Slip in micro-inches by Head
+        snprintf((char*)myStr.c_str(), BASIC, "%0.04f", (std::fabs((double)vFarmFrame[page].reliPage.discSlip[loopCount].wholePartofFloat) + ((double)vFarmFrame[page].reliPage.discSlip[loopCount].decimalPartofFloat) / 10000)); //!< Disc Slip in micro-inches by Head
         json_push_back(pageInfo, json_new_a((char*)myHeader.c_str(), (char*)myStr.c_str()));
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         snprintf((char*)myHeader.c_str(), BASIC, "Bit Error Rate of Zone 0 by Head %d", loopCount); // Head count
-		snprintf((char*)myStr.c_str(), BASIC, "%0.04f",((std::abs((double)vFarmFrame[page].reliPage.bitErrorRate[loopCount].wholePartofFloat) + ((double)vFarmFrame[page].reliPage.bitErrorRate[loopCount].decimalPartofFloat) / 10000))  * -1);
+		snprintf((char*)myStr.c_str(), BASIC, "%0.04f",((std::fabs((double)vFarmFrame[page].reliPage.bitErrorRate[loopCount].wholePartofFloat) + ((double)vFarmFrame[page].reliPage.bitErrorRate[loopCount].decimalPartofFloat) / 10000))  * -1);
 
 		json_push_back(pageInfo, json_new_a((char*)myHeader.c_str(), (char*)myStr.c_str()));
     }
