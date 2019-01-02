@@ -49,7 +49,7 @@ a cross platform compiler:
         x86
         x86_64
 
-This project can be build under Windows Visual Studio 2013 & 2017 solution
+This project can be built under Windows Visual Studio 2013 & 2017 solution
 files for x86 and x64 targets.
 
 ### Names, Logos, and Brands
@@ -61,18 +61,20 @@ imply endorsement.
 
 ### Support and Open Source Statement
 
-Seagate offers technical support for disk drive installation.  If you have any
-questions related to Seagate products and technologies, feel free to submit
-your request on our web site. See the web site for a list of world-wide
-telephone numbers.
+Support from Seagate Technology for open source projects is different than traditional Technical Support.  If possible, please use the **Issues tab** in the individual software projects so that others may benefit from the questions and answers.  Include the output of --version information in the message. See the user guide section 'General Usage Hints' for information about saving output to a log file.
 
-Seagate Support:
-http://www.seagate.com/support-home/
-Contact Us:
+
+If you need to contact us through email, please choose one of these
+two email addresses:
+
+- opensource@seagate.com   for general questions and bug reports
+- opensea-build@seagate.com   for specific questions about programming and building the software
+
+Seagate offers technical support for drive installation.  If you have any questions related to Seagate products and technologies, feel free to submit your request on our web site. See the web site for a list of world-wide telephone numbers.
+
+- http://www.seagate.com/support-home/
+- Contact Us:
 http://www.seagate.com/contacts/
-
-Please report bugs/suggestions to https://github.com/Seagate/openSeaChest_LogParser.
-Include the output of --version information in the email.
 
 This software uses open source packages obtained with permission from the
 relevant parties.
