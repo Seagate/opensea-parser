@@ -17,6 +17,7 @@
 #include <vector>
 #include <string>
 #include <stdlib.h>
+#include <cmath>
 #include "common.h"
 #include "libjson.h"
 #include "Opensea_Parser_Helper.h"
