@@ -1,24 +1,16 @@
-# Hand Written Makefile (Edit with caution) -Muhammad
 # 
-# Do NOT modify or remove this copyright and confidentiality notice.
+# Last Modified: 12/05/18
 #
-# Copyright 2017 Seagate Technology LLC.
-#
-# The code contained herein is CONFIDENTIAL to Seagate Technology LLC 
-# and may be covered under one or more Non-Disclosure Agreements. 
-# All or portions are also trade secret. 
-# Any use, modification, duplication, derivation, distribution or disclosure
-# of this code, for any reason, not expressly authorized is prohibited. 
-# All other rights are expressly reserved by Seagate Technology LLC.
+# Seagate Technology 2018
 #
 
 NAME=opensea-parser
-#Change the Major version when major interface changes are made. E.g. tDevice changes
+#Change the Major version when major interface changes are made.
 MAJOR=0
 #Change the Minor version when new features are added. 
 MINOR=0
 #Change the patch version when only bug fixes are made.
-PATCH=9
+PATCH=14
 
 VERSION=$(MAJOR).$(MINOR).$(PATCH)
 SRC_DIR=../../src/
