@@ -4695,7 +4695,33 @@ eReturnValues CAta_Identify_Log_08::get_Log_Page08(uint8_t *pData, JSONNODE *mas
 }
 
 // *******************************************************************************
-
+//-----------------------------------------------------------------------------
+//
+//! \fn   CAta_Identify_Log_30()
+//
+//! \brief
+//!   Description:  Class constructor for the CIdentify log 30
+//
+//  Entry:
+//
+//  Exit:
+//!  \return NONE
+//
+//---------------------------------------------------------------------------
+CAta_Identify_Log_30::CAta_Identify_Log_30(uint8_t *pBufferData)
+	:pData(pBufferData)
+	, m_name("log page 30")
+	, m_status(IN_PROGRESS)
+{
+	if (pData != NULL)
+	{
+		m_status = SUCCESS;
+	}
+	else
+	{
+		m_status = BAD_PARAMETER;
+	}
+}
 //-----------------------------------------------------------------------------
 //
 //! \fn   CAta_Identify_Log_30()

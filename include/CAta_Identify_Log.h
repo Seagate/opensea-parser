@@ -749,7 +749,7 @@ namespace opensea_parser {
         
     public:
         CAta_Identify_Log_30( const std::string & fileName);
-		CAta_Identify_Log_30(uint8_t *pData);
+		CAta_Identify_Log_30(uint8_t *pBufferData);
         virtual ~CAta_Identify_Log_30();
         eReturnValues get_identify_Status(){ return m_status; };
         eReturnValues parse_Identify_Log_30(JSONNODE *masterData);
