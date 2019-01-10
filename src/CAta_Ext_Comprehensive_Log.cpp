@@ -125,6 +125,10 @@ CExtComp::CExtComp(const std::string &fileName, JSONNODE *masterData)
 //---------------------------------------------------------------------------
 CExtComp::~CExtComp()
 {
+    if (pData != NULL)
+    {
+        delete [] pData;
+    }
 }
 //-----------------------------------------------------------------------------
 //

@@ -146,6 +146,10 @@ CSAtaDevicStatisticsTempLogs::CSAtaDevicStatisticsTempLogs(const std::string &fi
 //---------------------------------------------------------------------------
 CSAtaDevicStatisticsTempLogs::~CSAtaDevicStatisticsTempLogs()
 {
+    if (pData != NULL)
+    {
+        delete []pData;
+    }
 }
 //-----------------------------------------------------------------------------
 //
@@ -177,7 +181,7 @@ eReturnValues CSAtaDevicStatisticsTempLogs::parse_SCT_Temp_Log()
 	JSONNODE *sctTemp = json_new(JSON_NODE);
 	json_set_name(sctTemp, "SCT Temp Log");
 
-	if (m_dataSize > 0 && m_dataSize < (34 + CBIndex))   // check the size fo the data
+	if (m_dataSize > 0 && m_dataSize < (size_t)(34 + CBIndex))   // check the size fo the data
 	{
 		json_push_back(JsonData, sctTemp);
 		return static_cast<eReturnValues>(INVALID_LENGTH);

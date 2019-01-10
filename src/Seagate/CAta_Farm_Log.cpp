@@ -32,13 +32,12 @@ CATA_Farm_Log::CATA_Farm_Log()
     , m_logSize(0)
     , m_pageSize(0)
     , m_heads(0)
-	, m_MaxHeads(0)
+    , m_MaxHeads(0)
     , m_copies(0)
     , m_status(IN_PROGRESS)
-	, m_showStatusBits(false)
+    , m_showStatusBits(false)
     , m_pHeader()
     , pBuf()
-	, workingNode()
 {
 
 }
@@ -62,13 +61,12 @@ CATA_Farm_Log::CATA_Farm_Log( uint8_t *bufferData, size_t bufferSize, bool showS
     , m_logSize(0)
     , m_pageSize(0)
     , m_heads(0)
-	, m_MaxHeads(0)
+    , m_MaxHeads(0)
     , m_copies(0)
     , m_status(IN_PROGRESS)
-	, m_showStatusBits(showStatus)
+    , m_showStatusBits(showStatus)
     , m_pHeader()
     , pBuf()
-	, workingNode()
 {
 	pBuf = new uint8_t[bufferSize];								// new a buffer to the point				
 #ifndef _WIN64
@@ -122,7 +120,10 @@ CATA_Farm_Log::~CATA_Farm_Log()
         vFarmFrame.clear();                                    // clear the vector
         vFarmFrame.swap(vBlankFarmFrame);                     // Free memory with a empty vector
     }
-    delete [] pBuf;
+    if (pBuf != NULL)
+    {
+        delete [] pBuf;
+    }
 }
 //-----------------------------------------------------------------------------
 //
@@ -292,7 +293,6 @@ eReturnValues CATA_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint3
     json_set_name(driveInfo, (char*)myStr.c_str());
     JSONNODE *pageInfo = json_new(JSON_NODE);
     json_set_name(pageInfo, "Drive Information");
-	workingNode = pageInfo;
                                               
     snprintf((char*)myStr.c_str(), BASIC, "%s", vFarmFrame[page].identStringInfo.serialNumber.c_str());
     json_push_back(pageInfo, json_new_a("Serial Number", (char*)myStr.c_str()));																				//!< serial number of the device
@@ -375,7 +375,6 @@ eReturnValues CATA_Farm_Log::print_Work_Load(JSONNODE *masterData, uint32_t page
     json_set_name(workLoad, (char*)myStr.c_str());
     JSONNODE *pageInfo = json_new(JSON_NODE);
     json_set_name(pageInfo, "Work Load");
-	workingNode = pageInfo;
 
 	set_json_64_bit_With_Status(pageInfo, "Rated Workload Percentaged", vFarmFrame[page].workLoadPage.workloadPercentage, false, m_showStatusBits);				//!< rated Workload Percentage
 	set_json_64_bit_With_Status(pageInfo, "Total Number of Read Commands", vFarmFrame[page].workLoadPage.totalReadCommands, false, m_showStatusBits);			//!< Total Number of Read Commands
@@ -444,7 +443,6 @@ eReturnValues CATA_Farm_Log::print_Error_Information(JSONNODE *masterData, uint3
     snprintf((char*)myStr.c_str(), BASIC, "Error Information Log From Farm Log copy %" PRId32"", page);
     json_set_name(errorPage, (char*)myStr.c_str());
     JSONNODE *pageInfo = json_new(JSON_NODE);
-	workingNode = pageInfo;
 
     json_set_name(pageInfo, "Error Information");
 	set_json_64_bit_With_Status(pageInfo, "Unrecoverable Read Errors", vFarmFrame[page].errorPage.totalReadECC , false, m_showStatusBits);						//!< Number of Unrecoverable Read Errors
@@ -526,7 +524,6 @@ eReturnValues CATA_Farm_Log::print_Enviroment_Information(JSONNODE *masterData, 
     json_set_name(envPage, (char*)myStr.c_str());
     JSONNODE *pageInfo = json_new(JSON_NODE);
     json_set_name(pageInfo, "Environment");
-	workingNode = pageInfo;
 								
     snprintf((char*)myStr.c_str(), BASIC, "%0.02f",(check_Status_Strip_Status(vFarmFrame[page].environmentPage.curentTemp))*1.00);
 	set_json_string_With_Status(pageInfo, "Current Temperature", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.curentTemp,m_showStatusBits);								//!< Current Temperature in Celsius
@@ -730,7 +727,6 @@ eReturnValues CATA_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint32
     json_set_name(reliPage, (char*)myStr.c_str());
     JSONNODE *pageInfo = json_new(JSON_NODE);
     json_set_name(pageInfo, "Reliability");
-	workingNode = pageInfo;
             
 	set_json_64_bit_With_Status(pageInfo, "Timestamp of last IDD test", vFarmFrame[page].reliPage.lastIDDTest, false, m_showStatusBits);								//!< Timestamp of last IDD test
 	set_json_64_bit_With_Status(pageInfo, "Sub-command of last IDD test", vFarmFrame[page].reliPage.cmdLastIDDTest, false, m_showStatusBits);							//!< Sub-command of last IDD test

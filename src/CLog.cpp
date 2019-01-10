@@ -30,7 +30,6 @@ CLog::CLog()
     :m_name("CLog")
     , m_fileName("")
     , m_size(0)
-    , m_bufferData(0)
     , m_logStatus(UNKNOWN)
 {
 
@@ -52,10 +51,8 @@ CLog::CLog()
 CLog::CLog(const std::string &fileName)
     :m_name("CLog")
     , m_fileName(fileName)
-    , m_bufferData(NULL)
-    , m_logStatus(UNKNOWN)
     , m_size(0)
-
+    , m_logStatus(IN_PROGRESS)
 {
     get_CLog(fileName);
 }
@@ -63,9 +60,8 @@ CLog::CLog(const std::string &fileName)
 CLog::CLog(const uint8_t * pBuf, uint32_t logSize)
 	:m_name("CLog")
 	, m_fileName("")
-    , m_bufferData(0)
-    , m_logStatus(UNKNOWN)
     , m_size(logSize)
+    , m_logStatus(IN_PROGRESS)
 {
     get_CLog(pBuf, logSize);
 }

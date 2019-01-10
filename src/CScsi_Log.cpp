@@ -48,11 +48,12 @@ using namespace opensea_parser;
 //
 //---------------------------------------------------------------------------
 CScsiLog::CScsiLog()
-	: m_name("SCSI Log")
-	, m_ScsiStatus(IN_PROGRESS)
-	, bufferData()
-	, m_LogSize(0)
-{
+	: bufferData(NULL) 
+	, m_LogSize(0) 
+	, m_name("SCSI Log")                   
+	, m_ScsiStatus(IN_PROGRESS)            
+	, m_Page()                                                      
+{                                          
 	
 }
 //-----------------------------------------------------------------------------
@@ -69,10 +70,11 @@ CScsiLog::CScsiLog()
 //
 //---------------------------------------------------------------------------
 CScsiLog::CScsiLog(const std::string fileName, JSONNODE *masterData)
-    : m_name("SCSI Log")
-	, m_ScsiStatus(IN_PROGRESS)
-	, bufferData()
-	, m_LogSize(0)
+	: bufferData(NULL) 
+	, m_LogSize(0) 
+	, m_name("SCSI Log")                   
+	, m_ScsiStatus(IN_PROGRESS)            
+	, m_Page()
 
 {
 	CLog *cCLog;
@@ -149,7 +151,6 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 		byte_Swap_16(&m_Page->pageLength);
 		if (IsScsiLogPage(m_Page->pageLength , M_GETBITRANGE(m_Page->pageCode, 5, 0)) == true)
 		{
-			uint8_t pageCode = 0;
 			switch (M_GETBITRANGE(m_Page->pageCode, 5, 0))
 			{
 			case SUPPORTED_LOG_PAGES:

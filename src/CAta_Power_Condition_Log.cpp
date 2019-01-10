@@ -162,6 +162,10 @@ CAtaPowerConditionsLog::CAtaPowerConditionsLog(tDataPtr pData, JSONNODE *masterD
 //---------------------------------------------------------------------------
 CAtaPowerConditionsLog::~CAtaPowerConditionsLog()
 {
+    if (m_powerConditionLog != NULL)
+    {
+        delete [] m_powerConditionLog;
+    }
 }
 
 //-----------------------------------------------------------------------------

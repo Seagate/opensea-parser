@@ -336,8 +336,8 @@ namespace opensea_parser {
 #pragma pack(pop)
         std::vector <sFarmFrame > vFarmFrame;
    
-		uint16_t                    m_logSize;                                        //!< log size in bytes
         uint32_t                    m_totalPages;                                     //!< number of pages supported
+		uint16_t                    m_logSize;                                        //!< log size in bytes
         uint32_t                    m_pageSize;                                       //!< page size in bytes
 		uint64_t                    m_heads;										  //!< number of heads - first fill in with header information then changed to heads reported on the drive
 		uint64_t					m_MaxHeads;										  //!< Maximum Drive Heads Supported
@@ -346,8 +346,8 @@ namespace opensea_parser {
         uint8_t                     *pBuf;                                            //!< pointer to the buffer data that is the binary of FARM LOG
         eReturnValues               m_status;                                         //!< status of the class	
 		sScsiLogParameter			*m_logParam;                                      //!< pointer to the log page param for all of the log
-		sFarmHeader					*m_pHeader;										  //!< Member pointer to the header of the farm log
         sScsiPageParameter          *m_pageParam;                                     //!< pointer to the page parameters 
+        sFarmHeader					*m_pHeader;										  //!< Member pointer to the header of the farm log
         bool                        m_alreadySet;                                     //!< set true one it's already set..  (APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_OUTER)
 		bool						m_showStatusBits;								  //!< show the status bits of each entry
 

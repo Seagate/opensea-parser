@@ -180,6 +180,7 @@ CAta_Identify_log::CAta_Identify_log( const std::string & fileName)
 //---------------------------------------------------------------------------
 CAta_Identify_log::~CAta_Identify_log()
 {
+
 }
 //-----------------------------------------------------------------------------
 //
@@ -4792,6 +4793,10 @@ CAta_Identify_Log_30::CAta_Identify_Log_30( const std::string & fileName)
 //-------------------------------------------------------------------------
 CAta_Identify_Log_30::~CAta_Identify_Log_30()
 {
+    if (pData != NULL)
+    {
+        delete [] pData;
+    }
 }
 //-----------------------------------------------------------------------------
 //

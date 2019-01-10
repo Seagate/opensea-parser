@@ -249,7 +249,6 @@ namespace opensea_parser {
             eReturnValues               m_status;                           //!< status of the class
 			bool						m_showStatusBits;					//!< show the status bits of each entry
             sFarmHeader                 *m_pHeader;                         //!< Member pointer to the header of the farm log  
-			JSONNODE					*workingNode;						//!< the node that is being added to.
             uint8_t                     *pBuf;                              //!< pointer to the buffer data that is the binary of FARM LOG
 
             eReturnValues print_Header(JSONNODE *masterData);

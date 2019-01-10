@@ -28,18 +28,19 @@ using namespace opensea_parser;
 //
 //---------------------------------------------------------------------------
 CSCSI_Farm_Log::CSCSI_Farm_Log()
-	: m_totalPages()
-	, m_logSize(0)
-	, m_pageSize(0)
-	, m_heads(0)
-	, m_MaxHeads(0)
+	: m_totalPages()                                       
+	, m_logSize(0)                                             
+	, m_pageSize(0)                                      
+	, m_heads(0)                                   
+	, m_MaxHeads(0)                                
 	, m_copies(0)
-	, m_pHeader()
-	, m_logParam()
-	, m_alreadySet(false)
-	, m_MinorRev(0)
-	, m_showStatusBits(false)
-{
+    , m_MinorRev(0)
+    , pBuf()
+    , m_status(IN_PROGRESS)                                
+	, m_logParam()                                   
+	, m_alreadySet(false)          
+	, m_showStatusBits(false)                      
+{                                                  
 	m_status = IN_PROGRESS;
 
 }
@@ -60,16 +61,17 @@ CSCSI_Farm_Log::CSCSI_Farm_Log()
 //---------------------------------------------------------------------------
 
 CSCSI_Farm_Log::CSCSI_Farm_Log( uint8_t *bufferData, size_t bufferSize, bool showStatus)
-	: m_totalPages()
-	, m_logSize(0)
-	, m_pageSize(0)
-	, m_heads(0)
-	, m_MaxHeads(0)
+	: m_totalPages()                                       
+	, m_logSize(0)                                             
+	, m_pageSize(0)                                      
+	, m_heads(0)                                   
+	, m_MaxHeads(0)                                
 	, m_copies(0)
-	, m_pHeader()
-	, m_logParam()
-	, m_alreadySet(false)
-	, m_MinorRev(0)
+    , m_MinorRev(0)
+    , pBuf()
+    , m_status(IN_PROGRESS)                                
+	, m_logParam()                                   
+	, m_alreadySet(false)          
 	, m_showStatusBits(false)
 {
     m_status = IN_PROGRESS;
@@ -110,7 +112,10 @@ CSCSI_Farm_Log::~CSCSI_Farm_Log()
     {
         vFarmFrame.clear();                                    // clear the vector
     }
-	safe_Free(pBuf);
+	if (pBuf != NULL)
+    {
+        delete [] pBuf;
+    }
 }
 //-----------------------------------------------------------------------------
 //
@@ -144,7 +149,7 @@ eReturnValues CSCSI_Farm_Log::init_Header_Data()
 		m_pageSize = M_DoubleWord0(m_pHeader->pageSize);					// get the page size
 		if (check_For_Active_Status(&m_pHeader->headsSupported))			// the the number of heads if supported
 		{
-			if ((m_pHeader->headsSupported & 0x00FFFFFFFFFFFFFF) > 0)
+			if ((m_pHeader->headsSupported & 0x00FFFFFFFFFFFFFFLL) > 0)
 			{
 				m_heads = M_DoubleWord0(m_pHeader->headsSupported);
 				m_MaxHeads = M_DoubleWord0(m_pHeader->headsSupported);
@@ -689,7 +694,7 @@ eReturnValues CSCSI_Farm_Log::ParseFarmLog()
     {
         return FAILURE;
     }
-    if ((m_pHeader->signature & 0x00FFFFFFFFFFFFFF) == FARMSIGNATURE)				// check the head to see if it has the farm signature else fail
+    if ((m_pHeader->signature & 0x00FFFFFFFFFFFFFFLL) == FARMSIGNATURE)				// check the head to see if it has the farm signature else fail
     {
         for (uint32_t index = 0; index <= m_copies; ++index)						// loop for the number of copies. I don't think it's zero base as of now
         {
@@ -957,7 +962,6 @@ eReturnValues CSCSI_Farm_Log::ParseFarmLog()
 			delete pHeadInfo;
 			delete pInfo;
             pFarmFrame->vFramesFound.clear();                                                 // clear the vector for the next copy
-            pFarmFrame = { 0 };
 			delete pFarmFrame;
             
         }

@@ -94,7 +94,10 @@ CAta_Ext_DST_Log::CAta_Ext_DST_Log(uint8_t *pBufferData, JSONNODE *masterData)
 //---------------------------------------------------------------------------
 CAta_Ext_DST_Log::~CAta_Ext_DST_Log()
 {
-
+    if (pData != NULL)
+    {
+        delete []pData;
+    }
 }
 //-----------------------------------------------------------------------------
 //

@@ -90,10 +90,10 @@ CAta_NCQ_Command_Error_Log::CAta_NCQ_Command_Error_Log(const std::string & fileN
 }
 //-----------------------------------------------------------------------------
 //
-//! \fn ~CAta_NCQ_Command_Error_Log()
+//! \fn CAta_NCQ_Command_Error_Log()
 //
 //! \brief
-//!   Description: Class deconstructor 
+//!   Description: Class constructor
 //
 //  Entry:
 //
@@ -131,8 +131,25 @@ CAta_NCQ_Command_Error_Log::CAta_NCQ_Command_Error_Log(uint8_t *buffer)
 //---------------------------------------------------------------------------
 CAta_NCQ_Command_Error_Log::~CAta_NCQ_Command_Error_Log()
 {
-
+    if (pBuf != NULL)
+    {
+        delete [] pBuf;
+    }
 }
+//-----------------------------------------------------------------------------
+//
+//! \fn get_Bit_Name_Info
+//
+//! \brief
+//!   Description: parse the bit name and info 
+//
+//  Entry:
+//! \param NCQInfo - json node to the data
+//
+//  Exit:
+//!   \return bool
+//
+//---------------------------------------------------------------------------
 bool CAta_NCQ_Command_Error_Log::get_Bit_Name_Info(JSONNODE *NCQInfo)
 {
     std::string myStr = " ";
@@ -158,11 +175,38 @@ bool CAta_NCQ_Command_Error_Log::get_Bit_Name_Info(JSONNODE *NCQInfo)
     return validNCQ;
 }
 
+//-----------------------------------------------------------------------------
+//
+//! \fn create_LBA
+//
+//! \brief
+//!   Description: creates the lba 
+//
+//  Entry:
+//
+//  Exit:
+//!   \return bool
+//
+//---------------------------------------------------------------------------
 bool CAta_NCQ_Command_Error_Log::create_LBA()
 {
     m_LBA = ((uint64_t)ncqError->lba6 << 40) | ((uint64_t)ncqError->lba5 << 32) | ((uint64_t)ncqError->lba4 << 24) | ((uint64_t)ncqError->lba3 << 16) | ((uint64_t)ncqError->lba2 << 8) | ((uint64_t)ncqError->lba1);
     return true;
 }
+//-----------------------------------------------------------------------------
+//
+//! \fn get_NCQ_Command_Error_Log
+//
+//! \brief
+//!   Description: parse out the NCQ command error data from the log
+//
+//  Entry:
+//! \param masterData - json node to the all the data
+//
+//  Exit:
+//!   \return bool
+//
+//---------------------------------------------------------------------------
 eReturnValues CAta_NCQ_Command_Error_Log::get_NCQ_Command_Error_Log(JSONNODE *masterData)
 {
     JSONNODE *NCQInfo = json_new(JSON_NODE);
