@@ -77,7 +77,7 @@ CAtaPowerConditionsLog::CAtaPowerConditionsLog(std::string filename)
 		{
 			size_t logSize = cCLog->get_Size();
 			m_powerConditionLog = new uint8_t[logSize];								// new a buffer to the point				
-#ifdef __linux__ //To make old gcc compilers happy
+#ifndef _WIN64
 			memcpy(m_powerConditionLog, cCLog->get_Buffer(), logSize);
 #else
 			memcpy_s(m_powerConditionLog, logSize, cCLog->get_Buffer(), logSize);// copy the buffer data to the class member pBuf

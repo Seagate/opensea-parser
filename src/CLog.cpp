@@ -149,7 +149,7 @@ void CLog::get_CLog(const uint8_t * pBuf, uint32_t logSize)
 		m_bufferData = (char  *)calloc(logSize, sizeof(char));
 		if (m_bufferData)
 		{
-#ifdef __linux__ //To make old gcc compilers happy
+#ifndef _WIN64 
             memcpy(m_bufferData, pBuf, logSize);
 #else
 			memcpy_s(m_bufferData, logSize, pBuf, logSize);

@@ -135,7 +135,7 @@ CAta_Identify_log::CAta_Identify_log( const std::string & fileName)
 		{
 			size_t bufferSize = cCLog->get_Size();
 			pData = new uint8_t[cCLog->get_Size()];								// new a buffer to the point				
-#ifdef __linux__ //To make old gcc compilers happy
+#ifndef _WIN64
 			memcpy(pData, cCLog->get_Buffer(), bufferSize);
 #else
 			memcpy_s(pData, bufferSize, cCLog->get_Buffer(), bufferSize);// copy the buffer data to the class member pBuf
@@ -4748,7 +4748,7 @@ CAta_Identify_Log_30::CAta_Identify_Log_30( const std::string & fileName)
         {
 			size_t bufferSize = cCLog->get_Size();
 			pData = new uint8_t[cCLog->get_Size()];								// new a buffer to the point				
-#ifdef __linux__ //To make old gcc compilers happy
+#ifndef _WIN64
 			memcpy(pData, cCLog->get_Buffer(), bufferSize);
 #else
 			memcpy_s(pData, bufferSize, cCLog->get_Buffer(), bufferSize);// copy the buffer data to the class member pBuf

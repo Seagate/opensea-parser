@@ -75,7 +75,7 @@ CSCSI_Farm_Log::CSCSI_Farm_Log( uint8_t *bufferData, size_t bufferSize, bool sho
     m_status = IN_PROGRESS;
 
 	pBuf = new uint8_t[bufferSize];								// new a buffer to the point				
-#ifdef __linux__ //To make old gcc compilers happy
+#ifndef _WIN64
     memcpy(pBuf, bufferData, bufferSize);
 #else
     memcpy_s(pBuf, bufferSize, bufferData, bufferSize);// copy the buffer data to the class member pBuf

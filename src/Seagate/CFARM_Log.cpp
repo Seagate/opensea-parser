@@ -118,7 +118,7 @@ CFARMLog::CFARMLog(const std::string & fileName)
 		{
 			m_LogSize = cCLog->get_Size();
 			bufferData = new uint8_t[m_LogSize];								// new a buffer to the point				
-#ifdef __linux__ //To make old gcc compilers happy
+#ifndef _WIN64
 			memcpy(bufferData, cCLog->get_Buffer(), m_LogSize);
 #else
 			memcpy_s(bufferData, m_LogSize, cCLog->get_Buffer(), m_LogSize);// copy the buffer data to the class member pBuf

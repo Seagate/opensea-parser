@@ -58,7 +58,7 @@ CAta_NCQ_Command_Error_Log::CAta_NCQ_Command_Error_Log(const std::string & fileN
 		{
 			size_t logSize = cCLog->get_Size();
 			pBuf = new uint8_t[logSize];								// new a buffer to the point				
-#ifdef __linux__ //To make old gcc compilers happy
+#ifndef _WIN64
 			memcpy(pBuf, cCLog->get_Buffer(), logSize);
 #else
 			memcpy_s(pBuf, logSize, cCLog->get_Buffer(), logSize);// copy the buffer data to the class member pBuf
