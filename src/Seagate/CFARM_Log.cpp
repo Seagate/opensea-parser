@@ -29,7 +29,11 @@ using namespace opensea_parser;
 //
 //---------------------------------------------------------------------------
 CFARMLog::CFARMLog()
-    : m_status(IN_PROGRESS)
+	:bufferData()
+	, m_LogSize(0)
+	, m_status(IN_PROGRESS)
+	, m_isScsi(false)
+	, m_shwoStatus(false)
 {
 
 }
@@ -41,7 +45,58 @@ CFARMLog::CFARMLog()
 //!   Description: Class constructor
 //
 //  Entry:
-//! \param securityPrintLevel = the level of print 
+ 
+//! \parma fileName = the name of the file that need to be read in for getting the data
+//! \param showStatus = if true then show the status bits
+//
+//  Exit:
+//!   \return 
+//
+//---------------------------------------------------------------------------
+CFARMLog::CFARMLog(const std::string & fileName,bool showStatus)
+	:bufferData()
+	, m_LogSize(0)
+	, m_status(IN_PROGRESS)
+	, m_isScsi(false)
+	, m_shwoStatus(showStatus)
+{
+	CLog *cCLog;
+	cCLog = new CLog(fileName);
+	if (cCLog->get_Log_Status() == SUCCESS)
+	{
+		if (cCLog->get_Buffer() != NULL)
+		{
+			m_LogSize = cCLog->get_Size();
+			bufferData = new uint8_t[m_LogSize];								// new a buffer to the point				
+#ifdef __linux__ //To make old gcc compilers happy
+			memcpy(bufferData, cCLog->get_Buffer(), m_LogSize);
+#else
+			memcpy_s(bufferData, m_LogSize, cCLog->get_Buffer(), m_LogSize);// copy the buffer data to the class member pBuf
+#endif
+			m_isScsi = is_Device_Scsi();
+
+			m_status = IN_PROGRESS;
+		}
+		else
+		{
+
+			m_status = FAILURE;
+		}
+	}
+	else
+	{
+		m_status = cCLog->get_Log_Status();
+	}
+	delete (cCLog);
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn CFARMLog::CFARMLog()
+//
+//! \brief
+//!   Description: Class constructor
+//
+//  Entry:
 //! \parma fileName = the name of the file that need to be read in for getting the data
 //
 //  Exit:
@@ -49,7 +104,11 @@ CFARMLog::CFARMLog()
 //
 //---------------------------------------------------------------------------
 CFARMLog::CFARMLog(const std::string & fileName)
-    : m_status(IN_PROGRESS)
+	:bufferData()
+	, m_LogSize(0)
+	, m_status(IN_PROGRESS)
+	, m_isScsi(false)
+	, m_shwoStatus(false)
 {
 	CLog *cCLog;
 	cCLog = new CLog(fileName);
@@ -145,7 +204,7 @@ eReturnValues CFARMLog::ParseFarmLog(JSONNODE *masterJson)
     if (m_isScsi)
     {
         CSCSI_Farm_Log *pCFarm;
-        pCFarm = new CSCSI_Farm_Log((uint8_t *)bufferData, m_LogSize);
+        pCFarm = new CSCSI_Farm_Log((uint8_t *)bufferData, m_LogSize, m_shwoStatus);
         if (pCFarm->get_Log_Status() == SUCCESS)
         {
             retStatus = pCFarm->ParseFarmLog();
@@ -159,7 +218,7 @@ eReturnValues CFARMLog::ParseFarmLog(JSONNODE *masterJson)
     else
     {
         CATA_Farm_Log *pCFarm;
-        pCFarm = new CATA_Farm_Log((uint8_t *)bufferData, m_LogSize);
+        pCFarm = new CATA_Farm_Log((uint8_t *)bufferData, m_LogSize, m_shwoStatus);
         if (pCFarm->get_Log_Status() == IN_PROGRESS)
         {
             retStatus = pCFarm->parse_Farm_Log();

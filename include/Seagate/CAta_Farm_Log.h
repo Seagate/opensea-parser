@@ -53,7 +53,7 @@ namespace opensea_parser {
 				uint64_t        worldWideName;                              //!< world wide name 
 				uint64_t        worldWideName2;                             //!< world wide name 2
 				uint64_t        deviceInterface;                            //!< device interface
-				uint64_t        deviceCapcity;                              //!< 48-bit Device Capacity
+				uint64_t        deviceCapacity;                             //!< 48-bit Device Capacity
 				uint64_t        psecSize;                                   //!< Physical Sector Size in Bytes
 				uint64_t        lsecSize;                                   //!< Logical Sector Size in Bytes
 				uint64_t        deviceBufferSize;                           //!< Device Buffer Size in Bytes
@@ -247,7 +247,9 @@ namespace opensea_parser {
 			uint64_t					m_MaxHeads;							//!< Maximum Drive Heads Supported
             uint64_t                    m_copies;                           //!< Number of Historical Copies  
             eReturnValues               m_status;                           //!< status of the class
+			bool						m_showStatusBits;					//!< show the status bits of each entry
             sFarmHeader                 *m_pHeader;                         //!< Member pointer to the header of the farm log  
+			JSONNODE					*workingNode;						//!< the node that is being added to.
             uint8_t                     *pBuf;                              //!< pointer to the buffer data that is the binary of FARM LOG
 
             eReturnValues print_Header(JSONNODE *masterData);
@@ -359,7 +361,7 @@ namespace opensea_parser {
 
         public:
             CATA_Farm_Log();
-            CATA_Farm_Log( uint8_t *bufferData, size_t bufferSize);
+            CATA_Farm_Log( uint8_t *bufferData, size_t bufferSize, bool showStatus);
             virtual ~CATA_Farm_Log();
             eReturnValues parse_Farm_Log();
             void print_All_Pages(JSONNODE *masterData);

@@ -148,7 +148,7 @@ namespace opensea_parser {
 			uint64_t            worldWideName;
 			uint64_t            worldWideName2;
 			uint64_t            deviceInterface;
-			uint64_t            deviceCapcity;                              //!< 48-bit Device Capacity
+			uint64_t            deviceCapacity;                             //!< 48-bit Device Capacity
 			uint64_t            psecSize;                                   //!< Physical Sector Size in Bytes
 			uint64_t            lsecSize;                                   //!< Logical Sector Size in Bytes
 			uint64_t            deviceBufferSize;                           //!< Device Buffer Size in Bytes
@@ -171,7 +171,7 @@ namespace opensea_parser {
 			uint64_t            timeAvailable;                              //!< Time Available to Save User Data to Media Over Last Power Cycle (in 100us)
 			uint64_t            firstTimeStamp;                             //!< Timestamp of first SMART Summary Frame in Power-On Hours Milliseconds
 			uint64_t            lastTimeStamp;                              //!< Timestamp of latest SMART Summary Frame in Power-On Hours Milliseconds
-			_sDriveInfo() :pageNumber(0), copyNumber(0), serialNumber(0), serialNumber2(0), worldWideName(0), worldWideName2(0), deviceInterface(0), deviceCapcity(0), \
+			_sDriveInfo() :pageNumber(0), copyNumber(0), serialNumber(0), serialNumber2(0), worldWideName(0), worldWideName2(0), deviceInterface(0), deviceCapacity(0), \
 				psecSize(0), lsecSize(0), deviceBufferSize(0), heads(0), factor(0), rotationRate(0), firmware(0), firmwareRev(0), reserved(0), reserved2(0), poh(0), reserved3(0), \
 				reserved4(0), headLoadEvents(0), powerCycleCount(0), resetCount(0), reserved5(0), NVC_StatusATPowerOn(0), timeAvailable(0), firstTimeStamp(0), lastTimeStamp(0) {};
 		}sDriveInfo;
@@ -349,6 +349,7 @@ namespace opensea_parser {
 		sFarmHeader					*m_pHeader;										  //!< Member pointer to the header of the farm log
         sScsiPageParameter          *m_pageParam;                                     //!< pointer to the page parameters 
         bool                        m_alreadySet;                                     //!< set true one it's already set..  (APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_OUTER)
+		bool						m_showStatusBits;								  //!< show the status bits of each entry
 
 		void create_Serial_Number(std::string *serialNumber, const sDriveInfo * const idInfo);
 		void create_World_Wide_Name(std::string *worldWideName, const sDriveInfo * const idInfo);
@@ -374,7 +375,7 @@ namespace opensea_parser {
         eReturnValues print_Head_Information(eLogPageTypes type, JSONNODE *masterData, uint32_t page);
     public:
         CSCSI_Farm_Log();
-        CSCSI_Farm_Log(uint8_t *bufferData, size_t bufferSize);
+        CSCSI_Farm_Log(uint8_t *bufferData, size_t bufferSize,bool showStatus);
         virtual ~CSCSI_Farm_Log();
         eReturnValues ParseFarmLog();
         void print_All_Pages(JSONNODE *masterData);

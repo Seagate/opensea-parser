@@ -424,7 +424,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 			case SEAGATE_FARM_LOG:
 			{
 				CSCSI_Farm_Log *pCFarm;
-				pCFarm = new CSCSI_Farm_Log((uint8_t *)bufferData, m_LogSize);
+				pCFarm = new CSCSI_Farm_Log((uint8_t *)bufferData, m_LogSize, false);
 				if (pCFarm->get_Log_Status() == SUCCESS)
 				{
 					retStatus = pCFarm->ParseFarmLog();

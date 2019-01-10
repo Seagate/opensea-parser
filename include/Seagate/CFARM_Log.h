@@ -31,11 +31,13 @@ namespace opensea_parser {
 		size_t						m_LogSize;							 //!< size of the log
         eReturnValues               m_status;                            //!< status of the class
         bool                        m_isScsi;                            //!< true if the log is Scsi
+		bool						m_shwoStatus;						 //!< if true then we will show all the status bits for each entry
 
         bool is_Device_Scsi();											 //<! Function for finding out if the binary is for Scsi or not
     public:
         CFARMLog();
-        CFARMLog(const std::string & fileName);
+        CFARMLog(const std::string & fileName,bool showStatus);
+		CFARMLog(const std::string & fileName);
         virtual ~CFARMLog();
         eReturnValues ParseFarmLog( JSONNODE *masterData);
 
