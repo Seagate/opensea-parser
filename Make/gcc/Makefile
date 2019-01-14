@@ -1,8 +1,14 @@
 # 
-# Last Modified: 12/05/18
 #
-# Seagate Technology 2018
+# Do NOT modify or remove this copyright and license
 #
+# Copyright (c) 2017 - 2019 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
+#
+# This software is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+# ******************************************************************************************
 
 NAME=opensea-parser
 #Change the Major version when major interface changes are made.
