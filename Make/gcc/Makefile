@@ -12,6 +12,13 @@ MINOR=0
 #Change the patch version when only bug fixes are made.
 PATCH=14
 
+UNAME := $(shell uname -s)
+ifeq ($(UNAME),Darwin)
+    LXXFLAGS += -shared -undefined dynamic_lookup -Wall
+else 
+    LXXFLAGS += -shared -Wall
+endif
+
 VERSION=$(MAJOR).$(MINOR).$(PATCH)
 SRC_DIR=../../src/
 INC_DIR=-I../../include -I../../include/Seagate -I../../../opensea-common/include -I../../../libjson
@@ -19,7 +26,6 @@ CXX?=g++
 CXXFLAGS ?= -Wall
 CXXFLAGS += -c -fPIC -std=c++98 -I.
 ARCHIVE ?= ar
-LFLAGS = -Wall
 LIB_SRC_FILES = \
     $(SRC_DIR)Opensea_Parser_Helper.cpp\
     $(SRC_DIR)CLog.cpp\
@@ -52,8 +58,6 @@ LIB_SRC_FILES = \
     $(SRC_DIR)/Seagate/CAta_Farm_Log.cpp\
     $(SRC_DIR)/Seagate/CScsi_Farm_Log.cpp\
 
-        
-
 PROJECT_DEFINES += #-D_DEBUG
 
 #All of the source files have associated object files
@@ -77,7 +81,7 @@ $(LIBS): $(LIB_OBJ_FILES)
 	rm -f $(FILE_OUTPUT_DIR)/$@
 	$(ARCHIVE) cq $(FILE_OUTPUT_DIR)/$@ $(LIB_OBJ_FILES)
 # Removing the line below since we don't need a shared object for this right now...a static library is enough for the common stuff
-	$(CXX) -shared $(LIB_OBJ_FILES) -o lib$(NAME).so.$(VERSION)
+	$(CXX) $(LXXFLAGS) $(LIB_OBJ_FILES) -o lib$(NAME).so.$(VERSION)
 clean:
 	rm -f $(FILE_OUTPUT_DIR)/lib$(NAME).a $(FILE_OUTPUT_DIR)/lib$(NAME).so.$(VERSION) *.o ../../src/*.o ../../src/seagate/*.o
 	rm -rf $(FILE_OUTPUT_DIR)
