@@ -38,7 +38,7 @@ matrix:
         - git clone https://github.com/Seagate/libjson.git
         - mv libjson ../
         - mv opensea-common ../
-        cd "Make\VS.2017\opensea-parser\opensea-parser"
+        - cd "Make\VS.2017\opensea-parser\opensea-parser"
       script: 
         - export PATH=$MSBUILD_PATH:$PATH 
         - MSBuild.exe //p:Configuration=Static-Release //p:Platform=x64
