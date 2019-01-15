@@ -12,6 +12,8 @@ matrix:
       compiler: clang
       before_script: 
         - git clone https://github.com/Seagate/opensea-common.git
+        - git clone https://github.com/Seagate/libjson.git
+        - mv libjson ../
         - mv opensea-common ../
         - cd Make/gcc
       script: 
@@ -22,6 +24,8 @@ matrix:
       dist: xenial
       before_script: 
         - git clone https://github.com/Seagate/opensea-common.git
+        - git clone https://github.com/Seagate/libjson.git
+        - mv libjson ../
         - mv opensea-common ../
         - cd Make/gcc
       script: 
