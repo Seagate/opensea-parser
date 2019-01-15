@@ -1,4 +1,4 @@
-# CI for openseaChest_LogParser
+# CI for opensea-parser 
 language: cpp
 
 branches:
@@ -23,7 +23,7 @@ matrix:
       before_script: 
         - git clone https://github.com/Seagate/opensea-common.git
         - mv opensea-common ../
-        cd Make/gcc
+        - cd Make/gcc
       script: 
         make 
     - os: windows
