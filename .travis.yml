@@ -8,11 +8,21 @@ branches:
 
 matrix:
   include:
+    - os: osx
+      compiler: clang
+      before_script: 
+        - git clone https://github.com/Seagate/opensea-common.git
+        - mv opensea-common ../
+        - cd Make/gcc
+      script: 
+        make 
     - os: linux
       sudo: false
       compiler: gcc
       dist: xenial
       before_script: 
+        - git clone https://github.com/Seagate/opensea-common.git
+        - mv opensea-common ../
         cd Make/gcc
       script: 
         make 
