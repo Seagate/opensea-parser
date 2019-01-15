@@ -28,7 +28,7 @@ endif
 VERSION=$(MAJOR).$(MINOR).$(PATCH)
 SRC_DIR=../../src/
 INC_DIR=-I../../include -I../../include/Seagate -I../../../opensea-common/include -I../../../libjson
-CXX?=g++
+CXX ?= g++
 CXXFLAGS ?= -Wall
 CXXFLAGS += -c -fPIC -std=c++98 -I.
 ARCHIVE ?= ar
