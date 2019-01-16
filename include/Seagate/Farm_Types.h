@@ -104,7 +104,7 @@ inline void set_json_64_bit_With_Status(JSONNODE *nowNode, const std::string & m
 	uint32_t upperValue = static_cast<uint32_t>(value >> 32);
 	if (hexPrint)
 	{
-		if (value > LONG_MAX)
+		if (value > UINT32_MAX)
 		{
 			json_push_back(bigBit, json_new_b("64 bit Value String in Hex", true));
 			snprintf((char*)printStr.c_str(), BASIC, "0x%014" PRIx64"", value);
@@ -121,7 +121,7 @@ inline void set_json_64_bit_With_Status(JSONNODE *nowNode, const std::string & m
 	}
 	else
 	{
-		if (value > LONG_MAX)
+		if (value > UINT32_MAX)
 		{
 			json_push_back(bigBit, json_new_b("64 bit Value String in Hex", false));
 			snprintf((char*)printStr.c_str(), BASIC, "%" PRIi64"", value);
