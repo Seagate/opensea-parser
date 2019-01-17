@@ -161,69 +161,69 @@ namespace opensea_parser {
 
             typedef struct _sflyHeight
             {
-                uint64_t        outer;
-                uint64_t        inner;
-                uint64_t        middle;
+                int64_t        outer;
+                int64_t        inner;
+                int64_t        middle;
             }sflyHeight;
 
             typedef struct _sAtaReliabilityStat
             {
-                uint64_t        pageNumber;                                  //!< Page Number = 5
-                uint64_t        copyNumber;                                  //!< Copy Number
-                uint64_t        lastIDDTest;                                 //!< Timestamp of last IDD test
-                uint64_t        cmdLastIDDTest;                              //!< Sub-command of last IDD test
+                int64_t         pageNumber;                                  //!< Page Number = 5
+                int64_t         copyNumber;                                  //!< Copy Number
+                int64_t         lastIDDTest;                                 //!< Timestamp of last IDD test
+                int64_t         cmdLastIDDTest;                              //!< Sub-command of last IDD test
                 sHeadInfo       discSlip[RELISTAT];                          //!< [24] Disc Slip in micro-inches by Head
                 sHeadInfo       bitErrorRate[RELISTAT];                      //!< [24] Bit Error Rate of Zone 0 by Drive Head
-                uint64_t        gListReclamed;                               //!< Number of G-List Reclamations 
-                uint64_t        servoStatus;                                 //!< Servo Status (follows standard DST error code definitions)
-                uint64_t        altsBeforeIDD;                               //!< Number of Alt List Entries Before IDD Scan
-                uint64_t        altsAfterIDD;                                //!< Number of Alt List Entries After IDD Scan
-                uint64_t        gListBeforIDD;                               //!< Number of Resident G-List Entries Before IDD Scan
-                uint64_t        gListAfterIDD;                               //!< Number of Resident G-List Entries After IDD Scan
-                uint64_t        scrubsBeforeIDD;                             //!< Number of Scrub List Entries Before IDD Scan
-                uint64_t        scrubsAfterIDD;                              //!< Number of Scrub List Entries After IDD Scan
-                uint64_t        numberDOSScans;                              //!< Number of DOS Scans Performed
-                uint64_t        numberLBACorrect;                            //!< Number of LBAs Corrected by ISP
-                uint64_t        numberValidParitySec;                        //!< Number of Valid Parity Sectors
-                uint64_t        dosWriteCount[RELISTAT];                     //!< [24] DOS Write Refresh Count7
-                uint64_t        numberRAWops;                                //!< Number of RAW Operations
-                uint64_t        DVGASkipWriteDetect[RELISTAT];               //!< [24] DVGA Skip Write Detect by Head
-                uint64_t        RVGASkipWriteDetect[RELISTAT];               //!< [24] RVGA Skip Write Detect by Head
-                uint64_t        FVGASkipWriteDetect[RELISTAT];               //!< [24] FVGA Skip Write Detect by Head
-                uint64_t        skipWriteDetectThresExceeded[RELISTAT];      //!< [24] Skip Write Detect Threshold Exceeded Count by Head
-                uint64_t        attrErrorRateRaw;                            //!< Error Rate 
-                uint64_t        attrErrorRateNormal;                         //!< Error Rate 
-                uint64_t        attrErrorRateWorst;                          //!< Error Rate 
-                uint64_t        attrSeekErrorRateRaw;                        //!< Seek Error Rate 
-                uint64_t        attrSeekErrorRateNormal;                     //!< Seek Error Rate 
-                uint64_t        attrSeekErrorRateWorst;                      //!< Seek Error Rate 
-                uint64_t        attrUnloadEventsRaw;                         //!< High Priority Unload Events 
+                int64_t         gListReclamed;                               //!< Number of G-List Reclamations 
+                int64_t         servoStatus;                                 //!< Servo Status (follows standard DST error code definitions)
+                int64_t         altsBeforeIDD;                               //!< Number of Alt List Entries Before IDD Scan
+                int64_t         altsAfterIDD;                                //!< Number of Alt List Entries After IDD Scan
+                int64_t         gListBeforIDD;                               //!< Number of Resident G-List Entries Before IDD Scan
+                int64_t         gListAfterIDD;                               //!< Number of Resident G-List Entries After IDD Scan
+                int64_t         scrubsBeforeIDD;                             //!< Number of Scrub List Entries Before IDD Scan
+                int64_t         scrubsAfterIDD;                              //!< Number of Scrub List Entries After IDD Scan
+                int64_t         numberDOSScans;                              //!< Number of DOS Scans Performed
+                int64_t         numberLBACorrect;                            //!< Number of LBAs Corrected by ISP
+                int64_t         numberValidParitySec;                        //!< Number of Valid Parity Sectors
+                int64_t         dosWriteCount[RELISTAT];                     //!< [24] DOS Write Refresh Count7
+                int64_t         numberRAWops;                                //!< Number of RAW Operations
+                int64_t         DVGASkipWriteDetect[RELISTAT];               //!< [24] DVGA Skip Write Detect by Head
+                int64_t         RVGASkipWriteDetect[RELISTAT];               //!< [24] RVGA Skip Write Detect by Head
+                int64_t         FVGASkipWriteDetect[RELISTAT];               //!< [24] FVGA Skip Write Detect by Head
+                int64_t         skipWriteDetectThresExceeded[RELISTAT];      //!< [24] Skip Write Detect Threshold Exceeded Count by Head
+                int64_t         attrErrorRateRaw;                            //!< Error Rate 
+                int64_t         attrErrorRateNormal;                         //!< Error Rate 
+                int64_t         attrErrorRateWorst;                          //!< Error Rate 
+                int64_t         attrSeekErrorRateRaw;                        //!< Seek Error Rate 
+                int64_t         attrSeekErrorRateNormal;                     //!< Seek Error Rate 
+                int64_t         attrSeekErrorRateWorst;                      //!< Seek Error Rate 
+                int64_t         attrUnloadEventsRaw;                         //!< High Priority Unload Events 
                 uint64_t        microActuatorLockOUt;                        //!< Micro Actuator Lock-out, head mask accumulated over last 3 Summary Frames
-                uint64_t        sineACFF[RELISTAT];                          //!< [24] ACFF Sine 1X, value from most recent SMART Summary Frame by Head
-                uint64_t        cosineACFF[RELISTAT];                        //!< [24] ACFF Cosine 1X, value from most recent SMART Summary Frame by Head
-                uint64_t        PZTCalibration[RELISTAT];                    //!< [24] PZT Calibration, value from most recent SMART Summary Frame by Head
-                uint64_t        MRHeadResistance[RELISTAT];                  //!< [24] MR Head Resistance from most recent SMART Summary Frame by Head
-                uint64_t        numberOfTMD[RELISTAT];                       //!< [24] Number of TMD over last 3 SMART Summary Frames by Head
-                uint64_t        velocityObserver[RELISTAT];                  //!< [24] Velocity Observer over last 3 SMART Summary Frames by Head
-                uint64_t        numberOfVelocityObserver[RELISTAT];          //!< [24] Number of Velocity Observer over last 3 SMART Summary Frames by Head
+                int64_t         sineACFF[RELISTAT];                          //!< [24] ACFF Sine 1X, value from most recent SMART Summary Frame by Head
+                int64_t         cosineACFF[RELISTAT];                        //!< [24] ACFF Cosine 1X, value from most recent SMART Summary Frame by Head
+                int64_t         PZTCalibration[RELISTAT];                    //!< [24] PZT Calibration, value from most recent SMART Summary Frame by Head
+                int64_t         MRHeadResistance[RELISTAT];                  //!< [24] MR Head Resistance from most recent SMART Summary Frame by Head
+                int64_t         numberOfTMD[RELISTAT];                       //!< [24] Number of TMD over last 3 SMART Summary Frames by Head
+                int64_t         velocityObserver[RELISTAT];                  //!< [24] Velocity Observer over last 3 SMART Summary Frames by Head
+                int64_t         numberOfVelocityObserver[RELISTAT];          //!< [24] Number of Velocity Observer over last 3 SMART Summary Frames by Head
                 sflyHeight      currentH2SAT[RELISTAT];                      //!< [24] Current H2SAT trimmed mean bits in error by Head, by Test Zone 
                 sflyHeight      currentH2SATIterations[RELISTAT];            //!< [24] Qword[24][3] Current H2SAT iterations to converge by Head, by Test Zone 
-                uint64_t        currentH2SATPercentage[RELISTAT];            //!< [24] Qword[24] Current H2SAT percentage of codewords at iteration level by Head, averaged
-                uint64_t        currentH2SATamplitude[RELISTAT];             //!< [24] Qword[24] Current H2SAT amplitude by Head, averaged across Test Zones 
-                uint64_t        currentH2SATasymmetry[RELISTAT];             //!< [24] Qword[24] Current H2SAT asymmetry by Head, averaged across Test Zones
+                int64_t         currentH2SATPercentage[RELISTAT];            //!< [24] Qword[24] Current H2SAT percentage of codewords at iteration level by Head, averaged
+                int64_t         currentH2SATamplitude[RELISTAT];             //!< [24] Qword[24] Current H2SAT amplitude by Head, averaged across Test Zones 
+                int64_t         currentH2SATasymmetry[RELISTAT];             //!< [24] Qword[24] Current H2SAT asymmetry by Head, averaged across Test Zones
                 sflyHeight      flyHeightClearance[RELISTAT];                //!< [24][3] Applied fly height clearance delta per head in thousandths of one Angstrom.
-                uint64_t        diskSlipRecalPerformed;                      //!< Number of disc slip recalibrations performed
-                uint64_t        gList[RELISTAT];                             //!< [24] Number of Resident G-List per Head
-                uint64_t        pendingEntries[RELISTAT];                    //!< [24] Number of pending Entries per Head
-                uint64_t        heliumPresureTrip;                           //!< Helium Pressure Threshold Tripped ( 1- trip, 0 -no trip)
-                uint64_t        oughtDOS[RELISTAT];                          //!< [24] DOS Ought to scan count per head
-                uint64_t        needDOS[RELISTAT];                           //!< [24] DOS needs to scanns count per head
-                uint64_t        writeDOSFault[RELISTAT];                     //!< [24] DOS  write Fault scans per head
-                uint64_t        writePOH[RELISTAT];                          //!< [24] write POS in sec value from most recent SMART Frame by head
-                uint64_t        RVAbsoluteMean;                              //!< RV Absolute Mean, value from the most recent SMART Frame
-                uint64_t        maxRVAbsluteMean;                            //!< Max RV Absolute Mean, value from the most recent SMART Summary Frame
-                uint64_t        idleTime;                                    //!< idle Time, Value from most recent SMART Summary Frame
-                uint64_t        countDOSWrite[RELISTAT];                     //!< [24] DOS Write Count Threshold per head
+                int64_t         diskSlipRecalPerformed;                      //!< Number of disc slip recalibrations performed
+                int64_t         gList[RELISTAT];                             //!< [24] Number of Resident G-List per Head
+                int64_t         pendingEntries[RELISTAT];                    //!< [24] Number of pending Entries per Head
+                int64_t         heliumPresureTrip;                           //!< Helium Pressure Threshold Tripped ( 1- trip, 0 -no trip)
+                int64_t         oughtDOS[RELISTAT];                          //!< [24] DOS Ought to scan count per head
+                int64_t         needDOS[RELISTAT];                           //!< [24] DOS needs to scanns count per head
+                int64_t         writeDOSFault[RELISTAT];                     //!< [24] DOS  write Fault scans per head
+                int64_t         writePOH[RELISTAT];                          //!< [24] write POS in sec value from most recent SMART Frame by head
+                int64_t         RVAbsoluteMean;                              //!< RV Absolute Mean, value from the most recent SMART Frame
+                int64_t         maxRVAbsluteMean;                            //!< Max RV Absolute Mean, value from the most recent SMART Summary Frame
+                int64_t         idleTime;                                    //!< idle Time, Value from most recent SMART Summary Frame
+                int64_t         countDOSWrite[RELISTAT];                     //!< [24] DOS Write Count Threshold per head
 
             }sAtaReliabilityStat;
 

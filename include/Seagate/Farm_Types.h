@@ -70,7 +70,7 @@ inline uint64_t check_Status_Strip_Status(uint64_t value)
 	return value;
 }
 
-inline void set_json_64_bit_With_Status(JSONNODE *nowNode, const std::string & myStr, uint64_t value, bool hexPrint, bool showStatusBits)
+inline void set_json_64_bit_With_Status(JSONNODE *nowNode, const std::string & myStr, int64_t value, bool hexPrint, bool showStatusBits)
 {
 	std::string printStr = " ";
 	printStr.resize(BASIC);
@@ -100,11 +100,12 @@ inline void set_json_64_bit_With_Status(JSONNODE *nowNode, const std::string & m
 		}
 	}
 	value = check_Status_Strip_Status(value);
-	uint32_t lowValue = static_cast<uint32_t>(value);
-	uint32_t upperValue = static_cast<uint32_t>(value >> 32);
+	value = check_for_signed_int(value,16);
+	int32_t lowValue = static_cast<int32_t>(value);
+	int32_t upperValue = static_cast<int32_t>(value >> 32);
 	if (hexPrint)
 	{
-		if (value > UINT32_MAX)
+		if (value > INT32_MAX)
 		{
 			json_push_back(bigBit, json_new_b("64 bit Value String in Hex", true));
 			snprintf((char*)printStr.c_str(), BASIC, "0x%014" PRIx64"", value);
@@ -121,7 +122,7 @@ inline void set_json_64_bit_With_Status(JSONNODE *nowNode, const std::string & m
 	}
 	else
 	{
-		if (value > UINT32_MAX)
+		if (value > INT32_MAX)
 		{
 			json_push_back(bigBit, json_new_b("64 bit Value String in Hex", false));
 			snprintf((char*)printStr.c_str(), BASIC, "%" PRIi64"", value);
@@ -132,14 +133,13 @@ inline void set_json_64_bit_With_Status(JSONNODE *nowNode, const std::string & m
 		}
 		else
 		{
-			snprintf((char*)printStr.c_str(), BASIC, "%" PRIi64"", value);
-			json_push_back(nowNode, json_new_i((char *)myStr.c_str(), static_cast<int32_t>(value)));
+			json_push_back(nowNode, json_new_i((char *)myStr.c_str(), static_cast<int32_t>(M_DoubleWord0(value))));
 		}
 	}
 	
 }
 
-inline void set_json_int_With_Status(JSONNODE *nowNode, const std::string & myStr, uint64_t value, bool showStatusBits)
+inline void set_json_int_With_Status(JSONNODE *nowNode, const std::string & myStr, int64_t value, bool showStatusBits)
 {
 	std::string printStr = " ";
 	printStr.resize(BASIC);
@@ -166,13 +166,13 @@ inline void set_json_int_With_Status(JSONNODE *nowNode, const std::string & mySt
 			opensea_parser::set_Json_Bool(bigBit, "Field Valid", false);
 		}
 		value = check_Status_Strip_Status(value);
-		json_push_back(bigBit, json_new_i((char *)myStr.c_str(), static_cast<uint32_t>(M_Word0(value))));
+		json_push_back(bigBit, json_new_i((char *)myStr.c_str(), static_cast<int32_t>(M_DoubleWord0(value))));
 		json_push_back(nowNode, bigBit);
 	}
 	else
 	{
 		value = check_Status_Strip_Status(value);
-		json_push_back(nowNode, json_new_i((char *)myStr.c_str(), static_cast<uint32_t>(M_Word0(value))));
+		json_push_back(nowNode, json_new_i((char *)myStr.c_str(), static_cast<int32_t>(M_DoubleWord0(value))));
 	}
 }
 
