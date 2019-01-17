@@ -155,4 +155,16 @@ namespace opensea_parser {
 		return false;
 	}
 }
+inline int64_t check_for_signed_int(int64_t value, uint32_t length) 
+{
+	int8_t neg = -1;			// set to 1 if bit 56 is set then set it to -1
+	value = value << length;
+	if ((value & BIT63) == BIT63)   // check to see if the bit is set for nef number
+	{
+		value = M_2sCOMPLEMENT(value);
+		value = value * neg;
+	}
+	value = value >> length;      // move the back to the original number
+	return(value);
+}
 
