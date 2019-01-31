@@ -143,19 +143,19 @@ eReturnValues CSCSI_Farm_Log::init_Header_Data()
 		m_logSize = m_logParam->length;									    // set the class log size 
 		byte_Swap_16(&m_logSize);
 
-		m_pHeader = (sFarmHeader *)&pBuf[4];								
-		swap_Bytes_sFarmHeader(m_pHeader);									// swap all the bytes for the header
-		m_totalPages = M_DoubleWord0(m_pHeader->pagesSupported);			// get the total pages
-		m_pageSize = M_DoubleWord0(m_pHeader->pageSize);					// get the page size
-		if (check_For_Active_Status(&m_pHeader->headsSupported))			// the the number of heads if supported
+		m_pHeader = (sScsiFarmHeader *)&pBuf[4];
+		swap_Bytes_sFarmHeader(m_pHeader);											// swap all the bytes for the header
+		m_totalPages = M_DoubleWord0(m_pHeader->farmHeader.pagesSupported);			// get the total pages
+		m_pageSize = M_DoubleWord0(m_pHeader->farmHeader.pageSize);					// get the page size
+		if (check_For_Active_Status(&m_pHeader->farmHeader.headsSupported))			// the the number of heads if supported
 		{
-			if ((m_pHeader->headsSupported & 0x00FFFFFFFFFFFFFFLL) > 0)
+			if ((m_pHeader->farmHeader.headsSupported & 0x00FFFFFFFFFFFFFFLL) > 0)
 			{
-				m_heads = M_DoubleWord0(m_pHeader->headsSupported);
-				m_MaxHeads = M_DoubleWord0(m_pHeader->headsSupported);
+				m_heads = M_DoubleWord0(m_pHeader->farmHeader.headsSupported);
+				m_MaxHeads = M_DoubleWord0(m_pHeader->farmHeader.headsSupported);
 			}
 		}
-		m_copies = M_DoubleWord0(m_pHeader->copies);						// finish up with the number of copies (not supported "YET" in SAS)
+		m_copies = M_DoubleWord0(m_pHeader->farmHeader.copies);						// finish up with the number of copies (not supported "YET" in SAS)
 	}
 	return SUCCESS;
 }
@@ -367,7 +367,7 @@ void CSCSI_Farm_Log::set_Head_Header(std::string &headerName, eLogPageTypes inde
 //!   \return serialNumber = the string serialNumber
 //
 //---------------------------------------------------------------------------
-void CSCSI_Farm_Log::create_Serial_Number(std::string *serialNumber, const sDriveInfo * const idInfo)
+void CSCSI_Farm_Log::create_Serial_Number(std::string *serialNumber, const sScsiDriveInfo * const idInfo)
 {
 	uint64_t sn = 0;
 	uint64_t sn1 = idInfo->serialNumber & 0x00FFFFFFFFFFFFFFLL;
@@ -394,7 +394,7 @@ void CSCSI_Farm_Log::create_Serial_Number(std::string *serialNumber, const sDriv
 //!   \return wordWideName = the string wordWideName
 //
 //---------------------------------------------------------------------------
-void CSCSI_Farm_Log::create_World_Wide_Name(std::string *worldWideName, const sDriveInfo * const idInfo)
+void CSCSI_Farm_Log::create_World_Wide_Name(std::string *worldWideName, const sScsiDriveInfo * const idInfo)
 {
 	uint64_t wwn = 0;
 	wwn = (idInfo->worldWideName & 0x00FFFFFFFFFFFFFFLL) | ((idInfo->worldWideName2 & 0x00FFFFFFFFFFFFFFLL) << 32);
@@ -417,7 +417,7 @@ void CSCSI_Farm_Log::create_World_Wide_Name(std::string *worldWideName, const sD
 //!   \return firmwareRev = the string firmwareRev
 //
 //---------------------------------------------------------------------------
-void CSCSI_Farm_Log::create_Firmware_String(std::string *firmwareRev, const sDriveInfo * const idInfo)
+void CSCSI_Farm_Log::create_Firmware_String(std::string *firmwareRev, const sScsiDriveInfo * const idInfo)
 {
 	uint32_t firm = 0;
 	firm = (uint32_t)(idInfo->firmware & 0x00FFFFFFFFFFFFFFLL);
@@ -441,7 +441,7 @@ void CSCSI_Farm_Log::create_Firmware_String(std::string *firmwareRev, const sDri
 //!   \return dInterface = the string dInterface
 //
 //---------------------------------------------------------------------------
-void CSCSI_Farm_Log::create_Device_Interface_String(std::string *dInterface, const sDriveInfo * const idInfo)
+void CSCSI_Farm_Log::create_Device_Interface_String(std::string *dInterface, const sScsiDriveInfo * const idInfo)
 {
 	uint64_t dFace = 0;
 	dFace = (idInfo->deviceInterface & 0x00FFFFFFFFFFFFFFLL);
@@ -464,7 +464,7 @@ void CSCSI_Farm_Log::create_Device_Interface_String(std::string *dInterface, con
 //!   \return bool
 //
 //---------------------------------------------------------------------------
-bool CSCSI_Farm_Log::swap_Bytes_sDriveInfo(sDriveInfo *di)
+bool CSCSI_Farm_Log::swap_Bytes_sDriveInfo(sScsiDriveInfo *di)
 {
     byte_Swap_64(&di->copyNumber);
     byte_Swap_64(&di->deviceBufferSize);
@@ -506,18 +506,18 @@ bool CSCSI_Farm_Log::swap_Bytes_sDriveInfo(sDriveInfo *di)
 //!   \return true when done
 //
 //---------------------------------------------------------------------------
-bool CSCSI_Farm_Log::swap_Bytes_sWorkLoadStat(sWorkLoadStat *wl)
+bool CSCSI_Farm_Log::swap_Bytes_sWorkLoadStat(sScsiWorkLoadStat *wl)
 {
-    byte_Swap_64(&wl->copyNumber);
-    byte_Swap_64(&wl->logicalSecRead);
-    byte_Swap_64(&wl->logicalSecWritten);
-    byte_Swap_64(&wl->pageNumber);
-    byte_Swap_64(&wl->totalNumberofOtherCMDS);
-    byte_Swap_64(&wl->totalRandomReads);
-    byte_Swap_64(&wl->totalRandomWrites);
-    byte_Swap_64(&wl->totalReadCommands);
-    byte_Swap_64(&wl->totalWriteCommands);
-    byte_Swap_64(&wl->workloadPercentage);
+    byte_Swap_64(&wl->workLoad.copyNumber);
+    byte_Swap_64(&wl->workLoad.logicalSecRead);
+    byte_Swap_64(&wl->workLoad.logicalSecWritten);
+    byte_Swap_64(&wl->workLoad.pageNumber);
+    byte_Swap_64(&wl->workLoad.totalNumberofOtherCMDS);
+    byte_Swap_64(&wl->workLoad.totalRandomReads);
+    byte_Swap_64(&wl->workLoad.totalRandomWrites);
+    byte_Swap_64(&wl->workLoad.totalReadCommands);
+    byte_Swap_64(&wl->workLoad.totalWriteCommands);
+    byte_Swap_64(&wl->workLoad.workloadPercentage);
     return true;
 }
 //-----------------------------------------------------------------------------
@@ -534,14 +534,14 @@ bool CSCSI_Farm_Log::swap_Bytes_sWorkLoadStat(sWorkLoadStat *wl)
 //!   \return bool
 //
 //---------------------------------------------------------------------------
-bool CSCSI_Farm_Log::swap_Bytes_sErrorStat(sErrorStat * es)
+bool CSCSI_Farm_Log::swap_Bytes_sErrorStat(sScsiErrorStat * es)
 {
 	byte_Swap_64(&es->totalReadECC);
 	byte_Swap_64(&es->totalWriteECC);
 	byte_Swap_64(&es->totalReallocations);
     byte_Swap_64(&es->attrIOEDCErrors);
     byte_Swap_64(&es->copyNumber);
-    byte_Swap_16(&es->m_pPageHeader.pramCode);
+    byte_Swap_16(&es->pPageHeader.pramCode);
     byte_Swap_64(&es->pageNumber);
     byte_Swap_64(&es->totalFlashLED);
     byte_Swap_64(&es->totalMechanicalFails);
@@ -563,7 +563,7 @@ bool CSCSI_Farm_Log::swap_Bytes_sErrorStat(sErrorStat * es)
 //!   \return bool
 //
 //---------------------------------------------------------------------------
-bool CSCSI_Farm_Log::swap_Bytes_sEnvironmentStat(sEnvironmentStat *es)
+bool CSCSI_Farm_Log::swap_Bytes_sEnvironmentStat(sScsiEnvironmentStat *es)
 {
     byte_Swap_64(&es->copyNumber);
     byte_Swap_64(&es->curentTemp);
@@ -574,7 +574,7 @@ bool CSCSI_Farm_Log::swap_Bytes_sEnvironmentStat(sEnvironmentStat *es)
     byte_Swap_64(&es->lowestTemp);
     byte_Swap_64(&es->maxTemp);
     byte_Swap_64(&es->minTemp);
-    byte_Swap_16(&es->m_pPageHeader.pramCode);
+    byte_Swap_16(&es->pPageHeader.pramCode);
     byte_Swap_64(&es->pageNumber);
     return true;
 }
@@ -605,7 +605,7 @@ bool CSCSI_Farm_Log::swap_Bytes_sScsiReliabilityStat(sScsiReliabilityStat *ss)
 	byte_Swap_64(&ss->heliumPressuretThreshold);
 	byte_Swap_64(&ss->idleTime);
     byte_Swap_64(&ss->lastIDDTest);
-    byte_Swap_16(&ss->m_pPageHeader.pramCode);
+    byte_Swap_16(&ss->pPageHeader.pramCode);
 	byte_Swap_64(&ss->maxRVAbsuluteMean);
 	byte_Swap_64(&ss->microActuatorLockOut);
     byte_Swap_64(&ss->numberDOSScans);
@@ -633,16 +633,16 @@ bool CSCSI_Farm_Log::swap_Bytes_sScsiReliabilityStat(sScsiReliabilityStat *ss)
 //!   \return bool
 //
 //---------------------------------------------------------------------------
-bool CSCSI_Farm_Log::swap_Bytes_sFarmHeader(sFarmHeader *fh)
+bool CSCSI_Farm_Log::swap_Bytes_sFarmHeader(sScsiFarmHeader *fh)
 {
-    byte_Swap_64(&fh->copies);
-    byte_Swap_64(&fh->headsSupported);
-    byte_Swap_64(&fh->logSize);
-    byte_Swap_64(&fh->majorRev);
-    byte_Swap_64(&fh->minorRev);
-    byte_Swap_64(&fh->pageSize);
-    byte_Swap_64(&fh->pagesSupported);
-    byte_Swap_64(&fh->signature);
+    byte_Swap_64(&fh->farmHeader.copies);
+    byte_Swap_64(&fh->farmHeader.headsSupported);
+    byte_Swap_64(&fh->farmHeader.logSize);
+    byte_Swap_64(&fh->farmHeader.majorRev);
+    byte_Swap_64(&fh->farmHeader.minorRev);
+    byte_Swap_64(&fh->farmHeader.pageSize);
+    byte_Swap_64(&fh->farmHeader.pagesSupported);
+    byte_Swap_64(&fh->farmHeader.signature);
 	//m_MinorRev = fh->minorRev & 0x00FFLL;
     return true;
 }
@@ -689,21 +689,21 @@ bool CSCSI_Farm_Log::get_Head_Info(sHeadInformation *phead, uint8_t *buffer)
 eReturnValues CSCSI_Farm_Log::ParseFarmLog()
 {
     uint64_t offset = 4;															// the first page starts at offset 4                                   
-	sFarmFrame *pFarmFrame = new sFarmFrame();										// create the pointer to the union
+	sScsiFarmFrame *pFarmFrame = new sScsiFarmFrame();										// create the pointer to the union
     if (pBuf == NULL)
     {
         return FAILURE;
     }
-    if ((m_pHeader->signature & 0x00FFFFFFFFFFFFFFLL) == FARMSIGNATURE)				// check the head to see if it has the farm signature else fail
+    if ((m_pHeader->farmHeader.signature & 0x00FFFFFFFFFFFFFFLL) == FARMSIGNATURE)				// check the head to see if it has the farm signature else fail
     {
         for (uint32_t index = 0; index <= m_copies; ++index)						// loop for the number of copies. I don't think it's zero base as of now
         {
 			sScsiPageParameter *pFarmPageHeader;
-			sFarmHeader *pFarmHeader; 
-			sDriveInfo *pIdInfo;
-			sWorkLoadStat *pworkLoad;
-			sErrorStat *pError;
-			sEnvironmentStat *pEnvironment;
+			sScsiFarmHeader *pFarmHeader;
+			sScsiDriveInfo *pIdInfo;
+			sScsiWorkLoadStat *pworkLoad;
+			sScsiErrorStat *pError;
+			sScsiEnvironmentStat *pEnvironment;
 			sScsiReliabilityStat *pReli;
 			sHeadInformation *pHeadInfo = new sHeadInformation();
 			sStringIdentifyData *pInfo = new sStringIdentifyData();
@@ -716,13 +716,13 @@ eReturnValues CSCSI_Farm_Log::ParseFarmLog()
                 {
                 case FARM_HEADER_PARAMETER:
                     pFarmPageHeader = (sScsiPageParameter *)&pBuf[offset];                                      // get the Farm Header information
-                    pFarmHeader = (sFarmHeader *)&pBuf[offset + sizeof(sScsiPageParameter)];                    // get the Farm Header information
+                    pFarmHeader = (sScsiFarmHeader *)&pBuf[offset + sizeof(sScsiPageParameter)];                    // get the Farm Header information
                     memcpy(&pFarmFrame->farmHeader, pFarmHeader, sizeof(sFarmHeader));
                     offset += (pFarmPageHeader->plen + sizeof(sScsiPageParameter));
                     break;
                 case  GENERAL_DRIVE_INFORMATION_PARAMETER:
                     pFarmPageHeader = (sScsiPageParameter *)&pBuf[offset];                                      // get the Farm Header information
-                    pIdInfo = (sDriveInfo *)&pBuf[offset ];														// get the id drive information at the time.
+                    pIdInfo = (sScsiDriveInfo *)&pBuf[offset ];														// get the id drive information at the time.
                     swap_Bytes_sDriveInfo(pIdInfo);
                     pFarmFrame->driveInfo = *pIdInfo;
                     
@@ -736,28 +736,28 @@ eReturnValues CSCSI_Farm_Log::ParseFarmLog()
                     break;
                 case  WORKLOAD_STATISTICS_PARAMETER:
                     pFarmPageHeader = (sScsiPageParameter *)&pBuf[offset];                                      // get the Farm Header information
-                    pworkLoad = (sWorkLoadStat *)&pBuf[offset ];												// get the work load information
+                    pworkLoad = (sScsiWorkLoadStat *)&pBuf[offset ];												// get the work load information
                     swap_Bytes_sWorkLoadStat(pworkLoad);
                     memcpy(&pFarmFrame->workLoadPage, pworkLoad, sizeof(sWorkLoadStat));
                     offset += (pFarmPageHeader->plen + sizeof(sScsiPageParameter));
                     break;
                 case ERROR_STATISTICS_PARAMETER:
-                    pError = (sErrorStat *)&pBuf[offset];                    // get the error status
+                    pError = (sScsiErrorStat *)&pBuf[offset];                    // get the error status
                     swap_Bytes_sErrorStat(pError);
-                    memcpy(&pFarmFrame->errorPage, pError, sizeof(sErrorStat));
-                    offset += (pError->m_pPageHeader.plen + sizeof(sScsiPageParameter));
+                    memcpy(&pFarmFrame->errorPage, pError, sizeof(sScsiErrorStat));
+                    offset += (pError->pPageHeader.plen + sizeof(sScsiPageParameter));
                     break;
                 case ENVIRONMENTAL_STATISTICS_PARAMETER:
-                    pEnvironment = (sEnvironmentStat *)&pBuf[offset]; // get the envirmonent information 
+                    pEnvironment = (sScsiEnvironmentStat *)&pBuf[offset]; // get the envirmonent information 
                     swap_Bytes_sEnvironmentStat(pEnvironment);
-                    memcpy(&pFarmFrame->environmentPage, pEnvironment, sizeof(sEnvironmentStat));
-                    offset += (pEnvironment->m_pPageHeader.plen + sizeof(sScsiPageParameter));
+                    memcpy(&pFarmFrame->environmentPage, pEnvironment, sizeof(sScsiEnvironmentStat));
+                    offset += (pEnvironment->pPageHeader.plen + sizeof(sScsiPageParameter));
                     break;
                 case RELIABILITY_STATISTICS_PARAMETER:
                     pReli = (sScsiReliabilityStat *)&pBuf[offset];         // get the Reliabliity stat
                     swap_Bytes_sScsiReliabilityStat(pReli);
                     memcpy(&pFarmFrame->reliPage, pReli, sizeof(sScsiReliabilityStat));
-                    offset += (pReli->m_pPageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pReli->pPageHeader.plen + sizeof(sScsiPageParameter));
                     break;    
                 case DISC_SLIP_IN_MICRO_INCHES_BY_HEAD:
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
@@ -1134,14 +1134,14 @@ eReturnValues CSCSI_Farm_Log::print_WorkLoad(JSONNODE *masterData, uint32_t page
 
 #if defined( _DEBUG)
     printf("\nWork Load From Farm Log copy %d:", page);
-    printf("\tRated Workload Percentaged:               %" PRIu64" \n", vFarmFrame[page].workLoadPage.workloadPercentage & 0x00FFFFFFFFFFFFFFLL);         //!< rated Workload Percentage
-	printf("\tTotal Number of Read Commands:            %" PRIu64" \n", vFarmFrame[page].workLoadPage.totalReadCommands & 0x00FFFFFFFFFFFFFFLL);          //!< Total Number of Read Commands
-	printf("\tTotal Number of Write Commands:           %" PRIu64" \n", vFarmFrame[page].workLoadPage.totalWriteCommands & 0x00FFFFFFFFFFFFFFLL);         //!< Total Number of Write Commands
-	printf("\tTotal Number of Random Read Cmds:         %" PRIu64" \n", vFarmFrame[page].workLoadPage.totalRandomReads & 0x00FFFFFFFFFFFFFFLL);           //!< Total Number of Random Read Commands
-	printf("\tTotal Number of Random Write Cmds:        %" PRIu64" \n", vFarmFrame[page].workLoadPage.totalRandomWrites & 0x00FFFFFFFFFFFFFFLL);          //!< Total Number of Random Write Commands
-    printf("\tTotal Number of Other Commands:           %" PRIu64" \n", vFarmFrame[page].workLoadPage.totalNumberofOtherCMDS & 0x00FFFFFFFFFFFFFFLL);     //!< Total Number Of Other Commands
-    printf("\tLogical Sectors Written:                  %" PRIu64" \n", vFarmFrame[page].workLoadPage.logicalSecWritten & 0x00FFFFFFFFFFFFFFLL);          //!< Logical Sectors Written
-    printf("\tLogical Sectors Read:                     %" PRIu64" \n", vFarmFrame[page].workLoadPage.logicalSecRead & 0x00FFFFFFFFFFFFFFLL);             //!< Logical Sectors Read
+    printf("\tRated Workload Percentaged:               %" PRIu64" \n", vFarmFrame[page].workLoadPage.workLoad.workloadPercentage & 0x00FFFFFFFFFFFFFFLL);         //!< rated Workload Percentage
+	printf("\tTotal Number of Read Commands:            %" PRIu64" \n", vFarmFrame[page].workLoadPage.workLoad.totalReadCommands & 0x00FFFFFFFFFFFFFFLL);          //!< Total Number of Read Commands
+	printf("\tTotal Number of Write Commands:           %" PRIu64" \n", vFarmFrame[page].workLoadPage.workLoad.totalWriteCommands & 0x00FFFFFFFFFFFFFFLL);         //!< Total Number of Write Commands
+	printf("\tTotal Number of Random Read Cmds:         %" PRIu64" \n", vFarmFrame[page].workLoadPage.workLoad.totalRandomReads & 0x00FFFFFFFFFFFFFFLL);           //!< Total Number of Random Read Commands
+	printf("\tTotal Number of Random Write Cmds:        %" PRIu64" \n", vFarmFrame[page].workLoadPage.workLoad.totalRandomWrites & 0x00FFFFFFFFFFFFFFLL);          //!< Total Number of Random Write Commands
+    printf("\tTotal Number of Other Commands:           %" PRIu64" \n", vFarmFrame[page].workLoadPage.workLoad.totalNumberofOtherCMDS & 0x00FFFFFFFFFFFFFFLL);     //!< Total Number Of Other Commands
+    printf("\tLogical Sectors Written:                  %" PRIu64" \n", vFarmFrame[page].workLoadPage.workLoad.logicalSecWritten & 0x00FFFFFFFFFFFFFFLL);          //!< Logical Sectors Written
+    printf("\tLogical Sectors Read:                     %" PRIu64" \n", vFarmFrame[page].workLoadPage.workLoad.logicalSecRead & 0x00FFFFFFFFFFFFFFLL);             //!< Logical Sectors Read
     
 #endif
 
@@ -1149,14 +1149,14 @@ eReturnValues CSCSI_Farm_Log::print_WorkLoad(JSONNODE *masterData, uint32_t page
     json_set_name(workLoad, (char*)myStr.c_str());
     JSONNODE *pageInfo = json_new(JSON_NODE);
     json_set_name(pageInfo, "Work Load");
-    set_json_64_bit_With_Status(pageInfo, "Rated Workload Percentaged",vFarmFrame[page].workLoadPage.workloadPercentage, false, m_showStatusBits);				//!< rated Workload Percentage
-	set_json_64_bit_With_Status(pageInfo, "Total Number of Read Commands", vFarmFrame[page].workLoadPage.totalReadCommands, false, m_showStatusBits);			//!< Total Number of Read Commands
-	set_json_64_bit_With_Status(pageInfo, "Total Number of Write Commands", vFarmFrame[page].workLoadPage.totalWriteCommands, false, m_showStatusBits);			//!< Total Number of Write Commands
-    set_json_64_bit_With_Status(pageInfo, "Total Number of Random Read Cmds", vFarmFrame[page].workLoadPage.totalRandomReads, false, m_showStatusBits);			//!< Total Number of Random Read Commands
-	set_json_64_bit_With_Status(pageInfo, "Total Number of Random Write Cmds", vFarmFrame[page].workLoadPage.totalRandomWrites, false, m_showStatusBits);		//!< Total Number of Random Write Commands
-	set_json_64_bit_With_Status(pageInfo, "Total Number of Other Commands", vFarmFrame[page].workLoadPage.totalNumberofOtherCMDS, false, m_showStatusBits);		//!< Total Number Of Other Commands
-	set_json_64_bit_With_Status(pageInfo, "Logical Sectors Written", vFarmFrame[page].workLoadPage.logicalSecWritten, false, m_showStatusBits);					//!< Logical Sectors Written
-    set_json_64_bit_With_Status(pageInfo, "Logical Sectors Read", vFarmFrame[page].workLoadPage.logicalSecRead, false, m_showStatusBits);						//!< Logical Sectors Read
+    set_json_64_bit_With_Status(pageInfo, "Rated Workload Percentaged",vFarmFrame[page].workLoadPage.workLoad.workloadPercentage, false, m_showStatusBits);				//!< rated Workload Percentage
+	set_json_64_bit_With_Status(pageInfo, "Total Number of Read Commands", vFarmFrame[page].workLoadPage.workLoad.totalReadCommands, false, m_showStatusBits);			//!< Total Number of Read Commands
+	set_json_64_bit_With_Status(pageInfo, "Total Number of Write Commands", vFarmFrame[page].workLoadPage.workLoad.totalWriteCommands, false, m_showStatusBits);			//!< Total Number of Write Commands
+    set_json_64_bit_With_Status(pageInfo, "Total Number of Random Read Cmds", vFarmFrame[page].workLoadPage.workLoad.totalRandomReads, false, m_showStatusBits);			//!< Total Number of Random Read Commands
+	set_json_64_bit_With_Status(pageInfo, "Total Number of Random Write Cmds", vFarmFrame[page].workLoadPage.workLoad.totalRandomWrites, false, m_showStatusBits);		//!< Total Number of Random Write Commands
+	set_json_64_bit_With_Status(pageInfo, "Total Number of Other Commands", vFarmFrame[page].workLoadPage.workLoad.totalNumberofOtherCMDS, false, m_showStatusBits);		//!< Total Number Of Other Commands
+	set_json_64_bit_With_Status(pageInfo, "Logical Sectors Written", vFarmFrame[page].workLoadPage.workLoad.logicalSecWritten, false, m_showStatusBits);					//!< Logical Sectors Written
+    set_json_64_bit_With_Status(pageInfo, "Logical Sectors Read", vFarmFrame[page].workLoadPage.workLoad.logicalSecRead, false, m_showStatusBits);						//!< Logical Sectors Read
     
     json_push_back(workLoad, pageInfo);
     json_push_back(masterData, workLoad);
