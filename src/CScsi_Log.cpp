@@ -422,7 +422,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				delete (cCache);
 			}
 			break;
-			case SEAGATE_ONLY_LOG:
+			case SEAGATE_SPECIFIC_LOG:
 			{
 				CSCSI_Farm_Log *pCFarm;
 				pCFarm = new CSCSI_Farm_Log((uint8_t *)bufferData, m_LogSize, false);
