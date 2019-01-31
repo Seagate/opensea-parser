@@ -482,10 +482,13 @@
     <ClInclude Include="..\..\..\..\include\CScsi_Pending_Defects_Log.h" />
     <ClInclude Include="..\..\..\..\include\Opensea_Parser_Helper.h" />
     <ClInclude Include="..\..\..\..\include\Opensea_Parser_Version.h" />
+    <ClInclude Include="..\..\..\..\include\Seagate\Ata_Farm_Types.h" />
     <ClInclude Include="..\..\..\..\include\Seagate\CAta_Farm_Log.h" />
     <ClInclude Include="..\..\..\..\include\Seagate\CFARM_Log.h" />
     <ClInclude Include="..\..\..\..\include\Seagate\CScsi_Farm_Log.h" />
+    <ClInclude Include="..\..\..\..\include\Seagate\Farm_Helper.h" />
     <ClInclude Include="..\..\..\..\include\Seagate\Farm_Types.h" />
+    <ClInclude Include="..\..\..\..\include\Seagate\Scsi_Farm_Types.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\src\CAta_Device_Stat_Log.cpp" />
