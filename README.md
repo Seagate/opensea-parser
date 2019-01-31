@@ -3,8 +3,6 @@
 
 Welcome to opensea-parser, part of the openSeaChest_LogParser open source project!
 
-[![Build Status](https://travis-ci.org/Seagate/opensea-parser.svg?branch=develop)](https://travis-ci.org/Seagate/opensea-parser)
-
 BINARIES and SOURCE CODE files of the opensea-parser and openSeaChest_LogParser
  open source projects have
 been made available to you under the Mozilla Public License 2.0 (MPL).  The
