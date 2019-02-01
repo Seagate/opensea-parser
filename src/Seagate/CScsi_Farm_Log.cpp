@@ -72,7 +72,7 @@ CSCSI_Farm_Log::CSCSI_Farm_Log( uint8_t *bufferData, size_t bufferSize, bool sho
     , m_status(IN_PROGRESS)                                
 	, m_logParam()                                   
 	, m_alreadySet(false)          
-	, m_showStatusBits(false)
+	, m_showStatusBits(showStatus)
 {
     m_status = IN_PROGRESS;
 
@@ -962,12 +962,12 @@ eReturnValues CSCSI_Farm_Log::ParseFarmLog()
 			delete pHeadInfo;
 			delete pInfo;
             pFarmFrame->vFramesFound.clear();                                                 // clear the vector for the next copy
-			delete pFarmFrame;
-            
+			
         }
+		
         return SUCCESS;
     }
-
+	delete pFarmFrame;
     return FAILURE;
 }
 
