@@ -210,11 +210,20 @@ eReturnValues CFARMLog::ParseFarmLog(JSONNODE *masterJson)
         pCFarm = new CSCSI_Farm_Log((uint8_t *)bufferData, m_LogSize, m_shwoStatus);
         if (pCFarm->get_Log_Status() == SUCCESS)
         {
-            retStatus = pCFarm->ParseFarmLog();
-            if (retStatus == SUCCESS)
-            {
-                pCFarm->print_All_Pages(masterJson);
-            }
+			try
+			{
+				retStatus = pCFarm->parse_Farm_Log();
+				if (retStatus == IN_PROGRESS)
+				{
+					pCFarm->print_All_Pages(masterJson);
+					retStatus = SUCCESS;
+				}
+			}
+			catch (...)
+			{
+				delete (pCFarm);
+				return MEMORY_FAILURE;
+			}
         }
         delete( pCFarm);
     }
@@ -224,12 +233,21 @@ eReturnValues CFARMLog::ParseFarmLog(JSONNODE *masterJson)
         pCFarm = new CATA_Farm_Log((uint8_t *)bufferData, m_LogSize, m_shwoStatus);
         if (pCFarm->get_Log_Status() == IN_PROGRESS)
         {
-            retStatus = pCFarm->parse_Farm_Log();
-            if (retStatus == IN_PROGRESS)
-            {
-                pCFarm->print_All_Pages(masterJson);
-                retStatus = SUCCESS;
-            }
+			try
+			{
+				retStatus = pCFarm->parse_Farm_Log();
+				if (retStatus == IN_PROGRESS)
+				{
+					pCFarm->print_All_Pages(masterJson);
+					retStatus = SUCCESS;
+				}
+			}
+			catch (...)
+			{
+				delete (pCFarm);
+				return MEMORY_FAILURE;
+			}
+            
         }
         delete (pCFarm);
     }
