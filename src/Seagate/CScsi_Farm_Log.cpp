@@ -674,7 +674,7 @@ bool CSCSI_Farm_Log::get_Head_Info(sHeadInformation *phead, uint8_t *buffer)
 
 //-----------------------------------------------------------------------------
 //
-//! \fn ParseFarmLog()
+//! \fn parse_Farm_Log()
 //
 //! \brief
 //!   Description:  parse out the Farm Log into a vector called Farm Frame.
@@ -686,7 +686,7 @@ bool CSCSI_Farm_Log::get_Head_Info(sHeadInformation *phead, uint8_t *buffer)
 //!   \return SUCCESS or FAILURE
 //
 //---------------------------------------------------------------------------
-eReturnValues CSCSI_Farm_Log::ParseFarmLog()
+eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
 {
     uint64_t offset = 4;															// the first page starts at offset 4                                   
 	sScsiFarmFrame *pFarmFrame = new sScsiFarmFrame();										// create the pointer to the union
