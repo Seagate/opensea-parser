@@ -125,12 +125,20 @@ inline void set_json_64_bit_With_Status(JSONNODE *nowNode, const std::string & m
 			json_push_back(bigBit, json_new_a("64 bit Value String", (char*)printStr.c_str()));
 			json_push_back(bigBit, json_new_i((char*)lowStr.c_str(), lowValue));
 			json_push_back(bigBit, json_new_i((char*)upperStr.c_str(), upperValue));
-			json_push_back(nowNode, bigBit);
+
 		}
 		else
 		{
-			json_push_back(nowNode, json_new_i((char *)myStr.c_str(), static_cast<int32_t>(M_DoubleWord0(value))));
+			if(showStatusBits)
+				json_push_back(bigBit, json_new_i((char *)myStr.c_str(), static_cast<int32_t>(M_DoubleWord0(value))));
+			else
+			{
+				json_push_back(nowNode, json_new_i((char *)myStr.c_str(), static_cast<int32_t>(M_DoubleWord0(value))));
+				return;
+			}
+			
 		}
+		json_push_back(nowNode, bigBit);
 	}
 
 }
