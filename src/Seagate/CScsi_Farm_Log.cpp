@@ -288,7 +288,9 @@ void CSCSI_Farm_Log::set_Head_Header(std::string &headerName, eLogPageTypes inde
     case WRITE_POWERON_HOURS_FROM_MOST_RECENT_SMART:
         headerName = "Write Power On Hours from most recent SMART";
         break;
-    case RESERVED_FOR_FUTURE_EXPANSION_1:
+    case DOS_WRITE_COUNT_THRESHOLD_PER_HEAD:
+		headerName = "DOS Write Count Threshold per Head";
+		break;
     case RESERVED_FOR_FUTURE_EXPANSION_2:
     case RESERVED_FOR_FUTURE_EXPANSION_3:
     case RESERVED_FOR_FUTURE_EXPANSION_4:
@@ -716,7 +718,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                 {
                 case FARM_HEADER_PARAMETER:
                     pFarmPageHeader = (sScsiPageParameter *)&pBuf[offset];                                      // get the Farm Header information
-                    pFarmHeader = (sScsiFarmHeader *)&pBuf[offset + sizeof(sScsiPageParameter)];                    // get the Farm Header information
+                    pFarmHeader = (sScsiFarmHeader *)&pBuf[offset ];                    // get the Farm Header information
                     memcpy(&pFarmFrame->farmHeader, pFarmHeader, sizeof(sFarmHeader));
                     offset += (pFarmPageHeader->plen + sizeof(sScsiPageParameter));
                     break;
@@ -897,6 +899,12 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
                     memset(pHeadInfo, 0, sizeof(pHeadInfo));
                     break;
+				case DOS_WRITE_COUNT_THRESHOLD_PER_HEAD:  
+					get_Head_Info(pHeadInfo, &pBuf[offset]);
+					memcpy(&pFarmFrame->dosWriteCount, pHeadInfo, sizeof(*pHeadInfo));
+					offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+					memset(pHeadInfo, 0, sizeof(pHeadInfo));
+					break;
                 case CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_0:
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->currentH2STTrimmedbyHeadZone0, pHeadInfo, sizeof(*pHeadInfo));
@@ -965,7 +973,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
 			
         }
 		
-        return SUCCESS;
+        return IN_PROGRESS;
     }
 	delete pFarmFrame;
     return FAILURE;
@@ -988,32 +996,33 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
 //---------------------------------------------------------------------------
 eReturnValues CSCSI_Farm_Log::print_Header(JSONNODE *masterData)
 {
+	uint32_t page = 0;
     std::string myStr = "";
     JSONNODE *FARMheader = json_new(JSON_NODE);
-    sFarmHeader *header = (sFarmHeader *)&pBuf[4];                                                                // pointer to the header to get the signature
+    sScsiFarmHeader *header = (sScsiFarmHeader *)&pBuf[4];                                                                // pointer to the header to get the signature
 #if defined( _DEBUG)
-    printf("\tLog Signature   =  0x%" PRIX64" \n", header->signature & 0x00FFFFFFFFFFFFFFLL);                                  //!< Log Signature = 0x00004641524D4552
-    printf("\tMajor Revision =   %" PRIu64"  \n", header->majorRev & 0x00FFFFFFFFFFFFFFLL);                                    //!< Log Major rev
-    printf("\tMinor Revision =   %" PRIu64"  \n", header->minorRev & 0x00FFFFFFFFFFFFFFLL);                                    //!< minor rev 
-    printf("\tPages Supported =   %" PRIu64"  \n", header->pagesSupported & 0x00FFFFFFFFFFFFFFLL);                             //!< number of pages supported
-    printf("\tLog Size        =   %" PRIu64"  \n", header->logSize & 0x00FFFFFFFFFFFFFFLL);                                    //!< log size in bytes
-    printf("\tPage Size       =   %" PRIu64"  \n", header->pageSize & 0x00FFFFFFFFFFFFFFLL);                                   //!< page size in bytes
-    printf("\tHeads Supported =   %" PRIu64"  \n", header->headsSupported & 0x00FFFFFFFFFFFFFFLL);                             //!< Maximum Drive Heads Supported
-    printf("\tNumber of Copies=   %" PRIu64"  \n", header->copies & 0x00FFFFFFFFFFFFFLL);                                      //!< Number of Historical Copies
+    printf("\tLog Signature   =  0x%" PRIX64" \n", vFarmFrame[page].farmHeader.farmHeader.signature & 0x00FFFFFFFFFFFFFFLL);                                  //!< Log Signature = 0x00004641524D4552
+    printf("\tMajor Revision =   %" PRIu64"  \n", vFarmFrame[page].farmHeader.farmHeader.majorRev & 0x00FFFFFFFFFFFFFFLL);                                    //!< Log Major rev
+    printf("\tMinor Revision =   %" PRIu64"  \n", vFarmFrame[page].farmHeader.farmHeader.minorRev & 0x00FFFFFFFFFFFFFFLL);                                    //!< minor rev 
+    printf("\tPages Supported =   %" PRIu64"  \n", vFarmFrame[page].farmHeader.farmHeader.pagesSupported & 0x00FFFFFFFFFFFFFFLL);                             //!< number of pages supported
+    printf("\tLog Size        =   %" PRIu64"  \n", vFarmFrame[page].farmHeader.farmHeader.logSize & 0x00FFFFFFFFFFFFFFLL);                                    //!< log size in bytes
+    printf("\tPage Size       =   %" PRIu64"  \n", vFarmFrame[page].farmHeader.farmHeader.pageSize & 0x00FFFFFFFFFFFFFFLL);                                   //!< page size in bytes
+    printf("\tHeads Supported =   %" PRIu64"  \n", vFarmFrame[page].farmHeader.farmHeader.headsSupported & 0x00FFFFFFFFFFFFFFLL);                             //!< Maximum Drive Heads Supported
+    printf("\tNumber of Copies=   %" PRIu64"  \n", vFarmFrame[page].farmHeader.farmHeader.copies & 0x00FFFFFFFFFFFFFLL);                                      //!< Number of Historical Copies
 #endif
     json_set_name(FARMheader, "FARM Log");
     JSONNODE *pageInfo = json_new(JSON_NODE);
     json_set_name(pageInfo, "Header");
 
-    snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIX64"", check_Status_Strip_Status(header->signature));
+    snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIX64"", check_Status_Strip_Status(vFarmFrame[page].farmHeader.farmHeader.signature));
 	json_push_back(pageInfo, json_new_a("Log Signature", (char*)myStr.c_str() ));
-	json_push_back(pageInfo, json_new_i("Major Revision", static_cast<uint32_t>(check_Status_Strip_Status(header->majorRev))));
-	json_push_back(pageInfo, json_new_i("Minor Revision", static_cast<uint32_t>(check_Status_Strip_Status(header->minorRev))));
-	json_push_back(pageInfo, json_new_i("Pages Supported", static_cast<uint32_t>(check_Status_Strip_Status(header->pagesSupported))));
-	json_push_back(pageInfo, json_new_i("Log Size", static_cast<uint32_t>(check_Status_Strip_Status(header->logSize))));
-	json_push_back(pageInfo, json_new_i("Page Size", static_cast<uint32_t>(check_Status_Strip_Status(header->pageSize))));
-	json_push_back(pageInfo, json_new_i("Heads Supported", static_cast<uint32_t>(check_Status_Strip_Status(header->headsSupported))));
-	json_push_back(pageInfo, json_new_i("Number of Copies", static_cast<uint32_t>(check_Status_Strip_Status(header->copies ))));
+	json_push_back(pageInfo, json_new_i("Major Revision", static_cast<uint32_t>(check_Status_Strip_Status(vFarmFrame[page].farmHeader.farmHeader.majorRev))));
+	json_push_back(pageInfo, json_new_i("Minor Revision", static_cast<uint32_t>(check_Status_Strip_Status(vFarmFrame[page].farmHeader.farmHeader.minorRev))));
+	json_push_back(pageInfo, json_new_i("Pages Supported", static_cast<uint32_t>(check_Status_Strip_Status(vFarmFrame[page].farmHeader.farmHeader.pagesSupported))));
+	json_push_back(pageInfo, json_new_i("Log Size", static_cast<uint32_t>(check_Status_Strip_Status(vFarmFrame[page].farmHeader.farmHeader.logSize))));
+	json_push_back(pageInfo, json_new_i("Page Size", static_cast<uint32_t>(check_Status_Strip_Status(vFarmFrame[page].farmHeader.farmHeader.pageSize))));
+	json_push_back(pageInfo, json_new_i("Heads Supported", static_cast<uint32_t>(check_Status_Strip_Status(vFarmFrame[page].farmHeader.farmHeader.headsSupported))));
+	json_push_back(pageInfo, json_new_i("Number of Copies", static_cast<uint32_t>(check_Status_Strip_Status(vFarmFrame[page].farmHeader.farmHeader.copies ))));
 
     json_push_back(FARMheader, pageInfo);
     json_push_back(masterData, FARMheader);
@@ -1658,6 +1667,16 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
             set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].writePowerOnHours.headValue[loopCount], false, m_showStatusBits);
         }
         break;
+	case DOS_WRITE_COUNT_THRESHOLD_PER_HEAD:
+		for (loopCount = 0; loopCount < m_heads; ++loopCount)
+		{
+#if defined( _DEBUG)
+			printf("\tDOS Write Count Threshold per head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].dosWriteCount.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);
+#endif
+			snprintf((char*)myHeader.c_str(), BASIC, "DOS Write Count Threshold Head number %d", loopCount); // Head count
+			set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].dosWriteCount.headValue[loopCount], false, m_showStatusBits);
+		}
+		break;
     case CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_0:
         for (loopCount = 0; loopCount < m_heads; ++loopCount)
         {
