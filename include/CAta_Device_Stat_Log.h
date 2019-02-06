@@ -27,9 +27,9 @@ namespace opensea_parser {
         std::string                         m_name;                                                     //!< name of the class
         uint8_t                             *pData;                                                     //!< pointer to the data
 		size_t								m_logSize;													//!< size fo the log
-        eReturnValues                m_status;                                                   //!< holds the status of the class 
+        eReturnValues						m_status;                                                   //!< holds the status of the class 
 		size_t								m_dataSize;													//!< data size read in form the clog
-        JSONNODE                       *JsonData;                                                  //!< json master data
+        JSONNODE							*JsonData;                                                  //!< json master data
     public:
         CSAtaDevicStatisticsTempLogs();
         CSAtaDevicStatisticsTempLogs(uint8_t *buffer,JSONNODE *masterData);
