@@ -74,7 +74,6 @@ CScsiLog::CScsiLog(const std::string fileName, JSONNODE *masterData)
 	, m_LogSize(0) 
 	, m_name("SCSI Log")                   
 	, m_ScsiStatus(IN_PROGRESS)            
-	, m_Page()
 
 {
 	CLog *cCLog;
@@ -121,9 +120,6 @@ CScsiLog::CScsiLog(const std::string fileName, JSONNODE *masterData)
 //---------------------------------------------------------------------------
 CScsiLog::~CScsiLog()
 {
-	if (bufferData != NULL) {
-		safe_Free(bufferData);
-	}
 }
 //-----------------------------------------------------------------------------
 //
