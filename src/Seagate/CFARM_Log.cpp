@@ -201,7 +201,7 @@ bool CFARMLog::is_Device_Scsi()
 //!   \return SUCCESS or FAILURE
 //
 //---------------------------------------------------------------------------
-eReturnValues CFARMLog::ParseFarmLog(JSONNODE *masterJson)
+eReturnValues CFARMLog::parse_Device_Farm_Log(JSONNODE *masterJson)
 {
     eReturnValues retStatus = MEMORY_FAILURE;
     if (m_isScsi)

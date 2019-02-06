@@ -195,6 +195,7 @@ namespace opensea_parser {
         CAta_Identify_log(uint8_t *Buffer);
         CAta_Identify_log(const std::string & fileName);
         ~CAta_Identify_log();
+		eReturnValues get_Identify_Information_Status() { return m_status; };
         eReturnValues print_Identify_Information(JSONNODE *masterData);
     };
 

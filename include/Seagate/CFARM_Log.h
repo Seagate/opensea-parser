@@ -39,7 +39,8 @@ namespace opensea_parser {
         CFARMLog(const std::string & fileName,bool showStatus);
 		CFARMLog(const std::string & fileName);
         virtual ~CFARMLog();
-        eReturnValues ParseFarmLog( JSONNODE *masterData);
+		eReturnValues get_FARM_Status() { return m_status; };
+        eReturnValues parse_Device_Farm_Log( JSONNODE *masterData);
 
     };
 #endif

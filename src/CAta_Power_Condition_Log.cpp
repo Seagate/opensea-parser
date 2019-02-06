@@ -90,7 +90,7 @@ CAtaPowerConditionsLog::CAtaPowerConditionsLog(std::string filename)
 				byte_Swap_16(&idCheck->pageLength);  // now that we know it's not scsi we need to flip the bytes back
 				m_conditionFlags = &conditionFlags;
 				get_Power_Condition_Log();
-				m_status = SUCCESS;
+				m_status = IN_PROGRESS;
 			}
 			else
 			{

@@ -112,7 +112,7 @@ CSAtaDevicStatisticsTempLogs::CSAtaDevicStatisticsTempLogs(const std::string &fi
 			if (IsScsiLogPage(idCheck->pageLength, idCheck->pageCode) == false)
 			{
 				byte_Swap_16(&idCheck->pageLength);  // now that we know it's not scsi we need to flip the bytes back
-				m_status = SUCCESS;
+				m_status = IN_PROGRESS;
 			}
 			else
 			{
@@ -330,7 +330,6 @@ CAtaDeviceStatisticsLogs::CAtaDeviceStatisticsLogs(const std::string &fileName, 
 			{
 				byte_Swap_16(&idCheck->pageLength);  // now that we know it's not scsi we need to flip the bytes back
 				m_status = ParseSCTDeviceStatLog(masterData);
-				m_status = SUCCESS;
 			}
 			else
 			{

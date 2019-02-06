@@ -146,7 +146,7 @@ CAta_Identify_log::CAta_Identify_log( const std::string & fileName)
 			if (IsScsiLogPage(idCheck->pageLength, idCheck->pageCode) == false)
 			{
 				parse_Device_Info();
-				m_status = SUCCESS;
+				m_status = IN_PROGRESS;
 			}
 			else
 			{
@@ -4759,7 +4759,7 @@ CAta_Identify_Log_30::CAta_Identify_Log_30( const std::string & fileName)
 			byte_Swap_16(&idCheck->pageLength);
 			if (IsScsiLogPage(idCheck->pageLength, idCheck->pageCode) == false)
 			{
-				m_status = SUCCESS;
+				m_status = IN_PROGRESS;
 			}
 			else
 			{
