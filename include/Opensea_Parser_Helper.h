@@ -22,6 +22,8 @@ extern time_t g_currentTime;
 extern char g_currentTimeString[64];
 extern char *g_currentTimeStringPtr;
 
+
+
 namespace opensea_parser {
 
 #define RELISTAT                24
@@ -154,17 +156,54 @@ namespace opensea_parser {
 		}
 		return false;
 	}
-}
-inline int64_t check_for_signed_int(int64_t value, uint32_t length) 
-{
-	int8_t neg = -1;			// set to 1 if bit 56 is set then set it to -1
-	value = value << length;
-	if ((value & BIT63) == BIT63)   // check to see if the bit is set for nef number
+	//-----------------------------------------------------------------------------
+	//
+	//! \fn check_For_Active_Status()
+	//
+	//! \brief
+	//!   Description:  check for the active status bit in the 64 bit value
+	//
+	//  Entry:
+	//! \param value  =  64 bit value to check to see if the bit is set or not
+	//
+	//  Exit:
+	//!   \return bool - false or true
+	//
+	//---------------------------------------------------------------------------
+	inline bool check_For_Active_Status(uint64_t *value)
 	{
-		value = M_2sCOMPLEMENT(value);
-		value = value * neg;
+		if ((*value & BIT63) == BIT63 && (*value & BIT62) == BIT62)
+		{
+			return true;
+		}
+		return false;
 	}
-	value = value >> length;      // move the back to the original number
-	return(value);
+	//-----------------------------------------------------------------------------
+	//
+	//! \fn check_Status_Strip_Status()
+	//
+	//! \brief
+	//!   Description:  check for the active status bit in the 64 bit value
+	//
+	//  Entry:
+	//! \param value  =  64 bit value to check to see if the bit is set or not
+	//
+	//  Exit:
+	//!   \return uint64_t return the stipped value or a 0
+	//
+	//---------------------------------------------------------------------------
+	inline uint64_t check_Status_Strip_Status(uint64_t value)
+	{
+		if (check_For_Active_Status(&value))
+		{
+			value = value & 0x00FFFFFFFFFFFFFFLL;
+		}
+		else
+		{
+			value = 0;
+		}
+		return value;
+	}
 }
+
 

@@ -21,20 +21,20 @@
 namespace opensea_parser {
 #ifndef SCSIMEDIUMLOG
 #define SCSIMEDIUMLOG
+#pragma pack(push, 1)
+	typedef struct _sNonMediumErrorCountParameters
+	{
+		uint16_t		paramCode;							//<! The PARAMETER CODE field is defined
+		uint8_t			paramControlByte;					//<! binary format list log parameter
+		uint8_t			paramLength;						//<! The PARAMETER LENGTH field 
+		_sNonMediumErrorCountParameters() : paramCode(0), paramControlByte(0), paramLength(0) {};
+	} sNonMediumErrorCount;
+#pragma pack(pop)
 
 	class CScsiNonMediumErrorCountLog
 	{
 	private:
-#pragma pack(push, 1)
-		typedef struct _sNonMediumErrorCountParameters
-		{
-			uint16_t		paramCode;							//<! The PARAMETER CODE field is defined
-			uint8_t			paramControlByte;					//<! binary format list log parameter
-			uint8_t			paramLength;						//<! The PARAMETER LENGTH field 
-			_sNonMediumErrorCountParameters(): paramCode(0), paramControlByte(0), paramLength(0) {};
-		} sNonMediumErrorCount;
 
-#pragma pack(pop)
 	protected:
 		uint8_t						*pData;						//<! pointer to the data
 		std::string					m_NMECName;					//<! class name	

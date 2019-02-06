@@ -21,30 +21,29 @@
 namespace opensea_parser {
 #ifndef SCSIPOWERLOG
 #define SCSIPOWERLOG
+#pragma pack(push, 1)
+	typedef enum _eTransitionsTypes
+	{
+		ACTIVE = 0x0001,
+		IDLE_A = 0x0002,
+		IDLE_B = 0x0003,
+		IDLE_C = 0x0004,
+		STANDZ = 0x0008,
+		STANDY = 0x0009
+	}eTransitionsTypes;
+	typedef struct _sPowerConditionTransisionsParameters
+	{
+		uint16_t		paramCode;							//<! The PARAMETER CODE field is defined
+		uint8_t			paramControlByte;					//<! binary format list log parameter
+		uint8_t			paramLength;						//<! The PARAMETER LENGTH field 
+		uint32_t		paramValue;							//<! Parameter Value
+	} sPowerParams;
 
+#pragma pack(pop)
 
 	class CScsiPowerConditiontLog
 	{
 	private:
-#pragma pack(push, 1)
-		typedef enum _eTransitionsTypes
-		{
-			ACTIVE = 0x0001,
-			IDLE_A = 0x0002,
-			IDLE_B = 0x0003,
-			IDLE_C = 0x0004,
-			STANDZ = 0x0008,
-			STANDY = 0x0009
-		}eTransitionsTypes;
-		typedef struct _sPowerConditionTransisionsParameters
-		{
-			uint16_t		paramCode;							//<! The PARAMETER CODE field is defined
-			uint8_t			paramControlByte;					//<! binary format list log parameter
-			uint8_t			paramLength;						//<! The PARAMETER LENGTH field 
-			uint32_t		paramValue;							//<! Parameter Value
-		} sPowerParams;
-
-#pragma pack(pop)
 	protected:
 		uint8_t						*pData;						//<! pointer to the data
 		std::string					m_PowerName;				//<! class name	

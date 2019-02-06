@@ -21,20 +21,19 @@ namespace opensea_parser {
 #ifndef SCSIAPPLICATIONLOG
 #define SCSIAPPLICATIONLOG
 
+#pragma pack(push, 1)
+	typedef struct _sApplicationClientParameters
+	{
+		uint16_t		paramCode;							//<! The PARAMETER CODE field is defined
+		uint8_t			paramControlByte;					//<! binary format list log parameter
+		uint8_t			paramLength;						//<! The PARAMETER LENGTH field 
+		uint8_t			data[252];
+	} sApplicationParams;
+#pragma pack(pop)
+
 	class CScsiApplicationLog
 	{
 	private:
-#pragma pack(push, 1)
-		typedef struct _sApplicationClientParameters
-		{
-			uint16_t		paramCode;							//<! The PARAMETER CODE field is defined
-			uint8_t			paramControlByte;					//<! binary format list log parameter
-			uint8_t			paramLength;						//<! The PARAMETER LENGTH field 
-			uint8_t			data[252];
-			//_sApplicationClientParameters() : paramCode(0), paramControlByte(0), paramLength(0), data{ {0} } {};
-		} sApplicationParams;
-
-#pragma pack(pop)
 	protected:
 		uint8_t						*pData;						//<! pointer to the data
 		std::string					m_ApplicationName;			//<! class name	

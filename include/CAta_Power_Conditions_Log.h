@@ -21,42 +21,39 @@
 namespace opensea_parser {
 #ifndef ATAPOWERCOND
 #define ATAPOWERCOND
+#pragma pack(push,1)
+
+	typedef struct _sPowerConditionFlags
+	{
+		bool powerSupportBit;
+		bool powerSaveableBit;
+		bool powerChangeableBit;
+		bool defaultTimerBit;
+		bool savedTimmerBit;
+		bool currentTimmerBit;
+		bool holdPowerConditionBit;
+		bool reserved;
+	}sPowerConditionFlags;
+
+	typedef struct _sPowerLogDescriptor
+	{
+		uint8_t					reserved8;									//!< Power Condition log descriptor reserved byte
+		uint8_t					bitFlags;									//!< Power Condition Flags for each bit.
+		uint16_t				reserved16;									//!< Power Condition log descriptor reserved byte
+		uint32_t				defaultTimerSetting;						//!< The DEFAULT TIMER SETTING field is set at the time of manufacture.
+		uint32_t				savedTimerSetting;							//!< The SAVED TIMER SETTING field is valid if the POWER CONDITION SUPPORTED bit set to 1.
+		uint32_t				currentTimerSetting;						//!< The CURRENT TIMER SETTING field contains the minimum time that the device shall wait after command completion.
+		uint32_t				normalRecoveryTime;							//!< The NOMINAL RECOVERY TIME TO PM0:ACTIVE field contains the nominal time required to transition from this power.
+		uint32_t				minimumTimerSetting;						//!< The MINIMUM TIMER SETTING field contains the minimum timer value allowed by the Set Power Condition Timer.
+		uint32_t				maximumTimerSetting;						//!< The MAXIMUM TIMER SETTING field contains the maximum timer value allowed by the Set Power Condition Timer
+		uint32_t				reserved32;									//!< Power Condition log descriptor reserved byte
+	}sPowerLogDescriptor;
+
+#pragma pack(pop)
+
 	class CAtaPowerConditionsLog 
 	{
 	protected:
-#pragma pack(push,1)
-
-		typedef struct _sPowerConditionFlags
-		{
-			bool powerSupportBit;
-			bool powerSaveableBit;
-			bool powerChangeableBit;
-			bool defaultTimerBit;
-			bool savedTimmerBit;
-			bool currentTimmerBit;
-			bool holdPowerConditionBit;
-			bool reserved;
-		}sPowerConditionFlags;
-
-#pragma pack(pop)
-#pragma pack(push,1)
-
-		typedef struct _sPowerLogDescriptor
-		{
-			uint8_t					reserved8;									//!< Power Condition log descriptor reserved byte
-			uint8_t					bitFlags;									//!< Power Condition Flags for each bit.
-			uint16_t				reserved16;									//!< Power Condition log descriptor reserved byte
-			uint32_t				defaultTimerSetting;						//!< The DEFAULT TIMER SETTING field is set at the time of manufacture.
-			uint32_t				savedTimerSetting;							//!< The SAVED TIMER SETTING field is valid if the POWER CONDITION SUPPORTED bit set to 1.
-			uint32_t				currentTimerSetting;						//!< The CURRENT TIMER SETTING field contains the minimum time that the device shall wait after command completion.
-			uint32_t				normalRecoveryTime;							//!< The NOMINAL RECOVERY TIME TO PM0:ACTIVE field contains the nominal time required to transition from this power.
-			uint32_t				minimumTimerSetting;						//!< The MINIMUM TIMER SETTING field contains the minimum timer value allowed by the Set Power Condition Timer.
-			uint32_t				maximumTimerSetting;						//!< The MAXIMUM TIMER SETTING field contains the maximum timer value allowed by the Set Power Condition Timer
-			uint32_t				reserved32;									//!< Power Condition log descriptor reserved byte
-		}sPowerLogDescriptor;
-
-#pragma pack(pop)
-
 		uint8_t                *m_powerConditionLog;
 		uint8_t                *m_powerFlags;
 		tDataPtr			    Buffer;

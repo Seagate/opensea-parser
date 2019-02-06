@@ -21,51 +21,51 @@
 namespace opensea_parser {
 #ifndef SCSISTARTSTOPLOG
 #define SCSISTARTSTOPLOG
+#pragma pack(push, 1)
+	typedef enum _eSSMLogParams
+	{
+		manufactureDate = 0x0001,
+		accountingDate = 0x0002,
+		specLifetime = 0x0003,
+		accumulated = 0x0004,
+		loadUnload = 0x0005,
+		accumulatedLU = 0x0006,
+	}eSSMLogParams;
+	typedef struct _sStartStopStruct
+	{
+		uint16_t			manufatureParamCode;			//<! Data of Manufacture parameter code for the log 
+		uint8_t				paramControlByte1;				//<! param code for the log page format
+		uint8_t				paramLength1;					//<! this is different from size, see SCSI SPC Spec. 
+		uint32_t			year;							//<! Year of manufacture
+		uint16_t			week;							//<! Week of manufature
+		uint16_t			accountParamCode;				//<! Accounting Data parameter code for the log
+		uint8_t				paramControlByte2;				//<! param code for the log page format
+		uint8_t				paramLength2;					//<! this is different from size, see SCSI SPC Spec.
+		uint32_t			accYear;						//<! Accounting Year of manufacture
+		uint16_t			accWeek;						//<! Accounting Week of manufature
+		uint16_t			specCycleParamCode;				//<! Specified Cycle count of parameter code for the log 
+		uint8_t				paramControlByte3;				//<! param code for the log page format
+		uint8_t				paramLength3;					//<! this is different from size, see SCSI SPC Spec.
+		uint32_t			specLifeTime;					//<! Specified cycle count over device lifetime
+		uint16_t			AccumulatedParamCode;			//<! Accumulated start-stop cycles parameter code for the log 
+		uint8_t				paramControlByte4;				//<! param code for the log page format
+		uint8_t				paramLength4;					//<! this is different from size, see SCSI SPC Spec. 
+		uint32_t			accumulatedCycles;				//<! Accumulated start-stop cycle
+		uint16_t			loadUnloadParamCode;			//<! Load Unload Count parameter code for the log 
+		uint8_t				paramControlByte5;				//<! param code for the log page format
+		uint8_t				paramLength5;					//<! this is different from size, see SCSI SPC Spec. 
+		uint32_t			loadUnloadCount;				//<! Load Unload Count
+		uint16_t			accLoadUnloadParamCode;			//<! Accumulated Load Unload Count parameter code for the log 
+		uint8_t				paramControlByte6;				//<! param code for the log page format
+		uint8_t				paramLength6;					//<! this is different from size, see SCSI SPC Spec. 
+		uint32_t			accloadUnloadCount;				//<! AccumulatedLoad Unload Count
+
+	}sStartStopStruct;
+#pragma pack(pop)
 
 	class CScsiStartStop 
 	{
 	private:
-#pragma pack(push, 1)
-		typedef enum _eSSMLogParams
-		{
-			manufactureDate = 0x0001,
-			accountingDate = 0x0002,
-			specLifetime = 0x0003,
-			accumulated = 0x0004,
-			loadUnload = 0x0005,
-			accumulatedLU = 0x0006,
-		}eSSMLogParams;
-		typedef struct _sStartStopStruct
-		{
-			uint16_t			manufatureParamCode;			//<! Data of Manufacture parameter code for the log 
-			uint8_t				paramControlByte1;				//<! param code for the log page format
-			uint8_t				paramLength1;					//<! this is different from size, see SCSI SPC Spec. 
-			uint32_t			year;							//<! Year of manufacture
-			uint16_t			week;							//<! Week of manufature
-			uint16_t			accountParamCode;				//<! Accounting Data parameter code for the log
-			uint8_t				paramControlByte2;				//<! param code for the log page format
-			uint8_t				paramLength2;					//<! this is different from size, see SCSI SPC Spec.
-			uint32_t			accYear;						//<! Accounting Year of manufacture
-			uint16_t			accWeek;						//<! Accounting Week of manufature
-			uint16_t			specCycleParamCode;				//<! Specified Cycle count of parameter code for the log 
-			uint8_t				paramControlByte3;				//<! param code for the log page format
-			uint8_t				paramLength3;					//<! this is different from size, see SCSI SPC Spec.
-			uint32_t			specLifeTime;					//<! Specified cycle count over device lifetime
-			uint16_t			AccumulatedParamCode;			//<! Accumulated start-stop cycles parameter code for the log 
-			uint8_t				paramControlByte4;				//<! param code for the log page format
-			uint8_t				paramLength4;					//<! this is different from size, see SCSI SPC Spec. 
-			uint32_t			accumulatedCycles;				//<! Accumulated start-stop cycle
-			uint16_t			loadUnloadParamCode;			//<! Load Unload Count parameter code for the log 
-			uint8_t				paramControlByte5;				//<! param code for the log page format
-			uint8_t				paramLength5;					//<! this is different from size, see SCSI SPC Spec. 
-			uint32_t			loadUnloadCount;				//<! Load Unload Count
-			uint16_t			accLoadUnloadParamCode;			//<! Accumulated Load Unload Count parameter code for the log 
-			uint8_t				paramControlByte6;				//<! param code for the log page format
-			uint8_t				paramLength6;					//<! this is different from size, see SCSI SPC Spec. 
-			uint32_t			accloadUnloadCount;				//<! AccumulatedLoad Unload Count
-
-		}sStartStopStruct;
-#pragma pack(pop)
 	protected:
 		std::string					m_SSName;					//<! class name	
 		eReturnValues				m_StartStatus;			    //<! status of the class

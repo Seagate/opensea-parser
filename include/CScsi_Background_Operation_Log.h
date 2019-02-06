@@ -20,23 +20,22 @@
 namespace opensea_parser {
 #ifndef SCSIOPERATIONLOG
 #define SCSIOPERATIONLOG
+#pragma pack(push, 1)
+	typedef struct _sBackgroundOperationParameters
+	{
+		uint16_t		paramCode;							//<! The PARAMETER CODE field is defined
+		uint8_t			paramControlByte;					//<! binary format list log parameter
+		uint8_t			paramLength;						//<! The PARAMETER LENGTH field 
+		uint8_t			bo_Status;							//<! Background Operation Status
+		uint8_t			reserved;							//<! reserved
+		uint16_t		reserved1;							//<! reserved
+		_sBackgroundOperationParameters() : paramCode(0), paramControlByte(0), paramLength(0), bo_Status(0), reserved(0), reserved1(0) {};
+	} sOperationParams;
 
+#pragma pack(pop)
 	class CScsiOperationLog
 	{
 	private:
-#pragma pack(push, 1)
-		typedef struct _sBackgroundOperationParameters
-		{
-			uint16_t		paramCode;							//<! The PARAMETER CODE field is defined
-			uint8_t			paramControlByte;					//<! binary format list log parameter
-			uint8_t			paramLength;						//<! The PARAMETER LENGTH field 
-			uint8_t			bo_Status;							//<! Background Operation Status
-			uint8_t			reserved;							//<! reserved
-			uint16_t		reserved1;							//<! reserved
-			_sBackgroundOperationParameters() : paramCode(0), paramControlByte(0), paramLength(0), bo_Status(0), reserved(0), reserved1(0) {};
-		} sOperationParams;
-
-#pragma pack(pop)
 	protected:
 		uint8_t						*pData;						//<! pointer to the data
 		std::string					m_OperationName;			//<! class name	

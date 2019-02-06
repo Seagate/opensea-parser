@@ -21,29 +21,29 @@ namespace opensea_parser {
 #ifndef SCSIINFOLOG
 #define SCSIINFOLOG
 
+#pragma pack(push, 1)
+	typedef struct _sInfoExeptionsParameters
+	{
+		uint16_t		paramCode;							//<! The PARAMETER CODE field is defined
+		uint8_t			paramControlByte;					//<! binary format list log parameter
+		uint8_t			paramLength;						//<! The PARAMETER LENGTH field 
+		uint8_t			senseCode;							//<! INFORMATIONAL EXCEPTION ADDITIONAL SENSE CODE
+		uint8_t			senseCodeQualifier;					//<! INFORMATIONAL EXCEPTION ADDITIONAL SENSE CODE QUALIFIER
+		uint8_t			temp;								//<! MOST RECENT TEMPERATURE READING
+		uint8_t			tempLimit;							//<! VENDOR HDA TEMPERATURE TRIP POINT
+		uint8_t			maxTemp;							//<! MAXIMUM TEMPERATURE
+		uint8_t			vendor1;							//<! Vendor specific
+		uint8_t			vendor2;							//<! Vendor specific
+		uint8_t			vendor3;							//<! Vendor specific
+
+		_sInfoExeptionsParameters() : paramCode(0), paramControlByte(0), paramLength(0), senseCode(0), senseCodeQualifier(0), \
+			temp(0), tempLimit(0), maxTemp(0), vendor1(0), vendor2(0), vendor3(0) {};
+	} sExeptionsParams;
+#pragma pack(pop)
+
 	class CScsiInformationalExeptionsLog
 	{
 	private:
-#pragma pack(push, 1)
-		typedef struct _sInfoExeptionsParameters
-		{
-			uint16_t		paramCode;							//<! The PARAMETER CODE field is defined
-			uint8_t			paramControlByte;					//<! binary format list log parameter
-			uint8_t			paramLength;						//<! The PARAMETER LENGTH field 
-			uint8_t			senseCode;							//<! INFORMATIONAL EXCEPTION ADDITIONAL SENSE CODE
-			uint8_t			senseCodeQualifier;					//<! INFORMATIONAL EXCEPTION ADDITIONAL SENSE CODE QUALIFIER
-			uint8_t			temp;								//<! MOST RECENT TEMPERATURE READING
-			uint8_t			tempLimit;							//<! VENDOR HDA TEMPERATURE TRIP POINT
-			uint8_t			maxTemp;							//<! MAXIMUM TEMPERATURE
-			uint8_t			vendor1;							//<! Vendor specific
-			uint8_t			vendor2;							//<! Vendor specific
-			uint8_t			vendor3;							//<! Vendor specific
-
-			_sInfoExeptionsParameters (): paramCode(0), paramControlByte(0), paramLength(0), senseCode(0), senseCodeQualifier(0), \
-				temp(0), tempLimit(0), maxTemp(0), vendor1(0), vendor2(0), vendor3(0) {};
-		} sExeptionsParams;
-
-#pragma pack(pop)
 	protected:
 		uint8_t						*pData;						//<! pointer to the data
 		std::string					m_infoName;					//<! class name	
