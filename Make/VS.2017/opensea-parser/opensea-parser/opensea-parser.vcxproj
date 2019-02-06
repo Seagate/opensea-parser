@@ -480,6 +480,7 @@
     <ClInclude Include="..\..\..\..\include\CScsi_Supported_LogPages_Log.h" />
     <ClInclude Include="..\..\..\..\include\CScsi_Temperature_Log.h" />
     <ClInclude Include="..\..\..\..\include\CScsi_Pending_Defects_Log.h" />
+    <ClInclude Include="..\..\..\..\include\Identify_Log_Types.h" />
     <ClInclude Include="..\..\..\..\include\Opensea_Parser_Helper.h" />
     <ClInclude Include="..\..\..\..\include\Opensea_Parser_Version.h" />
     <ClInclude Include="..\..\..\..\include\Seagate\Ata_Farm_Types.h" />
