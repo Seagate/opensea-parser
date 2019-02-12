@@ -295,7 +295,7 @@ typedef struct _sSCT_Capabilities
 	bool        sct_Supported; 			                                        //<!   Sct Supported Bit   
 	_sSCT_Capabilities() : sct_Write_Same_Function_103_Supported(false), sct_Write_Same_Function_102_Supported(false), sct_Write_Same_Function_101_Supported(false), \
 		sct_Write_Same_Function_3_Supported(false), sct_Write_Same_Function_2_Supported(false), sct_Write_Same_Function_1_Supported(false), sct_Data_Tables_Supported(false), \
-		sct_Feature_Control_Supported(false), sct_Write_Same_Supported(false), sct_Supported(false) {};
+		sct_Feature_Control_Supported(false), sct_Error_Recovery_Control_Supported(false), sct_Write_Same_Supported(false), sct_Supported(false) {};
 }sSCT_Capabilities;
 
 typedef struct _sLogPage04
