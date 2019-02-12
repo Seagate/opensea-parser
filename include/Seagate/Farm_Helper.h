@@ -15,9 +15,11 @@
 #pragma once
 
 #include <inttypes.h>
+#include "libjson.h"
 #include "Opensea_Parser_Helper.h"
 namespace opensea_parser {
-
+#ifndef FARMHELPER
+#define FARMHELPER
 	//-----------------------------------------------------------------------------
 	//
 	//! \fn check_for_signed_int()
@@ -70,8 +72,20 @@ namespace opensea_parser {
 		printStr.resize(BASIC);
 		std::string lowStr = "64 bit Value Lower value";
 		std::string upperStr = "64 bit Value Upper value";
-
-
+		
+		if (!showStatusBits && (value < INT32_MAX)) 
+		{
+			if (hexPrint) 
+			{
+				snprintf((char*)printStr.c_str(), BASIC, "0x%08" PRIx32"", static_cast<int32_t>(M_DoubleWord0(value)));
+				json_push_back(nowNode, json_new_a((char *)myStr.c_str(), (char*)printStr.c_str()));
+			}
+			else
+			{
+				json_push_back(nowNode, json_new_i((char *)myStr.c_str(), static_cast<int32_t>(M_DoubleWord0(value))));
+			}
+		}
+		
 		JSONNODE *bigBit = json_new(JSON_NODE);
 		json_set_name(bigBit, (char *)myStr.c_str());
 		if (showStatusBits)
@@ -127,18 +141,10 @@ namespace opensea_parser {
 			}
 			else
 			{
-				if (showStatusBits)
-					json_push_back(bigBit, json_new_i((char *)myStr.c_str(), static_cast<int32_t>(M_DoubleWord0(value))));
-				else
-				{
-					json_push_back(nowNode, json_new_i((char *)myStr.c_str(), static_cast<int32_t>(M_DoubleWord0(value))));
-					return;
-				}
-
+				json_push_back(bigBit, json_new_i((char *)myStr.c_str(), static_cast<int32_t>(M_DoubleWord0(value))));
 			}
-			json_push_back(nowNode, bigBit);
 		}
-
+		json_push_back(nowNode, bigBit);
 	}
 	//-----------------------------------------------------------------------------
 	//
@@ -244,4 +250,5 @@ namespace opensea_parser {
 			json_push_back(nowNode, json_new_a((char *)myStr.c_str(), (char *)strValue.c_str()));
 		}
 	}
+#endif 
 }
