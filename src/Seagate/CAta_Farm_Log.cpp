@@ -525,23 +525,23 @@ eReturnValues CATA_Farm_Log::print_Enviroment_Information(JSONNODE *masterData, 
     JSONNODE *pageInfo = json_new(JSON_NODE);
     json_set_name(pageInfo, "Environment");
 								
-    snprintf((char*)myStr.c_str(), BASIC, "%0.02f",(check_Status_Strip_Status(vFarmFrame[page].environmentPage.curentTemp))*1.00);
+    snprintf((char*)myStr.c_str(), BASIC, "%0.02f", check_for_signed_int(M_Byte0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.curentTemp)),56)*1.00);
 	set_json_string_With_Status(pageInfo, "Current Temperature", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.curentTemp,m_showStatusBits);								//!< Current Temperature in Celsius
-    snprintf((char*)myStr.c_str(), BASIC, "%0.02f", (check_Status_Strip_Status(vFarmFrame[page].environmentPage.highestTemp))*1.00);
+    snprintf((char*)myStr.c_str(), BASIC, "%0.02f", check_for_signed_int(M_Byte0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.highestTemp)), 56)*1.00);
 	set_json_string_With_Status(pageInfo, "Highest Temperature", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.highestTemp, m_showStatusBits);								//!< Highest Temperature in Celsius
-    snprintf((char*)myStr.c_str(), BASIC, "%0.02f", (check_Status_Strip_Status(vFarmFrame[page].environmentPage.lowestTemp))*1.00);
+    snprintf((char*)myStr.c_str(), BASIC, "%0.02f", check_for_signed_int(M_Byte0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.lowestTemp)), 56)*1.00);
 	set_json_string_With_Status(pageInfo, "Lowest Temperature", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.lowestTemp, m_showStatusBits);								//!< Lowest Temperature
-    snprintf((char*)myStr.c_str(), BASIC, "%0.02f", (check_Status_Strip_Status(vFarmFrame[page].environmentPage.averageTemp))*1.00);
+    snprintf((char*)myStr.c_str(), BASIC, "%0.02f", check_for_signed_int(M_Byte0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.averageTemp)), 56)*1.00);
 	set_json_string_With_Status(pageInfo, "Average Short Term Temperature", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.averageTemp, m_showStatusBits);					//!< Average Short Term Temperature
-    snprintf((char*)myStr.c_str(), BASIC, "%0.02f", (check_Status_Strip_Status(vFarmFrame[page].environmentPage.averageLongTemp))*1.00);
+    snprintf((char*)myStr.c_str(), BASIC, "%0.02f", check_for_signed_int(M_Byte0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.averageLongTemp)), 56)*1.00);
 	set_json_string_With_Status(pageInfo, "Average Long Term Temperatures", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.averageLongTemp, m_showStatusBits);				//!< Average Long Term Temperature
-    snprintf((char*)myStr.c_str(), BASIC, "%0.02f", (check_Status_Strip_Status(vFarmFrame[page].environmentPage.highestShortTemp))*1.00);
+    snprintf((char*)myStr.c_str(), BASIC, "%0.02f", check_for_signed_int(M_Byte0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.highestShortTemp)), 56)*1.00);
 	set_json_string_With_Status(pageInfo, "Highest Average Short Term Temperature", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.highestShortTemp, m_showStatusBits);		//!< Highest Average Short Term Temperature
-    snprintf((char*)myStr.c_str(), BASIC, "%0.02f", (check_Status_Strip_Status(vFarmFrame[page].environmentPage.lowestShortTemp))*1.00);
+    snprintf((char*)myStr.c_str(), BASIC, "%0.02f", check_for_signed_int(M_Byte0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.lowestShortTemp)), 56)*1.00);
 	set_json_string_With_Status(pageInfo, "Lowest Average Short Term Temperature", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.lowestShortTemp, m_showStatusBits);		//!< Lowest Average Short Term Temperature
-    snprintf((char*)myStr.c_str(), BASIC, "%0.02f", (check_Status_Strip_Status(vFarmFrame[page].environmentPage.highestLongTemp))*1.00);
+    snprintf((char*)myStr.c_str(), BASIC, "%0.02f", check_for_signed_int(M_Byte0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.highestLongTemp)), 56)*1.00);
 	set_json_string_With_Status(pageInfo, "Highest Average Long Term Temperature", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.highestLongTemp, m_showStatusBits);		//!< Highest Average Long Term Temperature
-    snprintf((char*)myStr.c_str(), BASIC, "%0.02f", (check_Status_Strip_Status(vFarmFrame[page].environmentPage.lowestLongTemp))*1.00);
+    snprintf((char*)myStr.c_str(), BASIC, "%0.02f", check_for_signed_int(M_Byte0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.lowestLongTemp)), 56)*1.00);
 	set_json_string_With_Status(pageInfo, "Lowest Average Long Term Temperature", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.lowestLongTemp,m_showStatusBits);			//!< Lowest Average Long Term Temperature
 	
 	set_json_int_With_Status(pageInfo, "Time In Over Temperature", vFarmFrame[page].environmentPage.overTempTime, m_showStatusBits);												//!< Time In Over Temperature
