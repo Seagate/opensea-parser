@@ -89,9 +89,11 @@ $(LIBS): $(LIB_OBJ_FILES)
 # Removing the line below since we don't need a shared object for this right now...a static library is enough for the common stuff
 	$(CXX) $(LXXFLAGS) $(LIB_OBJ_FILES) -o lib$(NAME).so.$(VERSION)
 clean:
-	rm -f $(FILE_OUTPUT_DIR)/lib$(NAME).a $(FILE_OUTPUT_DIR)/lib$(NAME).so.$(VERSION) *.o ../../src/*.o ../../src/seagate/*.o
+	rm -f $(SRC_DIR)*.o
+	rm -f $(SRC_DIR)Seagate/*.o
+	rm -f $(FILE_OUTPUT_DIR)/lib$(NAME).a $(FILE_OUTPUT_DIR)/lib$(NAME).so.$(VERSION) *.o ../../src/*.o ../../src/Seagate/*.o
 	rm -rf $(FILE_OUTPUT_DIR)
-
+	
 mkoutputdir:
 	mkdir -p $(FILE_OUTPUT_DIR)
 
