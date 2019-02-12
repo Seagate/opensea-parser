@@ -110,6 +110,7 @@ typedef struct _sHeadInfo
 	int16_t         wholePartofFloat;                           //!< the whole number
 	uint8_t         reseved;
 	uint8_t         status;                                     //!< status bit is set here
+	_sHeadInfo() : decimalPartofFloat(0), wholePartofFloat(0), reseved(0), status(0) {};
 }sHeadInfo;
 
 typedef struct _sflyHeight
@@ -117,6 +118,7 @@ typedef struct _sflyHeight
 	int64_t        outer;
 	int64_t        inner;
 	int64_t        middle;
+	_sflyHeight() : outer(0), inner(0), middle(0) {};
 }sflyHeight;
 
 typedef struct _sAtaReliabilityStat

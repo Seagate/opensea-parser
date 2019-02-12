@@ -1144,9 +1144,10 @@ eReturnValues CAta_Identify_Log_00::get_Log_Page00(uint8_t *pData, JSONNODE *mas
 //---------------------------------------------------------------------------
 CAta_Identify_Log_02::CAta_Identify_Log_02(uint8_t *Buffer)
     : m_name("ATA Identify Log Page 02")
+	, pData(Buffer)
     , m_status(IN_PROGRESS)
+	, pCapacity()
 {
-    pData = Buffer;
     if (pData != NULL)
     {
         m_status = SUCCESS;
@@ -1374,12 +1375,13 @@ eReturnValues CAta_Identify_Log_02::get_Log_Page02(uint8_t *pData, JSONNODE *mas
 //---------------------------------------------------------------------------
 CAta_Identify_Log_03::CAta_Identify_Log_03(uint8_t *Buffer)
     : m_name("ATA Identify Log Page 03")
+	, pData(Buffer)
     , m_status(IN_PROGRESS)
+	, m_pCap()
     , m_sSupported ()
     , m_sDownloadMicrocode()
     , m_sSCTCap()
 {
-    pData = Buffer;
     if (pData != NULL)
     {
         m_status = SUCCESS;
@@ -2703,7 +2705,11 @@ eReturnValues CAta_Identify_Log_03::get_Log_Page03(uint8_t *pData, JSONNODE *mas
 //
 //---------------------------------------------------------------------------
 CAta_Identify_Log_04::CAta_Identify_Log_04(uint8_t *Buffer)
-	: m_CS()
+	: m_name("Log Page 04")
+	, pData()
+	, m_status(IN_PROGRESS)
+	, pLog()
+	, m_CS()
     , m_FS()
 {
     pData = Buffer;
@@ -3338,6 +3344,8 @@ eReturnValues CAta_Identify_Log_04::get_Log_Page04(uint8_t *pData, JSONNODE *mas
 CAta_Identify_Log_05::CAta_Identify_Log_05(uint8_t *Buffer)
     : m_name("ATA Identify Log Page 05")
     , m_status(IN_PROGRESS)
+	, m_pLog()
+	, m_pPrintable()
 {
     pData = Buffer;
     if (pData != NULL)
@@ -3626,6 +3634,7 @@ eReturnValues CAta_Identify_Log_05::get_Log_Page05(uint8_t *pData, JSONNODE *mas
 CAta_Identify_Log_06::CAta_Identify_Log_06(uint8_t *Buffer)
     : m_name("ATA Identify Log Page 06")
     , m_status(IN_PROGRESS)
+	, m_pLog()
     , m_sSCapabilities()
     , m_sSInformation()
 {
@@ -4082,6 +4091,7 @@ eReturnValues CAta_Identify_Log_06::get_Log_Page06(uint8_t *pData, JSONNODE *mas
 CAta_Identify_Log_07::CAta_Identify_Log_07(uint8_t *Buffer)
     : m_name("ATA Identify Log Page 07")
     , m_status(IN_PROGRESS)
+	, m_pLog()
     , m_ATACap()
     , m_hardwareRR()
 {

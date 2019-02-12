@@ -41,6 +41,7 @@ typedef struct _sFarmHeader
 	uint64_t        pageSize;                                   //!< page size in bytes
 	uint64_t        headsSupported;                             //!< Maximum Drive Heads Supported
 	uint64_t        copies;                                     //!< Number of Historical Copies
+	_sFarmHeader() : signature(0), majorRev(0), minorRev(0), pagesSupported(0), logSize(0), pageSize(0), headsSupported(0), copies(0) {};
 }sFarmHeader;
 
 typedef struct _sWorkLoadStat
@@ -55,6 +56,8 @@ typedef struct _sWorkLoadStat
 	uint64_t        totalNumberofOtherCMDS;                     //!< Total Number Of Other Commands
 	uint64_t        logicalSecWritten;                          //!< Logical Sectors Written
 	uint64_t        logicalSecRead;                             //!< Logical Sectors Read
+	_sWorkLoadStat() : pageNumber(0), copyNumber(0), workloadPercentage(0), totalReadCommands(0), totalWriteCommands(0), totalRandomReads(0), totalRandomWrites(0), \
+		totalNumberofOtherCMDS(0), logicalSecWritten(0), logicalSecRead(0) {};
 }sWorkLoadStat;
 
 
