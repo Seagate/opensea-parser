@@ -608,7 +608,7 @@ eReturnValues CATA_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint32
     {
 		double myWhole = 0;
 		double myRemander = 0;
-		myWhole = (double) std::abs(vFarmFrame[page].reliPage.bitErrorRate[loopCount].wholePartofFloat);
+		myWhole = (double) vFarmFrame[page].reliPage.bitErrorRate[loopCount].wholePartofFloat;
 		myRemander = (double) vFarmFrame[page].reliPage.bitErrorRate[loopCount].decimalPartofFloat;
 		myRemander = myRemander / 10000;
         printf("\tBit Error Rate of Zone 0 by Head %d:      %f (debug)\n", loopCount, (std::abs((double)vFarmFrame[page].reliPage.bitErrorRate[loopCount].wholePartofFloat + ((double)vFarmFrame[page].reliPage.bitErrorRate[loopCount].decimalPartofFloat) / 10000)) * -1);  //!< Bit Error Rate of Zone 0 by Drive Head
