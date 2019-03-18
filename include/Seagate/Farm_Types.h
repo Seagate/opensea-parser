@@ -60,6 +60,6 @@ typedef struct _sWorkLoadStat
 		totalNumberofOtherCMDS(0), logicalSecWritten(0), logicalSecRead(0) {};
 }sWorkLoadStat;
 
-
+#pragma pack(pop)
 
 
