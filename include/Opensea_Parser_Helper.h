@@ -13,6 +13,18 @@
 //
 // \file Opensea_Parser_Helper.h   Definition of SeaParser specific functions, structures
 #pragma once
+//defining these macros for C++ to make older C++ compilers happy and work like the newer C++ compilers
+#ifndef __STDC_FORMAT_MACROS
+#define __STDC_FORMAT_MACROS
+#endif
+#ifndef __STDC_LIMIT_MACROS
+#define __STDC_LIMIT_MACROS
+#endif
+#ifndef __STDC_CONSTANT_MACROS
+#define __STDC_CONSTANT_MACROS
+#endif
+
+#include <inttypes.h>
 #include <time.h>
 #include "common.h"
 #include "libjson.h"
@@ -25,6 +37,8 @@ extern char *g_currentTimeStringPtr;
 
 
 namespace opensea_parser {
+#ifndef OPENSEA_PARSER
+#define OPENSEA_PARSER
 
 #define RELISTAT                24
 #define WORLD_WIDE_NAME_LEN     18
@@ -36,22 +50,22 @@ namespace opensea_parser {
 #define INVALID_LENGTH          50
 
     // output file types
-    enum eOpensea_print_Types
+	typedef enum _eOpensea_print_Types
     {
         OPENSEA_LOG_PRINT_JSON,     // default
         OPENSEA_LOG_PRINT_TEXT,
         OPENSEA_LOG_PRINT_CSV,
         OPENSEA_LOG_PRINT_FLAT_CSV,
-    };
+    }eOpensea_print_Types;
 	// SCSI Parameter Control Bytes
-	enum eOpenSea_SCSI_Log_Parameter_Types
+	typedef enum _eOpenSea_SCSI_Log_Parameter_Types
 	{
-		OPENSEA_SCSI_LOG_BOUNDED_DATA_COUNTER = 0,   //
+		OPENSEA_SCSI_LOG_BOUNDED_DATA_COUNTER = 0,   // default
 		OPENSEA_SCSI_LOG_ASCII_FORMAT_LIST,
 		OPENSEA_SCSI_LOG_BOUNDED_DATA_COUNTER_OR_UNBOUNDED_DATA_COUNTER,
 		OPENSEA_SCSI_LOG_BINARY_FORMAT_LIST,
-	};
-
+	}eOpenSea_SCSI_Log_Parameter_Types;
+#pragma pack(push, 1)
 	typedef struct _sLogPageStruct
 	{
 		uint8_t			pageCode;							//<! page code for the log lpage format
@@ -59,7 +73,7 @@ namespace opensea_parser {
 		uint16_t		pageLength;							//<! this is different from size, see SCSI SPC Spec. 
 		_sLogPageStruct() : pageCode(0), subPage(0), pageLength(0) {};
 	}sLogPageStruct;
-
+#pragma pack(pop)
 	typedef enum _eLogPageNames
 	{
 		SUPPORTED_LOG_PAGES = 0x00,
@@ -204,6 +218,8 @@ namespace opensea_parser {
 		}
 		return value;
 	}
+
+#endif // !OPENSEA_PARSER
 }
 
 
