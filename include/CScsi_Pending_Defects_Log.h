@@ -21,28 +21,29 @@ namespace opensea_parser {
 #ifndef SCSIPENDINGLOG
 #define SCSIPENDINGLOG
 
+#pragma pack(push, 1)
+	typedef struct _sPendingDefectCountParameter
+	{
+		uint16_t		paramCode;							//<! The PARAMETER CODE field is defined
+		uint8_t			paramControlByte;					//<! binary format list log parameter
+		uint8_t			paramLength;						//<! The PARAMETER LENGTH field (04h)
+		uint32_t		totalPlistCount;					//<! count of the total number of pending list
+		_sPendingDefectCountParameter() : paramCode(0), paramControlByte(0), paramLength(0), totalPlistCount(0) {};
+	} sPendindDefectCount;
+	typedef struct _sPendingDefectInformationParameter
+	{
+		uint16_t		paramCode;							//<! The PARAMETER CODE field is defined
+		uint8_t			paramControlByte;					//<! binary format list log parameter
+		uint8_t			paramLength;						//<! The PARAMETER LENGTH field (14h)
+		uint32_t		defectPOH;							//<! Defect's power on hours
+		uint64_t		defectLBA;							//<! Defect's Logical Block Address
+		_sPendingDefectInformationParameter() : paramCode(0), paramControlByte(0), paramLength(0), defectPOH(0), defectLBA(0) {};
+	} sDefect;
+#pragma pack(pop)
+
 	class CScsiPendingDefectsLog
 	{
 	private:
-#pragma pack(push, 1)
-		typedef struct _sPendingDefectCountParameter
-		{
-			uint16_t		paramCode;							//<! The PARAMETER CODE field is defined
-			uint8_t			paramControlByte;					//<! binary format list log parameter
-			uint8_t			paramLength;						//<! The PARAMETER LENGTH field (04h)
-			uint32_t		totalPlistCount;					//<! count of the total number of pending list
-			_sPendingDefectCountParameter() : paramCode(0), paramControlByte(0), paramLength(0), totalPlistCount(0) {};
-		} sPendindDefectCount;
-		typedef struct _sPendingDefectInformationParameter
-		{
-			uint16_t		paramCode;							//<! The PARAMETER CODE field is defined
-			uint8_t			paramControlByte;					//<! binary format list log parameter
-			uint8_t			paramLength;						//<! The PARAMETER LENGTH field (14h)
-			uint32_t		defectPOH;							//<! Defect's power on hours
-			uint64_t		defectLBA;							//<! Defect's Logical Block Address
-			_sPendingDefectInformationParameter() : paramCode(0), paramControlByte(0), paramLength(0), defectPOH(0), defectLBA(0) {};
-		} sDefect;
-#pragma pack(pop)
 	protected:
 		uint8_t						*pData;						//<! pointer to the data
 		std::string					m_PlistName;				//<! class name	

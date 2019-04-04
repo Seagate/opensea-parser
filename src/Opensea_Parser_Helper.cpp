@@ -16,3 +16,10 @@ eVerbosityLevels g_verbosity = VERBOSITY_DEFAULT;
 time_t           g_currentTime;
 char             g_currentTimeString[64];
 char             *g_currentTimeStringPtr = g_currentTimeString;
+
+/*
+uint64_t opensea_parser::check_Status_Strip_Status(uint64_t value)
+{
+	return uint64_t();
+}
+*/

@@ -21,49 +21,52 @@
 namespace opensea_parser {
 #ifndef SCSIDSTLOG
 #define SCSIDSTLOG
+
+#define DST_TESTS  20
+#pragma pack(push, 1)
+	enum m_DST_Enum
+	{
+		DST_COMPLETED_WITHOUT_ERROR = 0x00,
+		DST_BACKGROUND_ABORTED = 0x01,
+		DST_ABORTED = 0x02,
+		DST_UNKNOWN_ERROR = 0x03,
+		DST_FAILURE_UNKNOWN_SEGMENT = 0x04,
+		DST_FAILURE_FIRST_SEGMENT = 0x05,
+		DST_FAILURE_SECOND_SEGMENT = 0x06,
+		DST_FAILURE_CHECK_NUMBER_FOR_SEGMENT = 0x07,
+		DST_IN_PROGRESS = 0x0f
+	};
+	enum m_DST_Test_Type
+	{
+		DST_NOT_RUN,
+		DST_BACKGROUND_SHORT,
+		DST_BACKGROUND_EXTENDED,
+		DST_RESERVED,
+		DST_ABORT_BACKGROUND,
+		DST_FORGROUND_SHORT,
+		DST_FORGROUND_EXTENDED,
+		DST_RESERVED2,
+	};
+	typedef struct _sSelfTest
+	{
+		uint16_t			paramCode;						//<! parameter code for the log for each self test  
+		uint8_t				paramControlByte;				//<! param code for the log page format
+		uint8_t				paramLength;					//<! param length.
+		uint8_t				stCode;							//<! self test code and results
+		uint8_t				stNumber;						//!< self test number
+		uint16_t			accPOH;							//!< Accumulated Power on Hours
+		uint64_t			address;						//!< address of firmst Failure
+		uint8_t				senseKey;						//!< Sense Key
+		uint8_t				addSenseCode;					//!< Additional Sense code
+		uint8_t				addSenseCodeQualifier;			//!< Additional Sense code
+		uint8_t				vendor;							//!< Vendor Specific
+	}sSelfTest;
+#pragma pack(pop)
+
 	class CScsi_DST_Results
 	{
-#define DST_TESTS  20
 	private:
-#pragma pack(push, 1)
-		enum m_DST_Enum 
-		{ 
-			DST_COMPLETED_WITHOUT_ERROR          = 0x00,
-			DST_BACKGROUND_ABORTED               = 0x01,
-			DST_ABORTED                          = 0x02,
-			DST_UNKNOWN_ERROR                    = 0x03,
-			DST_FAILURE_UNKNOWN_SEGMENT          = 0x04,
-			DST_FAILURE_FIRST_SEGMENT            = 0x05,
-			DST_FAILURE_SECOND_SEGMENT           = 0x06,
-			DST_FAILURE_CHECK_NUMBER_FOR_SEGMENT = 0x07,
-			DST_IN_PROGRESS                      = 0x0f
-		};
-		enum m_DST_Test_Type
-		{
-			DST_NOT_RUN,
-			DST_BACKGROUND_SHORT,
-			DST_BACKGROUND_EXTENDED,
-			DST_RESERVED,
-			DST_ABORT_BACKGROUND,
-			DST_FORGROUND_SHORT,
-			DST_FORGROUND_EXTENDED,
-			DST_RESERVED2,
-		};
-		typedef struct _sSelfTest
-		{
-			uint16_t			paramCode;						//<! parameter code for the log for each self test  
-			uint8_t				paramControlByte;				//<! param code for the log page format
-			uint8_t				paramLength;					//<! param length.
-			uint8_t				stCode;							//<! self test code and results
-			uint8_t				stNumber;						//!< self test number
-			uint16_t			accPOH;							//!< Accumulated Power on Hours
-			uint64_t			address;						//!< address of firmst Failure
-			uint8_t				senseKey;						//!< Sense Key
-			uint8_t				addSenseCode;					//!< Additional Sense code
-			uint8_t				addSenseCodeQualifier;			//!< Additional Sense code
-			uint8_t				vendor;							//!< Vendor Specific
-		}sSelfTest;
-#pragma pack(pop)
+
 	protected:
 		std::string					m_DSTName;					//<! class name	
 		eReturnValues				m_DSTStatus;			    //<! status of the class

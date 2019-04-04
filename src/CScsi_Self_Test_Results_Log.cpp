@@ -116,8 +116,7 @@ eReturnValues CScsi_DST_Results::parse_Self_Test_Log(uint8_t *buffer, size_t buf
 	std::string myStr = "";
 	myStr.resize(BASIC);
 	JSONNODE *DstJson = json_new(JSON_NODE);
-	//uint8_t StatusByte = 0;
-	//int8_t checkPointByte = 0;
+
 
 	json_set_name(DstJson, "Self Test Results Log");
 
@@ -134,7 +133,7 @@ eReturnValues CScsi_DST_Results::parse_Self_Test_Log(uint8_t *buffer, size_t buf
 			}
 			else
 			{
-				if ( ((i+1) * sizeof(sSelfTest) ) < bufferSize )
+				if ( (((size_t)i+1) * sizeof(sSelfTest) ) < bufferSize )
 				{
 					m_DST++;
 					retStatus = IN_PROGRESS;

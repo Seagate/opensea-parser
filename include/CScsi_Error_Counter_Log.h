@@ -21,22 +21,22 @@ namespace opensea_parser {
 #ifndef SCSIERRORLOG
 #define SCSIERRORLOG
 
-	class CScsiErrorCounterLog
-	{
-	private:
 #define WRITE  0x02
 #define READ   0x03
 #define VERIFY 0x05
 #pragma pack(push, 1)
-		typedef struct _sErrorParameters
-		{
-			uint16_t		paramCode;							//<! The PARAMETER CODE field is defined
-			uint8_t			paramControlByte;					//<! binary format list log parameter
-			uint8_t			paramLength;						//<! The PARAMETER LENGTH field 
-			_sErrorParameters() : paramCode(0), paramControlByte(0), paramLength(0) {};
-		} sErrorParams;
+	typedef struct _sErrorParameters
+	{
+		uint16_t		paramCode;							//<! The PARAMETER CODE field is defined
+		uint8_t			paramControlByte;					//<! binary format list log parameter
+		uint8_t			paramLength;						//<! The PARAMETER LENGTH field 
+		_sErrorParameters() : paramCode(0), paramControlByte(0), paramLength(0) {};
+	} sErrorParams;
 
 #pragma pack(pop)
+	class CScsiErrorCounterLog
+	{
+	private:
 	protected:
 		uint8_t						*pData;						//<! pointer to the data
 		std::string					m_ErrorName;				//<! class name	

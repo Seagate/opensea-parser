@@ -83,7 +83,7 @@ CExtComp::CExtComp(const std::string &fileName, JSONNODE *masterData)
 		{
 			m_logSize = cCLog->get_Size();
 			pData = new uint8_t[m_logSize];								// new a buffer to the point				
-#ifdef __linux__ //To make old gcc compilers happy
+#ifndef _WIN64
 			memcpy(pData, cCLog->get_Buffer(), m_logSize);
 #else
 			memcpy_s(pData, m_logSize, cCLog->get_Buffer(), m_logSize);// copy the buffer data to the class member pBuf
@@ -125,6 +125,10 @@ CExtComp::CExtComp(const std::string &fileName, JSONNODE *masterData)
 //---------------------------------------------------------------------------
 CExtComp::~CExtComp()
 {
+    if (pData != NULL)
+    {
+        delete [] pData;
+    }
 }
 //-----------------------------------------------------------------------------
 //

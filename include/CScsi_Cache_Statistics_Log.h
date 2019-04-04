@@ -20,20 +20,20 @@
 namespace opensea_parser {
 #ifndef SCSICACHELOG
 #define SCSICACHELOG
+#pragma pack(push, 1)
+	typedef struct _sCacheParameters
+	{
+		uint16_t		paramCode;							//<! The PARAMETER CODE field is defined
+		uint8_t			paramControlByte;					//<! binary format list log parameter
+		uint8_t			paramLength;						//<! The PARAMETER LENGTH field 
+		_sCacheParameters() : paramCode(0), paramControlByte(0), paramLength(0) {};
+	} sCacheParams;
+
+#pragma pack(pop)
 
 	class CScsiCacheLog
 	{
 	private:
-#pragma pack(push, 1)
-		typedef struct _sCacheParameters
-		{
-			uint16_t		paramCode;							//<! The PARAMETER CODE field is defined
-			uint8_t			paramControlByte;					//<! binary format list log parameter
-			uint8_t			paramLength;						//<! The PARAMETER LENGTH field 
-			_sCacheParameters() : paramCode(0), paramControlByte(0), paramLength(0) {};
-		} sCacheParams;
-
-#pragma pack(pop)
 	protected:
 		uint8_t						*pData;						//<! pointer to the data
 		std::string					m_CacheName;				//<! class name	

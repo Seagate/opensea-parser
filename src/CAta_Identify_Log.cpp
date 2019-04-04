@@ -135,7 +135,7 @@ CAta_Identify_log::CAta_Identify_log( const std::string & fileName)
 		{
 			size_t bufferSize = cCLog->get_Size();
 			pData = new uint8_t[cCLog->get_Size()];								// new a buffer to the point				
-#ifdef __linux__ //To make old gcc compilers happy
+#ifndef _WIN64
 			memcpy(pData, cCLog->get_Buffer(), bufferSize);
 #else
 			memcpy_s(pData, bufferSize, cCLog->get_Buffer(), bufferSize);// copy the buffer data to the class member pBuf
@@ -146,7 +146,7 @@ CAta_Identify_log::CAta_Identify_log( const std::string & fileName)
 			if (IsScsiLogPage(idCheck->pageLength, idCheck->pageCode) == false)
 			{
 				parse_Device_Info();
-				m_status = SUCCESS;
+				m_status = IN_PROGRESS;
 			}
 			else
 			{
@@ -180,6 +180,7 @@ CAta_Identify_log::CAta_Identify_log( const std::string & fileName)
 //---------------------------------------------------------------------------
 CAta_Identify_log::~CAta_Identify_log()
 {
+
 }
 //-----------------------------------------------------------------------------
 //
@@ -1143,9 +1144,10 @@ eReturnValues CAta_Identify_Log_00::get_Log_Page00(uint8_t *pData, JSONNODE *mas
 //---------------------------------------------------------------------------
 CAta_Identify_Log_02::CAta_Identify_Log_02(uint8_t *Buffer)
     : m_name("ATA Identify Log Page 02")
+	, pData(Buffer)
     , m_status(IN_PROGRESS)
+	, pCapacity()
 {
-    pData = Buffer;
     if (pData != NULL)
     {
         m_status = SUCCESS;
@@ -1373,12 +1375,13 @@ eReturnValues CAta_Identify_Log_02::get_Log_Page02(uint8_t *pData, JSONNODE *mas
 //---------------------------------------------------------------------------
 CAta_Identify_Log_03::CAta_Identify_Log_03(uint8_t *Buffer)
     : m_name("ATA Identify Log Page 03")
+	, pData(Buffer)
     , m_status(IN_PROGRESS)
+	, m_pCap()
     , m_sSupported ()
     , m_sDownloadMicrocode()
     , m_sSCTCap()
 {
-    pData = Buffer;
     if (pData != NULL)
     {
         m_status = SUCCESS;
@@ -2702,7 +2705,11 @@ eReturnValues CAta_Identify_Log_03::get_Log_Page03(uint8_t *pData, JSONNODE *mas
 //
 //---------------------------------------------------------------------------
 CAta_Identify_Log_04::CAta_Identify_Log_04(uint8_t *Buffer)
-	: m_CS()
+	: m_name("Log Page 04")
+	, pData()
+	, m_status(IN_PROGRESS)
+	, pLog()
+	, m_CS()
     , m_FS()
 {
     pData = Buffer;
@@ -3337,6 +3344,8 @@ eReturnValues CAta_Identify_Log_04::get_Log_Page04(uint8_t *pData, JSONNODE *mas
 CAta_Identify_Log_05::CAta_Identify_Log_05(uint8_t *Buffer)
     : m_name("ATA Identify Log Page 05")
     , m_status(IN_PROGRESS)
+	, m_pLog()
+	, m_pPrintable()
 {
     pData = Buffer;
     if (pData != NULL)
@@ -3625,6 +3634,7 @@ eReturnValues CAta_Identify_Log_05::get_Log_Page05(uint8_t *pData, JSONNODE *mas
 CAta_Identify_Log_06::CAta_Identify_Log_06(uint8_t *Buffer)
     : m_name("ATA Identify Log Page 06")
     , m_status(IN_PROGRESS)
+	, m_pLog()
     , m_sSCapabilities()
     , m_sSInformation()
 {
@@ -4081,6 +4091,7 @@ eReturnValues CAta_Identify_Log_06::get_Log_Page06(uint8_t *pData, JSONNODE *mas
 CAta_Identify_Log_07::CAta_Identify_Log_07(uint8_t *Buffer)
     : m_name("ATA Identify Log Page 07")
     , m_status(IN_PROGRESS)
+	, m_pLog()
     , m_ATACap()
     , m_hardwareRR()
 {
@@ -4695,7 +4706,33 @@ eReturnValues CAta_Identify_Log_08::get_Log_Page08(uint8_t *pData, JSONNODE *mas
 }
 
 // *******************************************************************************
-
+//-----------------------------------------------------------------------------
+//
+//! \fn   CAta_Identify_Log_30()
+//
+//! \brief
+//!   Description:  Class constructor for the CIdentify log 30
+//
+//  Entry:
+//
+//  Exit:
+//!  \return NONE
+//
+//---------------------------------------------------------------------------
+CAta_Identify_Log_30::CAta_Identify_Log_30(uint8_t *pBufferData)
+	:pData(pBufferData)
+	, m_name("log page 30")
+	, m_status(IN_PROGRESS)
+{
+	if (pData != NULL)
+	{
+		m_status = SUCCESS;
+	}
+	else
+	{
+		m_status = BAD_PARAMETER;
+	}
+}
 //-----------------------------------------------------------------------------
 //
 //! \fn   CAta_Identify_Log_30()
@@ -4722,7 +4759,7 @@ CAta_Identify_Log_30::CAta_Identify_Log_30( const std::string & fileName)
         {
 			size_t bufferSize = cCLog->get_Size();
 			pData = new uint8_t[cCLog->get_Size()];								// new a buffer to the point				
-#ifdef __linux__ //To make old gcc compilers happy
+#ifndef _WIN64
 			memcpy(pData, cCLog->get_Buffer(), bufferSize);
 #else
 			memcpy_s(pData, bufferSize, cCLog->get_Buffer(), bufferSize);// copy the buffer data to the class member pBuf
@@ -4732,7 +4769,7 @@ CAta_Identify_Log_30::CAta_Identify_Log_30( const std::string & fileName)
 			byte_Swap_16(&idCheck->pageLength);
 			if (IsScsiLogPage(idCheck->pageLength, idCheck->pageCode) == false)
 			{
-				m_status = SUCCESS;
+				m_status = IN_PROGRESS;
 			}
 			else
 			{
@@ -4766,6 +4803,10 @@ CAta_Identify_Log_30::CAta_Identify_Log_30( const std::string & fileName)
 //-------------------------------------------------------------------------
 CAta_Identify_Log_30::~CAta_Identify_Log_30()
 {
+    if (pData != NULL)
+    {
+        delete [] pData;
+    }
 }
 //-----------------------------------------------------------------------------
 //

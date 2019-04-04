@@ -1,0 +1,45 @@
+# CI for opensea-parser 
+language: cpp
+
+branches:
+  only:
+  - master
+  - develop
+
+matrix:
+  include:
+    - os: osx
+      compiler: clang
+      before_script: 
+        - git clone https://github.com/Seagate/opensea-common.git
+        - git clone https://github.com/Seagate/libjson.git
+        - mv libjson ../
+        - mv opensea-common ../
+        - cd Make/gcc
+      script: 
+        make 
+    - os: linux
+      sudo: false
+      compiler: gcc
+      dist: xenial
+      before_script: 
+        - git clone https://github.com/Seagate/opensea-common.git
+        - git clone https://github.com/Seagate/libjson.git
+        - mv libjson ../
+        - mv opensea-common ../
+        - cd Make/gcc
+      script: 
+        make 
+    - os: windows
+      env:
+        - MSBUILD_PATH="c:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\MSBuild\15.0\Bin"
+      before_script: 
+        - git clone https://github.com/Seagate/opensea-common.git
+        - git clone https://github.com/Seagate/libjson.git
+        - mv libjson ../
+        - mv opensea-common ../
+        - cd "Make\VS.2017\opensea-parser\opensea-parser"
+      script: 
+        - export PATH=$MSBUILD_PATH:$PATH 
+        - MSBuild.exe //p:Configuration=Static-Release //p:Platform=x64
+

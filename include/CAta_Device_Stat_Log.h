@@ -17,19 +17,96 @@
 #include "common.h"
 #include "CLog.h"
 #include "libjson.h"
+#include "Opensea_Parser_Helper.h"
 
 namespace opensea_parser {
 #ifndef ATADEVICESTAT
 #define ATADEVICESTAT
+#pragma pack(push, 1)
+	typedef struct _sStatusResponse
+	{
+		uint16_t    formatVersion;                                  //!< Status Response format version number.                         0 - 1 
+		uint16_t    SCTversion;                                     //!< Manufacturer�s vendor specific implementation version number   2 - 3
+		uint16_t    SCTspec;                                        //!< Highest level of SCT Technical Report supported                4 - 5
+		uint32_t    statusFlag;                                     //!< Bit 0: Segment Initialized Flag.                               6 - 9
+		uint8_t     driveStatus;                                    //!< drive status                                                   10
+		uint8_t     reseved1[3];                                    //!< reserved                                                       11 - 13
+		uint16_t    extenededStatusCode;                            //!< Status of last SCT command issued. FFFFh if SCT command        14 - 15 
+		uint16_t    actionCode;                                     //!< Action code of last SCT command issued.                        16 - 17
+		uint16_t    functionCode;                                   //!< Function code of last SCT command issued.                      18 - 19
+		uint8_t     reserved2[20];                                  //!< reserved                                                       20 - 39
+		uint64_t    lba;                                            //!< lba                                                            40 - 47
+		uint8_t     reserved3[154];                                 //!< reserved                                                       48 - 199
+		uint8_t     temp;                                           //!< Current drive HDA temperature in degrees Celsius.              200
+		uint8_t     reserved4;                                      //!< reserved                                                       201
+		uint8_t     maxTemp;                                        //!< Current drive HDA temperature in degrees Celsius.              202
+		uint8_t     reserved5;                                      //!< reserved                                                       203
+		uint8_t     lifeMaxTemp;                                    //!< Current drive HDA temperature in degrees Celsius.              204
+		uint8_t     reserved6;                                      //!< reserved                                                       205
+		uint8_t     reserved7[307];                                 //!< to the end                                                     206 - 511   
+	}sStatusResponse;
+	typedef struct _sHeader
+	{
+		uint16_t   RevNum;
+		uint16_t   LogPageNum;
+		uint32_t   Reserved;
+		_sHeader() :RevNum(0), LogPageNum(0), Reserved(0) {};
+	}sHeader;
+	typedef struct _sLogPage01
+	{
+		sHeader		header;									//!< header for the General Statistics Log 01h
+		uint64_t	lifeTimePWRResets;						//!< Lifetime Power on Resets
+		uint64_t	poh;									//!< Power on Hours
+		uint64_t	logSectWritten;							//!< Logical Sectors written
+		uint64_t	numberOfWrites;							//!< Number of Write Commands
+		uint64_t	logSectRead;							//!< Logical Sectors Read
+		uint64_t	numberOfReads;							//!< Number of Read Commands
+		uint64_t	date;									//!< Date and Time Timestamp
+		uint64_t	pendingErrorCount;						//!< Pending Error Count
+		uint64_t	workLoad;								//!< Workload Utilized
+		uint64_t	utilRate;								//!< Utilization Usage Rate
+		uint64_t	resourceAval;							//!< Resource Avablity
+		uint64_t	randomWriteResourcesUsed;				//!< Random Write Resources Used
+	}sLogPage01;
+	typedef struct _sDEVICELOGFOUR
+	{
+		sHeader		header;									//!< header for the Generail Error Statistics Log
+		uint64_t	numberReportedECC;						//!< Number of Reported Uncorrectable Errors
+		uint64_t	resets;									//!< Number of Resets Between Command Acceptance and Command Completion
+		uint64_t	statusChanged;							//!< Physical Element Status Changed
+	}sDeviceLog04;
+	typedef struct _DEVICELOGTHREE
+	{
+		uint32_t SpdPoh;									//!< Spindle Motor Power-on Hours
+		uint32_t HeadFlyHour;								//!< Head Flying Hours
+		uint32_t HeadLoadEvent;								//!< Head Load Events
+		uint32_t ReLogicalSec;								//!< Number of Reallocated Logical Sectors
+		uint32_t ReadRecAtmp;								//!< Read Recovery Attempts 
+		uint32_t MeStartFail;								//!< Number of Mechanical Start Failures
+		uint32_t ReCandidate;								//!< Number of Reallocation Candidate Logical Sectors
+		uint32_t UnloadEvent;								//!< Number of High Priority Unload Events
+		_DEVICELOGTHREE() :SpdPoh(0), HeadFlyHour(0), HeadLoadEvent(0), ReLogicalSec(0), ReadRecAtmp(0), MeStartFail(0), ReCandidate(0), UnloadEvent(0) {};
+	}sDeviceLog3;
+
+	typedef struct _DEVICELOGSIX
+	{
+		uint32_t HwReset;
+		uint32_t ASREvent;
+		uint32_t CRCError;
+		_DEVICELOGSIX() : HwReset(0), ASREvent(0), CRCError(0) {};
+	}sDeviceLog6;
+#pragma pack(pop)
+
+
     class CSAtaDevicStatisticsTempLogs 
     {
     protected:
         std::string                         m_name;                                                     //!< name of the class
         uint8_t                             *pData;                                                     //!< pointer to the data
 		size_t								m_logSize;													//!< size fo the log
-        eReturnValues                       m_status;                                                   //!< holds the status of the class 
+        eReturnValues						m_status;                                                   //!< holds the status of the class 
 		size_t								m_dataSize;													//!< data size read in form the clog
-        JSONNODE                            *JsonData;                                                  //!< json master data
+        JSONNODE							*JsonData;                                                  //!< json master data
     public:
         CSAtaDevicStatisticsTempLogs();
         CSAtaDevicStatisticsTempLogs(uint8_t *buffer,JSONNODE *masterData);
@@ -42,82 +119,6 @@ namespace opensea_parser {
     class CAtaDeviceStatisticsLogs 
     {
     protected:
-        
-#pragma pack(push, 1)
-        typedef struct _sStatusResponse
-        {
-            uint16_t    formatVersion;                                  //!< Status Response format version number.                         0 - 1 
-            uint16_t    SCTversion;                                     //!< Manufacturer�s vendor specific implementation version number   2 - 3
-            uint16_t    SCTspec;                                        //!< Highest level of SCT Technical Report supported                4 - 5
-            uint32_t    statusFlag;                                     //!< Bit 0: Segment Initialized Flag.                               6 - 9
-            uint8_t     driveStatus;                                    //!< drive status                                                   10
-            uint8_t     reseved1[3];                                    //!< reserved                                                       11 - 13
-            uint16_t    extenededStatusCode;                            //!< Status of last SCT command issued. FFFFh if SCT command        14 - 15 
-            uint16_t    actionCode;                                     //!< Action code of last SCT command issued.                        16 - 17
-            uint16_t    functionCode;                                   //!< Function code of last SCT command issued.                      18 - 19
-            uint8_t     reserved2[20];                                  //!< reserved                                                       20 - 39
-            uint64_t    lba;                                            //!< lba                                                            40 - 47
-            uint8_t     reserved3[154];                                 //!< reserved                                                       48 - 199
-            uint8_t     temp;                                           //!< Current drive HDA temperature in degrees Celsius.              200
-            uint8_t     reserved4;                                      //!< reserved                                                       201
-            uint8_t     maxTemp;                                        //!< Current drive HDA temperature in degrees Celsius.              202
-            uint8_t     reserved5;                                      //!< reserved                                                       203
-            uint8_t     lifeMaxTemp;                                    //!< Current drive HDA temperature in degrees Celsius.              204
-            uint8_t     reserved6;                                      //!< reserved                                                       205
-            uint8_t     reserved7[307];                                 //!< to the end                                                     206 - 511   
-        }sStatusResponse;
-        typedef struct _sHeader
-        {
-            uint16_t   RevNum;
-            uint16_t   LogPageNum;
-            uint32_t   Reserved;
-			_sHeader() :RevNum(0), LogPageNum(0), Reserved(0) {};
-        }sHeader;
-		typedef struct _sLogPage01
-		{
-			sHeader		header;									//!< header for the General Statistics Log 01h
-			uint64_t	lifeTimePWRResets;						//!< Lifetime Power on Resets
-			uint64_t	poh;									//!< Power on Hours
-			uint64_t	logSectWritten;							//!< Logical Sectors written
-			uint64_t	numberOfWrites;							//!< Number of Write Commands
-			uint64_t	logSectRead;							//!< Logical Sectors Read
-			uint64_t	numberOfReads;							//!< Number of Read Commands
-			uint64_t	date;									//!< Date and Time Timestamp
-			uint64_t	pendingErrorCount;						//!< Pending Error Count
-			uint64_t	workLoad;								//!< Workload Utilized
-			uint64_t	utilRate;								//!< Utilization Usage Rate
-			uint64_t	resourceAval;							//!< Resource Avablity
-			uint64_t	randomWriteResourcesUsed;				//!< Random Write Resources Used
-		}sLogPage01;
-		typedef struct _sDEVICELOGFOUR
-		{
-			sHeader		header;									//!< header for the Generail Error Statistics Log
-			uint64_t	numberReportedECC;						//!< Number of Reported Uncorrectable Errors
-			uint64_t	resets;									//!< Number of Resets Between Command Acceptance and Command Completion
-			uint64_t	statusChanged;							//!< Physical Element Status Changed
-		}sDeviceLog04;
-        typedef struct _DEVICELOGTHREE
-        {
-            uint32_t SpdPoh;									//!< Spindle Motor Power-on Hours
-            uint32_t HeadFlyHour;								//!< Head Flying Hours
-            uint32_t HeadLoadEvent;								//!< Head Load Events
-            uint32_t ReLogicalSec;								//!< Number of Reallocated Logical Sectors
-            uint32_t ReadRecAtmp;								//!< Read Recovery Attempts 
-            uint32_t MeStartFail;								//!< Number of Mechanical Start Failures
-            uint32_t ReCandidate;								//!< Number of Reallocation Candidate Logical Sectors
-            uint32_t UnloadEvent;								//!< Number of High Priority Unload Events
-            _DEVICELOGTHREE() :SpdPoh(0), HeadFlyHour(0), HeadLoadEvent(0), ReLogicalSec(0), ReadRecAtmp(0), MeStartFail(0), ReCandidate(0), UnloadEvent(0){};
-        }sDeviceLog3;
-
-        typedef struct _DEVICELOGSIX
-        {
-            uint32_t HwReset;
-            uint32_t ASREvent;
-            uint32_t CRCError;
-            _DEVICELOGSIX() : HwReset(0), ASREvent(0), CRCError(0){};
-        }sDeviceLog6;
-#pragma pack(pop)
-
         std::string                         m_name;                                                     //!< name of the class
 		eReturnValues                       m_status;                                                   //!< holds the status of the class
         uint8_t                             *pData;                                                     //!< pointer to the data
@@ -141,54 +142,7 @@ namespace opensea_parser {
         void logPage05(uint64_t *value, JSONNODE *masterData);
         void logPage06(uint64_t *value, JSONNODE *masterData);
         void logPage07(uint64_t *value, JSONNODE *masterData);
-		//-----------------------------------------------------------------------------
-		//
-		//! \fn check_For_Active_Status()
-		//
-		//! \brief
-		//!   Description:  check for the active status bit in the 64 bit value
-		//
-		//  Entry:
-		//! \param value  =  64 bit value to check to see if the bit is set or not
-		//
-		//  Exit:
-		//!   \return bool - false or true
-		//
-		//---------------------------------------------------------------------------
-		inline bool check_For_Active_Status(uint64_t *value)
-		{
-			if ((*value & BIT63) == BIT63 && (*value & BIT62) == BIT62)
-			{
-				return true;
-			}
-			return false;
-		}
-		//-----------------------------------------------------------------------------
-		//
-		//! \fn check_Status_Strip_Status()
-		//
-		//! \brief
-		//!   Description:  check for the active status bit in the 64 bit value
-		//
-		//  Entry:
-		//! \param value  =  64 bit value to check to see if the bit is set or not
-		//
-		//  Exit:
-		//!   \return uint64_t return the stipped value or a 0
-		//
-		//---------------------------------------------------------------------------
-		inline uint64_t check_Status_Strip_Status(uint64_t value)
-		{
-			if (check_For_Active_Status(&value))
-			{
-				value = value & 0x00FFFFFFFFFFFFFFLL;
-			}
-			else
-			{
-				value = 0;
-			}
-			return value;
-		}
+		
     public:
         CAtaDeviceStatisticsLogs();
         CAtaDeviceStatisticsLogs(const std::string &fileName, JSONNODE *masterData);

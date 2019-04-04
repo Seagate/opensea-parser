@@ -101,7 +101,7 @@ CSAtaDevicStatisticsTempLogs::CSAtaDevicStatisticsTempLogs(const std::string &fi
 		{
 			m_logSize = cCLog->get_Size();
 			pData = new uint8_t[m_logSize];								// new a buffer to the point				
-#ifdef __linux__ //To make old gcc compilers happy
+#ifndef _WIN64
 			memcpy(pData, cCLog->get_Buffer(), m_logSize);
 #else
 			memcpy_s(pData, m_logSize, cCLog->get_Buffer(), m_logSize);// copy the buffer data to the class member pBuf
@@ -112,7 +112,7 @@ CSAtaDevicStatisticsTempLogs::CSAtaDevicStatisticsTempLogs(const std::string &fi
 			if (IsScsiLogPage(idCheck->pageLength, idCheck->pageCode) == false)
 			{
 				byte_Swap_16(&idCheck->pageLength);  // now that we know it's not scsi we need to flip the bytes back
-				m_status = SUCCESS;
+				m_status = IN_PROGRESS;
 			}
 			else
 			{
@@ -146,6 +146,10 @@ CSAtaDevicStatisticsTempLogs::CSAtaDevicStatisticsTempLogs(const std::string &fi
 //---------------------------------------------------------------------------
 CSAtaDevicStatisticsTempLogs::~CSAtaDevicStatisticsTempLogs()
 {
+    if (pData != NULL)
+    {
+        delete []pData;
+    }
 }
 //-----------------------------------------------------------------------------
 //
@@ -177,7 +181,7 @@ eReturnValues CSAtaDevicStatisticsTempLogs::parse_SCT_Temp_Log()
 	JSONNODE *sctTemp = json_new(JSON_NODE);
 	json_set_name(sctTemp, "SCT Temp Log");
 
-	if (m_dataSize > 0 && m_dataSize < (34 + CBIndex))   // check the size fo the data
+	if (m_dataSize > 0 && m_dataSize < (size_t)(34 + CBIndex))   // check the size fo the data
 	{
 		json_push_back(JsonData, sctTemp);
 		return static_cast<eReturnValues>(INVALID_LENGTH);
@@ -314,7 +318,7 @@ CAtaDeviceStatisticsLogs::CAtaDeviceStatisticsLogs(const std::string &fileName, 
 		{
 			m_deviceLogSize = cCLog->get_Size();
 			pData = new uint8_t[m_deviceLogSize];								// new a buffer to the point				
-#ifdef __linux__ //To make old gcc compilers happy
+#ifndef _WIN64
 			memcpy(pData, cCLog->get_Buffer(), m_deviceLogSize);
 #else
 			memcpy_s(pData, m_deviceLogSize, cCLog->get_Buffer(), m_deviceLogSize);// copy the buffer data to the class member pBuf
@@ -326,7 +330,6 @@ CAtaDeviceStatisticsLogs::CAtaDeviceStatisticsLogs(const std::string &fileName, 
 			{
 				byte_Swap_16(&idCheck->pageLength);  // now that we know it's not scsi we need to flip the bytes back
 				m_status = ParseSCTDeviceStatLog(masterData);
-				m_status = SUCCESS;
 			}
 			else
 			{

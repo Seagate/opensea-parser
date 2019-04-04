@@ -26,7 +26,7 @@ namespace opensea_parser {
 		uint8_t						* bufferData;				//<! pointer to the data from the log
 		size_t						m_LogSize;					//<! log size
         std::string					m_name;						//<! class name	
-		eReturnValues				m_ScsiStatus;			    //!< status of the class
+		eReturnValues				m_ScsiStatus;			    //<! status of the class
         sLogPageStruct*				m_Page;						//<! page code for the log lpage format
 
 

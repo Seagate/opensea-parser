@@ -20,20 +20,19 @@
 namespace opensea_parser {
 #ifndef SCSIFACTORYLOG
 #define SCSIFACTORYLOG
+#pragma pack(push, 1)
+	typedef struct _sFactoryParameters
+	{
+		uint16_t		paramCode;							//<! The PARAMETER CODE field is defined
+		uint8_t			paramControlByte;					//<! binary format list log parameter
+		uint8_t			paramLength;						//<! The PARAMETER LENGTH field 
+		_sFactoryParameters() : paramCode(0), paramControlByte(0), paramLength(0) {};
+	} sFactoryParams;
 
+#pragma pack(pop)
 	class CScsiFactoryLog
 	{
 	private:
-#pragma pack(push, 1)
-		typedef struct _sFactoryParameters
-		{
-			uint16_t		paramCode;							//<! The PARAMETER CODE field is defined
-			uint8_t			paramControlByte;					//<! binary format list log parameter
-			uint8_t			paramLength;						//<! The PARAMETER LENGTH field 
-			_sFactoryParameters() : paramCode(0), paramControlByte(0), paramLength(0) {};
-		} sFactoryParams;
-
-#pragma pack(pop)
 	protected:
 		uint8_t						*pData;						//<! pointer to the data
 		std::string					m_FactoryName;				//<! class name	

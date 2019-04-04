@@ -29,7 +29,11 @@ using namespace opensea_parser;
 //
 //---------------------------------------------------------------------------
 CFARMLog::CFARMLog()
-    : m_status(IN_PROGRESS)
+	:bufferData()
+	, m_LogSize(0)
+	, m_status(IN_PROGRESS)
+	, m_isScsi(false)
+	, m_shwoStatus(false)
 {
 
 }
@@ -41,15 +45,20 @@ CFARMLog::CFARMLog()
 //!   Description: Class constructor
 //
 //  Entry:
-//! \param securityPrintLevel = the level of print 
+ 
 //! \parma fileName = the name of the file that need to be read in for getting the data
+//! \param showStatus = if true then show the status bits
 //
 //  Exit:
 //!   \return 
 //
 //---------------------------------------------------------------------------
-CFARMLog::CFARMLog(const std::string & fileName)
-    : m_status(IN_PROGRESS)
+CFARMLog::CFARMLog(const std::string & fileName,bool showStatus)
+	:bufferData()
+	, m_LogSize(0)
+	, m_status(IN_PROGRESS)
+	, m_isScsi(false)
+	, m_shwoStatus(showStatus)
 {
 	CLog *cCLog;
 	cCLog = new CLog(fileName);
@@ -59,7 +68,57 @@ CFARMLog::CFARMLog(const std::string & fileName)
 		{
 			m_LogSize = cCLog->get_Size();
 			bufferData = new uint8_t[m_LogSize];								// new a buffer to the point				
-#ifdef __linux__ //To make old gcc compilers happy
+#ifndef _WIN64
+			memcpy(bufferData, cCLog->get_Buffer(), m_LogSize);
+#else
+			memcpy_s(bufferData, m_LogSize, cCLog->get_Buffer(), m_LogSize);// copy the buffer data to the class member pBuf
+#endif
+			m_isScsi = is_Device_Scsi();
+
+			m_status = IN_PROGRESS;
+		}
+		else
+		{
+
+			m_status = FAILURE;
+		}
+	}
+	else
+	{
+		m_status = cCLog->get_Log_Status();
+	}
+	delete (cCLog);
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn CFARMLog::CFARMLog()
+//
+//! \brief
+//!   Description: Class constructor
+//
+//  Entry:
+//! \parma fileName = the name of the file that need to be read in for getting the data
+//
+//  Exit:
+//!   \return 
+//
+//---------------------------------------------------------------------------
+CFARMLog::CFARMLog(const std::string & fileName)
+	:bufferData()
+	, m_LogSize(0)
+	, m_status(IN_PROGRESS)
+	, m_isScsi(false)
+	, m_shwoStatus(false)
+{
+	CLog *cCLog;
+	cCLog = new CLog(fileName);
+	if (cCLog->get_Log_Status() == SUCCESS)
+	{
+		if (cCLog->get_Buffer() != NULL)
+		{
+			m_LogSize = cCLog->get_Size();
+			bufferData = new uint8_t[m_LogSize];								// new a buffer to the point				
+#ifndef _WIN64
 			memcpy(bufferData, cCLog->get_Buffer(), m_LogSize);
 #else
 			memcpy_s(bufferData, m_LogSize, cCLog->get_Buffer(), m_LogSize);// copy the buffer data to the class member pBuf
@@ -95,7 +154,10 @@ CFARMLog::CFARMLog(const std::string & fileName)
 //---------------------------------------------------------------------------
 CFARMLog::~CFARMLog()
 {
-
+    if (bufferData != NULL)
+    {
+        delete [] bufferData;
+    }
 }
 //-----------------------------------------------------------------------------
 //
@@ -139,35 +201,53 @@ bool CFARMLog::is_Device_Scsi()
 //!   \return SUCCESS or FAILURE
 //
 //---------------------------------------------------------------------------
-eReturnValues CFARMLog::ParseFarmLog(JSONNODE *masterJson)
+eReturnValues CFARMLog::parse_Device_Farm_Log(JSONNODE *masterJson)
 {
     eReturnValues retStatus = MEMORY_FAILURE;
     if (m_isScsi)
     {
         CSCSI_Farm_Log *pCFarm;
-        pCFarm = new CSCSI_Farm_Log((uint8_t *)bufferData, m_LogSize);
+        pCFarm = new CSCSI_Farm_Log((uint8_t *)bufferData, m_LogSize, m_shwoStatus);
         if (pCFarm->get_Log_Status() == SUCCESS)
         {
-            retStatus = pCFarm->ParseFarmLog();
-            if (retStatus == SUCCESS)
-            {
-                pCFarm->print_All_Pages(masterJson);
-            }
+			try
+			{
+				retStatus = pCFarm->parse_Farm_Log();
+				if (retStatus == IN_PROGRESS)
+				{
+					pCFarm->print_All_Pages(masterJson);
+					retStatus = SUCCESS;
+				}
+			}
+			catch (...)
+			{
+				delete (pCFarm);
+				return MEMORY_FAILURE;
+			}
         }
         delete( pCFarm);
     }
     else
     {
         CATA_Farm_Log *pCFarm;
-        pCFarm = new CATA_Farm_Log((uint8_t *)bufferData, m_LogSize);
+        pCFarm = new CATA_Farm_Log((uint8_t *)bufferData, m_LogSize, m_shwoStatus);
         if (pCFarm->get_Log_Status() == IN_PROGRESS)
         {
-            retStatus = pCFarm->parse_Farm_Log();
-            if (retStatus == IN_PROGRESS)
-            {
-                pCFarm->print_All_Pages(masterJson);
-                retStatus = SUCCESS;
-            }
+			try
+			{
+				retStatus = pCFarm->parse_Farm_Log();
+				if (retStatus == IN_PROGRESS)
+				{
+					pCFarm->print_All_Pages(masterJson);
+					retStatus = SUCCESS;
+				}
+			}
+			catch (...)
+			{
+				delete (pCFarm);
+				return MEMORY_FAILURE;
+			}
+            
         }
         delete (pCFarm);
     }

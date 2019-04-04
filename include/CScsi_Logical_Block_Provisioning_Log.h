@@ -21,21 +21,21 @@
 namespace opensea_parser {
 #ifndef SCSILBALOG
 #define SCSILBALOG
+#pragma pack(push, 1)
+	typedef struct _sLogical_Block_ProvisioningParameters
+	{
+		uint16_t		paramCode;							//<! The PARAMETER CODE field is defined
+		uint8_t			paramControlByte;					//<! binary format list log parameter
+		uint8_t			paramLength;						//<! The PARAMETER LENGTH field 
+		uint32_t		resourceCount;						//<! The RESOURCE COUNT field indicates an estimate of the number of Available Provisioning resources
+		uint32_t		reserved;							//<! Remander of the reserved area
+		_sLogical_Block_ProvisioningParameters() : paramCode(0), paramControlByte(0), paramLength(0), resourceCount(0), reserved(0) {};
+	} sLBA;
+#pragma pack(pop)
 
 	class CScsiLBAProvisionLog
 	{
 	private:
-#pragma pack(push, 1)
-		typedef struct _sLogical_Block_ProvisioningParameters
-		{
-			uint16_t		paramCode;							//<! The PARAMETER CODE field is defined
-			uint8_t			paramControlByte;					//<! binary format list log parameter
-			uint8_t			paramLength;						//<! The PARAMETER LENGTH field 
-			uint32_t		resourceCount;						//<! The RESOURCE COUNT field indicates an estimate of the number of Available Provisioning resources
-			uint32_t		reserved;							//<! Remander of the reserved area
-			_sLogical_Block_ProvisioningParameters() : paramCode(0), paramControlByte(0), paramLength(0), resourceCount(0), reserved(0) {};
-		} sLBA;
-#pragma pack(pop)
 	protected:
 		uint8_t						*pData;						//<! pointer to the data
 		std::string					m_LBAName;					//<! class name	

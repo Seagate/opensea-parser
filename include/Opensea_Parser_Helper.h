@@ -13,6 +13,18 @@
 //
 // \file Opensea_Parser_Helper.h   Definition of SeaParser specific functions, structures
 #pragma once
+//defining these macros for C++ to make older C++ compilers happy and work like the newer C++ compilers
+#ifndef __STDC_FORMAT_MACROS
+#define __STDC_FORMAT_MACROS
+#endif
+#ifndef __STDC_LIMIT_MACROS
+#define __STDC_LIMIT_MACROS
+#endif
+#ifndef __STDC_CONSTANT_MACROS
+#define __STDC_CONSTANT_MACROS
+#endif
+
+#include <inttypes.h>
 #include <time.h>
 #include "common.h"
 #include "libjson.h"
@@ -22,7 +34,11 @@ extern time_t g_currentTime;
 extern char g_currentTimeString[64];
 extern char *g_currentTimeStringPtr;
 
+
+
 namespace opensea_parser {
+#ifndef OPENSEA_PARSER
+#define OPENSEA_PARSER
 
 #define RELISTAT                24
 #define WORLD_WIDE_NAME_LEN     18
@@ -34,22 +50,22 @@ namespace opensea_parser {
 #define INVALID_LENGTH          50
 
     // output file types
-    enum eOpensea_print_Types
+	typedef enum _eOpensea_print_Types
     {
         OPENSEA_LOG_PRINT_JSON,     // default
         OPENSEA_LOG_PRINT_TEXT,
         OPENSEA_LOG_PRINT_CSV,
         OPENSEA_LOG_PRINT_FLAT_CSV,
-    };
+    }eOpensea_print_Types;
 	// SCSI Parameter Control Bytes
-	enum eOpenSea_SCSI_Log_Parameter_Types
+	typedef enum _eOpenSea_SCSI_Log_Parameter_Types
 	{
-		OPENSEA_SCSI_LOG_BOUNDED_DATA_COUNTER = 0,   //
+		OPENSEA_SCSI_LOG_BOUNDED_DATA_COUNTER = 0,   // default
 		OPENSEA_SCSI_LOG_ASCII_FORMAT_LIST,
 		OPENSEA_SCSI_LOG_BOUNDED_DATA_COUNTER_OR_UNBOUNDED_DATA_COUNTER,
 		OPENSEA_SCSI_LOG_BINARY_FORMAT_LIST,
-	};
-
+	}eOpenSea_SCSI_Log_Parameter_Types;
+#pragma pack(push, 1)
 	typedef struct _sLogPageStruct
 	{
 		uint8_t			pageCode;							//<! page code for the log lpage format
@@ -57,7 +73,7 @@ namespace opensea_parser {
 		uint16_t		pageLength;							//<! this is different from size, see SCSI SPC Spec. 
 		_sLogPageStruct() : pageCode(0), subPage(0), pageLength(0) {};
 	}sLogPageStruct;
-
+#pragma pack(pop)
 	typedef enum _eLogPageNames
 	{
 		SUPPORTED_LOG_PAGES = 0x00,
@@ -77,7 +93,7 @@ namespace opensea_parser {
 		POWER_CONDITION_TRANSITIONS = 0x1A,
 		INFORMATIONAL_EXCEPTIONS = 0x2F,
 		CACHE_STATISTICS = 0x37,
-		SEAGATE_FARM_LOG = 0x3D,
+		SEAGATE_SPECIFIC_LOG = 0x3D,
 		FACTORY_LOG = 0x3E,
 	}eLogPageNames;
 
@@ -87,7 +103,7 @@ namespace opensea_parser {
 		START_STOP_CYCLE_COUNTER ,	APPLICATION_CLIENT,	SELF_TEST_RESULTS,
 		SOLID_STATE_MEDIA ,	BACKGROUND_SCAN , PROTOCOL_SPECIFIC_PORT,
 		POWER_CONDITION_TRANSITIONS , INFORMATIONAL_EXCEPTIONS,
-		CACHE_STATISTICS ,	SEAGATE_FARM_LOG , 	FACTORY_LOG };
+		CACHE_STATISTICS ,	SEAGATE_SPECIFIC_LOG , 	FACTORY_LOG };
 
 
     inline void set_json_64bit(JSONNODE *nowNode, const std::string & myStr, uint64_t value, bool hexPrint)
@@ -154,5 +170,56 @@ namespace opensea_parser {
 		}
 		return false;
 	}
+	//-----------------------------------------------------------------------------
+	//
+	//! \fn check_For_Active_Status()
+	//
+	//! \brief
+	//!   Description:  check for the active status bit in the 64 bit value
+	//
+	//  Entry:
+	//! \param value  =  64 bit value to check to see if the bit is set or not
+	//
+	//  Exit:
+	//!   \return bool - false or true
+	//
+	//---------------------------------------------------------------------------
+	inline bool check_For_Active_Status(uint64_t *value)
+	{
+		if ((*value & BIT63) == BIT63 && (*value & BIT62) == BIT62)
+		{
+			return true;
+		}
+		return false;
+	}
+	//-----------------------------------------------------------------------------
+	//
+	//! \fn check_Status_Strip_Status()
+	//
+	//! \brief
+	//!   Description:  check for the active status bit in the 64 bit value
+	//
+	//  Entry:
+	//! \param value  =  64 bit value to check to see if the bit is set or not
+	//
+	//  Exit:
+	//!   \return uint64_t return the stipped value or a 0
+	//
+	//---------------------------------------------------------------------------
+	inline uint64_t check_Status_Strip_Status(uint64_t value)
+	{
+		if (check_For_Active_Status(&value))
+		{
+			value = value & 0x00FFFFFFFFFFFFFFLL;
+		}
+		else
+		{
+			value = 0;
+		}
+		return value;
+	}
+
+#endif // !OPENSEA_PARSER
 }
+
 

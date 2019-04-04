@@ -20,19 +20,20 @@
 namespace opensea_parser {
 #ifndef SCSITEMPLOG
 #define SCSITEMPLOG
+#pragma pack(push, 1)
+	typedef struct _sTempLogPageStruct
+	{
+		uint16_t		paramCode;							//<! The PARAMETER CODE field is described in 5.2.2.2.2, and shall be set as shown in table 352 for the Temperature log parameter.
+		uint8_t			paramControlByte;					//<! binary format list log parameter
+		uint8_t			paramLength;						//<! The PARAMETER LENGTH field is described in 5.2.2.2.2, and shall be set as shown in table 352 for the Temperature log parameter.
+		uint8_t			reserved;
+		uint8_t			temp;								//<! The TEMPERATURE field indicates the temperature of the SCSI target device in degrees Celsius at the time the LOG SENSE command
+	}sTempLogPageStruct;
+#pragma pack(pop)
+
 	class CScsiTemperatureLog
 	{
 	private:
-#pragma pack(push, 1)
-		typedef struct _sTempLogPageStruct
-		{
-			uint16_t		paramCode;							//<! The PARAMETER CODE field is described in 5.2.2.2.2, and shall be set as shown in table 352 for the Temperature log parameter.
-			uint8_t			paramControlByte;					//<! binary format list log parameter
-			uint8_t			paramLength;						//<! The PARAMETER LENGTH field is described in 5.2.2.2.2, and shall be set as shown in table 352 for the Temperature log parameter.
-			uint8_t			reserved;
-			uint8_t			temp;								//<! The TEMPERATURE field indicates the temperature of the SCSI target device in degrees Celsius at the time the LOG SENSE command
-		}sTempLogPageStruct;
-#pragma pack(pop)
 	protected:
 		uint8_t						*pData;						//<! pointer to the data
 		size_t						m_pDataSize;                //<! the size of the file that will be opened

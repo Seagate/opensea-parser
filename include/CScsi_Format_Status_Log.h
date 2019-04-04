@@ -21,19 +21,20 @@ namespace opensea_parser {
 #ifndef SCSIFORMATLOG
 #define SCSIFORMATLOG
 
+#pragma pack(push, 1)
+	typedef struct _sFormatStatusParameters
+	{
+		uint16_t		paramCode;							//<! The PARAMETER CODE field is defined
+		uint8_t			paramControlByte;					//<! binary format list log parameter
+		uint8_t			paramLength;						//<! The PARAMETER LENGTH field 
+		_sFormatStatusParameters() : paramCode(0), paramControlByte(0), paramLength(0) {};
+	} sFormatParams;
+
+#pragma pack(pop)
+
 	class CScsiFormatStatusLog
 	{
 	private:
-#pragma pack(push, 1)
-		typedef struct _sFormatStatusParameters
-		{
-			uint16_t		paramCode;							//<! The PARAMETER CODE field is defined
-			uint8_t			paramControlByte;					//<! binary format list log parameter
-			uint8_t			paramLength;						//<! The PARAMETER LENGTH field 
-			_sFormatStatusParameters() : paramCode(0), paramControlByte(0), paramLength(0) {};
-		} sFormatParams;
-
-#pragma pack(pop)
 	protected:
 		uint8_t						*pData;						//<! pointer to the data
 		std::string					m_FormatName;				//<! class name	

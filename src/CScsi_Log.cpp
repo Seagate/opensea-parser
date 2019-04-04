@@ -48,11 +48,12 @@ using namespace opensea_parser;
 //
 //---------------------------------------------------------------------------
 CScsiLog::CScsiLog()
-	: m_name("SCSI Log")
-	, m_ScsiStatus(IN_PROGRESS)
-	, bufferData()
-	, m_LogSize(0)
-{
+	: bufferData(NULL) 
+	, m_LogSize(0) 
+	, m_name("SCSI Log")                   
+	, m_ScsiStatus(IN_PROGRESS)            
+	, m_Page()                                                      
+{                                          
 	
 }
 //-----------------------------------------------------------------------------
@@ -69,10 +70,10 @@ CScsiLog::CScsiLog()
 //
 //---------------------------------------------------------------------------
 CScsiLog::CScsiLog(const std::string fileName, JSONNODE *masterData)
-    : m_name("SCSI Log")
-	, m_ScsiStatus(IN_PROGRESS)
-	, bufferData()
-	, m_LogSize(0)
+	: bufferData(NULL) 
+	, m_LogSize(0) 
+	, m_name("SCSI Log")                   
+	, m_ScsiStatus(IN_PROGRESS)            
 
 {
 	CLog *cCLog;
@@ -83,7 +84,7 @@ CScsiLog::CScsiLog(const std::string fileName, JSONNODE *masterData)
 		{
 			m_LogSize = cCLog->get_Size();
 			bufferData = new uint8_t[m_LogSize];								// new a buffer to the point				
-#ifdef __linux__ //To make old gcc compilers happy
+#ifndef _WIN64
 			memcpy(bufferData, cCLog->get_Buffer(), m_LogSize);
 #else
 			memcpy_s(bufferData, m_LogSize, cCLog->get_Buffer(), m_LogSize);// copy the buffer data to the class member pBuf
@@ -119,9 +120,6 @@ CScsiLog::CScsiLog(const std::string fileName, JSONNODE *masterData)
 //---------------------------------------------------------------------------
 CScsiLog::~CScsiLog()
 {
-	if (bufferData != NULL) {
-		safe_Free(bufferData);
-	}
 }
 //-----------------------------------------------------------------------------
 //
@@ -149,7 +147,6 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 		byte_Swap_16(&m_Page->pageLength);
 		if (IsScsiLogPage(m_Page->pageLength , M_GETBITRANGE(m_Page->pageCode, 5, 0)) == true)
 		{
-			uint8_t pageCode = 0;
 			switch (M_GETBITRANGE(m_Page->pageCode, 5, 0))
 			{
 			case SUPPORTED_LOG_PAGES:
@@ -421,13 +418,13 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				delete (cCache);
 			}
 			break;
-			case SEAGATE_FARM_LOG:
+			case SEAGATE_SPECIFIC_LOG:
 			{
 				CSCSI_Farm_Log *pCFarm;
-				pCFarm = new CSCSI_Farm_Log((uint8_t *)bufferData, m_LogSize);
+				pCFarm = new CSCSI_Farm_Log((uint8_t *)bufferData, m_LogSize, false);
 				if (pCFarm->get_Log_Status() == SUCCESS)
 				{
-					retStatus = pCFarm->ParseFarmLog();
+					retStatus = pCFarm->parse_Farm_Log();
 					if (retStatus == SUCCESS)
 					{
 						pCFarm->print_All_Pages(masterData);

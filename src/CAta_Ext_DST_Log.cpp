@@ -38,7 +38,7 @@ CAta_Ext_DST_Log::CAta_Ext_DST_Log(const std::string &fileName, JSONNODE *master
 		{
 			m_logSize = cCLog->get_Size();
 			pData = new uint8_t[m_logSize];								// new a buffer to the point				
-#ifdef __linux__ //To make old gcc compilers happy
+#ifndef _WIN64 
 			memcpy(pData, cCLog->get_Buffer(), m_logSize);
 #else
 			memcpy_s(pData, m_logSize, cCLog->get_Buffer(), m_logSize);// copy the buffer data to the class member pBuf
@@ -94,7 +94,10 @@ CAta_Ext_DST_Log::CAta_Ext_DST_Log(uint8_t *pBufferData, JSONNODE *masterData)
 //---------------------------------------------------------------------------
 CAta_Ext_DST_Log::~CAta_Ext_DST_Log()
 {
-
+    if (pData != NULL)
+    {
+        delete []pData;
+    }
 }
 //-----------------------------------------------------------------------------
 //

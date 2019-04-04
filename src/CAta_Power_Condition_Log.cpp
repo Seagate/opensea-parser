@@ -77,7 +77,7 @@ CAtaPowerConditionsLog::CAtaPowerConditionsLog(std::string filename)
 		{
 			size_t logSize = cCLog->get_Size();
 			m_powerConditionLog = new uint8_t[logSize];								// new a buffer to the point				
-#ifdef __linux__ //To make old gcc compilers happy
+#ifndef _WIN64
 			memcpy(m_powerConditionLog, cCLog->get_Buffer(), logSize);
 #else
 			memcpy_s(m_powerConditionLog, logSize, cCLog->get_Buffer(), logSize);// copy the buffer data to the class member pBuf
@@ -90,7 +90,7 @@ CAtaPowerConditionsLog::CAtaPowerConditionsLog(std::string filename)
 				byte_Swap_16(&idCheck->pageLength);  // now that we know it's not scsi we need to flip the bytes back
 				m_conditionFlags = &conditionFlags;
 				get_Power_Condition_Log();
-				m_status = SUCCESS;
+				m_status = IN_PROGRESS;
 			}
 			else
 			{
@@ -162,6 +162,10 @@ CAtaPowerConditionsLog::CAtaPowerConditionsLog(tDataPtr pData, JSONNODE *masterD
 //---------------------------------------------------------------------------
 CAtaPowerConditionsLog::~CAtaPowerConditionsLog()
 {
+    if (m_powerConditionLog != NULL)
+    {
+        delete [] m_powerConditionLog;
+    }
 }
 
 //-----------------------------------------------------------------------------

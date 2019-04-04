@@ -21,40 +21,41 @@
 namespace opensea_parser {
 #ifndef ATANCQCMDERROR
 #define ATANCQCMDERROR
-    class CAta_NCQ_Command_Error_Log 
-    {
-    private:
+
 #define MAX_QUEUE           32
 #pragma pack(push, 1)
-        typedef struct _sNCQError
-        {
-            uint8_t         NCQbit;         //!< ncq bit name
-            uint8_t         reserved;
-            uint8_t         status;
-            uint8_t         error;
-            uint8_t         lba1;
-            uint8_t         lba2;
-            uint8_t         lba3;
-            uint8_t         device;
-            uint8_t         lba4;
-            uint8_t         lba5;
-            uint8_t         lba6;
-            uint8_t         reserved1;
-            uint16_t        count;
-            uint8_t         senseKey;
-            uint8_t         senseCodeField;
-            uint8_t         senseCodeQualifier;
-            uint64_t        finalLBA;
-        }sNCQError;
-        typedef struct _sNCQWriteErrors
-        {
-            uint16_t        writePointer1;              //!< first 16 of 48 
-            uint16_t        writePointer2;              //!< second 16 of 48
-            uint16_t        writePointer3;              //!< third 16 of 48
-        }sNCQWriteErrors;
+	typedef struct _sNCQError
+	{
+		uint8_t         NCQbit;         //!< ncq bit name
+		uint8_t         reserved;
+		uint8_t         status;
+		uint8_t         error;
+		uint8_t         lba1;
+		uint8_t         lba2;
+		uint8_t         lba3;
+		uint8_t         device;
+		uint8_t         lba4;
+		uint8_t         lba5;
+		uint8_t         lba6;
+		uint8_t         reserved1;
+		uint16_t        count;
+		uint8_t         senseKey;
+		uint8_t         senseCodeField;
+		uint8_t         senseCodeQualifier;
+		uint64_t        finalLBA;
+	}sNCQError;
+	typedef struct _sNCQWriteErrors
+	{
+		uint16_t        writePointer1;              //!< first 16 of 48 
+		uint16_t        writePointer2;              //!< second 16 of 48
+		uint16_t        writePointer3;              //!< third 16 of 48
+	}sNCQWriteErrors;
 
 
 #pragma pack(pop)
+    class CAta_NCQ_Command_Error_Log 
+    {
+    private:
         uint32_t                writeValid;                 //!< write pointer valid field
         std::string             m_name;                                 //!< name of the class
         eReturnValues           m_status;                               //!< the status of the class  
@@ -72,6 +73,7 @@ namespace opensea_parser {
         CAta_NCQ_Command_Error_Log(const std::string & fileName);
         CAta_NCQ_Command_Error_Log(uint8_t *buffer);
         ~CAta_NCQ_Command_Error_Log();
+		eReturnValues get_NCQ_Command_Error_Log_Status() { return m_status; };
         eReturnValues get_NCQ_Command_Error_Log(JSONNODE *masterData);
     };
 #endif  //ATANCQCMDERROR
