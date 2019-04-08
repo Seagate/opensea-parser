@@ -84,6 +84,7 @@ namespace opensea_parser {
 			{
 				json_push_back(nowNode, json_new_i((char *)myStr.c_str(), static_cast<int32_t>(M_DoubleWord0(value))));
 			}
+			return;
 		}
 		
 		JSONNODE *bigBit = json_new(JSON_NODE);
