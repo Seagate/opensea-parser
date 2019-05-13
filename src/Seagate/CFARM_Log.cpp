@@ -141,6 +141,40 @@ CFARMLog::CFARMLog(const std::string & fileName)
 }
 //-----------------------------------------------------------------------------
 //
+//! \fn CFARMLog::CFARMLog()
+//
+//! \brief
+//!   Description: Class constructor
+//
+//  Entry:
+//! \param bufferData = pointer to the buffer data.
+//! \param bufferSize = the size of the buffer
+//! \param showStatus = true to show the status bits of the farmlog
+//
+//  Exit:
+//!   \return 
+//
+//---------------------------------------------------------------------------
+CFARMLog::CFARMLog(uint8_t *bufferData, size_t bufferSize, bool showStatus)
+	:bufferData(bufferData)
+	, m_LogSize(bufferSize)
+	, m_status(IN_PROGRESS)
+	, m_isScsi(false)
+	, m_shwoStatus(showStatus)
+{
+	if (bufferData != NULL)
+	{
+		m_isScsi = is_Device_Scsi();
+		m_status = IN_PROGRESS;
+}
+	else
+	{
+
+		m_status = FAILURE;
+	}
+}
+//-----------------------------------------------------------------------------
+//
 //! \fn CATA_Farm_Log::CATA_Farm_Log()
 //
 //! \brief
