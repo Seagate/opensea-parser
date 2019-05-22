@@ -125,10 +125,11 @@ namespace opensea_parser {
 			return;
 		}
 		
-		JSONNODE *bigBit = json_new(JSON_NODE);
-		json_set_name(bigBit, (char *)myStr.c_str());
+
 		if (showStatusBits)
 		{
+            JSONNODE *bigBit = json_new(JSON_NODE);
+            json_set_name(bigBit, (char *)myStr.c_str());
 			if ((value & BIT63) == BIT63)
 			{
 				set_Json_Bool(bigBit, "Field Supported", true);
