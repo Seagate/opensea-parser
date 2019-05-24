@@ -203,13 +203,17 @@ namespace opensea_parser {
     {
 		std::string printStr = " ";
 		printStr.resize(BASIC);
+#ifndef _WIN64   //To make old gcc compilers happy
 		std::string lowStr = "64 bit Value Lower value";
 		std::string upperStr = "64 bit Value Upper value";
+#endif
 
 		value = check_Status_Strip_Status(value);
 		value = check_for_signed_int(value, 16);
+#ifndef _WIN64   //To make old gcc compilers happy
 		int32_t lowValue = static_cast<int32_t>(value);
 		int32_t upperValue = static_cast<int32_t>(value >> 32);
+#endif
 		if (hexPrint)
 		{
 
