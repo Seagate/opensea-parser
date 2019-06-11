@@ -184,7 +184,7 @@ namespace opensea_parser {
 	}
 	//-----------------------------------------------------------------------------
 	//
-	//! \fn set_json_64()
+	//! \fn set_json_64bit_With_Check_Status()
 	//
 	//! \brief
 	//!   Description:  set the json values for a 64 bit value
@@ -199,7 +199,7 @@ namespace opensea_parser {
 	//!   \return void
 	//
 	//-----------------------------------------------------------------------------
-    inline void set_json_64bit(JSONNODE *nowNode, const std::string & myStr, uint64_t value, bool hexPrint)
+    inline void set_json_64bit_With_Check_Status(JSONNODE *nowNode, const std::string & myStr, uint64_t value, bool hexPrint)
     {
 		std::string printStr = " ";
 		printStr.resize(BASIC);
@@ -256,7 +256,78 @@ namespace opensea_parser {
 		}
 
 	}
+    //-----------------------------------------------------------------------------
+    //
+    //! \fn set_json_64()
+    //
+    //! \brief
+    //!   Description:  set the json values for a 64 bit value
+    //
+    //  Entry:
+    //! \param  nowNode = the Json node that the data will be added to
+    //! \param  myStr = the string data what will be adding to
+    //! \param value  =  64 bit value to check to see if the bit is set or not
+    //! \param hexPrint =  if true then print the data in a hex format
+    //
+    //  Exit:
+    //!   \return void
+    //
+    //-----------------------------------------------------------------------------
+    inline void set_json_64bit(JSONNODE *nowNode, const std::string & myStr, uint64_t value, bool hexPrint)
+    {
+        std::string printStr = " ";
+        printStr.resize(BASIC);
+#ifndef _WIN64   //To make old gcc compilers happy
+        std::string lowStr = "64 bit Value Lower value";
+        std::string upperStr = "64 bit Value Upper value";
+#endif
 
+#ifndef _WIN64   //To make old gcc compilers happy
+        int32_t lowValue = static_cast<int32_t>(value);
+        int32_t upperValue = static_cast<int32_t>(value >> 32);
+#endif
+        if (hexPrint)
+        {
+
+#ifndef _WIN64   //To make old gcc compilers happy
+            JSONNODE *bigBit = json_new(JSON_NODE);
+            json_set_name(bigBit, (char *)myStr.c_str());
+            json_push_back(bigBit, json_new_b("64 bit Value String in Hex", true));
+            snprintf((char*)printStr.c_str(), BASIC, "0x%014" PRIx64"", value);
+            json_push_back(bigBit, json_new_a("64 bit Value String", (char*)printStr.c_str()));
+            json_push_back(bigBit, json_new_i((char*)lowStr.c_str(), lowValue));
+            json_push_back(bigBit, json_new_i((char*)upperStr.c_str(), upperValue));
+            json_push_back(nowNode, bigBit);
+#else		//json does not support 64 bit numbers. Therefore we will print it as a string
+            snprintf((char*)printStr.c_str(), BASIC, "0x%08" PRIx64"", value);
+            json_push_back(nowNode, json_new_a((char *)myStr.c_str(), (char*)printStr.c_str()));
+#endif
+        }
+        else
+        {
+            if ((int64_t)value < INT32_MAX && (int64_t)value > INT32_MIN)
+            {
+                json_push_back(nowNode, json_new_i((char *)myStr.c_str(), static_cast<int32_t>(M_DoubleWord0(value))));
+            }
+            else
+            {
+#ifndef _WIN64   //To make old gcc compilers happy
+                JSONNODE *bigBit = json_new(JSON_NODE);
+                json_set_name(bigBit, (char *)myStr.c_str());
+                json_push_back(bigBit, json_new_b("64 bit Value String in Hex", false));
+                snprintf((char*)printStr.c_str(), BASIC, "%" PRIi64"", value);
+                json_push_back(bigBit, json_new_a("64 bit Value String", (char*)printStr.c_str()));
+                json_push_back(bigBit, json_new_i((char*)lowStr.c_str(), lowValue));
+                json_push_back(bigBit, json_new_i((char*)upperStr.c_str(), upperValue));
+                json_push_back(nowNode, bigBit);
+#else		//json does not support 64 bit numbers. Therefore we will print it as a string
+                snprintf((char*)printStr.c_str(), BASIC, "%" PRId64"", value);
+                json_push_back(nowNode, json_new_a((char *)myStr.c_str(), (char*)printStr.c_str()));
+#endif
+            }
+        }
+
+    }
 	//-----------------------------------------------------------------------------
 	//
 	//! \fn set_Json_Bool()

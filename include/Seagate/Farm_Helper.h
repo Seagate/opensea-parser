@@ -146,12 +146,12 @@ namespace opensea_parser {
 			{
 				set_Json_Bool(bigBit, "Field Valid", false);
 			}
-			set_json_64bit(bigBit, myStr, value, hexPrint);
+            set_json_64bit_With_Check_Status(bigBit, myStr, value, hexPrint);
 			json_push_back(nowNode, bigBit);
 		}
 		else
 		{
-			set_json_64bit(nowNode, myStr, value, hexPrint);
+            set_json_64bit_With_Check_Status(nowNode, myStr, value, hexPrint);
 		}
 	}
 
