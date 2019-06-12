@@ -120,6 +120,10 @@ CScsiLog::CScsiLog(const std::string fileName, JSONNODE *masterData)
 //---------------------------------------------------------------------------
 CScsiLog::~CScsiLog()
 {
+    if (bufferData != NULL)
+    {
+        delete [] bufferData;
+    }
 }
 //-----------------------------------------------------------------------------
 //
