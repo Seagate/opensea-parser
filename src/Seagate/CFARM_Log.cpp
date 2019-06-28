@@ -210,9 +210,9 @@ bool CFARMLog::is_Device_Scsi()
 {
     if (bufferData != NULL)
     {
-        if (M_GETBITRANGE(bufferData[0], 5, 0) == 0x3D)
+        if (M_GETBITRANGE(bufferData[0], 5, 0) == 0x3D )
         {
-            if (bufferData[1] == 03)
+            if (bufferData[1] == 03 || bufferData[1] == 04)
             {
                 return true;
             }

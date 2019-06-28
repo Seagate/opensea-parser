@@ -38,6 +38,8 @@ CATA_Farm_Log::CATA_Farm_Log()
     , m_showStatusBits(false)
     , m_pHeader()
     , pBuf()
+    , m_MajorRev(0)
+    , m_MinorRev(0)
 {
 
 }
@@ -67,6 +69,8 @@ CATA_Farm_Log::CATA_Farm_Log( uint8_t *bufferData, size_t bufferSize, bool showS
     , m_showStatusBits(showStatus)
     , m_pHeader()
     , pBuf()
+    , m_MajorRev(0)
+    , m_MinorRev(0)
 {
 	pBuf = new uint8_t[bufferSize];								// new a buffer to the point				
 #ifndef _WIN64
@@ -91,6 +95,8 @@ CATA_Farm_Log::CATA_Farm_Log( uint8_t *bufferData, size_t bufferSize, bool showS
 			m_MaxHeads = m_pHeader->headsSupported & 0x00FFFFFFFFFFFFFFLL;
             m_copies = m_pHeader->copies & 0x00FFFFFFFFFFFFFFLL;
             m_status = IN_PROGRESS;
+            m_MajorRev = M_DoubleWord0(m_pHeader->majorRev);
+            m_MinorRev = M_DoubleWord0(m_pHeader->minorRev);
         }
     }
     else
@@ -160,6 +166,11 @@ eReturnValues CATA_Farm_Log::parse_Farm_Log()
             create_World_Wide_Name(&pFarmFrame->identStringInfo.worldWideName, idInfo);
             create_Firmware_String(&pFarmFrame->identStringInfo.firmwareRev, idInfo);
             create_Device_Interface_String(&pFarmFrame->identStringInfo.deviceInterface, idInfo);
+            if (m_MajorRev >= MAJORVERSION3)                    // must be higher then version 3.0 for the model number
+            {
+                create_Model_Number_String(&pFarmFrame->identStringInfo.modelNumber, idInfo);
+            }
+            
             offset += m_pageSize;
 
             sWorkLoadStat *pworkLoad = (sWorkLoadStat *)&pBuf[offset];           // get the work load information
@@ -184,7 +195,6 @@ eReturnValues CATA_Farm_Log::parse_Farm_Log()
 	delete (pFarmFrame);
 	return retStatus;
 }
-
 
 //-----------------------------------------------------------------------------
 //
@@ -293,9 +303,15 @@ eReturnValues CATA_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint3
     json_set_name(driveInfo, (char*)myStr.c_str());
     JSONNODE *pageInfo = json_new(JSON_NODE);
     json_set_name(pageInfo, "Drive Information");
-                                              
-    snprintf((char*)myStr.c_str(), BASIC, "%s", vFarmFrame[page].identStringInfo.serialNumber.c_str());
-    json_push_back(pageInfo, json_new_a("Serial Number", (char*)myStr.c_str()));																				//!< serial number of the device
+     
+    snprintf((char*)myStr.c_str(), BASIC, "%s", vFarmFrame[page].identStringInfo.serialNumber.c_str());                                                         //!< serial number of the device
+    json_push_back(pageInfo, json_new_a("Serial Number", (char*)myStr.c_str()));
+    if (m_MajorRev <= MAJORVERSION3)
+    {
+        snprintf((char*)myStr.c_str(), BASIC, "%s", vFarmFrame[page].identStringInfo.modelNumber.c_str());                                                      //!< model Number  only on 3.0 and higher 
+        json_push_back(pageInfo, json_new_a("Model Number", (char*)myStr.c_str()));
+    }
+																				
     snprintf((char*)myStr.c_str(), BASIC, "%s", vFarmFrame[page].identStringInfo.worldWideName.c_str());
     json_push_back(pageInfo, json_new_a("World Wide Name", (char*)myStr.c_str()));																				//!< world wide Name
 	snprintf((char*)myStr.c_str(), BASIC, "%s", vFarmFrame[page].identStringInfo.firmwareRev.c_str());															//!< Firmware Revision [0:3]
@@ -332,6 +348,35 @@ eReturnValues CATA_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint3
 	set_json_64_bit_With_Status(pageInfo, "Time Stamp (Milliseconds) end", vFarmFrame[page].driveInfo.timeStamp2, false, m_showStatusBits);						//!< Timestamp of latest SMART Summary Frame in Power-On Hours Milliseconds1
 	set_json_64_bit_With_Status(pageInfo, "Time to ready of the last power cycle", vFarmFrame[page].driveInfo.timeToReady, false, m_showStatusBits);			//!< time to ready of the last power cycle
 	set_json_64_bit_With_Status(pageInfo, "Time drive is held in staggered spin", vFarmFrame[page].driveInfo.timeHeld, false, m_showStatusBits);				//!< time drive is held in staggered spin during the last power on sequence
+    if (m_MajorRev <= MAJORVERSION3)
+    {
+        if (check_For_Active_Status(&vFarmFrame[page].driveInfo.driveRecordingType))
+        {
+            myStr = "Drive Recording Type";
+            std::string type = "   ";
+            if (BIT0 & check_Status_Strip_Status(vFarmFrame[page].driveInfo.driveRecordingType) == 0)
+            {
+                type = "SMR";
+            }
+            else
+            {
+                type = "CMR";
+            }
+            set_json_string_With_Status(pageInfo, myStr,type, m_showStatusBits, m_showStatusBits);
+        }
+        if (check_For_Active_Status(&vFarmFrame[page].driveInfo.driveRecordingType))
+        {
+            myStr = "Has Drive been Depopped";
+            if (check_Status_Strip_Status(vFarmFrame[page].driveInfo.depopped) != 0)
+            {
+                set_Json_Bool(pageInfo, myStr,  true);
+            }
+            else
+            {
+                set_Json_Bool(pageInfo, myStr,  false);
+            }
+        }
+    }
     json_push_back(driveInfo, pageInfo);
     json_push_back(masterData, driveInfo);
 

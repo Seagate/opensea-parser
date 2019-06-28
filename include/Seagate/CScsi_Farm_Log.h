@@ -38,6 +38,7 @@ namespace opensea_parser {
 		uint64_t                    m_heads;										  //!< number of heads - first fill in with header information then changed to heads reported on the drive
 		uint64_t					m_MaxHeads;										  //!< Maximum Drive Heads Supported
         uint32_t                    m_copies;                                         //!< Number of Historical Copies
+        uint32_t                    m_MajorRev;                                       //!< holds the Major Revision number
 		uint32_t					m_MinorRev;										  //!< minor rev saved off to pick up the changes in the spec
         uint8_t                     *pBuf;                                            //!< pointer to the buffer data that is the binary of FARM LOG
         eReturnValues               m_status;                                         //!< status of the class	

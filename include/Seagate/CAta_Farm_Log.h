@@ -44,6 +44,8 @@ namespace opensea_parser {
 			bool						m_showStatusBits;					//!< show the status bits of each entry
             sFarmHeader                 *m_pHeader;                         //!< Member pointer to the header of the farm log  
             uint8_t                     *pBuf;                              //!< pointer to the buffer data that is the binary of FARM LOG
+            uint32_t                    m_MajorRev;                         //!< holds the Major Revision number
+            uint32_t                    m_MinorRev;                         //!< holds the minor revision number
 
             eReturnValues print_Header(JSONNODE *masterData);
             eReturnValues print_Drive_Information(JSONNODE *masterData, uint32_t page);
@@ -126,6 +128,46 @@ namespace opensea_parser {
 				strncpy((char *)firmwareRev->c_str(), (char*)&firm, FIRMWARE_REV_LEN);
 				byte_Swap_String((char *)firmwareRev->c_str());
 			}
+            //-----------------------------------------------------------------------------
+            //
+            //! \fn create_Model_Number_String()
+            //
+            //! \brief
+            //!   Description:  takes the 10 uint64 bit Model number field values and create a string 
+            //
+            //  Entry:
+            //! \param modelNumber - string for holding the Model number
+            //! \param idInfo  =  pointer to the drive info structure that holds the infromation needed
+            //
+            //  Exit:
+            //!   \return modelNumber = the string Model number
+            //
+            //---------------------------------------------------------------------------
+            inline void create_Model_Number_String(std::string *modelNumber, const sDriveInfo * const idInfo)
+            {
+                #define MAXSIZE  10
+                uint64_t model[MAXSIZE] = { 0,0,0,0,0,0,0,0,0,0 };
+                // loop for string the 0xc0 off
+                for (uint8_t i = 0; i < MAXSIZE; i++)
+                {
+                    model[i] = idInfo->modelNumber[i] & 0x00FFFFFFFFFFFFFFLL;
+                }
+                // temp string for coping the hex to text, have to resize for c98 issues
+                std::string tempStr = "";
+                tempStr.resize(BASIC);
+                modelNumber->resize(BASIC);
+                // memset them to 0
+                memset((char *)modelNumber->c_str(), 0, BASIC);
+                memset((char *)tempStr.c_str(), 0, BASIC);
+                // loop to copy the info into the modeleNumber string
+                for (uint8_t n = 0; n < MAXSIZE; n++)
+                {
+                    model[n] = idInfo->modelNumber[n] & 0x00FFFFFFFFFFFFFFLL;
+                    strncpy((char *)tempStr.c_str(), (char*)&model[n], 10);
+                    byte_Swap_String((char *)tempStr.c_str());
+                    strncat((char *)modelNumber->c_str(), (char*)tempStr.c_str(), sizeof(tempStr));
+                }
+            }
 			//-----------------------------------------------------------------------------
 			//
 			//! \fn create_Device_Interface_String()

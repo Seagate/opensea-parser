@@ -20,15 +20,18 @@
 
 #define MAX_HEAD_COUNT			24
 #define FARMSIGNATURE           0x00004641524D4552
+#define MAJORVERSION2                2
+#define MAJORVERSION3                3
 
 #pragma pack(push, 1)
 
 typedef struct _sStringIdentifyData
 {
-	std::string serialNumber;										//!< seiral number of the drive
-	std::string worldWideName;										//!< World Wide Name of the device
-	std::string deviceInterface;									//!< Device Interface 
-	std::string firmwareRev;										//!< Firmware Rev
+	std::string serialNumber;									//!< seiral number of the drive
+	std::string worldWideName;									//!< World Wide Name of the device
+	std::string deviceInterface;								//!< Device Interface 
+	std::string firmwareRev;									//!< Firmware Rev
+    std::string modelNumber;                                    //!< Model Number (2.15 and newer will have this)
 }sStringIdentifyData;
 
 typedef struct _sFarmHeader

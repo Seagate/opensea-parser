@@ -53,6 +53,9 @@ typedef struct _sDriveInfo
 	uint64_t        timeStamp2;                                 //!< Timestamp of latest SMART Summary Frame in Power-On Hours Milliseconds
 	uint64_t        timeToReady;								//!< time to ready of the last power cycle
 	uint64_t        timeHeld;									//!< time drive is held in staggered spin during the last power on sequence
+    uint64_t        modelNumber[10];                            //!< lower 32 Model Number (started support in 2.14 )
+    uint64_t        driveRecordingType;                         //!< 0 for SMR and 1 for CMR (started support in 2.15 )
+    uint64_t        depopped;                                   //!< has the drive been depopped  1= depopped and 0 = not depopped(started support in 2.15 )
 }sDriveInfo;
 
 typedef struct _sErrorStat
@@ -77,7 +80,9 @@ typedef struct _sErrorStat
 	uint64_t         totalFlashLED;                             //!< Total Flash LED (Assert) Events
 	uint64_t         indexFlashLED;                             //!< index of the last Flash LED of the array
 	uint64_t         uncorrectables;                            //!< uncorrecatables errors (sata only)
+    uint64_t         smartTrip;                                 //!< SMART Trip for (SAS only)
 	uint64_t         flashLEDArray[8];                          //!< Info on the last 8 Flash LED events Wrapping array.
+    uint64_t         readWriteRetry[8];                         //!< Info on the last 8 read/write Retry events
 }sErrorStat;
 
 typedef struct _sEnvironementStat
