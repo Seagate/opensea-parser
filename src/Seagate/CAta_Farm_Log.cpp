@@ -973,7 +973,14 @@ eReturnValues CATA_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint32
         snprintf((char *)myHeader.c_str(), BASIC, "DOS Write Count Threshold by Head %" PRId32"", loopCount); 
 		set_json_64_bit_With_Status(pageInfo, (char*)myHeader.c_str(), vFarmFrame[page].reliPage.countDOSWrite[loopCount], false, m_showStatusBits);					//!< [24] DOS Write Count Threshold per head
     }
-        
+    if (m_MajorRev >= MAJORVERSION3)                    // must be higher then version 3.0
+    {
+        for (loopCount = 0; loopCount < m_heads; ++loopCount)
+        {
+            snprintf((char *)myHeader.c_str(), BASIC, "Second MR Head Resistance by Head %" PRId32"", loopCount);
+            set_json_64_bit_With_Status(pageInfo, (char*)myHeader.c_str(), vFarmFrame[page].reliPage.secondMRHeadResistance[loopCount], false, m_showStatusBits);					//!< [24] DOS Write Count Threshold per head
+        }
+    }
     json_push_back(reliPage, pageInfo);
     json_push_back(masterData, reliPage);
     return SUCCESS;
