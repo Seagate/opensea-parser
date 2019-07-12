@@ -184,6 +184,7 @@ typedef struct _sAtaReliabilityStat
 	int64_t         maxRVAbsluteMean;                            //!< Max RV Absolute Mean, value from the most recent SMART Summary Frame
 	int64_t         idleTime;                                    //!< idle Time, Value from most recent SMART Summary Frame
 	int64_t         countDOSWrite[MAX_HEAD_COUNT];               //!< [24] DOS Write Count Threshold per head
+    int64_t         secondMRHeadResistance[MAX_HEAD_COUNT];      //!< [24] MAX_HEAD_COUNT (added in 2.11)
 
 }sAtaReliabilityStat;
 
