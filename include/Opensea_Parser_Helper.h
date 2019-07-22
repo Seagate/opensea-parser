@@ -174,7 +174,7 @@ namespace opensea_parser {
 	{
 		int8_t neg = -1;			// set to 1 if bit 56 is set then set it to -1
 		value = value << length;
-		if ((value & BIT63) == BIT63)   // check to see if the bit is set for nef number
+		if (value & BIT63)   // check to see if the bit is set for neg number
 		{
 			value = M_2sCOMPLEMENT(value);
 			value = value * neg;
