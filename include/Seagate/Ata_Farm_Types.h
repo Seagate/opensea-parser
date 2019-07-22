@@ -83,6 +83,8 @@ typedef struct _sErrorStat
     uint64_t         smartTrip;                                 //!< SMART Trip for (SAS only)
 	uint64_t         flashLEDArray[8];                          //!< Info on the last 8 Flash LED events Wrapping array.
     uint64_t         readWriteRetry[8];                         //!< Info on the last 8 read/write Retry events
+    uint64_t         superParityOnTheFlyRecoveryCnt[2];         //!< Super Parity on the Fly Recovery counters
+    uint64_t         reallocatedSectors[15];                    //!< Reallocated Secotors by cause
 }sErrorStat;
 
 typedef struct _sEnvironementStat

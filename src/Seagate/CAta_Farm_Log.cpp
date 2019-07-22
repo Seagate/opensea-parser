@@ -87,7 +87,7 @@ CATA_Farm_Log::CATA_Farm_Log( uint8_t *bufferData, size_t bufferSize, bool showS
         }
         else
         {
-            m_pHeader = (sFarmHeader *)&pBuf[0];
+            m_pHeader = reinterpret_cast< sFarmHeader *>(&pBuf[0]);
             m_totalPages = m_pHeader->pagesSupported & 0x00FFFFFFFFFFFFFFLL;
             m_logSize = m_pHeader->logSize & 0x00FFFFFFFFFFFFFFLL;
             m_pageSize = m_pHeader->pageSize & 0x00FFFFFFFFFFFFFFLL;
@@ -195,7 +195,95 @@ eReturnValues CATA_Farm_Log::parse_Farm_Log()
 	delete (pFarmFrame);
 	return retStatus;
 }
+//-----------------------------------------------------------------------------
+//
+//! \fn get_Reallocated_Sector_By_Cause
+//
+//! \brief
+//!   Description: parser out the data for reason to why it was reallocated
+//
+//  Entry:
+//! \param description - string to give reason
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void CATA_Farm_Log::get_Reallocated_Sector_By_Cause(std::string *description, uint64_t readWriteRetry)
+{
+    
+    check_Status_Strip_Status(readWriteRetry);
+    switch (readWriteRetry)
+    {
+        case HOST_READ_GENERIC:
+        {
+            snprintf((char*)description->c_str(), BASIC, "Host Read Generic");
+                break;
+        }
+        case HOST_READ_UNCORRECTABLE:
+        {
+            snprintf((char*)description->c_str(), BASIC, "Host Read Uncorrectable");
+            break;
+        }
+        case HOST_READ_RAW:
+        {
+            snprintf((char*)description->c_str(), BASIC, "Host Read Raw");
+            break;
+        }
+        case HOST_WRITE_GENERIC:
+        {
+            snprintf((char*)description->c_str(), BASIC, "Host Write Generic");
+            break;
+        }
+        case HOST_WRITE_UNCORRECTABLE:
+        {
+            snprintf((char*)description->c_str(), BASIC, "Host Write Uncorrectable");
+            break;
+        }
+        case HOST_WRITE_RAW:
+        {
+            snprintf((char*)description->c_str(), BASIC, "Host Write Raw");
+            break;
+        }
+        case BACKGROUND_READ_GENERIC:
+        {
+            snprintf((char*)description->c_str(), BASIC, "Background Read Generic");
+            break;
+        }
+        case BACKGROUND_READ_HOST_SELF_TEST:
+        {
+            snprintf((char*)description->c_str(), BASIC, "Background Read Host Self Test");
+            break;
+        }
+        case BACKGROUND_WRITE_GENERIC:
+        {
+            snprintf((char*)description->c_str(), BASIC, "Background Write Generic");
+            break;
+        }
+        case BACKGROUND_WRITE_RELIABILITY:
+        {
+            snprintf((char*)description->c_str(), BASIC, "Background Write Reliability");
+            break;
+        }
+        case BACKGROUND_WRITE_HOST_SELF_TEST:
+        {
+            snprintf((char*)description->c_str(), BASIC, "Background Write Host Self Test");
+            break;
+        }
+        case SERVO_WEDGE:
+        {
+            snprintf((char*)description->c_str(), BASIC, "Servo Wedge");
+            break;
+        }
 
+        default:
+        {
+            snprintf((char*)description->c_str(), BASIC, "Unknown");
+            break;
+        }
+    }
+
+}
 //-----------------------------------------------------------------------------
 //
 //! \fn PrintHeader()
@@ -314,9 +402,8 @@ eReturnValues CATA_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint3
 																				
     snprintf((char*)myStr.c_str(), BASIC, "%s", vFarmFrame[page].identStringInfo.worldWideName.c_str());
     json_push_back(pageInfo, json_new_a("World Wide Name", (char*)myStr.c_str()));																				//!< world wide Name
-	snprintf((char*)myStr.c_str(), BASIC, "%s", vFarmFrame[page].identStringInfo.firmwareRev.c_str());															//!< Firmware Revision [0:3]
-	json_push_back(pageInfo, json_new_a("Firmware Rev", (char*)myStr.c_str()));
-    snprintf((char*)myStr.c_str(), BASIC, "%s", vFarmFrame[page].identStringInfo.deviceInterface.c_str());
+																//!< Firmware Revision [0:3]
+    snprintf((char*)myStr.c_str(), BASIC, "%s", vFarmFrame[page].identStringInfo.deviceInterface.c_str());//!< Rotational Rate of Device (ID Word 217)
     json_push_back(pageInfo, json_new_a("Device Interface", (char*)myStr.c_str()));																				//!< Device Interface
 	set_json_64_bit_With_Status(pageInfo, "Power on Hour", vFarmFrame[page].driveInfo.poh, false, m_showStatusBits);											//!< Power-on Hour
 	set_json_64_bit_With_Status(pageInfo, "Device Capacity in Sectors", vFarmFrame[page].driveInfo.deviceCapacity, false, m_showStatusBits);
@@ -329,7 +416,10 @@ eReturnValues CATA_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint3
 		m_heads = check_Status_Strip_Status(vFarmFrame[page].driveInfo.heads);
 	}
 	set_json_64_bit_With_Status(pageInfo, "Device form factor", vFarmFrame[page].driveInfo.factor, false, m_showStatusBits);									//!< Device Form Factor (ID Word 168)
-	set_json_64_bit_With_Status(pageInfo, "Rotation Rate", vFarmFrame[page].driveInfo.rotationRate, false, m_showStatusBits);									//!< Rotational Rate of Device (ID Word 217)
+	set_json_64_bit_With_Status(pageInfo, "Rotation Rate", vFarmFrame[page].driveInfo.rotationRate, false, m_showStatusBits);
+    snprintf((char*)myStr.c_str(), BASIC, "%s", vFarmFrame[page].identStringInfo.firmwareRev.c_str());
+    json_push_back(pageInfo, json_new_a("Firmware Rev", (char*)myStr.c_str()));
+    
        
 	set_json_64_bit_With_Status(pageInfo, "ATA Security State (ID Word 128)", vFarmFrame[page].driveInfo.security, true, m_showStatusBits);					//!< ATA Security State (ID Word 128)
 	set_json_64_bit_With_Status(pageInfo, "ATA Features Supported (ID Word 78)", vFarmFrame[page].driveInfo.featuresSupported, true, m_showStatusBits);		//!< ATA Features Supported (ID Word 78)
@@ -515,7 +605,40 @@ eReturnValues CATA_Farm_Log::print_Error_Information(JSONNODE *masterData, uint3
         snprintf((char *)myStr.c_str(), BASIC, "Flash LED event # %" PRId32"", loopCount);
 		set_json_64_bit_With_Status(pageInfo, (char *)myStr.c_str(), vFarmFrame[page].errorPage.flashLEDArray[loopCount], false, m_showStatusBits);		          //!<Info on the last 8 Flash LED events Wrapping array.
     }
-
+    if (m_MajorRev <= MAJORVERSION3)
+    {
+        for (loopCount = 1; loopCount <= 8; ++loopCount)
+        {
+            snprintf((char *)myStr.c_str(), BASIC, "Read/Write Retry events # %" PRId32"", loopCount);
+            set_json_64_bit_With_Status(pageInfo, (char *)myStr.c_str(), vFarmFrame[page].errorPage.readWriteRetry[loopCount], false, m_showStatusBits);		          //!< Info on the last 8 Read/Write Retry events
+            snprintf((char *)myStr.c_str(), BASIC, "Retry Count"); 
+            set_json_64_bit_With_Status(pageInfo, (char *)myStr.c_str(), M_Byte0(check_Status_Strip_Status(vFarmFrame[page].errorPage.readWriteRetry[loopCount])), false, m_showStatusBits);
+            snprintf((char *)myStr.c_str(), BASIC, "Error Type"); 
+            set_json_64_bit_With_Status(pageInfo, (char *)myStr.c_str(), M_Nibble2(check_Status_Strip_Status(vFarmFrame[page].errorPage.readWriteRetry[loopCount])), false, m_showStatusBits);
+            snprintf((char *)myStr.c_str(), BASIC, "Head");
+            set_json_64_bit_With_Status(pageInfo, (char *)myStr.c_str(), M_Nibble3(check_Status_Strip_Status(vFarmFrame[page].errorPage.readWriteRetry[loopCount])), false, m_showStatusBits);
+            snprintf((char *)myStr.c_str(), BASIC, "Zone Group");
+            set_json_64_bit_With_Status(pageInfo, (char *)myStr.c_str(), M_Word1(check_Status_Strip_Status(vFarmFrame[page].errorPage.readWriteRetry[loopCount])), false, m_showStatusBits);
+            snprintf((char *)myStr.c_str(), BASIC, "RW Retry Log Entry");
+            set_json_64_bit_With_Status(pageInfo, (char *)myStr.c_str(), M_Word2(check_Status_Strip_Status(vFarmFrame[page].errorPage.readWriteRetry[loopCount])), false, m_showStatusBits);
+        }
+        for (loopCount = 1; loopCount <= 2; ++loopCount)
+        {
+            snprintf((char *)myStr.c_str(), BASIC, "Super Parity On the Fly recovery counters # %" PRId32"", loopCount);
+            set_json_64_bit_With_Status(pageInfo, (char *)myStr.c_str(), vFarmFrame[page].errorPage.superParityOnTheFlyRecoveryCnt[loopCount], false, m_showStatusBits);		          //!< Super Parity On the Fly recovery counters
+        }
+        for (loopCount = 0; loopCount < 15; ++loopCount)
+        {
+            snprintf((char *)myStr.c_str(), BASIC, "Reallocated sectors by cause # %" PRId32"", loopCount);
+            set_json_64_bit_With_Status(pageInfo, (char *)myStr.c_str(), vFarmFrame[page].errorPage.readWriteRetry[loopCount], false, m_showStatusBits);                    //!< Reallocated sectors by cause
+            if (check_For_Active_Status(&vFarmFrame[page].errorPage.readWriteRetry[loopCount]))
+            {
+                snprintf((char *)myStr.c_str(), BASIC, "Reallocated sectors by cause meaning ");
+                get_Reallocated_Sector_By_Cause(&myStr, vFarmFrame[page].errorPage.readWriteRetry[loopCount]);
+            }
+    
+        }
+    }
     json_push_back(errorPage, pageInfo);
     json_push_back(masterData, errorPage);
 
@@ -572,7 +695,7 @@ eReturnValues CATA_Farm_Log::print_Enviroment_Information(JSONNODE *masterData, 
 								
     snprintf((char*)myStr.c_str(), BASIC, "%0.02f", check_for_signed_int(M_Byte0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.curentTemp)),56)*1.00);
 	set_json_string_With_Status(pageInfo, "Current Temperature", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.curentTemp,m_showStatusBits);								//!< Current Temperature in Celsius
-    snprintf((char*)myStr.c_str(), BASIC, "%0.02f", check_for_signed_int(M_Byte0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.highestTemp)), 56)*1.00);
+    snprintf((char*)myStr.c_str(), BASIC, "%0.02f", check_for_signed_int(M_Byte0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.highestTemp)), 48)*1.00);
 	set_json_string_With_Status(pageInfo, "Highest Temperature", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.highestTemp, m_showStatusBits);								//!< Highest Temperature in Celsius
     snprintf((char*)myStr.c_str(), BASIC, "%0.02f", check_for_signed_int(M_Byte0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.lowestTemp)), 56)*1.00);
 	set_json_string_With_Status(pageInfo, "Lowest Temperature", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.lowestTemp, m_showStatusBits);								//!< Lowest Temperature
@@ -832,7 +955,7 @@ eReturnValues CATA_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint32
 	set_json_64_bit_With_Status(pageInfo, "Seek Error Rate (SMART Attr 7 Raw)", vFarmFrame[page].reliPage.attrSeekErrorRateRaw, true, m_showStatusBits);				//!< Seek Error Rate (SMART Attribute 7 Raw)
 	set_json_64_bit_With_Status(pageInfo, "Seek Error Rate (SMART Attr 7 Normalized)", vFarmFrame[page].reliPage.attrSeekErrorRateNormal, false, m_showStatusBits);     //!< Seek Error Rate (SMART Attribute 7 Normalized)
 	set_json_64_bit_With_Status(pageInfo, "Seek Error Rate (SMART Attr 7 Worst)", vFarmFrame[page].reliPage.attrSeekErrorRateWorst, false, m_showStatusBits);			//!< Seek Error Rate (SMART Attribute 7 Worst)
-	set_json_64_bit_With_Status(pageInfo, "High Priority Unload Events (Raw)", vFarmFrame[page].reliPage.attrUnloadEventsRaw, true, m_showStatusBits);					//!< High Priority Unload Events (SMART Attribute 192 Raw)
+	set_json_64_bit_With_Status(pageInfo, "High Priority Unload Events", vFarmFrame[page].reliPage.attrUnloadEventsRaw, false, m_showStatusBits);					//!< High Priority Unload Events (SMART Attribute 192 Raw)
 	set_json_64_bit_With_Status(pageInfo, "Micro Actuator Lock-out accumulated", vFarmFrame[page].reliPage.microActuatorLockOUt, false, m_showStatusBits);				//!< Micro Actuator Lock-out, head mask accumulated over last 3 Summary Frames8
         
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
