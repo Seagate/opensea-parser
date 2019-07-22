@@ -31,6 +31,23 @@ namespace opensea_parser {
     class CATA_Farm_Log 
     {
         protected:
+            typedef enum _eReallocatedSectorsCause
+            {
+                HOST_READ_GENERIC,
+                HOST_READ_UNCORRECTABLE,
+                HOST_READ_RAW,
+                HOST_WRITE_GENERIC,
+                HOST_WRITE_UNCORRECTABLE,
+                HOST_WRITE_RAW,
+                BACKGROUND_READ_GENERIC,
+                BACKGROUND_READ_RELIABILITY,
+                BACKGROUND_READ_HOST_SELF_TEST,
+                BACKGROUND_WRITE_GENERIC,
+                BACKGROUND_WRITE_RELIABILITY,
+                BACKGROUND_WRITE_HOST_SELF_TEST,
+                SERVO_WEDGE,
+            }eReallocatedSectorsCause;
+
             std::vector <sFarmFrame > vFarmFrame;
             std::vector <sFarmFrame >vBlankFarmFrame;
 
@@ -199,6 +216,7 @@ namespace opensea_parser {
             CATA_Farm_Log( uint8_t *bufferData, size_t bufferSize, bool showStatus);
             virtual ~CATA_Farm_Log();
             eReturnValues parse_Farm_Log();
+            void get_Reallocated_Sector_By_Cause(std::string *description, uint64_t readWriteRetry);
             void print_All_Pages(JSONNODE *masterData);
             void print_Page(JSONNODE *masterData, uint32_t page);
             void print_Page_Without_Drive_Info(JSONNODE *masterData, uint32_t page);
