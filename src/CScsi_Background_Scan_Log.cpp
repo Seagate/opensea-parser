@@ -362,7 +362,7 @@ eReturnValues CScsiScanLog::get_Scan_Data(JSONNODE *masterData)
 		json_set_name(pageInfo, "Background Scan Log");
 		m_Status = (sScanStatusParams *)&pData[0];
 		process_Scan_Status_Data(pageInfo);
-		for (size_t offset = ((size_t)m_Status->paramLength + 4); offset < (size_t)m_PageLength; )
+		for (size_t offset = ((size_t)m_Status->paramLength + 4); offset < (((size_t)m_PageLength) - sizeof(sScanFindingsParams)); )
 		{
 			if (offset < m_bufferLength && offset < UINT16_MAX)
 			{

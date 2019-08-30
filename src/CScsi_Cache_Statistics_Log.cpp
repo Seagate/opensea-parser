@@ -145,7 +145,7 @@ void CScsiCacheLog::get_Cache_Parameter_Code_Description(std::string *cache)
 	}
 	default:
 	{
-		snprintf((char*)cache->c_str(), BASIC, "Unknow");
+		snprintf((char*)cache->c_str(), BASIC, "Unknown");
 		break;
 	}
 	}

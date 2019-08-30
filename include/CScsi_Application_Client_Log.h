@@ -28,6 +28,14 @@ namespace opensea_parser {
 		uint8_t			paramControlByte;					//<! binary format list log parameter
 		uint8_t			paramLength;						//<! The PARAMETER LENGTH field 
 		uint8_t			data[252];
+        _sApplicationClientParameters(){}
+        _sApplicationClientParameters(uint8_t* buffer)
+        {
+            paramCode = *(reinterpret_cast<uint16_t*>(buffer));
+            paramControlByte = buffer[2];
+            paramLength = buffer[3];
+            memcpy(data, &buffer[4], 252);
+        }
 	} sApplicationParams;
 #pragma pack(pop)
 

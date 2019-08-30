@@ -163,7 +163,7 @@ eReturnValues CScsiApplicationLog::get_Client_Data(JSONNODE *masterData)
 		{
 			if (offset+sizeof(sApplicationParams) < m_bufferLength && offset < UINT16_MAX)
 			{
-				m_App = (sApplicationParams *)&pData[offset];
+                m_App = new sApplicationParams (&pData[offset]);
 				offset += sizeof(sApplicationParams);
 				
 				process_Client_Data(pageInfo);
