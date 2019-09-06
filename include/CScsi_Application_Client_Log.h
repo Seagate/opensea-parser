@@ -21,21 +21,37 @@ namespace opensea_parser {
 #ifndef SCSIAPPLICATIONLOG
 #define SCSIAPPLICATIONLOG
 
+#define MAX_PARTITION 64 //As per the spec, 
+#define APP_CLIENT_DATA_LEN 252 //header(4 bytes) + data (252 bytes) = 256 bytes
+
 #pragma pack(push, 1)
 	typedef struct _sApplicationClientParameters
 	{
 		uint16_t		paramCode;							//<! The PARAMETER CODE field is defined
 		uint8_t			paramControlByte;					//<! binary format list log parameter
 		uint8_t			paramLength;						//<! The PARAMETER LENGTH field 
-		uint8_t			data[252];
-        _sApplicationClientParameters(){}
+        uint8_t 		data[APP_CLIENT_DATA_LEN] = { 0 };
+        _sApplicationClientParameters() 
+        {
+            paramCode = 0;
+            paramControlByte = 0;
+            paramLength = 0;
+        }
         _sApplicationClientParameters(uint8_t* buffer)
         {
             paramCode = *(reinterpret_cast<uint16_t*>(buffer));
             paramControlByte = buffer[2];
             paramLength = buffer[3];
-            memcpy(data, &buffer[4], 252);
+            if (paramLength == APP_CLIENT_DATA_LEN)
+            {
+#ifndef _WIN64
+                memcpy(data, &buffer[4], paramLength);
+#else
+                memcpy_s(data, paramLength, &buffer[4], paramLength);// copy the buffer data to the class member pBuf
+#endif
+            }
         }
+
 	} sApplicationParams;
 #pragma pack(pop)
 

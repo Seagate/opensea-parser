@@ -35,7 +35,7 @@ CScsiApplicationLog::CScsiApplicationLog()
 	, m_ApplicationStatus(IN_PROGRESS)
 	, m_PageLength(0)
 	, m_bufferLength()
-	, m_App()
+	, m_App(0)
 {
 	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
@@ -122,7 +122,7 @@ void CScsiApplicationLog::process_Client_Data(JSONNODE *clientData)
 #endif
 	byte_Swap_16(&m_App->paramCode);
 	//get_Cache_Parameter_Code_Description(&myStr);
-	snprintf((char*)myStr.c_str(), BASIC, "Cache Statistics Description %" PRId16"", m_App->paramCode);
+	snprintf((char*)myStr.c_str(), BASIC, "Cache Statistics Description %" PRIu16"", m_App->paramCode);
 	JSONNODE *clientInfo = json_new(JSON_NODE);
 	json_set_name(clientInfo, (char*)myStr.c_str());
 
@@ -158,13 +158,15 @@ eReturnValues CScsiApplicationLog::get_Client_Data(JSONNODE *masterData)
 	{
 		JSONNODE *pageInfo = json_new(JSON_NODE);
 		json_set_name(pageInfo, "Application Client Log");
+        uint16_t l_NumberOfPartitions = 0;
 
-		for (size_t offset = 0; offset < m_PageLength; )
+		for (size_t offset = 0; ((offset < m_PageLength) && (l_NumberOfPartitions <= MAX_PARTITION));)
 		{
 			if (offset+sizeof(sApplicationParams) < m_bufferLength && offset < UINT16_MAX)
 			{
+                l_NumberOfPartitions++;
                 m_App = new sApplicationParams (&pData[offset]);
-				offset += sizeof(sApplicationParams);
+                offset += sizeof(sApplicationParams);
 				
 				process_Client_Data(pageInfo);
 			}
@@ -173,6 +175,8 @@ eReturnValues CScsiApplicationLog::get_Client_Data(JSONNODE *masterData)
 				json_push_back(masterData, pageInfo);
 				return BAD_PARAMETER;
 			}
+
+            delete[] m_App;
 
 		}
 

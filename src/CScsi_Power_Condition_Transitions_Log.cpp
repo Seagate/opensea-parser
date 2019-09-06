@@ -175,7 +175,7 @@ void CScsiPowerConditiontLog::process_List_Information(JSONNODE *powerData)
 	printf("Power Condition Transitions Log Page\n");
 #endif
 	byte_Swap_16(&m_PowerParam->paramCode);
-	snprintf((char*)myStr.c_str(), BASIC, "Relative Target Port Information %" PRId16"", m_PowerParam->paramCode);
+	snprintf((char*)myStr.c_str(), BASIC, "Relative Target Port Information %" PRIu16"", m_PowerParam->paramCode);
 	JSONNODE *powerInfo = json_new(JSON_NODE);
 	json_set_name(powerInfo, (char*)myStr.c_str());
 	get_Power_Mode_Type(&myStr, m_PowerParam->paramCode);

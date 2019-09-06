@@ -122,7 +122,7 @@ void CScsiFactoryLog::process_Factorty_Data(JSONNODE *factoryData)
 	printf("Factory Description \n");
 #endif
 	byte_Swap_16(&m_factory->paramCode);
-	snprintf((char*)myStr.c_str(), BASIC, "Factory Description %" PRId16"", m_factory->paramCode);
+	snprintf((char*)myStr.c_str(), BASIC, "Factory Description %" PRIu16"", m_factory->paramCode);
 	JSONNODE *factoryInfo = json_new(JSON_NODE);
 	json_set_name(factoryInfo, (char*)myStr.c_str());
 

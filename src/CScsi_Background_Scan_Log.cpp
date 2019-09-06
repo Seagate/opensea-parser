@@ -304,7 +304,7 @@ void CScsiScanLog::process_Defect_Data(JSONNODE *defectData)
 	printf("Background Scan Defect Description \n");
 #endif
 	byte_Swap_16(&m_defect->paramCode);
-	snprintf((char*)myStr.c_str(), BASIC, "Background Scan Defect Location %" PRId16"", m_defect->paramCode);;
+	snprintf((char*)myStr.c_str(), BASIC, "Background Scan Defect Location %" PRIu16"", m_defect->paramCode);;
 	JSONNODE *defectInfo = json_new(JSON_NODE);
 	json_set_name(defectInfo, (char*)myStr.c_str());
 
