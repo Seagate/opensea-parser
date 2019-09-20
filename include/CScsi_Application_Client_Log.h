@@ -30,18 +30,20 @@ namespace opensea_parser {
 		uint16_t		paramCode;							//<! The PARAMETER CODE field is defined
 		uint8_t			paramControlByte;					//<! binary format list log parameter
 		uint8_t			paramLength;						//<! The PARAMETER LENGTH field 
-        uint8_t 		data[APP_CLIENT_DATA_LEN] = { 0 };
+                uint8_t 		data[APP_CLIENT_DATA_LEN];
         _sApplicationClientParameters() 
         {
             paramCode = 0;
             paramControlByte = 0;
             paramLength = 0;
+            data[APP_CLIENT_DATA_LEN] = {0};
         }
         _sApplicationClientParameters(uint8_t* buffer)
         {
             paramCode = *(reinterpret_cast<uint16_t*>(buffer));
             paramControlByte = buffer[2];
             paramLength = buffer[3];
+            data[APP_CLIENT_DATA_LEN] = {0};
             if (paramLength == APP_CLIENT_DATA_LEN)
             {
 #ifndef _WIN64
