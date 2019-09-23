@@ -148,7 +148,7 @@ void CScsiPowerConditiontLog::get_Power_Mode_Type(std::string *power, uint16_t c
 		}
 		default:
 		{
-			snprintf((char*)power->c_str(), BASIC, "Unknow Power Mode Transition Type");
+			snprintf((char*)power->c_str(), BASIC, "Unknown Power Mode Transition Type");
 			break;
 		}
 	}
