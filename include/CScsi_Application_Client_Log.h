@@ -30,28 +30,20 @@ namespace opensea_parser {
 		uint16_t		paramCode;							//<! The PARAMETER CODE field is defined
 		uint8_t			paramControlByte;					//<! binary format list log parameter
 		uint8_t			paramLength;						//<! The PARAMETER LENGTH field 
-                uint8_t 		data[APP_CLIENT_DATA_LEN];
+        uint8_t         *data;                              //<! pointer to the data in the buffer
         _sApplicationClientParameters() 
         {
             paramCode = 0;
             paramControlByte = 0;
             paramLength = 0;
-            data[APP_CLIENT_DATA_LEN] = {0};
+            data = NULL;
         }
         _sApplicationClientParameters(uint8_t* buffer)
         {
             paramCode = *(reinterpret_cast<uint16_t*>(buffer));
             paramControlByte = buffer[2];
             paramLength = buffer[3];
-            data[APP_CLIENT_DATA_LEN] = {0};
-            if (paramLength == APP_CLIENT_DATA_LEN)
-            {
-#ifndef _WIN64
-                memcpy(data, &buffer[4], paramLength);
-#else
-                memcpy_s(data, paramLength, &buffer[4], paramLength);// copy the buffer data to the class member pBuf
-#endif
-            }
+            data = &buffer[4];
         }
 
 	} sApplicationParams;
@@ -65,10 +57,11 @@ namespace opensea_parser {
 		std::string					m_ApplicationName;			//<! class name	
 		eReturnValues				m_ApplicationStatus;		//<! status of the class
 		uint16_t					m_PageLength;				//<! length of the page
-		size_t						m_bufferLength;			    //<! length of the buffer from reading in the log
+        size_t						m_bufferLength;			    //<! length of the buffer from reading in the log
 		sApplicationParams			*m_App;						//<! Application client structure 
 
-		void process_Client_Data(JSONNODE *clientData);
+
+		void process_Client_Data(JSONNODE *appData);
 		eReturnValues get_Client_Data(JSONNODE *masterData);
 	public:
 		CScsiApplicationLog();

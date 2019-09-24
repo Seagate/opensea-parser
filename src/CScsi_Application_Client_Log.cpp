@@ -113,29 +113,57 @@ CScsiApplicationLog::~CScsiApplicationLog()
 //!   \return none
 //
 //---------------------------------------------------------------------------
-void CScsiApplicationLog::process_Client_Data(JSONNODE *clientData)
+void CScsiApplicationLog::process_Client_Data(JSONNODE *appData)
 {
 	std::string myStr = "";
 	myStr.resize(BASIC);
 #if defined( _DEBUG)
-	printf("Cache Event Description \n");
+	printf("Application Client Description \n");
 #endif
 	byte_Swap_16(&m_App->paramCode);
 	//get_Cache_Parameter_Code_Description(&myStr);
-	snprintf((char*)myStr.c_str(), BASIC, "Cache Statistics Description %" PRIu16"", m_App->paramCode);
-	JSONNODE *clientInfo = json_new(JSON_NODE);
-	json_set_name(clientInfo, (char*)myStr.c_str());
+	snprintf((char*)myStr.c_str(), BASIC, "Application Client Log 0x%04" PRIx16"", m_App->paramCode);
+	JSONNODE *appInfo = json_new(JSON_NODE);
+	json_set_name(appInfo, (char*)myStr.c_str());
+    if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+    {
+        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_App->paramCode);
+        json_push_back(appInfo, json_new_a("Application Client Parameter Code", (char*)myStr.c_str()));
 
-	snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_App->paramCode);
-	json_push_back(clientInfo, json_new_a("Cache Statistics Parameter Code", (char*)myStr.c_str()));
+        snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_App->paramControlByte);
+        json_push_back(appInfo, json_new_a("Application Client Control Byte ", (char*)myStr.c_str()));
+        snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_App->paramLength);
+        json_push_back(appInfo, json_new_a("Application Client Length ", (char*)myStr.c_str()));
+    }
 
-	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_App->paramControlByte);
-	json_push_back(clientInfo, json_new_a("Cache Statistics Control Byte ", (char*)myStr.c_str()));
-	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_App->paramLength);
-	json_push_back(clientInfo, json_new_a("Cache Statistics Length ", (char*)myStr.c_str()));
+    uint32_t lineNumber = 0;
+    char *innerMsg =(char*)calloc(128,sizeof(char));
+    char* innerStr = (char*)calloc(60, sizeof(char));
+    uint32_t offset = 0;
 
 
-	json_push_back(clientData, clientInfo);
+    for (uint32_t outer = 0; outer < APP_CLIENT_DATA_LEN -1; )
+    {
+        snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIX32 "", lineNumber);
+        sprintf(innerMsg, "%02" PRIX8 "", m_App->data[offset]);
+
+        for (uint32_t inner = 1; inner < 16 && offset < APP_CLIENT_DATA_LEN -1; inner++)
+        {
+            sprintf(innerStr, "%02" PRIX8"", m_App->data[offset]);
+            if (inner % 4 == 0)
+            {
+                strncat(innerMsg, " ", 1);
+            }
+            strncat(innerMsg, innerStr, 2);
+            offset++;
+        }
+        json_push_back(appInfo, json_new_a((char*)myStr.c_str(), innerMsg));
+        outer = offset;
+        lineNumber = outer;
+    }
+    safe_Free(innerMsg);
+    safe_Free(innerStr);
+	json_push_back(appData, appInfo);
 }
 //-----------------------------------------------------------------------------
 //
@@ -166,18 +194,16 @@ eReturnValues CScsiApplicationLog::get_Client_Data(JSONNODE *masterData)
 			{
                 l_NumberOfPartitions++;
                 m_App = new sApplicationParams (&pData[offset]);
-                offset += sizeof(sApplicationParams);
+                offset += APP_CLIENT_DATA_LEN + 4;
 				
 				process_Client_Data(pageInfo);
+                delete m_App;
 			}
 			else
 			{
 				json_push_back(masterData, pageInfo);
 				return BAD_PARAMETER;
 			}
-
-            delete[] m_App;
-
 		}
 
 		json_push_back(masterData, pageInfo);
