@@ -148,7 +148,7 @@ void CScsiPowerConditiontLog::get_Power_Mode_Type(std::string *power, uint16_t c
 		}
 		default:
 		{
-			snprintf((char*)power->c_str(), BASIC, "Unknow Power Mode Transition Type");
+			snprintf((char*)power->c_str(), BASIC, "Vendor Specific Power Mode Transition Type");
 			break;
 		}
 	}
@@ -175,18 +175,20 @@ void CScsiPowerConditiontLog::process_List_Information(JSONNODE *powerData)
 	printf("Power Condition Transitions Log Page\n");
 #endif
 	byte_Swap_16(&m_PowerParam->paramCode);
-	snprintf((char*)myStr.c_str(), BASIC, "Relative Target Port Information %" PRIu16"", m_PowerParam->paramCode);
+	snprintf((char*)myStr.c_str(), BASIC, "Power Condition Transitions 0x%04" PRIx16"", m_PowerParam->paramCode);
 	JSONNODE *powerInfo = json_new(JSON_NODE);
 	json_set_name(powerInfo, (char*)myStr.c_str());
 	get_Power_Mode_Type(&myStr, m_PowerParam->paramCode);
 	json_push_back(powerInfo, json_new_a("Power Condition Type", (char*)myStr.c_str()));
-
-	snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_PowerParam->paramCode);
-	json_push_back(powerInfo, json_new_a("Power Condition", (char*)myStr.c_str()));
-	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_PowerParam->paramControlByte);
-	json_push_back(powerInfo, json_new_a("Control Byte", (char*)myStr.c_str()));
-	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_PowerParam->paramLength);
-	json_push_back(powerInfo, json_new_a("Length", (char*)myStr.c_str()));
+    if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+    {
+        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_PowerParam->paramCode);
+        json_push_back(powerInfo, json_new_a("Power Condition", (char*)myStr.c_str()));
+        snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_PowerParam->paramControlByte);
+        json_push_back(powerInfo, json_new_a("Control Byte", (char*)myStr.c_str()));
+        snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_PowerParam->paramLength);
+        json_push_back(powerInfo, json_new_a("Length", (char*)myStr.c_str()));
+    }
 	byte_Swap_32(&m_PowerParam->paramValue);
 	json_push_back(powerInfo, json_new_i("Power Value", m_PowerParam->paramValue));
 
