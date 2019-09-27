@@ -285,7 +285,7 @@ eReturnValues CScsiFormatStatusLog::get_Format_Status_Data(JSONNODE *masterData)
 					}
 					else
 					{
-						json_push_back(masterData, pageInfo);
+						//json_push_back(masterData, pageInfo);
 						return BAD_PARAMETER;
 					}
 					break;
@@ -299,7 +299,7 @@ eReturnValues CScsiFormatStatusLog::get_Format_Status_Data(JSONNODE *masterData)
 					}
 					else
 					{
-						json_push_back(masterData, pageInfo);
+						//json_push_back(masterData, pageInfo);
 						return BAD_PARAMETER;
 					}
 					break;
@@ -313,7 +313,7 @@ eReturnValues CScsiFormatStatusLog::get_Format_Status_Data(JSONNODE *masterData)
 					}
 					else
 					{
-						json_push_back(masterData, pageInfo);
+						//json_push_back(masterData, pageInfo);
 						return BAD_PARAMETER;
 					}
 					break;
@@ -327,14 +327,14 @@ eReturnValues CScsiFormatStatusLog::get_Format_Status_Data(JSONNODE *masterData)
 					}
 					else
 					{
-						json_push_back(masterData, pageInfo);
+						//json_push_back(masterData, pageInfo);
 						return BAD_PARAMETER;
 					}
 					break;
 				}
 				default:
 				{
-					json_push_back(masterData, pageInfo);
+					//json_push_back(masterData, pageInfo);
 					return BAD_PARAMETER;
 					break;
 				}
@@ -343,7 +343,7 @@ eReturnValues CScsiFormatStatusLog::get_Format_Status_Data(JSONNODE *masterData)
 			}
 			else
 			{
-				json_push_back(masterData, pageInfo);
+				//json_push_back(masterData, pageInfo);
 				return BAD_PARAMETER;
 			}
 
