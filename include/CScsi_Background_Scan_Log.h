@@ -69,7 +69,7 @@ namespace opensea_parser {
 		eReturnValues				m_ScanStatus;			    //<! status of the class
 		uint16_t					m_PageLength;				//<! length of the page
 		size_t						m_bufferLength;			    //<! length of the buffer from reading in the log
-		sScanStatusParams			*m_Status;					//<! status  structure 
+		sScanStatusParams			*m_ScanParam;				//<! sscan status parameters
 		sScanFindingsParams			*m_defect;					//<! finding of defect structure
         sBackgroundScanParamHeader  *m_ParamHeader;              //<! for other param codes
 
