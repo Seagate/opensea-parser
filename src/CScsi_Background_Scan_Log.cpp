@@ -37,6 +37,7 @@ CScsiScanLog::CScsiScanLog()
 	, m_bufferLength()
 	, m_Status()
 	, m_defect()
+    , m_ParamHeader()
 {
 	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
@@ -66,6 +67,7 @@ CScsiScanLog::CScsiScanLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLen
 	, m_bufferLength(bufferSize)
 	, m_Status()
 	, m_defect()
+    , m_ParamHeader()
 {
 	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
@@ -339,6 +341,44 @@ void CScsiScanLog::process_Defect_Data(JSONNODE *defectData)
 	
 	json_push_back(defectData, defectInfo);
 }
+
+//-----------------------------------------------------------------------------
+//! \fn process_other_param_data
+//
+//! \brief
+//!   Description: parser out the data for other params
+//
+//  Entry:
+//! \param eventData - Json node that parsed data will be added to
+//
+//  Exit:
+//!   \return none
+//
+//---------------------------------------------------------------------------
+void CScsiScanLog::process_other_param_data(JSONNODE *scanData)
+{
+    std::string myStr = "";
+    myStr.resize(BASIC);
+    std::string headerStr = "";
+    headerStr.resize(BASIC);
+#if defined( _DEBUG)
+    printf("Background Scan Defect Description \n");
+#endif
+    byte_Swap_16(&m_ParamHeader->paramCode);
+    snprintf((char*)myStr.c_str(), BASIC, "Background Scan Defect Location %" PRIu16"", m_ParamHeader->paramCode);
+    JSONNODE *defectInfo = json_new(JSON_NODE);
+    json_set_name(defectInfo, (char*)myStr.c_str());
+
+    snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_ParamHeader->paramCode);
+    json_push_back(defectInfo, json_new_a("Background Scan Defect Parameter Code", (char*)myStr.c_str()));
+    snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_ParamHeader->paramControlByte);
+    json_push_back(defectInfo, json_new_a("Background Scan Defect Control Byte ", (char*)myStr.c_str()));
+    snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_ParamHeader->paramLength);
+    json_push_back(defectInfo, json_new_a("Background Scan Defect Length ", (char*)myStr.c_str()));
+
+    json_push_back(scanData, defectInfo);
+}
+
 //-----------------------------------------------------------------------------
 //
 //! \fn get_Scan_Data
@@ -366,10 +406,21 @@ eReturnValues CScsiScanLog::get_Scan_Data(JSONNODE *masterData)
 		{
 			if (offset < m_bufferLength && offset < UINT16_MAX)
 			{
-				m_defect = (sScanFindingsParams *)&pData[offset];
-				offset += sizeof(sScanFindingsParams);
-
-				process_Defect_Data(pageInfo);
+                uint16_t paramCode = *(reinterpret_cast<uint16_t*>(&pData[offset]));
+                byte_Swap_16(&paramCode);
+                if (paramCode >= 0x0001 && paramCode <= 0x0800)
+                {
+                    m_defect = (sScanFindingsParams *)&pData[offset];
+                    process_Defect_Data(pageInfo);
+                    //offset += sizeof(sScanFindingsParams);
+                    offset += m_defect->paramLength + 4;
+                }
+                else //if (paramCode >= 0x8000) //TODO: Nayana to check with Tim how to skip ssd part here
+                {
+                    m_ParamHeader = (sBackgroundScanParamHeader*)&pData[offset];                   
+                    process_other_param_data(pageInfo);
+                    offset += m_ParamHeader->paramLength + 4;
+                }				
 			}
 			else
 			{
