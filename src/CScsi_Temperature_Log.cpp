@@ -128,7 +128,7 @@ void CScsiTemperatureLog::get_Temp(JSONNODE *tempData)
 	json_push_back(paramInfo, json_new_a("Parameter Length", (char*)myStr.c_str()));
 	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Page->paramControlByte);
 	json_push_back(paramInfo, json_new_a("Control Byte", (char*)myStr.c_str()));
-	snprintf((char*)myStr.c_str(), BASIC, "%" PRId8"", m_Page->temp);
+	snprintf((char*)myStr.c_str(), BASIC, "%" PRIu8"", m_Page->temp);
 	json_push_back(paramInfo, json_new_a("Temperature", (char*)myStr.c_str()));
 
 	json_push_back(tempData, paramInfo);

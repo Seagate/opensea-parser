@@ -51,6 +51,14 @@ namespace opensea_parser {
 		_sBackgroundScanEncountersParameters() : paramCode(0), paramControlByte(0), paramLength(0), powerOnMinutes(0), status(0), senseCode(0), \
 			codeQualifier(0), vendorSpecific(0), vendorSpecific1(0), vendorSpecific2(0), LBA(0) {};
 	} sScanFindingsParams;
+
+    typedef struct _sBackgroundScanParamHeader // For other paramcodes
+    {
+        uint16_t		paramCode;							//<! The PARAMETER CODE field is defined
+        uint8_t			paramControlByte;					//<! binary format list log parameter
+        uint8_t			paramLength;						//<! The PARAMETER LENGTH field 
+    }sBackgroundScanParamHeader;
+
 #pragma pack(pop)
 	class CScsiScanLog
 	{
@@ -61,13 +69,15 @@ namespace opensea_parser {
 		eReturnValues				m_ScanStatus;			    //<! status of the class
 		uint16_t					m_PageLength;				//<! length of the page
 		size_t						m_bufferLength;			    //<! length of the buffer from reading in the log
-		sScanStatusParams			*m_Status;					//<! status  structure 
+		sScanStatusParams			*m_ScanParam;				//<! sscan status parameters
 		sScanFindingsParams			*m_defect;					//<! finding of defect structure
+        sBackgroundScanParamHeader  *m_ParamHeader;              //<! for other param codes
 
 		void get_Scan_Defect_Status_Description(std::string *defect);
 		void get_Scan_Status_Description(std::string *scan);
 		void process_Defect_Data(JSONNODE *defectData);
 		void process_Scan_Status_Data(JSONNODE *scanData);
+        void process_other_param_data(JSONNODE *scanData);
 		eReturnValues get_Scan_Data(JSONNODE *masterData);
 	public:
 		CScsiScanLog();

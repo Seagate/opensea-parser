@@ -73,6 +73,21 @@ namespace opensea_parser {
 		uint8_t			subPage;							//<! subpage code for the log page format
 		uint16_t		pageLength;							//<! this is different from size, see SCSI SPC Spec. 
 		_sLogPageStruct() : pageCode(0), subPage(0), pageLength(0) {};
+        _sLogPageStruct(uint8_t* buffer)
+        {
+            if (buffer != NULL)
+            {
+                pageCode = buffer[0];
+                subPage = buffer[1];
+                pageLength = *(reinterpret_cast<uint16_t*>(&buffer[2]));
+            }
+            else
+            {
+                pageCode = 0;
+                subPage = 0;
+                pageLength = 0;
+            }
+        }
 	}sLogPageStruct;
 #pragma pack(pop)
 	typedef enum _eLogPageNames
@@ -92,10 +107,10 @@ namespace opensea_parser {
 		BACKGROUND_SCAN = 0x15,
 		PROTOCOL_SPECIFIC_PORT = 0x18,
 		POWER_CONDITION_TRANSITIONS = 0x1A,
-		INFORMATIONAL_EXCEPTIONS = 0x2F,
+		INFORMATIONAL_EXCEPTIONS = 0x2F,        
 		CACHE_STATISTICS = 0x37,
 		SEAGATE_SPECIFIC_LOG = 0x3D,
-		FACTORY_LOG = 0x3E,
+		FACTORY_LOG = 0x3E,        
 	}eLogPageNames;
 
 	const int pageCodes[] = { SUPPORTED_LOG_PAGES,	WRITE_ERROR_COUNTER,
@@ -104,7 +119,7 @@ namespace opensea_parser {
 		START_STOP_CYCLE_COUNTER ,	APPLICATION_CLIENT,	SELF_TEST_RESULTS,
 		SOLID_STATE_MEDIA ,	BACKGROUND_SCAN , PROTOCOL_SPECIFIC_PORT,
 		POWER_CONDITION_TRANSITIONS , INFORMATIONAL_EXCEPTIONS,
-		CACHE_STATISTICS ,	SEAGATE_SPECIFIC_LOG , 	FACTORY_LOG };
+        CACHE_STATISTICS, SEAGATE_SPECIFIC_LOG, FACTORY_LOG,};
 
 	//-----------------------------------------------------------------------------
 	//
@@ -305,7 +320,7 @@ namespace opensea_parser {
         }
         else
         {
-            if ((int64_t)value < INT32_MAX && (int64_t)value > INT32_MIN)
+            if ((int32_t)value < INT32_MAX && (int32_t)value > INT32_MIN)
             {
                 json_push_back(nowNode, json_new_i((char *)myStr.c_str(), static_cast<int32_t>(M_DoubleWord0(value))));
             }

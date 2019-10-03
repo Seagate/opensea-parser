@@ -177,7 +177,7 @@ void CScsi_DST_Results::print_Self_Test_Log(JSONNODE *dstNode, uint16_t run)
 	std::string myStr = "";
 	myStr.resize(BASIC);
 	JSONNODE *runInfo = json_new(JSON_NODE);
-	snprintf((char*)myStr.c_str(), BASIC, "Run %3d ", run);
+	snprintf((char*)myStr.c_str(), BASIC, "Entry %3d ", run);   // changed the run# to Entry per Paul
 	json_set_name(runInfo, (char*)myStr.c_str());
 	snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_DST->paramCode);
 	json_push_back(runInfo, json_new_a("Parameter Code", (char*)myStr.c_str()));

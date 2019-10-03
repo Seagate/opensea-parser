@@ -21,13 +21,31 @@ namespace opensea_parser {
 #ifndef SCSIAPPLICATIONLOG
 #define SCSIAPPLICATIONLOG
 
+#define MAX_PARTITION 64 //As per the spec, 
+#define APP_CLIENT_DATA_LEN 252 //header(4 bytes) + data (252 bytes) = 256 bytes
+
 #pragma pack(push, 1)
 	typedef struct _sApplicationClientParameters
 	{
 		uint16_t		paramCode;							//<! The PARAMETER CODE field is defined
 		uint8_t			paramControlByte;					//<! binary format list log parameter
 		uint8_t			paramLength;						//<! The PARAMETER LENGTH field 
-		uint8_t			data[252];
+        uint8_t         *data;                              //<! pointer to the data in the buffer
+        _sApplicationClientParameters() 
+        {
+            paramCode = 0;
+            paramControlByte = 0;
+            paramLength = 0;
+            data = NULL;
+        }
+        _sApplicationClientParameters(uint8_t* buffer)
+        {
+            paramCode = *(reinterpret_cast<uint16_t*>(buffer));
+            paramControlByte = buffer[2];
+            paramLength = buffer[3];
+            data = &buffer[4];
+        }
+
 	} sApplicationParams;
 #pragma pack(pop)
 
@@ -39,10 +57,11 @@ namespace opensea_parser {
 		std::string					m_ApplicationName;			//<! class name	
 		eReturnValues				m_ApplicationStatus;		//<! status of the class
 		uint16_t					m_PageLength;				//<! length of the page
-		size_t						m_bufferLength;			    //<! length of the buffer from reading in the log
+        size_t						m_bufferLength;			    //<! length of the buffer from reading in the log
 		sApplicationParams			*m_App;						//<! Application client structure 
 
-		void process_Client_Data(JSONNODE *clientData);
+
+		void process_Client_Data(JSONNODE *appData);
 		eReturnValues get_Client_Data(JSONNODE *masterData);
 	public:
 		CScsiApplicationLog();

@@ -166,7 +166,7 @@ eReturnValues CScsiStartStop::parse_Start_Stop_Log(JSONNODE *masterData)
 	byte_Swap_16(&m_Page->accLoadUnloadParamCode);
 	if (accumulatedLU == m_Page->accLoadUnloadParamCode)
 	{
-		retStatus = get_Count(pageInfo, m_Page->accLoadUnloadParamCode, m_Page->paramLength6, m_Page->paramControlByte6, m_Page->accloadUnloadCount, "Load - Unload Count", "Specified Load-Unload Count Over Device Lifetime");
+		retStatus = get_Count(pageInfo, m_Page->accLoadUnloadParamCode, m_Page->paramLength6, m_Page->paramControlByte6, m_Page->accloadUnloadCount, "Accumulated Load - Unload Count", "Specified Load-Unload Count Over Device Lifetime");
 	}
 	else
 	{
