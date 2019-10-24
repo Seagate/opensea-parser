@@ -397,13 +397,19 @@ eReturnValues CAtaDeviceStatisticsLogs::ParseSCTDeviceStatLog(JSONNODE *masterDa
     {	
         pDeviceHeader = (sHeader*)&pData[offset];
         pLogPage = (uint64_t*)&pData[offset];
-        if (pDeviceHeader->Reserved != 0x0000 && pDeviceHeader->Reserved != 0xffff)
+
+        //The members of the sHeader were updated - LogPageNum is corrected from uint16_t to uint8_t as per the spec
+        //Nayana Commented the below ifcheck and kept it to know if any such scenario that satisfies this condition
+        //Or is it because the LogPageNum data type was incorrect before
+        
+        /*if (pDeviceHeader->Reserved != 0x0000 && pDeviceHeader->Reserved != 0xffff)
         {
 	    if (offset != 0)
-            {
+            {            
                pDeviceHeader = (sHeader*)&pData[offset - 16];
             }
-        }
+        }*/
+
         if (pDeviceHeader->RevNum == 0x0001)
         {
 #if defined( _DEBUG)
@@ -646,6 +652,30 @@ uint8_t CAtaDeviceStatisticsLogs::CheckStatusAndValid_8(uint64_t *value)
     if (isBit62Set(value) && isBit63Set(value))
     {
         retValue = (uint8_t)(*value);
+    }
+    return retValue;
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn   CheckStatusAndValidSigned_8()
+//
+//! \brief
+//!   Description: check the status on 62 and 63, if true on both then return value as int8
+//
+//  Entry:
+//! \param value = the 64 bit value 
+//
+//  Exit:
+//!  \return int8_t value
+//
+//---------------------------------------------------------------------------
+int8_t CAtaDeviceStatisticsLogs::CheckStatusAndValidSigned_8(uint64_t *value)
+{
+    int8_t retValue = 0;
+    //Bit 62 : Valid value and 63 bit needs to be set
+    if (isBit62Set(value) && isBit63Set(value))
+    {
+        retValue = (int8_t)(*value);
     }
     return retValue;
 }
@@ -901,33 +931,34 @@ void CAtaDeviceStatisticsLogs::logPage05(uint64_t *value, JSONNODE *masterData)
 {
     //Temperature Statistics(log page 04) in degrees Celsius.
     uint64_t *cData = &value[0];
-    uint8_t CurrentTemp = 0;
-    uint8_t AvgShortTemp = 0;
-    uint8_t AvgLongTemp = 0;
-    uint8_t HighestTemp = 0;
-    uint8_t LowestTemp = 0;
-    uint8_t HgstAvgShortTemp = 0;
-    uint8_t LowAvgShortTemp = 0;
-    uint8_t HgstAvgLongTemp = 0;
-    uint8_t LowAvgLongTemp = 0;
+    int8_t CurrentTemp = 0;
+    int8_t AvgShortTemp = 0;
+    int8_t AvgLongTemp = 0;
+    int8_t HighestTemp = 0;
+    int8_t LowestTemp = 0;
+    int8_t HgstAvgShortTemp = 0;
+    int8_t LowAvgShortTemp = 0;
+    int8_t HgstAvgLongTemp = 0;
+    int8_t LowAvgLongTemp = 0;
     uint32_t TimeInOverTemp = 0;
-    uint8_t MaxOperTemp = 0;
-    uint32_t TimeInUndTemp = 0;
-    uint8_t MinOperTemp = 0;
+    int8_t MaxOperTemp = 0;
+    int32_t TimeInUndTemp = 0;
+    int8_t MinOperTemp = 0;
 
-   // CurrentTemp = CheckStatusAndValid_8(&cData[1]);
-    AvgShortTemp = CheckStatusAndValid_8(&cData[2]);
-    AvgLongTemp = CheckStatusAndValid_8(&cData[3]);
-    HighestTemp = CheckStatusAndValid_8(&cData[4]);
-    LowestTemp = CheckStatusAndValid_8(&cData[5]);
-    HgstAvgShortTemp = CheckStatusAndValid_8(&cData[6]);
-    LowAvgShortTemp = CheckStatusAndValid_8(&cData[7]);
-    HgstAvgLongTemp = CheckStatusAndValid_8(&cData[8]);
-    LowAvgLongTemp = CheckStatusAndValid_8(&cData[9]);
-    TimeInOverTemp = CheckStatusAndValid_8(&cData[10]);
-    MaxOperTemp = CheckStatusAndValid_8(&cData[11]);
-    TimeInUndTemp = CheckStatusAndValid_8(&cData[12]);
-    MinOperTemp = CheckStatusAndValid_8(&cData[13]);
+    //TODO: Nayana to ask Tim why is this commented
+   // CurrentTemp = CheckStatusAndValidSigned_8(&cData[1]);
+    AvgShortTemp = CheckStatusAndValidSigned_8(&cData[2]);
+    AvgLongTemp = CheckStatusAndValidSigned_8(&cData[3]);
+    HighestTemp = CheckStatusAndValidSigned_8(&cData[4]);
+    LowestTemp = CheckStatusAndValidSigned_8(&cData[5]);
+    HgstAvgShortTemp = CheckStatusAndValidSigned_8(&cData[6]);
+    LowAvgShortTemp = CheckStatusAndValidSigned_8(&cData[7]);
+    HgstAvgLongTemp = CheckStatusAndValidSigned_8(&cData[8]);
+    LowAvgLongTemp = CheckStatusAndValidSigned_8(&cData[9]);
+    TimeInOverTemp = CheckStatusAndValid_32(&cData[10]);
+    MaxOperTemp = CheckStatusAndValidSigned_8(&cData[11]);
+    TimeInUndTemp = CheckStatusAndValid_32(&cData[12]);
+    MinOperTemp = CheckStatusAndValidSigned_8(&cData[13]);
 
     string myStr = "Temperature Statistics";
     JSONNODE *sctTemp = json_new(JSON_NODE);
@@ -936,43 +967,43 @@ void CAtaDeviceStatisticsLogs::logPage05(uint64_t *value, JSONNODE *masterData)
     
     printf("\t%s \n", "*****Temperature Statistics(log Page 05h)*****");
 #endif
-    json_push_back(sctTemp, json_new_i("Current Temperature(Degrees Celsius)", static_cast<uint32_t>(CurrentTemp)));
+    json_push_back(sctTemp, json_new_i("Current Temperature(Degrees Celsius)", (CurrentTemp)));
     //DeviceStatFlag(&cData[1]);
 
-    json_push_back(sctTemp, json_new_i("Average Short Term Temperature(Celsius)", static_cast<uint32_t>(AvgShortTemp)));
+    json_push_back(sctTemp, json_new_i("Average Short Term Temperature(Celsius)", (AvgShortTemp)));
     //DeviceStatFlag(&cData[2]);
 
-    json_push_back(sctTemp, json_new_i("Average Long Term Temperature(Celsius)", static_cast<uint32_t>(AvgLongTemp)));
+    json_push_back(sctTemp, json_new_i("Average Long Term Temperature(Celsius)", (AvgLongTemp)));
     //DeviceStatFlag(&cData[3]);
 
-    json_push_back(sctTemp, json_new_i("Highest Temperature(Degrees Celsius)", static_cast<uint32_t>(HighestTemp)));
+    json_push_back(sctTemp, json_new_i("Highest Temperature(Degrees Celsius)", (HighestTemp)));
     //DeviceStatFlag(&cData[4]);
 
-    json_push_back(sctTemp, json_new_i("Lowest Temperature(Degrees Celsius)", static_cast<uint32_t>(LowestTemp)));
+    json_push_back(sctTemp, json_new_i("Lowest Temperature(Degrees Celsius)", (LowestTemp)));
     //DeviceStatFlag(&cData[5]);
 
-    json_push_back(sctTemp, json_new_i("Highest Average Short Term Temp(Celsius)", static_cast<uint32_t>(HgstAvgShortTemp)));
+    json_push_back(sctTemp, json_new_i("Highest Average Short Term Temp(Celsius)", (HgstAvgShortTemp)));
     //DeviceStatFlag(&cData[6]);
 
-    json_push_back(sctTemp, json_new_i("Lowest Average Short Term Temp(Celsius)", static_cast<uint32_t>(LowAvgShortTemp)));
+    json_push_back(sctTemp, json_new_i("Lowest Average Short Term Temp(Celsius)", (LowAvgShortTemp)));
     //DeviceStatFlag(&cData[7]);
 
-    json_push_back(sctTemp, json_new_i("Highest Average Long Term Temp(Celsius)", static_cast<uint32_t>(HgstAvgLongTemp)));
+    json_push_back(sctTemp, json_new_i("Highest Average Long Term Temp(Celsius)", (HgstAvgLongTemp)));
     //DeviceStatFlag(&cData[8]);
 
-    json_push_back(sctTemp, json_new_i("Lowest Average Long Term Temp(Celsius)", static_cast<uint32_t>(LowAvgLongTemp)));
+    json_push_back(sctTemp, json_new_i("Lowest Average Long Term Temp(Celsius)", (LowAvgLongTemp)));
     //DeviceStatFlag(&cData[9]);
 
     json_push_back(sctTemp, json_new_i("Time in Over-Temperature(Minutes)", TimeInOverTemp));
     //DeviceStatFlag(&cData[10]);
 
-    json_push_back(sctTemp, json_new_i("Specified Maximum Operating Temp(Celsius)", static_cast<uint32_t>(MaxOperTemp)));
+    json_push_back(sctTemp, json_new_i("Specified Maximum Operating Temp(Celsius)", (MaxOperTemp)));
     //DeviceStatFlag(&cData[11]);
 
     json_push_back(sctTemp, json_new_i("Time in Under-Temperature(Minutes)", TimeInUndTemp));
     //DeviceStatFlag(&cData[12]);
 
-    json_push_back(sctTemp, json_new_i("Specified Minimum Operating Temp(Celsius)", TimeInUndTemp));
+    json_push_back(sctTemp, json_new_i("Specified Minimum Operating Temp(Celsius)", MinOperTemp));
     //DeviceStatFlag(&cData[13]);
 
     json_push_back(masterData, sctTemp);
@@ -1006,10 +1037,10 @@ sDeviceLog6  m_sSCT6;
     pSCT6->CRCError = CheckStatusAndValid_32(&cData[3]);
 
     JSONNODE *sctGen = json_new(JSON_NODE);
-    json_set_name(sctGen, "Gerneral Statistics(log Page 06h)");
+    json_set_name(sctGen, "Transport Statistics(log Page 06h)");
 #if defined( _DEBUG)
     
-    printf("\t%s \n", "*****General Statistics(log Page 06h)*****");
+    printf("\t%s \n", "*****Transport Statistics(log Page 06h)*****");
 #endif
     json_push_back(sctGen, json_new_i("Number of hardware resets", pSCT6->HwReset));
     //DeviceStatFlag(&cData[1]);

@@ -320,7 +320,7 @@ namespace opensea_parser {
         }
         else
         {
-            if ((int32_t)value < INT32_MAX && (int32_t)value > INT32_MIN)
+            if (((int32_t)value >= 0) && ((int32_t)value < INT32_MAX && (int32_t)value > INT32_MIN))
             {
                 json_push_back(nowNode, json_new_i((char *)myStr.c_str(), static_cast<int32_t>(M_DoubleWord0(value))));
             }

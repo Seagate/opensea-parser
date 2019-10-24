@@ -48,9 +48,9 @@ namespace opensea_parser {
 	typedef struct _sHeader
 	{
 		uint16_t   RevNum;
-		uint16_t   LogPageNum;
-		uint32_t   Reserved;
-		_sHeader() :RevNum(0), LogPageNum(0), Reserved(0) {};
+		uint8_t   LogPageNum;
+		uint8_t   Reserved[5];
+        _sHeader() :RevNum(0), LogPageNum(0), Reserved{ 0 } {};
 	}sHeader;
 	typedef struct _sLogPage01
 	{
@@ -133,6 +133,7 @@ namespace opensea_parser {
         bool isBit59Set(uint64_t *value);
         void DeviceStatFlag(uint64_t *value, JSONNODE *masterData);
         uint8_t  CheckStatusAndValid_8(uint64_t *value);
+        int8_t  CheckStatusAndValidSigned_8(uint64_t *value);
         uint32_t CheckStatusAndValid_32(uint64_t *value);
         void logPage00(uint64_t *value);
         void logPage01(uint64_t *value, JSONNODE *masterData);
