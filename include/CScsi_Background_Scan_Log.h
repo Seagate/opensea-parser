@@ -77,7 +77,7 @@ namespace opensea_parser {
 		void get_Scan_Status_Description(std::string *scan);
 		void process_Defect_Data(JSONNODE *defectData);
 		void process_Scan_Status_Data(JSONNODE *scanData);
-        void process_other_param_data(JSONNODE *scanData);
+        void process_other_param_data(JSONNODE *scanData, size_t offset);
 		eReturnValues get_Scan_Data(JSONNODE *masterData);
 	public:
 		CScsiScanLog();

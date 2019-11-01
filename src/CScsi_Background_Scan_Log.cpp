@@ -355,7 +355,7 @@ void CScsiScanLog::process_Defect_Data(JSONNODE *defectData)
 //!   \return none
 //
 //---------------------------------------------------------------------------
-void CScsiScanLog::process_other_param_data(JSONNODE *scanData)
+void CScsiScanLog::process_other_param_data(JSONNODE *scanData, size_t offset)
 {
     std::string myStr = "";
     myStr.resize(BASIC);
@@ -375,6 +375,14 @@ void CScsiScanLog::process_other_param_data(JSONNODE *scanData)
     json_push_back(defectInfo, json_new_a("Background Scan Defect Control Byte ", (char*)myStr.c_str()));
     snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_ParamHeader->paramLength);
     json_push_back(defectInfo, json_new_a("Background Scan Defect Length ", (char*)myStr.c_str()));
+    offset += 4;   // add the size of the param header
+    JSONNODE *myArray = json_new(JSON_ARRAY);
+    json_set_name(myArray, ("Background Data"));
+    for (uint16_t loop = 0; loop < m_ParamHeader->paramLength; loop++)
+    {
+        json_push_back(myArray, json_new_i("Background data", pData[offset]));
+    }
+    json_push_back(defectInfo, myArray);
 
     json_push_back(scanData, defectInfo);
 }
@@ -418,7 +426,7 @@ eReturnValues CScsiScanLog::get_Scan_Data(JSONNODE *masterData)
                 else //if (paramCode >= 0x8000) //TODO: Nayana to check with Tim how to skip ssd part here
                 {
                     m_ParamHeader = (sBackgroundScanParamHeader*)&pData[offset];                   
-                    process_other_param_data(pageInfo);
+                    process_other_param_data(pageInfo,offset);
                     offset += m_ParamHeader->paramLength + 4;
                 }				
 			}
