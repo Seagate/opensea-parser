@@ -117,7 +117,7 @@ eReturnValues CScsiStartStop::parse_Start_Stop_Log(JSONNODE *masterData)
 	eReturnValues status = IN_PROGRESS;
 	eReturnValues retStatus = IN_PROGRESS;
 	JSONNODE *pageInfo = json_new(JSON_NODE);
-	json_set_name(pageInfo, "Scsi Start Stop Cycle Counter Log");
+	json_set_name(pageInfo, "Scsi Start Stop Cycle Counter Log - Eh");
 	byte_Swap_16(&m_Page->manufatureParamCode);
 	if (manufactureDate == m_Page->manufatureParamCode)
 	{
@@ -226,10 +226,24 @@ eReturnValues CScsiStartStop::week_Year_Print(JSONNODE *data,uint16_t param, uin
 	json_push_back(dateInfo, json_new_a("Control Byte", (char*)myStr.c_str()));
 	myStr.resize(YEARSIZE);
 	memset((char*)myStr.c_str(), 0, YEARSIZE);
-	strncpy((char *)myStr.c_str(), (char*)&year, YEARSIZE);
+    if (year != 0x20202020)
+    {
+        strncpy((char *)myStr.c_str(), (char*)&year, YEARSIZE);
+    }
+    else
+    {
+        myStr = "0000";
+    }
 	json_push_back(dateInfo, json_new_a((char *)strYear.c_str(), (char*)myStr.c_str()));
 	myStr.resize(WEEKSIZE);
-	strncpy((char *)myStr.c_str(), (char*)&week, WEEKSIZE);
+    if (week != 0x2020)
+    {
+        strncpy((char *)myStr.c_str(), (char*)&week, WEEKSIZE);
+    }
+    else
+    {
+        myStr = "00";
+    }
 	json_push_back(dateInfo, json_new_a((char *)strWeek.c_str(), (char*)myStr.c_str()));
 
 	json_push_back(data, dateInfo);
