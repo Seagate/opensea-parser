@@ -149,17 +149,17 @@ void CScsiProtocolPortLog::get_Device_Type_Field(std::string *description, uint8
 	{
 		case 0x01:
 		{
-			snprintf((char*)description->c_str(), BASIC, "End device");
+			snprintf((char*)description->c_str(), BASIC, "1 = End device");
 			break;
 		}
 		case 0x02:
 		{
-			snprintf((char*)description->c_str(), BASIC, "Expander device");
+			snprintf((char*)description->c_str(), BASIC, "2 = Expander device");
 			break;
 		}
 		case 0x03:
 		{
-			snprintf((char*)description->c_str(), BASIC, "Expander device compliant with a previous version of the SAS standard");
+			snprintf((char*)description->c_str(), BASIC, "3 = Expander device compliant with a previous version of the SAS standard");
 			break;
 		}
 		default:
@@ -328,8 +328,10 @@ void CScsiProtocolPortLog::process_Descriptor_Information(JSONNODE *descData)
 
 	byte_Swap_64(&m_Descriptor->address);						// need to byte swap on SAS 64 bit
 	byte_Swap_64(&m_Descriptor->attachedAddress);				// need to byte swap on SAS 64 bit
-	set_json_64bit(descData, "SAS Addres", m_Descriptor->address, true);
-	set_json_64bit(descData, "Attached Address", m_Descriptor->attachedAddress, true);
+    snprintf((char*)myStr.c_str(), BASIC, "0x%014" PRIx64"", m_Descriptor->address);
+    json_push_back(descData, json_new_a("World Wide Name", (char*)myStr.c_str()));
+    snprintf((char*)myStr.c_str(), BASIC, "0x%014" PRIx64"", m_Descriptor->attachedAddress);
+    json_push_back(descData, json_new_a("Attached Address", (char*)myStr.c_str()));
 
 	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Descriptor->attachedPhyIdent);
 	json_push_back(descData, json_new_a("Attached Phy Identifier", (char*)myStr.c_str()));
@@ -385,8 +387,7 @@ void CScsiProtocolPortLog::process_List_Information(JSONNODE *listData)
 	json_push_back(listData, json_new_a("Port Identifier", (char*)myStr.c_str()));
 	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_List->genCode);
 	json_push_back(listData, json_new_a("Generation Code", (char*)myStr.c_str()));
-	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_List->numberOfPhys);
-	json_push_back(listData, json_new_a("Number of Phys", (char*)myStr.c_str()));
+	json_push_back(listData, json_new_i("Number of Phys", m_List->numberOfPhys));
 }
 //-----------------------------------------------------------------------------
 //
@@ -411,7 +412,7 @@ eReturnValues CScsiProtocolPortLog::get_Data(JSONNODE *masterData)
 	if (pData != NULL)
 	{
 		JSONNODE *pageInfo = json_new(JSON_NODE);
-		json_set_name(pageInfo, "Protocol-Specific Port Log Page");
+		json_set_name(pageInfo, "Protocol-Specific Port Log Page - 18h");
 
 		for (size_t offset = 0; (offset < m_PageLength && offset < UINT16_MAX);)
 		{
