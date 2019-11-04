@@ -375,12 +375,12 @@ void CScsiScanLog::process_other_param_data(JSONNODE *scanData, size_t offset)
     json_push_back(defectInfo, json_new_a("Background Scan Defect Control Byte ", (char*)myStr.c_str()));
     snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_ParamHeader->paramLength);
     json_push_back(defectInfo, json_new_a("Background Scan Defect Length ", (char*)myStr.c_str()));
-    offset += 4;   // add the size of the param header
     JSONNODE *myArray = json_new(JSON_ARRAY);
     json_set_name(myArray, ("Background Data"));
-    for (uint16_t loop = 0; loop < m_ParamHeader->paramLength; loop++)
+    // add the size of the param header
+    for (uint16_t loop = 4; loop < m_ParamHeader->paramLength; loop++)
     {
-        json_push_back(myArray, json_new_i("Background data", pData[offset]));
+        json_push_back(myArray, json_new_i("Background data", pData[loop]));
     }
     json_push_back(defectInfo, myArray);
 
