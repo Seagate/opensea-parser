@@ -186,10 +186,11 @@ void CScsiCacheLog::process_Cache_Event_Data(JSONNODE *cacheData)
         //snprintf((char*)myStr.c_str(), BASIC, "Cache Statistics Description %" PRId16"", m_cache->paramCode);
         JSONNODE *cacheInfo = json_new(JSON_NODE);
         json_set_name(cacheInfo, (char*)myStr.c_str());
+        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_cache->paramCode);
+        json_push_back(cacheInfo, json_new_a("Cache Statistics Parameter Code", (char*)myStr.c_str()));
         if (!discriptionIsFound)
         {
-            snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_cache->paramCode);
-            json_push_back(cacheInfo, json_new_a("Cache Statistics Parameter Code", (char*)myStr.c_str()));
+            
 
             //json_push_back(cacheInfo, json_new_a("Cache Statistics Description", (char*)myStr.c_str()));
             snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_cache->paramControlByte);

@@ -161,7 +161,7 @@ eReturnValues CScsiInformationalExeptionsLog::get_Informational_Exceptions_Data(
 	if (pData != NULL)
 	{
 		JSONNODE *pageInfo = json_new(JSON_NODE);
-		json_set_name(pageInfo, "Informational Exceptions Log");
+		json_set_name(pageInfo, "Informational Exceptions Log - 2fh length 0x0f");
 		uint16_t number = 0;
 		for (size_t offset = 0; offset < m_PageLength; )
 		{

@@ -112,38 +112,45 @@ CScsiPowerConditiontLog::~CScsiPowerConditiontLog()
 //!   \return void
 //
 //---------------------------------------------------------------------------
-void CScsiPowerConditiontLog::get_Power_Mode_Type(std::string *power, uint16_t code)
+bool CScsiPowerConditiontLog::get_Power_Mode_Type(std::string *power, uint16_t code)
 {
+    bool typeFound = false;
 	switch (code)
 	{
 		case ACTIVE:
 		{
 			snprintf((char*)power->c_str(), BASIC, "Accumulated transitions to active");
+            typeFound = true;
 			break;
 		}
 		case IDLE_A:
 		{
 			snprintf((char*)power->c_str(), BASIC, "Accumulated transitions to idle_a");
+            typeFound = true;
 			break;
 		}
 		case IDLE_B:
 		{
 			snprintf((char*)power->c_str(), BASIC, "Accumulated transitions to idle_b");
+            typeFound = true;
 			break;
 		}
 		case IDLE_C:
 		{
 			snprintf((char*)power->c_str(), BASIC, "Accumulated transitions to idle_c");
+            typeFound = true;
 			break;
 		}
 		case STANDZ:
 		{
 			snprintf((char*)power->c_str(), BASIC, "Accumulated transitions to standby_z");
+            typeFound = true;
 			break;
 		}
 		case STANDY:
 		{
 			snprintf((char*)power->c_str(), BASIC, "Accumulated transitions to standby_y");
+            typeFound = true;
 			break;
 		}
 		default:
@@ -152,6 +159,7 @@ void CScsiPowerConditiontLog::get_Power_Mode_Type(std::string *power, uint16_t c
 			break;
 		}
 	}
+    return typeFound;
 }
 //-----------------------------------------------------------------------------
 //
@@ -169,30 +177,32 @@ void CScsiPowerConditiontLog::get_Power_Mode_Type(std::string *power, uint16_t c
 //---------------------------------------------------------------------------
 void CScsiPowerConditiontLog::process_List_Information(JSONNODE *powerData)
 {
+    bool typeFound = false;
 	std::string myStr = "";
 	myStr.resize(BASIC);
 #if defined( _DEBUG)
 	printf("Power Condition Transitions Log Page\n");
 #endif
 	byte_Swap_16(&m_PowerParam->paramCode);
-	snprintf((char*)myStr.c_str(), BASIC, "Power Condition Transitions 0x%04" PRIx16"", m_PowerParam->paramCode);
-	JSONNODE *powerInfo = json_new(JSON_NODE);
-	json_set_name(powerInfo, (char*)myStr.c_str());
-	get_Power_Mode_Type(&myStr, m_PowerParam->paramCode);
-	json_push_back(powerInfo, json_new_a("Power Condition Type", (char*)myStr.c_str()));
-    if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+    byte_Swap_32(&m_PowerParam->paramValue);
+    typeFound = get_Power_Mode_Type(&myStr, m_PowerParam->paramCode);
+	
+    if (m_PowerParam->paramValue != 0)
     {
+        JSONNODE *powerInfo = json_new(JSON_NODE);
+        json_set_name(powerInfo, (char*)myStr.c_str());
         snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_PowerParam->paramCode);
-        json_push_back(powerInfo, json_new_a("Power Condition", (char*)myStr.c_str()));
-        snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_PowerParam->paramControlByte);
-        json_push_back(powerInfo, json_new_a("Control Byte", (char*)myStr.c_str()));
-        snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_PowerParam->paramLength);
-        json_push_back(powerInfo, json_new_a("Length", (char*)myStr.c_str()));
+        json_push_back(powerInfo, json_new_a("Power Condition Type", (char*)myStr.c_str()));
+        if (!typeFound)
+        {
+            snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_PowerParam->paramControlByte);
+            json_push_back(powerInfo, json_new_a("Control Byte", (char*)myStr.c_str()));
+            snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_PowerParam->paramLength);
+            json_push_back(powerInfo, json_new_a("Length", (char*)myStr.c_str()));
+        }
+        json_push_back(powerInfo, json_new_i("Power Value", m_PowerParam->paramValue));
+        json_push_back(powerData, powerInfo);
     }
-	byte_Swap_32(&m_PowerParam->paramValue);
-	json_push_back(powerInfo, json_new_i("Power Value", m_PowerParam->paramValue));
-
-	json_push_back(powerData, powerInfo);
 }
 //-----------------------------------------------------------------------------
 //
@@ -214,7 +224,7 @@ eReturnValues CScsiPowerConditiontLog::get_Data(JSONNODE *masterData)
 	if (pData != NULL)
 	{
 		JSONNODE *pageInfo = json_new(JSON_NODE);
-		json_set_name(pageInfo, "Power Conditions Tranistions Log");
+		json_set_name(pageInfo, "Power Conditions Tranistions Log - 1Ah");
 
 		for (size_t offset = 0; offset < m_PageLength; offset += sizeof(sPowerParams))
 		{

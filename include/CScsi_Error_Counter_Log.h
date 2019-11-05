@@ -47,8 +47,9 @@ namespace opensea_parser {
 		sErrorParams				*m_Error;					//<! Error counter structure 
 		uint8_t						m_pageType;					//<! need to know if it's a write read or verify log
 
+        void append_Error_Log_Page_Number(std::string *typeStr, std::string main);
 		void set_Master_String(std::string *typeStr, std::string main);
-		void get_Error_Parameter_Code_Description(std::string *error);
+		bool get_Error_Parameter_Code_Description(std::string *error);
 		void process_Error_Data(JSONNODE *errorData);
 		eReturnValues get_Error_Counter_Data(JSONNODE *masterData);
 	public:

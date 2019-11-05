@@ -52,7 +52,7 @@ namespace opensea_parser {
 		size_t						m_bufferLength;			    //<! length of the buffer from reading in the log
 		sPowerParams				*m_PowerParam;				//<! sturcture for each of the transistions
 
-		void get_Power_Mode_Type(std::string *power, uint16_t code);
+		bool get_Power_Mode_Type(std::string *power, uint16_t code);
 		void process_List_Information(JSONNODE *powerData);
 		eReturnValues get_Data(JSONNODE *masterData);
 	public:
