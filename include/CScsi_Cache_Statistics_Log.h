@@ -43,7 +43,7 @@ namespace opensea_parser {
 		uint64_t					m_Value;					//<! Parameter Value
 		sCacheParams				*m_cache;					//<! cache structure 
 
-		void get_Cache_Parameter_Code_Description(std::string *cache);
+		bool get_Cache_Parameter_Code_Description(std::string *cache);
 		void process_Cache_Event_Data(JSONNODE *cacheData);
 		eReturnValues get_Cache_Data(JSONNODE *masterData);
 	public:
