@@ -234,7 +234,7 @@ void CScsiScanLog::process_Scan_Status_Data(JSONNODE *scanData)
 //---------------------------------------------------------------------------
 void CScsiScanLog::get_Scan_Defect_Status_Description(std::string *defect)
 {
-	switch (M_GETBITRANGE(7,4, m_ScanParam->status))
+	switch (M_GETBITRANGE(m_ScanParam->status,7,4))
 	{
 		case 0x01:
 		{
@@ -323,9 +323,9 @@ void CScsiScanLog::process_Defect_Data(JSONNODE *defectData)
 	get_Scan_Status_Description(&myStr);
 	json_push_back(defectInfo, json_new_i((char*)myStr.c_str(), static_cast<uint32_t>(m_defect->status)));
 	get_Scan_Defect_Status_Description(&headerStr);
-	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", M_GETBITRANGE(7, 4, m_ScanParam->status));
+	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", M_GETBITRANGE(m_ScanParam->status,7, 4));
 	json_push_back(defectInfo, json_new_a((char*)headerStr.c_str(), (char*)myStr.c_str()));
-	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", M_GETBITRANGE(3, 0, m_ScanParam->status));
+	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", M_GETBITRANGE(m_ScanParam->status,3, 0));
 	json_push_back(defectInfo, json_new_a("Sense Key", (char*)myStr.c_str()));
 
 	json_push_back(defectInfo, json_new_i("Additional Sense Code", static_cast<uint32_t>(m_defect->senseCode)));
