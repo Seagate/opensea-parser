@@ -155,7 +155,7 @@ eReturnValues CScsiTemperatureLog::get_Data(JSONNODE *masterData)
 	if (pData != NULL)
 	{
 		JSONNODE *pageInfo = json_new(JSON_NODE);
-		json_set_name(pageInfo, "Temperature Log Page");
+		json_set_name(pageInfo, "Temperature Log Page - Dh");
 		for (size_t param = 0; param < m_PageLength; param += tempSize)
 		{
 			byte_Swap_16(&m_Page->paramCode);

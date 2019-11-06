@@ -250,7 +250,7 @@ eReturnValues CScsiLBAProvisionLog::get_LBA_Data(JSONNODE *masterData)
 	if (pData != NULL)
 	{
 		JSONNODE *pageInfo = json_new(JSON_NODE);
-		json_set_name(pageInfo, "Logical Block Provisioning Log");
+		json_set_name(pageInfo, "Logical Block Provisioning Log - Ch");
 
 		for (size_t offset = 0; offset < (size_t)m_PageLength; )
 		{

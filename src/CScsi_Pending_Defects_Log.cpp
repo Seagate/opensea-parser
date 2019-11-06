@@ -196,7 +196,7 @@ eReturnValues CScsiPendingDefectsLog::get_Plist_Data(JSONNODE *masterData)
 	eReturnValues retStatus = IN_PROGRESS;
 	if (pData != NULL)
 	{
-		myStr = "Pending Defect Log";
+		myStr = "Pending Defect Log - 15h";
 		JSONNODE *pageInfo = json_new(JSON_NODE);
 		json_set_name(pageInfo, (char*)myStr.c_str());
 		m_PListCountParam = (sPendindDefectCount *)pData;

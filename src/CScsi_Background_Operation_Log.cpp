@@ -202,7 +202,7 @@ eReturnValues CScsiOperationLog::get_Background_Operations_Data(JSONNODE *master
 	if (pData != NULL)
 	{
 		JSONNODE *pageInfo = json_new(JSON_NODE);
-		json_set_name(pageInfo, "Background Operation Log");
+		json_set_name(pageInfo, "Background Operation Log - 15h");
 
 		for (size_t offset = 0; offset < m_PageLength; )
 		{

@@ -118,7 +118,7 @@ eReturnValues CScsi_DST_Results::parse_Self_Test_Log(uint8_t *buffer, size_t buf
 	JSONNODE *DstJson = json_new(JSON_NODE);
 
 
-	json_set_name(DstJson, "Self Test Results Log");
+	json_set_name(DstJson, "Self Test Results Log - 10h");
 
 	m_DST = (sSelfTest *)buffer;
 	for (int i = 1; i <= 20; i++)

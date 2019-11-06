@@ -407,7 +407,7 @@ eReturnValues CScsiScanLog::get_Scan_Data(JSONNODE *masterData)
 	if (pData != NULL)
 	{
 		JSONNODE *pageInfo = json_new(JSON_NODE);
-		json_set_name(pageInfo, "Background Scan Log");
+		json_set_name(pageInfo, "Background Scan Log - 15h");
         m_ScanParam = (sScanStatusParams *)&pData[0];
 		process_Scan_Status_Data(pageInfo);
 		for (size_t offset = ((size_t)m_ScanParam->paramLength + 4); offset < (((size_t)m_PageLength) - sizeof(sScanFindingsParams)); )
