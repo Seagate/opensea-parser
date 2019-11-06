@@ -258,7 +258,7 @@ void CScsiScanLog::get_Scan_Defect_Status_Description(std::string *defect)
 		}
 		case 0x05:
 		{
-			snprintf((char*)defect->c_str(), BASIC, "Error Corrected by the device Rewriting the LBA without Performing Reassign Operation.");
+			snprintf((char*)defect->c_str(), BASIC, "Error Corrected, Device rewriting the LBA without Performing Reassign Operation.");
 			break;
 		}
 		case 0x06:
@@ -268,12 +268,12 @@ void CScsiScanLog::get_Scan_Defect_Status_Description(std::string *defect)
 		}
 		case 0x07:
 		{
-			snprintf((char*)defect->c_str(), BASIC, "Application Client caused a reassign operation for the LBA with a REASSIGN BLOCKS command or LBRPZ");
+			snprintf((char*)defect->c_str(), BASIC, "Application Client,  Reassign by Command - Invalid Data");
 			break;
 		}
 		case 0x08:
 		{
-			snprintf((char*)defect->c_str(), BASIC, "Application Client’s request for a reassign operation for the LBA with a REASSIGN BLOCKS");
+			snprintf((char*)defect->c_str(), BASIC, "Application Client, Reassign Command Failed");
 			break;
 		}
 		default:
