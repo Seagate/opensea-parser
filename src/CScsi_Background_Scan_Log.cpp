@@ -234,7 +234,7 @@ void CScsiScanLog::process_Scan_Status_Data(JSONNODE *scanData)
 //---------------------------------------------------------------------------
 void CScsiScanLog::get_Scan_Defect_Status_Description(std::string *defect)
 {
-	switch (M_GETBITRANGE(m_ScanParam->status,7,4))
+	switch (M_GETBITRANGE(m_defect->status,7,4))
 	{
 		case 0x01:
 		{
@@ -258,7 +258,7 @@ void CScsiScanLog::get_Scan_Defect_Status_Description(std::string *defect)
 		}
 		case 0x05:
 		{
-			snprintf((char*)defect->c_str(), BASIC, "Error was Corrected by the device Rewriting the LBA without Performing a Reassign Operation.");
+			snprintf((char*)defect->c_str(), BASIC, "Error Corrected by the device Rewriting the LBA without Performing Reassign Operation.");
 			break;
 		}
 		case 0x06:
@@ -320,12 +320,14 @@ void CScsiScanLog::process_Defect_Data(JSONNODE *defectData)
 	byte_Swap_32(&m_defect->powerOnMinutes);
 	json_push_back(defectInfo, json_new_i("Power On Minutes", static_cast<uint32_t>(m_defect->powerOnMinutes)));
 
-	get_Scan_Status_Description(&myStr);
-	json_push_back(defectInfo, json_new_i((char*)myStr.c_str(), static_cast<uint32_t>(m_defect->status)));
+    //Nayana: Need not print the Scan status here as already printed in process_Scan_Status_Data
+	//get_Scan_Status_Description(&myStr);
+	//json_push_back(defectInfo, json_new_i((char*)myStr.c_str(), static_cast<uint32_t>(m_ScanParam->status)));
+
 	get_Scan_Defect_Status_Description(&headerStr);
-	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", M_GETBITRANGE(m_ScanParam->status,7, 4));
+	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", M_GETBITRANGE(m_defect->status,7, 4));
 	json_push_back(defectInfo, json_new_a((char*)headerStr.c_str(), (char*)myStr.c_str()));
-	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", M_GETBITRANGE(m_ScanParam->status,3, 0));
+	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", M_GETBITRANGE(m_defect->status,3, 0));
 	json_push_back(defectInfo, json_new_a("Sense Key", (char*)myStr.c_str()));
 
 	json_push_back(defectInfo, json_new_i("Additional Sense Code", static_cast<uint32_t>(m_defect->senseCode)));
