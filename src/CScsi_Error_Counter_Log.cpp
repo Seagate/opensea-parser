@@ -303,8 +303,18 @@ void CScsiErrorCounterLog::process_Error_Data(JSONNODE *errorData)
             set_json_64bit(errorInfo, "Error Count", m_ErrorValue, false);
         }
         else
-        {
-            json_push_back(errorInfo, json_new_i("Error Count", static_cast<uint32_t>(m_ErrorValue)));
+        {           
+            if (M_GETBITRANGE(m_ErrorValue, 33, 15) == 0)
+            {
+                json_push_back(errorInfo, json_new_i("Error Count", static_cast<uint32_t>(m_ErrorValue)));
+            }
+
+            else
+            {
+                std::string printStr;
+                snprintf((char*)printStr.c_str(), BASIC, "%" PRIu32"", m_ErrorValue);
+                json_push_back(errorInfo, json_new_a((char *)myStr.c_str(), (char*)printStr.c_str()));
+            }
         }
 
         json_push_back(errorData, errorInfo);
