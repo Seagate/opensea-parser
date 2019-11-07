@@ -330,8 +330,14 @@ void CScsiScanLog::process_Defect_Data(JSONNODE *defectData)
 	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", M_GETBITRANGE(m_defect->status,3, 0));
 	json_push_back(defectInfo, json_new_a("Sense Key", (char*)myStr.c_str()));
 
-	json_push_back(defectInfo, json_new_i("Additional Sense Code", static_cast<uint32_t>(m_defect->senseCode)));
-	json_push_back(defectInfo, json_new_i("Additional Sense Code Qualifier", static_cast<uint32_t>(m_defect->codeQualifier)));
+
+	//json_push_back(defectInfo, json_new_i("Additional Sense Code", static_cast<uint32_t>(m_defect->senseCode)));
+	//json_push_back(defectInfo, json_new_i("Additional Sense Code Qualifier", static_cast<uint32_t>(m_defect->codeQualifier)));
+    snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_defect->senseCode);
+    json_push_back(defectInfo, json_new_a("Additional Sense Code", (char*)myStr.c_str()));
+    snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_defect->codeQualifier);
+    json_push_back(defectInfo, json_new_a("Additional Sense Code Qualifier", (char*)myStr.c_str()));
+
 	snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_defect->vendorSpecific);
 	json_push_back(defectInfo, json_new_a("Vendor Specific", (char*)myStr.c_str()));
 	snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_defect->vendorSpecific1);
