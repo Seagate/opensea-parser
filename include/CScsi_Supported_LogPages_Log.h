@@ -34,6 +34,7 @@ namespace opensea_parser {
 		uint8_t						m_SubPage;					//<! subpage data
 		uint8_t						m_Page;						//<! Page number
 		bool						m_ShowSubPage;				//<! flag to show the subpage information
+        bool                        m_ShowSupportedPagesOnce;   //<! set to true and then once we should this page set to false so we don't show it more then once
 
 		void get_Supported_And_Subpage_Description(std::string *description);
 		void process_Supported_Data(JSONNODE *supportData);

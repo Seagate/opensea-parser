@@ -38,6 +38,7 @@ CScsiSupportedLog::CScsiSupportedLog()
 	, m_SubPage(0)
 	, m_Page(0)
 	, m_ShowSubPage(false)
+    , m_ShowSupportedPagesOnce(true)
 {
 	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
@@ -69,6 +70,7 @@ CScsiSupportedLog::CScsiSupportedLog(uint8_t * buffer, size_t bufferSize, uint16
 	, m_SubPage(0)
 	, m_Page(0)
 	, m_ShowSubPage(subPage)
+    , m_ShowSupportedPagesOnce(true)
 {
 	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
@@ -123,14 +125,18 @@ void CScsiSupportedLog::get_Supported_And_Subpage_Description(std::string *descr
 	{
 		case SUPPORTED_LOG_PAGES:
 		{
-			if (m_ShowSubPage && m_SubPage == 0xFF)
-			{
-				snprintf((char*)description->c_str(), BASIC, "Supported Log Pages and Subpages");
-			}
-			else
-			{
-				snprintf((char*)description->c_str(), BASIC, "Supported Log Pages");
-			}
+            if (m_ShowSupportedPagesOnce)
+            {
+                if (m_ShowSubPage && m_SubPage == 0xFF)
+                {
+                    snprintf((char*)description->c_str(), BASIC, "Supported Log Pages and Subpages");
+                }
+                else
+                {
+                    snprintf((char*)description->c_str(), BASIC, "Supported Log Pages");
+                }
+                m_ShowSupportedPagesOnce = false;
+            }
 			break;
 		}
 		case WRITE_ERROR_COUNTER:
@@ -217,7 +223,7 @@ void CScsiSupportedLog::get_Supported_And_Subpage_Description(std::string *descr
 		}
 		case PROTOCOL_SPECIFIC_PORT:
 		{
-			snprintf((char*)description->c_str(), BASIC, "Total Uncorrected Errors");
+			snprintf((char*)description->c_str(), BASIC, "SAS Protocol Log Page");
 			break;
 		}
 		case POWER_CONDITION_TRANSITIONS:
@@ -270,16 +276,16 @@ void CScsiSupportedLog::process_Supported_Data(JSONNODE *SupportData)
 #if defined( _DEBUG)
 	printf("Supported Log Pages \n");
 #endif
-	if (m_ShowSubPage)
-	{
-		snprintf((char*)myHeader.c_str(), BASIC, "Page 0x%02" PRIx8" SubPage 0x%02" PRIx8"", m_Page,m_SubPage);
-	}
-	else
-	{
-		snprintf((char*)myHeader.c_str(), BASIC, "Page 0x%02" PRIx8"", m_Page);
-	}
-	get_Supported_And_Subpage_Description(&myStr);
 
+    if (m_ShowSubPage)
+    {
+        snprintf((char*)myHeader.c_str(), BASIC, "Page 0x%02" PRIx8" SubPage 0x%02" PRIx8"", m_Page, m_SubPage);
+    }
+    else
+    {
+        snprintf((char*)myHeader.c_str(), BASIC, "Page 0x%02" PRIx8"", m_Page);
+    }
+    get_Supported_And_Subpage_Description(&myStr);
 	json_push_back(SupportData, json_new_a((char*)myHeader.c_str(), (char*)myStr.c_str()));
 }
 //-----------------------------------------------------------------------------
@@ -318,7 +324,15 @@ eReturnValues CScsiSupportedLog::get_Supported_Log_Data(JSONNODE *masterData)
 					m_SubPage = (uint8_t)pData[offset];
 					offset++;
 				}
-				process_Supported_Data(pageInfo);
+                if ((m_Page != 0 || m_SubPage != 0) )
+                {
+                    process_Supported_Data(pageInfo);
+                }
+                else if(m_ShowSupportedPagesOnce)
+                { 
+                    process_Supported_Data(pageInfo);
+                }
+
 			}
 			else
 			{
