@@ -388,7 +388,7 @@ void CScsiScanLog::process_other_param_data(JSONNODE *scanData, size_t offset)
     // add the size of the param header
     for (uint16_t loop = 4; loop < m_ParamHeader->paramLength; loop++)
     {
-        json_push_back(myArray, json_new_i("Background data", pData[loop]));
+        json_push_back(myArray, json_new_i("Background data", pData[offset + loop]));
     }
     json_push_back(defectInfo, myArray);
 
