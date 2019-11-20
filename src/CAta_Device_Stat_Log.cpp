@@ -841,8 +841,11 @@ void CAtaDeviceStatisticsLogs::logPage03(uint64_t *value, JSONNODE *masterData)
     uint32_t ReCandidate = CheckStatusAndValid_32(&cData[7]);
     uint32_t UnloadEvent = CheckStatusAndValid_32(&cData[8]);
 	
-    pSCT3->SpdPoh = ((SpdPoh / 1000) / 3600);
-    pSCT3->HeadFlyHour = ((HeadFlyHour / 1000) / 3600);
+    //Need not convert to hours. As per the spec the value itself is in hours.
+    //pSCT3->SpdPoh = ((SpdPoh / 1000) / 3600);
+    //pSCT3->HeadFlyHour = ((HeadFlyHour / 1000) / 3600);
+    pSCT3->SpdPoh = SpdPoh;
+    pSCT3->HeadFlyHour = HeadFlyHour;
     pSCT3->HeadLoadEvent = HeadLoadEvent;
     pSCT3->ReLogicalSec = ReLogicalSec;
     pSCT3->ReadRecAtmp = ReadRecAtmp;
