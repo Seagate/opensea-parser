@@ -932,7 +932,7 @@ void CAtaDeviceStatisticsLogs::logPage04(uint64_t *value, JSONNODE *masterData)
 //---------------------------------------------------------------------------
 void CAtaDeviceStatisticsLogs::logPage05(uint64_t *value, JSONNODE *masterData)
 {
-    //Temperature Statistics(log page 04) in degrees Celsius.
+    //Temperature Statistics(log page 05) in degrees Celsius.
     uint64_t *cData = &value[0];
     int8_t CurrentTemp = 0;
     int8_t AvgShortTemp = 0;
