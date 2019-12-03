@@ -742,7 +742,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     pFarmPageHeader = (sScsiPageParameter *)&pBuf[offset];                                      // get the Farm Header information
                     pworkLoad = (sScsiWorkLoadStat *)&pBuf[offset ];												// get the work load information
                     swap_Bytes_sWorkLoadStat(pworkLoad);
-                    memcpy(&pFarmFrame->workLoadPage, pworkLoad, sizeof(sWorkLoadStat));
+                    memcpy(&pFarmFrame->workLoadPage, pworkLoad, sizeof(sScsiWorkLoadStat));
                     offset += (pFarmPageHeader->plen + sizeof(sScsiPageParameter));
                     break;
                 case ERROR_STATISTICS_PARAMETER:
@@ -1096,7 +1096,8 @@ eReturnValues CSCSI_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint
 	json_push_back(pageInfo, json_new_a("Firmware Rev", (char*)myStr.c_str()));
     snprintf((char*)myStr.c_str(), BASIC, "%s", vFarmFrame[page].identStringInfo.deviceInterface.c_str());
     json_push_back(pageInfo, json_new_a("Device Interface", (char*)myStr.c_str()));
-    set_json_64_bit_With_Status(pageInfo, "Device Capacity in Sectors", vFarmFrame[page].driveInfo.deviceCapacity, false, m_showStatusBits);
+    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu64"", vFarmFrame[page].driveInfo.deviceCapacity & 0x00FFFFFFFFFFFFFFLL);
+    set_json_string_With_Status(pageInfo, "Device Capacity in Sectors", (char*)myStr.c_str(), vFarmFrame[page].driveInfo.deviceCapacity, m_showStatusBits);
     set_json_64_bit_With_Status(pageInfo, "Physical Sector size", vFarmFrame[page].driveInfo.psecSize, false, m_showStatusBits);									//!< Physical Sector Size in Bytes
     set_json_64_bit_With_Status(pageInfo, "Logical Sector Size", vFarmFrame[page].driveInfo.lsecSize, false, m_showStatusBits);										//!< Logical Sector Size in Bytes
     set_json_64_bit_With_Status(pageInfo, "Device Buffer Size", vFarmFrame[page].driveInfo.deviceBufferSize, false, m_showStatusBits);								//!< Device Buffer Size in Bytes
@@ -1166,8 +1167,10 @@ eReturnValues CSCSI_Farm_Log::print_WorkLoad(JSONNODE *masterData, uint32_t page
     set_json_64_bit_With_Status(pageInfo, "Total Number of Random Read Cmds", vFarmFrame[page].workLoadPage.workLoad.totalRandomReads, false, m_showStatusBits);			//!< Total Number of Random Read Commands
 	set_json_64_bit_With_Status(pageInfo, "Total Number of Random Write Cmds", vFarmFrame[page].workLoadPage.workLoad.totalRandomWrites, false, m_showStatusBits);		//!< Total Number of Random Write Commands
 	set_json_64_bit_With_Status(pageInfo, "Total Number of Other Commands", vFarmFrame[page].workLoadPage.workLoad.totalNumberofOtherCMDS, false, m_showStatusBits);		//!< Total Number Of Other Commands
-	set_json_64_bit_With_Status(pageInfo, "Logical Sectors Written", vFarmFrame[page].workLoadPage.workLoad.logicalSecWritten, false, m_showStatusBits);					//!< Logical Sectors Written
-    set_json_64_bit_With_Status(pageInfo, "Logical Sectors Read", vFarmFrame[page].workLoadPage.workLoad.logicalSecRead, false, m_showStatusBits);						//!< Logical Sectors Read
+    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu64"", vFarmFrame[page].workLoadPage.workLoad.logicalSecWritten & 0x00FFFFFFFFFFFFFFLL);
+    set_json_string_With_Status(pageInfo, "Logical Sectors Written", (char*)myStr.c_str(), vFarmFrame[page].workLoadPage.workLoad.logicalSecWritten, m_showStatusBits);					//!< Logical Sectors Written
+    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu64"", vFarmFrame[page].workLoadPage.workLoad.logicalSecRead & 0x00FFFFFFFFFFFFFFLL);
+    set_json_string_With_Status(pageInfo, "Logical Sectors Read", (char*)myStr.c_str(), vFarmFrame[page].workLoadPage.workLoad.logicalSecRead, m_showStatusBits);						//!< Logical Sectors Read
     
     json_push_back(workLoad, pageInfo);
     json_push_back(masterData, workLoad);
@@ -1516,7 +1519,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
             printf("\tACFF Sine 1X, value from most recent SMART Summary Frame by Head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].acffSine1xValueByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< ACFF Sine 1X, value from most recent SMART Summary Frame
 #endif
             snprintf((char*)myHeader.c_str(), BASIC, "ACFF Sine 1X value from most recent SMART Summary Frame Head number %d", loopCount); // Head count
-            snprintf((char*)myStr.c_str(), BASIC, "%" PRIi8"", (int8_t)(check_for_signed_int(M_Byte0(check_Status_Strip_Status(vFarmFrame[page].acffSine1xValueByHead.headValue[loopCount])), 8)));
+            snprintf((char*)myStr.c_str(), BASIC, "%" PRIi8"", static_cast<int8_t>(check_for_signed_int(M_Byte0(check_Status_Strip_Status(vFarmFrame[page].acffSine1xValueByHead.headValue[loopCount])), 8)));
             set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].acffSine1xValueByHead.headValue[loopCount], m_showStatusBits);  //!< ACFF Sine 1X, value from most recent SMART Summary Frame
         }
         break;
@@ -1527,7 +1530,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
             printf("\tACFF Cosine 1X, value from most recent SMART Summary Frame by Head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].acffCosine1xValueByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< ACFF Cosine 1X, value from most recent SMART Summary Frame
 #endif
             snprintf((char*)myHeader.c_str(), BASIC, "ACFF Cosine 1X value from most recent SMART Summary Frame Head number %d", loopCount); // Head count
-            snprintf((char*)myStr.c_str(), BASIC, "%" PRIi8"", (int8_t)(check_for_signed_int(M_Byte0(check_Status_Strip_Status(vFarmFrame[page].acffCosine1xValueByHead.headValue[loopCount])), 8) ));
+            snprintf((char*)myStr.c_str(), BASIC, "%" PRIi8"", (static_cast<int8_t>(check_for_signed_int(M_Byte0(check_Status_Strip_Status(vFarmFrame[page].acffCosine1xValueByHead.headValue[loopCount])), 8) )*16));
             set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].acffCosine1xValueByHead.headValue[loopCount], m_showStatusBits);  //!< ACFF Cosine 1X, value from most recent SMART Summary Frame
         }
         break;
@@ -1756,7 +1759,8 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
             printf("\tApplied fly height clearance delta per head in thousandths of one Angstrom: Outer by Head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].appliedFlyHeightByHeadOuter.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Applied fly height clearance delta per head in thousandths of one Angstrom: Outer by Head
 #endif
             snprintf((char*)myHeader.c_str(), BASIC, "Applied fly height clearance delta per head in thousandths of one Angstrom: Outer Head number %d", loopCount); // Head count
-            set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].appliedFlyHeightByHeadOuter.headValue[loopCount], false, m_showStatusBits);  //!< Applied fly height clearance delta per head in thousandths of one Angstrom: Outer by Head
+            snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(static_cast<int16_t>(vFarmFrame[page].appliedFlyHeightByHeadOuter.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL)) / 10);   //!< Applied fly height clearance delta per head in thousandths of one Angstrom: Outer by Head
+            set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].appliedFlyHeightByHeadOuter.headValue[loopCount], m_showStatusBits);
         }
         break;
     case APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_INNER:
@@ -1766,7 +1770,8 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
             printf("\tApplied fly height clearance delta per head in thousandths of one Angstrom: Inner by Head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].appliedFlyHeightByHeadInner.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Applied fly height clearance delta per head in thousandths of one Angstrom: Inner by Head
 #endif
             snprintf((char*)myHeader.c_str(), BASIC, "Applied fly height clearance delta per head in thousandths of one Angstrom: Inner Head number %d", loopCount); // Head count
-            set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].appliedFlyHeightByHeadInner.headValue[loopCount], false, m_showStatusBits);  //!< Applied fly height clearance delta per head in thousandths of one Angstrom: Inner by Head
+            snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(static_cast<int16_t>(vFarmFrame[page].appliedFlyHeightByHeadInner.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL)) / 10);   //!< Applied fly height clearance delta per head in thousandths of one Angstrom: Inner by Head
+            set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].appliedFlyHeightByHeadInner.headValue[loopCount], m_showStatusBits);  
         }
         break;
     case APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_MIDDLE:
@@ -1776,7 +1781,8 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
             printf("\tApplied fly height clearance delta per head in thousandths of one Angstrom: Middle by Head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].appliedFlyHeightByHeadMiddle.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Applied fly height clearance delta per head in thousandths of one Angstrom: middle by Head
 #endif
             snprintf((char*)myHeader.c_str(), BASIC, "Applied fly height clearance delta per head in thousandths of one Angstrom: Middle Head number %d", loopCount);     // Head count
-            set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].appliedFlyHeightByHeadMiddle.headValue[loopCount], false, m_showStatusBits);  //!< Applied fly height clearance delta per head in thousandths of one Angstrom: middle by Head
+            snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(static_cast<int16_t>(vFarmFrame[page].appliedFlyHeightByHeadMiddle.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL)) / 10);   //!< Applied fly height clearance delta per head in thousandths of one Angstrom:middle by Head
+            set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].appliedFlyHeightByHeadMiddle.headValue[loopCount], m_showStatusBits);
         }
         break;
     default:

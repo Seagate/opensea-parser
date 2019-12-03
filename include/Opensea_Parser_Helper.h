@@ -154,10 +154,10 @@ namespace opensea_parser {
 	//! \param value  =  64 bit value to check to see if the bit is set or not
 	//
 	//  Exit:
-	//!   \return uint64_t return the stipped value or a 0
+	//!   \return int64_t return the stipped value or a 0
 	//
 	//---------------------------------------------------------------------------
-	inline uint64_t check_Status_Strip_Status(uint64_t value)
+	inline int64_t check_Status_Strip_Status(uint64_t value)
 	{
 		if (check_For_Active_Status(&value))
 		{
