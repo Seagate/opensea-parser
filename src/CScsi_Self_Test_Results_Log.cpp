@@ -207,7 +207,7 @@ void CScsi_DST_Results::print_Self_Test_Log(JSONNODE *dstNode, uint16_t run)
 	snprintf((char*)myStr.c_str(), BASIC, "%" PRIu8"", m_DST->senseKey);
 	json_push_back(runInfo, json_new_a("Sense Key", (char*)myStr.c_str()));
 	snprintf((char*)myStr.c_str(), BASIC, "%" PRIu8"", m_DST->addSenseCode);
-	json_push_back(runInfo, json_new_a("Additaional Sense Code", (char*)myStr.c_str()));
+	json_push_back(runInfo, json_new_a("Additional Sense Code", (char*)myStr.c_str()));
 	snprintf((char*)myStr.c_str(), BASIC, "%" PRIu8"", m_DST->addSenseCodeQualifier);
 	json_push_back(runInfo, json_new_a("Additional Sense Code Qualifier", (char*)myStr.c_str()));
 
