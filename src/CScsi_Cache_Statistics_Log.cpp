@@ -199,7 +199,7 @@ void CScsiCacheLog::process_Cache_Event_Data(JSONNODE *cacheData)
 
             json_push_back(cacheInfo, json_new_a("Cache Statistics Length ", (char*)myStr.c_str()));
         }
-        set_json_64bit(cacheInfo, "Cache Statistics Lengths", m_Value, false);
+        set_json_64bit(cacheInfo, "Cache Statistics Value", m_Value, false);
 
         json_push_back(cacheData, cacheInfo);
     }
