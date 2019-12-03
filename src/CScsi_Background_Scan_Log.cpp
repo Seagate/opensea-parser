@@ -345,7 +345,8 @@ void CScsiScanLog::process_Defect_Data(JSONNODE *defectData)
 	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_defect->vendorSpecific2);
 	json_push_back(defectInfo, json_new_a("Vendor Specific 2", (char*)myStr.c_str()));
 	byte_Swap_64(&m_defect->LBA);
-	set_json_64bit(defectInfo, "Logical Block Address", m_defect->LBA, false);
+    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu64"", m_defect->LBA);
+    json_push_back(defectInfo, json_new_a("Logical Block Address", (char*)myStr.c_str()));
 	
 	json_push_back(defectData, defectInfo);
 }
