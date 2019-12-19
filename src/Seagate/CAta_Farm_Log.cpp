@@ -765,7 +765,7 @@ eReturnValues CATA_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint32
 
 #if defined( _DEBUG)
     int16_t whole = 0;
-    uint32_t remander = 0;
+    double remander = 0;
     printf("\nReliability Information From Farm Log copy: %d\n", page);
     printf("\tTimestamp of last IDD test:               %" PRIu64" (debug)\n", vFarmFrame[page].reliPage.lastIDDTest & 0x00FFFFFFFFFFFFFFLL);                        //!< Timestamp of last IDD test
     printf("\tSub-command of last IDD test:             %" PRIu64" (debug)\n", vFarmFrame[page].reliPage.cmdLastIDDTest & 0x00FFFFFFFFFFFFFFLL);                     //!< Sub-command of last IDD test
@@ -774,17 +774,16 @@ eReturnValues CATA_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint32
         whole = vFarmFrame[page].reliPage.discSlip[loopCount].wholePartofFloat;
         remander = vFarmFrame[page].reliPage.discSlip[loopCount].decimalPartofFloat;
         remander = remander / 10000;
-        printf("\tDisc Slip in micro-inches by Head %d:      %f (debug)\n", loopCount, (std::abs((double)whole + (double)remander)));  //!< Disc Slip in micro-inches by Head
-		
+        printf("\tDisc Slip in micro-inches by Head %d:      %f (debug)\n", loopCount, (std::fabs((double)whole + (double)remander) ));  //!< Disc Slip in micro-inches by Head
     }
+    int16_t myWhole = 0;
+    double myRemander = 0;
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
-		double myWhole = 0;
-		double myRemander = 0;
-		myWhole = (double) vFarmFrame[page].reliPage.bitErrorRate[loopCount].wholePartofFloat;
-		myRemander = (double) vFarmFrame[page].reliPage.bitErrorRate[loopCount].decimalPartofFloat;
+		myWhole =  vFarmFrame[page].reliPage.bitErrorRate[loopCount].wholePartofFloat;
+		myRemander = vFarmFrame[page].reliPage.bitErrorRate[loopCount].decimalPartofFloat;
 		myRemander = myRemander / 10000;
-        printf("\tBit Error Rate of Zone 0 by Head %d:      %f (debug)\n", loopCount, (std::abs((double)vFarmFrame[page].reliPage.bitErrorRate[loopCount].wholePartofFloat + ((double)vFarmFrame[page].reliPage.bitErrorRate[loopCount].decimalPartofFloat) / 10000)) * -1);  //!< Bit Error Rate of Zone 0 by Drive Head
+        printf("\tBit Error Rate of Zone 0 by Head %d:      %f (debug)\n", loopCount, (std::fabs((double)myWhole) + (double)myRemander ) );  //!< Bit Error Rate of Zone 0 by Drive Head
     }
     printf( "\tNumber of G-List Reclamations(debug):            %" PRIu64" \n", vFarmFrame[page].reliPage.gListReclamed & 0x00FFFFFFFFFFFFFFLL);                   //!< Number of G-List Reclamations 
     printf( "\tServo Status(debug):                             %" PRIu64" \n", vFarmFrame[page].reliPage.servoStatus & 0x00FFFFFFFFFFFFFFLL);                     //!< Servo Status (follows standard DST error code definitions)
