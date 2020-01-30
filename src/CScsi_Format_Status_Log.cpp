@@ -265,9 +265,6 @@ eReturnValues CScsiFormatStatusLog::get_Format_Status_Data(JSONNODE *masterData)
 	eReturnValues retStatus = IN_PROGRESS;
 	if (pData != NULL)
 	{
-		JSONNODE *pageInfo = json_new(JSON_NODE);
-		json_set_name(pageInfo, "Format Status Log - 8h");
-
 		for (size_t offset = 0; offset < m_PageLength; )
 		{
 			if (offset < m_bufferLength && offset < UINT16_MAX)
@@ -339,7 +336,10 @@ eReturnValues CScsiFormatStatusLog::get_Format_Status_Data(JSONNODE *masterData)
 					break;
 				}
 				}
+                JSONNODE *pageInfo = json_new(JSON_NODE);
+                json_set_name(pageInfo, "Format Status Log - 8h");
 				get_Format_Status_Descriptions(pageInfo);
+                json_push_back(masterData, pageInfo);
 			}
 			else
 			{
@@ -348,8 +348,6 @@ eReturnValues CScsiFormatStatusLog::get_Format_Status_Data(JSONNODE *masterData)
 			}
 
 		}
-
-		json_push_back(masterData, pageInfo);
 		retStatus = SUCCESS;
 	}
 	else
