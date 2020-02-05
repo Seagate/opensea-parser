@@ -447,7 +447,7 @@ eReturnValues CATA_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint3
         {
             myStr = "Drive Recording Type";
             std::string type = "   ";
-            if (BIT0 & check_Status_Strip_Status(vFarmFrame[page].driveInfo.driveRecordingType) == 0)
+            if ((BIT0 & check_Status_Strip_Status(vFarmFrame[page].driveInfo.driveRecordingType)) == 0)
             {
                 type = "SMR";
             }
