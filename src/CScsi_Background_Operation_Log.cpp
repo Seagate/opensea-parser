@@ -2,7 +2,7 @@
 // CScsi_Background_Operation_Log.cpp  Definition of Background Operation log page reports parameters that are specific to background operations.
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2015 - 2018 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
+// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this

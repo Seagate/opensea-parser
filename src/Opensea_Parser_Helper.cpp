@@ -1,7 +1,7 @@
 // Opensea_Parser_Helper.cpp   Definition of SeaParser specific functions, structures
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2015 - 2018 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
+// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -17,9 +17,4 @@ time_t           g_currentTime;
 char             g_currentTimeString[64];
 char             *g_currentTimeStringPtr = g_currentTimeString;
 
-/*
-uint64_t opensea_parser::check_Status_Strip_Status(uint64_t value)
-{
-	return uint64_t();
-}
-*/
+

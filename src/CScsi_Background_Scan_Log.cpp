@@ -2,7 +2,7 @@
 // CScsi_Background_Scan_Log.cpp  Definition of Background Scan Log Page
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2015 - 2018 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
+// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -325,9 +325,9 @@ void CScsiScanLog::process_Defect_Data(JSONNODE *defectData)
 	//json_push_back(defectInfo, json_new_i((char*)myStr.c_str(), static_cast<uint32_t>(m_ScanParam->status)));
 
 	get_Scan_Defect_Status_Description(&headerStr);
-	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", M_GETBITRANGE(m_defect->status,7, 4));
+	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", (uint8_t)M_GETBITRANGE(m_defect->status,7, 4));
 	json_push_back(defectInfo, json_new_a((char*)headerStr.c_str(), (char*)myStr.c_str()));
-	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", M_GETBITRANGE(m_defect->status,3, 0));
+	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", (uint8_t)M_GETBITRANGE(m_defect->status,3, 0));
 	json_push_back(defectInfo, json_new_a("Sense Key", (char*)myStr.c_str()));
 
 
