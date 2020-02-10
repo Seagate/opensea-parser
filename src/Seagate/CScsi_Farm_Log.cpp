@@ -1202,23 +1202,23 @@ eReturnValues CSCSI_Farm_Log::print_Error_Information(JSONNODE *masterData, uint
 #if defined( _DEBUG)
     printf("\nError Information Log From Farm Log copy %d:", page);
     printf("\tUnrecoverable Read Errors:                %llu \n", vFarmFrame[page].errorPage.totalReadECC & 0x00FFFFFFFFFFFFFFLL);				//!< Number of Unrecoverable Read Errors
-    printf("\tUnrecoverable Write Errors:               %llu\ n", vFarmFrame[page].errorPage.totalWriteECC & 0x00FFFFFFFFFFFFFFLL);				//!< Number of Unrecoverable Write Errors
+    printf("\tUnrecoverable Write Errors:               %llu \n", vFarmFrame[page].errorPage.totalWriteECC & 0x00FFFFFFFFFFFFFFLL);				//!< Number of Unrecoverable Write Errors
     printf("\tNumber of Reallocated Sectors:            %llu \n", vFarmFrame[page].errorPage.totalReallocations & 0x00FFFFFFFFFFFFFFLL);			//!< Number of Reallocated Sectors
     printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.reserved & 0x00FFFFFFFFFFFFFFLL);					//!< Reserved
-    printf("\tNumber of Mechanical Start Failures:      %llu\ n" vFarmFrame[page].errorPage.totalMechanicalFails & 0x00FFFFFFFFFFFFFFLL);		//!< Number of Mechanical Start Failures
-    printf("\tNumber of Reallocated Candidate Sectors:  %llu\ n", vFarmFrame[page].errorPage.totalReallocatedCanidates & 0x00FFFFFFFFFFFFFFLL);	//!< Number of Reallocated Candidate Sectors
-    printf("\tReserved:                                 %llu \ n", vFarmFrame[page].errorPage.reserved1 & 0x00FFFFFFFFFFFFFFLL);					//!< Reserved
-    printf("\tReserved:                                 %llu \ n" vFarmFrame[page].errorPage.reserved2 & 0x00FFFFFFFFFFFFFFLL);					//!< Reserved
-    printf("\tReserved:                                 %llu \ n" vFarmFrame[page].errorPage.reserved3 & 0x00FFFFFFFFFFFFFFLL);					//!< Reserved
-    printf("\tReserved:                                 %llu \ n" vFarmFrame[page].errorPage.reserved4 & 0x00FFFFFFFFFFFFFFLL);					//!< Reserved
-    printf("\tReserved:                                 %llu \ n", vFarmFrame[page].errorPage.reserved5 & 0x00FFFFFFFFFFFFFFLL);					//!< Reserved
-    printf("\tNumber of IOEDC Errors (Raw):             %lu\ n" vFarmFrame[page].errorPage.attrIOEDCErrors & 0x00FFFFFFFFFFFFFFLL);				//!< Number of IOEDC Errors 
-    printf("\tReserved:                                 %llu\ n", vFarmFrame[page].errorPage.reserved6 & 0x00FFFFFFFFFFFFFFLL);					//!< Reserved
-    printf("\tReserved:                                 %llu\ n", vFarmFrame[page].errorPage.reserved7 & 0x00FFFFFFFFFFFFFFLL);					//!< Reserved
-    printf("\tReserved:                                 %llu\ n" vFarmFrame[page].errorPage.reserved8 & 0x00FFFFFFFFFFFFFFLL);					//!< Reserved
-    printf("\tTotal Flash LED (Assert) Events:          %llu\ n", vFarmFrame[page].errorPage.totalFlashLED & 0x00FFFFFFFFFFFFFFLL);				//!< Total Flash LED (Assert) Events
-	printf("\tReserved:                                 %llu\ n", vFarmFrame[page].errorPage.reserved9 & 0x00FFFFFFFFFFFFFFLL);					//!< Reserved
-	printf("\tFRU code if smart trip from most recent SMART Frame:%llu\ n" vFarmFrame[page].errorPage.FRUCode & 0x00FFFFFFFFFFFFFFLL);
+    printf("\tNumber of Mechanical Start Failures:      %llu \n", vFarmFrame[page].errorPage.totalMechanicalFails & 0x00FFFFFFFFFFFFFFLL);		//!< Number of Mechanical Start Failures
+    printf("\tNumber of Reallocated Candidate Sectors:  %llu \n", vFarmFrame[page].errorPage.totalReallocatedCanidates & 0x00FFFFFFFFFFFFFFLL);	//!< Number of Reallocated Candidate Sectors
+    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.reserved1 & 0x00FFFFFFFFFFFFFFLL);					//!< Reserved
+    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.reserved2 & 0x00FFFFFFFFFFFFFFLL);					//!< Reserved
+    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.reserved3 & 0x00FFFFFFFFFFFFFFLL);					//!< Reserved
+    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.reserved4 & 0x00FFFFFFFFFFFFFFLL);					//!< Reserved
+    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.reserved5 & 0x00FFFFFFFFFFFFFFLL);					//!< Reserved
+    printf("\tNumber of IOEDC Errors (Raw):             %llu \n", vFarmFrame[page].errorPage.attrIOEDCErrors & 0x00FFFFFFFFFFFFFFLL);				//!< Number of IOEDC Errors 
+    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.reserved6 & 0x00FFFFFFFFFFFFFFLL);					//!< Reserved
+    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.reserved7 & 0x00FFFFFFFFFFFFFFLL);					//!< Reserved
+    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.reserved8 & 0x00FFFFFFFFFFFFFFLL);					//!< Reserved
+    printf("\tTotal Flash LED (Assert) Events:          %llu \n", vFarmFrame[page].errorPage.totalFlashLED & 0x00FFFFFFFFFFFFFFLL);				//!< Total Flash LED (Assert) Events
+	printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.reserved9 & 0x00FFFFFFFFFFFFFFLL);					//!< Reserved
+	printf("\tFRU code if smart trip from most recent SMART Frame:%llu \n", vFarmFrame[page].errorPage.FRUCode & 0x00FFFFFFFFFFFFFFLL);
 #endif
 
     snprintf((char*)myStr.c_str(), BASIC, "Error Information Log From Farm Log copy %" PRId32"", page);
