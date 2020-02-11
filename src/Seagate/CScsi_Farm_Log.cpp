@@ -336,19 +336,22 @@ void CSCSI_Farm_Log::set_Head_Header(std::string &headerName, eLogPageTypes inde
     case APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_OUTER:
         if (!m_alreadySet)
         {
-            headerName = "Applied fly height clearance delta per head in thousandths of one Angstrom - Outer";
+            headerName = "Applied fly height clearance delta per head - Outer";
             m_alreadySet = true;
         }
         else // fix for the firmware issue. FDDRAGON-95
         {
-            headerName = "Applied fly height clearance delta per head in thousandths of one Angstrom - Middle";
+            headerName = "Applied fly height clearance delta per head - Middle";
         }
         break;
     case APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_INNER:
-        headerName = "Applied fly height clearance delta per head in thousandths of one Angstrom - Inner";
+        headerName = "Applied fly height clearance delta per head - Inner";
         break;
     case APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_MIDDLE:
-        headerName = "Applied fly height clearance delta per head in thousandths of one Angstrom - Middle";
+        headerName = "Applied fly height clearance delta per head - Middle";
+        break;
+    case RESERVED_FOR_FUTURE_EXPANSION:
+        headerName = "Future Expansion";
         break;
     default:
         headerName = "Something is wrong. Please report error SAS FARM 615";
@@ -1067,16 +1070,16 @@ eReturnValues CSCSI_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint
     printf("\tworkd wide name:                          %s         \n", vFarmFrame[page].identStringInfo.worldWideName.c_str());
     printf("\tfirmware Rev:                             %s         \n", vFarmFrame[page].identStringInfo.firmwareRev.c_str());											//!< Firmware Revision [0:3]
     printf("\tRotation Rate:                            %" PRIu64" \n", vFarmFrame[page].driveInfo.rotationRate & 0x00FFFFFFFFFFFFFFLL);								//!< Rotational Rate of Device 
-    printf("\treserved:								    %" PRIu64" \n", vFarmFrame[page].driveInfo.reserved & 0x00FFFFFFFFFFFFFFLL);									//!< reserved
-    printf("\treserved:								    %" PRIu64" \n", vFarmFrame[page].driveInfo.reserved1 & 0x00FFFFFFFFFFFFFFLL);									//!< reserved
-    printf("\treserved:								    %" PRIu64" \n", vFarmFrame[page].driveInfo.reserved2 & 0x00FFFFFFFFFFFFFFLL);									//!< reserved
+    printf("\treserved:                                 %" PRIu64" \n", vFarmFrame[page].driveInfo.reserved & 0x00FFFFFFFFFFFFFFLL);									//!< reserved
+    printf("\treserved:                                 %" PRIu64" \n", vFarmFrame[page].driveInfo.reserved1 & 0x00FFFFFFFFFFFFFFLL);									//!< reserved
+    printf("\treserved:                                 %" PRIu64" \n", vFarmFrame[page].driveInfo.reserved2 & 0x00FFFFFFFFFFFFFFLL);									//!< reserved
     printf("\tPower on Hours:                           %" PRIu64" \n", vFarmFrame[page].driveInfo.poh & 0x00FFFFFFFFFFFFFFLL);											//!< Power-on Hour
     printf("\treserved:                                 %" PRIu64" \n", vFarmFrame[page].driveInfo.reserved3 & 0x00FFFFFFFFFFFFFFLL);									//!< reserved
     printf("\treserved:                                 %" PRIu64" \n", vFarmFrame[page].driveInfo.reserved4 & 0x00FFFFFFFFFFFFFFLL);									//!< reserved
     printf("\tHead Load Events:                         %" PRIu64" \n", vFarmFrame[page].driveInfo.headLoadEvents & 0x00FFFFFFFFFFFFFFLL);								//!< Head Load Events
     printf("\tPower Cycle count:                        %" PRIu64" \n", vFarmFrame[page].driveInfo.powerCycleCount & 0x00FFFFFFFFFFFFFFLL);								//!< Power Cycle Count
     printf("\tHardware Reset count:                     %" PRIu64" \n", vFarmFrame[page].driveInfo.resetCount & 0x00FFFFFFFFFFFFFFLL);									//!< Hardware Reset Count
-    printf("\treserved:									%" PRIu64" \n", vFarmFrame[page].driveInfo.reserved5 & 0x00FFFFFFFFFFFFFFLL);									//!< treserved
+    printf("\treserved:                                 %" PRIu64" \n", vFarmFrame[page].driveInfo.reserved5 & 0x00FFFFFFFFFFFFFFLL);									//!< treserved
     printf("\tNVC Status @ power on:                    %" PRIu64" \n", vFarmFrame[page].driveInfo.NVC_StatusATPowerOn & 0x00FFFFFFFFFFFFFFLL);							//!< NVC Status on Power-on
     printf("\tTime Available to save:                   %" PRIu64" \n", vFarmFrame[page].driveInfo.timeAvailable & 0x00FFFFFFFFFFFFFFLL);								//!< Time Available to Save User Data to Media Over Last Power Cycle (in 100us)
     printf("\tTime of latest frame:                     %" PRIu64" \n", vFarmFrame[page].driveInfo.firstTimeStamp & 0x00FFFFFFFFFFFFFFLL);								//!< Timestamp of first SMART Summary Frame in Power-On Hours microseconds (spec is wrong)
@@ -1264,24 +1267,24 @@ eReturnValues CSCSI_Farm_Log::print_Enviroment_Information(JSONNODE *masterData,
 #if defined( _DEBUG)
     printf("\nEnvironment Information From Farm Log copy %d:", page);
 
-    printf("\tCurrent Temperature:                  %" PRIu64" \n", vFarmFrame[page].environmentPage.curentTemp & 0x00FFFFFFFFFFFFFFLL);			//!< Current Temperature in Celsius
-    printf("\tHighest Temperature:                  %" PRIu64" \n", vFarmFrame[page].environmentPage.highestTemp & 0x00FFFFFFFFFFFFFFLL);			//!< Highest Temperature in Celsius
-    printf("\tLowest Temperature:                   %" PRIu64" \n", vFarmFrame[page].environmentPage.lowestTemp & 0x00FFFFFFFFFFFFFFLL);			//!< Lowest Temperature
-    printf("\tReserved:                             %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved & 0x00FFFFFFFFFFFFFFLL);				//!< Reserved
-    printf("\tReserved:                             %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved1 & 0x00FFFFFFFFFFFFFFLL);				//!< Reserved
-    printf("\tReserved:                             %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved2 & 0x00FFFFFFFFFFFFFFLL);				//!< Reserved
-    printf("\tReserved:                             %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved3 & 0x00FFFFFFFFFFFFFFLL);				//!< Reserved
-    printf("\tReserved:                             %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved4 & 0x00FFFFFFFFFFFFFFLL);				//!< Reserved
-    printf("\tReserved:                             %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved5 & 0x00FFFFFFFFFFFFFFLL);				//!< Reserved
-    printf("\tReserved:                             %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved6 & 0x00FFFFFFFFFFFFFFLL);				//!< Reserved
-    printf("\tReserved:                             %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved7 & 0x00FFFFFFFFFFFFFFLL);				//!< Reserved
-    printf("\tSpecified Max Operating Temperature:  %" PRIu64" \n", vFarmFrame[page].environmentPage.maxTemp & 0x00FFFFFFFFFFFFFFLL);				//!< Specified Max Operating Temperature
-    printf("\tSpecified Min Operating Temperature:  %" PRIu64" \n", vFarmFrame[page].environmentPage.minTemp & 0x00FFFFFFFFFFFFFFLL);				//!< Specified Min Operating Temperature
-    printf("\tReserved:                             %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved8 & 0x00FFFFFFFFFFFFFFLL);				//!< Reserved
-    printf("\tReserved:                             %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved9 & 0x00FFFFFFFFFFFFFFLL);				//!< Reserved
-    printf("\tCurrent Relative Humidity:            %" PRIu64" \n", vFarmFrame[page].environmentPage.humidity & 0x00FFFFFFFFFFFFFFLL);				//!< Current Relative Humidity (in units of .1%)
-    printf("\tHumidity Mixed Ratio:                 %" PRIu64" \n", ((vFarmFrame[page].environmentPage.humidityRatio & 0x00FFFFFFFFFFFFFFLL) / 8)); //!< Humidity Mixed Ratio multiplied by 8 (divide by 8 to get actual value)
-    printf("\tCurrent Motor Power:                  %" PRIu64" \n", vFarmFrame[page].environmentPage.currentMotorPower & 0x00FFFFFFFFFFFFFFLL);		//!< Current Motor Power, value from most recent SMART Summary Frame6
+    printf("\tCurrent Temperature:                      %" PRIu64" \n", vFarmFrame[page].environmentPage.curentTemp & 0x00FFFFFFFFFFFFFFLL);			//!< Current Temperature in Celsius
+    printf("\tHighest Temperature:                      %" PRIu64" \n", vFarmFrame[page].environmentPage.highestTemp & 0x00FFFFFFFFFFFFFFLL);			//!< Highest Temperature in Celsius
+    printf("\tLowest Temperature:                       %" PRIu64" \n", vFarmFrame[page].environmentPage.lowestTemp & 0x00FFFFFFFFFFFFFFLL);			//!< Lowest Temperature
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved & 0x00FFFFFFFFFFFFFFLL);				//!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved1 & 0x00FFFFFFFFFFFFFFLL);				//!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved2 & 0x00FFFFFFFFFFFFFFLL);				//!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved3 & 0x00FFFFFFFFFFFFFFLL);				//!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved4 & 0x00FFFFFFFFFFFFFFLL);				//!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved5 & 0x00FFFFFFFFFFFFFFLL);				//!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved6 & 0x00FFFFFFFFFFFFFFLL);				//!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved7 & 0x00FFFFFFFFFFFFFFLL);				//!< Reserved
+    printf("\tSpecified Max Operating Temperature:      %" PRIu64" \n", vFarmFrame[page].environmentPage.maxTemp & 0x00FFFFFFFFFFFFFFLL);				//!< Specified Max Operating Temperature
+    printf("\tSpecified Min Operating Temperature:      %" PRIu64" \n", vFarmFrame[page].environmentPage.minTemp & 0x00FFFFFFFFFFFFFFLL);				//!< Specified Min Operating Temperature
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved8 & 0x00FFFFFFFFFFFFFFLL);				//!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved9 & 0x00FFFFFFFFFFFFFFLL);				//!< Reserved
+    printf("\tCurrent Relative Humidity:                %" PRIu64" \n", vFarmFrame[page].environmentPage.humidity & 0x00FFFFFFFFFFFFFFLL);				//!< Current Relative Humidity (in units of .1%)
+    printf("\tHumidity Mixed Ratio:                     %" PRIu64" \n", ((vFarmFrame[page].environmentPage.humidityRatio & 0x00FFFFFFFFFFFFFFLL) / 8)); //!< Humidity Mixed Ratio multiplied by 8 (divide by 8 to get actual value)
+    printf("\tCurrent Motor Power:                      %" PRIu64" \n", vFarmFrame[page].environmentPage.currentMotorPower & 0x00FFFFFFFFFFFFFFLL);		//!< Current Motor Power, value from most recent SMART Summary Frame6
 #endif
 
     snprintf((char*)myStr.c_str(), BASIC, "Environment Information From Farm Log copy %" PRId32"", page);
@@ -1412,389 +1415,403 @@ eReturnValues CSCSI_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint3
 eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNODE *masterData, uint32_t page)
 {
     uint32_t loopCount = 0;
-	JSONNODE *headInfoPage = json_new(JSON_NODE);
 	std::string myStr = " ";
 	myStr.resize(BASIC);
-	snprintf((char*)myStr.c_str(), BASIC, "Head Information From Farm Log copy: %" PRId32"", page);
-	
-	json_set_name(headInfoPage, (char*)myStr.c_str());
 
     std::string myHeader = " ";
-    set_Head_Header(myHeader, type);
-    myHeader.resize(BASIC);
-    JSONNODE *headPage = json_new(JSON_NODE);
-    json_set_name(headPage, (char *)myHeader.c_str());
-    switch (type)
+    if (type != RESERVED_FOR_FUTURE_EXPANSION_10 & type != RESERVED_FOR_FUTURE_EXPANSION_11 & type != RESERVED_FOR_FUTURE_EXPANSION_12 &
+        type != RESERVED_FOR_FUTURE_EXPANSION_13 & type != RESERVED_FOR_FUTURE_EXPANSION_14 & type != RESERVED_FOR_FUTURE_EXPANSION_15 &
+        type != RESERVED_FOR_FUTURE_EXPANSION_16 & type != RESERVED_FOR_FUTURE_EXPANSION_17 & type != RESERVED_FOR_FUTURE_EXPANSION_18 &
+        type != RESERVED_FOR_FUTURE_EXPANSION_19 & type != RESERVED_FOR_FUTURE_EXPANSION)
     {
-    case FARM_HEADER_PARAMETER:
-    case GENERAL_DRIVE_INFORMATION_PARAMETER:
-    case WORKLOAD_STATISTICS_PARAMETER:
-    case ERROR_STATISTICS_PARAMETER:
-    case ENVIRONMENTAL_STATISTICS_PARAMETER:
-    case RELIABILITY_STATISTICS_PARAMETER:
-        break;
-    case DISC_SLIP_IN_MICRO_INCHES_BY_HEAD:
-        for (loopCount = 0; loopCount < m_heads; ++loopCount)
+        set_Head_Header(myHeader, type);
+        myHeader.resize(BASIC);
+        JSONNODE *headPage = json_new(JSON_NODE);
+        json_set_name(headPage, (char *)myHeader.c_str());
+        switch (type)
         {
+        case FARM_HEADER_PARAMETER:
+        case GENERAL_DRIVE_INFORMATION_PARAMETER:
+        case WORKLOAD_STATISTICS_PARAMETER:
+        case ERROR_STATISTICS_PARAMETER:
+        case ENVIRONMENTAL_STATISTICS_PARAMETER:
+        case RELIABILITY_STATISTICS_PARAMETER:
+            break;
+        case DISC_SLIP_IN_MICRO_INCHES_BY_HEAD:
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
 #if defined( _DEBUG)
-            printf("\tDisc Slip in micro-inches by Head by Head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].discSlipPerHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Disc Slip in micro-inches
+                printf("\tDisc Slip in micro-inches by Head by Head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].discSlipPerHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Disc Slip in micro-inches
 
 #endif
-			uint64_t dsHead = check_Status_Strip_Status(vFarmFrame[page].discSlipPerHead.headValue[loopCount]);
-			int16_t whole = M_BytesTo2ByteValue(*((uint8_t*)&dsHead + 5), *((uint8_t*)&dsHead + 4));							// get 5:4 whole part of the float
-			uint32_t decimal  = M_BytesTo4ByteValue(*((uint8_t*)&dsHead + 3), *((uint8_t*)&dsHead + 2) , *((uint8_t*)&dsHead + 1), *((uint8_t*)&dsHead + 0));  // get 3:0 for the Deciaml Part of the float
-            snprintf((char*)myHeader.c_str(), BASIC, "Disc Slip in micro-inches Head %d", loopCount); // Head count
-			snprintf((char*)myStr.c_str(), BASIC, "%0.04f", (std::abs((double)whole) + ((double)decimal / 10000))); //!< Disc Slip in micro-inches by Head
-			set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].discSlipPerHead.headValue[loopCount], m_showStatusBits);
-        }
-        break;
-    case BIT_ERROR_RATE_OF_ZONE_0_BY_DRIVE_HEAD:
-        for (loopCount = 0; loopCount < m_heads; ++loopCount)
-        {
+                uint64_t dsHead = check_Status_Strip_Status(vFarmFrame[page].discSlipPerHead.headValue[loopCount]);
+                int16_t whole = M_BytesTo2ByteValue(*((uint8_t*)&dsHead + 5), *((uint8_t*)&dsHead + 4));							// get 5:4 whole part of the float
+                uint32_t decimal = M_BytesTo4ByteValue(*((uint8_t*)&dsHead + 3), *((uint8_t*)&dsHead + 2), *((uint8_t*)&dsHead + 1), *((uint8_t*)&dsHead + 0));  // get 3:0 for the Deciaml Part of the float
+                snprintf((char*)myHeader.c_str(), BASIC, "Disc Slip in micro-inches Head %d", loopCount); // Head count
+                snprintf((char*)myStr.c_str(), BASIC, "%0.04f", (std::abs((double)whole) + ((double)decimal / 10000))); //!< Disc Slip in micro-inches by Head
+                set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].discSlipPerHead.headValue[loopCount], m_showStatusBits);
+            }
+            break;
+        case BIT_ERROR_RATE_OF_ZONE_0_BY_DRIVE_HEAD:
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
 #if defined( _DEBUG)
-            printf("\tBit Error Rate of Zone 0 by Head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].bitErrorRateByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Bit Error Rate of Zone 0 by Drive Head
+                printf("\tBit Error Rate of Zone 0 by Head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].bitErrorRateByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Bit Error Rate of Zone 0 by Drive Head
 #endif
-			uint64_t beHead = check_Status_Strip_Status(vFarmFrame[page].bitErrorRateByHead.headValue[loopCount]);
-			int16_t whole = M_BytesTo2ByteValue(*((uint8_t*)&beHead + 5), *((uint8_t*)&beHead + 4));							// get 5:4 whole part of the float
-			uint32_t decimal = M_BytesTo4ByteValue(*((uint8_t*)&beHead + 3), *((uint8_t*)&beHead + 2), *((uint8_t*)&beHead + 1), *((uint8_t*)&beHead + 0));  // get 3:0 for the Deciaml Part of the float
-            snprintf((char*)myHeader.c_str(), BASIC, "Bit Error Rate of Zone 0 Head number %d", loopCount); // Head count
-			snprintf((char*)myStr.c_str(), BASIC, "%0.04f", ((std::abs((double)whole) + ((double)decimal / 10000)) * -1));  //!< Bit Error Rate of Zone 0 by Drive Head
-			set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].bitErrorRateByHead.headValue[loopCount], m_showStatusBits);
-        }
-        break;
-    case DOS_WRITE_REFRESH_COUNT:
-        for (loopCount = 0; loopCount < m_heads; ++loopCount)
-        {
+                uint64_t beHead = check_Status_Strip_Status(vFarmFrame[page].bitErrorRateByHead.headValue[loopCount]);
+                int16_t whole = M_BytesTo2ByteValue(*((uint8_t*)&beHead + 5), *((uint8_t*)&beHead + 4));							// get 5:4 whole part of the float
+                uint32_t decimal = M_BytesTo4ByteValue(*((uint8_t*)&beHead + 3), *((uint8_t*)&beHead + 2), *((uint8_t*)&beHead + 1), *((uint8_t*)&beHead + 0));  // get 3:0 for the Deciaml Part of the float
+                snprintf((char*)myHeader.c_str(), BASIC, "Bit Error Rate of Zone 0 Head number %d", loopCount); // Head count
+                snprintf((char*)myStr.c_str(), BASIC, "%0.04f", ((std::abs((double)whole) + ((double)decimal / 10000)) * -1));  //!< Bit Error Rate of Zone 0 by Drive Head
+                set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].bitErrorRateByHead.headValue[loopCount], m_showStatusBits);
+            }
+            break;
+        case DOS_WRITE_REFRESH_COUNT:
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
 #if defined( _DEBUG)
-            printf("\tDOS Write Refresh Count by Head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].dosWriteRefreshCountByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< DOS Write Refresh Count
+                printf("\tDOS Write Refresh Count by Head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].dosWriteRefreshCountByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< DOS Write Refresh Count
 #endif
-            snprintf((char*)myHeader.c_str(), BASIC, "DOS Write Refresh Count Head number %d", loopCount); // Head count
-            set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].dosWriteRefreshCountByHead.headValue[loopCount], false, m_showStatusBits);  //!< DOS Write Refresh Count
-        }
-        break;
-    case DVGA_SKIP_WRITE_DETECT_BY_HEAD:
-        for (loopCount = 0; loopCount < m_heads; ++loopCount)
-        {
+                snprintf((char*)myHeader.c_str(), BASIC, "DOS Write Refresh Count Head number %d", loopCount); // Head count
+                set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].dosWriteRefreshCountByHead.headValue[loopCount], false, m_showStatusBits);  //!< DOS Write Refresh Count
+            }
+            break;
+        case DVGA_SKIP_WRITE_DETECT_BY_HEAD:
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
 #if defined( _DEBUG)
-            printf("\tDVGA Skip Write 0 by Head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].dvgaSkipWriteDetectByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< DVGA Skip Write
+                printf("\tDVGA Skip Write 0 by Head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].dvgaSkipWriteDetectByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< DVGA Skip Write
 #endif
-            snprintf((char*)myHeader.c_str(), BASIC, "VGA Skip Write Head number %d", loopCount); // Head count
-            set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].dvgaSkipWriteDetectByHead.headValue[loopCount], false, m_showStatusBits); //!< DVGA Skip Write
-        }
-        break;
-    case RVGA_SKIP_WRITE_DETECT_BY_HEAD:
-        for (loopCount = 0; loopCount < m_heads; ++loopCount)
-        {
+                snprintf((char*)myHeader.c_str(), BASIC, "VGA Skip Write Head number %d", loopCount); // Head count
+                set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].dvgaSkipWriteDetectByHead.headValue[loopCount], false, m_showStatusBits); //!< DVGA Skip Write
+            }
+            break;
+        case RVGA_SKIP_WRITE_DETECT_BY_HEAD:
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
 #if defined( _DEBUG)
-            printf("\tRVGA Skip Write 0 by Head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].rvgaSkipWriteDetectByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< RVGA Skip Write
+                printf("\tRVGA Skip Write 0 by Head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].rvgaSkipWriteDetectByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< RVGA Skip Write
 #endif
-            snprintf((char*)myHeader.c_str(), BASIC, "RVGA Skip Writ Head number %d", loopCount); // Head count
-            set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].rvgaSkipWriteDetectByHead.headValue[loopCount], false, m_showStatusBits); //!< RVGA Skip Write
-        }
-        break;
-    case FVGA_SKIP_WRITE_DETECT_BY_HEAD:
-        for (loopCount = 0; loopCount < m_heads; ++loopCount)
-        {
+                snprintf((char*)myHeader.c_str(), BASIC, "RVGA Skip Writ Head number %d", loopCount); // Head count
+                set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].rvgaSkipWriteDetectByHead.headValue[loopCount], false, m_showStatusBits); //!< RVGA Skip Write
+            }
+            break;
+        case FVGA_SKIP_WRITE_DETECT_BY_HEAD:
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
 #if defined( _DEBUG)
-            printf("\tFVGA Skip Write 0 by Head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].fvgaSkipWriteDetectByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< FVGA Skip Write 
+                printf("\tFVGA Skip Write 0 by Head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].fvgaSkipWriteDetectByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< FVGA Skip Write 
 #endif
-            snprintf((char*)myHeader.c_str(), BASIC, "FVGA Skip Writ Head number %d", loopCount); // Head count
-            set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].fvgaSkipWriteDetectByHead.headValue[loopCount], false, m_showStatusBits); //!< FVGA Skip Write 
-        }
-        break;
-    case SKIP_WRITE_DETECT_THRESHOLD_EXCEEDED_COUNT_BY_HEAD:
-        for (loopCount = 0; loopCount < m_heads; ++loopCount)
-        {
+                snprintf((char*)myHeader.c_str(), BASIC, "FVGA Skip Writ Head number %d", loopCount); // Head count
+                set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].fvgaSkipWriteDetectByHead.headValue[loopCount], false, m_showStatusBits); //!< FVGA Skip Write 
+            }
+            break;
+        case SKIP_WRITE_DETECT_THRESHOLD_EXCEEDED_COUNT_BY_HEAD:
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
 #if defined( _DEBUG)
-            printf("\tSkip Write Detect Threshold Exceeded Count by Head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].skipWriteDectedThresholdExceededByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Skip Write Detect Threshold Exceeded Count
+                printf("\tSkip Write Detect Threshold Exceeded Count by Head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].skipWriteDectedThresholdExceededByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Skip Write Detect Threshold Exceeded Count
 #endif
-            snprintf((char*)myHeader.c_str(), BASIC, "Skip Write Detect Threshold Exceeded Count Head number %d", loopCount); // Head count
-            set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].skipWriteDectedThresholdExceededByHead.headValue[loopCount], false, m_showStatusBits);  //!< Skip Write Detect Threshold Exceeded Count
-        }
-        break;
-    case ACFF_SINE_1X_VALUE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD:
-        for (loopCount = 0; loopCount < m_heads; ++loopCount)
-        {
+                snprintf((char*)myHeader.c_str(), BASIC, "Skip Write Detect Threshold Exceeded Count Head number %d", loopCount); // Head count
+                set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].skipWriteDectedThresholdExceededByHead.headValue[loopCount], false, m_showStatusBits);  //!< Skip Write Detect Threshold Exceeded Count
+            }
+            break;
+        case ACFF_SINE_1X_VALUE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD:
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
 #if defined( _DEBUG)
-            printf("\tACFF Sine 1X, value from most recent SMART Summary Frame by Head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].acffSine1xValueByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< ACFF Sine 1X, value from most recent SMART Summary Frame
+                printf("\tACFF Sine 1X, value from most recent SMART Summary Frame by Head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].acffSine1xValueByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< ACFF Sine 1X, value from most recent SMART Summary Frame
 #endif
-            snprintf((char*)myHeader.c_str(), BASIC, "ACFF Sine 1X value from most recent SMART Summary Frame Head number %d", loopCount); // Head count
-            snprintf((char*)myStr.c_str(), BASIC, "%" PRIi8"", static_cast<int8_t>(check_for_signed_int(M_Byte0(check_Status_Strip_Status(vFarmFrame[page].acffSine1xValueByHead.headValue[loopCount])), 8)));
-            set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].acffSine1xValueByHead.headValue[loopCount], m_showStatusBits);  //!< ACFF Sine 1X, value from most recent SMART Summary Frame
-        }
-        break;
-    case ACFF_COSINE_1X_VALUE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD:
-        for (loopCount = 0; loopCount < m_heads; ++loopCount)
-        {
+                snprintf((char*)myHeader.c_str(), BASIC, "ACFF Sine 1X value from most recent SMART Summary Frame Head number %d", loopCount); // Head count
+                snprintf((char*)myStr.c_str(), BASIC, "%" PRIi8"", static_cast<int8_t>(check_for_signed_int(M_Byte0(check_Status_Strip_Status(vFarmFrame[page].acffSine1xValueByHead.headValue[loopCount])), 8)));
+                set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].acffSine1xValueByHead.headValue[loopCount], m_showStatusBits);  //!< ACFF Sine 1X, value from most recent SMART Summary Frame
+            }
+            break;
+        case ACFF_COSINE_1X_VALUE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD:
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
 #if defined( _DEBUG)
-            printf("\tACFF Cosine 1X, value from most recent SMART Summary Frame by Head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].acffCosine1xValueByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< ACFF Cosine 1X, value from most recent SMART Summary Frame
+                printf("\tACFF Cosine 1X, value from most recent SMART Summary Frame by Head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].acffCosine1xValueByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< ACFF Cosine 1X, value from most recent SMART Summary Frame
 #endif
-            snprintf((char*)myHeader.c_str(), BASIC, "ACFF Cosine 1X value from most recent SMART Summary Frame Head number %d", loopCount); // Head count
-            snprintf((char*)myStr.c_str(), BASIC, "%" PRIi8"", (static_cast<int8_t>(check_for_signed_int(M_Byte0(check_Status_Strip_Status(vFarmFrame[page].acffCosine1xValueByHead.headValue[loopCount])), 8) )*16));
-            set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].acffCosine1xValueByHead.headValue[loopCount], m_showStatusBits);  //!< ACFF Cosine 1X, value from most recent SMART Summary Frame
-        }
-        break;
-    case PZT_CALIBRATION_VALUE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD:
-        for (loopCount = 0; loopCount < m_heads; ++loopCount)
-        {
+                snprintf((char*)myHeader.c_str(), BASIC, "ACFF Cosine 1X value from most recent SMART Summary Frame Head number %d", loopCount); // Head count
+                snprintf((char*)myStr.c_str(), BASIC, "%" PRIi8"", (static_cast<int8_t>(check_for_signed_int(M_Byte0(check_Status_Strip_Status(vFarmFrame[page].acffCosine1xValueByHead.headValue[loopCount])), 8)) * 16));
+                set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].acffCosine1xValueByHead.headValue[loopCount], m_showStatusBits);  //!< ACFF Cosine 1X, value from most recent SMART Summary Frame
+            }
+            break;
+        case PZT_CALIBRATION_VALUE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD:
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
 #if defined( _DEBUG)
-            printf("\tPZT Calibration, value from most recent SMART Summary Frame by Head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].pztCalibrationValueByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< PZT Calibration, value from most recent SMART Summary Frame
+                printf("\tPZT Calibration, value from most recent SMART Summary Frame by Head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].pztCalibrationValueByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< PZT Calibration, value from most recent SMART Summary Frame
 #endif
-            snprintf((char*)myHeader.c_str(), BASIC, "PZT Calibration value from most recent SMART Summary Frame Head number %d", loopCount); // Head count
-            set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].pztCalibrationValueByHead.headValue[loopCount], false, m_showStatusBits);  //!< PZT Calibration, value from most recent SMART SummaryFrame
-        }
-        break;
-    case MR_HEAD_RESISTANCE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD:
-        for (loopCount = 0; loopCount < m_heads; ++loopCount)
-        {
+                snprintf((char*)myHeader.c_str(), BASIC, "PZT Calibration value from most recent SMART Summary Frame Head number %d", loopCount); // Head count
+                set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].pztCalibrationValueByHead.headValue[loopCount], false, m_showStatusBits);  //!< PZT Calibration, value from most recent SMART SummaryFrame
+            }
+            break;
+        case MR_HEAD_RESISTANCE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD:
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
 #if defined( _DEBUG)
-            printf("\tMR Head Resistance from most recent SMART Summary Frame by Head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].mrHeadResistanceByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< MR Head Resistance from most recent SMART Summary Frame
+                printf("\tMR Head Resistance from most recent SMART Summary Frame by Head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].mrHeadResistanceByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< MR Head Resistance from most recent SMART Summary Frame
 #endif
-            snprintf((char*)myHeader.c_str(), BASIC, "MR Head Resistanc from most recent SMART Summary Frame Head number %d", loopCount); // Head count
-            set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].mrHeadResistanceByHead.headValue[loopCount], false, m_showStatusBits);  //!< MR Head Resistance from most recent SMART Summary Frame
-        }
-        break;
-    case NUMBER_OF_TMD_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD:
-        for (loopCount = 0; loopCount < m_heads; ++loopCount)
-        {
+                snprintf((char*)myHeader.c_str(), BASIC, "MR Head Resistanc from most recent SMART Summary Frame Head number %d", loopCount); // Head count
+                set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].mrHeadResistanceByHead.headValue[loopCount], false, m_showStatusBits);  //!< MR Head Resistance from most recent SMART Summary Frame
+            }
+            break;
+        case NUMBER_OF_TMD_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD:
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
 #if defined( _DEBUG)
                 printf("\tNumber of TMD over last 3 SMART Summary Frame by Head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].numberOfTMDByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Number of TMD over last 3 SMART Summary Frame
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "Number of TMD over last 3 SMART Summary Frame Head number %d", loopCount); // Head count
                 set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].numberOfTMDByHead.headValue[loopCount], false, m_showStatusBits);  //!< Number of TMD over last 3 SMART Summary Frame
+            }
+            break;
+        case VELOCITY_OBSERVER_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD:
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
+#if defined( _DEBUG)
+                printf("\tVelocity Observer over last 3 SMART Summary Frame by Head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].velocityObserverByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Velocity Observer over last 3 SMART Summary Frame
+#endif
+                snprintf((char*)myHeader.c_str(), BASIC, "Velocity Observer over last 3 SMART Summary Frame Head number %d", loopCount); // Head count
+                set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].velocityObserverByHead.headValue[loopCount], false, m_showStatusBits); //!< Velocity Observer over last 3 SMART Summary Frame
+            }
+            break;
+        case NUMBER_OF_VELOCITY_OBSERVER_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD:
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
+#if defined( _DEBUG)
+                printf("\tNumber of Velocity Observer over last 3 SMART Summary Frame by Head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].numberOfVelocityObservedByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Number of Velocity Observer over last 3 SMART Summary Frame
+#endif
+                snprintf((char*)myHeader.c_str(), BASIC, "Number of Velocity Observer over last 3 SMART Summary Frame Head number %d", loopCount); // Head count
+                set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].numberOfVelocityObservedByHead.headValue[loopCount], false, m_showStatusBits); //!< Number of Velocity Observer over last 3 SMART Summary Frame
+            }
+            break;
+        case CURRENT_H2SAT_PERCENTAGE_OF_CODEWORDS_AT_ITERATION_LEVEL_BY_HEAD_AVERAGED_ACROSS_TEST_ZONES:
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
+#if defined( _DEBUG)
+                printf("\tCurrent H2SAT percentage of codewords at iteration level by Head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].currentH2SATPercentagedbyHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Current H2SAT percentage of codewords at iteration level
+#endif
+                snprintf((char*)myHeader.c_str(), BASIC, "Current H2SAT percentage of codewords at iteration level Head number %d", loopCount); // Head count
+                set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].currentH2SATPercentagedbyHead.headValue[loopCount], false, m_showStatusBits);  //!< Current H2SAT percentage of codewords at iteration level
+            }
+            break;
+        case CURRENT_H2SAT_AMPLITUDE_BY_HEAD_AVERAGED_ACROSS_TEST_ZONES:
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
+#if defined( _DEBUG)
+                printf("\tCurrent H2SAT amplitude, averaged across Test Zone by Head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].currentH2STAmplituedByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Current H2SAT amplitude, averaged across Test Zone
+#endif
+                snprintf((char*)myHeader.c_str(), BASIC, "Current H2SAT amplitude Head number %d", loopCount); // Head count
+                set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].currentH2STAmplituedByHead.headValue[loopCount], false, m_showStatusBits);  //!< Current H2SAT amplitude, averaged across Test Zone
+            }
+            break;
+        case CURRENT_H2SAT_ASYMMETRY_BY_HEAD_AVERAGED_ACROSS_TEST_ZONES:
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
+#if defined( _DEBUG)
+                printf("\tCurrent H2SAT asymmetry, averaged across Test Zone by Head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].currentH2STAsymmetryByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Current H2SAT asymmetry, averaged across Test Zone
+#endif
+                snprintf((char*)myHeader.c_str(), BASIC, "Current H2SAT asymmetry Head number %d", loopCount); // Head count
+                set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].currentH2STAsymmetryByHead.headValue[loopCount], false, m_showStatusBits);  //!< Current H2SAT asymmetry, averaged across Test Zone
+            }
+            break;
+        case NUMBER_OF_RESIDENT_GLIST_ENTRIES:
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
+#if defined( _DEBUG)
+                printf("\tResident Glist Entries by Head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].ResidentGlistEntries.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);
+#endif
+                snprintf((char*)myHeader.c_str(), BASIC, "Resident Glist Entries Head number %d", loopCount); // Head count
+                set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].ResidentGlistEntries.headValue[loopCount], false, m_showStatusBits);
+            }
+            break;
+        case NUMBER_OF_PENDING_ENTRIES:
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
+#if defined( _DEBUG)
+                printf("\tResident Pending list Entries by Head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].ResidentPlistEntries.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);
+#endif
+                snprintf((char*)myHeader.c_str(), BASIC, "Resident Pending list Entries Head number %d", loopCount); // Head count
+                set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].ResidentPlistEntries.headValue[loopCount], false, m_showStatusBits);
+            }
+            break;
+        case DOS_OUGHT_TO_SCAN_COUNT_PER_HEAD:
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
+#if defined( _DEBUG)
+                printf("\tDOS Oought To Scan Count by Head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].DOSOoughtToScan.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);
+#endif
+                snprintf((char*)myHeader.c_str(), BASIC, "DOS Oought To Scan Count Head number %d", loopCount); // Head count
+                set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].DOSOoughtToScan.headValue[loopCount], false, m_showStatusBits);
+            }
+            break;
+        case DOS_NEED_TO_SCAN_COUNT_PER_HEAD:
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
+#if defined( _DEBUG)
+                printf("\tDOS Needs To Scan Count by Head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].DOSNeedToScan.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);
+#endif
+                snprintf((char*)myHeader.c_str(), BASIC, "DOS Needs To Scan Count Head number %d", loopCount); // Head count
+                set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].DOSNeedToScan.headValue[loopCount], false, m_showStatusBits);
+            }
+            break;
+        case DOS_WRITE_FAULT_SCAN_COUNT_PER_HEAD:
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
+#if defined( _DEBUG)
+                printf("\tDOS Write Fault Scan Count by Head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].DOSWriteFaultScan.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);
+#endif
+                snprintf((char*)myHeader.c_str(), BASIC, "DOS Write Fault Scan Count Head number %d", loopCount); // Head count
+                set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].DOSWriteFaultScan.headValue[loopCount], false, m_showStatusBits);
+            }
+            break;
+        case WRITE_POWERON_HOURS_FROM_MOST_RECENT_SMART:
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
+#if defined( _DEBUG)
+                printf("\tWrite Power On Hours from most recent SMART by Head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].writePowerOnHours.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);
+#endif
+                snprintf((char*)myHeader.c_str(), BASIC, "Write Power On Hour Head number %d", loopCount); // Head count
+                set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].writePowerOnHours.headValue[loopCount], false, m_showStatusBits);
+                //snprintf((char*)myStr.c_str(), BASIC, "%0.04f", (check_for_signed_int(M_Word0(check_Status_Strip_Status(vFarmFrame[page].writePowerOnHours.headValue[loopCount])), 16) /216000));
+                //set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].writePowerOnHours.headValue[loopCount], m_showStatusBits);
+            }
+            break;
+        case DOS_WRITE_COUNT_THRESHOLD_PER_HEAD:
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
+#if defined( _DEBUG)
+                printf("\tDOS Write Count Threshold per head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].dosWriteCount.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);
+#endif
+                snprintf((char*)myHeader.c_str(), BASIC, "DOS Write Count Threshold Head number %d", loopCount); // Head count
+                set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].dosWriteCount.headValue[loopCount], false, m_showStatusBits);
+            }
+            break;
+        case CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_0:
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
+#if defined( _DEBUG)
+                printf("\tCurrent H2SAT trimmed mean bits in error by Head %d , by Test Zone 0:      %" PRIu64" \n", loopCount, vFarmFrame[page].currentH2STTrimmedbyHeadZone0.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Current H2SAT trimmed mean bits in error by Head, by Test Zone 0
+#endif
+                snprintf((char*)myHeader.c_str(), BASIC, "Current H2SAT trimmed mean bits in error Head number %d", loopCount); // Head count
+                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", (check_for_signed_int(M_Word0(check_Status_Strip_Status(vFarmFrame[page].currentH2STTrimmedbyHeadZone0.headValue[loopCount])), 16)*.10));
+                set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].currentH2STTrimmedbyHeadZone0.headValue[loopCount], m_showStatusBits); //!< Current H2SAT trimmed mean bits in error by Head, by Test Zone 0
+            }
+            break;
+        case CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_1:
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
+#if defined( _DEBUG)
+                printf("\tCurrent H2SAT trimmed mean bits in error by Head %d , by Test Zone 1:      %" PRIu64" \n", loopCount, vFarmFrame[page].currentH2STTrimmedbyHeadZone1.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Current H2SAT trimmed mean bits in error by Head, by Test Zone 1
+#endif
+                snprintf((char*)myHeader.c_str(), BASIC, "Current H2SAT trimmed mean bits in error Head number %d", loopCount); // Head count
+                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", (check_for_signed_int(M_Word0(check_Status_Strip_Status(vFarmFrame[page].currentH2STTrimmedbyHeadZone1.headValue[loopCount])), 16)*.10));
+                set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].currentH2STTrimmedbyHeadZone1.headValue[loopCount], m_showStatusBits); //!< Current H2SAT trimmed mean bits in error by Head, by Test Zone 1
+            }
+            break;
+        case CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_2:
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
+#if defined( _DEBUG)
+                printf("\tCurrent H2SAT trimmed mean bits in error by Head %d , by Test Zone 2:      %" PRIu64" \n", loopCount, vFarmFrame[page].currentH2STTrimmedbyHeadZone2.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Current H2SAT trimmed mean bits in error by Head, by Test Zone 2
+#endif
+                snprintf((char*)myHeader.c_str(), BASIC, "Current H2SAT trimmed mean bits in error Head number %d", loopCount); // Head count
+                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", (check_for_signed_int(M_Word0(check_Status_Strip_Status(vFarmFrame[page].currentH2STTrimmedbyHeadZone2.headValue[loopCount])), 16)*.10));
+                set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].currentH2STTrimmedbyHeadZone2.headValue[loopCount], m_showStatusBits);//!< Current H2SAT trimmed mean bits in error by Head, by Test Zone 2
+            }
+            break;
+        case CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_0:
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
+#if defined( _DEBUG)
+                printf("\tCurrent H2SAT iterations to converge by Head %d , by Test Zone 0:      %" PRIu64" \n", loopCount, vFarmFrame[page].currentH2STIterationsByHeadZone0.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Current H2SAT iterations to cnverge by Head, by Test Zone 0
+#endif
+                snprintf((char*)myHeader.c_str(), BASIC, "Current H2SAT iterations to converge Test Zone 0 Head number %d", loopCount); // Head count
+                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", (check_for_signed_int(M_Word0(check_Status_Strip_Status(vFarmFrame[page].currentH2STIterationsByHeadZone0.headValue[loopCount])), 16)*.10));
+                set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].currentH2STIterationsByHeadZone0.headValue[loopCount], m_showStatusBits);  //!< Current H2SAT iterations to cnverge by Head, by Test Zone 0
+            }
+            break;
+        case CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_1:
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
+#if defined( _DEBUG)
+                printf("\tCurrent H2SAT iterations to converge by Head %d , by Test Zone 1:      %" PRIu64" \n", loopCount, vFarmFrame[page].currentH2STIterationsByHeadZone1.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Current H2SAT iterations to cnverge by Head, by Test Zone 1
+#endif
+                snprintf((char*)myHeader.c_str(), BASIC, "Current H2SAT iterations to converge Test Zone 1 Head number %d", loopCount); // Head count
+                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", (check_for_signed_int(M_Word0(check_Status_Strip_Status(vFarmFrame[page].currentH2STIterationsByHeadZone1.headValue[loopCount])), 16)*.10));
+                set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].currentH2STIterationsByHeadZone1.headValue[loopCount], m_showStatusBits);  //!< Current H2SAT iterations to cnverge by Head, by Test Zone 1
+            }
+            break;
+        case CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_2:
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
+#if defined( _DEBUG)
+                printf("\tCurrent H2SAT iterations to converge by Head %d , by Test Zone 2:      %" PRIu64" \n", loopCount, vFarmFrame[page].currentH2STIterationsByHeadZone2.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Current H2SAT iterations to cnverge by Head, by Test Zone 2
+#endif
+                snprintf((char*)myHeader.c_str(), BASIC, "Current H2SAT iterations to converge Test Zone 2 Head number %d", loopCount); // Head count
+                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", (check_for_signed_int(M_Word0(check_Status_Strip_Status(vFarmFrame[page].currentH2STIterationsByHeadZone2.headValue[loopCount])), 16)*.10));
+                set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].currentH2STIterationsByHeadZone2.headValue[loopCount], m_showStatusBits); //!< Current H2SAT iterations to cnverge by Head, by Test Zone 2
+            }
+            break;
+        case APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_OUTER:
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
+#if defined( _DEBUG)
+                printf("\tApplied fly height clearance delta per head: Outer by Head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].appliedFlyHeightByHeadOuter.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Applied fly height clearance delta per head in thousandths of one Angstrom: Outer by Head
+#endif
+                snprintf((char*)myHeader.c_str(), BASIC, "Applied fly height clearance delta per head: Outer Head number %d", loopCount); // Head count
+                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(static_cast<int16_t>(vFarmFrame[page].appliedFlyHeightByHeadOuter.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL)) / 10);   //!< Applied fly height clearance delta per head in thousandths of one Angstrom: Outer by Head
+                set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].appliedFlyHeightByHeadOuter.headValue[loopCount], m_showStatusBits);
+            }
+            break;
+        case APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_INNER:
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
+#if defined( _DEBUG)
+                printf("\tApplied fly height clearance delta per head in thousandths of one Angstrom: Inner by Head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].appliedFlyHeightByHeadInner.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Applied fly height clearance delta per head in thousandths of one Angstrom: Inner by Head
+#endif
+                snprintf((char*)myHeader.c_str(), BASIC, "Applied fly height clearance delta per head: Inner Head number %d", loopCount); // Head count
+                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(static_cast<int16_t>(vFarmFrame[page].appliedFlyHeightByHeadInner.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL)) / 10);   //!< Applied fly height clearance delta per head in thousandths of one Angstrom: Inner by Head
+                set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].appliedFlyHeightByHeadInner.headValue[loopCount], m_showStatusBits);
+            }
+            break;
+        case APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_MIDDLE:
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
+#if defined( _DEBUG)
+                printf("\tApplied fly height clearance delta per head: Middle by Head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].appliedFlyHeightByHeadMiddle.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Applied fly height clearance delta per head in thousandths of one Angstrom: middle by Head
+#endif
+                snprintf((char*)myHeader.c_str(), BASIC, "Applied fly height clearance delta per head: Middle Head number %d", loopCount);     // Head count
+                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(static_cast<int16_t>(vFarmFrame[page].appliedFlyHeightByHeadMiddle.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL)) / 10);   //!< Applied fly height clearance delta per head in thousandths of one Angstrom:middle by Head
+                set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].appliedFlyHeightByHeadMiddle.headValue[loopCount], m_showStatusBits);
+            }
+            break;
+        case RESERVED_FOR_FUTURE_EXPANSION_10:
+        case RESERVED_FOR_FUTURE_EXPANSION_11:
+        case RESERVED_FOR_FUTURE_EXPANSION_12:
+        case RESERVED_FOR_FUTURE_EXPANSION_13:
+        case RESERVED_FOR_FUTURE_EXPANSION_14:
+        case RESERVED_FOR_FUTURE_EXPANSION_15:
+        case RESERVED_FOR_FUTURE_EXPANSION_16:
+        case RESERVED_FOR_FUTURE_EXPANSION_17:
+        case RESERVED_FOR_FUTURE_EXPANSION_18:
+        case RESERVED_FOR_FUTURE_EXPANSION_19:
+        case RESERVED_FOR_FUTURE_EXPANSION:
+            break;
+        default:
+#if defined( _DEBUG)
+            printf("\tSomething went wrong, ERROR \n");
+#endif
+            return FAILURE;
+            break;
         }
-        break;
-    case VELOCITY_OBSERVER_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD:
-        for (loopCount = 0; loopCount < m_heads; ++loopCount)
-        {
-#if defined( _DEBUG)
-            printf("\tVelocity Observer over last 3 SMART Summary Frame by Head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].velocityObserverByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Velocity Observer over last 3 SMART Summary Frame
-#endif
-            snprintf((char*)myHeader.c_str(), BASIC, "Velocity Observer over last 3 SMART Summary Frame Head number %d", loopCount); // Head count
-            set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].velocityObserverByHead.headValue[loopCount], false, m_showStatusBits); //!< Velocity Observer over last 3 SMART Summary Frame
-        }
-        break;
-    case NUMBER_OF_VELOCITY_OBSERVER_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD:
-        for (loopCount = 0; loopCount < m_heads; ++loopCount)
-        {
-#if defined( _DEBUG)
-            printf("\tNumber of Velocity Observer over last 3 SMART Summary Frame by Head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].numberOfVelocityObservedByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Number of Velocity Observer over last 3 SMART Summary Frame
-#endif
-            snprintf((char*)myHeader.c_str(), BASIC, "Number of Velocity Observer over last 3 SMART Summary Frame Head number %d", loopCount); // Head count
-            set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].numberOfVelocityObservedByHead.headValue[loopCount], false, m_showStatusBits); //!< Number of Velocity Observer over last 3 SMART Summary Frame
-        }
-        break;
-    case CURRENT_H2SAT_PERCENTAGE_OF_CODEWORDS_AT_ITERATION_LEVEL_BY_HEAD_AVERAGED_ACROSS_TEST_ZONES:
-        for (loopCount = 0; loopCount < m_heads; ++loopCount)
-        {
-#if defined( _DEBUG)
-            printf("\tCurrent H2SAT percentage of codewords at iteration level by Head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].currentH2SATPercentagedbyHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Current H2SAT percentage of codewords at iteration level
-#endif
-            snprintf((char*)myHeader.c_str(), BASIC, "Current H2SAT percentage of codewords at iteration level Head number %d", loopCount); // Head count
-            set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].currentH2SATPercentagedbyHead.headValue[loopCount], false, m_showStatusBits);  //!< Current H2SAT percentage of codewords at iteration level
-        }
-        break;
-    case CURRENT_H2SAT_AMPLITUDE_BY_HEAD_AVERAGED_ACROSS_TEST_ZONES:
-        for (loopCount = 0; loopCount < m_heads; ++loopCount)
-        {
-#if defined( _DEBUG)
-            printf("\tCurrent H2SAT amplitude, averaged across Test Zone by Head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].currentH2STAmplituedByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Current H2SAT amplitude, averaged across Test Zone
-#endif
-            snprintf((char*)myHeader.c_str(), BASIC, "Current H2SAT amplitude Head number %d", loopCount); // Head count
-            set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].currentH2STAmplituedByHead.headValue[loopCount], false, m_showStatusBits);  //!< Current H2SAT amplitude, averaged across Test Zone
-        }
-        break;
-    case CURRENT_H2SAT_ASYMMETRY_BY_HEAD_AVERAGED_ACROSS_TEST_ZONES:
-        for (loopCount = 0; loopCount < m_heads; ++loopCount)
-        {
-#if defined( _DEBUG)
-            printf("\tCurrent H2SAT asymmetry, averaged across Test Zone by Head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].currentH2STAsymmetryByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Current H2SAT asymmetry, averaged across Test Zone
-#endif
-            snprintf((char*)myHeader.c_str(), BASIC, "Current H2SAT asymmetry Head number %d", loopCount); // Head count
-            set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].currentH2STAsymmetryByHead.headValue[loopCount], false, m_showStatusBits);  //!< Current H2SAT asymmetry, averaged across Test Zone
-        }
-        break;
-    case NUMBER_OF_RESIDENT_GLIST_ENTRIES:
-        for (loopCount = 0; loopCount < m_heads; ++loopCount)
-        {
-#if defined( _DEBUG)
-            printf("\tResident Glist Entries by Head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].ResidentGlistEntries.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);
-#endif
-            snprintf((char*)myHeader.c_str(), BASIC, "Resident Glist Entries Head number %d", loopCount); // Head count
-            set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].ResidentGlistEntries.headValue[loopCount], false, m_showStatusBits);
-        }
-        break;
-    case NUMBER_OF_PENDING_ENTRIES:
-        for (loopCount = 0; loopCount < m_heads; ++loopCount)
-        {
-#if defined( _DEBUG)
-            printf("\tResident Pending list Entries by Head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].ResidentPlistEntries.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);
-#endif
-            snprintf((char*)myHeader.c_str(), BASIC, "Resident Pending list Entries Head number %d", loopCount); // Head count
-            set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].ResidentPlistEntries.headValue[loopCount], false, m_showStatusBits);
-        }
-        break;
-    case DOS_OUGHT_TO_SCAN_COUNT_PER_HEAD:
-        for (loopCount = 0; loopCount < m_heads; ++loopCount)
-        {
-#if defined( _DEBUG)
-            printf("\tDOS Oought To Scan Count by Head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].DOSOoughtToScan.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);
-#endif
-            snprintf((char*)myHeader.c_str(), BASIC, "DOS Oought To Scan Count Head number %d", loopCount); // Head count
-            set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].DOSOoughtToScan.headValue[loopCount], false, m_showStatusBits);
-        }
-        break;
-    case DOS_NEED_TO_SCAN_COUNT_PER_HEAD:
-        for (loopCount = 0; loopCount < m_heads; ++loopCount)
-        {
-#if defined( _DEBUG)
-            printf("\tDOS Needs To Scan Count by Head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].DOSNeedToScan.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);
-#endif
-            snprintf((char*)myHeader.c_str(), BASIC, "DOS Needs To Scan Count Head number %d", loopCount); // Head count
-            set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].DOSNeedToScan.headValue[loopCount], false, m_showStatusBits);
-        }
-        break;
-    case DOS_WRITE_FAULT_SCAN_COUNT_PER_HEAD:
-        for (loopCount = 0; loopCount < m_heads; ++loopCount)
-        {
-#if defined( _DEBUG)
-            printf("\tDOS Write Fault Scan Count by Head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].DOSWriteFaultScan.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);
-#endif
-            snprintf((char*)myHeader.c_str(), BASIC, "DOS Write Fault Scan Count Head number %d", loopCount); // Head count
-            set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].DOSWriteFaultScan.headValue[loopCount], false, m_showStatusBits);
-        }
-        break;
-    case WRITE_POWERON_HOURS_FROM_MOST_RECENT_SMART:
-        for (loopCount = 0; loopCount < m_heads; ++loopCount)
-        {
-#if defined( _DEBUG)
-            printf("\tWrite Power On Hours from most recent SMART by Head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].writePowerOnHours.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);
-#endif
-            snprintf((char*)myHeader.c_str(), BASIC, "Write Power On Hour Head number %d", loopCount); // Head count
-            set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].writePowerOnHours.headValue[loopCount], false, m_showStatusBits);
-            //snprintf((char*)myStr.c_str(), BASIC, "%0.04f", (check_for_signed_int(M_Word0(check_Status_Strip_Status(vFarmFrame[page].writePowerOnHours.headValue[loopCount])), 16) /216000));
-            //set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].writePowerOnHours.headValue[loopCount], m_showStatusBits);
-        }
-        break;
-	case DOS_WRITE_COUNT_THRESHOLD_PER_HEAD:
-		for (loopCount = 0; loopCount < m_heads; ++loopCount)
-		{
-#if defined( _DEBUG)
-			printf("\tDOS Write Count Threshold per head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].dosWriteCount.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);
-#endif
-			snprintf((char*)myHeader.c_str(), BASIC, "DOS Write Count Threshold Head number %d", loopCount); // Head count
-			set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].dosWriteCount.headValue[loopCount], false, m_showStatusBits);
-		}
-		break;
-    case CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_0:
-        for (loopCount = 0; loopCount < m_heads; ++loopCount)
-        {
-#if defined( _DEBUG)
-            printf("\tCurrent H2SAT trimmed mean bits in error by Head %d , by Test Zone 0:      %" PRIu64" \n", loopCount, vFarmFrame[page].currentH2STTrimmedbyHeadZone0.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Current H2SAT trimmed mean bits in error by Head, by Test Zone 0
-#endif
-            snprintf((char*)myHeader.c_str(), BASIC, "Current H2SAT trimmed mean bits in error Head number %d", loopCount); // Head count
-            snprintf((char*)myStr.c_str(), BASIC, "%0.02f", (check_for_signed_int(M_Word0(check_Status_Strip_Status(vFarmFrame[page].currentH2STTrimmedbyHeadZone0.headValue[loopCount])), 16)*.10));
-            set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].currentH2STTrimmedbyHeadZone0.headValue[loopCount], m_showStatusBits); //!< Current H2SAT trimmed mean bits in error by Head, by Test Zone 0
-        }
-        break;
-    case CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_1:
-        for (loopCount = 0; loopCount < m_heads; ++loopCount)
-        {
-#if defined( _DEBUG)
-            printf("\tCurrent H2SAT trimmed mean bits in error by Head %d , by Test Zone 1:      %" PRIu64" \n", loopCount, vFarmFrame[page].currentH2STTrimmedbyHeadZone1.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Current H2SAT trimmed mean bits in error by Head, by Test Zone 1
-#endif
-            snprintf((char*)myHeader.c_str(), BASIC, "Current H2SAT trimmed mean bits in error Head number %d", loopCount); // Head count
-            snprintf((char*)myStr.c_str(), BASIC, "%0.02f", (check_for_signed_int(M_Word0(check_Status_Strip_Status(vFarmFrame[page].currentH2STTrimmedbyHeadZone1.headValue[loopCount])), 16)*.10));
-            set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].currentH2STTrimmedbyHeadZone1.headValue[loopCount], m_showStatusBits); //!< Current H2SAT trimmed mean bits in error by Head, by Test Zone 1
-        }
-        break;
-    case CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_2:
-        for (loopCount = 0; loopCount < m_heads; ++loopCount)
-        {
-#if defined( _DEBUG)
-            printf("\tCurrent H2SAT trimmed mean bits in error by Head %d , by Test Zone 2:      %" PRIu64" \n", loopCount, vFarmFrame[page].currentH2STTrimmedbyHeadZone2.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Current H2SAT trimmed mean bits in error by Head, by Test Zone 2
-#endif
-            snprintf((char*)myHeader.c_str(), BASIC, "Current H2SAT trimmed mean bits in error Head number %d", loopCount); // Head count
-            snprintf((char*)myStr.c_str(), BASIC, "%0.02f", (check_for_signed_int(M_Word0(check_Status_Strip_Status(vFarmFrame[page].currentH2STTrimmedbyHeadZone2.headValue[loopCount])), 16)*.10));
-            set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].currentH2STTrimmedbyHeadZone2.headValue[loopCount], m_showStatusBits);//!< Current H2SAT trimmed mean bits in error by Head, by Test Zone 2
-        }
-        break;
-    case CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_0:
-        for (loopCount = 0; loopCount < m_heads; ++loopCount)
-        {
-#if defined( _DEBUG)
-            printf("\tCurrent H2SAT iterations to converge by Head %d , by Test Zone 0:      %" PRIu64" \n", loopCount, vFarmFrame[page].currentH2STIterationsByHeadZone0.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Current H2SAT iterations to cnverge by Head, by Test Zone 0
-#endif
-            snprintf((char*)myHeader.c_str(), BASIC, "Current H2SAT iterations to converge Test Zone 0 Head number %d", loopCount); // Head count
-            snprintf((char*)myStr.c_str(), BASIC, "%0.02f", (check_for_signed_int(M_Word0(check_Status_Strip_Status(vFarmFrame[page].currentH2STIterationsByHeadZone0.headValue[loopCount])), 16)*.10));
-            set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].currentH2STIterationsByHeadZone0.headValue[loopCount], m_showStatusBits);  //!< Current H2SAT iterations to cnverge by Head, by Test Zone 0
-        }
-        break;
-    case CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_1:
-        for (loopCount = 0; loopCount < m_heads; ++loopCount)
-        {
-#if defined( _DEBUG)
-            printf("\tCurrent H2SAT iterations to converge by Head %d , by Test Zone 1:      %" PRIu64" \n", loopCount, vFarmFrame[page].currentH2STIterationsByHeadZone1.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Current H2SAT iterations to cnverge by Head, by Test Zone 1
-#endif
-            snprintf((char*)myHeader.c_str(), BASIC, "Current H2SAT iterations to converge Test Zone 1 Head number %d", loopCount); // Head count
-            snprintf((char*)myStr.c_str(), BASIC, "%0.02f", (check_for_signed_int(M_Word0(check_Status_Strip_Status(vFarmFrame[page].currentH2STIterationsByHeadZone1.headValue[loopCount])), 16)*.10));
-            set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].currentH2STIterationsByHeadZone1.headValue[loopCount], m_showStatusBits);  //!< Current H2SAT iterations to cnverge by Head, by Test Zone 1
-        }
-        break;
-    case CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_2:
-        for (loopCount = 0; loopCount < m_heads; ++loopCount)
-        {
-#if defined( _DEBUG)
-            printf("\tCurrent H2SAT iterations to converge by Head %d , by Test Zone 2:      %" PRIu64" \n", loopCount, vFarmFrame[page].currentH2STIterationsByHeadZone2.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Current H2SAT iterations to cnverge by Head, by Test Zone 2
-#endif
-            snprintf((char*)myHeader.c_str(), BASIC, "Current H2SAT iterations to converge Test Zone 2 Head number %d", loopCount); // Head count
-            snprintf((char*)myStr.c_str(), BASIC, "%0.02f", (check_for_signed_int(M_Word0(check_Status_Strip_Status(vFarmFrame[page].currentH2STIterationsByHeadZone2.headValue[loopCount])),16)*.10))  ;  
-            set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].currentH2STIterationsByHeadZone2.headValue[loopCount], m_showStatusBits); //!< Current H2SAT iterations to cnverge by Head, by Test Zone 2
-        }
-        break;
-    case APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_OUTER:
-        for (loopCount = 0; loopCount < m_heads; ++loopCount)
-        {
-#if defined( _DEBUG)
-            printf("\tApplied fly height clearance delta per head in thousandths of one Angstrom: Outer by Head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].appliedFlyHeightByHeadOuter.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Applied fly height clearance delta per head in thousandths of one Angstrom: Outer by Head
-#endif
-            snprintf((char*)myHeader.c_str(), BASIC, "Applied fly height clearance delta per head in thousandths of one Angstrom: Outer Head number %d", loopCount); // Head count
-            snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(static_cast<int16_t>(vFarmFrame[page].appliedFlyHeightByHeadOuter.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL)) / 10);   //!< Applied fly height clearance delta per head in thousandths of one Angstrom: Outer by Head
-            set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].appliedFlyHeightByHeadOuter.headValue[loopCount], m_showStatusBits);
-        }
-        break;
-    case APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_INNER:
-        for (loopCount = 0; loopCount < m_heads; ++loopCount)
-        {
-#if defined( _DEBUG)
-            printf("\tApplied fly height clearance delta per head in thousandths of one Angstrom: Inner by Head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].appliedFlyHeightByHeadInner.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Applied fly height clearance delta per head in thousandths of one Angstrom: Inner by Head
-#endif
-            snprintf((char*)myHeader.c_str(), BASIC, "Applied fly height clearance delta per head in thousandths of one Angstrom: Inner Head number %d", loopCount); // Head count
-            snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(static_cast<int16_t>(vFarmFrame[page].appliedFlyHeightByHeadInner.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL)) / 10);   //!< Applied fly height clearance delta per head in thousandths of one Angstrom: Inner by Head
-            set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].appliedFlyHeightByHeadInner.headValue[loopCount], m_showStatusBits);  
-        }
-        break;
-    case APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_MIDDLE:
-        for (loopCount = 0; loopCount < m_heads; ++loopCount)
-        {
-#if defined( _DEBUG)
-            printf("\tApplied fly height clearance delta per head in thousandths of one Angstrom: Middle by Head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].appliedFlyHeightByHeadMiddle.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Applied fly height clearance delta per head in thousandths of one Angstrom: middle by Head
-#endif
-            snprintf((char*)myHeader.c_str(), BASIC, "Applied fly height clearance delta per head in thousandths of one Angstrom: Middle Head number %d", loopCount);     // Head count
-            snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(static_cast<int16_t>(vFarmFrame[page].appliedFlyHeightByHeadMiddle.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL)) / 10);   //!< Applied fly height clearance delta per head in thousandths of one Angstrom:middle by Head
-            set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].appliedFlyHeightByHeadMiddle.headValue[loopCount], m_showStatusBits);
-        }
-        break;
-    default:
-#if defined( _DEBUG)
-        printf("\tSomething went wrong, ERROR \n");  
-#endif
-        return FAILURE;
-        break;
+
+        json_push_back(masterData, headPage);
+        return SUCCESS;
     }
-	json_push_back(headInfoPage, headPage);
-    json_push_back(masterData, headInfoPage);
-    return SUCCESS;
 }
 //-----------------------------------------------------------------------------
 //
@@ -1870,8 +1887,8 @@ void CSCSI_Farm_Log::print_All_Pages(JSONNODE *masterData)
             case APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_INNER:
             case APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_MIDDLE:
             default:
-				print_Head_Information(vFarmFrame.at(index).vFramesFound.at(pramCode), masterData, index);
-				break;
+                print_Head_Information(vFarmFrame.at(index).vFramesFound.at(pramCode), masterData, index);
+                break;
             }
         }
     }
@@ -1927,10 +1944,17 @@ void CSCSI_Farm_Log::print_Page_Without_Drive_Info(JSONNODE *masterData, uint32_
         print_Error_Information(masterData, page);
         print_Enviroment_Information(masterData, page);
         print_Reli_Information(masterData, page);
+        JSONNODE *headInfoPage = json_new(JSON_NODE);
+        std::string myStr = " ";
+        myStr.resize(BASIC);
+        snprintf((char*)myStr.c_str(), BASIC, "Head Information From Farm Log copy: %" PRId32"", page);
+
+        json_set_name(headInfoPage, (char*)myStr.c_str());
         for (uint32_t frame = 0; frame < vFarmFrame.at(page).vFramesFound.size(); frame++)
         {
             print_Head_Information(vFarmFrame.at(page).vFramesFound.at(frame), masterData, page);
         }
+        json_push_back(masterData, headInfoPage);
     }
 }
 
