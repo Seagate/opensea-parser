@@ -3,7 +3,7 @@
 //
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2015 - 2018 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
+// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -38,6 +38,7 @@ namespace opensea_parser {
 		uint64_t                    m_heads;										  //!< number of heads - first fill in with header information then changed to heads reported on the drive
 		uint64_t					m_MaxHeads;										  //!< Maximum Drive Heads Supported
         uint32_t                    m_copies;                                         //!< Number of Historical Copies
+        uint32_t                    m_MajorRev;                                       //!< holds the Major Revision number
 		uint32_t					m_MinorRev;										  //!< minor rev saved off to pick up the changes in the spec
         uint8_t                     *pBuf;                                            //!< pointer to the buffer data that is the binary of FARM LOG
         eReturnValues               m_status;                                         //!< status of the class	

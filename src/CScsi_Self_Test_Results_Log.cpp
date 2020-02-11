@@ -2,7 +2,7 @@
 // CScsi_Self_Test_Results_Log.cpp  Implementation of DST Results log 
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2015 - 2018 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
+// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -118,7 +118,7 @@ eReturnValues CScsi_DST_Results::parse_Self_Test_Log(uint8_t *buffer, size_t buf
 	JSONNODE *DstJson = json_new(JSON_NODE);
 
 
-	json_set_name(DstJson, "Self Test Results Log");
+	json_set_name(DstJson, "Self Test Results Log - 10h");
 
 	m_DST = (sSelfTest *)buffer;
 	for (int i = 1; i <= 20; i++)
@@ -177,7 +177,7 @@ void CScsi_DST_Results::print_Self_Test_Log(JSONNODE *dstNode, uint16_t run)
 	std::string myStr = "";
 	myStr.resize(BASIC);
 	JSONNODE *runInfo = json_new(JSON_NODE);
-	snprintf((char*)myStr.c_str(), BASIC, "Run %3d ", run);
+	snprintf((char*)myStr.c_str(), BASIC, "Entry %3d ", run);   // changed the run# to Entry per Paul
 	json_set_name(runInfo, (char*)myStr.c_str());
 	snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_DST->paramCode);
 	json_push_back(runInfo, json_new_a("Parameter Code", (char*)myStr.c_str()));
@@ -186,9 +186,9 @@ void CScsi_DST_Results::print_Self_Test_Log(JSONNODE *dstNode, uint16_t run)
 	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_DST->paramControlByte);
 	json_push_back(runInfo, json_new_a("Control Byte", (char*)myStr.c_str()));
 
-	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", M_GETBITRANGE(m_DST->stCode, 7, 5));
+	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"",(uint8_t) M_GETBITRANGE(m_DST->stCode, 7, 5));
 	json_push_back(runInfo, json_new_a("Self Test Code", (char*)myStr.c_str()));
-	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", M_GETBITRANGE( m_DST->stCode,3,0));
+	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", (uint8_t)M_GETBITRANGE( m_DST->stCode,3,0));
 	json_push_back(runInfo, json_new_a("Self Test Results", (char*)myStr.c_str()));
 	if (M_GETBITRANGE(m_DST->stCode, 7, 5) == DST_NOT_RUN)
 	{
@@ -207,7 +207,7 @@ void CScsi_DST_Results::print_Self_Test_Log(JSONNODE *dstNode, uint16_t run)
 	snprintf((char*)myStr.c_str(), BASIC, "%" PRIu8"", m_DST->senseKey);
 	json_push_back(runInfo, json_new_a("Sense Key", (char*)myStr.c_str()));
 	snprintf((char*)myStr.c_str(), BASIC, "%" PRIu8"", m_DST->addSenseCode);
-	json_push_back(runInfo, json_new_a("Additaional Sense Code", (char*)myStr.c_str()));
+	json_push_back(runInfo, json_new_a("Additional Sense Code", (char*)myStr.c_str()));
 	snprintf((char*)myStr.c_str(), BASIC, "%" PRIu8"", m_DST->addSenseCodeQualifier);
 	json_push_back(runInfo, json_new_a("Additional Sense Code Qualifier", (char*)myStr.c_str()));
 

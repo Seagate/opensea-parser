@@ -1,7 +1,7 @@
 // CScsi_Pending_Defects_Log..cpp  Definition for parsing the pending defecs
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2015 - 2018 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
+// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -196,7 +196,7 @@ eReturnValues CScsiPendingDefectsLog::get_Plist_Data(JSONNODE *masterData)
 	eReturnValues retStatus = IN_PROGRESS;
 	if (pData != NULL)
 	{
-		myStr = "Pending Defect Log";
+		myStr = "Pending Defect Log - 15h";
 		JSONNODE *pageInfo = json_new(JSON_NODE);
 		json_set_name(pageInfo, (char*)myStr.c_str());
 		m_PListCountParam = (sPendindDefectCount *)pData;

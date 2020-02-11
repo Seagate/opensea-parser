@@ -2,7 +2,7 @@
 // CScsi_Error_Counter_Log.cpp  Definition of Error Counter for READ WRITE VERIFY ERRORS
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2015 - 2018 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
+// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -112,6 +112,45 @@ CScsiErrorCounterLog::~CScsiErrorCounterLog()
 }
 //-----------------------------------------------------------------------------
 //
+//! \fn append_Error_Log_Page_Number
+//
+//! \brief
+//!   Description: appends the Error Log Page Number so people can search on the number
+//
+//  Entry:
+//! \param *typeStr - pointer to the string that we will be creating
+//! \param main - this is the main header string that we will be adding the master string to
+//
+//  Exit:
+//!   \return 
+//
+//---------------------------------------------------------------------------
+void CScsiErrorCounterLog::append_Error_Log_Page_Number(std::string *typeStr, std::string main)
+{
+    switch (m_pageType)
+    {
+    case 0x02:
+    {
+        snprintf((char*)typeStr->c_str(), BASIC, "%s - %s", (char*)main.c_str(), "02h");// WRITE
+        break;
+    }
+    case 0x03:
+    {
+        snprintf((char*)typeStr->c_str(), BASIC, "%s - %s", (char*)main.c_str(), "03h"); // READ
+        break;
+    }
+    case 0x05:
+    {
+        snprintf((char*)typeStr->c_str(), BASIC, "%s - %s", (char*)main.c_str(), "05h"); // VERIFY
+        break;
+    }
+    default:
+        snprintf((char*)typeStr->c_str(), BASIC, "%s - %s", (char*)main.c_str(), "03h");  ///READ
+        break;
+    }
+}
+//-----------------------------------------------------------------------------
+//
 //! \fn set_Master_String
 //
 //! \brief
@@ -163,43 +202,51 @@ void CScsiErrorCounterLog::set_Master_String(std::string *typeStr, std::string m
 //!   \return void
 //
 //---------------------------------------------------------------------------
-void CScsiErrorCounterLog::get_Error_Parameter_Code_Description(std::string *error)
+bool CScsiErrorCounterLog::get_Error_Parameter_Code_Description(std::string *error)
 {
+    bool descriptionFound = false;
 	switch (m_Error->paramCode)
 	{
 		case 0x0000:
 		{
 			snprintf((char*)error->c_str(), BASIC, "Corrected Without Substantial Delay");
+            descriptionFound = true;
 			break;
 		}
 		case 0x0001:
 		{
 			snprintf((char*)error->c_str(), BASIC, "Corrected With Possible Delay");
+            descriptionFound = true;
 			break;
 		}
 		case 0x0002:
 		{
 			snprintf((char*)error->c_str(), BASIC, "Number of Errors that are Corrected by Applying Retries");
+            descriptionFound = true;
 			break;
 		}
 		case 0x0003:
 		{
 			snprintf((char*)error->c_str(), BASIC, "Total Number of Errors Corrected");
+            descriptionFound = true;
 			break;
 		}
 		case 0x0004:
 		{
 			snprintf((char*)error->c_str(), BASIC, "Total Times Correction Algorithm Processed");
+            descriptionFound = true;
 			break;
 		}
 		case 0x0005:
 		{
 			snprintf((char*)error->c_str(), BASIC, "Total Bytes Processed");
+            descriptionFound = true;
 			break;
 		}
 		case 0x0006:
 		{
 			snprintf((char*)error->c_str(), BASIC, "Total Uncorrected Errors");
+            descriptionFound = true;
 			break;
 		}
 		default:
@@ -208,6 +255,7 @@ void CScsiErrorCounterLog::get_Error_Parameter_Code_Description(std::string *err
 			break;
 		}
 	}
+    return descriptionFound;
 }
 //-----------------------------------------------------------------------------
 //
@@ -225,6 +273,7 @@ void CScsiErrorCounterLog::get_Error_Parameter_Code_Description(std::string *err
 //---------------------------------------------------------------------------
 void CScsiErrorCounterLog::process_Error_Data(JSONNODE *errorData)
 {
+    bool descriptionFound = false;
 	std::string myStr = "";
 	myStr.resize(BASIC);
 	std::string myHeader = "";
@@ -233,27 +282,43 @@ void CScsiErrorCounterLog::process_Error_Data(JSONNODE *errorData)
 	printf("Error Counter Log  \n");
 #endif
 	byte_Swap_16(&m_Error->paramCode);
-	get_Error_Parameter_Code_Description(&myHeader);
-	set_Master_String(&myStr, myHeader);
-	JSONNODE *errorInfo = json_new(JSON_NODE);
-	json_set_name(errorInfo, (char*)myStr.c_str());
+    descriptionFound = get_Error_Parameter_Code_Description(&myHeader);
+    if (m_ErrorValue != 0)
+    {
+        set_Master_String(&myStr, myHeader);
+        JSONNODE *errorInfo = json_new(JSON_NODE);
+        json_set_name(errorInfo, (char*)myStr.c_str());
+        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_Error->paramCode);
+        json_push_back(errorInfo, json_new_a("Error Counter Code", (char*)myStr.c_str()));
+        if (!descriptionFound)
+        {
+            
+            snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Error->paramControlByte);
+            json_push_back(errorInfo, json_new_a("Error Counter Control Byte ", (char*)myStr.c_str()));
+            snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Error->paramLength);
+            json_push_back(errorInfo, json_new_a("Error Counter Length ", (char*)myStr.c_str()));
+        }
+        if (m_Error->paramLength == 8 || m_ErrorValue > UINT32_MAX)
+        {
+            set_json_64bit(errorInfo, "Error Count", m_ErrorValue, false);
+        }
+        else
+        {           
+            if (M_GETBITRANGE(m_ErrorValue, 33, 15) == 0)
+            {
+                json_push_back(errorInfo, json_new_i("Error Count", static_cast<uint32_t>(m_ErrorValue)));
+            }
 
-	snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_Error->paramCode);
-	json_push_back(errorInfo, json_new_a("Error Counter Code", (char*)myStr.c_str()));
-	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Error->paramControlByte);
-	json_push_back(errorInfo, json_new_a("Error Counter Control Byte ", (char*)myStr.c_str()));
-	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Error->paramLength);
-	json_push_back(errorInfo, json_new_a("Error Counter Length ", (char*)myStr.c_str()));
-	if (m_Error->paramLength == 8 || m_ErrorValue > UINT32_MAX)
-	{
-		set_json_64bit(errorInfo, "Error Counter", m_ErrorValue, false);
-	}
-	else
-	{
-		json_push_back(errorInfo, json_new_i("Error Counter", static_cast<uint32_t>(m_ErrorValue)));
-	}
+            else
+            {
+                std::string printStr;
+                snprintf((char*)printStr.c_str(), BASIC, "%" PRIu32"",  static_cast<uint32_t>(m_ErrorValue));
+                json_push_back(errorInfo, json_new_a((char *)myStr.c_str(), (char*)printStr.c_str()));
+            }
+        }
 
-	json_push_back(errorData, errorInfo);
+        json_push_back(errorData, errorInfo);
+    }
 }
 //-----------------------------------------------------------------------------
 //
@@ -273,10 +338,13 @@ eReturnValues CScsiErrorCounterLog::get_Error_Counter_Data(JSONNODE *masterData)
 {
 	std::string myStr = "";
 	myStr.resize(BASIC);
+    std::string headerStr = "";
+    headerStr.resize(BASIC);
 	eReturnValues retStatus = IN_PROGRESS;
 	if (pData != NULL)
 	{
-		set_Master_String(&myStr, "Error Counter Log");
+		set_Master_String(&headerStr, "Error Counter Log");
+        append_Error_Log_Page_Number(&myStr, headerStr);
 		JSONNODE *pageInfo = json_new(JSON_NODE);
 		json_set_name(pageInfo, (char*)myStr.c_str());
 

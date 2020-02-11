@@ -2,7 +2,7 @@
 // CScsi_Start_Stop_Counter_Log.cpp  Implementation of CScsi start stop cycle counter Log class
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2015 - 2018 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
+// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -117,7 +117,7 @@ eReturnValues CScsiStartStop::parse_Start_Stop_Log(JSONNODE *masterData)
 	eReturnValues status = IN_PROGRESS;
 	eReturnValues retStatus = IN_PROGRESS;
 	JSONNODE *pageInfo = json_new(JSON_NODE);
-	json_set_name(pageInfo, "Scsi Start Stop Cycle Counter Log");
+	json_set_name(pageInfo, "Scsi Start Stop Cycle Counter Log - Eh");
 	byte_Swap_16(&m_Page->manufatureParamCode);
 	if (manufactureDate == m_Page->manufatureParamCode)
 	{
@@ -166,7 +166,7 @@ eReturnValues CScsiStartStop::parse_Start_Stop_Log(JSONNODE *masterData)
 	byte_Swap_16(&m_Page->accLoadUnloadParamCode);
 	if (accumulatedLU == m_Page->accLoadUnloadParamCode)
 	{
-		retStatus = get_Count(pageInfo, m_Page->accLoadUnloadParamCode, m_Page->paramLength6, m_Page->paramControlByte6, m_Page->accloadUnloadCount, "Load - Unload Count", "Specified Load-Unload Count Over Device Lifetime");
+		retStatus = get_Count(pageInfo, m_Page->accLoadUnloadParamCode, m_Page->paramLength6, m_Page->paramControlByte6, m_Page->accloadUnloadCount, "Accumulated Load - Unload Count", "Specified Load-Unload Count Over Device Lifetime");
 	}
 	else
 	{
@@ -226,10 +226,24 @@ eReturnValues CScsiStartStop::week_Year_Print(JSONNODE *data,uint16_t param, uin
 	json_push_back(dateInfo, json_new_a("Control Byte", (char*)myStr.c_str()));
 	myStr.resize(YEARSIZE);
 	memset((char*)myStr.c_str(), 0, YEARSIZE);
-	strncpy((char *)myStr.c_str(), (char*)&year, YEARSIZE);
+    if (year != 0x20202020)
+    {
+        strncpy((char *)myStr.c_str(), (char*)&year, YEARSIZE);
+    }
+    else
+    {
+        myStr = "0000";
+    }
 	json_push_back(dateInfo, json_new_a((char *)strYear.c_str(), (char*)myStr.c_str()));
 	myStr.resize(WEEKSIZE);
-	strncpy((char *)myStr.c_str(), (char*)&week, WEEKSIZE);
+    if (week != 0x2020)
+    {
+        strncpy((char *)myStr.c_str(), (char*)&week, WEEKSIZE);
+    }
+    else
+    {
+        myStr = "00";
+    }
 	json_push_back(dateInfo, json_new_a((char *)strWeek.c_str(), (char*)myStr.c_str()));
 
 	json_push_back(data, dateInfo);

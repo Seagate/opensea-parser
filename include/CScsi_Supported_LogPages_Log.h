@@ -2,7 +2,7 @@
 //
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2015 - 2018 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
+// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -34,6 +34,7 @@ namespace opensea_parser {
 		uint8_t						m_SubPage;					//<! subpage data
 		uint8_t						m_Page;						//<! Page number
 		bool						m_ShowSubPage;				//<! flag to show the subpage information
+        bool                        m_ShowSupportedPagesOnce;   //<! set to true and then once we should this page set to false so we don't show it more then once
 
 		void get_Supported_And_Subpage_Description(std::string *description);
 		void process_Supported_Data(JSONNODE *supportData);

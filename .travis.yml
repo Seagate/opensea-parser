@@ -9,6 +9,7 @@ branches:
 matrix:
   include:
     - os: osx
+      osx_image: xcode9
       compiler: clang
       before_script: 
         - git clone https://github.com/Seagate/opensea-common.git

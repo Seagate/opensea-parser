@@ -2,7 +2,7 @@
 //
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2015 - 2018 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
+// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -47,8 +47,9 @@ namespace opensea_parser {
 		sErrorParams				*m_Error;					//<! Error counter structure 
 		uint8_t						m_pageType;					//<! need to know if it's a write read or verify log
 
+        void append_Error_Log_Page_Number(std::string *typeStr, std::string main);
 		void set_Master_String(std::string *typeStr, std::string main);
-		void get_Error_Parameter_Code_Description(std::string *error);
+		bool get_Error_Parameter_Code_Description(std::string *error);
 		void process_Error_Data(JSONNODE *errorData);
 		eReturnValues get_Error_Counter_Data(JSONNODE *masterData);
 	public:

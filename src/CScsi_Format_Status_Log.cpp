@@ -2,7 +2,7 @@
 // CScsi_Format_Status_Log.cpp  Format Status log page reports information about the most recent successful format operation
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2015 - 2018 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
+// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -265,9 +265,6 @@ eReturnValues CScsiFormatStatusLog::get_Format_Status_Data(JSONNODE *masterData)
 	eReturnValues retStatus = IN_PROGRESS;
 	if (pData != NULL)
 	{
-		JSONNODE *pageInfo = json_new(JSON_NODE);
-		json_set_name(pageInfo, "Format Status Log");
-
 		for (size_t offset = 0; offset < m_PageLength; )
 		{
 			if (offset < m_bufferLength && offset < UINT16_MAX)
@@ -285,7 +282,7 @@ eReturnValues CScsiFormatStatusLog::get_Format_Status_Data(JSONNODE *masterData)
 					}
 					else
 					{
-						json_push_back(masterData, pageInfo);
+						//json_push_back(masterData, pageInfo);
 						return BAD_PARAMETER;
 					}
 					break;
@@ -299,7 +296,7 @@ eReturnValues CScsiFormatStatusLog::get_Format_Status_Data(JSONNODE *masterData)
 					}
 					else
 					{
-						json_push_back(masterData, pageInfo);
+						//json_push_back(masterData, pageInfo);
 						return BAD_PARAMETER;
 					}
 					break;
@@ -313,7 +310,7 @@ eReturnValues CScsiFormatStatusLog::get_Format_Status_Data(JSONNODE *masterData)
 					}
 					else
 					{
-						json_push_back(masterData, pageInfo);
+						//json_push_back(masterData, pageInfo);
 						return BAD_PARAMETER;
 					}
 					break;
@@ -327,29 +324,30 @@ eReturnValues CScsiFormatStatusLog::get_Format_Status_Data(JSONNODE *masterData)
 					}
 					else
 					{
-						json_push_back(masterData, pageInfo);
+						//json_push_back(masterData, pageInfo);
 						return BAD_PARAMETER;
 					}
 					break;
 				}
 				default:
 				{
-					json_push_back(masterData, pageInfo);
+					//json_push_back(masterData, pageInfo);
 					return BAD_PARAMETER;
 					break;
 				}
 				}
+                JSONNODE *pageInfo = json_new(JSON_NODE);
+                json_set_name(pageInfo, "Format Status Log - 8h");
 				get_Format_Status_Descriptions(pageInfo);
+                json_push_back(masterData, pageInfo);
 			}
 			else
 			{
-				json_push_back(masterData, pageInfo);
+				//json_push_back(masterData, pageInfo);
 				return BAD_PARAMETER;
 			}
 
 		}
-
-		json_push_back(masterData, pageInfo);
 		retStatus = SUCCESS;
 	}
 	else

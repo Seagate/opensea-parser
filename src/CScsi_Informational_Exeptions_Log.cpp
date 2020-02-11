@@ -2,7 +2,7 @@
 // CScsi_Informational_Exeptions_Log.cpp  Definition of the Informational Exceptions Log page provides a place for reporting detail about exceptions.
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2015 - 2018 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
+// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -161,7 +161,7 @@ eReturnValues CScsiInformationalExeptionsLog::get_Informational_Exceptions_Data(
 	if (pData != NULL)
 	{
 		JSONNODE *pageInfo = json_new(JSON_NODE);
-		json_set_name(pageInfo, "Informational Exceptions Log");
+		json_set_name(pageInfo, "Informational Exceptions Log - 2fh length 0x0f");
 		uint16_t number = 0;
 		for (size_t offset = 0; offset < m_PageLength; )
 		{

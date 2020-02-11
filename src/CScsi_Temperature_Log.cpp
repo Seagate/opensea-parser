@@ -2,7 +2,7 @@
 // CScsi_Temperature_Log.cpp  Implementation of CScsi Temperature Log class
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2015 - 2018 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
+// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -128,7 +128,7 @@ void CScsiTemperatureLog::get_Temp(JSONNODE *tempData)
 	json_push_back(paramInfo, json_new_a("Parameter Length", (char*)myStr.c_str()));
 	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Page->paramControlByte);
 	json_push_back(paramInfo, json_new_a("Control Byte", (char*)myStr.c_str()));
-	snprintf((char*)myStr.c_str(), BASIC, "%" PRId8"", m_Page->temp);
+	snprintf((char*)myStr.c_str(), BASIC, "%" PRIu8"", m_Page->temp);
 	json_push_back(paramInfo, json_new_a("Temperature", (char*)myStr.c_str()));
 
 	json_push_back(tempData, paramInfo);
@@ -155,7 +155,7 @@ eReturnValues CScsiTemperatureLog::get_Data(JSONNODE *masterData)
 	if (pData != NULL)
 	{
 		JSONNODE *pageInfo = json_new(JSON_NODE);
-		json_set_name(pageInfo, "Temperature Log Page");
+		json_set_name(pageInfo, "Temperature Log Page - Dh");
 		for (size_t param = 0; param < m_PageLength; param += tempSize)
 		{
 			byte_Swap_16(&m_Page->paramCode);

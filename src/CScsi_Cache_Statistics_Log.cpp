@@ -2,7 +2,7 @@
 // CScsi_Cache_Statistics_Log.cpp  Definition of Cache Statistics page for SAS
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2015 - 2018 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
+// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -114,41 +114,48 @@ CScsiCacheLog::~CScsiCacheLog()
 //!   \return void
 //
 //---------------------------------------------------------------------------
-void CScsiCacheLog::get_Cache_Parameter_Code_Description(std::string *cache)
+bool CScsiCacheLog::get_Cache_Parameter_Code_Description(std::string *cache)
 {
+    bool descriptionFound = false;
 	switch (m_cache->paramCode)
 	{
 	case 0x0000:
 	{
 		snprintf((char*)cache->c_str(), BASIC, "Number of logical blocks that have been Sent");
+        descriptionFound = true;
 		break;
 	}
 	case 0x0001:
 	{
 		snprintf((char*)cache->c_str(), BASIC, "Number of logical blocks that have been Received");
+        descriptionFound = true;
 		break;
 	}
 	case 0x0002:
 	{
 		snprintf((char*)cache->c_str(), BASIC, "Number of logical blocks READ from the Cache Memory");
+        descriptionFound = true;
 		break;
 	}
 	case 0x0003:
 	{
 		snprintf((char*)cache->c_str(), BASIC, "Number of READ and WRITE Commands lengths equal or less than the current segment size");
+        descriptionFound = true;
 		break;
 	}
 	case 0x0004:
 	{
 		snprintf((char*)cache->c_str(), BASIC, "Number of READ and WRITE Commands lengths greater than the current segment size");
+        descriptionFound = true;
 		break;
 	}
 	default:
 	{
-		snprintf((char*)cache->c_str(), BASIC, "Unknow");
+		snprintf((char*)cache->c_str(), BASIC, "Vendor specific 0x%04" PRIx16"", m_cache->paramCode);
 		break;
 	}
 	}
+    return descriptionFound;
 }
 //-----------------------------------------------------------------------------
 //
@@ -166,35 +173,36 @@ void CScsiCacheLog::get_Cache_Parameter_Code_Description(std::string *cache)
 //---------------------------------------------------------------------------
 void CScsiCacheLog::process_Cache_Event_Data(JSONNODE *cacheData)
 {
+    bool discriptionIsFound = false;
 	std::string myStr = "";
 	myStr.resize(BASIC);
 #if defined( _DEBUG)
 	printf("Cache Event Description \n");
 #endif
-	byte_Swap_16(&m_cache->paramCode);
-	get_Cache_Parameter_Code_Description(&myStr);
-	//snprintf((char*)myStr.c_str(), BASIC, "Cache Statistics Description %" PRId16"", m_cache->paramCode);
-	JSONNODE *cacheInfo = json_new(JSON_NODE);
-	json_set_name(cacheInfo, (char*)myStr.c_str());
+    if (m_Value != 0)
+    {
+        byte_Swap_16(&m_cache->paramCode);
+        discriptionIsFound = get_Cache_Parameter_Code_Description(&myStr);
+        //snprintf((char*)myStr.c_str(), BASIC, "Cache Statistics Description %" PRId16"", m_cache->paramCode);
+        JSONNODE *cacheInfo = json_new(JSON_NODE);
+        json_set_name(cacheInfo, (char*)myStr.c_str());
+        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_cache->paramCode);
+        json_push_back(cacheInfo, json_new_a("Cache Statistics Parameter Code", (char*)myStr.c_str()));
+        if (!discriptionIsFound)
+        {
+            
 
-	snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_cache->paramCode);
-	json_push_back(cacheInfo, json_new_a("Cache Statistics Parameter Code", (char*)myStr.c_str()));
-	
-	//json_push_back(cacheInfo, json_new_a("Cache Statistics Description", (char*)myStr.c_str()));
-	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_cache->paramControlByte);
-	json_push_back(cacheInfo, json_new_a("Cache Statistics Control Byte ", (char*)myStr.c_str()));
-	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_cache->paramLength);
-	json_push_back(cacheInfo, json_new_a("Cache Statistics Length ", (char*)myStr.c_str()));
-	if (m_cache->paramLength == 8 || m_Value > UINT32_MAX)
-	{
-		set_json_64bit(cacheInfo, "Cache Statistics Lengths", m_Value, false);
-	}
-	else	
-	{
-		json_push_back(cacheInfo, json_new_i("Cache Statistics Length", static_cast<uint32_t>(m_Value)));
-	}
+            //json_push_back(cacheInfo, json_new_a("Cache Statistics Description", (char*)myStr.c_str()));
+            snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_cache->paramControlByte);
+            json_push_back(cacheInfo, json_new_a("Cache Statistics Control Byte ", (char*)myStr.c_str()));
+            snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_cache->paramLength);
 
-	json_push_back(cacheData, cacheInfo);
+            json_push_back(cacheInfo, json_new_a("Cache Statistics Length ", (char*)myStr.c_str()));
+        }
+        set_json_64bit(cacheInfo, "Cache Statistics Value", m_Value, false);
+
+        json_push_back(cacheData, cacheInfo);
+    }
 }
 //-----------------------------------------------------------------------------
 //
@@ -216,7 +224,7 @@ eReturnValues CScsiCacheLog::get_Cache_Data(JSONNODE *masterData)
 	if (pData != NULL)
 	{
 		JSONNODE *pageInfo = json_new(JSON_NODE);
-		json_set_name(pageInfo, "Cache Statistics Log");
+		json_set_name(pageInfo, "Cache Statistics Log - 37h");
 
 		for (size_t offset = 0; offset < m_PageLength; )
 		{

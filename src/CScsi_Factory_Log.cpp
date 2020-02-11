@@ -2,7 +2,7 @@
 // CScsi_Factory_Log.cpp  Definition of Factory Log page for SAS
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2015 - 2018 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
+// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -118,31 +118,34 @@ void CScsiFactoryLog::process_Factorty_Data(JSONNODE *factoryData)
 {
 	std::string myStr = "";
 	myStr.resize(BASIC);
+    if (m_Value != 0)
+    {
 #if defined( _DEBUG)
-	printf("Factory Description \n");
+        printf("Factory Description \n");
 #endif
-	byte_Swap_16(&m_factory->paramCode);
-	snprintf((char*)myStr.c_str(), BASIC, "Factory Description %" PRId16"", m_factory->paramCode);
-	JSONNODE *factoryInfo = json_new(JSON_NODE);
-	json_set_name(factoryInfo, (char*)myStr.c_str());
+        byte_Swap_16(&m_factory->paramCode);
+        snprintf((char*)myStr.c_str(), BASIC, "Factory Description %" PRIu16"", m_factory->paramCode);
+        JSONNODE *factoryInfo = json_new(JSON_NODE);
+        json_set_name(factoryInfo, (char*)myStr.c_str());
 
-	snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_factory->paramCode);
-	json_push_back(factoryInfo, json_new_a("Factory Parameter Code", (char*)myStr.c_str()));
+        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_factory->paramCode);
+        json_push_back(factoryInfo, json_new_a("Factory Parameter Code", (char*)myStr.c_str()));
 
-	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_factory->paramControlByte);
-	json_push_back(factoryInfo, json_new_a("Factory Control Byte ", (char*)myStr.c_str()));
-	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_factory->paramLength);
-	json_push_back(factoryInfo, json_new_a("FactoryLength ", (char*)myStr.c_str()));
-	if (m_factory->paramLength == 8 || m_Value > UINT32_MAX)
-	{
-		set_json_64bit(factoryInfo, "Factory value", m_Value, false);
-	}
-	else
-	{
-		json_push_back(factoryInfo, json_new_i("Factory value", static_cast<uint32_t>(m_Value)));
-	}
+        snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_factory->paramControlByte);
+        json_push_back(factoryInfo, json_new_a("Factory Control Byte ", (char*)myStr.c_str()));
+        snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_factory->paramLength);
+        json_push_back(factoryInfo, json_new_a("FactoryLength ", (char*)myStr.c_str()));
+        if (m_factory->paramLength == 8 || m_Value > UINT32_MAX)
+        {
+            set_json_64bit(factoryInfo, "Factory value", m_Value, false);
+        }
+        else
+        {
+            json_push_back(factoryInfo, json_new_i("Factory value", static_cast<uint32_t>(m_Value)));
+        }
 
-	json_push_back(factoryData, factoryInfo);
+        json_push_back(factoryData, factoryInfo);
+    }
 }
 //-----------------------------------------------------------------------------
 //
@@ -164,7 +167,7 @@ eReturnValues CScsiFactoryLog::get_Factory_Data(JSONNODE *masterData)
 	if (pData != NULL)
 	{
 		JSONNODE *pageInfo = json_new(JSON_NODE);
-		json_set_name(pageInfo, "Factory Log");
+		json_set_name(pageInfo, "Factory Log - 3Eh");
 
 		for (size_t offset = 0; offset < m_PageLength; )
 		{

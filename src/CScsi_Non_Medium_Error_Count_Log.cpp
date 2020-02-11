@@ -2,7 +2,7 @@
 // CScsi_Non_Medium_Error_Count_Log.cpp Definition of the Non-Medium Error Count Log
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2015 - 2018 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
+// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -167,7 +167,7 @@ eReturnValues CScsiNonMediumErrorCountLog::get_Non_Medium_Error_Count_Data(JSONN
 	if (pData != NULL)
 	{
 		JSONNODE *pageInfo = json_new(JSON_NODE);
-		json_set_name(pageInfo, "Non-Medium Error Count Log");
+		json_set_name(pageInfo, "Non-Medium Error Count Log - 6h");
 		m_CountErrors = (sNonMediumErrorCount *)&pData[0];
 		if (m_CountErrors->paramLength < m_bufferLength && m_CountErrors->paramLength < UINT16_MAX)
 		{

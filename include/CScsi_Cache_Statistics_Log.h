@@ -2,7 +2,7 @@
 //
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2015 - 2018 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
+// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -43,7 +43,7 @@ namespace opensea_parser {
 		uint64_t					m_Value;					//<! Parameter Value
 		sCacheParams				*m_cache;					//<! cache structure 
 
-		void get_Cache_Parameter_Code_Description(std::string *cache);
+		bool get_Cache_Parameter_Code_Description(std::string *cache);
 		void process_Cache_Event_Data(JSONNODE *cacheData);
 		eReturnValues get_Cache_Data(JSONNODE *masterData);
 	public:

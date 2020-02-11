@@ -3,7 +3,7 @@
 //
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2018 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
+// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -73,6 +73,21 @@ namespace opensea_parser {
 		uint8_t			subPage;							//<! subpage code for the log page format
 		uint16_t		pageLength;							//<! this is different from size, see SCSI SPC Spec. 
 		_sLogPageStruct() : pageCode(0), subPage(0), pageLength(0) {};
+        _sLogPageStruct(uint8_t* buffer)
+        {
+            if (buffer != NULL)
+            {
+                pageCode = buffer[0];
+                subPage = buffer[1];
+                pageLength = *(reinterpret_cast<uint16_t*>(&buffer[2]));
+            }
+            else
+            {
+                pageCode = 0;
+                subPage = 0;
+                pageLength = 0;
+            }
+        }
 	}sLogPageStruct;
 #pragma pack(pop)
 	typedef enum _eLogPageNames
@@ -92,10 +107,10 @@ namespace opensea_parser {
 		BACKGROUND_SCAN = 0x15,
 		PROTOCOL_SPECIFIC_PORT = 0x18,
 		POWER_CONDITION_TRANSITIONS = 0x1A,
-		INFORMATIONAL_EXCEPTIONS = 0x2F,
+		INFORMATIONAL_EXCEPTIONS = 0x2F,        
 		CACHE_STATISTICS = 0x37,
 		SEAGATE_SPECIFIC_LOG = 0x3D,
-		FACTORY_LOG = 0x3E,
+		FACTORY_LOG = 0x3E,        
 	}eLogPageNames;
 
 	const int pageCodes[] = { SUPPORTED_LOG_PAGES,	WRITE_ERROR_COUNTER,
@@ -104,7 +119,7 @@ namespace opensea_parser {
 		START_STOP_CYCLE_COUNTER ,	APPLICATION_CLIENT,	SELF_TEST_RESULTS,
 		SOLID_STATE_MEDIA ,	BACKGROUND_SCAN , PROTOCOL_SPECIFIC_PORT,
 		POWER_CONDITION_TRANSITIONS , INFORMATIONAL_EXCEPTIONS,
-		CACHE_STATISTICS ,	SEAGATE_SPECIFIC_LOG , 	FACTORY_LOG };
+        CACHE_STATISTICS, SEAGATE_SPECIFIC_LOG, FACTORY_LOG,};
 
 	//-----------------------------------------------------------------------------
 	//
@@ -139,10 +154,10 @@ namespace opensea_parser {
 	//! \param value  =  64 bit value to check to see if the bit is set or not
 	//
 	//  Exit:
-	//!   \return uint64_t return the stipped value or a 0
+	//!   \return int64_t return the stipped value or a 0
 	//
 	//---------------------------------------------------------------------------
-	inline uint64_t check_Status_Strip_Status(uint64_t value)
+	inline int64_t check_Status_Strip_Status(uint64_t value)
 	{
 		if (check_For_Active_Status(&value))
 		{
@@ -174,7 +189,7 @@ namespace opensea_parser {
 	{
 		int8_t neg = -1;			// set to 1 if bit 56 is set then set it to -1
 		value = value << length;
-		if ((value & BIT63) == BIT63)   // check to see if the bit is set for nef number
+		if (value & BIT63)   // check to see if the bit is set for neg number
 		{
 			value = M_2sCOMPLEMENT(value);
 			value = value * neg;
@@ -184,7 +199,7 @@ namespace opensea_parser {
 	}
 	//-----------------------------------------------------------------------------
 	//
-	//! \fn set_json_64()
+	//! \fn set_json_64bit_With_Check_Status()
 	//
 	//! \brief
 	//!   Description:  set the json values for a 64 bit value
@@ -199,7 +214,7 @@ namespace opensea_parser {
 	//!   \return void
 	//
 	//-----------------------------------------------------------------------------
-    inline void set_json_64bit(JSONNODE *nowNode, const std::string & myStr, uint64_t value, bool hexPrint)
+    inline void set_json_64bit_With_Check_Status(JSONNODE *nowNode, const std::string & myStr, uint64_t value, bool hexPrint)
     {
 		std::string printStr = " ";
 		printStr.resize(BASIC);
@@ -233,7 +248,7 @@ namespace opensea_parser {
 		}
 		else
 		{
-			if ((int64_t)value < INT32_MAX && (int64_t)value > INT32_MIN)
+            if (M_IGETBITRANGE(value, 63, 32) == 0)
 			{
 				json_push_back(nowNode, json_new_i((char *)myStr.c_str(), static_cast<int32_t>(M_DoubleWord0(value))));
 			}
@@ -256,7 +271,78 @@ namespace opensea_parser {
 		}
 
 	}
+    //-----------------------------------------------------------------------------
+    //
+    //! \fn set_json_64()
+    //
+    //! \brief
+    //!   Description:  set the json values for a 64 bit value
+    //
+    //  Entry:
+    //! \param  nowNode = the Json node that the data will be added to
+    //! \param  myStr = the string data what will be adding to
+    //! \param value  =  64 bit value to check to see if the bit is set or not
+    //! \param hexPrint =  if true then print the data in a hex format
+    //
+    //  Exit:
+    //!   \return void
+    //
+    //-----------------------------------------------------------------------------
+    inline void set_json_64bit(JSONNODE *nowNode, const std::string & myStr, uint64_t value, bool hexPrint)
+    {
+        std::string printStr = " ";
+        printStr.resize(BASIC);
+#ifndef _WIN64   //To make old gcc compilers happy
+        std::string lowStr = "64 bit Value Lower value";
+        std::string upperStr = "64 bit Value Upper value";
+#endif
 
+#ifndef _WIN64   //To make old gcc compilers happy
+        int32_t lowValue = static_cast<int32_t>(value);
+        int32_t upperValue = static_cast<int32_t>(value >> 32);
+#endif
+        if (hexPrint)
+        {
+
+#ifndef _WIN64   //To make old gcc compilers happy
+            JSONNODE *bigBit = json_new(JSON_NODE);
+            json_set_name(bigBit, (char *)myStr.c_str());
+            json_push_back(bigBit, json_new_b("64 bit Value String in Hex", true));
+            snprintf((char*)printStr.c_str(), BASIC, "0x%014" PRIx64"", value);
+            json_push_back(bigBit, json_new_a("64 bit Value String", (char*)printStr.c_str()));
+            json_push_back(bigBit, json_new_i((char*)lowStr.c_str(), lowValue));
+            json_push_back(bigBit, json_new_i((char*)upperStr.c_str(), upperValue));
+            json_push_back(nowNode, bigBit);
+#else		//json does not support 64 bit numbers. Therefore we will print it as a string
+            snprintf((char*)printStr.c_str(), BASIC, "0x%08" PRIx64"", value);
+            json_push_back(nowNode, json_new_a((char *)myStr.c_str(), (char*)printStr.c_str()));
+#endif
+        }
+        else
+        {
+            if (M_IGETBITRANGE(value,63,32) == 0)
+            {
+                json_push_back(nowNode, json_new_i((char *)myStr.c_str(), static_cast<int32_t>(M_DoubleWord0(value))));
+            }
+            else
+            {
+#ifndef _WIN64   //To make old gcc compilers happy
+                JSONNODE *bigBit = json_new(JSON_NODE);
+                json_set_name(bigBit, (char *)myStr.c_str());
+                json_push_back(bigBit, json_new_b("64 bit Value String in Hex", false));
+                snprintf((char*)printStr.c_str(), BASIC, "%" PRIi64"", value);
+                json_push_back(bigBit, json_new_a("64 bit Value String", (char*)printStr.c_str()));
+                json_push_back(bigBit, json_new_i((char*)lowStr.c_str(), lowValue));
+                json_push_back(bigBit, json_new_i((char*)upperStr.c_str(), upperValue));
+                json_push_back(nowNode, bigBit);
+#else		//json does not support 64 bit numbers. Therefore we will print it as a string
+                snprintf((char*)printStr.c_str(), BASIC, "%" PRId64"", value);
+                json_push_back(nowNode, json_new_a((char *)myStr.c_str(), (char*)printStr.c_str()));
+#endif
+            }
+        }
+
+    }
 	//-----------------------------------------------------------------------------
 	//
 	//! \fn set_Json_Bool()

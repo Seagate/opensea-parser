@@ -2,7 +2,7 @@
 // CFARM_Log.cpp   Implementation of class CFARMLog
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2015 - 2018 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
+// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -210,9 +210,9 @@ bool CFARMLog::is_Device_Scsi()
 {
     if (bufferData != NULL)
     {
-        if (M_GETBITRANGE(bufferData[0], 5, 0) == 0x3D)
+        if (M_GETBITRANGE(bufferData[0], 5, 0) == 0x3D )
         {
-            if (bufferData[1] == 03)
+            if (bufferData[1] == 03 || bufferData[1] == 04)
             {
                 return true;
             }
