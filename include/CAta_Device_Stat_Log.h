@@ -50,7 +50,7 @@ namespace opensea_parser {
 		uint16_t   RevNum;
 		uint8_t   LogPageNum;
 		uint8_t   Reserved[5];
-        _sHeader() :RevNum(0), LogPageNum(0), Reserved{} {};
+        _sHeader() :RevNum(0), LogPageNum(0) {};   // removed the Reserved init, because of clang issue with setting it zero's
 	}sHeader;
 	typedef struct _sLogPage01
 	{
