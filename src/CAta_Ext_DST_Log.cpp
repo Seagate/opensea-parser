@@ -51,6 +51,7 @@ CAta_Ext_DST_Log::CAta_Ext_DST_Log(const std::string &fileName, JSONNODE *master
 				byte_Swap_16(&idCheck->pageLength);  // now that we know it's not scsi we need to flip the bytes back
 				m_status = parse_Ext_Self_Test_Log( masterData);
 			}
+            delete [] pData;
         }
     }
     else
@@ -79,6 +80,7 @@ CAta_Ext_DST_Log::CAta_Ext_DST_Log(uint8_t *pBufferData, JSONNODE *masterData)
 	pData = pBufferData;
     m_logSize = 0;
     m_status = parse_Ext_Self_Test_Log( masterData);
+    pData = NULL;
 }
 //-----------------------------------------------------------------------------
 //
@@ -94,9 +96,73 @@ CAta_Ext_DST_Log::CAta_Ext_DST_Log(uint8_t *pBufferData, JSONNODE *masterData)
 //---------------------------------------------------------------------------
 CAta_Ext_DST_Log::~CAta_Ext_DST_Log()
 {
-    if (pData != NULL)
+
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn Get_Status_Meaning
+//
+//! \brief
+//!   Description: fill in a string of the meaning of the status data
+//
+//  Entry:
+//! \param meaning - string to fill in the meaing
+//! \param status - the status to fill in the meaing 
+//
+//  Exit:
+//!   \return eReturnValues success
+//
+//---------------------------------------------------------------------------
+void CAta_Ext_DST_Log::Get_Status_Meaning(std::string &meaning,uint8_t status)
+{
+    meaning.resize(BASIC);
+    if (status == 0x00)
     {
-        delete []pData;
+        snprintf((char*)meaning.c_str(),BASIC,"Self Test has completed with no Error  or No Self test has been run");
+    }
+    else if (status == 0x01)
+    {
+        snprintf((char*)meaning.c_str(),BASIC,"Was Aborted by the host");
+    }
+    else if (status == 0x02)
+    {
+        snprintf((char*)meaning.c_str(),BASIC,"Was interepted by the host with a hard reset of a soft reset");
+    }
+    else if (status == 0x03)
+    {
+        snprintf((char*)meaning.c_str(),BASIC,"unknown error and Self Test was unable to complete");
+    }
+    else if (status == 0x04)
+    {
+        snprintf((char*)meaning.c_str(),BASIC,"Completed and has faild and the element is unknown");
+    }
+    else if (status == 0x05)
+    {
+        snprintf((char*)meaning.c_str(),BASIC,"Completed With an electrical element failing");
+    }
+    else if (status == 0x06)
+    {
+        snprintf((char*)meaning.c_str(),BASIC,"Completed having a servo element failure");
+    }
+    else if (status == 0x07)
+    {
+        snprintf((char*)meaning.c_str(),BASIC,"Completed having a read element failure");
+    }
+    else if (status == 0x08)
+    {
+        snprintf((char*)meaning.c_str(),BASIC,"Completed having handling damage");
+    }
+    else if (status == 0x09)
+    {
+        snprintf((char*)meaning.c_str(),BASIC,"Completed having suspected handling damage");
+    }
+    else if (status == 0x15)
+    {
+        snprintf((char*)meaning.c_str(),BASIC,"Self Test still in Progress");
+    }
+    else
+    {
+        snprintf((char*)meaning.c_str(),BASIC,"Reserved");
     }
 }
 //-----------------------------------------------------------------------------
@@ -150,6 +216,9 @@ eReturnValues CAta_Ext_DST_Log::parse_Ext_Self_Test_Log( JSONNODE *masterData)
         json_push_back(runInfo, json_new_a("Timestamp", (char*)myStr.c_str()));
         snprintf((char*)myStr.c_str(), BASIC, "0x%02x", int(StatusByte));
         json_push_back(runInfo, json_new_a("Status Byte", (char*)myStr.c_str()));
+        Get_Status_Meaning(myStr,StatusByte);
+        json_push_back(runInfo, json_new_a("Status Meaning",(char*)myStr.c_str()));
+
         snprintf((char*)myStr.c_str(), BASIC, "0x%02x", checkPointByte);
         json_push_back(runInfo, json_new_a("CheckPoint Byte", (char*)myStr.c_str()));
         snprintf((char*)myStr.c_str(), BASIC, "%u", compTime);
@@ -163,6 +232,7 @@ eReturnValues CAta_Ext_DST_Log::parse_Ext_Self_Test_Log( JSONNODE *masterData)
     json_push_back(masterData, DstJson);
 
     return SUCCESS;
+
 }
 
 

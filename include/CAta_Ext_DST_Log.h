@@ -32,6 +32,8 @@ namespace opensea_parser {
 		uint8_t						*pData;											//!< pointer the the data
         size_t						m_logSize;                                      //!< log size in bytes                             
         eReturnValues               m_status;                                       //!< holds the status so 
+
+        void Get_Status_Meaning(std::string &meaning,uint8_t status);
         eReturnValues parse_Ext_Self_Test_Log(JSONNODE *masterData);
 
     public:
