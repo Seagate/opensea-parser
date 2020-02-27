@@ -8,6 +8,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 //
+// Now supporting 3.7 version of the FARM LOG
 // ******************************************************************************************
 
 #include "CScsi_Farm_Log.h"
@@ -39,6 +40,7 @@ CSCSI_Farm_Log::CSCSI_Farm_Log()
     , m_status(IN_PROGRESS)                                
 	, m_logParam()   
 	, m_pageParam()
+        , m_pDriveInfo() 
 	, m_alreadySet(false)          
 	, m_showStatusBits(false)                      
 {                                                  
@@ -73,6 +75,7 @@ CSCSI_Farm_Log::CSCSI_Farm_Log( uint8_t *bufferData, size_t bufferSize, bool sho
     , m_status(IN_PROGRESS)                                
 	, m_logParam()
 	, m_pageParam()
+    , m_pDriveInfo() 
 	, m_alreadySet(false)          
 	, m_showStatusBits(showStatus)
 {
@@ -86,13 +89,20 @@ CSCSI_Farm_Log::CSCSI_Farm_Log( uint8_t *bufferData, size_t bufferSize, bool sho
 #endif
     if (pBuf != NULL)
     {
-		m_status = init_Header_Data();							// init the data for getting the log
+		if (init_Header_Data() == SUCCESS)							// init the data for getting the log
+               {
+                   m_status = parse_Farm_Log();
+               }
+               else 
+               {
+                   m_status =FAILURE;
+               }
     }
     else
     {
         m_status = FAILURE;
     }
-
+    delete [] pBuf;
 }
 //-----------------------------------------------------------------------------
 //
@@ -113,10 +123,6 @@ CSCSI_Farm_Log::~CSCSI_Farm_Log()
     if (!vFarmFrame.empty())
     {
         vFarmFrame.clear();                                    // clear the vector
-    }
-	if (pBuf != NULL)
-    {
-        delete [] pBuf;
     }
 }
 //-----------------------------------------------------------------------------
@@ -374,7 +380,7 @@ void CSCSI_Farm_Log::set_Head_Header(std::string &headerName, eLogPageTypes inde
 //!   \return serialNumber = the string serialNumber
 //
 //---------------------------------------------------------------------------
-void CSCSI_Farm_Log::create_Serial_Number(std::string *serialNumber, const sScsiDriveInfo * const idInfo)
+void CSCSI_Farm_Log::create_Serial_Number(std::string &serialNumber, const sScsiDriveInfo * const idInfo)
 {
 	uint64_t sn = 0;
 	uint64_t sn1 = idInfo->serialNumber & 0x00FFFFFFFFFFFFFFLL;
@@ -382,9 +388,9 @@ void CSCSI_Farm_Log::create_Serial_Number(std::string *serialNumber, const sScsi
 	byte_Swap_64(&sn1);
 	byte_Swap_64(&sn2);
 	sn = (sn1 | (sn2 >> 32));
-	serialNumber->resize(SERIAL_NUMBER_LEN );
-	memset((char*)serialNumber->c_str(),0, SERIAL_NUMBER_LEN );
-	strncpy((char *)serialNumber->c_str(), (char*)&sn, SERIAL_NUMBER_LEN);
+	serialNumber.resize(SERIAL_NUMBER_LEN );
+	memset((char*)serialNumber.c_str(),0, SERIAL_NUMBER_LEN );
+	strncpy((char *)serialNumber.c_str(), (char*)&sn, SERIAL_NUMBER_LEN);
 }
 //-----------------------------------------------------------------------------
 //
@@ -401,13 +407,13 @@ void CSCSI_Farm_Log::create_Serial_Number(std::string *serialNumber, const sScsi
 //!   \return wordWideName = the string wordWideName
 //
 //---------------------------------------------------------------------------
-void CSCSI_Farm_Log::create_World_Wide_Name(std::string *worldWideName, const sScsiDriveInfo * const idInfo)
+void CSCSI_Farm_Log::create_World_Wide_Name(std::string &worldWideName, const sScsiDriveInfo * const idInfo)
 {
 	uint64_t wwn = 0;
 	wwn = (idInfo->worldWideName & 0x00FFFFFFFFFFFFFFLL) | ((idInfo->worldWideName2 & 0x00FFFFFFFFFFFFFFLL) << 32);
-	worldWideName->resize(WORLD_WIDE_NAME_LEN);
-	memset((char *)worldWideName->c_str(), 0, WORLD_WIDE_NAME_LEN);
-	snprintf((char *)worldWideName->c_str(), WORLD_WIDE_NAME_LEN, "0x%" PRIX64"", wwn);
+	worldWideName.resize(WORLD_WIDE_NAME_LEN);
+	memset((char *)worldWideName.c_str(), 0, WORLD_WIDE_NAME_LEN);
+	snprintf((char *)worldWideName.c_str(), WORLD_WIDE_NAME_LEN, "0x%" PRIX64"", wwn);
 }
 //-----------------------------------------------------------------------------
 //
@@ -424,14 +430,14 @@ void CSCSI_Farm_Log::create_World_Wide_Name(std::string *worldWideName, const sS
 //!   \return firmwareRev = the string firmwareRev
 //
 //---------------------------------------------------------------------------
-void CSCSI_Farm_Log::create_Firmware_String(std::string *firmwareRev, const sScsiDriveInfo * const idInfo)
+void CSCSI_Farm_Log::create_Firmware_String(std::string &firmwareRev, const sScsiDriveInfo * const idInfo)
 {
 	uint32_t firm = 0;
 	firm = (uint32_t)(idInfo->firmware & 0x00FFFFFFFFFFFFFFLL);
 	byte_Swap_32(&firm);
-	firmwareRev->resize(FIRMWARE_REV_LEN);
-	memset((char *)firmwareRev->c_str(), 0, FIRMWARE_REV_LEN);
-	strncpy((char *)firmwareRev->c_str(), (char*)&firm, FIRMWARE_REV_LEN);
+	firmwareRev.resize(FIRMWARE_REV_LEN);
+	memset((char *)firmwareRev.c_str(), 0, FIRMWARE_REV_LEN);
+	strncpy((char *)firmwareRev.c_str(), (char*)&firm, FIRMWARE_REV_LEN);
 }
 //-----------------------------------------------------------------------------
 //
@@ -448,14 +454,34 @@ void CSCSI_Farm_Log::create_Firmware_String(std::string *firmwareRev, const sScs
 //!   \return dInterface = the string dInterface
 //
 //---------------------------------------------------------------------------
-void CSCSI_Farm_Log::create_Device_Interface_String(std::string *dInterface, const sScsiDriveInfo * const idInfo)
+void CSCSI_Farm_Log::create_Device_Interface_String(std::string &dInterface, const sScsiDriveInfo * const idInfo)
 {
 	uint64_t dFace = 0;
 	dFace = (idInfo->deviceInterface & 0x00FFFFFFFFFFFFFFLL);
-	dInterface->resize(DEVICE_INTERFACE_LEN);
-	memset((char *)dInterface->c_str(), 0, DEVICE_INTERFACE_LEN);
-	strncpy((char *)dInterface->c_str(), (char*)&dFace, DEVICE_INTERFACE_LEN);
+	dInterface.resize(DEVICE_INTERFACE_LEN);
+	memset((char *)dInterface.c_str(), 0, DEVICE_INTERFACE_LEN);
+	strncpy((char *)dInterface.c_str(), (char*)&dFace, DEVICE_INTERFACE_LEN);
 
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn create_Model_Number_String()
+//
+//! \brief
+//!   Description:  fill in the model number of the drive 
+//
+//  Entry:
+//! \param model - pointer to the  model number of the drive
+//! \param idInfo  =  pointer to the drive info structure that holds the infromation needed
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void CSCSI_Farm_Log::create_Model_Number_String(std::string &model, const sScsiDriveInfo * const idInfo)
+{
+	memset((char *)model.c_str(), 0, DEVICE_INTERFACE_LEN);
+	strncpy((char *)model.c_str(),"12345678", DEVICE_INTERFACE_LEN);
 }
 //-----------------------------------------------------------------------------
 //
@@ -489,14 +515,14 @@ bool CSCSI_Farm_Log::swap_Bytes_sDriveInfo(sScsiDriveInfo *di)
     byte_Swap_64(&di->powerCycleCount);
     byte_Swap_64(&di->psecSize);
     byte_Swap_64(&di->resetCount);
-	byte_Swap_64(&di->rotationRate);
+    byte_Swap_64(&di->rotationRate);
     byte_Swap_64(&di->serialNumber);
     byte_Swap_64(&di->serialNumber2);
     byte_Swap_64(&di->timeAvailable);
     byte_Swap_64(&di->firstTimeStamp);
     byte_Swap_64(&di->lastTimeStamp);
     byte_Swap_64(&di->worldWideName);
-	byte_Swap_64(&di->worldWideName2);
+    byte_Swap_64(&di->worldWideName2);
     return true;
 }
 //-----------------------------------------------------------------------------
@@ -543,17 +569,18 @@ bool CSCSI_Farm_Log::swap_Bytes_sWorkLoadStat(sScsiWorkLoadStat *wl)
 //---------------------------------------------------------------------------
 bool CSCSI_Farm_Log::swap_Bytes_sErrorStat(sScsiErrorStat * es)
 {
-	byte_Swap_64(&es->totalReadECC);
-	byte_Swap_64(&es->totalWriteECC);
-	byte_Swap_64(&es->totalReallocations);
+    byte_Swap_64(&es->totalReadECC);
+    byte_Swap_64(&es->totalWriteECC);
+    byte_Swap_64(&es->totalReallocations);
     byte_Swap_64(&es->attrIOEDCErrors);
     byte_Swap_64(&es->copyNumber);
     byte_Swap_16(&es->pPageHeader.pramCode);
     byte_Swap_64(&es->pageNumber);
     byte_Swap_64(&es->totalFlashLED);
     byte_Swap_64(&es->totalMechanicalFails);
-	byte_Swap_64(&es->totalReallocatedCanidates);
+    byte_Swap_64(&es->totalReallocatedCanidates);
     byte_Swap_64(&es->FRUCode);
+    byte_Swap_64(&es->parity);
     return true;
 }
 //-----------------------------------------------------------------------------
@@ -609,18 +636,18 @@ bool CSCSI_Farm_Log::swap_Bytes_sScsiReliabilityStat(sScsiReliabilityStat *ss)
     byte_Swap_64(&ss->gListAfterIDD);
     byte_Swap_64(&ss->gListBeforIDD);
     byte_Swap_64(&ss->gListReclamed);
-	byte_Swap_64(&ss->heliumPressuretThreshold);
-	byte_Swap_64(&ss->idleTime);
+    byte_Swap_64(&ss->heliumPressuretThreshold);
+    byte_Swap_64(&ss->idleTime);
     byte_Swap_64(&ss->lastIDDTest);
     byte_Swap_16(&ss->pPageHeader.pramCode);
-	byte_Swap_64(&ss->maxRVAbsuluteMean);
-	byte_Swap_64(&ss->microActuatorLockOut);
+    byte_Swap_64(&ss->maxRVAbsuluteMean);
+    byte_Swap_64(&ss->microActuatorLockOut);
     byte_Swap_64(&ss->numberDOSScans);
     byte_Swap_64(&ss->numberLBACorrect);
     byte_Swap_64(&ss->numberRAWops);
     byte_Swap_64(&ss->numberValidParitySec);
     byte_Swap_64(&ss->pageNumber);
-	byte_Swap_64(&ss->rvAbsuluteMean);
+    byte_Swap_64(&ss->rvAbsuluteMean);
     byte_Swap_64(&ss->scrubsAfterIDD);
     byte_Swap_64(&ss->scrubsBeforeIDD);
     byte_Swap_64(&ss->servoStatus);
@@ -670,8 +697,8 @@ bool CSCSI_Farm_Log::swap_Bytes_sFarmHeader(sScsiFarmHeader *fh)
 //---------------------------------------------------------------------------
 bool CSCSI_Farm_Log::get_Head_Info(sHeadInformation *phead, uint8_t *buffer)
 {
-    memcpy(&phead->headValue, (sHeadInformation *)&buffer[4], (sizeof(uint64_t) * (size_t) m_heads));
-	memcpy(&phead->pageHeader, (sScsiPageParameter *)&buffer[0], sizeof(sScsiPageParameter));
+    memcpy(phead->headValue, (sHeadInformation *)&buffer[4], (sizeof(uint64_t) * (size_t) m_heads));
+    memcpy(&phead->pageHeader, (sScsiPageParameter *)&pBuf[0], sizeof(sScsiPageParameter));
     for (uint32_t index = 0; index < m_heads; index++)
     {
         byte_Swap_64(&phead->headValue[index] );
@@ -695,292 +722,418 @@ bool CSCSI_Farm_Log::get_Head_Info(sHeadInformation *phead, uint8_t *buffer)
 //---------------------------------------------------------------------------
 eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
 {
-    uint64_t offset = 4;															// the first page starts at offset 4                                   
-	sScsiFarmFrame *pFarmFrame = new sScsiFarmFrame();										// create the pointer to the union
+    uint64_t offset = 4;                                                                    // the first page starts at offset 4                                   
+    bool headerAlreadyFound = false;                                                        // set to false, for files that are missing data
+    sScsiFarmFrame *pFarmFrame = new sScsiFarmFrame();								       	// create the pointer to the union
+
     if (pBuf == NULL)
     {
         return FAILURE;
     }
-    if ((m_pHeader->farmHeader.signature & 0x00FFFFFFFFFFFFFFLL) == FARMSIGNATURE)				// check the head to see if it has the farm signature else fail
+    uint64_t signature = m_pHeader->farmHeader.signature & 0x00FFFFFFFFFFFFFFLL;
+    
+    if (signature == FARMSIGNATURE)				// check the head to see if it has the farm signature else fail
     {
+        
         for (uint32_t index = 0; index <= m_copies; ++index)						// loop for the number of copies. I don't think it's zero base as of now
         {
-			sScsiPageParameter *pFarmPageHeader;
-			sScsiFarmHeader *pFarmHeader;
-			sScsiDriveInfo *pIdInfo;
-			sScsiWorkLoadStat *pworkLoad;
-			sScsiErrorStat *pError;
-			sScsiEnvironmentStat *pEnvironment;
-			sScsiReliabilityStat *pReli;
-			sHeadInformation *pHeadInfo = new sHeadInformation();
-			sStringIdentifyData *pInfo = new sStringIdentifyData();
+            if (pFarmFrame->vFramesFound.size() > 1)
+            {
+                pFarmFrame->vFramesFound.clear();                                                 // clear the vector for the next copy
+            }
+
             while (offset < m_logSize)
             {
                 m_pageParam = (sScsiPageParameter *)&pBuf[offset];										 // get the page params, so we know what the param code is. 
                 byte_Swap_16(&m_pageParam->pramCode);
-                pFarmFrame->vFramesFound.push_back((eLogPageTypes)m_pageParam->pramCode);                // collect all the log page types in a vector to pump them out at the end
+                if (!headerAlreadyFound || (m_pageParam->pramCode != 0x0000 && m_pageParam->pramCode < 0x004F))
+                {
+                    pFarmFrame->vFramesFound.push_back((eLogPageTypes)m_pageParam->pramCode);                // collect all the log page types in a vector to pump them out at the end
+                }
                 switch (m_pageParam->pramCode)
                 {
-                case FARM_HEADER_PARAMETER:
-                    pFarmPageHeader = (sScsiPageParameter *)&pBuf[offset];                                      // get the Farm Header information
-                    pFarmHeader = (sScsiFarmHeader *)&pBuf[offset ];                    // get the Farm Header information
-                    memcpy(&pFarmFrame->farmHeader, pFarmHeader, sizeof(sFarmHeader));
-                    offset += (pFarmPageHeader->plen + sizeof(sScsiPageParameter));
-                    break;
-                case  GENERAL_DRIVE_INFORMATION_PARAMETER:
-                    pFarmPageHeader = (sScsiPageParameter *)&pBuf[offset];                                      // get the Farm Header information
-                    pIdInfo = (sScsiDriveInfo *)&pBuf[offset ];														// get the id drive information at the time.
-                    swap_Bytes_sDriveInfo(pIdInfo);
-                    pFarmFrame->driveInfo = *pIdInfo;
                     
-                    create_Serial_Number(&pInfo->serialNumber, pIdInfo);										// create the serial number
-                    create_World_Wide_Name(&pInfo->worldWideName, pIdInfo);										// create the wwwn
-                    create_Firmware_String(&pInfo->firmwareRev, pIdInfo);										// create the firmware string
-                    create_Device_Interface_String(&pInfo->deviceInterface, pIdInfo);							// get / create the device interface string
+                case FARM_HEADER_PARAMETER:
+                    {
+                        if (headerAlreadyFound == false)                                    // check to see if we have already found the header
+                        {
+                            m_pHeader = (sScsiFarmHeader *)&pBuf[offset];                    // get the Farm Header information
+                            memcpy((sScsiFarmHeader *)&pFarmFrame->farmHeader, m_pHeader, sizeof(sScsiFarmHeader));
+                            offset += (m_pageParam->plen + sizeof(sScsiPageParameter));
+                            headerAlreadyFound = true;                                      // set the header to true so we will not look at the data a second time
+                        }
+                        else
+                        {
+                            offset += (sizeof(sScsiPageParameter));
+                        }
+                    }
+                    break; 
+ 
+                case  GENERAL_DRIVE_INFORMATION_PARAMETER:
+                    {
+                        m_pDriveInfo = (sScsiDriveInfo *)&pBuf[offset ];														// get the id drive information at the time.
+                        swap_Bytes_sDriveInfo(m_pDriveInfo);
+                        memcpy(&pFarmFrame->driveInfo,m_pDriveInfo, sizeof(sScsiDriveInfo));
 
-                    memcpy(&pFarmFrame->identStringInfo, pInfo, sizeof(sStringIdentifyData));
-                    offset += (pFarmPageHeader->plen + sizeof(sScsiPageParameter));
+                        create_Serial_Number(pFarmFrame->identStringInfo.serialNumber, m_pDriveInfo);										// create the serial number
+                        create_World_Wide_Name(pFarmFrame->identStringInfo.worldWideName, m_pDriveInfo);										// create the wwwn
+                        create_Firmware_String(pFarmFrame->identStringInfo.firmwareRev, m_pDriveInfo);										// create the firmware string
+                        create_Device_Interface_String(pFarmFrame->identStringInfo.deviceInterface, m_pDriveInfo);							// get / create the device interface string
+                        create_Model_Number_String(pFarmFrame->identStringInfo.modelNumber,  m_pDriveInfo);
+
+                        offset += (m_pageParam->plen + sizeof(sScsiPageParameter));
+                    }
                     break;
+                   
                 case  WORKLOAD_STATISTICS_PARAMETER:
-                    pFarmPageHeader = (sScsiPageParameter *)&pBuf[offset];                                      // get the Farm Header information
-                    pworkLoad = (sScsiWorkLoadStat *)&pBuf[offset ];												// get the work load information
-                    swap_Bytes_sWorkLoadStat(pworkLoad);
-                    memcpy(&pFarmFrame->workLoadPage, pworkLoad, sizeof(sScsiWorkLoadStat));
-                    offset += (pFarmPageHeader->plen + sizeof(sScsiPageParameter));
+                    {
+                       
+                        sScsiWorkLoadStat *pworkLoad = NULL; 										// get the work load information
+                        pworkLoad = (sScsiWorkLoadStat *)&pBuf[offset ];
+                        swap_Bytes_sWorkLoadStat(pworkLoad);
+                        memcpy((sScsiWorkLoadStat *)&pFarmFrame->workLoadPage, pworkLoad, sizeof(sScsiWorkLoadStat));
+                        offset += (m_pageParam->plen + sizeof(sScsiPageParameter));
+                    }
                     break;
-                case ERROR_STATISTICS_PARAMETER:
-                    pError = (sScsiErrorStat *)&pBuf[offset];                    // get the error status
-                    swap_Bytes_sErrorStat(pError);
-                    memcpy(&pFarmFrame->errorPage, pError, sizeof(sScsiErrorStat));
-                    offset += (pError->pPageHeader.plen + sizeof(sScsiPageParameter));
+                   
+                case ERROR_STATISTICS_PARAMETER:   
+                    {
+                        sScsiErrorStat *pError ;                                                     // get the error status
+                        pError = (sScsiErrorStat *)&pBuf[offset];
+                        swap_Bytes_sErrorStat(pError);
+                        memcpy((sScsiErrorStat *)&pFarmFrame->errorPage,pError, sizeof(sScsiErrorStat));
+                        offset += (pError->pPageHeader.plen + sizeof(sScsiPageParameter));
+                    }
                     break;
-                case ENVIRONMENTAL_STATISTICS_PARAMETER:
-                    pEnvironment = (sScsiEnvironmentStat *)&pBuf[offset]; // get the envirmonent information 
-                    swap_Bytes_sEnvironmentStat(pEnvironment);
-                    memcpy(&pFarmFrame->environmentPage, pEnvironment, sizeof(sScsiEnvironmentStat));
-                    offset += (pEnvironment->pPageHeader.plen + sizeof(sScsiPageParameter));
+                    
+                case ENVIRONMENTAL_STATISTICS_PARAMETER:     
+                    {
+                        sScsiEnvironmentStat *pEnvironment;                            // get the envirmonent information 
+                        pEnvironment = (sScsiEnvironmentStat *)&pBuf[offset];
+                        swap_Bytes_sEnvironmentStat(pEnvironment);
+                        memcpy((sScsiEnvironmentStat *)&pFarmFrame->environmentPage, pEnvironment, sizeof(sScsiEnvironmentStat));
+                        offset += (pEnvironment->pPageHeader.plen + sizeof(sScsiPageParameter)); 
+                    }
                     break;
-                case RELIABILITY_STATISTICS_PARAMETER:
-                    pReli = (sScsiReliabilityStat *)&pBuf[offset];         // get the Reliabliity stat
-                    swap_Bytes_sScsiReliabilityStat(pReli);
-                    memcpy(&pFarmFrame->reliPage, pReli, sizeof(sScsiReliabilityStat));
-                    offset += (pReli->pPageHeader.plen + sizeof(sScsiPageParameter));
-                    break;    
-                case DISC_SLIP_IN_MICRO_INCHES_BY_HEAD:
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->discSlipPerHead, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                    memset(pHeadInfo, 0, sizeof(*pHeadInfo));
+                   
+                case RELIABILITY_STATISTICS_PARAMETER:    
+                    {
+                        sScsiReliabilityStat *pReli;                                              // get the Reliabliity stat
+                        pReli =  (sScsiReliabilityStat *)&pBuf[offset];
+                        swap_Bytes_sScsiReliabilityStat(pReli);
+                        memcpy((sScsiReliabilityStat *)&pFarmFrame->reliPage, pReli, sizeof(sScsiReliabilityStat));
+                        offset += (pReli->pPageHeader.plen + sizeof(sScsiPageParameter));
+                    }
+                    break; 
+                    
+                case DISC_SLIP_IN_MICRO_INCHES_BY_HEAD:     
+                    {
+                        sHeadInformation *pHeadInfo = new sHeadInformation();
+                        get_Head_Info(pHeadInfo, &pBuf[offset]);
+                        memcpy(&pFarmFrame->discSlipPerHead, pHeadInfo, sizeof(*pHeadInfo));
+                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                        delete pHeadInfo;  
+                    }
                     break;
-                case BIT_ERROR_RATE_OF_ZONE_0_BY_DRIVE_HEAD:
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->bitErrorRateByHead, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                    memset(pHeadInfo, 0, sizeof(*pHeadInfo));
+                case BIT_ERROR_RATE_OF_ZONE_0_BY_DRIVE_HEAD:     
+                    {
+                        sHeadInformation *pHeadInfo = new sHeadInformation();
+                        get_Head_Info(pHeadInfo, &pBuf[offset]);
+                        memcpy(&pFarmFrame->bitErrorRateByHead, pHeadInfo, sizeof(*pHeadInfo));
+                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                        delete pHeadInfo;  
+                    }
                     break;
-                case DOS_WRITE_REFRESH_COUNT:  
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->dosWriteRefreshCountByHead, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                    memset(pHeadInfo, 0, sizeof(*pHeadInfo));
+                case DOS_WRITE_REFRESH_COUNT:     
+                    {
+                        sHeadInformation *pHeadInfo = new sHeadInformation();
+                        get_Head_Info(pHeadInfo, &pBuf[offset]);
+                        memcpy(&pFarmFrame->dosWriteRefreshCountByHead, pHeadInfo, sizeof(*pHeadInfo));
+                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                        delete pHeadInfo;  
+                    }
                     break;
-                case DVGA_SKIP_WRITE_DETECT_BY_HEAD:
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->dvgaSkipWriteDetectByHead, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                    memset(pHeadInfo, 0, sizeof(*pHeadInfo));
+                case DVGA_SKIP_WRITE_DETECT_BY_HEAD:     
+                    {
+                        sHeadInformation *pHeadInfo = new sHeadInformation();
+                        get_Head_Info(pHeadInfo, &pBuf[offset]);
+                        memcpy(&pFarmFrame->dvgaSkipWriteDetectByHead, pHeadInfo, sizeof(*pHeadInfo));
+                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter)); 
+                        delete pHeadInfo;  
+                    }
                     break;
-                case RVGA_SKIP_WRITE_DETECT_BY_HEAD:
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->rvgaSkipWriteDetectByHead, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                    memset(pHeadInfo, 0, sizeof(*pHeadInfo));
+                case RVGA_SKIP_WRITE_DETECT_BY_HEAD:     
+                    {
+                        sHeadInformation *pHeadInfo = new sHeadInformation();
+                        get_Head_Info(pHeadInfo, &pBuf[offset]);
+                        memcpy(&pFarmFrame->rvgaSkipWriteDetectByHead, pHeadInfo, sizeof(*pHeadInfo));
+                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter)); 
+                        delete pHeadInfo;  
+                    }
                     break;        
-                case FVGA_SKIP_WRITE_DETECT_BY_HEAD:
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->fvgaSkipWriteDetectByHead, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                    memset(pHeadInfo, 0, sizeof(*pHeadInfo));
+                case FVGA_SKIP_WRITE_DETECT_BY_HEAD:     
+                    {
+                        sHeadInformation *pHeadInfo = new sHeadInformation();
+                        get_Head_Info(pHeadInfo, &pBuf[offset]);
+                        memcpy(&pFarmFrame->fvgaSkipWriteDetectByHead, pHeadInfo, sizeof(*pHeadInfo));
+                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                        delete pHeadInfo;  
+                    }
                     break;
-                case SKIP_WRITE_DETECT_THRESHOLD_EXCEEDED_COUNT_BY_HEAD:
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->skipWriteDectedThresholdExceededByHead, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                    memset(pHeadInfo, 0, sizeof(*pHeadInfo));
+                case SKIP_WRITE_DETECT_THRESHOLD_EXCEEDED_COUNT_BY_HEAD:     
+                    {
+                        sHeadInformation *pHeadInfo = new sHeadInformation();
+                        get_Head_Info(pHeadInfo, &pBuf[offset]);
+                        memcpy(&pFarmFrame->skipWriteDectedThresholdExceededByHead, pHeadInfo, sizeof(*pHeadInfo));
+                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                        delete pHeadInfo;  
+                    }
                     break;
-                case ACFF_SINE_1X_VALUE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD:
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->acffSine1xValueByHead, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                    memset(pHeadInfo, 0, sizeof(*pHeadInfo));
+                case ACFF_SINE_1X_VALUE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD:     
+                    {
+                        sHeadInformation *pHeadInfo = new sHeadInformation(); 
+                        get_Head_Info(pHeadInfo, &pBuf[offset]);
+                        memcpy(&pFarmFrame->acffSine1xValueByHead, pHeadInfo, sizeof(*pHeadInfo));
+                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                        delete pHeadInfo;  
+                    }
                     break;
-                case ACFF_COSINE_1X_VALUE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD:
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->acffCosine1xValueByHead, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                    memset(pHeadInfo, 0, sizeof(*pHeadInfo));
+                case ACFF_COSINE_1X_VALUE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD:     
+                    {
+                        sHeadInformation *pHeadInfo = new sHeadInformation();
+                        get_Head_Info(pHeadInfo, &pBuf[offset]);
+                        memcpy(&pFarmFrame->acffCosine1xValueByHead, pHeadInfo, sizeof(*pHeadInfo));
+                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                        delete pHeadInfo;  
+                    }
                     break;
-                case PZT_CALIBRATION_VALUE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD:
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->pztCalibrationValueByHead, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                    memset(pHeadInfo, 0, sizeof(*pHeadInfo));
+                case PZT_CALIBRATION_VALUE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD:     
+                    {
+                        sHeadInformation *pHeadInfo = new sHeadInformation();
+                        get_Head_Info(pHeadInfo, &pBuf[offset]);
+                        memcpy(&pFarmFrame->pztCalibrationValueByHead, pHeadInfo, sizeof(*pHeadInfo));
+                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                        delete pHeadInfo;  
+                    }
                     break;
-                case MR_HEAD_RESISTANCE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD:
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->mrHeadResistanceByHead, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                    memset(pHeadInfo, 0, sizeof(*pHeadInfo));
+                case MR_HEAD_RESISTANCE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD:     
+                    {
+                        sHeadInformation *pHeadInfo = new sHeadInformation(); 
+                        get_Head_Info(pHeadInfo, &pBuf[offset]);
+                        memcpy(&pFarmFrame->mrHeadResistanceByHead, pHeadInfo, sizeof(*pHeadInfo));
+                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                        delete pHeadInfo;  
+                    }
                     break;
-                case NUMBER_OF_TMD_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD:
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->numberOfTMDByHead, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                    memset(pHeadInfo, 0, sizeof(*pHeadInfo));
+                case NUMBER_OF_TMD_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD:  
+                    {
+                        sHeadInformation *pHeadInfo = new sHeadInformation();
+                        get_Head_Info(pHeadInfo, &pBuf[offset]);
+                        memcpy(&pFarmFrame->numberOfTMDByHead, pHeadInfo, sizeof(*pHeadInfo));
+                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                        delete pHeadInfo;  
+                    }
                     break;
-                case VELOCITY_OBSERVER_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD:
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->velocityObserverByHead, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                    memset(pHeadInfo, 0, sizeof(*pHeadInfo));
+                case VELOCITY_OBSERVER_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD:     
+                    {
+                        sHeadInformation *pHeadInfo = new sHeadInformation();
+                        get_Head_Info(pHeadInfo, &pBuf[offset]);
+                        memcpy(&pFarmFrame->velocityObserverByHead, pHeadInfo, sizeof(*pHeadInfo));
+                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                        delete pHeadInfo;  
+                    }
                     break;
-                case NUMBER_OF_VELOCITY_OBSERVER_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD:
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->numberOfVelocityObservedByHead, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                    memset(pHeadInfo, 0, sizeof(*pHeadInfo));
+                case NUMBER_OF_VELOCITY_OBSERVER_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD:     
+                    {
+                        sHeadInformation *pHeadInfo = new sHeadInformation();
+                        get_Head_Info(pHeadInfo, &pBuf[offset]);
+                        memcpy(&pFarmFrame->numberOfVelocityObservedByHead, pHeadInfo, sizeof(*pHeadInfo));
+                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                        delete pHeadInfo;  
+                    }
                     break;
-                case CURRENT_H2SAT_PERCENTAGE_OF_CODEWORDS_AT_ITERATION_LEVEL_BY_HEAD_AVERAGED_ACROSS_TEST_ZONES:
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->currentH2SATPercentagedbyHead, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                    memset(pHeadInfo, 0, sizeof(*pHeadInfo));
+                case CURRENT_H2SAT_PERCENTAGE_OF_CODEWORDS_AT_ITERATION_LEVEL_BY_HEAD_AVERAGED_ACROSS_TEST_ZONES:  
+                    {
+                        sHeadInformation *pHeadInfo = new sHeadInformation();
+                        get_Head_Info(pHeadInfo, &pBuf[offset]);
+                        memcpy(&pFarmFrame->currentH2SATPercentagedbyHead, pHeadInfo, sizeof(*pHeadInfo));
+                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                        delete pHeadInfo;  
+                    }
                     break;
-                case CURRENT_H2SAT_AMPLITUDE_BY_HEAD_AVERAGED_ACROSS_TEST_ZONES:
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->currentH2STAmplituedByHead, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                    memset(pHeadInfo, 0, sizeof(*pHeadInfo));
+                case CURRENT_H2SAT_AMPLITUDE_BY_HEAD_AVERAGED_ACROSS_TEST_ZONES:     
+                    {
+                        sHeadInformation *pHeadInfo = new sHeadInformation(); 
+                        get_Head_Info(pHeadInfo, &pBuf[offset]);
+                        memcpy(&pFarmFrame->currentH2STAmplituedByHead, pHeadInfo, sizeof(*pHeadInfo));
+                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                        delete pHeadInfo;  
+                    }
                     break;
-                case CURRENT_H2SAT_ASYMMETRY_BY_HEAD_AVERAGED_ACROSS_TEST_ZONES:
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->currentH2STAsymmetryByHead, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                    memset(pHeadInfo, 0, sizeof(*pHeadInfo));
+                case CURRENT_H2SAT_ASYMMETRY_BY_HEAD_AVERAGED_ACROSS_TEST_ZONES:     
+                    {
+                        sHeadInformation *pHeadInfo = new sHeadInformation();
+                        get_Head_Info(pHeadInfo, &pBuf[offset]);
+                        memcpy(&pFarmFrame->currentH2STAsymmetryByHead, pHeadInfo, sizeof(*pHeadInfo));
+                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                        delete pHeadInfo;  
+                    }
                     break;
-                case NUMBER_OF_RESIDENT_GLIST_ENTRIES:
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->ResidentGlistEntries, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                    memset(pHeadInfo, 0, sizeof(*pHeadInfo));
+                case NUMBER_OF_RESIDENT_GLIST_ENTRIES:     
+                    {
+                        sHeadInformation *pHeadInfo = new sHeadInformation();
+                        get_Head_Info(pHeadInfo, &pBuf[offset]);
+                        memcpy(&pFarmFrame->ResidentGlistEntries, pHeadInfo, sizeof(*pHeadInfo));
+                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                        delete pHeadInfo;  
+                    }
                     break;
-                case     NUMBER_OF_PENDING_ENTRIES:
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->ResidentPlistEntries, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                    memset(pHeadInfo, 0, sizeof(*pHeadInfo));
+                case     NUMBER_OF_PENDING_ENTRIES:     
+                    {
+                        sHeadInformation *pHeadInfo = new sHeadInformation();
+                        get_Head_Info(pHeadInfo, &pBuf[offset]);
+                        memcpy(&pFarmFrame->ResidentPlistEntries, pHeadInfo, sizeof(*pHeadInfo));
+                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter)); 
+                        delete pHeadInfo;  
+                    }
                     break;
-                case    DOS_OUGHT_TO_SCAN_COUNT_PER_HEAD:
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->DOSOoughtToScan, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                    memset(pHeadInfo, 0, sizeof(*pHeadInfo));
+                case    DOS_OUGHT_TO_SCAN_COUNT_PER_HEAD:     
+                    {
+                        sHeadInformation *pHeadInfo = new sHeadInformation();
+                        get_Head_Info(pHeadInfo, &pBuf[offset]);
+                        memcpy(&pFarmFrame->DOSOoughtToScan, pHeadInfo, sizeof(*pHeadInfo));
+                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                        delete pHeadInfo;  
+                    }
                     break;
-                case   DOS_NEED_TO_SCAN_COUNT_PER_HEAD:
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->DOSNeedToScan, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                    memset(pHeadInfo, 0, sizeof(*pHeadInfo));
+                case   DOS_NEED_TO_SCAN_COUNT_PER_HEAD:     
+                    {
+                        sHeadInformation *pHeadInfo = new sHeadInformation(); 
+                        get_Head_Info(pHeadInfo, &pBuf[offset]);
+                        memcpy(&pFarmFrame->DOSNeedToScan, pHeadInfo, sizeof(*pHeadInfo));
+                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                        delete pHeadInfo;  
+                    }
                     break;
-                case   DOS_WRITE_FAULT_SCAN_COUNT_PER_HEAD:
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->DOSWriteFaultScan, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                    memset(pHeadInfo, 0, sizeof(*pHeadInfo));
+                case   DOS_WRITE_FAULT_SCAN_COUNT_PER_HEAD:     
+                    {
+                        sHeadInformation *pHeadInfo = new sHeadInformation();
+                        get_Head_Info(pHeadInfo, &pBuf[offset]);
+                        memcpy(&pFarmFrame->DOSWriteFaultScan, pHeadInfo, sizeof(*pHeadInfo));
+                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                        delete pHeadInfo;  
+                    }
                     break;
-                case  WRITE_POWERON_HOURS_FROM_MOST_RECENT_SMART:
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->writePowerOnHours, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                    memset(pHeadInfo, 0, sizeof(*pHeadInfo));
+                case  WRITE_POWERON_HOURS_FROM_MOST_RECENT_SMART:     
+                    {
+                        sHeadInformation *pHeadInfo = new sHeadInformation();
+                        get_Head_Info(pHeadInfo, &pBuf[offset]);
+                        memcpy(&pFarmFrame->writePowerOnHours, pHeadInfo, sizeof(*pHeadInfo));
+                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                        delete pHeadInfo;  
+                    }
                     break;
-				case DOS_WRITE_COUNT_THRESHOLD_PER_HEAD:  
-					get_Head_Info(pHeadInfo, &pBuf[offset]);
-					memcpy(&pFarmFrame->dosWriteCount, pHeadInfo, sizeof(*pHeadInfo));
-					offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-					memset(pHeadInfo, 0, sizeof(*pHeadInfo));
-					break;
-                case CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_0:
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->currentH2STTrimmedbyHeadZone0, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                    memset(pHeadInfo, 0, sizeof(*pHeadInfo));
+                case DOS_WRITE_COUNT_THRESHOLD_PER_HEAD:     
+                    {
+                         sHeadInformation *pHeadInfo = new sHeadInformation();
+                         get_Head_Info(pHeadInfo, &pBuf[offset]);
+                         memcpy(&pFarmFrame->dosWriteCount, pHeadInfo, sizeof(*pHeadInfo));
+                         offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                         delete pHeadInfo; 
+                    }
                     break;
-
-                case CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_1:
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->currentH2STTrimmedbyHeadZone1, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                    memset(pHeadInfo, 0, sizeof(*pHeadInfo));
+                case CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_0:    
+                    {
+                        sHeadInformation *pHeadInfo = new sHeadInformation();
+                        get_Head_Info(pHeadInfo, &pBuf[offset]);
+                        memcpy(&pFarmFrame->currentH2STTrimmedbyHeadZone0, pHeadInfo, sizeof(*pHeadInfo));
+                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                        delete pHeadInfo;  
+                    }
                     break;
-                case CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_2:
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->currentH2STTrimmedbyHeadZone2, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                    memset(pHeadInfo, 0, sizeof(*pHeadInfo));
+                case CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_1:     
+                    {
+                        sHeadInformation *pHeadInfo = new sHeadInformation();
+                        get_Head_Info(pHeadInfo, &pBuf[offset]);
+                        memcpy(&pFarmFrame->currentH2STTrimmedbyHeadZone1, pHeadInfo, sizeof(*pHeadInfo));
+                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                        delete pHeadInfo;  
+                    }
                     break;
-                case CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_0:
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->currentH2STIterationsByHeadZone0, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                    memset(pHeadInfo, 0, sizeof(*pHeadInfo));
+                case CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_2:     
+                    {
+                        sHeadInformation *pHeadInfo = new sHeadInformation();
+                        get_Head_Info(pHeadInfo, &pBuf[offset]);
+                        memcpy(&pFarmFrame->currentH2STTrimmedbyHeadZone2, pHeadInfo, sizeof(*pHeadInfo));
+                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter)); 
+                        delete pHeadInfo;  
+                    }
                     break;
-                case CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_1:
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->currentH2STIterationsByHeadZone1, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                    memset(pHeadInfo, 0, sizeof(*pHeadInfo));
+                case CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_0:     
+                    {
+                        sHeadInformation *pHeadInfo = new sHeadInformation();
+                        get_Head_Info(pHeadInfo, &pBuf[offset]);
+                        memcpy(&pFarmFrame->currentH2STIterationsByHeadZone0, pHeadInfo, sizeof(*pHeadInfo));
+                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                        delete pHeadInfo;  
+                    }
                     break;
-                case CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_2:
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->currentH2STIterationsByHeadZone2, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                    memset(pHeadInfo, 0, sizeof(*pHeadInfo));
+                case CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_1:  
+                    {
+                        sHeadInformation *pHeadInfo = new sHeadInformation();
+                        get_Head_Info(pHeadInfo, &pBuf[offset]);
+                        memcpy(&pFarmFrame->currentH2STIterationsByHeadZone1, pHeadInfo, sizeof(*pHeadInfo));
+                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                        delete pHeadInfo;  
+                    }
                     break;
-                case APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_OUTER:
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->appliedFlyHeightByHeadOuter, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                    memset(pHeadInfo, 0, sizeof(*pHeadInfo));
+                case CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_2:     
+                    {
+                        sHeadInformation *pHeadInfo = new sHeadInformation(); 
+                        get_Head_Info(pHeadInfo, &pBuf[offset]);
+                        memcpy(&pFarmFrame->currentH2STIterationsByHeadZone2, pHeadInfo, sizeof(*pHeadInfo));
+                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                        delete pHeadInfo;  
+                    }
                     break;
-                case APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_INNER:
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->appliedFlyHeightByHeadInner, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                    memset(pHeadInfo, 0, sizeof(*pHeadInfo));
+                case APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_OUTER:   
+                    {
+                        sHeadInformation *pHeadInfo = new sHeadInformation();
+                        get_Head_Info(pHeadInfo, &pBuf[offset]);
+                        memcpy(&pFarmFrame->appliedFlyHeightByHeadOuter, pHeadInfo, sizeof(*pHeadInfo));
+                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                        delete pHeadInfo;  
+                    }
                     break;
-                case APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_MIDDLE:
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->appliedFlyHeightByHeadMiddle, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                    memset(pHeadInfo, 0, sizeof(*pHeadInfo));
+                case APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_INNER:    
+                    {
+                        sHeadInformation *pHeadInfo = new sHeadInformation();
+                        get_Head_Info(pHeadInfo, &pBuf[offset]);
+                        memcpy(&pFarmFrame->appliedFlyHeightByHeadInner, pHeadInfo, sizeof(*pHeadInfo));
+                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                        delete pHeadInfo;
+                    }
                     break;
+                case APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_MIDDLE:     
+                    {
+                        sHeadInformation *pHeadInfo = new sHeadInformation();
+                        get_Head_Info(pHeadInfo, &pBuf[offset]);
+                        memcpy(&pFarmFrame->appliedFlyHeightByHeadMiddle, pHeadInfo, sizeof(*pHeadInfo));
+                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                        delete pHeadInfo; 
+                    }
+                    break; 
                 default:
                     offset += m_logSize;
                     break;
-                }
-                
+               }  
             }
             vFarmFrame.push_back(*pFarmFrame);                                   // push the data to the vector
-			delete pHeadInfo;
-			delete pInfo;
-            pFarmFrame->vFramesFound.clear();                                                 // clear the vector for the next copy
-			
         }
-		
-        return IN_PROGRESS;
+	    delete pFarmFrame;	
+        return SUCCESS;
     }
-	delete pFarmFrame;
+    delete pFarmFrame;
     return FAILURE;
 }
 
@@ -1003,10 +1156,10 @@ eReturnValues CSCSI_Farm_Log::print_Header(JSONNODE *masterData)
 {
 	uint32_t page = 0;
     std::string myStr = "";
-    JSONNODE *FARMheader = json_new(JSON_NODE);
+    JSONNODE *pageInfo = json_new(JSON_NODE);
     //sScsiFarmHeader *header = (sScsiFarmHeader *)&pBuf[4];                                                                // pointer to the header to get the signature
 #if defined( _DEBUG)
-    printf("\tLog Signature   =  0x%" PRIX64" \n", vFarmFrame[page].farmHeader.farmHeader.signature & 0x00FFFFFFFFFFFFFFLL);                                  //!< Log Signature = 0x00004641524D4552
+    printf("\tLog Signature   =  0x%" PRIX64" \n", vFarmFrame[page].farmHeader.farmHeader.signature );                                  //!< Log Signature = 0x00004641524D4552
     printf("\tMajor Revision =   %" PRIu64"  \n", vFarmFrame[page].farmHeader.farmHeader.majorRev & 0x00FFFFFFFFFFFFFFLL);                                    //!< Log Major rev
     printf("\tMinor Revision =   %" PRIu64"  \n", vFarmFrame[page].farmHeader.farmHeader.minorRev & 0x00FFFFFFFFFFFFFFLL);                                    //!< minor rev 
     printf("\tPages Supported =   %" PRIu64"  \n", vFarmFrame[page].farmHeader.farmHeader.pagesSupported & 0x00FFFFFFFFFFFFFFLL);                             //!< number of pages supported
@@ -1015,9 +1168,7 @@ eReturnValues CSCSI_Farm_Log::print_Header(JSONNODE *masterData)
     printf("\tHeads Supported =   %" PRIu64"  \n", vFarmFrame[page].farmHeader.farmHeader.headsSupported & 0x00FFFFFFFFFFFFFFLL);                             //!< Maximum Drive Heads Supported
     printf("\tNumber of Copies=   %" PRIu64"  \n", vFarmFrame[page].farmHeader.farmHeader.copies & 0x00FFFFFFFFFFFFFLL);                                      //!< Number of Historical Copies
 #endif
-    json_set_name(FARMheader, "FARM Log");
-    JSONNODE *pageInfo = json_new(JSON_NODE);
-    json_set_name(pageInfo, "Header");
+    json_set_name(pageInfo, "FARM Log");
 
     snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIX64"", check_Status_Strip_Status(vFarmFrame[page].farmHeader.farmHeader.signature));
 	json_push_back(pageInfo, json_new_a("Log Signature", (char*)myStr.c_str() ));
@@ -1029,8 +1180,7 @@ eReturnValues CSCSI_Farm_Log::print_Header(JSONNODE *masterData)
 	json_push_back(pageInfo, json_new_i("Heads Supported", static_cast<uint32_t>(check_Status_Strip_Status(vFarmFrame[page].farmHeader.farmHeader.headsSupported))));
 	json_push_back(pageInfo, json_new_i("Number of Copies", static_cast<uint32_t>(check_Status_Strip_Status(vFarmFrame[page].farmHeader.farmHeader.copies ))));
 
-    json_push_back(FARMheader, pageInfo);
-    json_push_back(masterData, FARMheader);
+    json_push_back(masterData, pageInfo);
 
     return SUCCESS;
 }
@@ -1055,10 +1205,17 @@ eReturnValues CSCSI_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint
 {
     std::string myStr = " ";
     myStr.resize(BASIC);
-    JSONNODE *driveInfo = json_new(JSON_NODE);
+    JSONNODE *pageInfo = json_new(JSON_NODE);
 
 #if defined( _DEBUG)
-    printf("\nDrive Information From Farm Log copy %d:", page);
+    if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
+    {
+        printf("\nDrive Informatio From FACTORY page\n");
+    }
+    else
+    {
+        printf("\nDrive Information From Farm Log copy %d:\n", page);
+    }
     printf("\tDevice Interface:                         %s         \n", vFarmFrame[page].identStringInfo.deviceInterface.c_str());
     printf("\tDevice Capcaity in sectors:               %" PRId64" \n", vFarmFrame[page].driveInfo.deviceCapacity & 0x00FFFFFFFFFFFFFFLL);
     printf("\tPhysical Sector size:                     %" PRIX64" \n", vFarmFrame[page].driveInfo.psecSize & 0x00FFFFFFFFFFFFFFLL);									//!< Physical Sector Size in Bytes
@@ -1086,10 +1243,15 @@ eReturnValues CSCSI_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint
     printf("\tTime of latest frame (milliseconds):      %" PRIu64" \n", vFarmFrame[page].driveInfo.lastTimeStamp & 0x00FFFFFFFFFFFFFFLL);								//!< Timestamp of latest SMART Summary Frame in Power-On Hours Milliseconds1
 
 #endif
-    snprintf((char*)myStr.c_str(), BASIC, "Drive Information From Farm Log copy %" PRId32"", page);
-    json_set_name(driveInfo, (char*)myStr.c_str());
-    JSONNODE *pageInfo = json_new(JSON_NODE);
-    json_set_name(pageInfo, "Drive Information");
+    if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
+    {
+        snprintf((char*)myStr.c_str(), BASIC, "Drive Informatio From FACTORY page");
+    }
+    else
+    {
+        snprintf((char*)myStr.c_str(), BASIC, "Drive Information From Farm Log copy %" PRId32"", page);
+    }
+    json_set_name(pageInfo, (char*)myStr.c_str());
 
 	snprintf((char*)myStr.c_str(), BASIC, "%s", vFarmFrame[page].identStringInfo.serialNumber.c_str());
 	json_push_back(pageInfo, json_new_a("Serial Number", (char*)myStr.c_str()));
@@ -1121,8 +1283,7 @@ eReturnValues CSCSI_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint
 	set_json_64_bit_With_Status(pageInfo, "First Time Stamp (Milliseconds)",vFarmFrame[page].driveInfo.firstTimeStamp, false, m_showStatusBits);					//!< Timestamp of first SMART Summary Frame in Power-On Hours Milliseconds
     set_json_64_bit_With_Status(pageInfo, "Latest Time Stamp (Milliseconds)", vFarmFrame[page].driveInfo.lastTimeStamp, false, m_showStatusBits);					//!< Timestamp of latest SMART Summary Frame in Power-On Hours Milliseconds
 
-    json_push_back(driveInfo, pageInfo);
-    json_push_back(masterData, driveInfo);
+    json_push_back(masterData, pageInfo);
     return SUCCESS;
 }
 
@@ -1145,25 +1306,36 @@ eReturnValues CSCSI_Farm_Log::print_WorkLoad(JSONNODE *masterData, uint32_t page
 {
     std::string myStr = " ";
     myStr.resize(BASIC);
-    JSONNODE *workLoad = json_new(JSON_NODE);
+    JSONNODE *pageInfo = json_new(JSON_NODE);
 
 #if defined( _DEBUG)
-    printf("\nWork Load From Farm Log copy %d:", page);
-    printf("\tRated Workload Percentaged:               %" PRIu64" \n", vFarmFrame[page].workLoadPage.workLoad.workloadPercentage & 0x00FFFFFFFFFFFFFFLL);         //!< rated Workload Percentage
-	printf("\tTotal Number of Read Commands:            %" PRIu64" \n", vFarmFrame[page].workLoadPage.workLoad.totalReadCommands & 0x00FFFFFFFFFFFFFFLL);          //!< Total Number of Read Commands
-	printf("\tTotal Number of Write Commands:           %" PRIu64" \n", vFarmFrame[page].workLoadPage.workLoad.totalWriteCommands & 0x00FFFFFFFFFFFFFFLL);         //!< Total Number of Write Commands
-	printf("\tTotal Number of Random Read Cmds:         %" PRIu64" \n", vFarmFrame[page].workLoadPage.workLoad.totalRandomReads & 0x00FFFFFFFFFFFFFFLL);           //!< Total Number of Random Read Commands
-	printf("\tTotal Number of Random Write Cmds:        %" PRIu64" \n", vFarmFrame[page].workLoadPage.workLoad.totalRandomWrites & 0x00FFFFFFFFFFFFFFLL);          //!< Total Number of Random Write Commands
-    printf("\tTotal Number of Other Commands:           %" PRIu64" \n", vFarmFrame[page].workLoadPage.workLoad.totalNumberofOtherCMDS & 0x00FFFFFFFFFFFFFFLL);     //!< Total Number Of Other Commands
-    printf("\tLogical Sectors Written:                  %" PRIu64" \n", vFarmFrame[page].workLoadPage.workLoad.logicalSecWritten & 0x00FFFFFFFFFFFFFFLL);          //!< Logical Sectors Written
-    printf("\tLogical Sectors Read:                     %" PRIu64" \n", vFarmFrame[page].workLoadPage.workLoad.logicalSecRead & 0x00FFFFFFFFFFFFFFLL);             //!< Logical Sectors Read
+    if (vFarmFrame[page].workLoadPage.workLoad.copyNumber == FACTORYCOPY)
+    {
+        printf("\nWork Load From FACTORY page");
+    }
+    else
+    {
+        printf("\nWork Load From Farm Log copy %d: \n", page);
+    }
+    printf("\tRated Workload Percentaged:               %lu  \n", vFarmFrame[page].workLoadPage.workLoad.workloadPercentage & 0x00FFFFFFFFFFFFFFLL);         //!< rated Workload Percentage
+	printf("\tTotal Number of Read Commands:            %lu  \n", vFarmFrame[page].workLoadPage.workLoad.totalReadCommands & 0x00FFFFFFFFFFFFFFLL);          //!< Total Number of Read Commands
+	printf("\tTotal Number of Write Commands:           %lu  \n", vFarmFrame[page].workLoadPage.workLoad.totalWriteCommands & 0x00FFFFFFFFFFFFFFLL);         //!< Total Number of Write Commands
+	printf("\tTotal Number of Random Read Cmds:         %lu \n", vFarmFrame[page].workLoadPage.workLoad.totalRandomReads & 0x00FFFFFFFFFFFFFFLL);           //!< Total Number of Random Read Commands
+	printf("\tTotal Number of Random Write Cmds:        %lu  \n", vFarmFrame[page].workLoadPage.workLoad.totalRandomWrites & 0x00FFFFFFFFFFFFFFLL);          //!< Total Number of Random Write Commands
+    printf("\tTotal Number of Other Commands:           %lu  \n", vFarmFrame[page].workLoadPage.workLoad.totalNumberofOtherCMDS & 0x00FFFFFFFFFFFFFFLL);     //!< Total Number Of Other Commands
+    printf("\tLogical Sectors Written:                  %lu  \n", vFarmFrame[page].workLoadPage.workLoad.logicalSecWritten & 0x00FFFFFFFFFFFFFFLL);          //!< Logical Sectors Written
+    printf("\tLogical Sectors Read:                     %lu \n", vFarmFrame[page].workLoadPage.workLoad.logicalSecRead & 0x00FFFFFFFFFFFFFFLL);             //!< Logical Sectors Read
     
 #endif
-
-    snprintf((char*)myStr.c_str(), BASIC, "Work Load From Farm Log copy %" PRId32"", page);
-    json_set_name(workLoad, (char*)myStr.c_str());
-    JSONNODE *pageInfo = json_new(JSON_NODE);
-    json_set_name(pageInfo, "Work Load");
+    if (vFarmFrame[page].workLoadPage.workLoad.copyNumber == FACTORYCOPY)
+    {
+        snprintf((char*)myStr.c_str(), BASIC, "Work Load From FACTORY page");
+    }
+    else
+    {
+        snprintf((char*)myStr.c_str(), BASIC, "Work Load From Farm Log copy %" PRId32"", page);
+    }
+    json_set_name(pageInfo, (char*)myStr.c_str());
     set_json_64_bit_With_Status(pageInfo, "Rated Workload Percentaged",vFarmFrame[page].workLoadPage.workLoad.workloadPercentage, false, m_showStatusBits);				//!< rated Workload Percentage
 	set_json_64_bit_With_Status(pageInfo, "Total Number of Read Commands", vFarmFrame[page].workLoadPage.workLoad.totalReadCommands, false, m_showStatusBits);			//!< Total Number of Read Commands
 	set_json_64_bit_With_Status(pageInfo, "Total Number of Write Commands", vFarmFrame[page].workLoadPage.workLoad.totalWriteCommands, false, m_showStatusBits);			//!< Total Number of Write Commands
@@ -1175,8 +1347,7 @@ eReturnValues CSCSI_Farm_Log::print_WorkLoad(JSONNODE *masterData, uint32_t page
     snprintf((char*)myStr.c_str(), BASIC, "%llu", vFarmFrame[page].workLoadPage.workLoad.logicalSecRead & 0x00FFFFFFFFFFFFFFLL);
     set_json_string_With_Status(pageInfo, "Logical Sectors Read", (char*)myStr.c_str(), vFarmFrame[page].workLoadPage.workLoad.logicalSecRead, m_showStatusBits);						//!< Logical Sectors Read
     
-    json_push_back(workLoad, pageInfo);
-    json_push_back(masterData, workLoad);
+    json_push_back(masterData, pageInfo);
 
     return SUCCESS;
 }
@@ -1200,10 +1371,17 @@ eReturnValues CSCSI_Farm_Log::print_Error_Information(JSONNODE *masterData, uint
 {
     std::string myStr = " ";
     myStr.resize(BASIC);
-    JSONNODE *errorPage = json_new(JSON_NODE);
+    JSONNODE *pageInfo = json_new(JSON_NODE);
 
 #if defined( _DEBUG)
-    printf("\nError Information Log From Farm Log copy %d:", page);
+    if (vFarmFrame[page].workLoadPage.workLoad.copyNumber == FACTORYCOPY)
+    {
+        printf("\nError Information From FACTORY page \n");
+    }
+    else
+    {
+        printf("\nError Information Log From Farm Log copy %d: \n", page);
+    }
     printf("\tUnrecoverable Read Errors:                %llu \n", vFarmFrame[page].errorPage.totalReadECC & 0x00FFFFFFFFFFFFFFLL);				//!< Number of Unrecoverable Read Errors
     printf("\tUnrecoverable Write Errors:               %llu \n", vFarmFrame[page].errorPage.totalWriteECC & 0x00FFFFFFFFFFFFFFLL);				//!< Number of Unrecoverable Write Errors
     printf("\tNumber of Reallocated Sectors:            %llu \n", vFarmFrame[page].errorPage.totalReallocations & 0x00FFFFFFFFFFFFFFLL);			//!< Number of Reallocated Sectors
@@ -1220,14 +1398,20 @@ eReturnValues CSCSI_Farm_Log::print_Error_Information(JSONNODE *masterData, uint
     printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.reserved7 & 0x00FFFFFFFFFFFFFFLL);					//!< Reserved
     printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.reserved8 & 0x00FFFFFFFFFFFFFFLL);					//!< Reserved
     printf("\tTotal Flash LED (Assert) Events:          %llu \n", vFarmFrame[page].errorPage.totalFlashLED & 0x00FFFFFFFFFFFFFFLL);				//!< Total Flash LED (Assert) Events
-	printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.reserved9 & 0x00FFFFFFFFFFFFFFLL);					//!< Reserved
-	printf("\tFRU code if smart trip from most recent SMART Frame:%llu \n", vFarmFrame[page].errorPage.FRUCode & 0x00FFFFFFFFFFFFFFLL);
+    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.reserved9 & 0x00FFFFFFFFFFFFFFLL);					//!< Reserved
+    printf("\tFRU code if smart trip from most recent SMART Frame:%llu \n", vFarmFrame[page].errorPage.FRUCode & 0x00FFFFFFFFFFFFFFLL);
+    printf("\tSuper Parity on the Fly Recovery          %llu \n", vFarmFrame[page].errorPage.parity & 0x00FFFFFFFFFFFFFFLL);
 #endif
+    if (vFarmFrame[page].errorPage.copyNumber == FACTORYCOPY)
+    {
+        snprintf((char*)myStr.c_str(), BASIC, "Error Information From FACTORY page");
+    }
+    else
+    {
+        snprintf((char*)myStr.c_str(), BASIC, "Error Information Log From Farm Log copy %" PRId32"", page);
+    }
+    json_set_name(pageInfo, (char*)myStr.c_str());
 
-    snprintf((char*)myStr.c_str(), BASIC, "Error Information Log From Farm Log copy %" PRId32"", page);
-    json_set_name(errorPage, (char*)myStr.c_str());
-    JSONNODE *pageInfo = json_new(JSON_NODE);
-    json_set_name(pageInfo, "Error Information");
     set_json_64_bit_With_Status(pageInfo, "Unrecoverable Read Errors", vFarmFrame[page].errorPage.totalReadECC, false, m_showStatusBits);							//!< Number of Unrecoverable Read Errors
     set_json_64_bit_With_Status(pageInfo, "Unrecoverable Write Errors", vFarmFrame[page].errorPage.totalWriteECC, false, m_showStatusBits);							//!< Number of Unrecoverable Write Errors
     set_json_64_bit_With_Status(pageInfo, "Number of Reallocated Sectors",vFarmFrame[page].errorPage.totalReallocations, false, m_showStatusBits);					//!< Number of Reallocated Sectors
@@ -1235,10 +1419,13 @@ eReturnValues CSCSI_Farm_Log::print_Error_Information(JSONNODE *masterData, uint
     set_json_64_bit_With_Status(pageInfo, "Number of Reallocated Candidate Sectors",vFarmFrame[page].errorPage.totalReallocatedCanidates, false, m_showStatusBits); //!< Number of Reallocated Candidate Sectors
     set_json_64_bit_With_Status(pageInfo, "Number of IOEDC Errors (Raw)",vFarmFrame[page].errorPage.attrIOEDCErrors, false, m_showStatusBits);						//!< Number of IOEDC Errors (SMART Attribute 184 Raw)
     set_json_64_bit_With_Status(pageInfo, "Total Flash LED (Assert) Events",vFarmFrame[page].errorPage.totalFlashLED, false, m_showStatusBits);						//!< Total Flash LED (Assert) Events
-	set_json_64_bit_With_Status(pageInfo, "FRU code if smart trip from most recent SMART Frame", vFarmFrame[page].errorPage.FRUCode, false, m_showStatusBits);		//!< FRU code if smart trip from most recent SMART Frame
-
-    json_push_back(errorPage, pageInfo);
-    json_push_back(masterData, errorPage);
+    set_json_64_bit_With_Status(pageInfo, "FRU code if smart trip from most recent SMART Frame", vFarmFrame[page].errorPage.FRUCode, false, m_showStatusBits);		//!< FRU code if smart trip from most recent SMART Frame
+    if (m_MajorRev > 3 && m_MinorRev > 2)
+    {
+        set_json_64_bit_With_Status(pageInfo, "Super Parity on the Fly Recovery", vFarmFrame[page].errorPage.parity, false, m_showStatusBits);                      //!< Super Parity on the Fly Recovery
+    }
+    
+    json_push_back(masterData, pageInfo);
 
     return SUCCESS;
 }
@@ -1262,14 +1449,21 @@ eReturnValues CSCSI_Farm_Log::print_Enviroment_Information(JSONNODE *masterData,
 {
     std::string myStr = " ";
     myStr.resize(BASIC);
-    JSONNODE *envPage = json_new(JSON_NODE);
+    JSONNODE *pageInfo = json_new(JSON_NODE);
 
 #if defined( _DEBUG)
-    printf("\nEnvironment Information From Farm Log copy %d:", page);
+    if (vFarmFrame[page].environmentPage.copyNumber == FACTORYCOPY)
+    {
+        printf( "Environment Information From FACTORY page \n");
+    }
+    else
+    {
+        printf("\nEnvironment Information From Farm Log copy %d: \n", page);
+    }
 
-    printf("\tCurrent Temperature:                      %" PRIu64" \n", vFarmFrame[page].environmentPage.curentTemp & 0x00FFFFFFFFFFFFFFLL);			//!< Current Temperature in Celsius
-    printf("\tHighest Temperature:                      %" PRIu64" \n", vFarmFrame[page].environmentPage.highestTemp & 0x00FFFFFFFFFFFFFFLL);			//!< Highest Temperature in Celsius
-    printf("\tLowest Temperature:                       %" PRIu64" \n", vFarmFrame[page].environmentPage.lowestTemp & 0x00FFFFFFFFFFFFFFLL);			//!< Lowest Temperature
+    printf("\tCurrent Temperature:                      %0.02f     \n", (M_Word0(vFarmFrame[page].environmentPage.curentTemp)*.10));			        //!< Current Temperature in Celsius
+    printf("\tHighest Temperature:                      %0.02f     \n", (M_Word0(vFarmFrame[page].environmentPage.highestTemp)*.10));			        //!< Highest Temperature in Celsius
+    printf("\tLowest Temperature:                       %0.02f     \n", (M_Word0(vFarmFrame[page].environmentPage.lowestTemp)*.10));			        //!< Lowest Temperature
     printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved & 0x00FFFFFFFFFFFFFFLL);				//!< Reserved
     printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved1 & 0x00FFFFFFFFFFFFFFLL);				//!< Reserved
     printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved2 & 0x00FFFFFFFFFFFFFFLL);				//!< Reserved
@@ -1278,19 +1472,23 @@ eReturnValues CSCSI_Farm_Log::print_Enviroment_Information(JSONNODE *masterData,
     printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved5 & 0x00FFFFFFFFFFFFFFLL);				//!< Reserved
     printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved6 & 0x00FFFFFFFFFFFFFFLL);				//!< Reserved
     printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved7 & 0x00FFFFFFFFFFFFFFLL);				//!< Reserved
-    printf("\tSpecified Max Operating Temperature:      %" PRIu64" \n", vFarmFrame[page].environmentPage.maxTemp & 0x00FFFFFFFFFFFFFFLL);				//!< Specified Max Operating Temperature
-    printf("\tSpecified Min Operating Temperature:      %" PRIu64" \n", vFarmFrame[page].environmentPage.minTemp & 0x00FFFFFFFFFFFFFFLL);				//!< Specified Min Operating Temperature
+    printf("\tSpecified Max Operating Temperature:      %0.02f     \n", (M_Word0(vFarmFrame[page].environmentPage.maxTemp) * 1.00));				    //!< Specified Max Operating Temperature
+    printf("\tSpecified Min Operating Temperature:      %0.02f     \n", (M_Word0(vFarmFrame[page].environmentPage.minTemp) * 1.00));				    //!< Specified Min Operating Temperature
     printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved8 & 0x00FFFFFFFFFFFFFFLL);				//!< Reserved
-    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved9 & 0x00FFFFFFFFFFFFFFLL);				//!< Reserved
-    printf("\tCurrent Relative Humidity:                %" PRIu64" \n", vFarmFrame[page].environmentPage.humidity & 0x00FFFFFFFFFFFFFFLL);				//!< Current Relative Humidity (in units of .1%)
-    printf("\tHumidity Mixed Ratio:                     %" PRIu64" \n", ((vFarmFrame[page].environmentPage.humidityRatio & 0x00FFFFFFFFFFFFFFLL) / 8)); //!< Humidity Mixed Ratio multiplied by 8 (divide by 8 to get actual value)
-    printf("\tCurrent Motor Power:                      %" PRIu64" \n", vFarmFrame[page].environmentPage.currentMotorPower & 0x00FFFFFFFFFFFFFFLL);		//!< Current Motor Power, value from most recent SMART Summary Frame6
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved9 & 0x00FFFFFFFFFFFFFFLL);	            //!< Reserved
+    printf("\tCurrent Relative Humidity:                %" PRId32".%" PRId32"   \n", M_DoubleWord1(vFarmFrame[page].environmentPage.humidity & 0x00FFFFFFFFFFFFFFLL), M_DoubleWord0(vFarmFrame[page].environmentPage.humidity & 0x00FFFFFFFFFFFFFFLL));		//!< Current Relative Humidity (in units of .1%)
+    printf("\tHumidity Mixed Ratio:                     %0.02f     \n", ((vFarmFrame[page].environmentPage.humidityRatio & 0x00FFFFFFFFFFFFFFLL) / 8.0)); //!< Humidity Mixed Ratio multiplied by 8 (divide by 8 to get actual value)
+    printf("\tCurrent Motor Power:                      %" PRIu64" \n", (M_Word0(vFarmFrame[page].environmentPage.currentMotorPower)));		        //!< Current Motor Power, value from most recent SMART Summary Frame6
 #endif
-
-    snprintf((char*)myStr.c_str(), BASIC, "Environment Information From Farm Log copy %" PRId32"", page);
-    json_set_name(envPage, (char*)myStr.c_str());
-    JSONNODE *pageInfo = json_new(JSON_NODE);
-    json_set_name(pageInfo, "Environment");
+    if (vFarmFrame[page].environmentPage.copyNumber == FACTORYCOPY)
+    {
+        snprintf((char*)myStr.c_str(), BASIC, "Environment Information From FACTORY page");
+    }
+    else
+    {
+        snprintf((char*)myStr.c_str(), BASIC, "Environment Information From Farm Log copy %" PRId32"", page);
+    }
+    json_set_name(pageInfo, (char*)myStr.c_str());
 
 	snprintf((char*)myStr.c_str(), BASIC, "%0.02f", check_for_signed_int(M_Word0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.curentTemp)),48)*.10);							//!< Current Temperature in Celsius
 	set_json_string_With_Status(pageInfo, "Current Temperature (Celsius)", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.curentTemp, m_showStatusBits);
@@ -1306,10 +1504,10 @@ eReturnValues CSCSI_Farm_Log::print_Enviroment_Information(JSONNODE *masterData,
 	set_json_string_With_Status(pageInfo, "Current Relative Humidity", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.humidity, m_showStatusBits);
 	snprintf((char*)myStr.c_str(), BASIC, "%0.02f", (check_Status_Strip_Status(vFarmFrame[page].environmentPage.humidityRatio) / 8.0));						//!< Humidity Mixed Ratio multiplied by 8 (divide by 8 to get actual value)
 	set_json_string_With_Status(pageInfo, "Humidity Mixed Ratio", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.humidityRatio, m_showStatusBits);
-	set_json_int_With_Status(pageInfo, "Current Motor Power", vFarmFrame[page].environmentPage.currentMotorPower, m_showStatusBits);					    //!< Current Motor Power, value from most recent SMART Summary Frame6
+    snprintf((char*)myStr.c_str(), BASIC, "%" PRIi16"", M_Word0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.currentMotorPower)));
+    set_json_string_With_Status(pageInfo, "Current Motor Power", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.currentMotorPower, m_showStatusBits);					    //!< Current Motor Power, value from most recent SMART Summary Frame6
 	
-    json_push_back(envPage, pageInfo);
-    json_push_back(masterData, envPage);
+    json_push_back(masterData, pageInfo);
 
     return SUCCESS;
 }
@@ -1333,16 +1531,23 @@ eReturnValues CSCSI_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint3
 {
     std::string myStr = " ";
     myStr.resize(BASIC);
-    JSONNODE *reliPage = json_new(JSON_NODE);
+    JSONNODE *pageInfo = json_new(JSON_NODE);
 
 #if defined( _DEBUG)
-    printf("\nReliability Information From Farm Log copy: %d\n", page);
+    if (vFarmFrame[page].reliPage.copyNumber == FACTORYCOPY)
+    {
+        printf( "Reliability Information From FACTORY page");
+    }
+    else
+    {
+        printf("\nReliability Information From Farm Log copy: %d\n", page);
+    }
     printf("\tTimestamp of last IDD test:               %" PRIu64" \n", vFarmFrame[page].reliPage.lastIDDTest & 0x00FFFFFFFFFFFFFFLL);                     //!< Timestamp of last IDD test
     printf("\tSub-command of last IDD test:             %" PRIu64" \n", vFarmFrame[page].reliPage.cmdLastIDDTest & 0x00FFFFFFFFFFFFFFLL);                  //!< Sub-command of last IDD test
-    printf("\tNumber of G-List Reclamations:            %" PRIu64" \n", vFarmFrame[page].reliPage.gListReclamed & 0x00FFFFFFFFFFFFFFLL);                   //!< Number of G-List Reclamations 
+    printf("\tNumber of Reclamations Sectors:           %" PRIu64" \n", vFarmFrame[page].reliPage.gListReclamed & 0x00FFFFFFFFFFFFFFLL);                   //!< Number of G-List Reclamations 
     printf("\tServo Status:                             %" PRIu64" \n", vFarmFrame[page].reliPage.servoStatus & 0x00FFFFFFFFFFFFFFLL);                     //!< Servo Status (follows standard DST error code definitions)
-    printf("\tAlts List Entries Before IDD Scan:        %" PRIu64" \n", vFarmFrame[page].reliPage.altsBeforeIDD & 0x00FFFFFFFFFFFFFFLL);                   //!< Number of Alt List Entries Before IDD Scan
-    printf("\tAltz List Entries After IDD Scan:         %" PRIu64" \n", vFarmFrame[page].reliPage.altsAfterIDD & 0x00FFFFFFFFFFFFFFLL);                    //!< Number of Alt List Entries After IDD Scan
+    printf("\tNumber of Slipped Secotrs Before IDD Scan:%" PRIu64" \n", vFarmFrame[page].reliPage.altsBeforeIDD & 0x00FFFFFFFFFFFFFFLL);                   //!< Number of Alt List Entries Before IDD Scan
+    printf("\tNumber of Slipped Secotrs After IDD Scan: %" PRIu64" \n", vFarmFrame[page].reliPage.altsAfterIDD & 0x00FFFFFFFFFFFFFFLL);                    //!< Number of Alt List Entries After IDD Scan
     printf("\tResident G-List Entries Before IDD Scan:  %" PRIu64" \n", vFarmFrame[page].reliPage.gListBeforIDD & 0x00FFFFFFFFFFFFFFLL);                   //!< Number of Resident G-List Entries Before IDD Scan
     printf("\tResident G-List Entries After IDD Scan:   %" PRIu64" \n", vFarmFrame[page].reliPage.gListAfterIDD & 0x00FFFFFFFFFFFFFFLL);                   //!< Number of Resident G-List Entries After IDD Scan
     printf("\tScrubs List Entries Before IDD Scan:      %" PRIu64" \n", vFarmFrame[page].reliPage.scrubsBeforeIDD & 0x00FFFFFFFFFFFFFFLL);                 //!< Number of Scrub List Entries Before IDD Scan
@@ -1365,20 +1570,24 @@ eReturnValues CSCSI_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint3
 	printf("\tIdle Time value from the most recent SMART Summary Frame:     %" PRIu64" \n", vFarmFrame[page].reliPage.idleTime & 0x00FFFFFFFFFFFFFFLL);		//!< idle Time value from the most recent SMART Summary Frame
 
 #endif
-
-    snprintf((char*)myStr.c_str(), BASIC, "Reliability Information From Farm Log copy: %" PRId32"", page);
-    json_set_name(reliPage, (char*)myStr.c_str());
-    JSONNODE *pageInfo = json_new(JSON_NODE);
-    json_set_name(pageInfo, "Reliability");
-
+    if (vFarmFrame[page].reliPage.copyNumber == FACTORYCOPY)
+    {
+        snprintf((char*)myStr.c_str(), BASIC, "Reliability Information From FACTORY page");
+    }
+    else
+    {
+        snprintf((char*)myStr.c_str(), BASIC, "Reliability Information From Farm Log copy: %" PRId32"", page);
+    }
+    json_set_name(pageInfo, (char*)myStr.c_str());
+ 
     set_json_64_bit_With_Status(pageInfo, "Timestamp of last IDD test", vFarmFrame[page].reliPage.lastIDDTest, false, m_showStatusBits);							//!< Timestamp of last IDD test
     set_json_64_bit_With_Status(pageInfo, "Sub-command of last IDD test", vFarmFrame[page].reliPage.cmdLastIDDTest, false, m_showStatusBits);						//!< Sub-command of last IDD test
-    set_json_64_bit_With_Status(pageInfo, "Number of G-List Reclamations", vFarmFrame[page].reliPage.gListReclamed, false, m_showStatusBits);						//!< Number of G-List Reclamations 
+    set_json_64_bit_With_Status(pageInfo, "Number of Reclamations Sectors", vFarmFrame[page].reliPage.gListReclamed, false, m_showStatusBits);						//!< Number of G-List Reclamations 
     set_json_64_bit_With_Status(pageInfo, "Servo Status", vFarmFrame[page].reliPage.servoStatus, false, m_showStatusBits);											//!< Servo Status (follows standard DST error code definitions)
-    set_json_64_bit_With_Status(pageInfo, "Alts List Entries Before IDD Scan", vFarmFrame[page].reliPage.altsBeforeIDD, false, m_showStatusBits);					//!< Number of Alt List Entries Before IDD Scan
-    set_json_64_bit_With_Status(pageInfo, "Alts List Entries After IDD Scan", vFarmFrame[page].reliPage.altsAfterIDD, false, m_showStatusBits);						//!< Number of Alt List Entries After IDD Scan
-    set_json_64_bit_With_Status(pageInfo, "Resident G-List Entries Before IDD Scan", vFarmFrame[page].reliPage.gListBeforIDD, false, m_showStatusBits);				//!< Number of Resident G-List Entries Before IDD Scan
-    set_json_64_bit_With_Status(pageInfo, "Resident G-List Entries After IDD Scan", vFarmFrame[page].reliPage.gListAfterIDD, false, m_showStatusBits);				//!< Number of Resident G-List Entries After IDD Scan
+    set_json_64_bit_With_Status(pageInfo, "Number of Slipped Secotrs Before IDD Scan", vFarmFrame[page].reliPage.altsBeforeIDD, false, m_showStatusBits);					//!< Number of Alt List Entries Before IDD Scan
+    set_json_64_bit_With_Status(pageInfo, "Number of Slipped Secotrs After IDD Scan", vFarmFrame[page].reliPage.altsAfterIDD, false, m_showStatusBits);						//!< Number of Alt List Entries After IDD Scan
+    set_json_64_bit_With_Status(pageInfo, "Number of Resident Reallocated Sectors Before IDD Scan Before IDD Scan", vFarmFrame[page].reliPage.gListBeforIDD, false, m_showStatusBits);				//!< Number of Resident G-List Entries Before IDD Scan
+    set_json_64_bit_With_Status(pageInfo, "Number of Resident Reallocated Sectors Before IDD Scans After IDD Scan", vFarmFrame[page].reliPage.gListAfterIDD, false, m_showStatusBits);				//!< Number of Resident G-List Entries After IDD Scan
     set_json_64_bit_With_Status(pageInfo, "Scrubs List Entries Before IDD Scan", vFarmFrame[page].reliPage.scrubsBeforeIDD, false, m_showStatusBits);				//!< Number of Scrub List Entries Before IDD Scan
     set_json_64_bit_With_Status(pageInfo, "Scrubs List Entries After IDD Scan", vFarmFrame[page].reliPage.scrubsAfterIDD, false, m_showStatusBits);					//!< Number of Scrub List Entries After IDD Scan
     set_json_64_bit_With_Status(pageInfo, "Number of DOS Scans Performed", vFarmFrame[page].reliPage.numberDOSScans, false, m_showStatusBits);						//!< Number of DOS Scans Performed
@@ -1392,8 +1601,7 @@ eReturnValues CSCSI_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint3
 	set_json_64_bit_With_Status(pageInfo, "Max RV absulute Mean", vFarmFrame[page].reliPage.maxRVAbsuluteMean, false, m_showStatusBits);							//!< Max RV absulute Mean
 	set_json_64_bit_With_Status(pageInfo, "Idle Time value from the most recent SMART Summary Frame", vFarmFrame[page].reliPage.idleTime, false, m_showStatusBits);	//!< idle Time value from the most recent SMART Summary Frame
 
-    json_push_back(reliPage, pageInfo);
-    json_push_back(masterData, reliPage);
+    json_push_back(masterData, pageInfo);
 
     return SUCCESS;
 }
@@ -1419,13 +1627,17 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
 	myStr.resize(BASIC);
 
     std::string myHeader = " ";
+    myHeader.resize(BASIC);
+    if (type == NULL)
+    {
+        return FAILURE;
+    }
     if (type != RESERVED_FOR_FUTURE_EXPANSION_10 && type != RESERVED_FOR_FUTURE_EXPANSION_11 && type != RESERVED_FOR_FUTURE_EXPANSION_12 &&
         type != RESERVED_FOR_FUTURE_EXPANSION_13 && type != RESERVED_FOR_FUTURE_EXPANSION_14 && type != RESERVED_FOR_FUTURE_EXPANSION_15 &&
         type != RESERVED_FOR_FUTURE_EXPANSION_16 && type != RESERVED_FOR_FUTURE_EXPANSION_17 && type != RESERVED_FOR_FUTURE_EXPANSION_18 &&
         type != RESERVED_FOR_FUTURE_EXPANSION_19 && type != RESERVED_FOR_FUTURE_EXPANSION)
     {
         set_Head_Header(myHeader, type);
-        myHeader.resize(BASIC);
         JSONNODE *headPage = json_new(JSON_NODE);
         json_set_name(headPage, (char *)myHeader.c_str());
         switch (type)
@@ -1752,7 +1964,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tCurrent H2SAT iterations to converge by Head %d , by Test Zone 2:      %" PRIu64" \n", loopCount, vFarmFrame[page].currentH2STIterationsByHeadZone2.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Current H2SAT iterations to cnverge by Head, by Test Zone 2
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "Current H2SAT iterations to converge Test Zone 2 Head number %d", loopCount); // Head count
-                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", (check_for_signed_int(M_Word0(check_Status_Strip_Status(vFarmFrame[page].currentH2STIterationsByHeadZone2.headValue[loopCount])), 16)*.10));
+                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(static_cast<int16_t>(M_Word0(check_Status_Strip_Status(vFarmFrame[page].currentH2STIterationsByHeadZone2.headValue[loopCount])),16)*.10));
                 set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].currentH2STIterationsByHeadZone2.headValue[loopCount], m_showStatusBits); //!< Current H2SAT iterations to cnverge by Head, by Test Zone 2
             }
             break;
@@ -1763,7 +1975,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tApplied fly height clearance delta per head: Outer by Head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].appliedFlyHeightByHeadOuter.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Applied fly height clearance delta per head in thousandths of one Angstrom: Outer by Head
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "Applied fly height clearance delta per head: Outer Head number %d", loopCount); // Head count
-                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(static_cast<int16_t>(vFarmFrame[page].appliedFlyHeightByHeadOuter.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL)) / 10);   //!< Applied fly height clearance delta per head in thousandths of one Angstrom: Outer by Head
+                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(static_cast<int16_t>(M_Word0(check_Status_Strip_Status(vFarmFrame[page].appliedFlyHeightByHeadOuter.headValue[loopCount])),16)*.1));   //!< Applied fly height clearance delta per head in thousandths of one Angstrom: Outer by Head
                 set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].appliedFlyHeightByHeadOuter.headValue[loopCount], m_showStatusBits);
             }
             break;
@@ -1774,7 +1986,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tApplied fly height clearance delta per head in thousandths of one Angstrom: Inner by Head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].appliedFlyHeightByHeadInner.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Applied fly height clearance delta per head in thousandths of one Angstrom: Inner by Head
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "Applied fly height clearance delta per head: Inner Head number %d", loopCount); // Head count
-                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(static_cast<int16_t>(vFarmFrame[page].appliedFlyHeightByHeadInner.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL)) / 10);   //!< Applied fly height clearance delta per head in thousandths of one Angstrom: Inner by Head
+                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(static_cast<int16_t>(M_Word0(check_Status_Strip_Status(vFarmFrame[page].appliedFlyHeightByHeadInner.headValue[loopCount])),16)*.1));   //!< Applied fly height clearance delta per head in thousandths of one Angstrom: Inner by Head
                 set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].appliedFlyHeightByHeadInner.headValue[loopCount], m_showStatusBits);
             }
             break;
@@ -1785,7 +1997,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tApplied fly height clearance delta per head: Middle by Head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].appliedFlyHeightByHeadMiddle.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Applied fly height clearance delta per head in thousandths of one Angstrom: middle by Head
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "Applied fly height clearance delta per head: Middle Head number %d", loopCount);     // Head count
-                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(static_cast<int16_t>(vFarmFrame[page].appliedFlyHeightByHeadMiddle.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL)) / 10);   //!< Applied fly height clearance delta per head in thousandths of one Angstrom:middle by Head
+                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(static_cast<int16_t>(M_Word0(check_Status_Strip_Status(vFarmFrame[page].appliedFlyHeightByHeadMiddle.headValue[loopCount])),16) *.1));   //!< Applied fly height clearance delta per head in thousandths of one Angstrom:middle by Head
                 set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].appliedFlyHeightByHeadMiddle.headValue[loopCount], m_showStatusBits);
             }
             break;
@@ -1812,6 +2024,8 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
         json_push_back(masterData, headPage);
         return SUCCESS;
     }
+
+    return SUCCESS;
 }
 //-----------------------------------------------------------------------------
 //
@@ -1828,67 +2042,70 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
 //---------------------------------------------------------------------------
 void CSCSI_Farm_Log::print_All_Pages(JSONNODE *masterData)
 {
-    print_Header(masterData);
-    for (uint32_t index = 0; index < vFarmFrame.size(); ++index)
+    if (vFarmFrame.size() > 0)
     {
-
-        for (uint32_t pramCode = 0; pramCode < vFarmFrame.at(index).vFramesFound.size(); pramCode++)
+        print_Header(masterData);
+        for (uint32_t index = 0; index < vFarmFrame.size(); ++index)
         {
-            switch (vFarmFrame.at(index).vFramesFound.at(pramCode))
+
+            for (uint32_t pramCode = 0; pramCode < vFarmFrame.at(index).vFramesFound.size(); pramCode++)
             {
-            case FARM_HEADER_PARAMETER:
-                // get the Farm Header information;
-                break;
-            case  GENERAL_DRIVE_INFORMATION_PARAMETER:
-                print_Drive_Information(masterData, index);                   // get the id drive information at the time.
-                break;
-            case  WORKLOAD_STATISTICS_PARAMETER:
-                print_WorkLoad(masterData, index);                           // get the work load information
-                break;
-            case ERROR_STATISTICS_PARAMETER:
-                print_Error_Information(masterData, index);                    // get the error status
-                break;
-            case ENVIRONMENTAL_STATISTICS_PARAMETER:
-                print_Enviroment_Information(masterData, index);               // get the envirmonent information 
-                break;
-            case RELIABILITY_STATISTICS_PARAMETER:
-                print_Reli_Information(masterData, index);         // get the Reliabliity stat
-                break;
-            case DISC_SLIP_IN_MICRO_INCHES_BY_HEAD:
-            case BIT_ERROR_RATE_OF_ZONE_0_BY_DRIVE_HEAD:
-            case DOS_WRITE_REFRESH_COUNT:
-            case DVGA_SKIP_WRITE_DETECT_BY_HEAD:
-            case RVGA_SKIP_WRITE_DETECT_BY_HEAD:
-            case FVGA_SKIP_WRITE_DETECT_BY_HEAD:
-            case SKIP_WRITE_DETECT_THRESHOLD_EXCEEDED_COUNT_BY_HEAD:
-            case ACFF_SINE_1X_VALUE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD:
-            case ACFF_COSINE_1X_VALUE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD:
-            case PZT_CALIBRATION_VALUE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD:
-            case MR_HEAD_RESISTANCE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD:
-            case NUMBER_OF_TMD_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD:
-            case VELOCITY_OBSERVER_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD:
-            case NUMBER_OF_VELOCITY_OBSERVER_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD:
-            case CURRENT_H2SAT_PERCENTAGE_OF_CODEWORDS_AT_ITERATION_LEVEL_BY_HEAD_AVERAGED_ACROSS_TEST_ZONES:
-            case CURRENT_H2SAT_AMPLITUDE_BY_HEAD_AVERAGED_ACROSS_TEST_ZONES:
-            case CURRENT_H2SAT_ASYMMETRY_BY_HEAD_AVERAGED_ACROSS_TEST_ZONES:
-            case NUMBER_OF_RESIDENT_GLIST_ENTRIES:
-            case NUMBER_OF_PENDING_ENTRIES:
-            case DOS_OUGHT_TO_SCAN_COUNT_PER_HEAD:
-            case DOS_NEED_TO_SCAN_COUNT_PER_HEAD:
-            case DOS_WRITE_FAULT_SCAN_COUNT_PER_HEAD:
-            case WRITE_POWERON_HOURS_FROM_MOST_RECENT_SMART:
-            case CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_0:
-            case CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_1:
-            case CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_2:
-            case CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_0:
-            case CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_1:
-            case CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_2:
-            case APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_OUTER:
-            case APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_INNER:
-            case APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_MIDDLE:
-            default:
-                print_Head_Information(vFarmFrame.at(index).vFramesFound.at(pramCode), masterData, index);
-                break;
+                switch (vFarmFrame.at(index).vFramesFound.at(pramCode))
+                {
+                case FARM_HEADER_PARAMETER:
+                    //get the Farm Header information;
+                    break;
+                case  GENERAL_DRIVE_INFORMATION_PARAMETER:
+                    print_Drive_Information(masterData, index);                   // get the id drive information at the time.
+                    break;
+                case  WORKLOAD_STATISTICS_PARAMETER:
+                    print_WorkLoad(masterData, index);                           // get the work load information
+                    break;
+                case ERROR_STATISTICS_PARAMETER:
+                    print_Error_Information(masterData, index);                    // get the error status
+                    break;
+                case ENVIRONMENTAL_STATISTICS_PARAMETER:
+                    print_Enviroment_Information(masterData, index);               // get the envirmonent information 
+                    break;
+                case RELIABILITY_STATISTICS_PARAMETER:
+                    print_Reli_Information(masterData, index);         // get the Reliabliity stat
+                    break;
+                case DISC_SLIP_IN_MICRO_INCHES_BY_HEAD:
+                case BIT_ERROR_RATE_OF_ZONE_0_BY_DRIVE_HEAD:
+                case DOS_WRITE_REFRESH_COUNT:
+                case DVGA_SKIP_WRITE_DETECT_BY_HEAD:
+                case RVGA_SKIP_WRITE_DETECT_BY_HEAD:
+                case FVGA_SKIP_WRITE_DETECT_BY_HEAD:
+                case SKIP_WRITE_DETECT_THRESHOLD_EXCEEDED_COUNT_BY_HEAD:
+                case ACFF_SINE_1X_VALUE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD:
+                case ACFF_COSINE_1X_VALUE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD:
+                case PZT_CALIBRATION_VALUE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD:
+                case MR_HEAD_RESISTANCE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD:
+                case NUMBER_OF_TMD_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD:
+                case VELOCITY_OBSERVER_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD:
+                case NUMBER_OF_VELOCITY_OBSERVER_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD:
+                case CURRENT_H2SAT_PERCENTAGE_OF_CODEWORDS_AT_ITERATION_LEVEL_BY_HEAD_AVERAGED_ACROSS_TEST_ZONES:
+                case CURRENT_H2SAT_AMPLITUDE_BY_HEAD_AVERAGED_ACROSS_TEST_ZONES:
+                case CURRENT_H2SAT_ASYMMETRY_BY_HEAD_AVERAGED_ACROSS_TEST_ZONES:
+                case NUMBER_OF_RESIDENT_GLIST_ENTRIES:
+                case NUMBER_OF_PENDING_ENTRIES:
+                case DOS_OUGHT_TO_SCAN_COUNT_PER_HEAD:
+                case DOS_NEED_TO_SCAN_COUNT_PER_HEAD:
+                case DOS_WRITE_FAULT_SCAN_COUNT_PER_HEAD:
+                case WRITE_POWERON_HOURS_FROM_MOST_RECENT_SMART:
+                case CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_0:
+                case CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_1:
+                case CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_2:
+                case CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_0:
+                case CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_1:
+                case CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_2:
+                case APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_OUTER:
+                case APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_INNER:
+                case APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_MIDDLE:
+                default:
+                    print_Head_Information(vFarmFrame.at(index).vFramesFound.at(pramCode), masterData, index);
+                    break;
+                }
             }
         }
     }
@@ -1909,16 +2126,20 @@ void CSCSI_Farm_Log::print_All_Pages(JSONNODE *masterData)
 //---------------------------------------------------------------------------
 void CSCSI_Farm_Log::print_Page(JSONNODE *masterData, uint32_t page)
 {
-    if (page <= vFarmFrame.size())
+    if (vFarmFrame.size() > 0)
     {
-        print_Drive_Information(masterData, page);
-        print_WorkLoad(masterData, page);
-        print_Error_Information(masterData, page);
-        print_Enviroment_Information(masterData, page);
-        print_Reli_Information(masterData, page);
-        for (uint32_t frame = 0; frame < vFarmFrame.at(page).vFramesFound.size(); frame++)
+        if (page <= vFarmFrame.size())
         {
-            print_Head_Information(vFarmFrame.at(page).vFramesFound.at(frame), masterData, page);
+
+            print_Drive_Information(masterData, page);
+            print_WorkLoad(masterData, page);
+            print_Error_Information(masterData, page);
+            print_Enviroment_Information(masterData, page);
+            print_Reli_Information(masterData, page);
+            for (uint32_t frame = 0; frame < vFarmFrame.at(page).vFramesFound.size(); frame++)
+            {
+                print_Head_Information(vFarmFrame.at(page).vFramesFound.at(frame), masterData, page);
+            }
         }
     }
 }
@@ -1938,23 +2159,26 @@ void CSCSI_Farm_Log::print_Page(JSONNODE *masterData, uint32_t page)
 //---------------------------------------------------------------------------
 void CSCSI_Farm_Log::print_Page_Without_Drive_Info(JSONNODE *masterData, uint32_t page)
 {
-    if (page <= vFarmFrame.size())
+    if (vFarmFrame.size() > 0)
     {
-        print_WorkLoad(masterData, page);
-        print_Error_Information(masterData, page);
-        print_Enviroment_Information(masterData, page);
-        print_Reli_Information(masterData, page);
-        JSONNODE *headInfoPage = json_new(JSON_NODE);
-        std::string myStr = " ";
-        myStr.resize(BASIC);
-        snprintf((char*)myStr.c_str(), BASIC, "Head Information From Farm Log copy: %" PRId32"", page);
-
-        json_set_name(headInfoPage, (char*)myStr.c_str());
-        for (uint32_t frame = 0; frame < vFarmFrame.at(page).vFramesFound.size(); frame++)
+        if (page <= vFarmFrame.size())
         {
-            print_Head_Information(vFarmFrame.at(page).vFramesFound.at(frame), masterData, page);
+            print_WorkLoad(masterData, page);
+            print_Error_Information(masterData, page);
+            print_Enviroment_Information(masterData, page);
+            print_Reli_Information(masterData, page);
+            JSONNODE *headInfoPage = json_new(JSON_NODE);
+            std::string myStr = " ";
+            myStr.resize(BASIC);
+            snprintf((char*)myStr.c_str(), BASIC, "Head Information From Farm Log copy: %" PRId32"", page);
+
+            json_set_name(headInfoPage, (char*)myStr.c_str());
+            for (uint32_t frame = 0; frame < vFarmFrame.at(page).vFramesFound.size(); frame++)
+            {
+                print_Head_Information(vFarmFrame.at(page).vFramesFound.at(frame), masterData, page);
+            }
+            json_push_back(masterData, headInfoPage);
         }
-        json_push_back(masterData, headInfoPage);
     }
 }
 

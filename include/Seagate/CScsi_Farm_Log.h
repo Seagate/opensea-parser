@@ -3,7 +3,7 @@
 //
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
+// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -45,13 +45,15 @@ namespace opensea_parser {
 		sScsiLogParameter			*m_logParam;                                      //!< pointer to the log page param for all of the log
         sScsiPageParameter          *m_pageParam;                                     //!< pointer to the page parameters 
         sScsiFarmHeader				*m_pHeader;										  //!< Member pointer to the header of the farm log
+        sScsiDriveInfo              *m_pDriveInfo;                                    //!< Drive information pointer with header information
         bool                        m_alreadySet;                                     //!< set true one it's already set..  (APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_OUTER)
 		bool						m_showStatusBits;								  //!< show the status bits of each entry
 
-		void create_Serial_Number(std::string *serialNumber, const sScsiDriveInfo * const idInfo);
-		void create_World_Wide_Name(std::string *worldWideName, const sScsiDriveInfo * const idInfo);
-		void create_Firmware_String(std::string *firmwareRev, const sScsiDriveInfo * const idInfo);
-		void create_Device_Interface_String(std::string *dInterface, const sScsiDriveInfo * const idInfo);
+		void create_Serial_Number(std::string &serialNumber, const sScsiDriveInfo * const idInfo);
+		void create_World_Wide_Name(std::string &worldWideName, const sScsiDriveInfo * const idInfo);
+		void create_Firmware_String(std::string &firmwareRev, const sScsiDriveInfo * const idInfo);
+		void create_Device_Interface_String(std::string &dInterface, const sScsiDriveInfo * const idInfo);
+        void create_Model_Number_String(std::string &model, const sScsiDriveInfo * const idInfo);
         bool strip_Active_Status(uint64_t *value);
         bool swap_Bytes_sFarmHeader(sScsiFarmHeader *fh);
         bool swap_Bytes_sDriveInfo(sScsiDriveInfo *di);

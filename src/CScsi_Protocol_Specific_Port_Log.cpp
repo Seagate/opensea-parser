@@ -2,7 +2,7 @@
 // CScsi_Protocol_Specific_Port_Log.h   Definition of Protocol-Specific Port log page for SAS
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
+// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
