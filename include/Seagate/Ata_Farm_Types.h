@@ -3,7 +3,7 @@
 //
 // Do NOT modify or remove this copyright and license
 //
-//Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
+//Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -56,6 +56,7 @@ typedef struct _sDriveInfo
     uint64_t        modelNumber[10];                            //!< lower 32 Model Number (started support in 2.14 )
     uint64_t        driveRecordingType;                         //!< 0 for SMR and 1 for CMR (started support in 2.15 )
     uint64_t        depopped;                                   //!< has the drive been depopped  1= depopped and 0 = not depopped(started support in 2.15 )
+    uint64_t        maxNumberForReasign;                        //!< Max Number of Available Sectors for Reassignment – Value in disc sectors(started in 3.3 )
 }sDriveInfo;
 
 typedef struct _sErrorStat
@@ -81,10 +82,10 @@ typedef struct _sErrorStat
 	uint64_t         indexFlashLED;                             //!< index of the last Flash LED of the array
 	uint64_t         uncorrectables;                            //!< uncorrecatables errors (sata only)
     uint64_t         smartTrip;                                 //!< SMART Trip for (SAS only)
-	uint64_t         flashLEDArray[8];                          //!< Info on the last 8 Flash LED events Wrapping array.
-    uint64_t         readWriteRetry[8];                         //!< Info on the last 8 read/write Retry events
-    uint64_t         superParityOnTheFlyRecoveryCnt[2];         //!< Super Parity on the Fly Recovery counters
-    uint64_t         reallocatedSectors[15];                    //!< Reallocated Secotors by cause
+	uint64_t         flashLEDArray[8];                          //!< Info on the last 8 Flash LED events Wrapping array. (added 2.7)
+    uint64_t         readWriteRetry[8];                         //!< Info on the last 8 read/write Retry events (added 2.7)
+    uint64_t         superParityOnTheFlyRecoveryCnt[2];         //!< Super Parity on the Fly Recovery counters  (added 3.0)
+    uint64_t         reallocatedSectors[15];                    //!< Reallocated Secotors by cause(added 3.0)
 }sErrorStat;
 
 typedef struct _sEnvironementStat
@@ -109,6 +110,12 @@ typedef struct _sEnvironementStat
 	uint64_t         humidity;                                  //!< Current Relative Humidity (in units of .1%)
 	uint64_t         humidityRatio;                             //!< Humidity Mixed Ratio multiplied by 8 (divide by 8 to get actual value)
 	uint64_t         currentMotorPower;                         //!< Current Motor Power, value from most recent SMART Summary Frame
+    uint64_t         current12v;                                //!< Current 12V input (added 3.7)
+    uint64_t         min12v;                                    //!< Minimum 12V input from last 3 SMART Summary Frames (3.7)
+    uint64_t         max12v;                                    //!< Maximum 12V input from last 3 SMART Summary Frames (3.7)
+    uint64_t         current5v;                                 //!< Current 5V input (3.7)
+    uint64_t         min5v;                                     //!< Minimum 5V input from last 3 SMART Summary Frames (3.7)
+    uint64_t         max5v;                                     //!< Maximum 5V input from last 3 SMART Summary Frames (3.7)
 }sEnvironementStat;
 
 typedef struct _sHeadInfo
@@ -122,10 +129,10 @@ typedef struct _sHeadInfo
 
 typedef struct _sflyHeight
 {
+    int64_t        inner;
+    int64_t        middle;
 	int64_t        outer;
-	int64_t        inner;
-	int64_t        middle;
-	_sflyHeight() : outer(0), inner(0), middle(0) {};
+	_sflyHeight() : inner(0), middle(0), outer(0) {};
 }sflyHeight;
 
 typedef struct _sAtaReliabilityStat
