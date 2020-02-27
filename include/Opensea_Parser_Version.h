@@ -1,7 +1,7 @@
 //
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
+// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -20,7 +20,7 @@
 
 #define OPENSEA_PARSER_MAJOR_VERSION	0
 #define OPENSEA_PARSER_MINOR_VERSION	1
-#define OPENSEA_PARSER_PATCH_VERSION	6
+#define OPENSEA_PARSER_PATCH_VERSION	7
 
 #define OPENSEA_PARSER_VERSION COMBINE_PARSER_VERSIONS(OPENSEA_PARSER_MAJOR_VERSION,OPENSEA_PARSER_MINOR_VERSION,OPENSEA_PARSER_PATCH_VERSION)
 
