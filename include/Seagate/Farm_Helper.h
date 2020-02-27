@@ -3,7 +3,7 @@
 //
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
+// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -46,8 +46,8 @@ namespace opensea_parser {
 		printStr.resize(BASIC);
 		std::string lowStr = "64 bit Value Lower value";
 		std::string upperStr = "64 bit Value Upper value";
-		
-        if (!showStatusBits  && (M_GETBITRANGE(value, 63, 32) == 0))
+		// if the 31 bit is set it will turn the value to a negitive number
+        if (!showStatusBits  && (M_GETBITRANGE(value, 63, 31) == 0))
 		{
 			if (hexPrint) 
 			{

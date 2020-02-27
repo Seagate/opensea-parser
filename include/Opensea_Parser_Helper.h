@@ -3,7 +3,7 @@
 //
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
+// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -222,7 +222,6 @@ namespace opensea_parser {
 		std::string lowStr = "64 bit Value Lower value";
 		std::string upperStr = "64 bit Value Upper value";
 #endif
-
 		value = check_Status_Strip_Status(value);
 		value = check_for_signed_int(value, 16);
 #ifndef _WIN64   //To make old gcc compilers happy
@@ -248,7 +247,8 @@ namespace opensea_parser {
 		}
 		else
 		{
-            if (M_IGETBITRANGE(value, 63, 32) == 0)
+            // had to change to the 31 bit, otherwise because it casts to an int it caused some numbers to be negitive 
+            if (M_IGETBITRANGE(value, 63, 31) == 0)
 			{
 				json_push_back(nowNode, json_new_i((char *)myStr.c_str(), static_cast<int32_t>(M_DoubleWord0(value))));
 			}

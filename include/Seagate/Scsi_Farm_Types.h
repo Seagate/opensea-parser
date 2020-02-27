@@ -3,7 +3,7 @@
 //
 // Do NOT modify or remove this copyright and license
 //
-//Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
+//Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -153,7 +153,7 @@ typedef struct _sScsiDriveInfo
 
 typedef struct _sScsiWorkLoadStat
 {
-	sScsiPageParameter  pPageHeader;								//!< pointer the farm header page parameter
+	sScsiPageParameter  PageHeader;								//!< pointer the farm header page parameter
 	sWorkLoadStat		workLoad;									//!< structure of the work load Stat
 }sScsiWorkLoadStat;
 
@@ -180,6 +180,7 @@ typedef struct _sScsiErrorStat
 	uint64_t            totalFlashLED;								//!< Total Flash LED (Assert) Events
 	uint64_t            reserved9;									//!< Reserved
 	uint64_t            FRUCode;									//!< FRU code if smart trip from most recent SMART Frame (SAS only) 
+    uint64_t            parity;                                     //!< Super Parity on the Fly Recovery
 }sScsiErrorStat;
 
 typedef struct _sScsiEnvironmentStat

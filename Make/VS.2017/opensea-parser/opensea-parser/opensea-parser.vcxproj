@@ -591,7 +591,7 @@
     <ClCompile Include="..\..\..\..\src\Opensea_Parser_Helper.cpp" />
     <ClCompile Include="..\..\..\..\src\Seagate\CAta_Farm_Log.cpp" />
     <ClCompile Include="..\..\..\..\src\Seagate\CFARM_Log.cpp" />
-    <ClCompile Include="..\..\..\..\src\Seagate\CScsi_Farm_log.cpp" />
+    <ClCompile Include="..\..\..\..\src\Seagate\CScsi_Farm_Log.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

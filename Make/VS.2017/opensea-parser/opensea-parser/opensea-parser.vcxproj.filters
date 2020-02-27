@@ -152,9 +152,6 @@
     <ClCompile Include="..\..\..\..\src\Seagate\CFARM_Log.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\src\Seagate\CScsi_Farm_log.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\src\CAta_Ext_Comprehensive_Log.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -216,6 +213,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\src\Opensea_Parser_Helper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\Seagate\CScsi_Farm_Log.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

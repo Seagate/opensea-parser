@@ -3,7 +3,7 @@
 //
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
+// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -22,6 +22,7 @@
 #define FARMSIGNATURE           0x00004641524D4552
 #define MAJORVERSION2                2
 #define MAJORVERSION3                3
+#define FACTORYCOPY             0xc0464143544f5259
 
 #pragma pack(push, 1)
 
@@ -59,8 +60,11 @@ typedef struct _sWorkLoadStat
 	uint64_t        totalNumberofOtherCMDS;                     //!< Total Number Of Other Commands
 	uint64_t        logicalSecWritten;                          //!< Logical Sectors Written
 	uint64_t        logicalSecRead;                             //!< Logical Sectors Read
+    uint64_t        dither;                                     //!< Number of dither events during current power cycle (added 3.4)
+    uint64_t        ditherRandom;                               //!< Number of times dither was held off during random workloads during current power cycle(added 3.4)
+    uint64_t        ditherSequential;                           //!< Number of times dither was held off during sequential workloads during current power cycle(added 3.4)
 	_sWorkLoadStat() : pageNumber(0), copyNumber(0), workloadPercentage(0), totalReadCommands(0), totalWriteCommands(0), totalRandomReads(0), totalRandomWrites(0), \
-		totalNumberofOtherCMDS(0), logicalSecWritten(0), logicalSecRead(0) {};
+		totalNumberofOtherCMDS(0), logicalSecWritten(0), logicalSecRead(0), dither(0), ditherRandom(0), ditherSequential(0) {};
 }sWorkLoadStat;
 
 #pragma pack(pop)
