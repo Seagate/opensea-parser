@@ -141,8 +141,8 @@ typedef struct _sAtaReliabilityStat
 	int64_t         copyNumber;                                  //!< Copy Number
 	int64_t         lastIDDTest;                                 //!< Timestamp of last IDD test
 	int64_t         cmdLastIDDTest;                              //!< Sub-command of last IDD test
-	sHeadInfo       discSlip[MAX_HEAD_COUNT];                    //!< [24] Disc Slip in micro-inches by Head
-	sHeadInfo       bitErrorRate[MAX_HEAD_COUNT];                //!< [24] Bit Error Rate of Zone 0 by Drive Head
+    uint64_t        discSlip[MAX_HEAD_COUNT];                    //!< [24] Disc Slip in micro-inches by Head
+    uint64_t        bitErrorRate[MAX_HEAD_COUNT];                //!< [24] Bit Error Rate of Zone 0 by Drive Head
 	int64_t         gListReclamed;                               //!< Number of G-List Reclamations 
 	int64_t         servoStatus;                                 //!< Servo Status (follows standard DST error code definitions)
 	int64_t         altsBeforeIDD;                               //!< Number of Alt List Entries Before IDD Scan

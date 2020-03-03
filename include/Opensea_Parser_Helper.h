@@ -48,7 +48,7 @@ namespace opensea_parser {
 #define MODEL_NUMBER_LEN        20
 #define FIRMWARE_REV_LEN        4
 #define BASIC                   80
-#define INVALID_LENGTH          50
+
 
     // output file types
 	typedef enum _eOpensea_print_Types

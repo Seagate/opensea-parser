@@ -731,7 +731,10 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
         return FAILURE;
     }
     uint64_t signature = m_pHeader->farmHeader.signature & 0x00FFFFFFFFFFFFFFLL;
-    
+    if (signature != FARMSIGNATURE || signature == 0x00FFFFFFFFFFFFFF)
+    {
+        return VALIDATION_FAILURE;
+    }
     if (signature == FARMSIGNATURE)				// check the head to see if it has the farm signature else fail
     {
         
@@ -1317,14 +1320,14 @@ eReturnValues CSCSI_Farm_Log::print_WorkLoad(JSONNODE *masterData, uint32_t page
     {
         printf("\nWork Load From Farm Log copy %d: \n", page);
     }
-    printf("\tRated Workload Percentaged:               %lu  \n", vFarmFrame[page].workLoadPage.workLoad.workloadPercentage & 0x00FFFFFFFFFFFFFFLL);         //!< rated Workload Percentage
-	printf("\tTotal Number of Read Commands:            %lu  \n", vFarmFrame[page].workLoadPage.workLoad.totalReadCommands & 0x00FFFFFFFFFFFFFFLL);          //!< Total Number of Read Commands
-	printf("\tTotal Number of Write Commands:           %lu  \n", vFarmFrame[page].workLoadPage.workLoad.totalWriteCommands & 0x00FFFFFFFFFFFFFFLL);         //!< Total Number of Write Commands
-	printf("\tTotal Number of Random Read Cmds:         %lu \n", vFarmFrame[page].workLoadPage.workLoad.totalRandomReads & 0x00FFFFFFFFFFFFFFLL);           //!< Total Number of Random Read Commands
-	printf("\tTotal Number of Random Write Cmds:        %lu  \n", vFarmFrame[page].workLoadPage.workLoad.totalRandomWrites & 0x00FFFFFFFFFFFFFFLL);          //!< Total Number of Random Write Commands
-    printf("\tTotal Number of Other Commands:           %lu  \n", vFarmFrame[page].workLoadPage.workLoad.totalNumberofOtherCMDS & 0x00FFFFFFFFFFFFFFLL);     //!< Total Number Of Other Commands
-    printf("\tLogical Sectors Written:                  %lu  \n", vFarmFrame[page].workLoadPage.workLoad.logicalSecWritten & 0x00FFFFFFFFFFFFFFLL);          //!< Logical Sectors Written
-    printf("\tLogical Sectors Read:                     %lu \n", vFarmFrame[page].workLoadPage.workLoad.logicalSecRead & 0x00FFFFFFFFFFFFFFLL);             //!< Logical Sectors Read
+    printf("\tRated Workload Percentaged:               %llu  \n", vFarmFrame[page].workLoadPage.workLoad.workloadPercentage & 0x00FFFFFFFFFFFFFFLL);         //!< rated Workload Percentage
+	printf("\tTotal Number of Read Commands:            %llu  \n", vFarmFrame[page].workLoadPage.workLoad.totalReadCommands & 0x00FFFFFFFFFFFFFFLL);          //!< Total Number of Read Commands
+	printf("\tTotal Number of Write Commands:           %llu  \n", vFarmFrame[page].workLoadPage.workLoad.totalWriteCommands & 0x00FFFFFFFFFFFFFFLL);         //!< Total Number of Write Commands
+	printf("\tTotal Number of Random Read Cmds:         %llu \n", vFarmFrame[page].workLoadPage.workLoad.totalRandomReads & 0x00FFFFFFFFFFFFFFLL);           //!< Total Number of Random Read Commands
+	printf("\tTotal Number of Random Write Cmds:        %llu  \n", vFarmFrame[page].workLoadPage.workLoad.totalRandomWrites & 0x00FFFFFFFFFFFFFFLL);          //!< Total Number of Random Write Commands
+    printf("\tTotal Number of Other Commands:           %llu  \n", vFarmFrame[page].workLoadPage.workLoad.totalNumberofOtherCMDS & 0x00FFFFFFFFFFFFFFLL);     //!< Total Number Of Other Commands
+    printf("\tLogical Sectors Written:                  %llu  \n", vFarmFrame[page].workLoadPage.workLoad.logicalSecWritten & 0x00FFFFFFFFFFFFFFLL);          //!< Logical Sectors Written
+    printf("\tLogical Sectors Read:                     %llu \n", vFarmFrame[page].workLoadPage.workLoad.logicalSecRead & 0x00FFFFFFFFFFFFFFLL);             //!< Logical Sectors Read
     
 #endif
     if (vFarmFrame[page].workLoadPage.workLoad.copyNumber == FACTORYCOPY)
@@ -1478,7 +1481,7 @@ eReturnValues CSCSI_Farm_Log::print_Enviroment_Information(JSONNODE *masterData,
     printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved9 & 0x00FFFFFFFFFFFFFFLL);	            //!< Reserved
     printf("\tCurrent Relative Humidity:                %" PRId32".%" PRId32"   \n", M_DoubleWord1(vFarmFrame[page].environmentPage.humidity & 0x00FFFFFFFFFFFFFFLL), M_DoubleWord0(vFarmFrame[page].environmentPage.humidity & 0x00FFFFFFFFFFFFFFLL));		//!< Current Relative Humidity (in units of .1%)
     printf("\tHumidity Mixed Ratio:                     %0.02f     \n", ((vFarmFrame[page].environmentPage.humidityRatio & 0x00FFFFFFFFFFFFFFLL) / 8.0)); //!< Humidity Mixed Ratio multiplied by 8 (divide by 8 to get actual value)
-    printf("\tCurrent Motor Power:                      %" PRIu64" \n", (M_Word0(vFarmFrame[page].environmentPage.currentMotorPower)));		        //!< Current Motor Power, value from most recent SMART Summary Frame6
+    printf("\tCurrent Motor Power:                      %" PRIu16" \n", (M_Word0(vFarmFrame[page].environmentPage.currentMotorPower)));		        //!< Current Motor Power, value from most recent SMART Summary Frame6
 #endif
     if (vFarmFrame[page].environmentPage.copyNumber == FACTORYCOPY)
     {
@@ -1640,6 +1643,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
         set_Head_Header(myHeader, type);
         JSONNODE *headPage = json_new(JSON_NODE);
         json_set_name(headPage, (char *)myHeader.c_str());
+        
         switch (type)
         {
         case FARM_HEADER_PARAMETER:
@@ -1652,29 +1656,30 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
         case DISC_SLIP_IN_MICRO_INCHES_BY_HEAD:
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
-#if defined( _DEBUG)
-                printf("\tDisc Slip in micro-inches by Head by Head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].discSlipPerHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Disc Slip in micro-inches
-
-#endif
                 uint64_t dsHead = check_Status_Strip_Status(vFarmFrame[page].discSlipPerHead.headValue[loopCount]);
-                int16_t whole = M_BytesTo2ByteValue(*((uint8_t*)&dsHead + 5), *((uint8_t*)&dsHead + 4));							// get 5:4 whole part of the float
-                uint32_t decimal = M_BytesTo4ByteValue(*((uint8_t*)&dsHead + 3), *((uint8_t*)&dsHead + 2), *((uint8_t*)&dsHead + 1), *((uint8_t*)&dsHead + 0));  // get 3:0 for the Deciaml Part of the float
+                int16_t whole = M_Word2(dsHead);							// get 5:4 whole part of the float
+                double decimal = M_DoubleWord0(dsHead);                   // get 3:0 for the Deciaml Part of the float
+#if defined( _DEBUG)
+                printf("\tDisc Slip in micro-inches by Head by Head %d:  raw 0x%" PRIx64", calculated %" PRIi16".%04.0f (debug) \n" \
+                    , loopCount, vFarmFrame[page].discSlipPerHead.headValue[loopCount], whole, decimal);  //!< Disc Slip in micro-inches
+#endif
                 snprintf((char*)myHeader.c_str(), BASIC, "Disc Slip in micro-inches Head %d", loopCount); // Head count
-                snprintf((char*)myStr.c_str(), BASIC, "%0.04f", (std::abs((double)whole) + ((double)decimal / 10000))); //!< Disc Slip in micro-inches by Head
+                snprintf((char*)myStr.c_str(), BASIC, "%" PRIi16".%04.0f", whole,decimal);                                      //!< Disc Slip in micro-inches by Head
                 set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].discSlipPerHead.headValue[loopCount], m_showStatusBits);
             }
             break;
         case BIT_ERROR_RATE_OF_ZONE_0_BY_DRIVE_HEAD:
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
-#if defined( _DEBUG)
-                printf("\tBit Error Rate of Zone 0 by Head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].bitErrorRateByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Bit Error Rate of Zone 0 by Drive Head
-#endif
+
                 uint64_t beHead = check_Status_Strip_Status(vFarmFrame[page].bitErrorRateByHead.headValue[loopCount]);
-                int16_t whole = M_BytesTo2ByteValue(*((uint8_t*)&beHead + 5), *((uint8_t*)&beHead + 4));							// get 5:4 whole part of the float
-                uint32_t decimal = M_BytesTo4ByteValue(*((uint8_t*)&beHead + 3), *((uint8_t*)&beHead + 2), *((uint8_t*)&beHead + 1), *((uint8_t*)&beHead + 0));  // get 3:0 for the Deciaml Part of the float
+                int16_t whole = M_Word2(beHead);							// get 5:4 whole part of the float
+                double decimal = M_DoubleWord0(beHead);                     // get 3:0 for the Deciaml Part of the float
+#if defined( _DEBUG)
+                printf("\tBit Error Rate of Zone 0 by Head %d:  raw 0x%" PRIx64", %" PRIi16".%04.0f \n", loopCount, vFarmFrame[page].bitErrorRateByHead.headValue[loopCount], whole, decimal);  //!< Bit Error Rate of Zone 0 by Drive Head
+#endif
                 snprintf((char*)myHeader.c_str(), BASIC, "Bit Error Rate of Zone 0 Head number %d", loopCount); // Head count
-                snprintf((char*)myStr.c_str(), BASIC, "%0.04f", ((std::abs((double)whole) + ((double)decimal / 10000)) * -1));  //!< Bit Error Rate of Zone 0 by Drive Head
+                snprintf((char*)myStr.c_str(), BASIC, "%" PRIi16".%04.0f", whole, decimal);                                     //!< Bit Error Rate of Zone 0 by Drive Head
                 set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].bitErrorRateByHead.headValue[loopCount], m_showStatusBits);
             }
             break;
