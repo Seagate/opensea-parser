@@ -777,31 +777,31 @@ eReturnValues CATA_Farm_Log::Print_Enviroment_Information(JSONNODE *masterData, 
     }
     json_set_name(pageInfo, (char*)myStr.c_str());
 								
-    snprintf((char*)myStr.c_str(), BASIC, "%0.02f", check_for_signed_int(M_Byte0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.curentTemp)),56)*1.00);
+    snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.curentTemp)*1.00));
 	set_json_string_With_Status(pageInfo, "Current Temperature", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.curentTemp,m_showStatusBits);								//!< Current Temperature in Celsius
-    snprintf((char*)myStr.c_str(), BASIC, "%0.02f", check_for_signed_int(M_Byte0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.highestTemp)), 48)*1.00);
+    snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.highestTemp)*1.00));
 	set_json_string_With_Status(pageInfo, "Highest Temperature", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.highestTemp, m_showStatusBits);								//!< Highest Temperature in Celsius
-    snprintf((char*)myStr.c_str(), BASIC, "%0.02f", check_for_signed_int(M_Byte0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.lowestTemp)), 56)*1.00);
+    snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.lowestTemp)*1.00));
 	set_json_string_With_Status(pageInfo, "Lowest Temperature", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.lowestTemp, m_showStatusBits);								//!< Lowest Temperature
-    snprintf((char*)myStr.c_str(), BASIC, "%0.02f", check_for_signed_int(M_Byte0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.averageTemp)), 56)*1.00);
+    snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.averageTemp)*1.00));
 	set_json_string_With_Status(pageInfo, "Average Short Term Temperature", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.averageTemp, m_showStatusBits);					//!< Average Short Term Temperature
-    snprintf((char*)myStr.c_str(), BASIC, "%0.02f", check_for_signed_int(M_Byte0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.averageLongTemp)), 56)*1.00);
+    snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.averageLongTemp)*1.00));
 	set_json_string_With_Status(pageInfo, "Average Long Term Temperatures", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.averageLongTemp, m_showStatusBits);				//!< Average Long Term Temperature
-    snprintf((char*)myStr.c_str(), BASIC, "%0.02f", check_for_signed_int(M_Byte0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.highestShortTemp)), 56)*1.00);
+    snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.highestShortTemp)*1.00));
 	set_json_string_With_Status(pageInfo, "Highest Average Short Term Temperature", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.highestShortTemp, m_showStatusBits);		//!< Highest Average Short Term Temperature
-    snprintf((char*)myStr.c_str(), BASIC, "%0.02f", check_for_signed_int(M_Byte0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.lowestShortTemp)), 56)*1.00);
+    snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.lowestShortTemp)*1.00));
 	set_json_string_With_Status(pageInfo, "Lowest Average Short Term Temperature", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.lowestShortTemp, m_showStatusBits);		//!< Lowest Average Short Term Temperature
-    snprintf((char*)myStr.c_str(), BASIC, "%0.02f", check_for_signed_int(M_Byte0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.highestLongTemp)), 56)*1.00);
+    snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.highestLongTemp)*1.00));
 	set_json_string_With_Status(pageInfo, "Highest Average Long Term Temperature", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.highestLongTemp, m_showStatusBits);		//!< Highest Average Long Term Temperature
-    snprintf((char*)myStr.c_str(), BASIC, "%0.02f", check_for_signed_int(M_Byte0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.lowestLongTemp)), 56)*1.00);
+    snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.lowestLongTemp)*1.00));
 	set_json_string_With_Status(pageInfo, "Lowest Average Long Term Temperature", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.lowestLongTemp,m_showStatusBits);			//!< Lowest Average Long Term Temperature
 	
 	set_json_int_With_Status(pageInfo, "Time In Over Temperature", vFarmFrame[page].environmentPage.overTempTime, m_showStatusBits);												//!< Time In Over Temperature
 	set_json_int_With_Status(pageInfo, "Time In Under Temperature", vFarmFrame[page].environmentPage.underTempTime, m_showStatusBits);												//!< Time In Under Temperature
-	snprintf((char*)myStr.c_str(), BASIC, "%0.02f", (check_Status_Strip_Status(vFarmFrame[page].environmentPage.maxTemp))*1.00);
+	snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.maxTemp)*1.00));
 	set_json_string_With_Status(pageInfo, "Specified Max Operating Temperature", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.maxTemp, m_showStatusBits);					//!< Specified Max Operating Temperature
     
-	snprintf((char*)myStr.c_str(), BASIC, "%0.02f", (check_Status_Strip_Status(vFarmFrame[page].environmentPage.minTemp))*1.00);
+	snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.minTemp)*1.00));
 	set_json_string_With_Status(pageInfo, "Specified Min Operating Temperature", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.minTemp, m_showStatusBits);					//!< Specified Min Operating Temperature
 	
 	set_json_int_With_Status(pageInfo, "Over-Limit Shock Events Count(Raw)", vFarmFrame[page].environmentPage.shockEvents, m_showStatusBits);										//!< Over-Limit Shock Events Count
@@ -980,15 +980,15 @@ eReturnValues CATA_Farm_Log::Print_Head_Information(JSONNODE *masterData, uint32
 
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
-        whole = static_cast<int16_t>(M_Word2(vFarmFrame[page].reliPage.discSlip[loopCount]));
-        remander = (double)M_DoubleWord0(vFarmFrame[page].reliPage.discSlip[loopCount]);
+        whole = M_WordInt2(vFarmFrame[page].reliPage.discSlip[loopCount]);
+        remander = (double)M_DoubleWordInt0(vFarmFrame[page].reliPage.discSlip[loopCount]);
         printf("\tDisc Slip in micro-inches by Head %d:      %" PRIi16".%04.0f (debug)\n", loopCount, whole, remander);  //!< Disc Slip in micro-inches by Head
     }
 
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
-        whole = static_cast<int16_t>(M_Word2(vFarmFrame[page].reliPage.bitErrorRate[loopCount]));
-        remander = (double)M_DoubleWord0(vFarmFrame[page].reliPage.bitErrorRate[loopCount]);
+        whole = M_WordInt2(vFarmFrame[page].reliPage.bitErrorRate[loopCount]);
+        remander = (double)M_DoubleWordInt0(vFarmFrame[page].reliPage.bitErrorRate[loopCount]);
         printf("\tBit Error Rate of Zone 0 by Head %d:      %" PRIi16".%04.0f (debug)\n", loopCount, whole , remander);  //!< Bit Error Rate of Zone 0 by Drive Head
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
@@ -1044,11 +1044,11 @@ eReturnValues CATA_Farm_Log::Print_Head_Information(JSONNODE *masterData, uint32
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         printf("\tFly height inner clearance delta by Head  %d:   raw 0x%" PRIx64" inner, calculated %0.02f (debug)\n", loopCount, vFarmFrame[page].reliPage.flyHeightClearance[loopCount].inner, \
-            (float)static_cast<int16_t>(M_Word0(vFarmFrame[page].reliPage.flyHeightClearance[loopCount].inner)) / 10);                //!< [24][3] Applied fly height clearance delta per head in thousandths of one Angstrom.
+            (float)static_cast<int16_t>(M_WordInt0(vFarmFrame[page].reliPage.flyHeightClearance[loopCount].inner)) / 10);                //!< [24][3] Applied fly height clearance delta per head in thousandths of one Angstrom.
         printf("\tFly height middle clearance delta by Head  %d:   raw 0x%" PRIx64" middle, calculated %0.02f (debug)\n", loopCount, vFarmFrame[page].reliPage.flyHeightClearance[loopCount].middle, \
-            (float)static_cast<int16_t>(M_Word0(vFarmFrame[page].reliPage.flyHeightClearance[loopCount].middle)) / 10);               //!< [24][3] Applied fly height clearance delta per head in thousandths of one Angstrom.
+            (float)static_cast<int16_t>(M_WordInt0(vFarmFrame[page].reliPage.flyHeightClearance[loopCount].middle)) / 10);               //!< [24][3] Applied fly height clearance delta per head in thousandths of one Angstrom.
         printf("\tFly height outer clearance delta by Head  %d:   raw 0x%" PRIx64" outer, calculated %0.02f (debug)\n", loopCount, vFarmFrame[page].reliPage.flyHeightClearance[loopCount].outer, \
-            (float)static_cast<int16_t>(M_Word0(vFarmFrame[page].reliPage.flyHeightClearance[loopCount].outer)) / 10);                //!< [24][3] Applied fly height clearance delta per head in thousandths of one Angstrom.
+            (float)static_cast<int16_t>(M_WordInt0(vFarmFrame[page].reliPage.flyHeightClearance[loopCount].outer)) / 10);                //!< [24][3] Applied fly height clearance delta per head in thousandths of one Angstrom.
     }
     printf("\tNumber of disc slip recalibrations performed:  %" PRId64" (debug)\n", vFarmFrame[page].reliPage.diskSlipRecalPerformed & 0x00FFFFFFFFFFFFFFLL);                  //!< Number of disc slip recalibrations performed
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
@@ -1098,13 +1098,13 @@ eReturnValues CATA_Farm_Log::Print_Head_Information(JSONNODE *masterData, uint32
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         snprintf((char*)myHeader.c_str(), BASIC, "Disc Slip in micro-inches by Head %d", loopCount); // Head count
-        snprintf((char*)myStr.c_str(), BASIC, "%" PRIi16".%04.0f", static_cast<int16_t>(M_Word2(vFarmFrame[page].reliPage.discSlip[loopCount])), (double)M_DoubleWord0(vFarmFrame[page].reliPage.discSlip[loopCount]) ); //!< Disc Slip in micro-inches by Head
+        snprintf((char*)myStr.c_str(), BASIC, "%" PRIi16".%04.0f", M_WordInt2(vFarmFrame[page].reliPage.discSlip[loopCount]), (double)M_DoubleWordInt0(vFarmFrame[page].reliPage.discSlip[loopCount]) ); //!< Disc Slip in micro-inches by Head
         json_push_back(headInfo, json_new_a((char*)myHeader.c_str(), (char*)myStr.c_str()));
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         snprintf((char*)myHeader.c_str(), BASIC, "Bit Error Rate of Zone 0 by Head %d", loopCount); // Head count
-        snprintf((char*)myStr.c_str(), BASIC, "%" PRIi16".%04.0f", static_cast<int16_t>M_Word2(vFarmFrame[page].reliPage.bitErrorRate[loopCount]), (double)M_DoubleWord0(vFarmFrame[page].reliPage.bitErrorRate[loopCount]));
+        snprintf((char*)myStr.c_str(), BASIC, "%" PRIi16".%04.0f", M_WordInt2(vFarmFrame[page].reliPage.bitErrorRate[loopCount]), (double)M_DoubleWordInt0(vFarmFrame[page].reliPage.bitErrorRate[loopCount]));
         json_push_back(headInfo, json_new_a((char*)myHeader.c_str(), (char*)myStr.c_str()));
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
@@ -1172,37 +1172,37 @@ eReturnValues CATA_Farm_Log::Print_Head_Information(JSONNODE *masterData, uint32
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         snprintf((char *)myHeader.c_str(), BASIC, "Fly height clearance delta by Head %" PRId32" inner", loopCount);
-        snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<int16_t>(M_Word0(vFarmFrame[page].reliPage.flyHeightClearance[loopCount].inner))*.1);
+        snprintf((char*)myStr.c_str(), BASIC, "%0.02f",static_cast<float>( M_WordInt0(vFarmFrame[page].reliPage.flyHeightClearance[loopCount].inner)*.1));
         set_json_string_With_Status(headInfo, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].reliPage.flyHeightClearance[loopCount].inner, m_showStatusBits);  //!< [24][3] Applied fly height clearance delta per head in thousandths of one Angstrom.
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         snprintf((char*)myHeader.c_str(), BASIC, "Fly height clearance delta by Head %" PRId32" middle", loopCount); // Head count
-        snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<int16_t>(M_Word0(vFarmFrame[page].reliPage.flyHeightClearance[loopCount].middle)) * .1);
+        snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].reliPage.flyHeightClearance[loopCount].middle) * .1));
         set_json_string_With_Status(headInfo, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].reliPage.flyHeightClearance[loopCount].middle, m_showStatusBits); //!< [24][3] Applied fly height clearance delta per head in thousandths of one Angstrom.
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         snprintf((char*)myHeader.c_str(), BASIC, "Fly height clearance delta by Head %" PRId32" outer", loopCount); // Head count
-        snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<int16_t>(M_Word0(vFarmFrame[page].reliPage.flyHeightClearance[loopCount].outer )) * .1);
+        snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].reliPage.flyHeightClearance[loopCount].outer ) * .1));
         set_json_string_With_Status(headInfo, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].reliPage.flyHeightClearance[loopCount].outer, m_showStatusBits);//!< [24][3] Applied fly height clearance delta per head in thousandths of one Angstrom.
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         snprintf((char *)myHeader.c_str(), BASIC, "Current H2SAT trimmed mean bits in error by Head %" PRId32" inner", loopCount);
-        snprintf((char*)myStr.c_str(), BASIC, "%0.01f", static_cast<int16_t>(M_Word0(check_Status_Strip_Status(vFarmFrame[page].reliPage.currentH2SAT[loopCount].inner))) *.1);
+        snprintf((char*)myStr.c_str(), BASIC, "%0.01f", static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].reliPage.currentH2SAT[loopCount].inner)) *.1));
         set_json_string_With_Status(headInfo, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].reliPage.currentH2SAT[loopCount].inner, m_showStatusBits);    //!< [24] Current H2SAT trimmed mean bits in error by Head, by Test Zone 9,
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         snprintf((char*)myHeader.c_str(), BASIC, "Current H2SAT trimmed mean bits in error by Head %" PRId32" middle", loopCount); // Head count
-        snprintf((char*)myStr.c_str(), BASIC, "%0.01f", static_cast<int16_t>(M_Word0(check_Status_Strip_Status(vFarmFrame[page].reliPage.currentH2SAT[loopCount].middle))) *.1);
+        snprintf((char*)myStr.c_str(), BASIC, "%0.01f", static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].reliPage.currentH2SAT[loopCount].middle)) *.1));
         set_json_string_With_Status(headInfo, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].reliPage.currentH2SAT[loopCount].middle, m_showStatusBits);   //!< [24] Current H2SAT trimmed mean bits in error by Head, by Test Zone 9,
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         snprintf((char*)myHeader.c_str(), BASIC, "Current H2SAT trimmed mean bits in error by Head %" PRId32" outer", loopCount); // Head count
-        snprintf((char*)myStr.c_str(), BASIC, "%0.01f", static_cast<int16_t>(M_Word0(check_Status_Strip_Status(vFarmFrame[page].reliPage.currentH2SAT[loopCount].outer ))) *.1);
+        snprintf((char*)myStr.c_str(), BASIC, "%0.01f", static_cast<float > (M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].reliPage.currentH2SAT[loopCount].outer)) *.1));
         set_json_string_With_Status(headInfo, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].reliPage.currentH2SAT[loopCount].outer,  m_showStatusBits);   //!< [24] Current H2SAT trimmed mean bits in error by Head, by Test Zone 9,
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
@@ -1236,7 +1236,7 @@ eReturnValues CATA_Farm_Log::Print_Head_Information(JSONNODE *masterData, uint32
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         snprintf((char *)myHeader.c_str(), BASIC, "Current H2SAT asymmetry by Head %" PRId32"", loopCount);
-        snprintf((char*)myStr.c_str(), BASIC, "%0.01f", (float)static_cast<int16_t>(M_Word0(check_Status_Strip_Status(vFarmFrame[page].reliPage.currentH2SATasymmetry[loopCount])))  * .1);
+        snprintf((char*)myStr.c_str(), BASIC, "%0.01f", static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].reliPage.currentH2SATasymmetry[loopCount])))  * .1);
         set_json_string_With_Status(headInfo, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].reliPage.currentH2SATasymmetry[loopCount], m_showStatusBits);             //!< [24] Qword[24] Current H2SAT asymmetry by Head, averaged across Test Zones
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)

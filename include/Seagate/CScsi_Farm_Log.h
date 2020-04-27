@@ -61,8 +61,10 @@ namespace opensea_parser {
         bool swap_Bytes_sErrorStat(sScsiErrorStat * es);
         bool swap_Bytes_sEnvironmentStat(sScsiEnvironmentStat *es);
         bool swap_Bytes_sScsiReliabilityStat(sScsiReliabilityStat *ss);
+        bool swap_Bytes_sLUNStruct(sLUNStruct *LUN);
         bool get_Head_Info(sHeadInformation *phead, uint8_t *buffer);
         void set_Head_Header(std::string &headerName, eLogPageTypes index);
+        void get_LUN_Info(sLUNStruct *pLUN, uint8_t *buffer);
 		
 		eReturnValues init_Header_Data();
         eReturnValues print_Header(JSONNODE *masterData);

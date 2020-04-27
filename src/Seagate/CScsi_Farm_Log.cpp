@@ -658,7 +658,7 @@ bool CSCSI_Farm_Log::swap_Bytes_sScsiReliabilityStat(sScsiReliabilityStat *ss)
 //! \fn swap_Bytes_sScsiReliabilityStat()
 //
 //! \brief
-//!   Description:  takes the pointer to the structure an does a byte swap on all the data for the reliability stat
+//!   Description:  takes the pointer to the structure an does a byte swap on all the data for the farm header
 //
 //  Entry:
 //! \param sScsiReliabilityStat  =  pointer to the reliability stat
@@ -682,10 +682,48 @@ bool CSCSI_Farm_Log::swap_Bytes_sFarmHeader(sScsiFarmHeader *fh)
 }
 //-----------------------------------------------------------------------------
 //
+//! \fn swap_Bytes_sScsiReliabilityStat()
+//
+//! \brief
+//!   Description:  takes the pointer to the structure an does a byte swap on all the data for the LUN Structure
+//
+//  Entry:
+//! \param sLUNStruct  =  pointer to the LUN Structure
+//
+//  Exit:
+//!   \return bool
+//
+//---------------------------------------------------------------------------
+bool CSCSI_Farm_Log::swap_Bytes_sLUNStruct(sLUNStruct *LUN)
+{
+    byte_Swap_64(&LUN->correctedLBAbyISP);
+    byte_Swap_64(&LUN->dosScansPerformed);
+    byte_Swap_64(&LUN->headLoadEvents);
+    byte_Swap_64(&LUN->idelTime);
+    byte_Swap_64(&LUN->LUNID);
+    byte_Swap_64(&LUN->maxRVabsolue);
+    byte_Swap_64(&LUN->paritySectors);
+    byte_Swap_64(&LUN->reallocatedCandidates);
+    byte_Swap_64(&LUN->reallocatedSectors);
+    byte_Swap_64(&LUN->reclamedGlist);
+    byte_Swap_64(&LUN->residentReallocatedAfterIDD);
+    byte_Swap_64(&LUN->residentReallocatedBeforeIDD);
+    byte_Swap_64(&LUN->RVabsolue);
+    byte_Swap_64(&LUN->servoStatus);
+    byte_Swap_64(&LUN->slippedSectorsAfterIDD);
+    byte_Swap_64(&LUN->slippedSectorsBeforeIDD);
+    byte_Swap_64(&LUN->subCmdOfIDD);
+    byte_Swap_64(&LUN->successScrubbedAfterIDD);
+    byte_Swap_64(&LUN->successScrubbedBeforeIDD);
+    byte_Swap_64(&LUN->timeStampOfIDD);
+    return true;
+}
+//-----------------------------------------------------------------------------
+//
 //! \fn get_Head_Info()
 //
 //! \brief
-//!   Description:  takes the pointer to the structure an does a byte swap on all the data for the reliability stat
+//!   Description:  takes the pointer to the structure an does a byte swap on all the data for heads
 //
 //  Entry:
 //! \param phead  =  pointer to the head information
@@ -705,7 +743,27 @@ bool CSCSI_Farm_Log::get_Head_Info(sHeadInformation *phead, uint8_t *buffer)
     }
     return true;
 }
-
+//-----------------------------------------------------------------------------
+//
+//! \fn get_Head_Info()
+//
+//! \brief
+//!   Description:  takes the pointer to the structure an does a byte swap on all the data for the reliability stat
+//
+//  Entry:
+//! \param pLUN  =  pointer to the LUN structure
+//! \param buffer = the pointer to the buffer data
+//
+//  Exit:
+//!   \return bool
+//
+//---------------------------------------------------------------------------
+void CSCSI_Farm_Log::get_LUN_Info(sLUNStruct *pLUN, uint8_t *buffer)
+{
+    memcpy(pLUN, (sLUNStruct *)&buffer[4], sizeof(sLUNStruct) );
+    memcpy(&pLUN->pageHeader, (sScsiPageParameter *)&buffer[0], sizeof(sScsiPageParameter));
+    swap_Bytes_sLUNStruct(pLUN);
+}
 //-----------------------------------------------------------------------------
 //
 //! \fn parse_Farm_Log()
@@ -1126,6 +1184,51 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                         delete pHeadInfo; 
                     }
                     break; 
+                case SECOND_MR_HEAD_RESISTANCE:
+                    {
+                        sHeadInformation *pHeadInfo = new sHeadInformation();
+                        get_Head_Info(pHeadInfo, &pBuf[offset]);
+                        memcpy(&pFarmFrame->secondMRHeadResistanceByHead, pHeadInfo, sizeof(*pHeadInfo));
+                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                        delete pHeadInfo;
+                    }
+                    break;
+                case LUN_0_ACTUATOR:
+                    {
+                        sLUNStruct *pLUNInfo = new sLUNStruct();
+                        //get_Head_Info(pLUNInfo, &pBuf[offset]);
+                        memcpy(&pFarmFrame->lun0, pLUNInfo, sizeof(*pLUNInfo));
+                        offset += (pLUNInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                        delete pLUNInfo;
+                    }
+                break;
+                case LUN_1_ACTUATOR:
+                    {
+                        sHeadInformation *pHeadInfo = new sHeadInformation();
+                        get_Head_Info(pHeadInfo, &pBuf[offset]);
+                        memcpy(&pFarmFrame->appliedFlyHeightByHeadMiddle, pHeadInfo, sizeof(*pHeadInfo));
+                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                        delete pHeadInfo;
+                    }
+                break;
+                case LUN_2_ACTUATOR:
+                    {
+                        sHeadInformation *pHeadInfo = new sHeadInformation();
+                        get_Head_Info(pHeadInfo, &pBuf[offset]);
+                        memcpy(&pFarmFrame->appliedFlyHeightByHeadMiddle, pHeadInfo, sizeof(*pHeadInfo));
+                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                        delete pHeadInfo;
+                    }
+                break;
+                case LUN_3_ACTUATOR:
+                    {
+                        sHeadInformation *pHeadInfo = new sHeadInformation();
+                        get_Head_Info(pHeadInfo, &pBuf[offset]);
+                        memcpy(&pFarmFrame->appliedFlyHeightByHeadMiddle, pHeadInfo, sizeof(*pHeadInfo));
+                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                        delete pHeadInfo;
+                    }
+                    break;
                 default:
                     offset += m_logSize;
                     break;
@@ -1464,9 +1567,9 @@ eReturnValues CSCSI_Farm_Log::print_Enviroment_Information(JSONNODE *masterData,
         printf("\nEnvironment Information From Farm Log copy %d: \n", page);
     }
 
-    printf("\tCurrent Temperature:                      %0.02f     \n", (M_Word0(vFarmFrame[page].environmentPage.curentTemp)*.10));			        //!< Current Temperature in Celsius
-    printf("\tHighest Temperature:                      %0.02f     \n", (M_Word0(vFarmFrame[page].environmentPage.highestTemp)*.10));			        //!< Highest Temperature in Celsius
-    printf("\tLowest Temperature:                       %0.02f     \n", (M_Word0(vFarmFrame[page].environmentPage.lowestTemp)*.10));			        //!< Lowest Temperature
+    printf("\tCurrent Temperature:                      %0.02f     \n", static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.curentTemp)*.10));			        //!< Current Temperature in Celsius
+    printf("\tHighest Temperature:                      %0.02f     \n", static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.highestTemp)*.10));			        //!< Highest Temperature in Celsius
+    printf("\tLowest Temperature:                       %0.02f     \n", static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.lowestTemp)*.10));			        //!< Lowest Temperature
     printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved & 0x00FFFFFFFFFFFFFFLL);				//!< Reserved
     printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved1 & 0x00FFFFFFFFFFFFFFLL);				//!< Reserved
     printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved2 & 0x00FFFFFFFFFFFFFFLL);				//!< Reserved
@@ -1475,12 +1578,12 @@ eReturnValues CSCSI_Farm_Log::print_Enviroment_Information(JSONNODE *masterData,
     printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved5 & 0x00FFFFFFFFFFFFFFLL);				//!< Reserved
     printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved6 & 0x00FFFFFFFFFFFFFFLL);				//!< Reserved
     printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved7 & 0x00FFFFFFFFFFFFFFLL);				//!< Reserved
-    printf("\tSpecified Max Operating Temperature:      %0.02f     \n", (M_Word0(vFarmFrame[page].environmentPage.maxTemp) * 1.00));				    //!< Specified Max Operating Temperature
-    printf("\tSpecified Min Operating Temperature:      %0.02f     \n", (M_Word0(vFarmFrame[page].environmentPage.minTemp) * 1.00));				    //!< Specified Min Operating Temperature
+    printf("\tSpecified Max Operating Temperature:      %0.02f     \n", static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.maxTemp) * 1.00));				    //!< Specified Max Operating Temperature
+    printf("\tSpecified Min Operating Temperature:      %0.02f     \n", static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.minTemp) * 1.00));				    //!< Specified Min Operating Temperature
     printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved8 & 0x00FFFFFFFFFFFFFFLL);				//!< Reserved
     printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved9 & 0x00FFFFFFFFFFFFFFLL);	            //!< Reserved
     printf("\tCurrent Relative Humidity:                %" PRId32".%" PRId32"   \n", M_DoubleWord1(vFarmFrame[page].environmentPage.humidity & 0x00FFFFFFFFFFFFFFLL), M_DoubleWord0(vFarmFrame[page].environmentPage.humidity & 0x00FFFFFFFFFFFFFFLL));		//!< Current Relative Humidity (in units of .1%)
-    printf("\tHumidity Mixed Ratio:                     %0.02f     \n", ((vFarmFrame[page].environmentPage.humidityRatio & 0x00FFFFFFFFFFFFFFLL) / 8.0)); //!< Humidity Mixed Ratio multiplied by 8 (divide by 8 to get actual value)
+    printf("\tHumidity Mixed Ratio:                     %0.02f     \n", static_cast<float>((vFarmFrame[page].environmentPage.humidityRatio & 0x00FFFFFFFFFFFFFFLL) / 8.0)); //!< Humidity Mixed Ratio multiplied by 8 (divide by 8 to get actual value)
     printf("\tCurrent Motor Power:                      %" PRIu16" \n", (M_Word0(vFarmFrame[page].environmentPage.currentMotorPower)));		        //!< Current Motor Power, value from most recent SMART Summary Frame6
 #endif
     if (vFarmFrame[page].environmentPage.copyNumber == FACTORYCOPY)
@@ -1493,21 +1596,21 @@ eReturnValues CSCSI_Farm_Log::print_Enviroment_Information(JSONNODE *masterData,
     }
     json_set_name(pageInfo, (char*)myStr.c_str());
 
-	snprintf((char*)myStr.c_str(), BASIC, "%0.02f", check_for_signed_int(M_Word0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.curentTemp)),48)*.10);							//!< Current Temperature in Celsius
+	snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.curentTemp)),48)*.10);							//!< Current Temperature in Celsius
 	set_json_string_With_Status(pageInfo, "Current Temperature (Celsius)", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.curentTemp, m_showStatusBits);
-	snprintf((char*)myStr.c_str(), BASIC, "%0.02f", check_for_signed_int(M_Word0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.highestTemp)), 48)*.10);						//!< Highest Average Long Term Temperature
+	snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.highestTemp)), 48)*.10);						//!< Highest Average Long Term Temperature
 	set_json_string_With_Status(pageInfo, "Highest Average Long Term Temperature", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.highestTemp, m_showStatusBits);		
-	snprintf((char*)myStr.c_str(), BASIC, "%0.02f", check_for_signed_int(M_Word0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.lowestTemp)), 48)*.10);							//!< Lowest Average Long Term Temperature
+	snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.lowestTemp)), 48)*.10);							//!< Lowest Average Long Term Temperature
 	set_json_string_With_Status(pageInfo, "Lowest Average Long Term Temperature", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.lowestTemp, m_showStatusBits);			
-	snprintf((char*)myStr.c_str(), BASIC, "%0.02f", M_Word0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.maxTemp))*1.00);							//!< Specified Max Operating Temperature
+	snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.maxTemp))*1.00));							//!< Specified Max Operating Temperature
 	set_json_string_With_Status(pageInfo, "Specified Max Operating Temperature", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.maxTemp, m_showStatusBits);					
-	snprintf((char*)myStr.c_str(), BASIC, "%0.02f", M_Word0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.minTemp))*1.00);							//!< Specified Min Operating Temperature
+	snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.minTemp))*1.00));							//!< Specified Min Operating Temperature
 	set_json_string_With_Status(pageInfo, "Specified Min Operating Temperature", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.minTemp, m_showStatusBits);					
-	snprintf((char*)myStr.c_str(), BASIC, "%0.02f", (check_Status_Strip_Status(vFarmFrame[page].environmentPage.humidity))*0.1);							//!< Current Relative Humidity (in units of .1%)
+	snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.humidity)*0.1));							//!< Current Relative Humidity (in units of .1%)
 	set_json_string_With_Status(pageInfo, "Current Relative Humidity", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.humidity, m_showStatusBits);
-	snprintf((char*)myStr.c_str(), BASIC, "%0.02f", (check_Status_Strip_Status(vFarmFrame[page].environmentPage.humidityRatio) / 8.0));						//!< Humidity Mixed Ratio multiplied by 8 (divide by 8 to get actual value)
+	snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.humidityRatio) / 8.0));						//!< Humidity Mixed Ratio multiplied by 8 (divide by 8 to get actual value)
 	set_json_string_With_Status(pageInfo, "Humidity Mixed Ratio", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.humidityRatio, m_showStatusBits);
-    snprintf((char*)myStr.c_str(), BASIC, "%" PRIi16"", M_Word0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.currentMotorPower)));
+    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16"", M_Word0(vFarmFrame[page].environmentPage.currentMotorPower));
     set_json_string_With_Status(pageInfo, "Current Motor Power", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.currentMotorPower, m_showStatusBits);					    //!< Current Motor Power, value from most recent SMART Summary Frame6
 	
     json_push_back(masterData, pageInfo);
@@ -1657,8 +1760,8 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
                 uint64_t dsHead = check_Status_Strip_Status(vFarmFrame[page].discSlipPerHead.headValue[loopCount]);
-                int16_t whole = M_Word2(dsHead);							// get 5:4 whole part of the float
-                double decimal = M_DoubleWord0(dsHead);                   // get 3:0 for the Deciaml Part of the float
+                int16_t whole = M_WordInt2(dsHead);							// get 5:4 whole part of the float
+                double decimal = static_cast<double>(M_DoubleWordInt0(dsHead));                   // get 3:0 for the Deciaml Part of the float
 #if defined( _DEBUG)
                 printf("\tDisc Slip in micro-inches by Head by Head %d:  raw 0x%" PRIx64", calculated %" PRIi16".%04.0f (debug) \n" \
                     , loopCount, vFarmFrame[page].discSlipPerHead.headValue[loopCount], whole, decimal);  //!< Disc Slip in micro-inches
@@ -1673,8 +1776,8 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
             {
 
                 uint64_t beHead = check_Status_Strip_Status(vFarmFrame[page].bitErrorRateByHead.headValue[loopCount]);
-                int16_t whole = M_Word2(beHead);							// get 5:4 whole part of the float
-                double decimal = M_DoubleWord0(beHead);                     // get 3:0 for the Deciaml Part of the float
+                int16_t whole = M_WordInt2(beHead);							// get 5:4 whole part of the float
+                double decimal = static_cast<double>(M_DoubleWordInt0(beHead));                     // get 3:0 for the Deciaml Part of the float
 #if defined( _DEBUG)
                 printf("\tBit Error Rate of Zone 0 by Head %d:  raw 0x%" PRIx64", %" PRIi16".%04.0f \n", loopCount, vFarmFrame[page].bitErrorRateByHead.headValue[loopCount], whole, decimal);  //!< Bit Error Rate of Zone 0 by Drive Head
 #endif
@@ -1914,7 +2017,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tCurrent H2SAT trimmed mean bits in error by Head %d , by Test Zone 0:      %" PRIu64" \n", loopCount, vFarmFrame[page].currentH2STTrimmedbyHeadZone0.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Current H2SAT trimmed mean bits in error by Head, by Test Zone 0
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "Current H2SAT trimmed mean bits in error Head number %d", loopCount); // Head count
-                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", (check_for_signed_int(M_Word0(check_Status_Strip_Status(vFarmFrame[page].currentH2STTrimmedbyHeadZone0.headValue[loopCount])), 16)*.10));
+                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].currentH2STTrimmedbyHeadZone0.headValue[loopCount])*.10));
                 set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].currentH2STTrimmedbyHeadZone0.headValue[loopCount], m_showStatusBits); //!< Current H2SAT trimmed mean bits in error by Head, by Test Zone 0
             }
             break;
@@ -1925,7 +2028,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tCurrent H2SAT trimmed mean bits in error by Head %d , by Test Zone 1:      %" PRIu64" \n", loopCount, vFarmFrame[page].currentH2STTrimmedbyHeadZone1.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Current H2SAT trimmed mean bits in error by Head, by Test Zone 1
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "Current H2SAT trimmed mean bits in error Head number %d", loopCount); // Head count
-                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", (check_for_signed_int(M_Word0(check_Status_Strip_Status(vFarmFrame[page].currentH2STTrimmedbyHeadZone1.headValue[loopCount])), 16)*.10));
+                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].currentH2STTrimmedbyHeadZone1.headValue[loopCount])*.10));
                 set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].currentH2STTrimmedbyHeadZone1.headValue[loopCount], m_showStatusBits); //!< Current H2SAT trimmed mean bits in error by Head, by Test Zone 1
             }
             break;
@@ -1936,7 +2039,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tCurrent H2SAT trimmed mean bits in error by Head %d , by Test Zone 2:      %" PRIu64" \n", loopCount, vFarmFrame[page].currentH2STTrimmedbyHeadZone2.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Current H2SAT trimmed mean bits in error by Head, by Test Zone 2
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "Current H2SAT trimmed mean bits in error Head number %d", loopCount); // Head count
-                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", (check_for_signed_int(M_Word0(check_Status_Strip_Status(vFarmFrame[page].currentH2STTrimmedbyHeadZone2.headValue[loopCount])), 16)*.10));
+                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].currentH2STTrimmedbyHeadZone2.headValue[loopCount])*.10));
                 set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].currentH2STTrimmedbyHeadZone2.headValue[loopCount], m_showStatusBits);//!< Current H2SAT trimmed mean bits in error by Head, by Test Zone 2
             }
             break;
@@ -1947,7 +2050,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tCurrent H2SAT iterations to converge by Head %d , by Test Zone 0:      %" PRIu64" \n", loopCount, vFarmFrame[page].currentH2STIterationsByHeadZone0.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Current H2SAT iterations to cnverge by Head, by Test Zone 0
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "Current H2SAT iterations to converge Test Zone 0 Head number %d", loopCount); // Head count
-                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", (check_for_signed_int(M_Word0(check_Status_Strip_Status(vFarmFrame[page].currentH2STIterationsByHeadZone0.headValue[loopCount])), 16)*.10));
+                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].currentH2STIterationsByHeadZone0.headValue[loopCount])*.10));
                 set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].currentH2STIterationsByHeadZone0.headValue[loopCount], m_showStatusBits);  //!< Current H2SAT iterations to cnverge by Head, by Test Zone 0
             }
             break;
@@ -1958,7 +2061,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tCurrent H2SAT iterations to converge by Head %d , by Test Zone 1:      %" PRIu64" \n", loopCount, vFarmFrame[page].currentH2STIterationsByHeadZone1.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Current H2SAT iterations to cnverge by Head, by Test Zone 1
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "Current H2SAT iterations to converge Test Zone 1 Head number %d", loopCount); // Head count
-                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", (check_for_signed_int(M_Word0(check_Status_Strip_Status(vFarmFrame[page].currentH2STIterationsByHeadZone1.headValue[loopCount])), 16)*.10));
+                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].currentH2STIterationsByHeadZone1.headValue[loopCount])*.10));
                 set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].currentH2STIterationsByHeadZone1.headValue[loopCount], m_showStatusBits);  //!< Current H2SAT iterations to cnverge by Head, by Test Zone 1
             }
             break;
@@ -1969,7 +2072,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tCurrent H2SAT iterations to converge by Head %d , by Test Zone 2:      %" PRIu64" \n", loopCount, vFarmFrame[page].currentH2STIterationsByHeadZone2.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Current H2SAT iterations to cnverge by Head, by Test Zone 2
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "Current H2SAT iterations to converge Test Zone 2 Head number %d", loopCount); // Head count
-                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(static_cast<int16_t>(M_Word0(check_Status_Strip_Status(vFarmFrame[page].currentH2STIterationsByHeadZone2.headValue[loopCount])),16)*.10));
+                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].currentH2STIterationsByHeadZone2.headValue[loopCount])*.10));
                 set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].currentH2STIterationsByHeadZone2.headValue[loopCount], m_showStatusBits); //!< Current H2SAT iterations to cnverge by Head, by Test Zone 2
             }
             break;
@@ -1980,7 +2083,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tApplied fly height clearance delta per head: Outer by Head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].appliedFlyHeightByHeadOuter.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Applied fly height clearance delta per head in thousandths of one Angstrom: Outer by Head
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "Applied fly height clearance delta per head: Outer Head number %d", loopCount); // Head count
-                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(static_cast<int16_t>(M_Word0(check_Status_Strip_Status(vFarmFrame[page].appliedFlyHeightByHeadOuter.headValue[loopCount])),16)*.1));   //!< Applied fly height clearance delta per head in thousandths of one Angstrom: Outer by Head
+                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].appliedFlyHeightByHeadOuter.headValue[loopCount])*.1));   //!< Applied fly height clearance delta per head in thousandths of one Angstrom: Outer by Head
                 set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].appliedFlyHeightByHeadOuter.headValue[loopCount], m_showStatusBits);
             }
             break;
@@ -1991,7 +2094,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tApplied fly height clearance delta per head in thousandths of one Angstrom: Inner by Head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].appliedFlyHeightByHeadInner.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Applied fly height clearance delta per head in thousandths of one Angstrom: Inner by Head
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "Applied fly height clearance delta per head: Inner Head number %d", loopCount); // Head count
-                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(static_cast<int16_t>(M_Word0(check_Status_Strip_Status(vFarmFrame[page].appliedFlyHeightByHeadInner.headValue[loopCount])),16)*.1));   //!< Applied fly height clearance delta per head in thousandths of one Angstrom: Inner by Head
+                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].appliedFlyHeightByHeadInner.headValue[loopCount])*.1));   //!< Applied fly height clearance delta per head in thousandths of one Angstrom: Inner by Head
                 set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].appliedFlyHeightByHeadInner.headValue[loopCount], m_showStatusBits);
             }
             break;
@@ -2002,7 +2105,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tApplied fly height clearance delta per head: Middle by Head %d:      %" PRIu64" \n", loopCount, vFarmFrame[page].appliedFlyHeightByHeadMiddle.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Applied fly height clearance delta per head in thousandths of one Angstrom: middle by Head
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "Applied fly height clearance delta per head: Middle Head number %d", loopCount);     // Head count
-                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(static_cast<int16_t>(M_Word0(check_Status_Strip_Status(vFarmFrame[page].appliedFlyHeightByHeadMiddle.headValue[loopCount])),16) *.1));   //!< Applied fly height clearance delta per head in thousandths of one Angstrom:middle by Head
+                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].appliedFlyHeightByHeadMiddle.headValue[loopCount]) *.1));   //!< Applied fly height clearance delta per head in thousandths of one Angstrom:middle by Head
                 set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].appliedFlyHeightByHeadMiddle.headValue[loopCount], m_showStatusBits);
             }
             break;
@@ -2016,6 +2119,113 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
         case RESERVED_FOR_FUTURE_EXPANSION_17:
         case RESERVED_FOR_FUTURE_EXPANSION_18:
         case RESERVED_FOR_FUTURE_EXPANSION_19:
+#if defined( _DEBUG)
+            printf("\tSomething went wrong, ERROR \n");
+#endif
+            return FAILURE;
+            break;
+        case SECOND_MR_HEAD_RESISTANCE:
+            break;
+        case RESERVED_FOR_FUTURE_EXPANSION_20:
+        case RESERVED_FOR_FUTURE_EXPANSION_21:
+        case RESERVED_FOR_FUTURE_EXPANSION_22:
+        case RESERVED_FOR_FUTURE_EXPANSION_23:
+        case RESERVED_FOR_FUTURE_EXPANSION_24:
+        case RESERVED_FOR_FUTURE_EXPANSION_25:
+        case RESERVED_FOR_FUTURE_EXPANSION_26:
+        case RESERVED_FOR_FUTURE_EXPANSION_27:
+        case RESERVED_FOR_FUTURE_EXPANSION_28:
+        case RESERVED_FOR_FUTURE_EXPANSION_29:
+        case RESERVED_FOR_FUTURE_EXPANSION_30:
+        case RESERVED_FOR_FUTURE_EXPANSION_31:
+#if defined( _DEBUG)
+            printf("\tSomething went wrong, ERROR \n");
+#endif
+            return FAILURE;
+            break;
+        case LUN_0_ACTUATOR:
+            break;
+        case RESERVED_FOR_FUTURE_EXPANSION_40:
+        case RESERVED_FOR_FUTURE_EXPANSION_41:
+        case RESERVED_FOR_FUTURE_EXPANSION_42:
+        case RESERVED_FOR_FUTURE_EXPANSION_43:
+        case RESERVED_FOR_FUTURE_EXPANSION_44:
+        case RESERVED_FOR_FUTURE_EXPANSION_45:
+        case RESERVED_FOR_FUTURE_EXPANSION_46:
+        case RESERVED_FOR_FUTURE_EXPANSION_47:
+        case RESERVED_FOR_FUTURE_EXPANSION_48:
+        case RESERVED_FOR_FUTURE_EXPANSION_49:
+        case RESERVED_FOR_FUTURE_EXPANSION_50:
+        case RESERVED_FOR_FUTURE_EXPANSION_51:
+        case RESERVED_FOR_FUTURE_EXPANSION_52:
+        case RESERVED_FOR_FUTURE_EXPANSION_53:
+        case RESERVED_FOR_FUTURE_EXPANSION_54:
+#if defined( _DEBUG)
+            printf("\tSomething went wrong, ERROR \n");
+#endif
+            return FAILURE;
+            break;
+        case LUN_1_ACTUATOR:
+            break;
+        case RESERVED_FOR_FUTURE_EXPANSION_60:
+        case RESERVED_FOR_FUTURE_EXPANSION_61:
+        case RESERVED_FOR_FUTURE_EXPANSION_62:
+        case RESERVED_FOR_FUTURE_EXPANSION_63:
+        case RESERVED_FOR_FUTURE_EXPANSION_64:
+        case RESERVED_FOR_FUTURE_EXPANSION_65:
+        case RESERVED_FOR_FUTURE_EXPANSION_66:
+        case RESERVED_FOR_FUTURE_EXPANSION_67:
+        case RESERVED_FOR_FUTURE_EXPANSION_68:
+        case RESERVED_FOR_FUTURE_EXPANSION_69:
+        case RESERVED_FOR_FUTURE_EXPANSION_70:
+        case RESERVED_FOR_FUTURE_EXPANSION_71:
+        case RESERVED_FOR_FUTURE_EXPANSION_72:
+        case RESERVED_FOR_FUTURE_EXPANSION_73:
+        case RESERVED_FOR_FUTURE_EXPANSION_74:
+#if defined( _DEBUG)
+            printf("\tSomething went wrong, ERROR \n");
+#endif
+            return FAILURE;
+            break;
+        case LUN_2_ACTUATOR:
+            break;
+        case RESERVED_FOR_FUTURE_EXPANSION_80:
+        case RESERVED_FOR_FUTURE_EXPANSION_81:
+        case RESERVED_FOR_FUTURE_EXPANSION_82:
+        case RESERVED_FOR_FUTURE_EXPANSION_83:
+        case RESERVED_FOR_FUTURE_EXPANSION_84:
+        case RESERVED_FOR_FUTURE_EXPANSION_85:
+        case RESERVED_FOR_FUTURE_EXPANSION_86:
+        case RESERVED_FOR_FUTURE_EXPANSION_87:
+        case RESERVED_FOR_FUTURE_EXPANSION_88:
+        case RESERVED_FOR_FUTURE_EXPANSION_89:
+        case RESERVED_FOR_FUTURE_EXPANSION_90:
+        case RESERVED_FOR_FUTURE_EXPANSION_91:
+        case RESERVED_FOR_FUTURE_EXPANSION_92:
+        case RESERVED_FOR_FUTURE_EXPANSION_93:
+        case RESERVED_FOR_FUTURE_EXPANSION_94:
+#if defined( _DEBUG)
+            printf("\tSomething went wrong, ERROR \n");
+#endif
+            return FAILURE;
+            break;
+        case LUN_3_ACTUATOR:
+            break;
+        case RESERVED_FOR_FUTURE_EXPANSION_100:
+        case RESERVED_FOR_FUTURE_EXPANSION_101:
+        case RESERVED_FOR_FUTURE_EXPANSION_102:
+        case RESERVED_FOR_FUTURE_EXPANSION_103:
+        case RESERVED_FOR_FUTURE_EXPANSION_104:
+        case RESERVED_FOR_FUTURE_EXPANSION_105:
+        case RESERVED_FOR_FUTURE_EXPANSION_106:
+        case RESERVED_FOR_FUTURE_EXPANSION_107:
+        case RESERVED_FOR_FUTURE_EXPANSION_108:
+        case RESERVED_FOR_FUTURE_EXPANSION_109:
+        case RESERVED_FOR_FUTURE_EXPANSION_110:
+        case RESERVED_FOR_FUTURE_EXPANSION_111:
+        case RESERVED_FOR_FUTURE_EXPANSION_112:
+        case RESERVED_FOR_FUTURE_EXPANSION_113:
+        case RESERVED_FOR_FUTURE_EXPANSION_114:
         case RESERVED_FOR_FUTURE_EXPANSION:
             break;
         default:

@@ -60,8 +60,16 @@ typedef struct _sWorkLoadStat
 	uint64_t        totalNumberofOtherCMDS;                     //!< Total Number Of Other Commands
 	uint64_t        logicalSecWritten;                          //!< Logical Sectors Written
 	uint64_t        logicalSecRead;                             //!< Logical Sectors Read
-    uint64_t        dither;                                     //!< Number of dither events during current power cycle (added 3.4)
-    uint64_t        ditherRandom;                               //!< Number of times dither was held off during random workloads during current power cycle(added 3.4)
+    union
+    {
+        uint64_t        dither;                                     //!< ATA Number of dither events during current power cycle (added 3.4)
+        uint64_t        totalReadCmdsFromFrames;                    //!< SCSI Total Read Commands by Radius from last 3 SMART Summary Frames 
+    };
+    union
+    {
+        uint64_t        ditherRandom;                               //!< ATA Number of times dither was held off during random workloads during current power cycle(added 3.4)
+        uint64_t        totalWriteCmdsFromFrames;                   //!< SCSI Total Write Commands by Radius from last 3 SMART Summary Frames 
+    };
     uint64_t        ditherSequential;                           //!< Number of times dither was held off during sequential workloads during current power cycle(added 3.4)
 	_sWorkLoadStat() : pageNumber(0), copyNumber(0), workloadPercentage(0), totalReadCommands(0), totalWriteCommands(0), totalRandomReads(0), totalRandomWrites(0), \
 		totalNumberofOtherCMDS(0), logicalSecWritten(0), logicalSecRead(0), dither(0), ditherRandom(0), ditherSequential(0) {};
