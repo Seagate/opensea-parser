@@ -451,42 +451,32 @@ eReturnValues CATA_Farm_Log::Print_Drive_Information(JSONNODE *masterData, uint3
 	set_json_64_bit_With_Status(pageInfo, "Time to ready of the last power cycle", vFarmFrame[page].driveInfo.timeToReady, false, m_showStatusBits);			//!< time to ready of the last power cycle
 	set_json_64_bit_With_Status(pageInfo, "Time drive is held in staggered spin", vFarmFrame[page].driveInfo.timeHeld, false, m_showStatusBits);                //!< time drive is held in staggered spin during the last power on sequence
 
-    if (m_MajorRev >= MAJORVERSION3)
+
+    myStr = "Drive Recording Type";
+    std::string type = "   ";
+    if ((BIT0 & check_Status_Strip_Status(vFarmFrame[page].driveInfo.driveRecordingType)) == 0)
     {
-        if (check_For_Active_Status(&vFarmFrame[page].driveInfo.driveRecordingType))
-        {
-            myStr = "Drive Recording Type";
-            std::string type = "   ";
-            if ((BIT0 & check_Status_Strip_Status(vFarmFrame[page].driveInfo.driveRecordingType)) == 0)
-            {
-                type = "SMR"; 
-            }
-            else
-            {
-                type = "SMR";
-            }
-            set_json_string_With_Status(pageInfo, myStr, type, m_showStatusBits, m_showStatusBits);
-        }
-        if (check_For_Active_Status(&vFarmFrame[page].driveInfo.driveRecordingType))
-        {
-            myStr = "Has Drive been Depopped";
-            if (check_Status_Strip_Status(vFarmFrame[page].driveInfo.depopped) != 0)
-            {
-                set_Json_Bool(pageInfo, myStr, true);
-            }
-            else
-            {
-                set_Json_Bool(pageInfo, myStr, false);
-            }
-        }
+        type = "SMR"; 
     }
-    if (m_MajorRev >= MAJORVERSION3 && m_MinorRev > 3)
+    else
     {
-        if (check_For_Active_Status(&vFarmFrame[page].driveInfo.maxNumberForReasign))
-        {
-            set_json_64_bit_With_Status(pageInfo, "Max Number of Available Sectors for Reassignment", vFarmFrame[page].driveInfo.maxNumberForReasign, true, m_showStatusBits);                //!< Max Number of Available Sectors for Reassignment – Value in disc sectors(started in 3.3 )
-        }
+        type = "SMR";
     }
+    set_json_string_With_Status(pageInfo, myStr, type, m_showStatusBits, m_showStatusBits);
+
+    myStr = "Has Drive been Depopped";
+    if (check_Status_Strip_Status(vFarmFrame[page].driveInfo.depopped) != 0)
+    {
+        set_Json_Bool(pageInfo, myStr, true);
+    }
+    else
+    {
+        set_Json_Bool(pageInfo, myStr, false);
+    }
+
+    set_json_64_bit_With_Status(pageInfo, "Max Number of Available Sectors for Reassignment", vFarmFrame[page].driveInfo.maxNumberForReasign, true, m_showStatusBits);                //!< Max Number of Available Sectors for Reassignment – Value in disc sectors(started in 3.3 )
+  
+ 
     json_push_back(masterData, pageInfo);
 
     return SUCCESS;
@@ -552,13 +542,10 @@ eReturnValues CATA_Farm_Log::Print_Work_Load(JSONNODE *masterData, uint32_t page
     set_json_string_With_Status(pageInfo, "Logical Sectors Written", (char*)myStr.c_str(), vFarmFrame[page].workLoadPage.logicalSecWritten, m_showStatusBits);					//!< Logical Sectors Written
     snprintf((char*)myStr.c_str(), BASIC, "%llu", vFarmFrame[page].workLoadPage.logicalSecRead & 0x00FFFFFFFFFFFFFFLL);
     set_json_string_With_Status(pageInfo, "Logical Sectors Read", (char*)myStr.c_str(), vFarmFrame[page].workLoadPage.logicalSecRead, m_showStatusBits);						//!< Logical Sectors Read
-    if (m_MajorRev >= MAJORVERSION3 && m_MinorRev > 4)
-    {
-        set_json_64_bit_With_Status(pageInfo, "Number of dither events during current power cycle", vFarmFrame[page].workLoadPage.dither, false, m_showStatusBits);				//!< Number of dither events during current power cycle (added 3.4)
-        set_json_64_bit_With_Status(pageInfo, "Number of times dither was held off during random workloads", vFarmFrame[page].workLoadPage.ditherRandom, false, m_showStatusBits);			//!< Number of times dither was held off during random workloads during current power cycle(added 3.4)
-        set_json_64_bit_With_Status(pageInfo, "Number of times dither was held off during sequential workloads", vFarmFrame[page].workLoadPage.ditherSequential, false, m_showStatusBits);			//!< Number of times dither was held off during sequential workloads during current power cycle(added 3.4)
+    set_json_64_bit_With_Status(pageInfo, "Number of dither events during current power cycle", vFarmFrame[page].workLoadPage.dither, false, m_showStatusBits);				//!< Number of dither events during current power cycle (added 3.4)
+    set_json_64_bit_With_Status(pageInfo, "Number of times dither was held off during random workloads", vFarmFrame[page].workLoadPage.ditherRandom, false, m_showStatusBits);			//!< Number of times dither was held off during random workloads during current power cycle(added 3.4)
+    set_json_64_bit_With_Status(pageInfo, "Number of times dither was held off during sequential workloads", vFarmFrame[page].workLoadPage.ditherSequential, false, m_showStatusBits);			//!< Number of times dither was held off during sequential workloads during current power cycle(added 3.4)
 
-    }
     json_push_back(masterData, pageInfo);
 
     return SUCCESS;
@@ -647,71 +634,71 @@ eReturnValues CATA_Farm_Log::Print_Error_Information(JSONNODE *masterData, uint3
 	set_json_64_bit_With_Status(pageInfo, "CTO Count Over 5s", vFarmFrame[page].errorPage.overfiveSecCTO, false, m_showStatusBits);								//!< CTO Count Over 5s (SMART Attribute 188 Raw[2..3])
 	set_json_64_bit_With_Status(pageInfo, "CTO Count Over 7.5s", vFarmFrame[page].errorPage.oversevenSecCTO, false, m_showStatusBits);							//!< CTO Count Over 7.5s (SMART Attribute
 	set_json_64_bit_With_Status(pageInfo, "Total Flash LED (Assert) Events", vFarmFrame[page].errorPage.totalFlashLED, false, m_showStatusBits);				//!< Total Flash LED (Assert) Events
-    if (m_MajorRev >= MAJORVERSION2 && m_MinorRev > 7)
+
+    set_json_int_With_Status(pageInfo, "Index of the last Flash LED", vFarmFrame[page].errorPage.indexFlashLED, m_showStatusBits);								//!< index of the last Flash LED of the array          
+    set_json_64_bit_With_Status(pageInfo, "Uncorrectable errors", vFarmFrame[page].errorPage.uncorrectables, false, m_showStatusBits);							//!< uncorrecatables errors (sata only)
+    for (loopCount = 0; loopCount < 8; ++loopCount)
     {
-        set_json_int_With_Status(pageInfo, "Index of the last Flash LED", vFarmFrame[page].errorPage.indexFlashLED, m_showStatusBits);								//!< index of the last Flash LED of the array          
-        set_json_64_bit_With_Status(pageInfo, "Uncorrectable errors", vFarmFrame[page].errorPage.uncorrectables, false, m_showStatusBits);							//!< uncorrecatables errors (sata only)
-        for (loopCount = 0; loopCount < 8; ++loopCount)
-        {
-            snprintf((char *)myStr.c_str(), BASIC, "Flash LED event # %" PRId32"", loopCount);
-            set_json_64_bit_With_Status(pageInfo, (char *)myStr.c_str(), vFarmFrame[page].errorPage.flashLEDArray[loopCount], false, m_showStatusBits);		          //!<Info on the last 8 Flash LED events Wrapping array.
-        }
+        snprintf((char *)myStr.c_str(), BASIC, "Flash LED event # %" PRId32"", loopCount);
+        set_json_64_bit_With_Status(pageInfo, (char *)myStr.c_str(), vFarmFrame[page].errorPage.flashLEDArray[loopCount], false, m_showStatusBits);		          //!<Info on the last 8 Flash LED events Wrapping array.
     }
+
     if (m_MajorRev >= MAJORVERSION3 && m_MinorRev >= 2 && m_MinorRev <= 4)
     {
         for (loopCount = 0; loopCount <= 7; ++loopCount)
         {
-            snprintf((char *)myStr.c_str(), BASIC, "Read Write Retry events # %" PRIx32"", loopCount);
-            set_json_64_bit_With_Status(pageInfo, (char *)myStr.c_str(), vFarmFrame[page].errorPage.readWriteRetry[loopCount], true, m_showStatusBits);		          //!< Info on the last 8 Read/Write Retry events
-            snprintf((char *)myStr.c_str(), BASIC, "Retry Count");
-            set_json_64_bit_With_Status(pageInfo, (char *)myStr.c_str(), M_Byte0(check_Status_Strip_Status(vFarmFrame[page].errorPage.readWriteRetry[loopCount])), false, m_showStatusBits);
-            snprintf((char *)myStr.c_str(), BASIC, "Error Type");
+            //snprintf((char *)myStr.c_str(), BASIC, "Read Write Retry events # %" PRIx32"", loopCount);
+            //set_json_64_bit_With_Status(pageInfo, (char *)myStr.c_str(), vFarmFrame[page].errorPage.readWriteRetry[loopCount], true, m_showStatusBits);		          //!< Info on the last 8 Read/Write Retry events
+            snprintf((char *)myStr.c_str(), BASIC, "Read Write Retry Error Type # %" PRIx32"", loopCount);
             set_json_64_bit_With_Status(pageInfo, (char *)myStr.c_str(), M_Byte6(check_Status_Strip_Status(vFarmFrame[page].errorPage.readWriteRetry[loopCount])), false, m_showStatusBits);
-            snprintf((char *)myStr.c_str(), BASIC, "Head");
-            set_json_64_bit_With_Status(pageInfo, (char *)myStr.c_str(), M_Nibble3(check_Status_Strip_Status(vFarmFrame[page].errorPage.readWriteRetry[loopCount])), false, m_showStatusBits);
-            snprintf((char *)myStr.c_str(), BASIC, "Zone Group");
-            set_json_64_bit_With_Status(pageInfo, (char *)myStr.c_str(), M_Word1(check_Status_Strip_Status(vFarmFrame[page].errorPage.readWriteRetry[loopCount])), false, m_showStatusBits);
-            snprintf((char *)myStr.c_str(), BASIC, "RW Retry Log Entry");
+            snprintf((char *)myStr.c_str(), BASIC, "Read Write Retry Log Entry # %" PRIx32"", loopCount);
             set_json_64_bit_With_Status(pageInfo, (char *)myStr.c_str(), M_Byte5(check_Status_Strip_Status(vFarmFrame[page].errorPage.readWriteRetry[loopCount])), false, m_showStatusBits);
+            snprintf((char *)myStr.c_str(), BASIC, "Read Write Retry Zone Group # %" PRIx32"", loopCount);
+            set_json_64_bit_With_Status(pageInfo, (char *)myStr.c_str(), M_Word1(check_Status_Strip_Status(vFarmFrame[page].errorPage.readWriteRetry[loopCount])), false, m_showStatusBits);
+            snprintf((char *)myStr.c_str(), BASIC, "Read Write Retry Head # %" PRIx32"", loopCount);
+            set_json_64_bit_With_Status(pageInfo, (char *)myStr.c_str(), M_Nibble3(check_Status_Strip_Status(vFarmFrame[page].errorPage.readWriteRetry[loopCount])), false, m_showStatusBits);
+            snprintf((char *)myStr.c_str(), BASIC, "Read Write Retry Retry Count # %" PRIx32"", loopCount);
+            set_json_64_bit_With_Status(pageInfo, (char *)myStr.c_str(), M_Byte0(check_Status_Strip_Status(vFarmFrame[page].errorPage.readWriteRetry[loopCount])), false, m_showStatusBits);           
         }
     }
-    else if (m_MajorRev >= MAJORVERSION3 && m_MinorRev >= 5)
+    else // if ((m_MajorRev == MAJORVERSION3 && m_MinorRev >= 5) || m_MajorRev >= MAJORVERSION4)
     {
         for (loopCount = 0; loopCount <= 7; ++loopCount)
         {
-            snprintf((char *)myStr.c_str(), BASIC, "Read Write Retry events # %" PRIx32"", loopCount);
-            set_json_64_bit_With_Status(pageInfo, (char *)myStr.c_str(), vFarmFrame[page].errorPage.readWriteRetry[loopCount], true, m_showStatusBits);		          //!< Info on the last 8 Read/Write Retry events
-            snprintf((char *)myStr.c_str(), BASIC, "Retry Count");
-            set_json_64_bit_With_Status(pageInfo, (char *)myStr.c_str(), M_Byte0(check_Status_Strip_Status(vFarmFrame[page].errorPage.readWriteRetry[loopCount])), false, m_showStatusBits);
-            snprintf((char *)myStr.c_str(), BASIC, "Error Type");
+            //snprintf((char *)myStr.c_str(), BASIC, "Read Write Retry events # %" PRIx32" ", loopCount);
+            //set_json_64_bit_With_Status(pageInfo, (char *)myStr.c_str(), vFarmFrame[page].errorPage.readWriteRetry[loopCount], true, m_showStatusBits);		          //!< Info on the last 8 Read/Write Retry events
+            snprintf((char *)myStr.c_str(), BASIC, "Read Write Retry Error Type # %" PRIx32"", loopCount);
+
             set_json_64_bit_With_Status(pageInfo, (char *)myStr.c_str(), M_Byte6(check_Status_Strip_Status(vFarmFrame[page].errorPage.readWriteRetry[loopCount])), false, m_showStatusBits);
-            snprintf((char *)myStr.c_str(), BASIC, "Head");
-            set_json_64_bit_With_Status(pageInfo, (char *)myStr.c_str(), M_Byte1(check_Status_Strip_Status(vFarmFrame[page].errorPage.readWriteRetry[loopCount])), false, m_showStatusBits);
-            snprintf((char *)myStr.c_str(), BASIC, "Zone Group");
-            set_json_64_bit_With_Status(pageInfo, (char *)myStr.c_str(), M_Word1(check_Status_Strip_Status(vFarmFrame[page].errorPage.readWriteRetry[loopCount])), false, m_showStatusBits);
-            snprintf((char *)myStr.c_str(), BASIC, "RW Retry Log Entry");
+            snprintf((char *)myStr.c_str(), BASIC, "Read Write Retry Log Entry # %" PRIx32"", loopCount);
             set_json_64_bit_With_Status(pageInfo, (char *)myStr.c_str(), M_Byte5(check_Status_Strip_Status(vFarmFrame[page].errorPage.readWriteRetry[loopCount])), false, m_showStatusBits);
+            snprintf((char *)myStr.c_str(), BASIC, "Read Write Retry Zone Group # %" PRIx32"", loopCount);
+            set_json_64_bit_With_Status(pageInfo, (char *)myStr.c_str(), M_Word1(check_Status_Strip_Status(vFarmFrame[page].errorPage.readWriteRetry[loopCount])), false, m_showStatusBits);
+            snprintf((char *)myStr.c_str(), BASIC, "Read Write Retry Head # %" PRIx32"", loopCount);
+            set_json_64_bit_With_Status(pageInfo, (char *)myStr.c_str(), M_Byte1(check_Status_Strip_Status(vFarmFrame[page].errorPage.readWriteRetry[loopCount])), false, m_showStatusBits);
+            snprintf((char *)myStr.c_str(), BASIC, "Read Write Retry Retry Count # %" PRIx32"", loopCount);
+            set_json_64_bit_With_Status(pageInfo, (char *)myStr.c_str(), M_Byte0(check_Status_Strip_Status(vFarmFrame[page].errorPage.readWriteRetry[loopCount])), false, m_showStatusBits);
+  
         }
     }
-    if (m_MajorRev >= MAJORVERSION3 && m_MinorRev >= 2)
+
+    for (loopCount = 1; loopCount <= 2; ++loopCount)
     {
-        for (loopCount = 1; loopCount <= 2; ++loopCount)
-        {
-            snprintf((char *)myStr.c_str(), BASIC, "Super Parity On the Fly recovery counters # %" PRId32"", loopCount);
-            set_json_64_bit_With_Status(pageInfo, (char *)myStr.c_str(), vFarmFrame[page].errorPage.superParityOnTheFlyRecoveryCnt[loopCount], false, m_showStatusBits);		          //!< Super Parity On the Fly recovery counters
-        }
-        for (loopCount = 0; loopCount < 15; ++loopCount)
-        {
-            snprintf((char *)myStr.c_str(), BASIC, "Reallocated sectors by cause # %" PRId32"", loopCount);
-            set_json_64_bit_With_Status(pageInfo, (char *)myStr.c_str(), vFarmFrame[page].errorPage.reallocatedSectors[loopCount], false, m_showStatusBits);                    //!< Reallocated sectors by cause
-            if (check_For_Active_Status(&vFarmFrame[page].errorPage.reallocatedSectors[loopCount]))
-            {
-                snprintf((char *)myStr.c_str(), BASIC, "Reallocated sectors by cause meaning ");
-                Get_Reallocated_Sector_By_Cause(&myStr, vFarmFrame[page].errorPage.reallocatedSectors[loopCount]);
-            }
-    
-        }
+        snprintf((char *)myStr.c_str(), BASIC, "Super Parity On the Fly recovery counters # %" PRId32"", loopCount);
+        set_json_64_bit_With_Status(pageInfo, (char *)myStr.c_str(), vFarmFrame[page].errorPage.superParityOnTheFlyRecoveryCnt[loopCount], false, m_showStatusBits);		          //!< Super Parity On the Fly recovery counters
     }
+    for (loopCount = 0; loopCount < 15; ++loopCount)
+    {
+        snprintf((char *)myStr.c_str(), BASIC, "Reallocated sectors by cause # %" PRId32"", loopCount);
+        set_json_64_bit_With_Status(pageInfo, (char *)myStr.c_str(), vFarmFrame[page].errorPage.reallocatedSectors[loopCount], false, m_showStatusBits);                    //!< Reallocated sectors by cause
+        if (check_For_Active_Status(&vFarmFrame[page].errorPage.reallocatedSectors[loopCount]))
+        {
+            snprintf((char *)myStr.c_str(), BASIC, "Reallocated sectors by cause meaning ");
+            Get_Reallocated_Sector_By_Cause(&myStr, vFarmFrame[page].errorPage.reallocatedSectors[loopCount]);
+        }
+    
+    }
+
     json_push_back(masterData, pageInfo);
 
     return SUCCESS;
@@ -924,6 +911,7 @@ eReturnValues CATA_Farm_Log::Print_Reli_Information(JSONNODE *masterData, uint32
     set_json_64_bit_With_Status(pageInfo, "Number of DOS Scans Performed", vFarmFrame[page].reliPage.numberDOSScans, false, m_showStatusBits);							//!< Number of DOS Scans Performed
     set_json_64_bit_With_Status(pageInfo, "Number of LBAs Corrected by ISP", vFarmFrame[page].reliPage.numberLBACorrect, false, m_showStatusBits);						//!< Number of LBAs Corrected by ISP
     set_json_64_bit_With_Status(pageInfo, "Number of Valid Parity Sectors", vFarmFrame[page].reliPage.numberValidParitySec, false, m_showStatusBits);					//!< Number of Valid Parity Sector
+    set_json_64_bit_With_Status(pageInfo, "Number of RAW Operations", vFarmFrame[page].reliPage.numberRAWops, false, m_showStatusBits);
     set_json_64_bit_With_Status(pageInfo, "Error Rate (SMART Attribute 1 Raw)", vFarmFrame[page].reliPage.attrErrorRateRaw, true, m_showStatusBits);					//!< Error Rate (SMART Attribute 1 Raw)
     set_json_64_bit_With_Status(pageInfo, "Error Rate (SMART Attribute 1 Normalized)", vFarmFrame[page].reliPage.attrErrorRateNormal, false, m_showStatusBits);			//!< Error Rate (SMART Attribute 1 Normalized)
     set_json_64_bit_With_Status(pageInfo, "Error Rate (SMART Attribute 1 Worst)", vFarmFrame[page].reliPage.attrErrorRateWorst, false, m_showStatusBits);				//!< Error Rate (SMART Attribute 1 Worst)
@@ -932,7 +920,7 @@ eReturnValues CATA_Farm_Log::Print_Reli_Information(JSONNODE *masterData, uint32
     set_json_64_bit_With_Status(pageInfo, "Seek Error Rate (SMART Attr 7 Worst)", vFarmFrame[page].reliPage.attrSeekErrorRateWorst, false, m_showStatusBits);			//!< Seek Error Rate (SMART Attribute 7 Worst)
     set_json_64_bit_With_Status(pageInfo, "High Priority Unload Events", vFarmFrame[page].reliPage.attrUnloadEventsRaw, false, m_showStatusBits);					//!< High Priority Unload Events (SMART Attribute 192 Raw)
     set_json_64_bit_With_Status(pageInfo, "Micro Actuator Lock-out accumulated", vFarmFrame[page].reliPage.microActuatorLockOUt, false, m_showStatusBits);				//!< Micro Actuator Lock-out, head mask accumulated over last 3 Summary Frames8
-    set_json_64_bit_With_Status(pageInfo, "Number of RAW Operations", vFarmFrame[page].reliPage.numberRAWops, false, m_showStatusBits);
+    
     set_json_64_bit_With_Status(pageInfo, "Number of Disc Slip Recalibrations Performed", vFarmFrame[page].reliPage.diskSlipRecalPerformed, false, m_showStatusBits);       //!< Number of disc slip recalibrations performed
     set_json_64_bit_With_Status(pageInfo, "RV Absolute Mean", vFarmFrame[page].reliPage.RVAbsoluteMean, false, m_showStatusBits);										//!< RV Absolute Mean, value from the most recent SMART Frame
     set_json_64_bit_With_Status(pageInfo, "Max RV Absolute Mean", vFarmFrame[page].reliPage.maxRVAbsluteMean, false, m_showStatusBits);									//!< Max RV Absolute Mean, value from the most recent SMART Summary Frame

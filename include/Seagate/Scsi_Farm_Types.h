@@ -349,7 +349,7 @@ typedef struct _sLUNStruct
     uint64_t            paritySectors;                              //<! Number of Valid Parity Sectors
     uint64_t            RVabsolue;                                  //<! RV Absolute Mean, value from most recent SMART Summary Frame
     uint64_t            maxRVabsolue;                               //<! Max RV Absolute Mean, value from most recent SMART Summary Frame
-    uint64_t            idelTime;                                   //<! Idle Time, value from most recent SMART Summary Frame in seconds
+    uint64_t            idleTime;                                   //<! Idle Time, value from most recent SMART Summary Frame in seconds
 }sLUNStruct;
 typedef struct _sScsiFarmFrame
 {
@@ -394,10 +394,8 @@ typedef struct _sScsiFarmFrame
 	sHeadInformation        appliedFlyHeightByHeadInner;
 	sHeadInformation        appliedFlyHeightByHeadMiddle;
     sHeadInformation        secondMRHeadResistanceByHead;
-    sLUNStruct              lun0;
-    sLUNStruct              lun1;
-    sLUNStruct              lun2;
-    sLUNStruct              lun3;
+    std::vector<sLUNStruct> vLUN;
+
 	std::vector<eLogPageTypes>   vFramesFound;
 }sScsiFarmFrame;
 

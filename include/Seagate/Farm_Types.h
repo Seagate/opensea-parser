@@ -20,8 +20,9 @@
 
 #define MAX_HEAD_COUNT			24
 #define FARMSIGNATURE           0x00004641524D4552
-#define MAJORVERSION2                2
-#define MAJORVERSION3                3
+#define MAJORVERSION2           2
+#define MAJORVERSION3           3
+#define MAJORVERSION4           4
 #define FACTORYCOPY             0xc0464143544f5259
 
 #pragma pack(push, 1)
