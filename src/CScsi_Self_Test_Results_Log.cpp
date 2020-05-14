@@ -235,47 +235,55 @@ void CScsi_DST_Results::get_Self_Test_Results_String( std::string & meaning, uin
 	{
 		case DST_COMPLETED_WITHOUT_ERROR:
 		{
-			meaning.assign( "Self Test completed without error.");
+			meaning = "Self Test completed without error";
 			break;
 		}
 		case DST_BACKGROUND_ABORTED:
 		{
-			meaning = "The background Self-Test was aborted by the application.";
+			meaning = "Was Aborted by the host";
 			break;
 		}
 		case DST_ABORTED:
 		{
-			meaning = "The Self Test routine was aborted by an application.";
+			meaning = "Was interepted by the host with a hard reset of a soft reset";
 			break;
 		}
 		case DST_UNKNOWN_ERROR:
 		{
-			meaning = "An unknown error occurred.";
+			meaning = "unknown error and Self Test was unable to complete";
 			break;
 		}
 		case DST_FAILURE_UNKNOWN_SEGMENT:
 		{
-			meaning = "Completed with a failure, segment that failed unknow.";
+			meaning = "Completed and has faild and the element is unknown";
 			break;
 		}
 		case DST_FAILURE_FIRST_SEGMENT:
 		{
-			meaning = "Completed with a failure, First segment failed.";
+			meaning = "Completed With an electrical element failing";
 			break;
 		}
 		case DST_FAILURE_SECOND_SEGMENT:
 		{
-			meaning = "Completed with a failure, Second segment failed.";
+			meaning = "Completed having a servo element failure";
 			break;
 		}
 		case DST_FAILURE_CHECK_NUMBER_FOR_SEGMENT:
 		{
-			meaning = "Completed with a failure, indicated in Self Test Number.";
+			meaning = "Completed having a read element failure";
 			break;
 		}
+        case DST_FAILURE_HANDLING_DAMAGE:
+        {
+            meaning = "Completed having handling damage";
+        }
+        case DST_FAILURE_SUSPECTED_HANDLING_DAMAGE:
+        {
+            meaning = "Completed having suspected handling damage";
+        }
 		case DST_IN_PROGRESS:
 		{
-			meaning = "Self Test is in progress.";
+			meaning = "Self Test is in progress";
 			break;
 		}
 		default:

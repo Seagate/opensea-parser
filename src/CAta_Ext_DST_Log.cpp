@@ -118,51 +118,51 @@ void CAta_Ext_DST_Log::Get_Status_Meaning(std::string &meaning,uint8_t status)
     meaning.resize(BASIC);
     if (status == 0x00)
     {
-        snprintf((char*)meaning.c_str(),BASIC,"Self Test has completed with no Error  or No Self test has been run");
+        meaning = "Self Test completed without error.";
     }
     else if (status == 0x01)
     {
-        snprintf((char*)meaning.c_str(),BASIC,"Was Aborted by the host");
+        meaning = "Was Aborted by the host";
     }
     else if (status == 0x02)
     {
-        snprintf((char*)meaning.c_str(),BASIC,"Was interepted by the host with a hard reset of a soft reset");
+        meaning = "Was interepted by the host with a hard reset of a soft reset";
     }
     else if (status == 0x03)
     {
-        snprintf((char*)meaning.c_str(),BASIC,"unknown error and Self Test was unable to complete");
+        meaning = "unknown error and Self Test was unable to complete";
     }
     else if (status == 0x04)
     {
-        snprintf((char*)meaning.c_str(),BASIC,"Completed and has faild and the element is unknown");
+        meaning = "Completed and has faild and the element is unknown";
     }
     else if (status == 0x05)
     {
-        snprintf((char*)meaning.c_str(),BASIC,"Completed With an electrical element failing");
+        meaning = "Completed With an electrical element failing";
     }
     else if (status == 0x06)
     {
-        snprintf((char*)meaning.c_str(),BASIC,"Completed having a servo element failure");
+        meaning = "Completed having a servo element failure";
     }
     else if (status == 0x07)
     {
-        snprintf((char*)meaning.c_str(),BASIC,"Completed having a read element failure");
+        meaning = "Completed having a read element failure";
     }
     else if (status == 0x08)
     {
-        snprintf((char*)meaning.c_str(),BASIC,"Completed having handling damage");
+        meaning = "Completed having handling damage";
     }
     else if (status == 0x09)
     {
-        snprintf((char*)meaning.c_str(),BASIC,"Completed having suspected handling damage");
+        meaning = "Completed having suspected handling damage";
     }
     else if (status == 0x15)
     {
-        snprintf((char*)meaning.c_str(),BASIC,"Self Test still in Progress");
+        meaning = "Self Test is in progress";
     }
     else
     {
-        snprintf((char*)meaning.c_str(),BASIC,"Reserved");
+        meaning ="Reserved";
     }
 }
 //-----------------------------------------------------------------------------
