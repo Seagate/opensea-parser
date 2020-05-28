@@ -42,11 +42,12 @@ CExtComp::CExtComp()
 //
 //
 //---------------------------------------------------------------------------
-CExtComp::CExtComp(uint8_t *buffer, JSONNODE *masterData)
+CExtComp::CExtComp(uint8_t *buffer, size_t logSize, JSONNODE *masterData)
 	:pData(buffer)
-	, m_logSize(0)
+	, m_logSize(logSize)
 	, m_name("Ext Comp Log")
 	, m_status(IN_PROGRESS)
+    , fileName(false)
 {
 
 	if (buffer != NULL)                           // if the buffer is null then exit something did go right
@@ -74,6 +75,7 @@ CExtComp::CExtComp(const std::string &fileName, JSONNODE *masterData)
 	, m_logSize()
     , m_name("Ext Comp Log")
     , m_status(IN_PROGRESS)
+    , fileName(true)
 {
 	CLog *cCLog;
 	cCLog = new CLog(fileName);
@@ -125,9 +127,12 @@ CExtComp::CExtComp(const std::string &fileName, JSONNODE *masterData)
 //---------------------------------------------------------------------------
 CExtComp::~CExtComp()
 {
-    if (pData != NULL)
+    if (fileName)
     {
-        delete [] pData;
+        if (pData != NULL)
+        {
+            delete[] pData;
+        }
     }
 }
 //-----------------------------------------------------------------------------

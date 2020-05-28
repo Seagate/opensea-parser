@@ -31,6 +31,7 @@ namespace opensea_parser {
 		size_t								m_logSize;													//!< size of the log. 
         std::string                         m_name;                                                     //!< name of the class
         eReturnValues                       m_status;                                                   //!< holds the status of the class
+        bool                                fileName;                                                   //!< set to true if the file name is set
 
 		
 		eReturnValues parse_Ext_Comp_Structure(uint32_t structNumber, uint32_t sector, JSONNODE *structureData);
@@ -38,7 +39,7 @@ namespace opensea_parser {
 		eReturnValues parse_Ext_Comp_Log(JSONNODE *masterData);
     public:
         CExtComp();
-		CExtComp(uint8_t *buffer, JSONNODE *masterData);
+		CExtComp(uint8_t *buffer, size_t logSize, JSONNODE *masterData);
         CExtComp(const std::string &fileName, JSONNODE *masterData);
         virtual ~CExtComp();
 
