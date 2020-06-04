@@ -69,6 +69,7 @@ namespace opensea_parser {
 		bool                    spinUp;
 		bool                    puis;
 		bool                    APM;
+        bool                    CFA;
 		bool                    downloadMicrocode;
 		bool                    unload;
 		bool                    writeFUAExt;
@@ -87,7 +88,7 @@ namespace opensea_parser {
 			DRAT(false), lpsMisalignmentReporting(false), readBufferDMA(false), writeBufferDMA(false), \
 			downloadMicrocodeDMA(false), bit28(false), rZAT(false), nOP(false), readBuffer(false), WriteBuffer(false), \
 			readLookAhead(false), volatileWriteCache(false), SMART(false), flushCacheExt(false), bit48(false), \
-			spinUp(false), puis(false), APM(false), downloadMicrocode(false), unload(false), writeFUAExt(false), \
+			spinUp(false), puis(false), APM(false), CFA(false), downloadMicrocode(false), unload(false), writeFUAExt(false), \
 			GPL(false), Streaming(false), smartSelfTest(false), smartErrorLogging(false), EPC(false), senseData(false), \
 			freeFall(false), DMMode3(false), GPL_DM(false), writeUncorrectable(false), WRV(false) {};
 	}sIDCapabilities;
@@ -248,7 +249,7 @@ namespace opensea_parser {
 		bool        spinupSupported;					                            //<! SPIN-UP SUPPORTED bit                     bit 18       	
 		bool        PUISSupported;					                                //<! PUIS SUPPORTED bit                        bit 17       	
 		bool        APMSupporteed;					                                //<! APM SUPPORTED bit                         bit 16       	
-		bool        reserved1;					                                    //<! Reserved for CFA                          bit 15       	
+		bool        CFASupported;					                                //<! Reserved for CFA                          bit 15       	
 		bool        downloadMicroCodeSuppored;			                            //<! DOWNLOAD MICROCODE SUPPORTED bit          bit 14       	
 		bool        unloadSupported;					                            //<! UNLOAD SUPPORTED bit                      bit 13       	
 		bool        writeFUAExtSupported;				                            //<! WRITE FUA EXT SUPPORTED bit               bit 12       	
@@ -269,7 +270,7 @@ namespace opensea_parser {
 			writeBufferDMASupported(false), reserved6(false), downLoadMicroCodeDMASupported(false), bit28Supported(false), RZATSupported(false), reserved5(false), \
 			NOPSupported(false), readBufferSupported(false), writeBufferSupported(false), reserved4(false), readLookAheadSupported(false), \
 			volatileWriteCacheSupported(false), smartSupported(false), flushCacheExtSupported(false), reserved3(false), bit48Supported(false), reserved2(false), \
-			spinupSupported(false), PUISSupported(false), APMSupporteed(false), reserved1(false), downloadMicroCodeSuppored(false), unloadSupported(false), \
+			spinupSupported(false), PUISSupported(false), APMSupporteed(false), CFASupported(false), downloadMicroCodeSuppored(false), unloadSupported(false), \
 			writeFUAExtSupported(false), GPLSupported(false), streamingSupported(false), reserved(false), smartSelfTestSupported(false), smartErrorLoggingSupported(false), \
 			epcSupported(false), senseDataSupported(false), freeFallSupported(false), DMMode3Supported(false), GPLDMASupportd(false), writeUnccorctableSupportd(false), WRVSupported(false) {};
 	}sSupportedCapabilities;
