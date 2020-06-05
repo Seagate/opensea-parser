@@ -41,9 +41,11 @@ namespace opensea_parser {
                 HOST_WRITE_RAW,
                 BACKGROUND_READ_GENERIC,
                 BACKGROUND_READ_RELIABILITY,
+                BACKGROUND_READ_RECOVERY,
                 BACKGROUND_READ_HOST_SELF_TEST,
                 BACKGROUND_WRITE_GENERIC,
                 BACKGROUND_WRITE_RELIABILITY,
+                BACKGROUND_WRITE_RECOVERY,
                 BACKGROUND_WRITE_HOST_SELF_TEST,
                 SERVO_WEDGE,
             }eReallocatedSectorsCause;

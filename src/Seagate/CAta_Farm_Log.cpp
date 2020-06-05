@@ -250,6 +250,14 @@ void CATA_Farm_Log::Get_Reallocated_Sector_By_Cause(std::string *description, ui
             snprintf((char*)description->c_str(), BASIC, "Background Read Generic");
             break;
         }
+        case BACKGROUND_READ_RELIABILITY:
+        {
+            description->append("Background Read Reliability");
+        }
+        case BACKGROUND_READ_RECOVERY:
+        {
+            description->assign("Background Read Recovery");
+        }
         case BACKGROUND_READ_HOST_SELF_TEST:
         {
             snprintf((char*)description->c_str(), BASIC, "Background Read Host Self Test");
@@ -264,6 +272,10 @@ void CATA_Farm_Log::Get_Reallocated_Sector_By_Cause(std::string *description, ui
         {
             snprintf((char*)description->c_str(), BASIC, "Background Write Reliability");
             break;
+        }
+        case BACKGROUND_WRITE_RECOVERY:
+        {
+            description->assign("Background Write Recovery");
         }
         case BACKGROUND_WRITE_HOST_SELF_TEST:
         {
@@ -647,8 +659,6 @@ eReturnValues CATA_Farm_Log::Print_Error_Information(JSONNODE *masterData, uint3
     {
         for (loopCount = 0; loopCount <= 7; ++loopCount)
         {
-            //snprintf((char *)myStr.c_str(), BASIC, "Read Write Retry events # %" PRIx32"", loopCount);
-            //set_json_64_bit_With_Status(pageInfo, (char *)myStr.c_str(), vFarmFrame[page].errorPage.readWriteRetry[loopCount], true, m_showStatusBits);		          //!< Info on the last 8 Read/Write Retry events
             snprintf((char *)myStr.c_str(), BASIC, "Read Write Retry Error Type # %" PRIx32"", loopCount);
             set_json_64_bit_With_Status(pageInfo, (char *)myStr.c_str(), M_Byte6(check_Status_Strip_Status(vFarmFrame[page].errorPage.readWriteRetry[loopCount])), false, m_showStatusBits);
             snprintf((char *)myStr.c_str(), BASIC, "Read Write Retry Log Entry # %" PRIx32"", loopCount);
@@ -657,16 +667,14 @@ eReturnValues CATA_Farm_Log::Print_Error_Information(JSONNODE *masterData, uint3
             set_json_64_bit_With_Status(pageInfo, (char *)myStr.c_str(), M_Word1(check_Status_Strip_Status(vFarmFrame[page].errorPage.readWriteRetry[loopCount])), false, m_showStatusBits);
             snprintf((char *)myStr.c_str(), BASIC, "Read Write Retry Head # %" PRIx32"", loopCount);
             set_json_64_bit_With_Status(pageInfo, (char *)myStr.c_str(), M_Nibble3(check_Status_Strip_Status(vFarmFrame[page].errorPage.readWriteRetry[loopCount])), false, m_showStatusBits);
-            snprintf((char *)myStr.c_str(), BASIC, "Read Write Retry Retry Count # %" PRIx32"", loopCount);
+            snprintf((char *)myStr.c_str(), BASIC, "Read Write Retry Count # %" PRIx32"", loopCount);
             set_json_64_bit_With_Status(pageInfo, (char *)myStr.c_str(), M_Byte0(check_Status_Strip_Status(vFarmFrame[page].errorPage.readWriteRetry[loopCount])), false, m_showStatusBits);           
         }
     }
-    else // if ((m_MajorRev == MAJORVERSION3 && m_MinorRev >= 5) || m_MajorRev >= MAJORVERSION4)
+    else 
     {
         for (loopCount = 0; loopCount <= 7; ++loopCount)
         {
-            //snprintf((char *)myStr.c_str(), BASIC, "Read Write Retry events # %" PRIx32" ", loopCount);
-            //set_json_64_bit_With_Status(pageInfo, (char *)myStr.c_str(), vFarmFrame[page].errorPage.readWriteRetry[loopCount], true, m_showStatusBits);		          //!< Info on the last 8 Read/Write Retry events
             snprintf((char *)myStr.c_str(), BASIC, "Read Write Retry Error Type # %" PRIx32"", loopCount);
 
             set_json_64_bit_With_Status(pageInfo, (char *)myStr.c_str(), M_Byte6(check_Status_Strip_Status(vFarmFrame[page].errorPage.readWriteRetry[loopCount])), false, m_showStatusBits);
@@ -676,7 +684,7 @@ eReturnValues CATA_Farm_Log::Print_Error_Information(JSONNODE *masterData, uint3
             set_json_64_bit_With_Status(pageInfo, (char *)myStr.c_str(), M_Word1(check_Status_Strip_Status(vFarmFrame[page].errorPage.readWriteRetry[loopCount])), false, m_showStatusBits);
             snprintf((char *)myStr.c_str(), BASIC, "Read Write Retry Head # %" PRIx32"", loopCount);
             set_json_64_bit_With_Status(pageInfo, (char *)myStr.c_str(), M_Byte1(check_Status_Strip_Status(vFarmFrame[page].errorPage.readWriteRetry[loopCount])), false, m_showStatusBits);
-            snprintf((char *)myStr.c_str(), BASIC, "Read Write Retry Retry Count # %" PRIx32"", loopCount);
+            snprintf((char *)myStr.c_str(), BASIC, "Read Write Retry Count # %" PRIx32"", loopCount);
             set_json_64_bit_With_Status(pageInfo, (char *)myStr.c_str(), M_Byte0(check_Status_Strip_Status(vFarmFrame[page].errorPage.readWriteRetry[loopCount])), false, m_showStatusBits);
   
         }
@@ -1123,13 +1131,13 @@ eReturnValues CATA_Farm_Log::Print_Head_Information(JSONNODE *masterData, uint32
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         snprintf((char *)myHeader.c_str(), BASIC, "ACFF Sine 1X for Head  %" PRId32"", loopCount);
-        snprintf((char*)myStr.c_str(), BASIC, "%" PRIi16"", (static_cast<int16_t>(check_for_signed_int(M_Byte0(vFarmFrame[page].reliPage.sineACFF[loopCount]), 8)))*16);
+        snprintf((char*)myStr.c_str(), BASIC, "%" PRIi8"", (M_ByteInt0(vFarmFrame[page].reliPage.sineACFF[loopCount])*16));
         set_json_string_With_Status(headInfo, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].reliPage.sineACFF[loopCount], m_showStatusBits);        //!< [24] ACFF Sine 1X, value from most recent SMART Summary Frame by Head7,8
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         snprintf((char *)myHeader.c_str(), BASIC, "ACFF Cosine 1X for Head  %" PRId32"", loopCount);
-        snprintf((char*)myStr.c_str(), BASIC, "%" PRIi16"", (static_cast<int16_t>(check_for_signed_int(M_Byte0(vFarmFrame[page].reliPage.cosineACFF[loopCount]), 8)))*16);
+        snprintf((char*)myStr.c_str(), BASIC, "%" PRIi8"", (M_ByteInt0(vFarmFrame[page].reliPage.cosineACFF[loopCount])*16));
         set_json_string_With_Status(headInfo, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].reliPage.cosineACFF[loopCount], m_showStatusBits);       //!< [24] ACFF Cosine 1X, value from most recent SMART Summary Frame by Head7,8
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
@@ -1255,7 +1263,8 @@ eReturnValues CATA_Farm_Log::Print_Head_Information(JSONNODE *masterData, uint32
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         snprintf((char *)myHeader.c_str(), BASIC, "Write POS in sec value by Head %" PRId32"", loopCount);
-		set_json_64_bit_With_Status(headInfo, (char*)myHeader.c_str(), vFarmFrame[page].reliPage.writePOH[loopCount], false, m_showStatusBits);                         //!< [24] write POS in sec value from most recent SMART Frame by head
+        snprintf((char*)myStr.c_str(), BASIC, "%0.04f", static_cast<double>(M_DoubleWord0(vFarmFrame[page].reliPage.writePOH[loopCount])) / 3600);
+        set_json_string_With_Status(headInfo, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].reliPage.writePOH[loopCount] , m_showStatusBits);                         //!< [24] write POS in sec value from most recent SMART Frame by head
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
