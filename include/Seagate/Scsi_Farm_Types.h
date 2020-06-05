@@ -88,6 +88,83 @@ typedef enum _eLogPageTypes
 	APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_OUTER,
 	APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_INNER,
 	APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_MIDDLE,
+    SECOND_MR_HEAD_RESISTANCE,
+    RESERVED_FOR_FUTURE_EXPANSION_20,
+    RESERVED_FOR_FUTURE_EXPANSION_21,
+    RESERVED_FOR_FUTURE_EXPANSION_22,
+    RESERVED_FOR_FUTURE_EXPANSION_23,
+    RESERVED_FOR_FUTURE_EXPANSION_24,
+    RESERVED_FOR_FUTURE_EXPANSION_25,
+    RESERVED_FOR_FUTURE_EXPANSION_26,
+    RESERVED_FOR_FUTURE_EXPANSION_27,
+    RESERVED_FOR_FUTURE_EXPANSION_28,
+    RESERVED_FOR_FUTURE_EXPANSION_29,
+    RESERVED_FOR_FUTURE_EXPANSION_30,
+    RESERVED_FOR_FUTURE_EXPANSION_31,
+    LUN_0_ACTUATOR,
+    RESERVED_FOR_FUTURE_EXPANSION_40,
+    RESERVED_FOR_FUTURE_EXPANSION_41,
+    RESERVED_FOR_FUTURE_EXPANSION_42,
+    RESERVED_FOR_FUTURE_EXPANSION_43,
+    RESERVED_FOR_FUTURE_EXPANSION_44,
+    RESERVED_FOR_FUTURE_EXPANSION_45,
+    RESERVED_FOR_FUTURE_EXPANSION_46,
+    RESERVED_FOR_FUTURE_EXPANSION_47,
+    RESERVED_FOR_FUTURE_EXPANSION_48,
+    RESERVED_FOR_FUTURE_EXPANSION_49,
+    RESERVED_FOR_FUTURE_EXPANSION_50,
+    RESERVED_FOR_FUTURE_EXPANSION_51,
+    RESERVED_FOR_FUTURE_EXPANSION_52,
+    RESERVED_FOR_FUTURE_EXPANSION_53,
+    RESERVED_FOR_FUTURE_EXPANSION_54,
+    LUN_1_ACTUATOR,
+    RESERVED_FOR_FUTURE_EXPANSION_60,
+    RESERVED_FOR_FUTURE_EXPANSION_61,
+    RESERVED_FOR_FUTURE_EXPANSION_62,
+    RESERVED_FOR_FUTURE_EXPANSION_63,
+    RESERVED_FOR_FUTURE_EXPANSION_64,
+    RESERVED_FOR_FUTURE_EXPANSION_65,
+    RESERVED_FOR_FUTURE_EXPANSION_66,
+    RESERVED_FOR_FUTURE_EXPANSION_67,
+    RESERVED_FOR_FUTURE_EXPANSION_68,
+    RESERVED_FOR_FUTURE_EXPANSION_69,
+    RESERVED_FOR_FUTURE_EXPANSION_70,
+    RESERVED_FOR_FUTURE_EXPANSION_71,
+    RESERVED_FOR_FUTURE_EXPANSION_72,
+    RESERVED_FOR_FUTURE_EXPANSION_73,
+    RESERVED_FOR_FUTURE_EXPANSION_74,
+    LUN_2_ACTUATOR,
+    RESERVED_FOR_FUTURE_EXPANSION_80,
+    RESERVED_FOR_FUTURE_EXPANSION_81,
+    RESERVED_FOR_FUTURE_EXPANSION_82,
+    RESERVED_FOR_FUTURE_EXPANSION_83,
+    RESERVED_FOR_FUTURE_EXPANSION_84,
+    RESERVED_FOR_FUTURE_EXPANSION_85,
+    RESERVED_FOR_FUTURE_EXPANSION_86,
+    RESERVED_FOR_FUTURE_EXPANSION_87,
+    RESERVED_FOR_FUTURE_EXPANSION_88,
+    RESERVED_FOR_FUTURE_EXPANSION_89,
+    RESERVED_FOR_FUTURE_EXPANSION_90,
+    RESERVED_FOR_FUTURE_EXPANSION_91,
+    RESERVED_FOR_FUTURE_EXPANSION_92,
+    RESERVED_FOR_FUTURE_EXPANSION_93,
+    RESERVED_FOR_FUTURE_EXPANSION_94,
+    LUN_3_ACTUATOR,
+    RESERVED_FOR_FUTURE_EXPANSION_100,
+    RESERVED_FOR_FUTURE_EXPANSION_101,
+    RESERVED_FOR_FUTURE_EXPANSION_102,
+    RESERVED_FOR_FUTURE_EXPANSION_103,
+    RESERVED_FOR_FUTURE_EXPANSION_104,
+    RESERVED_FOR_FUTURE_EXPANSION_105,
+    RESERVED_FOR_FUTURE_EXPANSION_106,
+    RESERVED_FOR_FUTURE_EXPANSION_107,
+    RESERVED_FOR_FUTURE_EXPANSION_108,
+    RESERVED_FOR_FUTURE_EXPANSION_109,
+    RESERVED_FOR_FUTURE_EXPANSION_110,
+    RESERVED_FOR_FUTURE_EXPANSION_111,
+    RESERVED_FOR_FUTURE_EXPANSION_112,
+    RESERVED_FOR_FUTURE_EXPANSION_113,
+    RESERVED_FOR_FUTURE_EXPANSION_114,
 	RESERVED_FOR_FUTURE_EXPANSION,
 }eLogPageTypes;
 
@@ -244,10 +321,36 @@ typedef struct _sScsiReliabilityStat
 
 typedef struct _sHeadInformation
 {
-	sScsiPageParameter  pageHeader;                                  //!<  header page parameters
-	uint64_t            headValue[MAX_HEAD_COUNT];                   //!< head information
+	sScsiPageParameter  pageHeader;                                  //<!  header page parameters
+	uint64_t            headValue[MAX_HEAD_COUNT];                   //<! head information
 }sHeadInformation;
 
+typedef struct _sLUNStruct
+{
+    sScsiPageParameter  pageHeader;                                 //<!  header page parameters
+    uint64_t            pageNumber;                                 //<! Page Number = 5
+    uint64_t            copyNumber;                                 //<! Copy Number
+    uint64_t            LUNID;                                      //<! LUN ID
+    uint64_t            headLoadEvents;                             //<! Head Load Events
+    uint64_t            reallocatedSectors;                         //<! Number of Reallocated Sectors
+    uint64_t            reallocatedCandidates;                      //<! Number of Reallocated Candidate Sectors
+    uint64_t            timeStampOfIDD;                             //<! Timestamp of last IDD test
+    uint64_t            subCmdOfIDD;                                //<! Sub - command of last IDD test
+    uint64_t            reclamedGlist;                              //<! Number of G - list reclamations
+    uint64_t            servoStatus;                                //<! Servo Status
+    uint64_t            slippedSectorsBeforeIDD;                    //<! Number of Slipped Sectors Before IDD Scan
+    uint64_t            slippedSectorsAfterIDD;                     //<! Number of Slipped Sectors After IDD Scan
+    uint64_t            residentReallocatedBeforeIDD;               //<! Number of Resident Reallocated Sectors Before IDD Scan
+    uint64_t            residentReallocatedAfterIDD;                //<! Number of Resident Reallocated Sectors After IDD Scan
+    uint64_t            successScrubbedBeforeIDD;                   //<! Number of Successfully Scrubbed Sectors Before IDD Scan
+    uint64_t            successScrubbedAfterIDD;                    //<! Number of Successfully Scrubbed Sectors After IDD Scan
+    uint64_t            dosScansPerformed;                          //<! Number of DOS Scans Performed
+    uint64_t            correctedLBAbyISP;                          //<! Number of LBAs Corrected by ISP
+    uint64_t            paritySectors;                              //<! Number of Valid Parity Sectors
+    uint64_t            RVabsolue;                                  //<! RV Absolute Mean, value from most recent SMART Summary Frame
+    uint64_t            maxRVabsolue;                               //<! Max RV Absolute Mean, value from most recent SMART Summary Frame
+    uint64_t            idleTime;                                   //<! Idle Time, value from most recent SMART Summary Frame in seconds
+}sLUNStruct;
 typedef struct _sScsiFarmFrame
 {
 	sScsiFarmHeader         farmHeader;                             //!< Farm header 
@@ -290,6 +393,9 @@ typedef struct _sScsiFarmFrame
 	sHeadInformation        appliedFlyHeightByHeadOuter;
 	sHeadInformation        appliedFlyHeightByHeadInner;
 	sHeadInformation        appliedFlyHeightByHeadMiddle;
+    sHeadInformation        secondMRHeadResistanceByHead;
+    std::vector<sLUNStruct> vLUN;
+
 	std::vector<eLogPageTypes>   vFramesFound;
 }sScsiFarmFrame;
 

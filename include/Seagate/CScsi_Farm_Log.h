@@ -61,8 +61,10 @@ namespace opensea_parser {
         bool swap_Bytes_sErrorStat(sScsiErrorStat * es);
         bool swap_Bytes_sEnvironmentStat(sScsiEnvironmentStat *es);
         bool swap_Bytes_sScsiReliabilityStat(sScsiReliabilityStat *ss);
+        bool swap_Bytes_sLUNStruct(sLUNStruct *LUN);
         bool get_Head_Info(sHeadInformation *phead, uint8_t *buffer);
         void set_Head_Header(std::string &headerName, eLogPageTypes index);
+        void get_LUN_Info(sLUNStruct *pLUN, uint8_t *buffer);
 		
 		eReturnValues init_Header_Data();
         eReturnValues print_Header(JSONNODE *masterData);
@@ -72,6 +74,7 @@ namespace opensea_parser {
         eReturnValues print_Enviroment_Information(JSONNODE *masterData, uint32_t page);
         eReturnValues print_Reli_Information(JSONNODE *masterData, uint32_t page);
         eReturnValues print_Head_Information(eLogPageTypes type, JSONNODE *masterData, uint32_t page);
+        eReturnValues print_LUN_Actuator_Information(JSONNODE *masterData, uint32_t page, uint32_t index);
     public:
         CSCSI_Farm_Log();
         CSCSI_Farm_Log(uint8_t *bufferData, size_t bufferSize,bool showStatus);
