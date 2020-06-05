@@ -137,8 +137,8 @@ typedef struct _sflyHeight
 
 typedef struct _sAtaReliabilityStat
 {
-	int64_t         pageNumber;                                  //!< Page Number = 5
-	int64_t         copyNumber;                                  //!< Copy Number
+	uint64_t         pageNumber;                                  //!< Page Number = 5
+	uint64_t         copyNumber;                                  //!< Copy Number
 	int64_t         lastIDDTest;                                 //!< Timestamp of last IDD test
 	int64_t         cmdLastIDDTest;                              //!< Sub-command of last IDD test
     uint64_t        discSlip[MAX_HEAD_COUNT];                    //!< [24] Disc Slip in micro-inches by Head

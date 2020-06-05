@@ -847,7 +847,6 @@ return SUCCESS;
 //---------------------------------------------------------------------------
 eReturnValues CATA_Farm_Log::Print_Reli_Information(JSONNODE *masterData, uint32_t page)
 {
-    uint32_t loopCount = 0;
     std::string myStr = " ";
     myStr.resize(BASIC);
     std::string myHeader = "";

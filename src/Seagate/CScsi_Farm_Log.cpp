@@ -1538,10 +1538,8 @@ eReturnValues CSCSI_Farm_Log::print_Error_Information(JSONNODE *masterData, uint
     set_json_64_bit_With_Status(pageInfo, "Number of IOEDC Errors (Raw)",vFarmFrame[page].errorPage.attrIOEDCErrors, false, m_showStatusBits);						//!< Number of IOEDC Errors (SMART Attribute 184 Raw)
     set_json_64_bit_With_Status(pageInfo, "Total Flash LED (Assert) Events",vFarmFrame[page].errorPage.totalFlashLED, false, m_showStatusBits);						//!< Total Flash LED (Assert) Events
     set_json_64_bit_With_Status(pageInfo, "FRU code if smart trip from most recent SMART Frame", vFarmFrame[page].errorPage.FRUCode, false, m_showStatusBits);		//!< FRU code if smart trip from most recent SMART Frame
-    if (m_MajorRev > 3 && m_MinorRev > 2)
-    {
-        set_json_64_bit_With_Status(pageInfo, "Super Parity on the Fly Recovery", vFarmFrame[page].errorPage.parity, false, m_showStatusBits);                      //!< Super Parity on the Fly Recovery
-    }
+    set_json_64_bit_With_Status(pageInfo, "Super Parity on the Fly Recovery", vFarmFrame[page].errorPage.parity, false, m_showStatusBits);                      //!< Super Parity on the Fly Recovery
+
     
     json_push_back(masterData, pageInfo);
 
