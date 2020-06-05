@@ -217,13 +217,15 @@ eReturnValues CScsiStartStop::week_Year_Print(JSONNODE *data,uint16_t param, uin
 	JSONNODE *dateInfo = json_new(JSON_NODE);
 	json_set_name(dateInfo, (char *)strHeader.c_str());
 	
-
-	snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", param);
-	json_push_back(dateInfo, json_new_a("Parameter Code", (char*)myStr.c_str()));
-	snprintf((char*)myStr.c_str(), BASIC, "%" PRId8"", paramlength);
-	json_push_back(dateInfo, json_new_a("Parameter Length", (char*)myStr.c_str()));
-	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", paramConByte);
-	json_push_back(dateInfo, json_new_a("Control Byte", (char*)myStr.c_str()));
+    if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+    {
+        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", param);
+        json_push_back(dateInfo, json_new_a("Parameter Code", (char*)myStr.c_str()));
+        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu8"", paramlength);
+        json_push_back(dateInfo, json_new_a("Parameter Length", (char*)myStr.c_str()));
+        snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", paramConByte);
+        json_push_back(dateInfo, json_new_a("Control Byte", (char*)myStr.c_str()));
+    }
 	myStr.resize(YEARSIZE);
 	memset((char*)myStr.c_str(), 0, YEARSIZE);
     if (year != 0x20202020)
@@ -271,12 +273,15 @@ eReturnValues CScsiStartStop::get_Count(JSONNODE *countData, uint16_t param, uin
 	JSONNODE *countInfo = json_new(JSON_NODE);
 	json_set_name(countInfo, (char *)strHeader.c_str());
 
-	snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", param);
-	json_push_back(countInfo, json_new_a("Parameter Code", (char*)myStr.c_str()));
-	snprintf((char*)myStr.c_str(), BASIC, "%" PRId8"", paramlength);
-	json_push_back(countInfo, json_new_a("Parameter Length", (char*)myStr.c_str()));
-	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", paramConByte);
-	json_push_back(countInfo, json_new_a("Control Byte", (char*)myStr.c_str()));
+    if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+    {
+        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", param);
+        json_push_back(countInfo, json_new_a("Parameter Code", (char*)myStr.c_str()));
+        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu8"", paramlength);
+        json_push_back(countInfo, json_new_a("Parameter Length", (char*)myStr.c_str()));
+        snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", paramConByte);
+        json_push_back(countInfo, json_new_a("Control Byte", (char*)myStr.c_str()));
+    }
 	byte_Swap_32(&count);
 	json_push_back(countInfo, json_new_i((char *)strCount.c_str(),  count )); 
 
