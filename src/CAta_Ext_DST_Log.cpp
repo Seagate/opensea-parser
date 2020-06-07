@@ -28,6 +28,8 @@ using namespace opensea_parser;
 //---------------------------------------------------------------------------
 CAta_Ext_DST_Log::CAta_Ext_DST_Log(const std::string &fileName, JSONNODE *masterData)
     :m_name("Ext DST Log")                                         //!< name of the class
+    , pData()
+    , m_logSize(0)
     , m_status(IN_PROGRESS)
 {
 	CLog *cCLog;
