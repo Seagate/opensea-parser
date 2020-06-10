@@ -34,6 +34,7 @@ CFARMLog::CFARMLog()
 	, m_status(IN_PROGRESS)
 	, m_isScsi(false)
 	, m_shwoStatus(false)
+    , m_bufferdelete(false)
 {
 
 }
@@ -59,6 +60,7 @@ CFARMLog::CFARMLog(const std::string & fileName,bool showStatus)
 	, m_status(IN_PROGRESS)
 	, m_isScsi(false)
 	, m_shwoStatus(showStatus)
+    , m_bufferdelete(true)
 {
 	CLog *cCLog;
 	cCLog = new CLog(fileName);
@@ -109,6 +111,7 @@ CFARMLog::CFARMLog(const std::string & fileName)
 	, m_status(IN_PROGRESS)
 	, m_isScsi(false)
 	, m_shwoStatus(false)
+    , m_bufferdelete(true)
 {
 	CLog *cCLog;
 	cCLog = new CLog(fileName);
@@ -161,6 +164,7 @@ CFARMLog::CFARMLog(uint8_t *bufferData, size_t bufferSize, bool showStatus)
 	, m_status(IN_PROGRESS)
 	, m_isScsi(false)
 	, m_shwoStatus(showStatus)
+    , m_bufferdelete(false)
 {
 	if (bufferData != NULL)
 	{
@@ -188,9 +192,12 @@ CFARMLog::CFARMLog(uint8_t *bufferData, size_t bufferSize, bool showStatus)
 //---------------------------------------------------------------------------
 CFARMLog::~CFARMLog()
 {
-    if (bufferData != NULL)
+    if (m_bufferdelete)
     {
-        delete [] bufferData;
+        if (bufferData != NULL)
+        {
+            delete[] bufferData;
+        }
     }
 }
 //-----------------------------------------------------------------------------
