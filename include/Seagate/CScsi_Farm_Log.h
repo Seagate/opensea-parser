@@ -82,6 +82,7 @@ namespace opensea_parser {
         eReturnValues parse_Farm_Log();
         void print_All_Pages(JSONNODE *masterData);
         void print_Page(JSONNODE *masterData, uint32_t page);
+        void print_Page_One_Node(JSONNODE *masterData);
         void print_Page_Without_Drive_Info(JSONNODE *masterData, uint32_t page);
         virtual eReturnValues get_Log_Status(){ return m_status; };
     };
