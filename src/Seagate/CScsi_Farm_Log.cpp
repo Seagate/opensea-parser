@@ -90,19 +90,19 @@ CSCSI_Farm_Log::CSCSI_Farm_Log( uint8_t *bufferData, size_t bufferSize, bool sho
     if (pBuf != NULL)
     {
 		if (init_Header_Data() == SUCCESS)							// init the data for getting the log
-               {
-                   m_status = parse_Farm_Log();
-               }
-               else 
-               {
-                   m_status =FAILURE;
-               }
+        {
+            m_status = parse_Farm_Log();
+        }
+        else 
+        {
+            m_status =FAILURE;
+        }
     }
     else
     {
         m_status = FAILURE;
     }
-    delete [] pBuf;
+    delete[] pBuf;
 }
 //-----------------------------------------------------------------------------
 //
@@ -1283,7 +1283,7 @@ eReturnValues CSCSI_Farm_Log::print_Header(JSONNODE *masterData)
     printf("\tHeads Supported =   %" PRIu64"  \n", vFarmFrame[page].farmHeader.farmHeader.headsSupported & 0x00FFFFFFFFFFFFFFLL);                             //!< Maximum Drive Heads Supported
     printf("\tNumber of Copies=   %" PRIu64"  \n", vFarmFrame[page].farmHeader.farmHeader.copies & 0x00FFFFFFFFFFFFFLL);                                      //!< Number of Historical Copies
 #endif
-    json_set_name(pageInfo, "FARM Log");
+    json_set_name(pageInfo, "FARM Log Header");
 
     snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIX64"", check_Status_Strip_Status(vFarmFrame[page].farmHeader.farmHeader.signature));
 	json_push_back(pageInfo, json_new_a("Log Signature", (char*)myStr.c_str() ));
@@ -2547,6 +2547,30 @@ void CSCSI_Farm_Log::print_Page(JSONNODE *masterData, uint32_t page)
                 print_Head_Information(vFarmFrame.at(page).vFramesFound.at(frame), masterData, page);
             }
         }
+    }
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn print_Page_One_Node()
+//
+//! \brief
+//!   Description:  print out a copy of a the pages, all under one Node
+//
+//  Entry:
+//! \param masterData  =  master data to the json node
+//
+//  Exit:
+//!   \return 
+//
+//---------------------------------------------------------------------------
+void CSCSI_Farm_Log::print_Page_One_Node(JSONNODE *masterData)
+{
+    if (vFarmFrame.size() > 0)
+    {
+        JSONNODE *pageInfo = json_new(JSON_NODE);
+        json_set_name(pageInfo,"FARM Log");
+        print_All_Pages(pageInfo);
+        json_push_back(masterData, pageInfo);
     }
 }
 //-----------------------------------------------------------------------------
