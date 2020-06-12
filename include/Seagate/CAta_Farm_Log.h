@@ -224,6 +224,7 @@ namespace opensea_parser {
             void Print_All_Pages(JSONNODE *masterData);
             void Print_Page(JSONNODE *masterData, uint32_t page);
             void Print_Page_Without_Drive_Info(JSONNODE *masterData, uint32_t page);
+            void Print_Page_One_Node(JSONNODE *masterData);
             virtual eReturnValues Get_Log_Status(){ return m_status; };
             virtual void Get_Serial_Number(std::string sn){ sn.assign( vFarmFrame[0].identStringInfo.serialNumber); };
             virtual void Get_Firmware_String(std::string firmware){ firmware.assign(vFarmFrame[0].identStringInfo.firmwareRev); };
