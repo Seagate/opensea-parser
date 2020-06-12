@@ -60,7 +60,7 @@ CScsiScanLog::CScsiScanLog()
 //
 //---------------------------------------------------------------------------
 CScsiScanLog::CScsiScanLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength)
-	: pData(buffer)
+	: pData(NULL)
 	, m_ScanName("Background Scan Log")
 	, m_ScanStatus(IN_PROGRESS)
 	, m_PageLength(pageLength)
@@ -73,7 +73,13 @@ CScsiScanLog::CScsiScanLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLen
 	{
 		printf("%s \n", m_ScanName.c_str());
 	}
-	if (buffer != NULL)
+    pData = new uint8_t[bufferSize];								// new a buffer to the point				
+#ifndef _WIN64
+    memcpy(pData, buffer, bufferSize);
+#else
+    memcpy_s(pData, bufferSize, buffer, bufferSize);// copy the buffer data to the class member pBuf
+#endif
+	if (pData != NULL)
 	{
 		m_ScanStatus = IN_PROGRESS;
 	}
@@ -100,7 +106,11 @@ CScsiScanLog::CScsiScanLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLen
 //---------------------------------------------------------------------------
 CScsiScanLog::~CScsiScanLog()
 {
-
+    if (pData != NULL)
+    {
+        delete[] pData;
+        pData = NULL;
+    }
 }
 //-----------------------------------------------------------------------------
 //

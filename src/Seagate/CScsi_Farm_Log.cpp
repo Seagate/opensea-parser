@@ -71,7 +71,7 @@ CSCSI_Farm_Log::CSCSI_Farm_Log( uint8_t *bufferData, size_t bufferSize, bool sho
 	, m_MaxHeads(0)                                
 	, m_copies(0)
     , m_MinorRev(0)
-    , pBuf()
+    , pBuf(NULL)
     , m_status(IN_PROGRESS)                                
 	, m_logParam()
 	, m_pageParam()

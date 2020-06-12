@@ -57,7 +57,7 @@ CScsiPowerConditiontLog::CScsiPowerConditiontLog()
 //
 //---------------------------------------------------------------------------
 CScsiPowerConditiontLog::CScsiPowerConditiontLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength)
-	: pData(buffer)
+	: pData(NULL)
 	, m_PowerName("Power Condition Transitions Log")
 	, m_PowerStatus(IN_PROGRESS)
 	, m_PageLength(pageLength)
@@ -68,7 +68,13 @@ CScsiPowerConditiontLog::CScsiPowerConditiontLog(uint8_t * buffer, size_t buffer
 	{
 		printf("%s \n", m_PowerName.c_str());
 	}
-	if (buffer != NULL)
+    pData = new uint8_t[bufferSize];								// new a buffer to the point				
+#ifndef _WIN64
+    memcpy(pData, buffer, bufferSize);
+#else
+    memcpy_s(pData, bufferSize, buffer, bufferSize);// copy the buffer data to the class member pBuf
+#endif
+	if (pData != NULL)
 	{
 		m_PowerStatus = IN_PROGRESS;
 	}
@@ -95,7 +101,11 @@ CScsiPowerConditiontLog::CScsiPowerConditiontLog(uint8_t * buffer, size_t buffer
 //---------------------------------------------------------------------------
 CScsiPowerConditiontLog::~CScsiPowerConditiontLog()
 {
-
+    if (pData != NULL)
+    {
+        delete[] pData;
+        pData = NULL;
+    }
 }
 //-----------------------------------------------------------------------------
 //

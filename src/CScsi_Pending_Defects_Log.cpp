@@ -59,7 +59,7 @@ CScsiPendingDefectsLog::CScsiPendingDefectsLog()
 //
 //---------------------------------------------------------------------------
 CScsiPendingDefectsLog::CScsiPendingDefectsLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength)
-	: pData(buffer)
+	: pData(NULL)
 	, m_PlistName("Pending Defect Log")
 	, m_PlistStatus(IN_PROGRESS)
 	, m_PageLength(pageLength)
@@ -71,7 +71,13 @@ CScsiPendingDefectsLog::CScsiPendingDefectsLog(uint8_t * buffer, size_t bufferSi
 	{
 		printf("%s \n", m_PlistName.c_str());
 	}
-	if (buffer != NULL)
+    pData = new uint8_t[bufferSize];								// new a buffer to the point				
+#ifndef _WIN64
+    memcpy(pData, buffer, bufferSize);
+#else
+    memcpy_s(pData, bufferSize, buffer, bufferSize);// copy the buffer data to the class member pBuf
+#endif
+	if (pData != NULL)
 	{
 		m_PlistStatus = IN_PROGRESS;
 	}
@@ -98,7 +104,11 @@ CScsiPendingDefectsLog::CScsiPendingDefectsLog(uint8_t * buffer, size_t bufferSi
 //---------------------------------------------------------------------------
 CScsiPendingDefectsLog::~CScsiPendingDefectsLog()
 {
-
+    if (pData != NULL)
+    {
+        delete[] pData;
+        pData = NULL;
+    }
 }
 //-----------------------------------------------------------------------------
 //

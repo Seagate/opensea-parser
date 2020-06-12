@@ -54,8 +54,8 @@ CScsiProtocolPortLog::CScsiProtocolPortLog()
 //  Exit:
 //
 //---------------------------------------------------------------------------
-CScsiProtocolPortLog::CScsiProtocolPortLog(uint8_t * buffer, size_t bufferSize)
-	:pData(buffer)
+CScsiProtocolPortLog::CScsiProtocolPortLog(uint8_t *buffer, size_t bufferSize)
+	:pData()
 	, m_PSPName("Protocol Port Log")
 	, m_PSPStatus(IN_PROGRESS)
 	, m_PageLength(0)
@@ -65,7 +65,13 @@ CScsiProtocolPortLog::CScsiProtocolPortLog(uint8_t * buffer, size_t bufferSize)
 	{
 		printf("%s \n", m_PSPName.c_str());
 	}
-	if (buffer != NULL)
+    pData = new uint8_t[bufferSize];								// new a buffer to the point				
+#ifndef _WIN64
+    memcpy(pData, buffer, bufferSize);
+#else
+    memcpy_s(pData, bufferSize, buffer, bufferSize);           // copy the buffer data to the class member pBuf
+#endif
+	if (pData != NULL)
 	{
 		m_PSPStatus = IN_PROGRESS;
 	}
@@ -92,7 +98,11 @@ CScsiProtocolPortLog::CScsiProtocolPortLog(uint8_t * buffer, size_t bufferSize)
 //---------------------------------------------------------------------------
 CScsiProtocolPortLog::~CScsiProtocolPortLog()
 {
-
+    if (pData != NULL)
+    {
+        delete[] pData;
+        pData = NULL;
+    }
 }
 //-----------------------------------------------------------------------------
 //
