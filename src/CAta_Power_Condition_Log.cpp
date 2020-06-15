@@ -131,9 +131,13 @@ CAtaPowerConditionsLog::CAtaPowerConditionsLog(tDataPtr pData, JSONNODE *masterD
 	, m_standbyYPowerConditions(NULL), m_standbyZPowerConditions(NULL)
 	, conditionFlags()
 {
-
-    m_powerConditionLog = (uint8_t*)pData.pData;
-
+    m_powerConditionLog = new uint8_t[pData.DataLen];								// new a buffer to the point				
+#ifndef _WIN64
+    memcpy(m_powerConditionLog, (uint8_t*)pData.pData, pData.DataLen);
+#else
+    memcpy_s(m_powerConditionLog, pData.DataLen, (uint8_t*)pData.pData, pData.DataLen);// copy the buffer data to the class member pBuf
+#endif
+ 
     if (m_powerConditionLog != NULL)
     {
         m_conditionFlags = &conditionFlags;

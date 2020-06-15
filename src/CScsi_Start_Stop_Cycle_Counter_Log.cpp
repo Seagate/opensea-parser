@@ -30,7 +30,8 @@ using namespace opensea_parser;
 //
 //---------------------------------------------------------------------------
 CScsiStartStop::CScsiStartStop()
-	: m_SSName("Start Stop Log")
+	: pData(NULL)
+    , m_SSName("Start Stop Log")
 	, m_StartStatus(IN_PROGRESS)
 	, m_PageLength(0)
     , m_SubPage(0)
@@ -53,7 +54,8 @@ CScsiStartStop::CScsiStartStop()
 //
 //---------------------------------------------------------------------------
 CScsiStartStop::CScsiStartStop(uint8_t * buffer, size_t bufferSize, JSONNODE *masterData)
-	: m_SSName("Start Stop Log")
+	: pData(NULL)
+    , m_SSName("Start Stop Log")
 	, m_StartStatus(IN_PROGRESS)
 	, m_PageLength(0)
     , m_SubPage(0)
@@ -61,15 +63,28 @@ CScsiStartStop::CScsiStartStop(uint8_t * buffer, size_t bufferSize, JSONNODE *ma
 {
 	if (buffer != NULL)
 	{
-		if (bufferSize >= (sizeof(sStartStopStruct)+sizeof(sLogPageStruct)))				// check for invaid log size < need to add in the size of the log page header
-		{
-			m_Page = (sStartStopStruct *)buffer;				// set a buffer to the point to the log page info
-			m_StartStatus = parse_Start_Stop_Log(masterData);
-		}
-		else
-		{
-			m_StartStatus = static_cast<eReturnValues>(INVALID_LENGTH);
-		}
+        pData = new uint8_t[bufferSize];								// new a buffer to the point				
+#ifndef _WIN64
+        memcpy(pData, buffer, bufferSize);
+#else
+        memcpy_s(pData, bufferSize, buffer, bufferSize);// copy the buffer data to the class member pBuf
+#endif
+        if (pData != NULL)
+        {
+            if (bufferSize >= (sizeof(sStartStopStruct) + sizeof(sLogPageStruct)))				// check for invaid log size < need to add in the size of the log page header
+            {
+                m_Page = (sStartStopStruct *)pData;				// set a buffer to the point to the log page info
+                m_StartStatus = parse_Start_Stop_Log(masterData);
+            }
+            else
+            {
+                m_StartStatus = static_cast<eReturnValues>(INVALID_LENGTH);
+            }
+        }
+        else
+        {
+            m_StartStatus = MEMORY_FAILURE;
+        }
 	}
 	else
 	{
@@ -94,7 +109,11 @@ CScsiStartStop::CScsiStartStop(uint8_t * buffer, size_t bufferSize, JSONNODE *ma
 //---------------------------------------------------------------------------
 CScsiStartStop::~CScsiStartStop()
 {
-
+    if (pData != NULL)
+    {
+        delete[] pData;
+        pData = NULL;
+    }
 }
 //-----------------------------------------------------------------------------
 //

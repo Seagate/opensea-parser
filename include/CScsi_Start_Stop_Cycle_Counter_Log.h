@@ -67,6 +67,7 @@ namespace opensea_parser {
 	{
 	private:
 	protected:
+        uint8_t                     *pData;                     //<! pointer to the data buffer
 		std::string					m_SSName;					//<! class name	
 		eReturnValues				m_StartStatus;			    //<! status of the class
 		uint16_t					m_PageLength;				//<! byte swapped length of the page
