@@ -73,11 +73,11 @@ CScsiScanLog::CScsiScanLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLen
 	{
 		printf("%s \n", m_ScanName.c_str());
 	}
-    pData = new uint8_t[bufferSize];								// new a buffer to the point				
+    pData = new uint8_t[pageLength];								// new a buffer to the point				
 #ifndef _WIN64
-    memcpy(pData, buffer, bufferSize);
+    memcpy(pData, buffer, pageLength);
 #else
-    memcpy_s(pData, bufferSize, buffer, bufferSize);// copy the buffer data to the class member pBuf
+    memcpy_s(pData, bufferSize, buffer, pageLength);// copy the buffer data to the class member pBuf
 #endif
 	if (pData != NULL)
 	{

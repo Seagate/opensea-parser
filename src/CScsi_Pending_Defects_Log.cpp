@@ -71,11 +71,11 @@ CScsiPendingDefectsLog::CScsiPendingDefectsLog(uint8_t * buffer, size_t bufferSi
 	{
 		printf("%s \n", m_PlistName.c_str());
 	}
-    pData = new uint8_t[bufferSize];								// new a buffer to the point				
+    pData = new uint8_t[pageLength];								// new a buffer to the point				
 #ifndef _WIN64
-    memcpy(pData, buffer, bufferSize);
+    memcpy(pData, buffer, pageLength);
 #else
-    memcpy_s(pData, bufferSize, buffer, bufferSize);// copy the buffer data to the class member pBuf
+    memcpy_s(pData, pageLength, buffer, pageLength);// copy the buffer data to the class member pBuf
 #endif
 	if (pData != NULL)
 	{
