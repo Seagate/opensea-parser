@@ -2232,12 +2232,12 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
 #if defined( _DEBUG)
             printf("\tSomething went wrong, ERROR \n");
 #endif
-            return FAILURE;
+
             break;
         }
 
         json_push_back(masterData, headPage);
-        return SUCCESS;
+  
     }
 
     return SUCCESS;
