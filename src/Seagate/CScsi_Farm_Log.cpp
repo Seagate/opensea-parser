@@ -2148,6 +2148,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "Second MR Head Resistance from most recent SMART Summary Frame by Head %" PRIu32"", loopCount);     // Head count
                 snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].secondMRHeadResistanceByHead.headValue[loopCount]) *.1));   //!< Second MR Head Resistance
+                set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].secondMRHeadResistanceByHead.headValue[loopCount], m_showStatusBits);
             }
             break;
         case RESERVED_FOR_FUTURE_EXPANSION_20:
@@ -2515,7 +2516,8 @@ void CSCSI_Farm_Log::print_All_Pages(JSONNODE *masterData)
                 case RESERVED_FOR_FUTURE_EXPANSION:
                     break;
                 default:
-                    print_Head_Information(vFarmFrame.at(index).vFramesFound.at(pramCode), masterData, index);
+                    // No head data. We don't want to go into the head data
+                    //print_Head_Information(vFarmFrame.at(index).vFramesFound.at(pramCode), masterData, index);
                     break;
                 }
             }

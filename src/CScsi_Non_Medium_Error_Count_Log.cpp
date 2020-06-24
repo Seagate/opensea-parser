@@ -127,7 +127,7 @@ void CScsiNonMediumErrorCountLog::process_Non_Medium_Error_Count_Data(JSONNODE *
 #endif
 		byte_Swap_16(&m_CountErrors->paramCode);
 
-		snprintf((char*)myStr.c_str(), BASIC, "Non-Medium Error Count Log Parameters");
+		snprintf((char*)myStr.c_str(), BASIC, "Non-Medium Error Count Log Parameters 0x%04" PRIx16"", m_CountErrors->paramCode);
 		JSONNODE *cacheInfo = json_new(JSON_NODE);
 		json_set_name(cacheInfo, (char*)myStr.c_str());
 
