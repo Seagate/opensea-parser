@@ -216,60 +216,29 @@ namespace opensea_parser {
 	//-----------------------------------------------------------------------------
     inline void set_json_64bit_With_Check_Status(JSONNODE *nowNode, const std::string & myStr, uint64_t value, bool hexPrint)
     {
-		std::string printStr = " ";
-		printStr.resize(BASIC);
-#ifndef _WIN64   //To make old gcc compilers happy
-		std::string lowStr = "64 bit Value Lower value";
-		std::string upperStr = "64 bit Value Upper value";
-#endif
 		value = check_Status_Strip_Status(value);
-		value = check_for_signed_int(value, 16);
-#ifndef _WIN64   //To make old gcc compilers happy
-		int32_t lowValue = static_cast<int32_t>(value);
-		int32_t upperValue = static_cast<int32_t>(value >> 32);
-#endif
-		if (hexPrint)
-		{
+        char *printStr = (char*)calloc((BASIC), sizeof(char));
 
-#ifndef _WIN64   //To make old gcc compilers happy
-			JSONNODE *bigBit = json_new(JSON_NODE);
-			json_set_name(bigBit, (char *)myStr.c_str());
-			json_push_back(bigBit, json_new_b("64 bit Value String in Hex", true));
-			snprintf((char*)printStr.c_str(), BASIC, "0x%014" PRIx64"", value);
-			json_push_back(bigBit, json_new_a("64 bit Value String", (char*)printStr.c_str()));
-			json_push_back(bigBit, json_new_i((char*)lowStr.c_str(), lowValue));
-			json_push_back(bigBit, json_new_i((char*)upperStr.c_str(), upperValue));
-			json_push_back(nowNode, bigBit);
-#else		//json does not support 64 bit numbers. Therefore we will print it as a string
-			snprintf((char*)printStr.c_str(), BASIC, "0x%08" PRIx64"", value);
-			json_push_back(nowNode, json_new_a((char *)myStr.c_str(), (char*)printStr.c_str()));
-#endif
-		}
-		else
-		{
-            // had to change to the 31 bit, otherwise because it casts to an int it caused some numbers to be negitive 
-            if (M_IGETBITRANGE(value, 63, 31) == 0)
-			{
-				json_push_back(nowNode, json_new_i((char *)myStr.c_str(), static_cast<int32_t>(M_DoubleWord0(value))));
-			}
-			else
-			{
-#ifndef _WIN64   //To make old gcc compilers happy
-				JSONNODE *bigBit = json_new(JSON_NODE);
-				json_set_name(bigBit, (char *)myStr.c_str());
-				json_push_back(bigBit, json_new_b("64 bit Value String in Hex", false));
-				snprintf((char*)printStr.c_str(), BASIC, "%" PRIi64"", value);
-				json_push_back(bigBit, json_new_a("64 bit Value String", (char*)printStr.c_str()));
-				json_push_back(bigBit, json_new_i((char*)lowStr.c_str(), lowValue));
-				json_push_back(bigBit, json_new_i((char*)upperStr.c_str(), upperValue));
-				json_push_back(nowNode, bigBit);
-#else		//json does not support 64 bit numbers. Therefore we will print it as a string
-				snprintf((char*)printStr.c_str(), BASIC, "%" PRId64"", value);
-				json_push_back(nowNode, json_new_a((char *)myStr.c_str(), (char*)printStr.c_str()));
-#endif
-			}
-		}
-
+        if (hexPrint)
+        {
+            //json does not support 64 bit numbers. Therefore we will print it as a string
+            snprintf(printStr, BASIC, "0x%016" PRIx64"", value);
+            json_push_back(nowNode, json_new_a((char *)myStr.c_str(), printStr));
+        }
+        else
+        {
+            if (M_IGETBITRANGE(value, 63, 32) == 0)
+            {
+                json_push_back(nowNode, json_new_i((char *)myStr.c_str(), static_cast<int32_t>(M_DoubleWord0(value))));
+            }
+            else
+            {
+                // if the vale is greater then a unsigned 32 bit number print it as a string
+                snprintf(printStr, BASIC, "%" PRIu64"", value);
+                json_push_back(nowNode, json_new_a((char *)myStr.c_str(), printStr));
+            }
+        }
+        safe_Free(printStr);
 	}
     //-----------------------------------------------------------------------------
     //
@@ -290,33 +259,13 @@ namespace opensea_parser {
     //-----------------------------------------------------------------------------
     inline void set_json_64bit(JSONNODE *nowNode, const std::string & myStr, uint64_t value, bool hexPrint)
     {
-        std::string printStr = " ";
-        printStr.resize(BASIC);
-#ifndef _WIN64   //To make old gcc compilers happy
-        std::string lowStr = "64 bit Value Lower value";
-        std::string upperStr = "64 bit Value Upper value";
-#endif
+        char *printStr = (char*)calloc((BASIC), sizeof(char));
 
-#ifndef _WIN64   //To make old gcc compilers happy
-        int32_t lowValue = static_cast<int32_t>(value);
-        int32_t upperValue = static_cast<int32_t>(value >> 32);
-#endif
         if (hexPrint)
         {
-
-#ifndef _WIN64   //To make old gcc compilers happy
-            JSONNODE *bigBit = json_new(JSON_NODE);
-            json_set_name(bigBit, (char *)myStr.c_str());
-            json_push_back(bigBit, json_new_b("64 bit Value String in Hex", true));
-            snprintf((char*)printStr.c_str(), BASIC, "0x%014" PRIx64"", value);
-            json_push_back(bigBit, json_new_a("64 bit Value String", (char*)printStr.c_str()));
-            json_push_back(bigBit, json_new_i((char*)lowStr.c_str(), lowValue));
-            json_push_back(bigBit, json_new_i((char*)upperStr.c_str(), upperValue));
-            json_push_back(nowNode, bigBit);
-#else		//json does not support 64 bit numbers. Therefore we will print it as a string
-            snprintf((char*)printStr.c_str(), BASIC, "0x%08" PRIx64"", value);
-            json_push_back(nowNode, json_new_a((char *)myStr.c_str(), (char*)printStr.c_str()));
-#endif
+            //json does not support 64 bit numbers. Therefore we will print it as a string
+            snprintf(printStr, BASIC, "0x%016" PRIx64"", value);
+            json_push_back(nowNode, json_new_a((char *)myStr.c_str(), printStr));
         }
         else
         {
@@ -326,22 +275,12 @@ namespace opensea_parser {
             }
             else
             {
-#ifndef _WIN64   //To make old gcc compilers happy
-                JSONNODE *bigBit = json_new(JSON_NODE);
-                json_set_name(bigBit, (char *)myStr.c_str());
-                json_push_back(bigBit, json_new_b("64 bit Value String in Hex", false));
-                snprintf((char*)printStr.c_str(), BASIC, "%" PRIi64"", value);
-                json_push_back(bigBit, json_new_a("64 bit Value String", (char*)printStr.c_str()));
-                json_push_back(bigBit, json_new_i((char*)lowStr.c_str(), lowValue));
-                json_push_back(bigBit, json_new_i((char*)upperStr.c_str(), upperValue));
-                json_push_back(nowNode, bigBit);
-#else		//json does not support 64 bit numbers. Therefore we will print it as a string
-                snprintf((char*)printStr.c_str(), BASIC, "%" PRId64"", value);
-                json_push_back(nowNode, json_new_a((char *)myStr.c_str(), (char*)printStr.c_str()));
-#endif
+                // if the vale is greater then a unsigned 32 bit number print it as a string
+                snprintf(printStr, BASIC, "%" PRIu64"", value);
+                json_push_back(nowNode, json_new_a((char *)myStr.c_str(), printStr));
             }
         }
-
+        safe_Free(printStr);
     }
 	//-----------------------------------------------------------------------------
 	//
