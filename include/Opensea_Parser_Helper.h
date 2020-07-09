@@ -42,7 +42,7 @@ namespace opensea_parser {
 #define OPENSEA_PARSER
 
 #define RELISTAT                24
-#define WORLD_WIDE_NAME_LEN     18
+#define WORLD_WIDE_NAME_LEN     19
 #define DEVICE_INTERFACE_LEN    4
 #define SERIAL_NUMBER_LEN       8
 #define MODEL_NUMBER_LEN        20
@@ -227,7 +227,7 @@ namespace opensea_parser {
         }
         else
         {
-            if (M_IGETBITRANGE(value, 63, 32) == 0)
+            if (M_IGETBITRANGE(value, 63, 31) == 0)
             {
                 json_push_back(nowNode, json_new_i((char *)myStr.c_str(), static_cast<int32_t>(M_DoubleWord0(value))));
             }
