@@ -387,7 +387,7 @@ void CSCSI_Farm_Log::create_Serial_Number(std::string &serialNumber, const sScsi
 	uint64_t sn2 = idInfo->serialNumber2 & 0x00FFFFFFFFFFFFFFLL;
 	byte_Swap_64(&sn1);
 	byte_Swap_64(&sn2);
-	sn = (sn1 | (sn2 >> 32));
+	sn = (sn2  | (sn1 >> 32));
 	serialNumber.resize(SERIAL_NUMBER_LEN );
 	memset((char*)serialNumber.c_str(),0, SERIAL_NUMBER_LEN );
 	strncpy((char *)serialNumber.c_str(), (char*)&sn, SERIAL_NUMBER_LEN);
@@ -736,7 +736,7 @@ bool CSCSI_Farm_Log::swap_Bytes_sLUNStruct(sLUNStruct *LUN)
 bool CSCSI_Farm_Log::get_Head_Info(sHeadInformation *phead, uint8_t *buffer)
 {
     memcpy(phead->headValue, (sHeadInformation *)&buffer[4], (sizeof(uint64_t) * (size_t) m_heads));
-    memcpy(&phead->pageHeader, (sScsiPageParameter *)&pBuf[0], sizeof(sScsiPageParameter));
+    memcpy(&phead->pageHeader, (sScsiPageParameter *)&buffer[0], sizeof(sScsiPageParameter));
     for (uint32_t index = 0; index < m_heads; index++)
     {
         byte_Swap_64(&phead->headValue[index] );
@@ -886,7 +886,24 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                         offset += (pReli->pPageHeader.plen + sizeof(sScsiPageParameter));
                     }
                     break; 
-                    
+                case  RESERVED_FOR_FUTURE_STATISTICS_1:
+                case  RESERVED_FOR_FUTURE_STATISTICS_2:
+                case  RESERVED_FOR_FUTURE_STATISTICS_3:
+                case  RESERVED_FOR_FUTURE_STATISTICS_4:
+                case  RESERVED_FOR_FUTURE_STATISTICS_5:
+                case  RESERVED_FOR_FUTURE_STATISTICS_6:
+                case  RESERVED_FOR_FUTURE_STATISTICS_7:
+                case  RESERVED_FOR_FUTURE_STATISTICS_8:
+                case  RESERVED_FOR_FUTURE_STATISTICS_9:
+                case  RESERVED_FOR_FUTURE_STATISTICS_10:
+                {
+                    sHeadInformation *pHeadInfo = new sHeadInformation();
+                    get_Head_Info(pHeadInfo, &pBuf[offset]);
+                    memcpy(&pFarmFrame->discSlipPerHead, pHeadInfo, sizeof(*pHeadInfo));
+                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    delete pHeadInfo;
+                }
+                break;
                 case DISC_SLIP_IN_MICRO_INCHES_BY_HEAD:     
                     {
                         sHeadInformation *pHeadInfo = new sHeadInformation();
@@ -1859,7 +1876,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tACFF Sine 1X, value from most recent SMART Summary Frame by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].acffSine1xValueByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< ACFF Sine 1X, value from most recent SMART Summary Frame
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "ACFF Sine 1X value from most recent SMART Summary Frame Head number %" PRIu32"", loopCount); // Head count
-                snprintf((char*)myStr.c_str(), BASIC, "%" PRIi8"", static_cast<int8_t>(check_for_signed_int(M_Byte0(check_Status_Strip_Status(vFarmFrame[page].acffSine1xValueByHead.headValue[loopCount])), 8)));
+                snprintf((char*)myStr.c_str(), BASIC, "%" PRIi8"", static_cast<int8_t>(check_for_signed_int(M_Byte0(check_Status_Strip_Status(vFarmFrame[page].acffSine1xValueByHead.headValue[loopCount])), 8)) * 16);
                 set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].acffSine1xValueByHead.headValue[loopCount], m_showStatusBits);  //!< ACFF Sine 1X, value from most recent SMART Summary Frame
             }
             break;
