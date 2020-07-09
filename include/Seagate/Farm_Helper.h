@@ -46,6 +46,7 @@ namespace opensea_parser {
 		printStr.resize(BASIC);
 		std::string lowStr = "64 bit Value Lower value";
 		std::string upperStr = "64 bit Value Upper value";
+        value = check_Status_Strip_Status(value);
 		// if the 31 bit is set it will turn the value to a negitive number
         if (!showStatusBits  && (M_GETBITRANGE(value, 63, 31) == 0))
 		{
