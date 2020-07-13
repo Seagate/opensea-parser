@@ -319,7 +319,7 @@ eReturnValues CATA_Farm_Log::Print_Header(JSONNODE *masterData)
     JSONNODE *pageInfo = json_new(JSON_NODE);
     sFarmHeader *header = (sFarmHeader *)&pBuf[0];																				// pointer to the header to get the signature
 
-#if defined( _DEBUG)
+#if defined_DEBUG
     printf("\tLog Signature           (debug) =  0x%" PRIX64" \n", header->signature & 0x00FFFFFFFFFFFFFFLL);						//!< Log Signature = 0x00004641524D4552
     printf("\tMajor Revision          (debug) =   %" PRId64"  \n", header->majorRev & 0x00FFFFFFFFFFFFFFLL);						//!< Log Major rev
     printf("\tMinor Revision          (debug) =   %" PRId64"  \n", header->minorRev & 0x00FFFFFFFFFFFFFFLL);						//!< minor rev 
@@ -370,7 +370,7 @@ eReturnValues CATA_Farm_Log::Print_Drive_Information(JSONNODE *masterData, uint3
     myStr.resize(BASIC);
     JSONNODE *pageInfo = json_new(JSON_NODE);
 
-#if defined( _DEBUG)
+#if defined_DEBUG
     if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
     {
         printf("\nDrive Information From FACTORY page");
@@ -526,7 +526,7 @@ eReturnValues CATA_Farm_Log::Print_Work_Load(JSONNODE *masterData, uint32_t page
     myStr.resize(BASIC);
     JSONNODE *pageInfo = json_new(JSON_NODE);
 
-#if defined( _DEBUG)
+#if defined_DEBUG
     if (vFarmFrame[page].workLoadPage.copyNumber == FACTORYCOPY)
     {
         printf("\nWork Load Information From FACTORY page");
@@ -605,7 +605,7 @@ eReturnValues CATA_Farm_Log::Print_Error_Information(JSONNODE *masterData, uint3
     myStr.resize(BASIC);
     JSONNODE *pageInfo = json_new(JSON_NODE);
 
-#if defined( _DEBUG)
+#if defined_DEBUG
     if (vFarmFrame[page].errorPage.copyNumber == FACTORYCOPY)
     {
         printf("\nError Information From FACTORY page");
@@ -764,7 +764,7 @@ eReturnValues CATA_Farm_Log::Print_Enviroment_Information(JSONNODE *masterData, 
     myStr.resize(BASIC);
     JSONNODE *pageInfo = json_new(JSON_NODE);
 
-#if defined( _DEBUG)
+#if defined_DEBUG
     if (vFarmFrame[page].environmentPage.copyNumber == FACTORYCOPY)
     {
         printf("\nEnvironment Information From FACTORY page");
@@ -901,7 +901,7 @@ eReturnValues CATA_Farm_Log::Print_Reli_Information(JSONNODE *masterData, uint32
     myHeader.resize(BASIC);
     JSONNODE *pageInfo = json_new(JSON_NODE);
 
-#if defined( _DEBUG)
+#if defined_DEBUG
     int16_t whole = 0;
     double remander = 0;
     if (vFarmFrame[page].reliPage.copyNumber == FACTORYCOPY)
@@ -1009,7 +1009,7 @@ eReturnValues CATA_Farm_Log::Print_Head_Information(JSONNODE *masterData, uint32
     myHeader.resize(BASIC);
     JSONNODE *headInfo = json_new(JSON_NODE);
 
-#if defined( _DEBUG)
+#if defined_DEBUG
     int16_t whole = 0;
     double remander = 0;
     if (vFarmFrame[page].reliPage.copyNumber == FACTORYCOPY)
@@ -1410,7 +1410,7 @@ void CATA_Farm_Log::Print_All_Pages(JSONNODE *masterData)
     Print_Header(masterData);
     for (uint32_t index = 0; index < vFarmFrame.size(); ++index)
     {
-// #if defined( _DEBUG)
+// #if defined_DEBUG
         Print_Drive_Information(masterData, index);
         Print_Work_Load(masterData, index);
 // #endif

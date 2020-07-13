@@ -199,7 +199,7 @@ void CScsiScanLog::process_Scan_Status_Data(JSONNODE *scanData)
 {
 	std::string myStr = "";
 	myStr.resize(BASIC);
-#if defined( _DEBUG)
+#if defined_DEBUG
 	printf("Background Scan Status Description \n");
 #endif
 	byte_Swap_16(&m_ScanParam->paramCode);
@@ -312,7 +312,7 @@ void CScsiScanLog::process_Defect_Data(JSONNODE *defectData)
 	myStr.resize(BASIC);
 	std::string headerStr = "";
 	headerStr.resize(BASIC);
-#if defined( _DEBUG)
+#if defined_DEBUG
 	printf("Background Scan Defect Description \n");
 #endif
 	byte_Swap_16(&m_defect->paramCode);
@@ -380,7 +380,7 @@ void CScsiScanLog::process_other_param_data(JSONNODE *scanData, size_t offset)
     myStr.resize(BASIC);
     std::string headerStr = "";
     headerStr.resize(BASIC);
-#if defined( _DEBUG)
+#if defined_DEBUG
     printf("Background Scan Defect Description \n");
 #endif
     byte_Swap_16(&m_ParamHeader->paramCode);

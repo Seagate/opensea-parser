@@ -190,7 +190,7 @@ void CScsiPowerConditiontLog::process_List_Information(JSONNODE *powerData)
     bool typeFound = false;
 	std::string myStr = "";
 	myStr.resize(BASIC);
-#if defined( _DEBUG)
+#if defined_DEBUG
 	printf("Power Condition Transitions Log Page\n");
 #endif
 	byte_Swap_16(&m_PowerParam->paramCode);

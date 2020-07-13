@@ -122,7 +122,7 @@ void CScsiProtocolPortLog::process_Events_Data(JSONNODE *eventData)
 {
 	std::string myStr = "";
 	myStr.resize(BASIC);
-#if defined( _DEBUG)
+#if defined_DEBUG
 	printf("Phy Event Description \n");
 #endif
 	snprintf((char*)myStr.c_str(), BASIC, "Phy Event Description %" PRId8"",m_Event->eventSource);
@@ -311,7 +311,7 @@ void CScsiProtocolPortLog::process_Descriptor_Information(JSONNODE *descData)
 {
 	std::string myStr = "";
 	myStr.resize(BASIC);
-#if defined( _DEBUG)
+#if defined_DEBUG
 	printf("Descriptor Information \n");
 #endif
 
@@ -383,7 +383,7 @@ void CScsiProtocolPortLog::process_List_Information(JSONNODE *listData)
 {
 	std::string myStr = "";
 	myStr.resize(BASIC);
-#if defined( _DEBUG)
+#if defined_DEBUG
 	printf("List Information \n");
 #endif
 	

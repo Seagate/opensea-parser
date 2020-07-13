@@ -273,7 +273,7 @@ void CScsiSupportedLog::process_Supported_Data(JSONNODE *SupportData)
 	myStr.resize(BASIC);
 	std::string myHeader = "";
 	myHeader.resize(BASIC);
-#if defined( _DEBUG)
+#if defined_DEBUG
 	printf("Supported Log Pages \n");
 #endif
 

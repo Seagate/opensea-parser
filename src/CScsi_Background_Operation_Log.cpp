@@ -171,7 +171,7 @@ void CScsiOperationLog::process_Background_Operations_Data(JSONNODE *operationDa
 {
 	std::string myStr = "";
 	myStr.resize(BASIC);
-#if defined( _DEBUG)
+#if defined_DEBUG
 	printf("Cache Event Description \n");
 #endif
 	byte_Swap_16(&m_Operation->paramCode);

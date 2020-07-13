@@ -350,7 +350,7 @@ eReturnValues CAtaPowerConditionsLog::printPowerLogDescriptor(JSONNODE *masterDa
 	get_Power_Condition_Flags(logDescriptor->bitFlags);
 	if (logDescriptor != NULL)
 	{
-#if defined( _DEBUG)
+#if defined_DEBUG
 		printf("\nReserved \n");
 		printf("Power Condition Flags\n");
 		printf("     Power Condition Supported                 : %" PRIu8" \n", m_conditionFlags->powerSupportBit);
@@ -416,7 +416,7 @@ void CAtaPowerConditionsLog::printPowerConditionFlag(JSONNODE *masterData)
 	if (m_conditionFlags != NULL)
 	{
 
-#if defined( _DEBUG)
+#if defined_DEBUG
 		printf("Power Condition Supported            = %d   \n", m_conditionFlags->powerSupportBit);
 		printf("Power Condition Saveable             = %d   \n", m_conditionFlags->powerSaveableBit);
 		printf("Power Condition Changeable           = %d   \n", m_conditionFlags->powerChangeableBit);

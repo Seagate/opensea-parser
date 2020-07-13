@@ -1118,7 +1118,7 @@ eReturnValues CAta_Identify_Log_00::get_Log_Page00(uint8_t *pData, JSONNODE *mas
     {
         JSONNODE *pageInfo = json_new(JSON_NODE);
         json_set_name(pageInfo, "Log Page 00h");
-#if defined( _DEBUG)
+#if defined_DEBUG
         printf("Log Page 00h \n");
         printf("\tHeader =   0x%016" PRIx64"  \n", m_pLog0->header);
 #endif
@@ -1211,7 +1211,7 @@ bool CAta_Identify_Log_02::get_Device_Capacity(JSONNODE *capData)
 {
     std::string myStr = "";
     //myStr.resize(BASIC);
-#if defined( _DEBUG)
+#if defined_DEBUG
     printf("Device Capacity \n");
     printf("\tDevice Capacity =   0x%016" PRIx64"  \n", pCapacity->deviceCapacity);
 #endif
@@ -1260,7 +1260,7 @@ bool CAta_Identify_Log_02::get_Device_Capacity(JSONNODE *capData)
             snprintf((char*)myStr.c_str(), BASIC, "unknown size");
             break;
         }
-#if defined( _DEBUG)
+#if defined_DEBUG
         printf("\tDevice Capacity =   %" PRIu64"  \n", myUint48);
         printf("\tCapacity =   %s \n", (char*)myStr.c_str());
 #endif
@@ -1278,7 +1278,7 @@ bool CAta_Identify_Log_02::get_Sector_Size(JSONNODE *sectorData)
 {
     std::string myStr = "";
     myStr.resize(BASIC);
-#if defined( _DEBUG)
+#if defined_DEBUG
     printf("Physical / Logical sector size \n");
     printf("\tSector Size =   0x%016" PRIx64"  \n", pCapacity->sectorSize);
 #endif
@@ -1352,7 +1352,7 @@ eReturnValues CAta_Identify_Log_02::get_Log_Page02(uint8_t *pData, JSONNODE *mas
     {
         JSONNODE *pageInfo = json_new(JSON_NODE);
         json_set_name(pageInfo, "Log Page 02h");
-#if defined( _DEBUG)
+#if defined_DEBUG
         printf("Log Page 02h \n");
         printf("\tHeader =   0x%016" PRIx64"  \n", pCapacity->header);
 #endif
@@ -1668,7 +1668,7 @@ bool CAta_Identify_Log_03::get_Supported_Capabilities(JSONNODE *currentData)
 {
     std::string myStr = "";
     myStr.resize(BASIC);
-#if defined( _DEBUG)
+#if defined_DEBUG
     printf("Current Settings \n");
     printf("\tCurrent Settings =   0x%016" PRIx64"  \n", m_pCap->supportedCapabilities);
 #endif
@@ -1742,7 +1742,7 @@ bool CAta_Identify_Log_03::get_DownLoad_MicroCode(JSONNODE *DM)
 {
     std::string myStr = "";
     //myStr.resize(BASIC);
-#if defined( _DEBUG)
+#if defined_DEBUG
     printf("Download Microcode \n");
     printf("\tDownload Microcode =   0x%016" PRIx64"  \n", m_pCap->download);
 #endif
@@ -1789,7 +1789,7 @@ bool CAta_Identify_Log_03::get_Media_Rotation_Rate(JSONNODE *MRR)
 #define RESERVED_RATE       0xFFFF
     std::string myStr = "";
     //myStr.resize(BASIC);
-#if defined( _DEBUG)
+#if defined_DEBUG
     printf("Media Rotation Rate \n");
     printf("\tMedia Rotation Rate =   0x%016" PRIx64"  \n", m_pCap->rotationRate);
 #endif
@@ -1841,7 +1841,7 @@ bool CAta_Identify_Log_03::get_Form_Factor(JSONNODE *ff)
 {
     std::string myStr = "";
     myStr.resize(BASIC);
-#if defined( _DEBUG)
+#if defined_DEBUG
     printf("Form Factor \n");
     printf("\tForm Factor =   0x%016" PRIx64"  \n", m_pCap->formFactor);
 #endif
@@ -1905,7 +1905,7 @@ bool CAta_Identify_Log_03::get_Write_Read_Verify_Mode3(JSONNODE *mode3)
 {
     std::string myStr = "";
     //myStr.resize(BASIC);
-#if defined( _DEBUG)
+#if defined_DEBUG
     printf("Write Read Verify Mode 3 \n");
     printf("\tWrite Read Verify =   0x%016" PRIx64"  \n", m_pCap->mode3);
 #endif
@@ -1944,7 +1944,7 @@ bool CAta_Identify_Log_03::get_Write_Read_Verify_Mode2(JSONNODE *mode2)
 {
     std::string myStr = "";
     //myStr.resize(BASIC);
-#if defined( _DEBUG)
+#if defined_DEBUG
     printf("Write Read Verify Mode 2 \n");
     printf("\tWrite Read Verify =   0x%016" PRIx64"  \n", m_pCap->mode2);
 #endif
@@ -1983,7 +1983,7 @@ bool CAta_Identify_Log_03::world_Wide_Name(JSONNODE *WWN)
 {
     std::string myStr = "";
     myStr.resize(BASIC);
-#if defined( _DEBUG)
+#if defined_DEBUG
     printf("World Wide Name \n");
     printf("\tWorld Wide Name =   0x%04" PRIx16"  \n", m_pCap->wwn);
     printf("\tWorld Wide Name2 =   0x%04" PRIx16"  \n", m_pCap->wwn2);
@@ -2023,7 +2023,7 @@ bool CAta_Identify_Log_03::get_Data_Set_Managment(JSONNODE *setManagement)
 {
     std::string myStr = "";
     //myStr.resize(BASIC);
-#if defined( _DEBUG)
+#if defined_DEBUG
     printf("Data Set Management \n");
     printf("\tData Set Management =   0x%016" PRIx64"  \n", m_pCap->dataSet);
 #endif
@@ -2064,7 +2064,7 @@ bool CAta_Identify_Log_03::get_Utilization_Unit_Time(JSONNODE *unitTime)
 {
     std::string myStr = "";
     myStr.resize(BASIC);
-#if defined( _DEBUG)
+#if defined_DEBUG
     printf("Utilization Per Unit Time \n");
     printf("\tUtilization Per Unit Time =   0x%016" PRIx64"  \n", m_pCap->utilization);
     printf("\tUtilization Per Unit Time2 =   0x%016" PRIx64"  \n", m_pCap->utilTime2);
@@ -2114,7 +2114,7 @@ bool CAta_Identify_Log_03::get_Utilization_Usage_Rate_Support(JSONNODE *rate)
 {
     std::string myStr = "";
     //myStr.resize(BASIC);
-#if defined( _DEBUG)
+#if defined_DEBUG
     printf("Utilization Usage Rate Support \n");
     printf("\tUtilization Usage Rate Support =   0x%016" PRIx64"  \n", m_pCap->utilRate);
 #endif
@@ -2184,7 +2184,7 @@ bool CAta_Identify_Log_03::get_Zoned_Capabilities(JSONNODE *zoned)
 {
     std::string myStr = "";
     myStr.resize(BASIC);
-#if defined( _DEBUG)
+#if defined_DEBUG
     printf("Zoned Capabilities \n");
     printf("\tZoned Capabilities =   0x%016" PRIx64"  \n", m_pCap->zoned);
 #endif
@@ -2239,7 +2239,7 @@ bool CAta_Identify_Log_03::get_Supported_ZAC_Capabilities(JSONNODE *zac)
 {
     std::string myStr = "";
     myStr.resize(BASIC);
-#if defined( _DEBUG)
+#if defined_DEBUG
     printf("Supported ZAC Capabilitiest \n");
     printf("\tSupported ZAC Capabilities=   0x%016" PRIx64"  \n", m_pCap->ZAC);
 #endif
@@ -2317,7 +2317,7 @@ bool CAta_Identify_Log_03::get_Background_Operations_Capabilities(JSONNODE *bgOp
 {
     std::string myStr = "";
     myStr.resize(BASIC);
-#if defined( _DEBUG)
+#if defined_DEBUG
     printf("Advanced Background Operations Capabilities \n");
     printf("\tAdvanced Background Operations Capabilities =   0x%016" PRIx64"  \n", m_pCap->backgroundOpsCapabilities);
 #endif
@@ -2373,7 +2373,7 @@ bool CAta_Identify_Log_03::get_Background_Operations_Recommendations(JSONNODE *r
 {
     std::string myStr = "";
     //myStr.resize(BASIC);
-#if defined( _DEBUG)
+#if defined_DEBUG
     printf("Advanced Background Operations Recommendations \n");
     printf("\tAdvanced Background Operations Recommendations =   0x%016" PRIx64"  \n", m_pCap->backgroundOpsRecommendations);
 #endif
@@ -2414,7 +2414,7 @@ bool CAta_Identify_Log_03::get_Queue_Depth(JSONNODE *qd)
 {
     std::string myStr = "";
     myStr.resize(BASIC);
-#if defined( _DEBUG)
+#if defined_DEBUG
     printf("Queue Depth \n");
     printf("\tQueue Depth =   0x%016" PRIx64"  \n", m_pCap->queueDepth);
 #endif
@@ -2523,7 +2523,7 @@ bool CAta_Identify_Log_03::get_SCT_Capabilities(JSONNODE *sct)
 {
     std::string myStr = "";
     myStr.resize(BASIC);
-#if defined( _DEBUG)
+#if defined_DEBUG
     printf("Supported SCT Capabilities \n");
     printf("\tSupported SCT Capabilities =   0x%016" PRIx64"  \n", m_pCap->sctCapabilities);
 #endif
@@ -2570,7 +2570,7 @@ bool CAta_Identify_Log_03::get_Depop_Capabilities(JSONNODE *depop)
 {
     std::string myStr = "";
     //myStr.resize(BASIC);
-#if defined( _DEBUG)
+#if defined_DEBUG
     printf("Depopulation Capabilities \n");
     printf("\tDepopulation Capabilities =   0x%016" PRIx64"  \n", m_pCap->depopCapabilities);
 #endif
@@ -2622,7 +2622,7 @@ bool CAta_Identify_Log_03::get_Depopulation_Execution_Time(JSONNODE *depop)
 {
     std::string myStr = "";
     myStr.resize(BASIC);
-#if defined( _DEBUG)
+#if defined_DEBUG
     printf("Depopulation Execution Times \n");
     printf("\tDepopulation Execution Time =   0x%016" PRIx64"  \n", m_pCap->depopExTime);
 #endif
@@ -2672,7 +2672,7 @@ eReturnValues CAta_Identify_Log_03::get_Log_Page03(uint8_t *pData, JSONNODE *mas
     {
         JSONNODE *pageInfo = json_new(JSON_NODE);
         json_set_name(pageInfo, "Log Page 03h");
-#if defined( _DEBUG)
+#if defined_DEBUG
         printf("Log Page 03h \n");
         printf("\tHeader =   0x%016" PRIx64"  \n", m_pCap->header);
 #endif
@@ -2858,7 +2858,7 @@ bool CAta_Identify_Log_04::get_Current_Settings(JSONNODE *currentData)
 {
     std::string myStr = "";
     //myStr.resize(BASIC);
-#if defined( _DEBUG)
+#if defined_DEBUG
     printf("Current Settings \n");
     printf("\tCurrent Settings =   0x%016" PRId64"  \n", pLog->currentSettings);
 #endif
@@ -2936,7 +2936,7 @@ bool CAta_Identify_Log_04::get_Feature_Settings(JSONNODE *featureData)
 {
     std::string myStr = "";
     //myStr.resize(BASIC);
-#if defined( _DEBUG)
+#if defined_DEBUG
     printf("Feature Settings \n");
     printf("\tFeature Settings =   0x%016" PRIx64"  \n", pLog->featureSettings);
 #endif
@@ -2999,7 +2999,7 @@ bool CAta_Identify_Log_04::get_DMS_Times(JSONNODE *dmaData)
 {
     std::string myStr = "";
     //myStr.resize(BASIC);
-#if defined( _DEBUG)
+#if defined_DEBUG
     printf("DMA Host Interface Sector Times \n");
     printf("\tDMA Host Interface Sector Times =   0x%016" PRIx64"  \n", pLog->DMAHostInterfaceSectorTimes);
 #endif
@@ -3034,7 +3034,7 @@ bool CAta_Identify_Log_04::get_PIO_Times(JSONNODE *pioData)
 {
     std::string myStr = "";
     //myStr.resize(BASIC);
-#if defined( _DEBUG)
+#if defined_DEBUG
     printf("PIO Host Interface Sector Times \n");
     printf("\tPIO Host Interface Sector Times =   0x%016" PRIx64"  \n", pLog->PioHostInterfaceSectorTImes);
 #endif
@@ -3069,7 +3069,7 @@ bool CAta_Identify_Log_04::get_Streaming_Min_Request_Times(JSONNODE *streamMinDa
 {
     std::string myStr = "";
     //myStr.resize(BASIC);
-#if defined( _DEBUG)
+#if defined_DEBUG
     printf("Streaming Minimum request Times \n");
     printf("\tStreaming Minimum request Times =   0x%016" PRIx64"  \n", pLog->streamingMinRequestSize);
 #endif
@@ -3104,7 +3104,7 @@ bool CAta_Identify_Log_04::get_Streaming_Access_Latency(JSONNODE *accessData)
 {
     std::string myStr = "";
     //myStr.resize(BASIC);
-#if defined( _DEBUG)
+#if defined_DEBUG
     printf("Streaming Access Latency \n");
     printf("\tStreaming Access Latency =   0x%016" PRIx64"  \n", pLog->streamingAccessLatency);
 #endif
@@ -3139,7 +3139,7 @@ bool CAta_Identify_Log_04::get_Streaming_Performance_Granularity(JSONNODE *perfo
 {
     std::string myStr = "";
     //myStr.resize(BASIC);
-#if defined( _DEBUG)
+#if defined_DEBUG
     printf("Streaming Performance Granularity \n");
     printf("\tStreaming Performance Granularity =   0x%016" PRIx64"  \n", pLog->streamingPerformanceGranularity);
 #endif
@@ -3177,7 +3177,7 @@ bool CAta_Identify_Log_04::get_Free_Fall_Control(JSONNODE *freeFallData)
 {
     std::string myStr = "";
     //myStr.resize(BASIC);
-#if defined( _DEBUG)
+#if defined_DEBUG
     printf("Free Fall control sensitivity  \n");
     printf("\tFree Fall control sensitivity  =   0x%016" PRIx64"  \n", pLog->freeFallControlSensitivity);
 #endif
@@ -3212,7 +3212,7 @@ bool CAta_Identify_Log_04::get_Device_Maintenance_Schedule(JSONNODE *maintenaceD
 {
     std::string myStr = "";
     //myStr.resize(BASIC);
-#if defined( _DEBUG)
+#if defined_DEBUG
     printf("Device Maintenance Schedule \n");
     printf("\tDevice Maintenance Schedule =   0x%016" PRIx64"  \n", pLog->deviceMaintenaceSchedule);
 #endif
@@ -3318,7 +3318,7 @@ eReturnValues CAta_Identify_Log_04::get_Log_Page04(uint8_t *pData, JSONNODE *mas
     {
         JSONNODE *pageInfo = json_new(JSON_NODE);
         json_set_name(pageInfo, "Log Page 04h");
-#if defined( _DEBUG)
+#if defined_DEBUG
         printf("Log Page 04h \n");
         printf("\tHeader =   0x%016" PRIx64"  \n", pLog->header);
 #endif
@@ -3536,7 +3536,7 @@ bool CAta_Identify_Log_05::get_printables(JSONNODE *pageInfo)
 {
     std::string myStr = "";
     //myStr.resize(BASIC);
-#if defined( _DEBUG)
+#if defined_DEBUG
     printf("Device String Page \n");
 
 #endif
@@ -3614,7 +3614,7 @@ eReturnValues CAta_Identify_Log_05::get_Log_Page05(uint8_t *pData, JSONNODE *mas
     {
         JSONNODE *pageInfo = json_new(JSON_NODE);
         json_set_name(pageInfo, "Log Page 05h");
-#if defined( _DEBUG)
+#if defined_DEBUG
         printf("Log Page 05h \n");
         printf("\tHeader =   0x%016" PRIx64"  \n", m_pLog->header);
 #endif
@@ -3760,7 +3760,7 @@ bool CAta_Identify_Log_06::get_Security_Settings(JSONNODE *si)
 {
     std::string myStr = "";
     //myStr.resize(BASIC);
-#if defined( _DEBUG)
+#if defined_DEBUG
     printf("Security Settings \n");
     printf("\tSecurity Settings =   0x%016" PRIx64"  \n", m_pLog->securitySetting);
 #endif
@@ -3808,7 +3808,7 @@ bool CAta_Identify_Log_06::get_Master_Password_Identifier(JSONNODE *mpIdent)
 {
     std::string myStr = "";
     //myStr.resize(BASIC);
-#if defined( _DEBUG)
+#if defined_DEBUG
     printf("Master Password Identifier \n");
     printf("\tMaster Password Identifier =   0x%016" PRIx64"  \n", m_pLog->masterPassword);
 #endif
@@ -3848,7 +3848,7 @@ bool CAta_Identify_Log_06::get_Time_for_Enhanced_Erase(JSONNODE *enhanced)
 {
     std::string myStr = "";
     // myStr.resize(BASIC);
-#if defined( _DEBUG)
+#if defined_DEBUG
     printf("Time for Enhanced Erase \n");
     printf("\tTime for Enhanced Erase =   0x%016" PRIx64"  \n", m_pLog->timeEnhancedErase);
 #endif
@@ -3887,7 +3887,7 @@ bool CAta_Identify_Log_06::get_Time_for_Normal_Erase(JSONNODE *normal)
 {
     std::string myStr = "";
     //myStr.resize(BASIC);
-#if defined( _DEBUG)
+#if defined_DEBUG
     printf("Time for Normal Erase \n");
     printf("\tTime for Normal Erase =   0x%016" PRIx64"  \n", m_pLog->timeNormalErase);
 #endif
@@ -3926,7 +3926,7 @@ bool CAta_Identify_Log_06::get_Trusted_Computing_Feature_Set(JSONNODE *tdc)
 {
     std::string myStr = "";
     //myStr.resize(BASIC);
-#if defined( _DEBUG)
+#if defined_DEBUG
     printf("Trusted Computing Feature Set \n");
     printf("\tTrusted Computing Feature Set =   0x%016" PRIx64"  \n", m_pLog->tcfeatures);
 #endif
@@ -4017,7 +4017,7 @@ bool CAta_Identify_Log_06::get_Security_Capabilities(JSONNODE *sCap)
 {
     std::string myStr = "";
     //myStr.resize(BASIC);
-#if defined( _DEBUG)
+#if defined_DEBUG
     printf("Trusted Computing Feature Set \n");
     printf("\tTrusted Computing Feature Set =   0x%016" PRIx64"  \n", m_pLog->tcfeatures);
 #endif
@@ -4069,7 +4069,7 @@ eReturnValues CAta_Identify_Log_06::get_Log_Page06(uint8_t *pData, JSONNODE *mas
     {
         JSONNODE *pageInfo = json_new(JSON_NODE);
         json_set_name(pageInfo, "Log Page 06h");
-#if defined( _DEBUG)
+#if defined_DEBUG
         printf("Log Page 06h \n");
         printf("\tHeader =   0x%016" PRIx64"  \n", m_pLog->header);
 #endif
@@ -4175,7 +4175,7 @@ eReturnValues CAta_Identify_Log_07::get_Log_Page07(uint8_t *pData, JSONNODE *mas
     {
         JSONNODE *pageInfo = json_new(JSON_NODE);
         json_set_name(pageInfo, "Log Page 07h");
-#if defined( _DEBUG)
+#if defined_DEBUG
         printf("Log Page 07h \n");
         printf("\tHeader =   0x%016" PRIx64"  \n", m_pLog->header);
 #endif
@@ -4400,7 +4400,7 @@ bool CAta_Identify_Log_08::get_Sata_Capabilities(JSONNODE *cap)
 {
     std::string myStr = "";
     //myStr.resize(BASIC);
-#if defined( _DEBUG)
+#if defined_DEBUG
     printf("SATA Capabilities\n");
     printf("\tSATA Capabilities =   0x%016" PRIx64"  \n", m_pLog->sataCapabilities);
 #endif
@@ -4554,7 +4554,7 @@ bool CAta_Identify_Log_08::get_Current_Sata(JSONNODE *current)
 {
     std::string myStr = "";
     //myStr.resize(BASIC);
-#if defined( _DEBUG)
+#if defined_DEBUG
     printf("Current SATA Settings\n");
     printf("\tCurrent SATA Settingss =   0x%016" PRIx64"  \n", m_pLog->currentSata);
 #endif
@@ -4700,7 +4700,7 @@ eReturnValues CAta_Identify_Log_08::get_Log_Page08(uint8_t *pData, JSONNODE *mas
     {
         JSONNODE *pageInfo = json_new(JSON_NODE);
         json_set_name(pageInfo, "Log Page 08h");
-#if defined( _DEBUG)
+#if defined_DEBUG
         printf("Log Page 08h \n");
         printf("\tHeader =   0x%016" PRIx64"  \n", m_pLog->header);
 #endif

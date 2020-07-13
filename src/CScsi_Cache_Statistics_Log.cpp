@@ -176,7 +176,7 @@ void CScsiCacheLog::process_Cache_Event_Data(JSONNODE *cacheData)
     bool discriptionIsFound = false;
 	std::string myStr = "";
 	myStr.resize(BASIC);
-#if defined( _DEBUG)
+#if defined_DEBUG
 	printf("Cache Event Description \n");
 #endif
     if (m_Value != 0)

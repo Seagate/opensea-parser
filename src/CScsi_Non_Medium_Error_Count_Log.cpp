@@ -122,7 +122,7 @@ void CScsiNonMediumErrorCountLog::process_Non_Medium_Error_Count_Data(JSONNODE *
 	myStr.resize(BASIC);
 	if (m_Value != 0)
 	{
-#if defined( _DEBUG)
+#if defined_DEBUG
 		printf("Non-Medium Error Count Log Parameters\n");
 #endif
 		byte_Swap_16(&m_CountErrors->paramCode);
