@@ -477,10 +477,7 @@ eReturnValues CATA_Farm_Log::Print_Drive_Information(JSONNODE *masterData, uint3
     {
         type = "SMR";
     }
-    else
-    {
-        type = "SMR";
-    }
+
     set_json_string_With_Status(pageInfo, myStr, type, vFarmFrame[page].driveInfo.driveRecordingType, m_showStatusBits);
 
     myStr = "Has Drive been Depopped";
@@ -1286,12 +1283,12 @@ eReturnValues CATA_Farm_Log::Print_Head_Information(JSONNODE *masterData, uint32
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
-        snprintf((char *)myHeader.c_str(), BASIC, "Number of Reallocated Sectors per head by Head %" PRId32"", loopCount);
+        snprintf((char *)myHeader.c_str(), BASIC, "Number of Resident G-List by Head %" PRId32"", loopCount);
         set_json_64_bit_With_Status(headInfo, (char*)myHeader.c_str(), vFarmFrame[page].reliPage.gList[loopCount], false, m_showStatusBits);							//!< [24] Number of Reallocated Sectors per head
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
-        snprintf((char *)myHeader.c_str(), BASIC, "Number of Reallocation Candidate Sectors per head by Head %" PRId32"", loopCount);
+        snprintf((char *)myHeader.c_str(), BASIC, "Number of Pending Entries by Head %" PRId32"", loopCount);
         set_json_64_bit_With_Status(headInfo, (char*)myHeader.c_str(), vFarmFrame[page].reliPage.pendingEntries[loopCount], false, m_showStatusBits);                   //!< [24] Number of Reallocation Candidate Sectors per head
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
@@ -1320,17 +1317,17 @@ eReturnValues CATA_Farm_Log::Print_Head_Information(JSONNODE *masterData, uint32
         snprintf((char *)myHeader.c_str(), BASIC, "DOS Write Count Threshold by Head %" PRId32"", loopCount);
         set_json_64_bit_With_Status(headInfo, (char*)myHeader.c_str(), vFarmFrame[page].reliPage.countDOSWrite[loopCount], false, m_showStatusBits);					//!< [24] DOS Write Count Threshold per head
     }
-    if (m_MajorRev >= MAJORVERSION3)                    // must be higher then version 3.0
-    {
+    //if (m_MajorRev >= MAJORVERSION3)                    // must be higher then version 3.0
+    //{
         for (loopCount = 0; loopCount < m_heads; ++loopCount)
         {
             snprintf((char *)myHeader.c_str(), BASIC, "Second MR Head Resistance by Head %" PRId32"", loopCount);
             set_json_64_bit_With_Status(headInfo, (char*)myHeader.c_str(), vFarmFrame[page].reliPage.secondMRHeadResistance[loopCount], false, m_showStatusBits);					//!< [24] DOS Write Count Threshold per head
         }
-    }
+    //}
 
-    if (m_MajorRev >= MAJORVERSION4 && m_MinorRev >= 5)
-    {
+    //if (m_MajorRev >= MAJORVERSION4 && m_MinorRev >= 5)
+    //{
         for (loopCount = 0; loopCount < m_heads; ++loopCount)
         {
             snprintf((char *)myHeader.c_str(), BASIC, "FAFH Measurement Status by Head %" PRId32"", loopCount);
@@ -1390,7 +1387,7 @@ eReturnValues CATA_Farm_Log::Print_Head_Information(JSONNODE *masterData, uint32
             snprintf((char*)myHeader.c_str(), BASIC, "FAFH High Frequency Passive Clearance in ADC counts by Head %" PRId32" outer", loopCount); // Head count
             set_json_64_bit_With_Status(headInfo, (char*)myHeader.c_str(), vFarmFrame[page].reliPage.FAFHHighFrequency[loopCount].outer, false, m_showStatusBits);					//!< [24][3] FAFH High Frequency Passive Clearance in ADC counts
         }
-    }
+    //}
     json_push_back(masterData, headInfo);
     return SUCCESS;
 }

@@ -2332,7 +2332,7 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Information(JSONNODE *masterDat
     set_json_64_bit_With_Status(pageInfo, "LUN ID", pLUN->LUNID, false, m_showStatusBits);						                                        //!< LUN ID 
     set_json_64_bit_With_Status(pageInfo, "Head Load Events", pLUN->headLoadEvents, false, m_showStatusBits);											//!< Head Load Events 
     set_json_64_bit_With_Status(pageInfo, "Number of Reallocated Sectors", pLUN->reallocatedSectors, false, m_showStatusBits);					        //!< Number of Reallocated Sectors 
-    set_json_64_bit_With_Status(pageInfo, "Number of Reallocated Sectors", pLUN->reallocatedSectors, false, m_showStatusBits);					        //!< Number of Reallocated Candidate Sectors  
+    set_json_64_bit_With_Status(pageInfo, "Number of Reallocated Sectors Candidate", pLUN->reallocatedSectors, false, m_showStatusBits);				//!< Number of Reallocated Candidate Sectors  
     set_json_64_bit_With_Status(pageInfo, "TimeStamp of last IDD test", pLUN->timeStampOfIDD, false, m_showStatusBits);						            //!< Timestamp of last IDD test  
     set_json_64_bit_With_Status(pageInfo, "Sub-Command of Last IDD Test", pLUN->subCmdOfIDD, false, m_showStatusBits);				                    //!< Sub-command of last IDD test 
     set_json_64_bit_With_Status(pageInfo, "Number of G-List reclamations", pLUN->reclamedGlist, false, m_showStatusBits);				                //!< Number of G-list reclamations  
