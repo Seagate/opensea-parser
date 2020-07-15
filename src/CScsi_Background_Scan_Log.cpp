@@ -214,8 +214,8 @@ void CScsiScanLog::process_Scan_Status_Data(JSONNODE *scanData)
 	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_ScanParam->paramLength);
 	json_push_back(statusInfo, json_new_a("Background Scan Status Length ", (char*)myStr.c_str()));
 
-	byte_Swap_32(&m_ScanParam->powerOnMinutes);
-	json_push_back(statusInfo, json_new_i("Power On Minutes", static_cast<uint32_t>(m_ScanParam->powerOnMinutes)));
+	byte_Swap_32(&m_ScanParam->timeStamp);
+	json_push_back(statusInfo, json_new_i("SMART Time Stamp", static_cast<uint32_t>(m_ScanParam->timeStamp)));
 	get_Scan_Status_Description(&myStr);
 	json_push_back(statusInfo, json_new_i((char*)myStr.c_str(), static_cast<uint32_t>(m_ScanParam->status)));
 	byte_Swap_16(&m_ScanParam->scansPerformed);
