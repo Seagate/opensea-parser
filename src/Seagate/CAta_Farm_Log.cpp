@@ -171,6 +171,7 @@ eReturnValues CATA_Farm_Log::parse_Farm_Log()
             {
                 Create_Model_Number_String(pFarmFrame->identStringInfo.modelNumber, idInfo);
             }
+            
 
             offset += m_pageSize;
 
@@ -428,6 +429,7 @@ eReturnValues CATA_Farm_Log::Print_Drive_Information(JSONNODE *masterData, uint3
         json_push_back(pageInfo, json_new_a("Model Number", (char*)myStr.c_str()));
     }
 
+
     snprintf((char*)myStr.c_str(), BASIC, "%s", vFarmFrame[page].identStringInfo.worldWideName.c_str());
     json_push_back(pageInfo, json_new_a("World Wide Name", (char*)myStr.c_str()));																				//!< world wide Name
                                                                 //!< Firmware Revision [0:3]
@@ -470,7 +472,7 @@ eReturnValues CATA_Farm_Log::Print_Drive_Information(JSONNODE *masterData, uint3
     set_json_64_bit_With_Status(pageInfo, "Time drive is held in staggered spin", vFarmFrame[page].driveInfo.timeHeld, false, m_showStatusBits);                //!< time drive is held in staggered spin during the last power on sequence
 
     myStr = "Drive Recording Type";
-    std::string type = "   ";
+    std::string type = "CMR";
     if ((BIT0 & check_Status_Strip_Status(vFarmFrame[page].driveInfo.driveRecordingType)) == 0)
     {
         type = "SMR";

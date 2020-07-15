@@ -1721,14 +1721,14 @@ eReturnValues CSCSI_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint3
  
     set_json_64_bit_With_Status(pageInfo, "Timestamp of last IDD test", vFarmFrame[page].reliPage.lastIDDTest, false, m_showStatusBits);							//!< Timestamp of last IDD test
     set_json_64_bit_With_Status(pageInfo, "Sub-command of last IDD test", vFarmFrame[page].reliPage.cmdLastIDDTest, false, m_showStatusBits);						//!< Sub-command of last IDD test
-    set_json_64_bit_With_Status(pageInfo, "Number of Reclamations Sectors", vFarmFrame[page].reliPage.gListReclamed, false, m_showStatusBits);						//!< Number of G-List Reclamations 
+    set_json_64_bit_With_Status(pageInfo, "Number of Reallocated Sector Reclamations", vFarmFrame[page].reliPage.gListReclamed, false, m_showStatusBits);						//!< Number of G-List Reclamations 
     set_json_64_bit_With_Status(pageInfo, "Servo Status", vFarmFrame[page].reliPage.servoStatus, false, m_showStatusBits);											//!< Servo Status (follows standard DST error code definitions)
-    set_json_64_bit_With_Status(pageInfo, "Number of Slipped Secotrs Before IDD Scan", vFarmFrame[page].reliPage.altsBeforeIDD, false, m_showStatusBits);					//!< Number of Alt List Entries Before IDD Scan
-    set_json_64_bit_With_Status(pageInfo, "Number of Slipped Secotrs After IDD Scan", vFarmFrame[page].reliPage.altsAfterIDD, false, m_showStatusBits);						//!< Number of Alt List Entries After IDD Scan
-    set_json_64_bit_With_Status(pageInfo, "Number of Resident Reallocated Sectors Before IDD Scan Before IDD Scan", vFarmFrame[page].reliPage.gListBeforIDD, false, m_showStatusBits);				//!< Number of Resident G-List Entries Before IDD Scan
-    set_json_64_bit_With_Status(pageInfo, "Number of Resident Reallocated Sectors Before IDD Scans After IDD Scan", vFarmFrame[page].reliPage.gListAfterIDD, false, m_showStatusBits);				//!< Number of Resident G-List Entries After IDD Scan
-    set_json_64_bit_With_Status(pageInfo, "Scrubs List Entries Before IDD Scan", vFarmFrame[page].reliPage.scrubsBeforeIDD, false, m_showStatusBits);				//!< Number of Scrub List Entries Before IDD Scan
-    set_json_64_bit_With_Status(pageInfo, "Scrubs List Entries After IDD Scan", vFarmFrame[page].reliPage.scrubsAfterIDD, false, m_showStatusBits);					//!< Number of Scrub List Entries After IDD Scan
+    set_json_64_bit_With_Status(pageInfo, "Number of Slipped Sectors Before IDD Scan", vFarmFrame[page].reliPage.altsBeforeIDD, false, m_showStatusBits);					//!< Number of Alt List Entries Before IDD Scan
+    set_json_64_bit_With_Status(pageInfo, "Number of Slipped Sectors After IDD Scan", vFarmFrame[page].reliPage.altsAfterIDD, false, m_showStatusBits);						//!< Number of Alt List Entries After IDD Scan
+    set_json_64_bit_With_Status(pageInfo, "Number of Resident Reallocated Sectors Before IDD Scan", vFarmFrame[page].reliPage.gListBeforIDD, false, m_showStatusBits);				//!< Number of Resident G-List Entries Before IDD Scan
+    set_json_64_bit_With_Status(pageInfo, "Number of Resident Reallocated Sectors After IDD Scan", vFarmFrame[page].reliPage.gListAfterIDD, false, m_showStatusBits);				//!< Number of Resident G-List Entries After IDD Scan
+    set_json_64_bit_With_Status(pageInfo, "Number of Successfully Scrubbed Sectors Before IDD Scan", vFarmFrame[page].reliPage.scrubsBeforeIDD, false, m_showStatusBits);				//!< Number of Scrub List Entries Before IDD Scan
+    set_json_64_bit_With_Status(pageInfo, "Number of Successfully Scrubbed Sectors After IDD Scan", vFarmFrame[page].reliPage.scrubsAfterIDD, false, m_showStatusBits);					//!< Number of Scrub List Entries After IDD Scan
     set_json_64_bit_With_Status(pageInfo, "Number of DOS Scans Performed", vFarmFrame[page].reliPage.numberDOSScans, false, m_showStatusBits);						//!< Number of DOS Scans Performed
     set_json_64_bit_With_Status(pageInfo, "Number of LBAs Corrected by ISP", vFarmFrame[page].reliPage.numberLBACorrect, false, m_showStatusBits);					//!< Number of LBAs Corrected by ISP
     set_json_64_bit_With_Status(pageInfo, "Number of Valid Parity Sectors", vFarmFrame[page].reliPage.numberValidParitySec, false, m_showStatusBits);				//!< Number of Valid Parity Sectors
