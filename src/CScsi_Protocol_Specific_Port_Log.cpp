@@ -131,6 +131,9 @@ void CScsiProtocolPortLog::process_Events_Data(JSONNODE *eventData)
 
 	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Event->eventSource);
 	json_push_back(eventInfo, json_new_a("Phy Event Source", (char*)myStr.c_str()));
+
+    byte_Swap_32(&m_Event->event);              // need to byte swap on SAS 
+    byte_Swap_32(&m_Event->threshold);          // need to byte swap on SAS 
 	snprintf((char*)myStr.c_str(), BASIC, "0x%08" PRIx32"", m_Event->event);
 	json_push_back(eventInfo, json_new_a("Phy Event", (char*)myStr.c_str()));
 	snprintf((char*)myStr.c_str(), BASIC, "0x%08" PRIx32"", m_Event->threshold);
@@ -448,7 +451,7 @@ eReturnValues CScsiProtocolPortLog::get_Data(JSONNODE *masterData)
 				for (uint32_t events = 1; events <= m_Descriptor->numberOfEvents; events++)
 				{
 					// check the length to the end of the buffer
-					if ((offset + m_Descriptor->phyEventLength) < m_bufferLength)
+					if ((offset + m_Descriptor->phyEventLength) <= m_bufferLength)
 					{
 						m_Event = (sPhyEventDescriptor *)&pData[offset];
 						offset += m_Descriptor->phyEventLength;
