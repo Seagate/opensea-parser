@@ -61,8 +61,8 @@ typedef enum _eLogPageTypes
 	DOS_WRITE_FAULT_SCAN_COUNT_PER_HEAD,
 	WRITE_POWERON_HOURS_FROM_MOST_RECENT_SMART,
 	DOS_WRITE_COUNT_THRESHOLD_PER_HEAD,
-	RESERVED_FOR_FUTURE_EXPANSION_2,
-	RESERVED_FOR_FUTURE_EXPANSION_3,
+	CUM_LIFETIME_UNRECOVERALBE_READ_REPET_PER_HEAD,
+	CUM_LIFETIME_UNRECOVERABLE_READ_UNIQUE_PER_HEAD,
 	RESERVED_FOR_FUTURE_EXPANSION_4,
 	RESERVED_FOR_FUTURE_EXPANSION_5,
 	RESERVED_FOR_FUTURE_EXPANSION_6,
@@ -384,6 +384,8 @@ typedef struct _sScsiFarmFrame
 	sHeadInformation        DOSWriteFaultScan;
 	sHeadInformation        writePowerOnHours;
 	sHeadInformation		dosWriteCount; 
+    sHeadInformation        cumECCReadRepeat;
+    sHeadInformation        cumECCReadUnique;
 	sHeadInformation        currentH2STTrimmedbyHeadZone0;
 	sHeadInformation        currentH2STTrimmedbyHeadZone1;
 	sHeadInformation        currentH2STTrimmedbyHeadZone2;
