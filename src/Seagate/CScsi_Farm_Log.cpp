@@ -299,8 +299,12 @@ void CSCSI_Farm_Log::set_Head_Header(std::string &headerName, eLogPageTypes inde
     case DOS_WRITE_COUNT_THRESHOLD_PER_HEAD:
 		headerName = "DOS Write Count Threshold per Head";
 		break;
-    case RESERVED_FOR_FUTURE_EXPANSION_2:
-    case RESERVED_FOR_FUTURE_EXPANSION_3:
+    case CUM_LIFETIME_UNRECOVERALBE_READ_REPET_PER_HEAD:
+        headerName = "Cumlative Lifetime Unrecoverable Read Repeat by head";
+        break;
+    case CUM_LIFETIME_UNRECOVERABLE_READ_UNIQUE_PER_HEAD:
+        headerName = "Cumlative Lifetime Unrecoverable Read Unique by head";
+        break;
     case RESERVED_FOR_FUTURE_EXPANSION_4:
     case RESERVED_FOR_FUTURE_EXPANSION_5:
     case RESERVED_FOR_FUTURE_EXPANSION_6:
@@ -1102,6 +1106,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                         delete pHeadInfo;  
                     }
                     break;
+               
                 case  WRITE_POWERON_HOURS_FROM_MOST_RECENT_SMART:     
                     {
                         sHeadInformation *pHeadInfo = new sHeadInformation();
@@ -1119,6 +1124,31 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                          offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
                          delete pHeadInfo; 
                     }
+                    break;
+                case CUM_LIFETIME_UNRECOVERALBE_READ_REPET_PER_HEAD:
+                    {
+                        sHeadInformation *pHeadInfo = new sHeadInformation();
+                        get_Head_Info(pHeadInfo, &pBuf[offset]);
+                        memcpy(&pFarmFrame->cumECCReadRepeat, pHeadInfo, sizeof(*pHeadInfo));
+                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                        delete pHeadInfo;
+                    }
+                    break;
+                case CUM_LIFETIME_UNRECOVERABLE_READ_UNIQUE_PER_HEAD:
+                    {
+                        sHeadInformation *pHeadInfo = new sHeadInformation();
+                        get_Head_Info(pHeadInfo, &pBuf[offset]);
+                        memcpy(&pFarmFrame->cumECCReadUnique, pHeadInfo, sizeof(*pHeadInfo));
+                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                        delete pHeadInfo;
+                    }
+                    break;
+                case RESERVED_FOR_FUTURE_EXPANSION_4:
+                case RESERVED_FOR_FUTURE_EXPANSION_5:
+                case RESERVED_FOR_FUTURE_EXPANSION_6:
+                case RESERVED_FOR_FUTURE_EXPANSION_7:
+                case RESERVED_FOR_FUTURE_EXPANSION_8:
+                case RESERVED_FOR_FUTURE_EXPANSION_9:
                     break;
                 case CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_0:    
                     {
@@ -2041,6 +2071,26 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "DOS Write Count Threshold Head number %" PRIu32"", loopCount); // Head count
                 set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].dosWriteCount.headValue[loopCount], false, m_showStatusBits);
+            }
+            break;
+        case CUM_LIFETIME_UNRECOVERALBE_READ_REPET_PER_HEAD:
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
+#if defined_DEBUG
+                printf("\tCumlative Lifetime Unrecoverable Read Repeat per head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].cumECCReadRepeat.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);
+#endif
+                snprintf((char*)myHeader.c_str(), BASIC, "Cumlative Lifetime Unrecoverable Read Repeat %" PRIu32"", loopCount); // Head count
+                set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].cumECCReadRepeat.headValue[loopCount], false, m_showStatusBits);
+            }
+            break;
+        case CUM_LIFETIME_UNRECOVERABLE_READ_UNIQUE_PER_HEAD:
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
+#if defined_DEBUG
+                printf("\tCumlative Lifetime Unrecoverable Read Unique per head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].cumECCReadUnique.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);
+#endif
+                snprintf((char*)myHeader.c_str(), BASIC, "Cumlative Lifetime Unrecoverable Read Unique %" PRIu32"", loopCount); // Head count
+                set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].cumECCReadUnique.headValue[loopCount], false, m_showStatusBits);
             }
             break;
         case CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_0:
