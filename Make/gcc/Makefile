@@ -60,6 +60,7 @@ LIB_SRC_FILES = \
     $(SRC_DIR)CScsi_Power_Condition_Transitions_Log.cpp\
     $(SRC_DIR)CScsi_Protocol_Specific_Port_Log.cpp\
     $(SRC_DIR)CScsi_Self_Test_Results_Log.cpp\
+    $(SRC_DIR)CScsi_Solid_State_Drive_Log.cpp\
     $(SRC_DIR)CScsi_Start_Stop_Cycle_Counter_Log.cpp\
     $(SRC_DIR)CScsi_Supported_LogPages_Log.cpp\
     $(SRC_DIR)/Seagate/CFARM_Log.cpp\

@@ -546,6 +546,7 @@
     <ClInclude Include="..\..\..\..\include\CScsi_Power_Condition_Transitions_Log.h" />
     <ClInclude Include="..\..\..\..\include\CScsi_Protocol_Specific_Port_Log.h" />
     <ClInclude Include="..\..\..\..\include\CScsi_Self_Test_Results_Log.h" />
+    <ClInclude Include="..\..\..\..\include\CScsi_Solid_State_Drive_Log.h" />
     <ClInclude Include="..\..\..\..\include\CScsi_Start_Stop_Cycle_Counter_Log.h" />
     <ClInclude Include="..\..\..\..\include\CScsi_Supported_LogPages_Log.h" />
     <ClInclude Include="..\..\..\..\include\CScsi_Temperature_Log.h" />
@@ -584,6 +585,7 @@
     <ClCompile Include="..\..\..\..\src\CScsi_Power_Condition_Transitions_Log.cpp" />
     <ClCompile Include="..\..\..\..\src\CScsi_Protocol_Specific_Port_Log.cpp" />
     <ClCompile Include="..\..\..\..\src\CScsi_Self_Test_Results_Log.cpp" />
+    <ClCompile Include="..\..\..\..\src\CScsi_Solid_State_Drive_Log.cpp" />
     <ClCompile Include="..\..\..\..\src\CScsi_Start_Stop_Cycle_Counter_Log.cpp" />
     <ClCompile Include="..\..\..\..\src\CScsi_Supported_LogPages_Log.cpp" />
     <ClCompile Include="..\..\..\..\src\CScsi_Temperature_Log.cpp" />

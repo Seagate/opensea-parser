@@ -31,6 +31,7 @@
 #include "CScsi_Background_Scan_Log.h"
 #include "CScsi_Farm_Log.h"
 #include "CScsi_Application_Client_Log.h"
+#include "CScsi_Solid_State_Drive_Log.h"
 
 using namespace opensea_parser;
 //-----------------------------------------------------------------------------
@@ -321,16 +322,22 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				delete(cSelfTest);
 			}
 			break;
-			case SOLID_STATE_MEDIA:
-			{
-				if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
-				{
-					std::cout << "Solid State Media Log Pages Found" << std::endl;
-				}
-				std::cout << "not supported at this time" << std::endl;
-				retStatus = SUCCESS;
-			}
-			break;
+            case SOLID_STATE_MEDIA:
+            {
+                if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+                {
+                    std::cout << "Solid State Drive Log Pages Found" << std::endl;
+                }
+                CScsiSolidStateDriveLog *cSSD;
+                cSSD = new CScsiSolidStateDriveLog((uint8_t *)&bufferData[4], m_LogSize, m_Page->pageLength);
+                retStatus = cSSD->get_Solid_State_Drive_Log_Status();
+                if (retStatus == IN_PROGRESS)
+                {
+                    retStatus = cSSD->parse_Solid_State_Drive_Log(masterData);
+                }
+                delete(cSSD);
+            }
+            break;
 			case BACKGROUND_SCAN:
 			{
 				if (m_Page->subPage == 0x00)        // Background Scan
