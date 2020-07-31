@@ -239,17 +239,17 @@ void CScsiFormatStatusLog::process_Format_Status_Data_Variable_Length(JSONNODE *
     snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Format->paramLength);
     json_push_back(formatInfo, json_new_a("Format Status Length ", (char*)myStr.c_str()));
 
-    uint32_t lineNumber = 0;
+    uint8_t lineNumber = 0;
     char *innerMsg = (char*)calloc(128, sizeof(char));
     char* innerStr = (char*)calloc(60, sizeof(char));
-    uint32_t offset = 0;
+    uint8_t offset = 0;
 
-    for (uint32_t outer = 0; outer < m_Format->paramLength - 1; )
+    for (uint8_t outer = 0; outer < m_Format->paramLength - 1; )
     {
         snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIX32 "", lineNumber);
         sprintf(innerMsg, "%02" PRIX8 "", m_FormatDataOutParamValue[offset++]);
         // inner loop for creating a single ling of the buffer data
-        for (uint32_t inner = 1; inner < 16 && offset < m_Format->paramLength - 1; inner++)
+        for (uint8_t inner = 1; inner < 16 && offset < m_Format->paramLength - 1; inner++)
         {
             sprintf(innerStr, "%02" PRIX8"", m_FormatDataOutParamValue[offset]);
             if (inner % 4 == 0)
