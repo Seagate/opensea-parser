@@ -63,6 +63,7 @@ LIB_SRC_FILES = \
     $(SRC_DIR)CScsi_Solid_State_Drive_Log.cpp\
     $(SRC_DIR)CScsi_Start_Stop_Cycle_Counter_Log.cpp\
     $(SRC_DIR)CScsi_Supported_LogPages_Log.cpp\
+    $(SRC_DIR)CScsi_Zoned_Device_Statistics_Log.cpp\
     $(SRC_DIR)/Seagate/CFARM_Log.cpp\
     $(SRC_DIR)/Seagate/CAta_Farm_Log.cpp\
     $(SRC_DIR)/Seagate/CScsi_Farm_Log.cpp\

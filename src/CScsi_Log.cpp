@@ -32,6 +32,7 @@
 #include "CScsi_Farm_Log.h"
 #include "CScsi_Application_Client_Log.h"
 #include "CScsi_Solid_State_Drive_Log.h"
+#include "CScsi_Zoned_Device_Statistics_Log.h"
 
 using namespace opensea_parser;
 //-----------------------------------------------------------------------------
@@ -336,6 +337,22 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
                     retStatus = cSSD->parse_Solid_State_Drive_Log(masterData);
                 }
                 delete(cSSD);
+            }
+            break;
+            case ZONED_DEVICE_STATISTICS:
+            {
+                if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+                {
+                    std::cout << "Zoned Device Statistics Log Pages Found" << std::endl;
+                }
+                CScsiZonedDeviceStatisticsLog *cZDS;
+                cZDS = new CScsiZonedDeviceStatisticsLog((uint8_t *)&bufferData[4], m_LogSize, m_Page->pageLength);
+                retStatus = cZDS->get_Zoned_Device_Statistics_Log_Status();
+                if (retStatus == IN_PROGRESS)
+                {
+                    retStatus = cZDS->parse_Zoned_Device_Statistics_Log(masterData);
+                }
+                delete(cZDS);
             }
             break;
 			case BACKGROUND_SCAN:

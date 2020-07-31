@@ -129,6 +129,9 @@
     <ClInclude Include="..\..\..\..\include\CScsi_Solid_State_Drive_Log.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\include\CScsi_Zoned_Device_Statistics_Log.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\src\CAta_Device_Stat_Log.cpp">
@@ -222,6 +225,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\src\CScsi_Solid_State_Drive_Log.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\CScsi_Zoned_Device_Statistics_Log.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

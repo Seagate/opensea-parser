@@ -209,6 +209,11 @@ void CScsiSupportedLog::get_Supported_And_Subpage_Description(std::string *descr
 			snprintf((char*)description->c_str(), BASIC, "Solid State Media");
 			break;
 		}
+        case ZONED_DEVICE_STATISTICS:
+        {
+            snprintf((char*)description->c_str(), BASIC, "Zoned Device Statistics");
+            break;
+        }
 		case BACKGROUND_SCAN:
 		{
 			if (m_ShowSubPage && m_SubPage == 0x02)

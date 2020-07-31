@@ -551,6 +551,7 @@
     <ClInclude Include="..\..\..\..\include\CScsi_Supported_LogPages_Log.h" />
     <ClInclude Include="..\..\..\..\include\CScsi_Temperature_Log.h" />
     <ClInclude Include="..\..\..\..\include\CScsi_Pending_Defects_Log.h" />
+    <ClInclude Include="..\..\..\..\include\CScsi_Zoned_Device_Statistics_Log.h" />
     <ClInclude Include="..\..\..\..\include\Identify_Log_Types.h" />
     <ClInclude Include="..\..\..\..\include\Opensea_Parser_Helper.h" />
     <ClInclude Include="..\..\..\..\include\Opensea_Parser_Version.h" />
@@ -590,6 +591,7 @@
     <ClCompile Include="..\..\..\..\src\CScsi_Supported_LogPages_Log.cpp" />
     <ClCompile Include="..\..\..\..\src\CScsi_Temperature_Log.cpp" />
     <ClCompile Include="..\..\..\..\src\CScsi_Pending_Defects_Log.cpp" />
+    <ClCompile Include="..\..\..\..\src\CScsi_Zoned_Device_Statistics_Log.cpp" />
     <ClCompile Include="..\..\..\..\src\Opensea_Parser_Helper.cpp" />
     <ClCompile Include="..\..\..\..\src\Seagate\CAta_Farm_Log.cpp" />
     <ClCompile Include="..\..\..\..\src\Seagate\CFARM_Log.cpp" />
