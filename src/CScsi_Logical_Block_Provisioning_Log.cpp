@@ -203,7 +203,7 @@ void CScsiLBAProvisionLog::process_LBA_Provision_Data(JSONNODE *lbaData)
 {
 	std::string myStr = "";
 	myStr.resize(BASIC);
-#if defined_DEBUG
+#if defined _DEBUG
 	printf("Logical Block Provisioning Log \n");
 #endif
 	byte_Swap_16(&m_Provision->paramCode);

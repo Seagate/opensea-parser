@@ -120,7 +120,7 @@ void CScsiFactoryLog::process_Factorty_Data(JSONNODE *factoryData)
 	myStr.resize(BASIC);
     if (m_Value != 0)
     {
-#if defined_DEBUG
+#if defined _DEBUG
         printf("Factory Description \n");
 #endif
         byte_Swap_16(&m_factory->paramCode);

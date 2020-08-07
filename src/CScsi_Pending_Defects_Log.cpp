@@ -129,7 +129,7 @@ void CScsiPendingDefectsLog::process_PList_Data(JSONNODE *pendingData)
 	std::string myStr = "";
 	myStr.resize(BASIC);
 
-#if defined_DEBUG
+#if defined _DEBUG
 	printf("Pending Defect Log  \n");
 #endif
 	byte_Swap_16(&m_PlistDefect->paramCode);
@@ -167,7 +167,7 @@ void CScsiPendingDefectsLog::process_PList_Count(JSONNODE *pendingCount)
 {
 	std::string myStr = "";
 	myStr.resize(BASIC);
-#if defined_DEBUG
+#if defined _DEBUG
 	printf("Pending Defect Count \n");
 #endif
 	byte_Swap_16(&m_PListCountParam->paramCode);

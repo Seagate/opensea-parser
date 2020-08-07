@@ -257,7 +257,7 @@ eReturnValues CExtComp::parse_Ext_Comp_Structure(uint32_t structNumber, uint32_t
             timeStamp = pData[wOffset + 14];
             word_Swap_32(&timeStamp);
             wOffset += 18;
-#if defined_DEBUG
+#if defined _DEBUG
 			printf("\nControl  Feature  Count  lowLBA   midLBA  hiLBA device  command  timeStamp");
             printf("\n0x%02x     0x%04x   0x%04x 0x%04x   0x%04x  0x%04x 0x%02x   0x%02x      %d \n", \
                 deviceControl, \

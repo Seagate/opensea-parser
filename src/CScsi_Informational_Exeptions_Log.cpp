@@ -126,7 +126,7 @@ void CScsiInformationalExeptionsLog::process_Informational_Exceptions_Data(JSONN
 {
 	std::string myStr = "";
 	myStr.resize(BASIC);
-#if defined_DEBUG
+#if defined _DEBUG
 	printf("Informational Exceptions Log \n");
 #endif
 	snprintf((char*)myStr.c_str(), BASIC, "Informational Exception %" PRId16"", count);

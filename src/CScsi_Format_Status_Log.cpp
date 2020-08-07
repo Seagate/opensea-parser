@@ -171,7 +171,7 @@ void CScsiFormatStatusLog::process_Format_Status_Data(JSONNODE *formatData)
     std::string myHeader = "";
     myHeader.resize(BASIC);
 
-#if defined_DEBUG
+#if defined _DEBUG
     printf("Format Status Log\n");
 #endif
 
@@ -225,7 +225,7 @@ void CScsiFormatStatusLog::process_Format_Status_Data_Variable_Length(JSONNODE *
     std::string myHeader = "";
     myHeader.resize(BASIC);
 
-#if defined_DEBUG
+#if defined _DEBUG
     printf("Format Status Log  \n");
 #endif
     get_Format_Parameter_Code_Description(&myHeader);

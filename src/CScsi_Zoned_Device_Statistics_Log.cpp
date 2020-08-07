@@ -216,7 +216,7 @@ void CScsiZonedDeviceStatisticsLog::process_Zoned_Device_Statistics_Data(JSONNOD
 
     if (m_ZDSValue != 0)
     {
-#if defined_DEBUG
+#if defined _DEBUG
         printf("Zoned Device Statistics Log  \n");
 #endif
         byte_Swap_16(&m_ZDSParam->paramCode);

@@ -278,7 +278,7 @@ void CScsiErrorCounterLog::process_Error_Data(JSONNODE *errorData)
 	myStr.resize(BASIC);
 	std::string myHeader = "";
 	myHeader.resize(BASIC);
-#if defined_DEBUG
+#if defined _DEBUG
 	printf("Error Counter Log  \n");
 #endif
 	byte_Swap_16(&m_Error->paramCode);

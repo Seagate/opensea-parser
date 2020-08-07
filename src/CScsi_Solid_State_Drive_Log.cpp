@@ -155,7 +155,7 @@ void CScsiSolidStateDriveLog::process_Solid_State_Drive_Data(JSONNODE *ssdData)
 
     if (m_SSDValue != 0)
     {
-#if defined_DEBUG
+#if defined _DEBUG
         printf("Solid State Drive Log  \n");
 #endif
         byte_Swap_16(&m_SSDParam->paramCode);
