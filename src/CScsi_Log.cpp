@@ -329,14 +329,14 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
                 {
                     std::cout << "Solid State Drive Log Pages Found" << std::endl;
                 }
-                CScsiSolidStateDriveLog *cSSD;
+                /*CScsiSolidStateDriveLog *cSSD;
                 cSSD = new CScsiSolidStateDriveLog((uint8_t *)&bufferData[4], m_LogSize, m_Page->pageLength);
                 retStatus = cSSD->get_Solid_State_Drive_Log_Status();
                 if (retStatus == IN_PROGRESS)
                 {
                     retStatus = cSSD->parse_Solid_State_Drive_Log(masterData);
                 }
-                delete(cSSD);
+                delete(cSSD);*/
             }
             break;
             case ZONED_DEVICE_STATISTICS:
@@ -345,14 +345,14 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
                 {
                     std::cout << "Zoned Device Statistics Log Pages Found" << std::endl;
                 }
-                CScsiZonedDeviceStatisticsLog *cZDS;
+                /*CScsiZonedDeviceStatisticsLog *cZDS;
                 cZDS = new CScsiZonedDeviceStatisticsLog((uint8_t *)&bufferData[4], m_LogSize, m_Page->pageLength);
                 retStatus = cZDS->get_Zoned_Device_Statistics_Log_Status();
                 if (retStatus == IN_PROGRESS)
                 {
                     retStatus = cZDS->parse_Zoned_Device_Statistics_Log(masterData);
                 }
-                delete(cZDS);
+                delete(cZDS);*/
             }
             break;
 			case BACKGROUND_SCAN:
