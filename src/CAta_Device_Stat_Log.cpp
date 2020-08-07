@@ -198,7 +198,7 @@ eReturnValues CSAtaDevicStatisticsTempLogs::parse_SCT_Temp_Log()
 
    
 
-#if defined_DEBUG
+#if defined _DEBUG
     printf("\t%s%" PRId16" \n", "Temp Log Sample Period (in minutes):          ", SamplePeriod);
     printf("\t%s%" PRId16" \n", "Temp Log Interval (in minutes):              ", Interval);
     printf("\t%s%" PRId8"  \n", "Temp Log Max Op Limit:                       ", MaxOpLimit);
@@ -719,7 +719,7 @@ uint32_t CAtaDeviceStatisticsLogs::CheckStatusAndValid_32(uint64_t *value)
 //---------------------------------------------------------------------------
 void CAtaDeviceStatisticsLogs::logPage00(uint64_t *value)
 {
-#if defined_DEBUG
+#if defined _DEBUG
     uint64_t *cData = &value[0];
     uint8_t *pEntries = (uint8_t *)&value[0];
     uint8_t TotalEntries = 0;
@@ -752,7 +752,7 @@ void CAtaDeviceStatisticsLogs::logPage01(uint64_t *value, JSONNODE *masterData)
     string myStr = "Statistics";
     JSONNODE *sctStat = json_new(JSON_NODE);
     json_set_name(sctStat, "General Statistics(log Page 01h)");
-#if defined_DEBUG
+#if defined _DEBUG
     
     printf("\t%s \n", "*****General Statistics(log Page 01h)*****");
 #endif
@@ -798,7 +798,7 @@ void CAtaDeviceStatisticsLogs::logPage02(uint64_t *value, JSONNODE *masterData)
 
     JSONNODE *sctFreeFall = json_new(JSON_NODE);
     json_set_name(sctFreeFall, "Free Fall Statistics(log Page 02h)");
-#if defined_DEBUG
+#if defined _DEBUG
  
     printf("\t%s ", "*****Free Fall Statistics(log Page 02h)*****");
 
@@ -855,7 +855,7 @@ void CAtaDeviceStatisticsLogs::logPage03(uint64_t *value, JSONNODE *masterData)
 
     JSONNODE *sctRotat = json_new(JSON_NODE);
     json_set_name(sctRotat, "Rotating Media Statistics(log Page 03h)");
-#if defined_DEBUG
+#if defined _DEBUG
     printf("\t%s \n", "*****Rotating Media Statistics(log Page 03h)*****");
 #endif
     json_push_back(sctRotat, json_new_i("Spindle Motor Power-on Hours(hrs)", pSCT3->SpdPoh));
@@ -905,7 +905,7 @@ void CAtaDeviceStatisticsLogs::logPage04(uint64_t *value, JSONNODE *masterData)
 
     JSONNODE *sctError = json_new(JSON_NODE);
     json_set_name(sctError, "General Errors Statistics(log Page 04h)");
-#if defined_DEBUG
+#if defined _DEBUG
     
     printf("\t%s \n", "*****General Errors Statistics(log Page 04h)*****");
 #endif
@@ -966,7 +966,7 @@ void CAtaDeviceStatisticsLogs::logPage05(uint64_t *value, JSONNODE *masterData)
     string myStr = "Temperature Statistics";
     JSONNODE *sctTemp = json_new(JSON_NODE);
     json_set_name(sctTemp, "Temperature Statistics(log Page 05h)");
-#if defined_DEBUG
+#if defined _DEBUG
     
     printf("\t%s \n", "*****Temperature Statistics(log Page 05h)*****");
 #endif
@@ -1041,7 +1041,7 @@ sDeviceLog6  m_sSCT6;
 
     JSONNODE *sctGen = json_new(JSON_NODE);
     json_set_name(sctGen, "Transport Statistics(log Page 06h)");
-#if defined_DEBUG
+#if defined _DEBUG
     
     printf("\t%s \n", "*****Transport Statistics(log Page 06h)*****");
 #endif
@@ -1078,7 +1078,7 @@ void CAtaDeviceStatisticsLogs::logPage07(uint64_t *value, JSONNODE *masterData)
 
     JSONNODE *sctError = json_new(JSON_NODE);
     json_set_name(sctError, "Solid State Device Statistics(log Page 07h)");
-#if defined_DEBUG
+#if defined _DEBUG
 
     printf("\t%s \n", "*****Solid State Device Statistics(log Page 07h)*****");
 
