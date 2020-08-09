@@ -171,6 +171,10 @@ eReturnValues CATA_Farm_Log::parse_Farm_Log()
             {
                 Create_Model_Number_String(pFarmFrame->identStringInfo.modelNumber, idInfo);
             }
+            else
+            {
+                pFarmFrame->identStringInfo.modelNumber = "ST12345678";
+            }
             
 
             offset += m_pageSize;
@@ -423,11 +427,11 @@ eReturnValues CATA_Farm_Log::Print_Drive_Information(JSONNODE *masterData, uint3
 
     snprintf((char*)myStr.c_str(), BASIC, "%s", vFarmFrame[page].identStringInfo.serialNumber.c_str());                                                         //!< serial number of the device
     json_push_back(pageInfo, json_new_a("Serial Number", (char*)myStr.c_str()));
-    if (m_MajorRev >= MAJORVERSION3)
-    {
+    //if (m_MajorRev >= MAJORVERSION3)
+    //{
         snprintf((char*)myStr.c_str(), BASIC, "%s", vFarmFrame[page].identStringInfo.modelNumber.c_str());                                                      //!< model Number  only on 3.0 and higher 
         json_push_back(pageInfo, json_new_a("Model Number", (char*)myStr.c_str()));
-    }
+    //}
 
 
     snprintf((char*)myStr.c_str(), BASIC, "%s", vFarmFrame[page].identStringInfo.worldWideName.c_str());
@@ -532,7 +536,7 @@ eReturnValues CATA_Farm_Log::Print_Work_Load(JSONNODE *masterData, uint32_t page
     }
     else
     {
-        printf("\nWork Load From Farm Log copy %d:", page);
+        printf("\nWork Load From Farm Log copy %d", page);
     }
     printf("\tRated Workload Percentaged(debug):               %" PRId64" \n", vFarmFrame[page].workLoadPage.workloadPercentage & 0x00FFFFFFFFFFFFFFLL);         //!< rated Workload Percentage
     printf("\tTotal Number of Other Commands(debug):           %" PRId64" \n", vFarmFrame[page].workLoadPage.totalNumberofOtherCMDS & 0x00FFFFFFFFFFFFFFLL);     //!< Total Number Of Other Commands
@@ -909,7 +913,7 @@ eReturnValues CATA_Farm_Log::Print_Reli_Information(JSONNODE *masterData, uint32
     }
     else
     {
-        printf("\nReliability Information From Farm Log copy: %d\n", page);
+        printf("\nReliability Information From Farm Log copy %d\n", page);
     }
     printf("\tTimestamp of last IDD test:               %" PRIu64" (debug)\n", vFarmFrame[page].reliPage.lastIDDTest & 0x00FFFFFFFFFFFFFFLL);                        //!< Timestamp of last IDD test
     printf("\tSub-command of last IDD test:             %" PRIu64" (debug)\n", vFarmFrame[page].reliPage.cmdLastIDDTest & 0x00FFFFFFFFFFFFFFLL);                     //!< Sub-command of last IDD test
@@ -1017,7 +1021,7 @@ eReturnValues CATA_Farm_Log::Print_Head_Information(JSONNODE *masterData, uint32
     }
     else
     {
-        printf("\n Head Information From Farm Log copy: %d\n", page);
+        printf("\n Head Information From Farm Log copy %d\n", page);
     }
 
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
