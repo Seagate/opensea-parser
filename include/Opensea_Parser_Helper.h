@@ -57,6 +57,7 @@ namespace opensea_parser {
         OPENSEA_LOG_PRINT_TEXT,
         OPENSEA_LOG_PRINT_CSV,
         OPENSEA_LOG_PRINT_FLAT_CSV,
+        OPENSEA_LOG_PRINT_PROM,
     }eOpensea_print_Types;
 	// SCSI Parameter Control Bytes
 	typedef enum _eOpenSea_SCSI_Log_Parameter_Types
