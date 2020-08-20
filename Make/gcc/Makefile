@@ -43,6 +43,7 @@ LIB_SRC_FILES = \
     $(SRC_DIR)CAta_Identify_Log.cpp\
     $(SRC_DIR)CAta_Power_Condition_Log.cpp\
     $(SRC_DIR)CAta_NCQ_Command_Error_Log.cpp\
+    $(SRC_DIR)CAta_SMART_Log_Dir.cpp\
     $(SRC_DIR)CScsi_Log.cpp\
     $(SRC_DIR)CScsi_Application_Client_Log.cpp\
     $(SRC_DIR)CScsi_Background_Operation_Log.cpp\
