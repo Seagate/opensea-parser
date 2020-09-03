@@ -95,16 +95,16 @@ typedef struct _sWorkLoadStat
     union
     {
         uint64_t        numberOfReadCmds4;                      //!< ATA - Number of Read commands from 75-100% of LBA space for last 3 SMART Summary Frames (added 4.4)
-        uint64_t        totalWriteCmdsFromFrames3;              //!< SCSI - Number of Write commands from 25-75% of LBA space for last 3 SMART Summary Frames (added 4.4)
+        uint64_t        totalWriteCmdsFromFrames3;              //!< SCSI - Number of Write commands from 25-50% of LBA space for last 3 SMART Summary Frames (added 4.4)
     };
     union
     {
         uint64_t        numberOfWriteCmds1;                     //!< ATA - Number of Write commands from 0-3.125% of LBA space for last 3 SMART Summary Frames (added 4.4)
-        uint64_t        totalWriteCmdsFromFrames4;              //!< SCSI - Number of Write commands from 75-100% of LBA space for last 3 SMART Summary Frames (added 4.4)
+        uint64_t        totalWriteCmdsFromFrames4;              //!< SCSI - Number of Write commands from 50-100% of LBA space for last 3 SMART Summary Frames (added 4.4)
     };
     uint64_t        numberOfWriteCmds2;                         //!< ATA - Number of Write commands from 3.125-25% of LBA space for last 3 SMART Summary Frames (added 4.4)
-    uint64_t        numberOfWriteCmds3;                         //!< ATA - Number of Write commands from 25-75% of LBA space for last 3 SMART Summary Frames (added 4.4)
-    uint64_t        numberOfWriteCmds4;                         //!< ATA - Number of Write commands from 75-100% of LBA space for last 3 SMART Summary Frames (added 4.4)
+    uint64_t        numberOfWriteCmds3;                         //!< ATA - Number of Write commands from 25-50% of LBA space for last 3 SMART Summary Frames (added 4.4)
+    uint64_t        numberOfWriteCmds4;                         //!< ATA - Number of Write commands from 50-100% of LBA space for last 3 SMART Summary Frames (added 4.4)
     _sWorkLoadStat() : pageNumber(0), copyNumber(0), workloadPercentage(0), totalReadCommands(0), totalWriteCommands(0), totalRandomReads(0), totalRandomWrites(0), \
         totalNumberofOtherCMDS(0), logicalSecWritten(0), logicalSecRead(0), dither(0), ditherRandom(0), ditherSequential(0), numberOfReadCmds1(0), numberOfReadCmds2(0), \
         numberOfReadCmds3(0), numberOfReadCmds4(0), numberOfWriteCmds1(0), numberOfWriteCmds2(0), numberOfWriteCmds3(0), numberOfWriteCmds4(0) {};
