@@ -57,10 +57,12 @@ namespace opensea_parser {
         bool strip_Active_Status(uint64_t *value);
         bool swap_Bytes_sFarmHeader(sScsiFarmHeader *fh);
         bool swap_Bytes_sDriveInfo(sScsiDriveInfo *di);
+        bool swap_Bytes_sDrive_Info_Page_06(sGeneralDriveInfoPage06 *gd);
         bool swap_Bytes_sWorkLoadStat(sScsiWorkLoadStat *wl);
-        bool swap_Bytes_sErrorStat(sScsiErrorStat * es);
+        bool swap_Bytes_sErrorStat(sScsiErrorFrame * es);
         bool swap_Bytes_sEnvironmentStat(sScsiEnvironmentStat *es);
-        bool swap_Bytes_sScsiReliabilityStat(sScsiReliabilityStat *ss);
+        bool swap_Bytes_EnvironmentPage07(sScsiEnvStatPage07 *ep);
+        bool swap_Bytes_sScsiReliabilityStat(sScsiReliablility *ss);
         bool swap_Bytes_sLUNStruct(sLUNStruct *LUN);
         bool get_Head_Info(sHeadInformation *phead, uint8_t *buffer);
         void set_Head_Header(std::string &headerName, eLogPageTypes index);
@@ -71,7 +73,9 @@ namespace opensea_parser {
         eReturnValues print_Drive_Information(JSONNODE *masterData, uint32_t page);
         eReturnValues print_WorkLoad(JSONNODE *masterData, uint32_t page);
         eReturnValues print_Error_Information(JSONNODE *masterData, uint32_t page);
+        eReturnValues print_Error_Information_Version_4(JSONNODE *masterData, uint32_t page);
         eReturnValues print_Enviroment_Information(JSONNODE *masterData, uint32_t page);
+        eReturnValues print_Enviroment_Statistics_Page_07(JSONNODE *masterData, uint32_t page);
         eReturnValues print_Reli_Information(JSONNODE *masterData, uint32_t page);
         eReturnValues print_Head_Information(eLogPageTypes type, JSONNODE *masterData, uint32_t page);
         eReturnValues print_LUN_Actuator_Information(JSONNODE *masterData, uint32_t page, uint32_t index);
