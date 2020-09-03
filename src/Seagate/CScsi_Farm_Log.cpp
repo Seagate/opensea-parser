@@ -2708,6 +2708,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
             return FAILURE;
             break;
         case SECOND_MR_HEAD_RESISTANCE:
+        {
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
 #if defined _DEBUG
@@ -2717,18 +2718,151 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].secondMRHeadResistanceByHead.headValue[loopCount]) *.1));   //!< Second MR Head Resistance
                 set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].secondMRHeadResistanceByHead.headValue[loopCount], m_showStatusBits);
             }
-            break;
+        }
+        break;
         case FAFH_MEASUREMENT_STATUS:            // FAFH Measurement Status, bitwise OR across all diameters per head
+        {
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
+#if defined _DEBUG
+                printf("\tFAFH Measurement Status by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fafhMeasurementStatus.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< FAFH Measurement Status
+#endif
+                snprintf((char*)myHeader.c_str(), BASIC, "FAFH Measurement Status by Head %" PRIu32"", loopCount);     // Head count
+                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].fafhMeasurementStatus.headValue[loopCount]) *.1));   //!< FAFH Measurement Status
+                set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].fafhMeasurementStatus.headValue[loopCount], m_showStatusBits);
+            }
+        }
+        break;
         case FAFH_HF_LF_RELATIVE_APMLITUDE:      // FAFH HF / LF Relative Amplitude in tenths, maximum value across all 3 zones per head
+        {
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
+#if defined _DEBUG
+                printf("\tFAFH HF LF Relative Amplitude by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fafhRelativeApmlitude.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  
+#endif
+                snprintf((char*)myHeader.c_str(), BASIC, "FAFH HF LF Relative Amplitude by Head %" PRIu32"", loopCount);     // Head count
+                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].fafhRelativeApmlitude.headValue[loopCount]) *.1));   
+                set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].fafhRelativeApmlitude.headValue[loopCount], m_showStatusBits);
+            }
+        }
+        break;
         case FAFH_BIT_ERROR_RATE_0:              // FAFH Bit Error Rate, write then read BER on reserved tracks Diameter 0: Outer
+        {
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
+#if defined _DEBUG
+                printf("\tFAFH Bit Error Rate 0 by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fafh_bit_error_rate_0.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  
+#endif
+                snprintf((char*)myHeader.c_str(), BASIC, "FAFH Bit Error Rate 0 by Head %" PRIu32"", loopCount);     // Head count
+                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].fafh_bit_error_rate_0.headValue[loopCount]) *.1));   
+                set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].fafh_bit_error_rate_0.headValue[loopCount], m_showStatusBits);
+            }
+        }
+        break;
         case FAFH_BIT_ERROR_RATE_1:              // FAFH Bit Error Rate, write then read BER on reserved tracks Diameter 1 : Outer
+        {
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
+#if defined _DEBUG
+                printf("\tFAFH Bit Error Rate 1 by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fafh_bit_error_rate_1.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  
+#endif
+                snprintf((char*)myHeader.c_str(), BASIC, "FAFH Bit Error Rate 1 by Head %" PRIu32"", loopCount);     // Head count
+                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].fafh_bit_error_rate_1.headValue[loopCount]) *.1));   
+                set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].fafh_bit_error_rate_1.headValue[loopCount], m_showStatusBits);
+            }
+        }
+        break;
         case FAFH_BIT_ERROR_RATE_2:              // FAFH Bit Error Rate, write then read BER on reserved tracks Diameter 2 : Outer
+        {
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
+#if defined _DEBUG
+                printf("\tFAFH Bit Error Rate 2 by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fafh_bit_error_rate_2.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  
+#endif
+                snprintf((char*)myHeader.c_str(), BASIC, "FAFH Bit Error Rate 2 by Head %" PRIu32"", loopCount);     // Head count
+                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].fafh_bit_error_rate_2.headValue[loopCount]) *.1));   
+                set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].fafh_bit_error_rate_2.headValue[loopCount], m_showStatusBits);
+            }
+        }
+        break;
         case FAFH_LOW_FREQUENCY_0:               // FAFH Low Frequency Passive Clearance in ADC counts Diameter 0 : outer
+        {
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
+#if defined _DEBUG
+                printf("\tFAFH Low Frequency 0 by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fafhLowFrequency_0.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  
+#endif
+                snprintf((char*)myHeader.c_str(), BASIC, "FAFH Low Frequency 0 by Head %" PRIu32"", loopCount);     // Head count
+                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].fafhLowFrequency_0.headValue[loopCount]) *.1));  
+                set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].fafhLowFrequency_0.headValue[loopCount], m_showStatusBits);
+            }
+        }
+        break;
         case FAFH_LOW_FREQUENCY_1:               // FAFH Low Frequency Passive Clearance in ADC counts Diameter 1 : outer
+        {
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
+#if defined _DEBUG
+                printf("\tFAFH Low Frequency 1 by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fafhLowFrequency_1.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  
+#endif
+                snprintf((char*)myHeader.c_str(), BASIC, "FAFH Low Frequency 1 by Head %" PRIu32"", loopCount);     // Head count
+                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].fafhLowFrequency_1.headValue[loopCount]) *.1));   
+                set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].fafhLowFrequency_1.headValue[loopCount], m_showStatusBits);
+            }
+        }
+        break;
         case FAFH_LOW_FREQUENCY_2:               // FAFH Low Frequency Passive Clearance in ADC counts Diameter 2 : outer
+        {
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
+#if defined _DEBUG
+                printf("\tFAFH Low Frequency 2 by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fafhLowFrequency_2.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  
+#endif
+                snprintf((char*)myHeader.c_str(), BASIC, "FAFH Low Frequency 2 by Head %" PRIu32"", loopCount);     // Head count
+                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].fafhLowFrequency_2.headValue[loopCount]) *.1));   
+                set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].fafhLowFrequency_2.headValue[loopCount], m_showStatusBits);
+            }
+        }
+        break;
         case FAFH_HIGH_FREQUENCY_0:              // FAFH High Frequency Passive Clearance in ADC counts Diameter 0 : outer
+        {
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
+#if defined _DEBUG
+                printf("\tFAFH High Frequency 0 by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fafhHighFrequency_0.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  
+#endif
+                snprintf((char*)myHeader.c_str(), BASIC, "FAFH High Frequency 0 by Head %" PRIu32"", loopCount);     // Head count
+                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].fafhHighFrequency_0.headValue[loopCount]) *.1));   
+                set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].fafhHighFrequency_0.headValue[loopCount], m_showStatusBits);
+            }
+        }
+        break;
         case FAFH_HIGH_FREQUENCY_1:              // FAFH High Frequency Passive Clearance in ADC counts Diameter 1 : outer
+        {
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
+#if defined _DEBUG
+                printf("\tFAFH High Frequency 1 by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fafhHighFrequency_1.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  
+#endif
+                snprintf((char*)myHeader.c_str(), BASIC, "FAFH High Frequency 1 by Head %" PRIu32"", loopCount);     // Head count
+                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].fafhHighFrequency_1.headValue[loopCount]) *.1));  
+                set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].fafhHighFrequency_1.headValue[loopCount], m_showStatusBits);
+            }
+        }
+        break;
         case FAFH_HIGH_FREQUENCY_2:              // FAFH High Frequency Passive Clearance in ADC counts Diameter 2 : outer
+        {
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
+#if defined _DEBUG
+                printf("\tFAFH High Frequency 2 by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fafhHighFrequency_2.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  
+#endif
+                snprintf((char*)myHeader.c_str(), BASIC, "FAFH High Frequency 2 by Head %" PRIu32"", loopCount);     // Head count
+                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].fafhHighFrequency_2.headValue[loopCount]) *.1));  
+                set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].fafhHighFrequency_2.headValue[loopCount], m_showStatusBits);
+            }
+        }
+        break;
         case RESERVED_FOR_FUTURE_EXPANSION_31:
         case LUN_0_ACTUATOR:
         case RESERVED_FOR_FUTURE_EXPANSION_40:
@@ -3010,16 +3144,38 @@ void CSCSI_Farm_Log::print_All_Pages(JSONNODE *masterData)
                     print_Head_Information(vFarmFrame.at(index).vFramesFound.at(pramCode), headPage, index);
                     break;
                 case FAFH_MEASUREMENT_STATUS:            // FAFH Measurement Status, bitwise OR across all diameters per head
+                    print_Head_Information(vFarmFrame.at(index).vFramesFound.at(pramCode), headPage, index);
+                    break;
                 case FAFH_HF_LF_RELATIVE_APMLITUDE:      // FAFH HF / LF Relative Amplitude in tenths, maximum value across all 3 zones per head
+                    print_Head_Information(vFarmFrame.at(index).vFramesFound.at(pramCode), headPage, index);
+                    break;
                 case FAFH_BIT_ERROR_RATE_0:              // FAFH Bit Error Rate, write then read BER on reserved tracks Diameter 0: Outer
+                    print_Head_Information(vFarmFrame.at(index).vFramesFound.at(pramCode), headPage, index);
+                    break;
                 case FAFH_BIT_ERROR_RATE_1:              // FAFH Bit Error Rate, write then read BER on reserved tracks Diameter 1 : Outer
+                    print_Head_Information(vFarmFrame.at(index).vFramesFound.at(pramCode), headPage, index);
+                    break;
                 case FAFH_BIT_ERROR_RATE_2:              // FAFH Bit Error Rate, write then read BER on reserved tracks Diameter 2 : Outer
+                    print_Head_Information(vFarmFrame.at(index).vFramesFound.at(pramCode), headPage, index);
+                    break;
                 case FAFH_LOW_FREQUENCY_0:               // FAFH Low Frequency Passive Clearance in ADC counts Diameter 0 : outer
+                    print_Head_Information(vFarmFrame.at(index).vFramesFound.at(pramCode), headPage, index);
+                    break;
                 case FAFH_LOW_FREQUENCY_1:               // FAFH Low Frequency Passive Clearance in ADC counts Diameter 1 : outer
+                    print_Head_Information(vFarmFrame.at(index).vFramesFound.at(pramCode), headPage, index);
+                    break;
                 case FAFH_LOW_FREQUENCY_2:               // FAFH Low Frequency Passive Clearance in ADC counts Diameter 2 : outer
+                    print_Head_Information(vFarmFrame.at(index).vFramesFound.at(pramCode), headPage, index);
+                    break;
                 case FAFH_HIGH_FREQUENCY_0:              // FAFH High Frequency Passive Clearance in ADC counts Diameter 0 : outer
+                    print_Head_Information(vFarmFrame.at(index).vFramesFound.at(pramCode), headPage, index);
+                    break;
                 case FAFH_HIGH_FREQUENCY_1:              // FAFH High Frequency Passive Clearance in ADC counts Diameter 1 : outer
+                    print_Head_Information(vFarmFrame.at(index).vFramesFound.at(pramCode), headPage, index);
+                    break;
                 case FAFH_HIGH_FREQUENCY_2:              // FAFH High Frequency Passive Clearance in ADC counts Diameter 2 : outer
+                    print_Head_Information(vFarmFrame.at(index).vFramesFound.at(pramCode), headPage, index);
+                    break;
                 case RESERVED_FOR_FUTURE_EXPANSION_31:
                     break;
                 case LUN_0_ACTUATOR:
