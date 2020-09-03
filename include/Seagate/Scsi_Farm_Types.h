@@ -18,6 +18,8 @@
 #include "Opensea_Parser_Helper.h"
 #include "Farm_Types.h"
 
+#define DATESIZE 2
+
 #pragma pack(push, 1)
 typedef enum _eLogPageTypes
 {
@@ -411,10 +413,7 @@ typedef struct _sGeneralDriveInformationpage06
     uint64_t            pageNumber;                                  //!< Page Number = 6
     uint64_t            copyNumber;                                  //!< Copy Number
     uint64_t            Depop;                                       //!< Depopulation Head Mask
-    uint64_t            mn1;                                         //!< Model Number [3 0]   Product ID
-    uint64_t            mn2;                                         //!< Model Number [7 4]   Product ID
-    uint64_t            mn3;                                         //!< Model Number [11 8]   Product ID
-    uint64_t            mn4;                                         //!< Model Number [15 12]   Product ID
+    uint64_t            productID[4];                                //!< Model Number [3 0]   Product ID
     uint64_t            driveType;                                   //!< Drive Recording Type
     uint64_t            isDepopped;                                  //!< Is drive currently depopped – 1 = depopped, 0 = not depopped
     uint64_t            maxNumAvaliableSectors;                      //!< Max Number of Available Sectors for Reassignment – Value in disc sectors	
