@@ -472,12 +472,14 @@ eReturnValues CATA_Farm_Log::Print_Drive_Information(JSONNODE *masterData, uint3
     set_json_string_With_Status(pageInfo, "Time Stamp (Milliseconds) start", (char*)myStr.c_str(), vFarmFrame[page].driveInfo.timeStamp1, m_showStatusBits);
     snprintf((char*)myStr.c_str(), BASIC, "%llu", vFarmFrame[page].driveInfo.timeStamp2 & 0x00FFFFFFFFFFFFFFLL);
     set_json_string_With_Status(pageInfo, "Time Stamp (Milliseconds) end", (char*)myStr.c_str(), vFarmFrame[page].driveInfo.timeStamp2, m_showStatusBits);      //!< Timestamp of latest SMART Summary Frame in Power-On Hours Milliseconds1
-    set_json_64_bit_With_Status(pageInfo, "Time to ready of the last power cycle", vFarmFrame[page].driveInfo.timeToReady, false, m_showStatusBits);			//!< time to ready of the last power cycle
+    //snprintf((char*)myStr.c_str(), BASIC, "%llu", vFarmFrame[page].driveInfo.timeToReady);
+    snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_Word0(vFarmFrame[page].driveInfo.timeToReady)) / 1000);
+    set_json_string_With_Status(pageInfo, "Time to ready of the last power cycle", (char*)myStr.c_str(), vFarmFrame[page].driveInfo.timeToReady, m_showStatusBits);			//!< time to ready of the last power cycle
     set_json_64_bit_With_Status(pageInfo, "Time drive is held in staggered spin", vFarmFrame[page].driveInfo.timeHeld, false, m_showStatusBits);                //!< time drive is held in staggered spin during the last power on sequence
 
     myStr = "Drive Recording Type";
     std::string type = "CMR";
-    if ((BIT0 & check_Status_Strip_Status(vFarmFrame[page].driveInfo.driveRecordingType)) == 0)
+    if (vFarmFrame[page].driveInfo.driveRecordingType & BIT0)
     {
         type = "SMR";
     }
@@ -841,40 +843,43 @@ eReturnValues CATA_Farm_Log::Print_Enviroment_Information(JSONNODE *masterData, 
     set_json_string_With_Status(pageInfo, "Humidity Mixed Ratio", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.humidityRatio, m_showStatusBits);
     set_json_int_With_Status(pageInfo, "Current Motor Power", vFarmFrame[page].environmentPage.currentMotorPower, m_showStatusBits);												//!< Current Motor Power, value from most recent SMART Summary Frame6
 
-    if (m_MajorRev >= MAJORVERSION3 && m_MinorRev > 7)
-    {
-        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%02" PRId16"", static_cast<uint16_t>(vFarmFrame[page].environmentPage.current12v / 1000), static_cast<uint16_t>(vFarmFrame[page].environmentPage.current12v % 1000));
-        set_json_string_With_Status(pageInfo, "12 volts", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.current12v, m_showStatusBits);
-        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%02" PRId16"", static_cast<uint16_t>(vFarmFrame[page].environmentPage.min12v / 1000), static_cast<uint16_t>(vFarmFrame[page].environmentPage.min12v % 1000));
-        set_json_string_With_Status(pageInfo, "Minimum 12 volts", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.min12v, m_showStatusBits);
-        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%02" PRId16"", static_cast<uint16_t>(vFarmFrame[page].environmentPage.max12v / 1000), static_cast<uint16_t>(vFarmFrame[page].environmentPage.max12v % 1000));
-        set_json_string_With_Status(pageInfo, "Maximum 12 volts", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.max12v, m_showStatusBits);
 
-        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%" PRId16"", static_cast<uint16_t>(vFarmFrame[page].environmentPage.current5v / 1000), static_cast<uint16_t>(vFarmFrame[page].environmentPage.current5v % 1000));
-        set_json_string_With_Status(pageInfo, "5 volts", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.current5v, m_showStatusBits);
-        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%02" PRId16"", static_cast<uint16_t>(vFarmFrame[page].environmentPage.min5v / 1000), static_cast<uint16_t>(vFarmFrame[page].environmentPage.min5v % 1000));
-        set_json_string_With_Status(pageInfo, "Maximum 5 volts", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.min5v, m_showStatusBits);
-        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%02" PRId16"", static_cast<uint16_t>(vFarmFrame[page].environmentPage.max5v / 1000), static_cast<uint16_t>(vFarmFrame[page].environmentPage.max5v % 1000));
-        set_json_string_With_Status(pageInfo, "Maximum 5 volts", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.max5v, m_showStatusBits);
+    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%02" PRId16"", (M_Word0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.current12v)) / 1000), \
+        (M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.current12v)) % 1000));
+    set_json_string_With_Status(pageInfo, "Current 12 volts", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.current12v, m_showStatusBits);
+    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%02" PRId16"", (M_Word0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.min12v)) / 1000), \
+        (M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.min12v)) % 1000));
+    set_json_string_With_Status(pageInfo, "Minimum 12 volts", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.min12v, m_showStatusBits);
+    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%02" PRId16"", (M_Word0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.max12v)) / 1000), \
+        (M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.max12v)) % 1000));
+    set_json_string_With_Status(pageInfo, "Maximum 12 volts", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.max12v, m_showStatusBits);
 
-    }
+    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%" PRId16"", (M_Word0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.current5v)) / 1000), \
+        (M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.current5v)) % 1000));
+    set_json_string_With_Status(pageInfo, "Current 5 volts", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.current5v, m_showStatusBits);
+    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%02" PRId16"", (M_Word0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.min5v)) / 1000), \
+        (M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.min5v)) % 1000));
+    set_json_string_With_Status(pageInfo, "Maximum 5 volts", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.min5v, m_showStatusBits);
+    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%02" PRId16"", (M_Word0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.max5v)) / 1000), \
+        (M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.max5v)) % 1000));
+    set_json_string_With_Status(pageInfo, "Maximum 5 volts", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.max5v, m_showStatusBits);
 
-    if (m_MajorRev >= MAJORVERSION4 && m_MinorRev >= 3)
-    {
-        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%02" PRId16"", static_cast<uint16_t>(vFarmFrame[page].environmentPage.powerAvg12v / 1000), static_cast<uint16_t>(vFarmFrame[page].environmentPage.powerAvg12v % 1000));
-        set_json_string_With_Status(pageInfo, "12V Power Average", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.powerAvg12v, m_showStatusBits);
-        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%02" PRId16"", static_cast<uint16_t>(vFarmFrame[page].environmentPage.powerMin12v / 1000), static_cast<uint16_t>(vFarmFrame[page].environmentPage.powerMin12v % 1000));
-        set_json_string_With_Status(pageInfo, "12V Power Minimum", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.powerMin12v, m_showStatusBits);
-        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%02" PRId16"", static_cast<uint16_t>(vFarmFrame[page].environmentPage.powerMax12v / 1000), static_cast<uint16_t>(vFarmFrame[page].environmentPage.powerMax12v % 1000));
-        set_json_string_With_Status(pageInfo, "12V Power Maximum", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.powerMax12v, m_showStatusBits);
 
-        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%" PRId16"", static_cast<uint16_t>(vFarmFrame[page].environmentPage.powerAvg5v / 1000), static_cast<uint16_t>(vFarmFrame[page].environmentPage.powerAvg5v % 1000));
-        set_json_string_With_Status(pageInfo, "5V Power Average", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.powerAvg5v, m_showStatusBits);
-        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%02" PRId16"", static_cast<uint16_t>(vFarmFrame[page].environmentPage.powerMin5v / 1000), static_cast<uint16_t>(vFarmFrame[page].environmentPage.powerMin5v % 1000));
-        set_json_string_With_Status(pageInfo, "5V Power Minimum", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.powerMin5v, m_showStatusBits);
-        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%02" PRId16"", static_cast<uint16_t>(vFarmFrame[page].environmentPage.powerMax5v / 1000), static_cast<uint16_t>(vFarmFrame[page].environmentPage.powerMax5v % 1000));
-        set_json_string_With_Status(pageInfo, "5V Power Maximum", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.powerMax5v, m_showStatusBits);
-    }
+    
+    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%02" PRId16"", static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.powerAvg12v)) / 1000), static_cast<uint16_t>(vFarmFrame[page].environmentPage.powerAvg12v % 1000));
+    set_json_string_With_Status(pageInfo, "12V Power Average", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.powerAvg12v, m_showStatusBits);
+    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%02" PRId16"", static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.powerMin12v)) / 1000), static_cast<uint16_t>(vFarmFrame[page].environmentPage.powerMin12v % 1000));
+    set_json_string_With_Status(pageInfo, "12V Power Minimum", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.powerMin12v, m_showStatusBits);
+    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%02" PRId16"", static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.powerMax12v)) / 1000), static_cast<uint16_t>(vFarmFrame[page].environmentPage.powerMax12v % 1000));
+    set_json_string_With_Status(pageInfo, "12V Power Maximum", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.powerMax12v, m_showStatusBits);
+
+    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%" PRId16"", static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.powerAvg5v)) / 1000), static_cast<uint16_t>(vFarmFrame[page].environmentPage.powerAvg5v % 1000));
+    set_json_string_With_Status(pageInfo, "5V Power Average", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.powerAvg5v, m_showStatusBits);
+    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%02" PRId16"", static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.powerMin5v)) / 1000), static_cast<uint16_t>(vFarmFrame[page].environmentPage.powerMin5v % 1000));
+    set_json_string_With_Status(pageInfo, "5V Power Minimum", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.powerMin5v, m_showStatusBits);
+    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%02" PRId16"", static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.powerMax5v)) / 1000), static_cast<uint16_t>(vFarmFrame[page].environmentPage.powerMax5v % 1000));
+    set_json_string_With_Status(pageInfo, "5V Power Maximum", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.powerMax5v, m_showStatusBits);
+ 
 
     json_push_back(masterData, pageInfo);
 
@@ -1099,11 +1104,11 @@ eReturnValues CATA_Farm_Log::Print_Head_Information(JSONNODE *masterData, uint32
     printf("\tNumber of disc slip recalibrations performed:  %" PRId64" (debug)\n", vFarmFrame[page].reliPage.diskSlipRecalPerformed & 0x00FFFFFFFFFFFFFFLL);                  //!< Number of disc slip recalibrations performed
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
-        printf("\tNumber of Resident G-List by Head  %d:  %" PRId64" (debug)\n", loopCount, vFarmFrame[page].reliPage.gList[loopCount] & 0x00FFFFFFFFFFFFFFLL);                //!< [24] Number of Resident G-List per Head
+        printf("\tNumber of Resident G-List by Head %d:  %" PRId64" (debug)\n", loopCount, vFarmFrame[page].reliPage.gList[loopCount] & 0x00FFFFFFFFFFFFFFLL);                //!< [24] Number of Resident G-List per Head
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
-        printf("\tNumber of pending Entrie by Head  %d:  %" PRId64" (debug)\n", loopCount, vFarmFrame[page].reliPage.pendingEntries[loopCount] & 0x00FFFFFFFFFFFFFFLL);        //!< [24] Number of pending Entries per Head
+        printf("\tNumber of pending Entries by Head %d:  %" PRId64" (debug)\n", loopCount, vFarmFrame[page].reliPage.pendingEntries[loopCount] & 0x00FFFFFFFFFFFFFFLL);        //!< [24] Number of pending Entries per Head
     }
     printf("\tHelium Pressure Threshold Tripped:             %" PRId64" (debug)\n", vFarmFrame[page].reliPage.heliumPresureTrip & 0x00FFFFFFFFFFFFFFLL);                       //!< Helium Pressure Threshold Tripped ( 1- trip, 0 -no trip)
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
@@ -1360,33 +1365,39 @@ eReturnValues CATA_Farm_Log::Print_Head_Information(JSONNODE *masterData, uint32
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         snprintf((char *)myHeader.c_str(), BASIC, "FAFH Low Frequency Passive Clearance in ADC counts inner by Head %" PRId32"", loopCount);
-        set_json_64_bit_With_Status(headInfo, (char*)myHeader.c_str(), vFarmFrame[page].reliPage.FAFHLowFrequency[loopCount].inner, false, m_showStatusBits);					//!< [24][3] FAFH Low Frequency Passive Clearance in ADC counts
+        snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<double>(M_DoubleWord0(vFarmFrame[page].reliPage.FAFHLowFrequency[loopCount].inner)) / 10.0);
+        set_json_string_With_Status(headInfo, (char*)myHeader.c_str(), (char*)myStr.c_str(), false, m_showStatusBits);					//!< [24][3] FAFH Low Frequency Passive Clearance in ADC counts
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         snprintf((char*)myHeader.c_str(), BASIC, "FAFH Low Frequency Passive Clearance in ADC counts middle by Head %" PRId32"", loopCount); // Head count
-        set_json_64_bit_With_Status(headInfo, (char*)myHeader.c_str(), vFarmFrame[page].reliPage.FAFHLowFrequency[loopCount].middle, false, m_showStatusBits);					//!< [24][3] FAFH Low Frequency Passive Clearance in ADC counts
+        snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<double>(M_DoubleWord0(vFarmFrame[page].reliPage.FAFHLowFrequency[loopCount].middle)) / 10.0);
+        set_json_string_With_Status(headInfo, (char*)myHeader.c_str(), (char*)myStr.c_str(), false, m_showStatusBits);					//!< [24][3] FAFH Low Frequency Passive Clearance in ADC counts
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
-        snprintf((char*)myHeader.c_str(), BASIC, "FAFH Low Frequency Passive Clearance in ADC counts outer by Head %" PRId32"", loopCount); // Head count
-        set_json_64_bit_With_Status(headInfo, (char*)myHeader.c_str(), vFarmFrame[page].reliPage.FAFHLowFrequency[loopCount].outer, false, m_showStatusBits);					//!< [24][3] FAFH Low Frequency Passive Clearance in ADC counts
+        snprintf((char*)myHeader.c_str(), BASIC, "FAFH Low Frequency Passive Clearance in ADC counts outer by Head %" PRId32"", loopCount); 
+        snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<double>(M_DoubleWord0(vFarmFrame[page].reliPage.FAFHLowFrequency[loopCount].outer)) / 10.0);  // Head count
+        set_json_string_With_Status(headInfo, (char*)myHeader.c_str(), (char*)myStr.c_str(), false, m_showStatusBits);					//!< [24][3] FAFH Low Frequency Passive Clearance in ADC counts
     }
 
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         snprintf((char *)myHeader.c_str(), BASIC, "FAFH High Frequency Passive Clearance in ADC counts inner by Head %" PRId32"", loopCount);
-        set_json_64_bit_With_Status(headInfo, (char*)myHeader.c_str(), vFarmFrame[page].reliPage.FAFHHighFrequency[loopCount].inner, false, m_showStatusBits);					//!< [24][3] FAFH High Frequency Passive Clearance in ADC counts
+        snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<double>(M_DoubleWord0(vFarmFrame[page].reliPage.FAFHHighFrequency[loopCount].inner)) / 10.0);
+        set_json_string_With_Status(headInfo, (char*)myHeader.c_str(), (char*)myStr.c_str(), false, m_showStatusBits);					//!< [24][3] FAFH High Frequency Passive Clearance in ADC counts
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         snprintf((char*)myHeader.c_str(), BASIC, "FAFH High Frequency Passive Clearance in ADC counts middle by Head %" PRId32"", loopCount); // Head count
-        set_json_64_bit_With_Status(headInfo, (char*)myHeader.c_str(), vFarmFrame[page].reliPage.FAFHHighFrequency[loopCount].middle, false, m_showStatusBits);					//!< [24][3] FAFH High Frequency Passive Clearance in ADC counts
+        snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<double>(M_DoubleWord0(vFarmFrame[page].reliPage.FAFHHighFrequency[loopCount].middle)) / 10.0);
+        set_json_string_With_Status(headInfo, (char*)myHeader.c_str(), (char*)myStr.c_str(), false, m_showStatusBits);					//!< [24][3] FAFH High Frequency Passive Clearance in ADC counts
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         snprintf((char*)myHeader.c_str(), BASIC, "FAFH High Frequency Passive Clearance in ADC counts outer by Head %" PRId32"", loopCount); // Head count
-        set_json_64_bit_With_Status(headInfo, (char*)myHeader.c_str(), vFarmFrame[page].reliPage.FAFHHighFrequency[loopCount].outer, false, m_showStatusBits);					//!< [24][3] FAFH High Frequency Passive Clearance in ADC counts
+        snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<double>(M_DoubleWord0(vFarmFrame[page].reliPage.FAFHHighFrequency[loopCount].outer)) / 10.0);
+        set_json_string_With_Status(headInfo, (char*)myHeader.c_str(), (char*)myStr.c_str(), false, m_showStatusBits);					//!< [24][3] FAFH High Frequency Passive Clearance in ADC counts
     }
 
     json_push_back(masterData, headInfo);
