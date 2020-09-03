@@ -530,6 +530,7 @@
     <ClInclude Include="..\..\..\..\include\CAta_Identify_Log.h" />
     <ClInclude Include="..\..\..\..\include\CAta_NCQ_Command_Error_Log.h" />
     <ClInclude Include="..\..\..\..\include\CAta_Power_Conditions_Log.h" />
+    <ClInclude Include="..\..\..\..\include\CAta_SMART_Log_Dir.h" />
     <ClInclude Include="..\..\..\..\include\CLog.h" />
     <ClInclude Include="..\..\..\..\include\CScsi_Application_Client_Log.h" />
     <ClInclude Include="..\..\..\..\include\CScsi_Background_Operation_Log.h" />
@@ -570,6 +571,7 @@
     <ClCompile Include="..\..\..\..\src\CAta_Identify_Log.cpp" />
     <ClCompile Include="..\..\..\..\src\CAta_NCQ_Command_Error_Log.cpp" />
     <ClCompile Include="..\..\..\..\src\CAta_Power_Condition_Log.cpp" />
+    <ClCompile Include="..\..\..\..\src\CAta_SMART_Log_Dir.cpp" />
     <ClCompile Include="..\..\..\..\src\CLog.cpp" />
     <ClCompile Include="..\..\..\..\src\CScsi_Application_Client_Log.cpp" />
     <ClCompile Include="..\..\..\..\src\CScsi_Background_Operation_Log.cpp" />
