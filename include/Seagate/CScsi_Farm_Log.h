@@ -53,7 +53,8 @@ namespace opensea_parser {
 		void create_World_Wide_Name(std::string &worldWideName, const sScsiDriveInfo * const idInfo);
 		void create_Firmware_String(std::string &firmwareRev, const sScsiDriveInfo * const idInfo);
 		void create_Device_Interface_String(std::string &dInterface, const sScsiDriveInfo * const idInfo);
-        void create_Model_Number_String(std::string &model, const sScsiDriveInfo * const idInfo);
+        void create_Model_Number_String(std::string &model, sGeneralDriveInfoPage06 * const idInfo);
+        void create_Year_Assembled_String(std::string &dateStr, uint16_t *date);
         bool strip_Active_Status(uint64_t *value);
         bool swap_Bytes_sFarmHeader(sScsiFarmHeader *fh);
         bool swap_Bytes_sDriveInfo(sScsiDriveInfo *di);
@@ -71,6 +72,7 @@ namespace opensea_parser {
 		eReturnValues init_Header_Data();
         eReturnValues print_Header(JSONNODE *masterData);
         eReturnValues print_Drive_Information(JSONNODE *masterData, uint32_t page);
+        eReturnValues print_General_Drive_Information_Continued(JSONNODE *masterData, uint32_t page);
         eReturnValues print_WorkLoad(JSONNODE *masterData, uint32_t page);
         eReturnValues print_Error_Information(JSONNODE *masterData, uint32_t page);
         eReturnValues print_Error_Information_Version_4(JSONNODE *masterData, uint32_t page);

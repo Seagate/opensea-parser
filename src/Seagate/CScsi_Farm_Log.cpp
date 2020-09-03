@@ -363,6 +363,39 @@ void CSCSI_Farm_Log::set_Head_Header(std::string &headerName, eLogPageTypes inde
     case SECOND_MR_HEAD_RESISTANCE:
         headerName = "Second Head MR Head Resistance";
         break;
+    case FAFH_MEASUREMENT_STATUS:            
+        headerName = "FAFH Measurement Status, bitwise OR across all diameters per head";
+        break;
+    case FAFH_HF_LF_RELATIVE_APMLITUDE:      
+        headerName = " FAFH HF / LF Relative Amplitude in tenths, maximum value across all 3 zones per head";
+        break;
+    case FAFH_BIT_ERROR_RATE_0:              
+        headerName = " FAFH Bit Error Rate, write then read BER on reserved tracks Diameter 0: Outer";
+        break;
+    case FAFH_BIT_ERROR_RATE_1:              
+        headerName = " FAFH Bit Error Rate, write then read BER on reserved tracks Diameter 1 : Outer";
+        break;
+    case FAFH_BIT_ERROR_RATE_2:              
+        headerName = " FAFH Bit Error Rate, write then read BER on reserved tracks Diameter 2 : Outer";
+        break;
+    case FAFH_LOW_FREQUENCY_0:               
+        headerName = " FAFH Low Frequency Passive Clearance in ADC counts Diameter 0 : outer";
+        break;
+    case FAFH_LOW_FREQUENCY_1:               
+        headerName = " FAFH Low Frequency Passive Clearance in ADC counts Diameter 1 : outer";
+        break;
+    case FAFH_LOW_FREQUENCY_2:               
+        headerName = " FAFH Low Frequency Passive Clearance in ADC counts Diameter 2 : outer";
+        break;
+    case FAFH_HIGH_FREQUENCY_0:             
+        headerName = " FAFH High Frequency Passive Clearance in ADC counts Diameter 0 : outer";
+        break;
+    case FAFH_HIGH_FREQUENCY_1:              
+        headerName = " FAFH High Frequency Passive Clearance in ADC counts Diameter 1 : outer";
+        break;
+    case FAFH_HIGH_FREQUENCY_2:              
+        headerName = " FAFH High Frequency Passive Clearance in ADC counts Diameter 2 : outer";
+        break;
     case RESERVED_FOR_FUTURE_EXPANSION:
         headerName = "Future Expansion";
         break;
@@ -484,10 +517,51 @@ void CSCSI_Farm_Log::create_Device_Interface_String(std::string &dInterface, con
 //!   \return void
 //
 //---------------------------------------------------------------------------
-void CSCSI_Farm_Log::create_Model_Number_String(std::string &model, const sScsiDriveInfo * const idInfo)
+void CSCSI_Farm_Log::create_Model_Number_String(std::string &model, sGeneralDriveInfoPage06 *idInfo)
 {
-	memset((char *)model.c_str(), 0, DEVICE_INTERFACE_LEN);
-	strncpy((char *)model.c_str(),"12345678", DEVICE_INTERFACE_LEN);
+#define MAXSIZE  4
+    uint32_t modelParts[MAXSIZE] = { 0,0,0,0};
+    // loop for and get the information from the lower bits
+    for (uint8_t i = 0; i < MAXSIZE; i++)
+    {
+        modelParts[i] = M_DoubleWord0(idInfo->productID[i]); 
+        byte_Swap_32(&modelParts[i]);
+    }
+    // temp string for coping the hex to text, have to resize for c98 issues
+    std::string tempStr = "";
+    tempStr.resize(MODEL_NUMBER_LEN);
+    model.resize(MODEL_NUMBER_LEN);
+    // memset them to 0
+    memset((char *)model.c_str(), 0, MODEL_NUMBER_LEN);
+    memset((char *)tempStr.c_str(), 0, MODEL_NUMBER_LEN);
+    // loop to copy the info into the modeleNumber string
+    for (uint8_t n = 0; n < MAXSIZE; n++)
+    {
+        strncpy((char *)tempStr.c_str(), (char*)&modelParts[n], MAXSIZE);
+        strncat((char *)model.c_str(), (char*)tempStr.c_str(), sizeof(tempStr));
+    }
+    remove_Trailing_Whitespace((char *)model.c_str());
+
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn create_Year_Assembled_String()
+//
+//! \brief
+//!   Description:  fill in the date string from the date. used for year and week assembled
+//
+//  Entry:
+//! \param dateStr - pointer to the date string
+//! \param date  =  pointer to the date data
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void CSCSI_Farm_Log::create_Year_Assembled_String(std::string &dateStr, uint16_t *date)
+{
+    byte_Swap_16(date);
+    strncpy((char *)dateStr.c_str(), (char*)date, DATESIZE);
 }
 //-----------------------------------------------------------------------------
 //
@@ -529,6 +603,7 @@ bool CSCSI_Farm_Log::swap_Bytes_sDriveInfo(sScsiDriveInfo *di)
     byte_Swap_64(&di->lastTimeStamp);
     byte_Swap_64(&di->worldWideName);
     byte_Swap_64(&di->worldWideName2);
+    byte_Swap_64(&di->dateOfAssembly);
     return true;
 }
 //-----------------------------------------------------------------------------
@@ -550,15 +625,17 @@ bool CSCSI_Farm_Log::swap_Bytes_sDrive_Info_Page_06(sGeneralDriveInfoPage06 *gd)
     byte_Swap_64(&gd->pageNumber);
     byte_Swap_64(&gd->copyNumber);
     byte_Swap_64(&gd->Depop);
-    byte_Swap_64(&gd->mn1);
-    byte_Swap_64(&gd->mn2);
-    byte_Swap_64(&gd->mn3);
+    byte_Swap_64(&gd->productID[0]);
+    byte_Swap_64(&gd->productID[1]);
+    byte_Swap_64(&gd->productID[2]);
+    byte_Swap_64(&gd->productID[3]);
     byte_Swap_64(&gd->driveType);
     byte_Swap_64(&gd->isDepopped);
     byte_Swap_64(&gd->maxNumAvaliableSectors);
     byte_Swap_64(&gd->timeToReady);
     byte_Swap_64(&gd->holdTime);
     byte_Swap_64(&gd->servoSpinUpTime);
+    
     return true;
 }
 //-----------------------------------------------------------------------------
@@ -952,11 +1029,10 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                         swap_Bytes_sDriveInfo(m_pDriveInfo);
                         memcpy(&pFarmFrame->driveInfo,m_pDriveInfo, sizeof(sScsiDriveInfo));
 
-                        create_Serial_Number(pFarmFrame->identStringInfo.serialNumber, m_pDriveInfo);										// create the serial number
-                        create_World_Wide_Name(pFarmFrame->identStringInfo.worldWideName, m_pDriveInfo);										// create the wwwn
-                        create_Firmware_String(pFarmFrame->identStringInfo.firmwareRev, m_pDriveInfo);										// create the firmware string
-                        create_Device_Interface_String(pFarmFrame->identStringInfo.deviceInterface, m_pDriveInfo);							// get / create the device interface string
-                        create_Model_Number_String(pFarmFrame->identStringInfo.modelNumber,  m_pDriveInfo);
+                        create_Serial_Number(pFarmFrame->identStringInfo.serialNumber, m_pDriveInfo);							// create the serial number
+                        create_World_Wide_Name(pFarmFrame->identStringInfo.worldWideName, m_pDriveInfo);						// create the wwwn
+                        create_Firmware_String(pFarmFrame->identStringInfo.firmwareRev, m_pDriveInfo);							// create the firmware string
+                        create_Device_Interface_String(pFarmFrame->identStringInfo.deviceInterface, m_pDriveInfo);				// get / create the device interface string
 
                         offset += (m_pageParam->plen + sizeof(sScsiPageParameter));
                     }
@@ -1031,6 +1107,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     pDriveInfo = (sGeneralDriveInfoPage06 *)&pBuf[offset];
                     swap_Bytes_sDrive_Info_Page_06(pDriveInfo);
                     memcpy((sGeneralDriveInfoPage06 *)&pFarmFrame->gDPage06, pDriveInfo, sizeof(sGeneralDriveInfoPage06));
+                    create_Model_Number_String(pFarmFrame->identStringInfo.modelNumber, pDriveInfo);
                     offset += (pDriveInfo->pPageHeader.plen + sizeof(sScsiPageParameter));
                 }
                 break;
@@ -1622,7 +1699,7 @@ eReturnValues CSCSI_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint
 #if defined _DEBUG
     if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
     {
-        printf("\nDrive Informatio From FACTORY page\n");
+        printf("\nDrive Information From FACTORY page\n");
     }
     else
     {
@@ -1657,7 +1734,7 @@ eReturnValues CSCSI_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint
 #endif
     if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
     {
-        snprintf((char*)myStr.c_str(), BASIC, "Drive Informatio From FACTORY page");
+        snprintf((char*)myStr.c_str(), BASIC, "Drive Information From FACTORY page");
     }
     else
     {
@@ -1671,6 +1748,10 @@ eReturnValues CSCSI_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint
 	json_push_back(pageInfo, json_new_a("World Wide Name", (char*)myStr.c_str()));
 	snprintf((char*)myStr.c_str(), BASIC, "%s", vFarmFrame[page].identStringInfo.firmwareRev.c_str());																//!< Firmware Revision [0:3]
 	json_push_back(pageInfo, json_new_a("Firmware Rev", (char*)myStr.c_str()));
+
+    snprintf((char*)myStr.c_str(), BASIC, "%s", vFarmFrame[page].identStringInfo.modelNumber.c_str());
+    json_push_back(pageInfo, json_new_a("Model Number", (char*)myStr.c_str()));
+
     snprintf((char*)myStr.c_str(), BASIC, "%s", vFarmFrame[page].identStringInfo.deviceInterface.c_str());
     json_push_back(pageInfo, json_new_a("Device Interface", (char*)myStr.c_str()));
     snprintf((char*)myStr.c_str(), BASIC, "%llu", vFarmFrame[page].driveInfo.deviceCapacity & 0x00FFFFFFFFFFFFFFLL);
@@ -1692,13 +1773,86 @@ eReturnValues CSCSI_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint
     set_json_64_bit_With_Status(pageInfo, "Hardware Reset count", vFarmFrame[page].driveInfo.resetCount, false, m_showStatusBits);									//!< Hardware Reset Count
     set_json_64_bit_With_Status(pageInfo, "NVC Status @ power on", vFarmFrame[page].driveInfo.NVC_StatusATPowerOn, false, m_showStatusBits);						//!< NVC Status on Power-on
     set_json_64_bit_With_Status(pageInfo, "Time Available to save (in 100us)", vFarmFrame[page].driveInfo.timeAvailable, false, m_showStatusBits);					//!< Time Available to Save User Data to Media Over Last Power Cycle (in 100us)
-	set_json_64_bit_With_Status(pageInfo, "First Time Stamp (Milliseconds)",vFarmFrame[page].driveInfo.firstTimeStamp, false, m_showStatusBits);					//!< Timestamp of first SMART Summary Frame in Power-On Hours Milliseconds
-    set_json_64_bit_With_Status(pageInfo, "Latest Time Stamp (Milliseconds)", vFarmFrame[page].driveInfo.lastTimeStamp, false, m_showStatusBits);					//!< Timestamp of latest SMART Summary Frame in Power-On Hours Milliseconds
+	set_json_64_bit_With_Status(pageInfo, "Timestamp of First SMART Summary Frame (ms)",vFarmFrame[page].driveInfo.firstTimeStamp, false, m_showStatusBits);		//!< Timestamp of first SMART Summary Frame in Power-On Hours Milliseconds
+    set_json_64_bit_With_Status(pageInfo, "TimeStamp of Last SMART Summary Frame (ms)", vFarmFrame[page].driveInfo.lastTimeStamp, false, m_showStatusBits);			//!< Timestamp of latest SMART Summary Frame in Power-On Hours Milliseconds
+
+    myStr.resize(DATESIZE);
+    memset((char*)myStr.c_str(), 0, DATESIZE);
+    uint16_t year = M_Word1(vFarmFrame[page].driveInfo.dateOfAssembly);
+    uint16_t week = M_Word0(vFarmFrame[page].driveInfo.dateOfAssembly);
+
+    create_Year_Assembled_String(myStr, &year);
+    json_push_back(pageInfo, json_new_a("Year of Assembled", (char*)myStr.c_str()));
+
+    create_Year_Assembled_String(myStr, &week);
+    json_push_back(pageInfo, json_new_a("Week of Assembled", (char*)myStr.c_str()));
 
     json_push_back(masterData, pageInfo);
     return SUCCESS;
 }
+//-----------------------------------------------------------------------------
+//
+//! \fn print_General_Drive_Information_Continued()
+//
+//! \brief
+//!   Description:  print out the drive information
+//
+//  Entry:
+//! \param masterData - pointer to the json data that will be printed or passed on
+//! \param page  = the page copy number of the data we want to print. 
+//
+//  Exit:
+//!   \return SUCCESS
+//
+//---------------------------------------------------------------------------
+eReturnValues CSCSI_Farm_Log::print_General_Drive_Information_Continued(JSONNODE *masterData, uint32_t page)
+{
+    std::string myStr = " ";
+    myStr.resize(BASIC);
+    JSONNODE *pageInfo = json_new(JSON_NODE);
 
+    if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
+    {
+        snprintf((char*)myStr.c_str(), BASIC, "Drive Informatio From FACTORY page");
+    }
+    else
+    {
+        snprintf((char*)myStr.c_str(), BASIC, "Drive Information From Farm Log copy %" PRId32"", page);
+    }
+    json_set_name(pageInfo, (char*)myStr.c_str());
+
+    set_json_64_bit_With_Status(pageInfo, "Depopulation Head Mask", vFarmFrame[page].gDPage06.Depop, false, m_showStatusBits);                                   //!< Depopulation Head Mask
+
+    myStr = "Drive Recording Type";
+    std::string type = "CMR";
+    if (vFarmFrame[page].gDPage06.driveType & BIT0)
+    {
+        type = "SMR";
+    }
+
+    set_json_string_With_Status(pageInfo, myStr, type, vFarmFrame[page].gDPage06.driveType, m_showStatusBits);
+
+    myStr = "Has Drive been Depopped";
+    if (check_Status_Strip_Status(vFarmFrame[page].gDPage06.Depop) != 0)
+    {
+        set_Json_Bool(pageInfo, myStr, true);
+    }
+    else
+    {
+        set_Json_Bool(pageInfo, myStr, false);
+    }
+
+    set_json_64_bit_With_Status(pageInfo, "Max Number of Available Sectors for Reassignment", vFarmFrame[page].gDPage06.maxNumAvaliableSectors, false, m_showStatusBits);          //!< Max Number of Available Sectors for Reassignment – Value in disc sectors(started in 3.3 )
+    snprintf((char*)myStr.c_str(), BASIC, "%0.03f", static_cast<float>(M_Word0(vFarmFrame[page].gDPage06.timeToReady)) * .001);
+    set_json_string_With_Status(pageInfo, "Time to ready of the last power cycle", (char*)myStr.c_str(), vFarmFrame[page].gDPage06.timeToReady, m_showStatusBits);			//!< time to ready of the last power cycle
+    snprintf((char*)myStr.c_str(), BASIC, "%0.03f", static_cast<float>(M_Word0(vFarmFrame[page].gDPage06.holdTime)) *.001);
+    set_json_string_With_Status(pageInfo, "Time drive is held in staggered spin", (char*)myStr.c_str(), vFarmFrame[page].gDPage06.holdTime,  m_showStatusBits);                //!< time drive is held in staggered spin during the last power on sequence
+    snprintf((char*)myStr.c_str(), BASIC, "%0.03f", static_cast<float>(M_Word0(vFarmFrame[page].gDPage06.servoSpinUpTime)) * .001);
+    set_json_string_With_Status(pageInfo, "Lst Servo Spin up Time", (char*)myStr.c_str(), vFarmFrame[page].gDPage06.servoSpinUpTime, m_showStatusBits);			//!< time to ready of the last power cycle
+
+    json_push_back(masterData, pageInfo);
+    return SUCCESS;
+}
 //-----------------------------------------------------------------------------
 //
 //! \fn PrintWorkLoad()
@@ -2728,8 +2882,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tFAFH Measurement Status by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fafhMeasurementStatus.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< FAFH Measurement Status
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "FAFH Measurement Status by Head %" PRIu32"", loopCount);     // Head count
-                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].fafhMeasurementStatus.headValue[loopCount]) *.1));   //!< FAFH Measurement Status
-                set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].fafhMeasurementStatus.headValue[loopCount], m_showStatusBits);
+                set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].fafhMeasurementStatus.headValue[loopCount], false, m_showStatusBits);
             }
         }
         break;
@@ -2738,9 +2891,9 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
 #if defined _DEBUG
-                printf("\tFAFH HF LF Relative Amplitude by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fafhRelativeApmlitude.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  
+                printf("\tFAFH HF // LF Relative Amplitude by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fafhRelativeApmlitude.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  
 #endif
-                snprintf((char*)myHeader.c_str(), BASIC, "FAFH HF LF Relative Amplitude by Head %" PRIu32"", loopCount);     // Head count
+                snprintf((char*)myHeader.c_str(), BASIC, "FAFH HF / LF Relative Amplitude by Head %" PRIu32"", loopCount);     // Head count
                 snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].fafhRelativeApmlitude.headValue[loopCount]) *.1));   
                 set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].fafhRelativeApmlitude.headValue[loopCount], m_showStatusBits);
             }
@@ -2793,7 +2946,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tFAFH Low Frequency 0 by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fafhLowFrequency_0.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "FAFH Low Frequency 0 by Head %" PRIu32"", loopCount);     // Head count
-                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].fafhLowFrequency_0.headValue[loopCount]) *.1));  
+                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].fafhLowFrequency_0.headValue[loopCount]) *.001));  
                 set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].fafhLowFrequency_0.headValue[loopCount], m_showStatusBits);
             }
         }
@@ -2806,7 +2959,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tFAFH Low Frequency 1 by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fafhLowFrequency_1.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "FAFH Low Frequency 1 by Head %" PRIu32"", loopCount);     // Head count
-                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].fafhLowFrequency_1.headValue[loopCount]) *.1));   
+                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].fafhLowFrequency_1.headValue[loopCount]) *.001));   
                 set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].fafhLowFrequency_1.headValue[loopCount], m_showStatusBits);
             }
         }
@@ -2819,7 +2972,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tFAFH Low Frequency 2 by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fafhLowFrequency_2.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "FAFH Low Frequency 2 by Head %" PRIu32"", loopCount);     // Head count
-                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].fafhLowFrequency_2.headValue[loopCount]) *.1));   
+                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].fafhLowFrequency_2.headValue[loopCount]) *.001));   
                 set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].fafhLowFrequency_2.headValue[loopCount], m_showStatusBits);
             }
         }
@@ -2832,7 +2985,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tFAFH High Frequency 0 by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fafhHighFrequency_0.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "FAFH High Frequency 0 by Head %" PRIu32"", loopCount);     // Head count
-                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].fafhHighFrequency_0.headValue[loopCount]) *.1));   
+                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].fafhHighFrequency_0.headValue[loopCount]) *.001));   
                 set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].fafhHighFrequency_0.headValue[loopCount], m_showStatusBits);
             }
         }
@@ -2845,7 +2998,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tFAFH High Frequency 1 by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fafhHighFrequency_1.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "FAFH High Frequency 1 by Head %" PRIu32"", loopCount);     // Head count
-                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].fafhHighFrequency_1.headValue[loopCount]) *.1));  
+                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].fafhHighFrequency_1.headValue[loopCount]) *.001));  
                 set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].fafhHighFrequency_1.headValue[loopCount], m_showStatusBits);
             }
         }
@@ -2858,7 +3011,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tFAFH High Frequency 2 by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fafhHighFrequency_2.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "FAFH High Frequency 2 by Head %" PRIu32"", loopCount);     // Head count
-                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].fafhHighFrequency_2.headValue[loopCount]) *.1));  
+                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].fafhHighFrequency_2.headValue[loopCount]) *.001));  
                 set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].fafhHighFrequency_2.headValue[loopCount], m_showStatusBits);
             }
         }
@@ -3094,6 +3247,7 @@ void CSCSI_Farm_Log::print_All_Pages(JSONNODE *masterData)
                     print_Reli_Information(masterData, index);         // get the Reliabliity stat
                     break;
                 case GENERAL_DRIVE_INFORMATION_06:
+                    print_General_Drive_Information_Continued(masterData, index);
                     break;
                 case ENVIRONMENT_STATISTICS_PAMATER_07:
                     print_Enviroment_Statistics_Page_07(masterData, index);
