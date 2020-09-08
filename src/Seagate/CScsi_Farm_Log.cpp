@@ -942,6 +942,21 @@ bool CSCSI_Farm_Log::swap_Bytes_Flash_LED(sActuatorFLEDInfo *fled)
     }
     return true;
 }
+bool CSCSI_Farm_Log::swap_Bytes_Reallocation_Data(sActReallocationData *real)
+{
+    byte_Swap_64(&real->pageNumber);
+    byte_Swap_64(&real->copyNumber);
+    byte_Swap_64(&real->actID);
+
+    byte_Swap_64(&real->numberReallocatedSectors);
+    byte_Swap_64(&real->numberReallocatedCandidates);
+    
+    for (uint16_t i = 0; i < REALLOCATIONEVENTS; i++)
+    {
+        byte_Swap_64(&real->reallocatedCauses[i]);
+    }
+    return true;
+}
 //-----------------------------------------------------------------------------
 //
 //! \fn get_Head_Info()
@@ -1603,7 +1618,6 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                 {
                     sLUNStruct *pLUNInfo = new sLUNStruct;
                     memcpy(pLUNInfo,&pBuf[offset],sizeof(sLUNStruct));
-                    //pLUNInfo = (sLUNStruct *)&pBuf[offset];
                     swap_Bytes_sLUNStruct(pLUNInfo);
                     memcpy(&pFarmFrame->vLUN50,pLUNInfo,sizeof(sLUNStruct));
                     offset += (pLUNInfo->pageHeader.plen + sizeof(sScsiPageParameter));
@@ -1615,7 +1629,6 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                 {
                     sActuatorFLEDInfo *pFLEDInfo = new sActuatorFLEDInfo;
                     memcpy(pFLEDInfo, &pBuf[offset], sizeof(sActuatorFLEDInfo));
-                    //pLUNInfo = (sLUNStruct *)&pBuf[offset];
                     swap_Bytes_Flash_LED(pFLEDInfo);
                     memcpy(&pFarmFrame->fled51, pFLEDInfo, sizeof(sActuatorFLEDInfo));
                     offset += (pFLEDInfo->pageHeader.plen + sizeof(sScsiPageParameter));
@@ -1623,27 +1636,82 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     delete pFLEDInfo;
                 }
                 break;
-                case LUN_1_ACTUATOR:
-                    {
-                        sLUNStruct *pLUNInfo = new sLUNStruct();
-                        memcpy(pLUNInfo, &pBuf[offset], sizeof(sLUNStruct));
-                        //pLUNInfo = (sLUNStruct *)&pBuf[offset];
-                        swap_Bytes_sLUNStruct(pLUNInfo);
-                        memcpy(&pFarmFrame->vLUN60, pLUNInfo, sizeof(sLUNStruct));
-                        offset += (pLUNInfo->pageHeader.plen + sizeof(sLUNStruct));
-                        delete pLUNInfo;
-                    }
+                case LUN_REALLOCATION_0:
+                {
+                    sActReallocationData *pReall = new sActReallocationData();
+                    memcpy(pReall, &pBuf[offset], sizeof(sActReallocationData));
+                    //pLUNInfo = (sLUNStruct *)&pBuf[offset];
+                    swap_Bytes_Reallocation_Data(pReall);
+                    memcpy(&pFarmFrame->reall52, pReall, sizeof(sActReallocationData));
+                    offset += (pReall->pageHeader.plen + sizeof(sScsiPageParameter));
+                    delete pReall;
+                }
                 break;
-                case LUN_2_ACTUATOR:
+                case LUN_1_ACTUATOR:
                     {
                         sLUNStruct *pLUNInfo = new sLUNStruct();
                         memcpy(pLUNInfo, &pBuf[offset], sizeof(sLUNStruct));
                         //pLUNInfo = (sLUNStruct *)&pBuf[offset];;
                         swap_Bytes_sLUNStruct(pLUNInfo);
                         memcpy(&pFarmFrame->vLUN70, pLUNInfo, sizeof(sLUNStruct));
-                        offset += (pLUNInfo->pageHeader.plen + sizeof(sLUNStruct));
+                        offset += (pLUNInfo->pageHeader.plen + sizeof(sScsiPageParameter));
                         delete pLUNInfo;
                     }
+                break;
+                case LUN_1_FLASH_LED:
+                {
+                    sActuatorFLEDInfo *pFLEDInfo = new sActuatorFLEDInfo;
+                    memcpy(pFLEDInfo, &pBuf[offset], sizeof(sActuatorFLEDInfo));
+                    swap_Bytes_Flash_LED(pFLEDInfo);
+                    memcpy(&pFarmFrame->fled51, pFLEDInfo, sizeof(sActuatorFLEDInfo));
+                    offset += (pFLEDInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+
+                    delete pFLEDInfo;
+                }
+                break;
+                case LUN_REALLOCATION_1:
+                {
+                    sActReallocationData *pReall = new sActReallocationData();
+                    memcpy(pReall, &pBuf[offset], sizeof(sActReallocationData));
+                    //pLUNInfo = (sLUNStruct *)&pBuf[offset];
+                    swap_Bytes_Reallocation_Data(pReall);
+                    memcpy(&pFarmFrame->reall52, pReall, sizeof(sActReallocationData));
+                    offset += (pReall->pageHeader.plen + sizeof(sScsiPageParameter));
+                    delete pReall;
+                }
+                break;
+                case LUN_2_ACTUATOR:
+                {
+                    sLUNStruct *pLUNInfo = new sLUNStruct();
+                    memcpy(pLUNInfo, &pBuf[offset], sizeof(sLUNStruct));
+                    //pLUNInfo = (sLUNStruct *)&pBuf[offset];;
+                    swap_Bytes_sLUNStruct(pLUNInfo);
+                    memcpy(&pFarmFrame->vLUN70, pLUNInfo, sizeof(sLUNStruct));
+                    offset += (pLUNInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    delete pLUNInfo;
+                }
+                break;
+                case LUN_2_FLASH_LED:
+                {
+                    sActuatorFLEDInfo *pFLEDInfo = new sActuatorFLEDInfo;
+                    memcpy(pFLEDInfo, &pBuf[offset], sizeof(sActuatorFLEDInfo));
+                    swap_Bytes_Flash_LED(pFLEDInfo);
+                    memcpy(&pFarmFrame->fled51, pFLEDInfo, sizeof(sActuatorFLEDInfo));
+                    offset += (pFLEDInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+
+                    delete pFLEDInfo;
+                }
+                break;
+                case LUN_REALLOCATION_2:
+                {
+                    sActReallocationData *pReall = new sActReallocationData();
+                    memcpy(pReall, &pBuf[offset], sizeof(sActReallocationData));
+                    //pLUNInfo = (sLUNStruct *)&pBuf[offset];
+                    swap_Bytes_Reallocation_Data(pReall);
+                    memcpy(&pFarmFrame->reall52, pReall, sizeof(sActReallocationData));
+                    offset += (pReall->pageHeader.plen + sizeof(sScsiPageParameter));
+                    delete pReall;
+                }
                 break;
                 case LUN_3_ACTUATOR:
                     {
@@ -1652,10 +1720,32 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                         //pLUNInfo = (sLUNStruct *)&pBuf[offset];
                         swap_Bytes_sLUNStruct(pLUNInfo);
                         memcpy(&pFarmFrame->vLUN80, pLUNInfo, sizeof(sLUNStruct));
-                        offset += (pLUNInfo->pageHeader.plen + sizeof(sLUNStruct));
+                        offset += (pLUNInfo->pageHeader.plen + sizeof(sScsiPageParameter));
                         delete pLUNInfo;
                     }
                     break;
+                case LUN_3_FLASH_LED:
+                {
+                    sActuatorFLEDInfo *pFLEDInfo = new sActuatorFLEDInfo;
+                    memcpy(pFLEDInfo, &pBuf[offset], sizeof(sActuatorFLEDInfo));
+                    swap_Bytes_Flash_LED(pFLEDInfo);
+                    memcpy(&pFarmFrame->fled51, pFLEDInfo, sizeof(sActuatorFLEDInfo));
+                    offset += (pFLEDInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+
+                    delete pFLEDInfo;
+                }
+                break;
+                case LUN_REALLOCATION_3:
+                {
+                    sActReallocationData *pReall = new sActReallocationData();
+                    memcpy(pReall, &pBuf[offset], sizeof(sActReallocationData));
+                    //pLUNInfo = (sLUNStruct *)&pBuf[offset];
+                    swap_Bytes_Reallocation_Data(pReall);
+                    memcpy(&pFarmFrame->reall52, pReall, sizeof(sActReallocationData));
+                    offset += (pReall->pageHeader.plen + sizeof(sScsiPageParameter));
+                    delete pReall;
+                }
+                break;
                 default:
                     offset += m_logSize;
                     break;
@@ -2494,8 +2584,6 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
     myHeader.resize(BASIC);
 
     set_Head_Header(myHeader, type);
-    //JSONNODE *headPage = json_new(JSON_NODE);
-    //json_set_name(headPage, "Head Information From Farm Log copy 0");
 
     if (type == NULL)
     {
@@ -2935,9 +3023,9 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
 #if defined _DEBUG
-                printf("\tFAFH HF // LF Relative Amplitude by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fafhRelativeApmlitude.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  
+                printf("\tFAFH HF / LF Relative Amplitude by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fafhRelativeApmlitude.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  
 #endif
-                snprintf((char*)myHeader.c_str(), BASIC, "FAFH HF / LF Relative Amplitude by Head %" PRIu32"", loopCount);     // Head count
+                snprintf((char*)myHeader.c_str(), BASIC, "FAFH HF \\ LF Relative Amplitude by Head %" PRIu32"", loopCount);     // Head count
                 snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].fafhRelativeApmlitude.headValue[loopCount]) *.1));   
                 set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].fafhRelativeApmlitude.headValue[loopCount], m_showStatusBits);
             }
@@ -3063,7 +3151,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
         case RESERVED_FOR_FUTURE_EXPANSION_31:
         case LUN_0_ACTUATOR:
         case LUN_0_FLASH_LED:
-        case RESERVED_FOR_FUTURE_EXPANSION_41:
+        case LUN_REALLOCATION_0:
         case RESERVED_FOR_FUTURE_EXPANSION_42:
         case RESERVED_FOR_FUTURE_EXPANSION_43:
         case RESERVED_FOR_FUTURE_EXPANSION_44:
@@ -3079,7 +3167,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
         case RESERVED_FOR_FUTURE_EXPANSION_54:
         case LUN_1_ACTUATOR:
         case LUN_1_FLASH_LED:
-        case RESERVED_FOR_FUTURE_EXPANSION_61:
+        case LUN_REALLOCATION_1:
         case RESERVED_FOR_FUTURE_EXPANSION_62:
         case RESERVED_FOR_FUTURE_EXPANSION_63:
         case RESERVED_FOR_FUTURE_EXPANSION_64:
@@ -3095,7 +3183,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
         case RESERVED_FOR_FUTURE_EXPANSION_74:
         case LUN_2_ACTUATOR:
         case LUN_2_FLASH_LED:
-        case RESERVED_FOR_FUTURE_EXPANSION_81:
+        case LUN_REALLOCATION_2:
         case RESERVED_FOR_FUTURE_EXPANSION_82:
         case RESERVED_FOR_FUTURE_EXPANSION_83:
         case RESERVED_FOR_FUTURE_EXPANSION_84:
@@ -3111,7 +3199,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
         case RESERVED_FOR_FUTURE_EXPANSION_94:
         case LUN_3_ACTUATOR:
         case LUN_3_FLASH_LED:
-        case RESERVED_FOR_FUTURE_EXPANSION_101:
+        case LUN_REALLOCATION_3:
         case RESERVED_FOR_FUTURE_EXPANSION_102:
         case RESERVED_FOR_FUTURE_EXPANSION_103:
         case RESERVED_FOR_FUTURE_EXPANSION_104:
@@ -3156,7 +3244,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
 //!   \return SUCCESS
 //
 //---------------------------------------------------------------------------
-eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Information(JSONNODE *masterData, uint32_t page, uint32_t index)
+eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Information(JSONNODE *masterData, uint32_t page, uint32_t index, uint16_t actNum)
 {
     std::string myStr = " ";
     myStr.resize(BASIC);
@@ -3164,15 +3252,23 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Information(JSONNODE *masterDat
 
     sLUNStruct *pLUN;
     pLUN = &vFarmFrame[page].vLUN50;
+    if (actNum == LUN_1_ACTUATOR)
+        pLUN = &vFarmFrame[page].vLUN60;
+    else if (actNum == LUN_2_ACTUATOR)
+        pLUN = &vFarmFrame[page].vLUN70;
+    else if (actNum == LUN_3_ACTUATOR)
+        pLUN = &vFarmFrame[page].vLUN80;
+    else
+        pLUN = &vFarmFrame[page].vLUN50;
 
 #if defined _DEBUG
     if (pLUN->copyNumber == FACTORYCOPY)
     {
-        printf("LUN Actuator 0x%" PRIx16" Information From FACTORY page", M_WordInt0(pLUN->LUNID));
+        printf("LUN Actuator 0x%" PRIx16" Information From FACTORY page", M_Word0(pLUN->LUNID));
     }
     else
     {
-        printf("\nLUN Actuator 0x%" PRIx16" Information From Farm Log copy: %" PRIu32"\n", M_WordInt0(pLUN->LUNID), page);
+        printf("\nLUN Actuator 0x%" PRIx16" Information From Farm Log copy: %" PRIu32"\n", M_Word0(pLUN->LUNID), page);
     }
     printf("\tPage Number:                                0x%" PRIx64" \n", pLUN->pageNumber & 0x00FFFFFFFFFFFFFFLL);                   //!< Page Number 
     printf("\tCopy Number:                                  %" PRIu64" \n", pLUN->copyNumber & 0x00FFFFFFFFFFFFFFLL);                   //!< Copy Number 
@@ -3200,17 +3296,17 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Information(JSONNODE *masterDat
 #endif
     if (pLUN->copyNumber == FACTORYCOPY)
     {
-        snprintf((char*)myStr.c_str(), BASIC, "LUN Actuator 0x%" PRIX16" Information From FACTORY page",M_WordInt0(pLUN->LUNID));
+        snprintf((char*)myStr.c_str(), BASIC, "LUN Actuator 0x%" PRIX16" Information From FACTORY page",M_Word0(pLUN->LUNID));
     }
     else
     {
-        snprintf((char*)myStr.c_str(), BASIC, "LUN Actuator Information 0x%" PRIX16" From Farm Log copy: %" PRId32"", M_WordInt0(pLUN->LUNID), page);
+        snprintf((char*)myStr.c_str(), BASIC, "LUN Actuator Information 0x%" PRIX16" From Farm Log copy: %" PRId32"", M_Word0(pLUN->LUNID), page);
     }
     json_set_name(pageInfo, (char*)myStr.c_str());
 
     set_json_64_bit_With_Status(pageInfo, "Page Number", pLUN->pageNumber, true, m_showStatusBits);							                        //!< Page Number 
     set_json_64_bit_With_Status(pageInfo, "Copy Number ", pLUN->copyNumber, false, m_showStatusBits);						                            //!< Copy Number 
-    set_json_64_bit_With_Status(pageInfo, "LUN Actuator ID", pLUN->LUNID, false, m_showStatusBits);						                                        //!< LUN ID 
+    set_json_64_bit_With_Status(pageInfo, "LUN Actuator ID", pLUN->LUNID, false, m_showStatusBits);						                                //!< LUN ID 
     set_json_64_bit_With_Status(pageInfo, "Head Load Events", pLUN->headLoadEvents, false, m_showStatusBits);											//!< Head Load Events 
     set_json_64_bit_With_Status(pageInfo, "Number of Reallocated Sectors", pLUN->reallocatedSectors, false, m_showStatusBits);					        //!< Number of Reallocated Sectors 
     set_json_64_bit_With_Status(pageInfo, "Number of Reallocated Sectors Candidate", pLUN->reallocatedSectors, false, m_showStatusBits);				//!< Number of Reallocated Candidate Sectors  
@@ -3237,7 +3333,7 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Information(JSONNODE *masterDat
 }
 //-----------------------------------------------------------------------------
 //
-//! \fn print_LUN_Acutator_Information()
+//! \fn print_LUN_Actuator_FLED_Info()
 //
 //! \brief
 //!   Description:  print out the LUN Acutator information 
@@ -3250,7 +3346,7 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Information(JSONNODE *masterDat
 //!   \return SUCCESS
 //
 //---------------------------------------------------------------------------
-eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_FLED_Info(JSONNODE *masterData, uint32_t page, uint32_t index)
+eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_FLED_Info(JSONNODE *masterData, uint32_t page, uint32_t index, uint16_t actNum)
 {
 
     uint16_t i = 0;
@@ -3261,44 +3357,51 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_FLED_Info(JSONNODE *masterData,
     JSONNODE *pageInfo = json_new(JSON_NODE);
 
     sActuatorFLEDInfo *pFLED;
-    pFLED = &vFarmFrame[page].fled51;
+    if (actNum == LUN_1_FLASH_LED)
+        pFLED = &vFarmFrame[page].fled61;
+    else if (actNum == LUN_2_FLASH_LED)
+        pFLED = &vFarmFrame[page].fled71;
+    else if (actNum == LUN_3_FLASH_LED)
+        pFLED = &vFarmFrame[page].fled81;
+    else
+        pFLED = &vFarmFrame[page].fled51;
 
 #if defined _DEBUG
     if (pFLED->copyNumber == FACTORYCOPY)
     {
-        printf("LUN Actuator 0x%" PRIx16" FLED Info From FACTORY page", M_WordInt0(pFLED->actID));
+        printf("Actuator 0x%" PRIx16" FLED Info From FACTORY page", M_Word0(pFLED->actID));
     }
     else
     {
-        printf("\nLUN Actuator 0x%" PRIx16" FLED Info From Farm Log copy: %" PRIu32"\n", M_WordInt0(pFLED->actID), page);
+        printf("\nActuator 0x%" PRIx16" FLED Info From Farm Log copy: %" PRIu32"\n", M_Word0(pFLED->actID), page);
     }
     printf("\tPage Number:                                  0x%" PRIx64" \n", pFLED->pageNumber & 0x00FFFFFFFFFFFFFFLL);                   //!< Page Number 
     printf("\tCopy Number:                                  %" PRIu64" \n", pFLED->copyNumber & 0x00FFFFFFFFFFFFFFLL);                   //!< Copy Number 
     printf("\tActuator ID:                                  %" PRIu64" \n", pFLED->actID & 0x00FFFFFFFFFFFFFFLL);                        //!< Actuator ID  
-    printf("\tTotal Flash LED Evnets:                       %" PRIu64" \n", pFLED->totalFLEDEvents & 0x00FFFFFFFFFFFFFFLL);              //!< Total Flash LED Events
+    printf("\tTotal Flash LED Events:                       %" PRIu64" \n", pFLED->totalFLEDEvents & 0x00FFFFFFFFFFFFFFLL);              //!< Total Flash LED Events
     printf("\tIndex of Last Flash LED:                      %" PRIu64" \n", pFLED->index & 0x00FFFFFFFFFFFFFFLL);                        //!< Index of last entry in FLED Info array below, in case the array wraps
     for (i = 0; i < FLASHEVENTS; i++)
     {
 
-        printf("\tAddress of Event %" PRIu16":              0x%" PRIx64" \n", i,pFLED->flashLEDArray[i] & 0x00FFFFFFFFFFFFFFLL);           //!< Info on the last 8 Flash LED (assert) Events, wrapping array
-        printf("\tTimeStamp of Event%" PRIu16":             %" PRIu64" \n", i,pFLED->timestampForLED[i] & 0x00FFFFFFFFFFFFFFLL);         //!< Universal Timestamp (us) of last 8 Flash LED (assert) Events, wrapping array
-        printf("\tPower Cycle Event %" PRIu16":             %" PRIu64" \n", i,pFLED->powerCycleOfLED[i] & 0x00FFFFFFFFFFFFFFLL);         //!< SPower Cycle of the last 8 Flash LED (assert) Events, wrapping array
+        printf("\tAddress of Event %" PRIu16":                   0x%" PRIx64" \n", i,pFLED->flashLEDArray[i] & 0x00FFFFFFFFFFFFFFLL);           //!< Info on the last 8 Flash LED (assert) Events, wrapping array
+        printf("\tTimeStamp of Event%" PRIu16":                  %" PRIu64" \n", i,pFLED->timestampForLED[i] & 0x00FFFFFFFFFFFFFFLL);         //!< Universal Timestamp (us) of last 8 Flash LED (assert) Events, wrapping array
+        printf("\tPower Cycle Event %" PRIu16":                  %" PRIu64" \n", i,pFLED->powerCycleOfLED[i] & 0x00FFFFFFFFFFFFFFLL);         //!< SPower Cycle of the last 8 Flash LED (assert) Events, wrapping array
     }
 
 
 #endif
     if (pFLED->copyNumber == FACTORYCOPY)
     {
-        snprintf((char*)myStr.c_str(), BASIC, "LUN Actuator 0x%" PRIx16" Information From FACTORY page", M_WordInt0(pFLED->actID));
+        snprintf((char*)myStr.c_str(), BASIC, "Actuator Flash LED 0x%" PRIx16" Information From FACTORY page", M_Word0(pFLED->actID));
     }
     else
     {
-        snprintf((char*)myStr.c_str(), BASIC, "LUN Actuator Information 0x%" PRIx16" From Farm Log copy: %" PRId32"", M_WordInt0(pFLED->actID), page);
+        snprintf((char*)myStr.c_str(), BASIC, "Actuator Flash LED Information 0x%" PRIx16" From Farm Log copy: %" PRId32"", M_Word0(pFLED->actID), page);
     }
     json_set_name(pageInfo, (char*)myStr.c_str());
 
     set_json_64_bit_With_Status(pageInfo, "Page Number", pFLED->pageNumber, true, m_showStatusBits);							                        //!< Page Number 
-    set_json_64_bit_With_Status(pageInfo, "Copy Number ", pFLED->copyNumber, false, m_showStatusBits);						                            //!< Copy Number 
+    set_json_64_bit_With_Status(pageInfo, "Copy Number", pFLED->copyNumber, false, m_showStatusBits);						                            //!< Copy Number 
     set_json_64_bit_With_Status(pageInfo, "Actuator ID", pFLED->actID, false, m_showStatusBits);						                                        //!< LUN ID 
     set_json_64_bit_With_Status(pageInfo, "Total Flash LED Evnets", pFLED->totalFLEDEvents, false, m_showStatusBits);											//!< Head Load Events 
     set_json_64_bit_With_Status(pageInfo, "Index of Last Flash LED", pFLED->index, false, m_showStatusBits);					       
@@ -3317,6 +3420,86 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_FLED_Info(JSONNODE *masterData,
 
     return SUCCESS;
 }
+
+//-----------------------------------------------------------------------------
+//
+//! \fn print_LUN_Actuator_Reallocation
+//
+//! \brief
+//!   Description:  print out the LUN Acutator information for Realalocation
+//
+//  Entry:
+//! \param masterData - pointer to the json data that will be printed or passed on
+//! \param page  = the page copy number of the data we want to print. 
+//
+//  Exit:
+//!   \return SUCCESS
+//
+//---------------------------------------------------------------------------
+eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Reallocation(JSONNODE *masterData, uint32_t page, uint32_t index,uint16_t actNum)
+{
+    uint16_t i = 0;
+    std::string myStr = " ";
+    std::string timeStr = " ";
+    myStr.resize(BASIC);
+    timeStr.resize(BASIC);
+    JSONNODE *pageInfo = json_new(JSON_NODE);
+
+    sActReallocationData *pReal;
+    if (actNum == LUN_REALLOCATION_1)
+        pReal = &vFarmFrame[page].reall62;
+    else if (actNum == LUN_REALLOCATION_2)
+        pReal = &vFarmFrame[page].reall72;
+    else if (actNum == LUN_REALLOCATION_3)
+        pReal = &vFarmFrame[page].reall82;
+    else
+        pReal = &vFarmFrame[page].reall52;
+
+#if defined _DEBUG
+    if (pReal->copyNumber == FACTORYCOPY)
+    {
+        printf("LUN Actuator 0x%" PRIx16" Reallocation From FACTORY page", M_Word0(pReal->actID));
+    }
+    else
+    {
+        printf("\nLUN Actuator 0x%" PRIx16" Reallocation From Farm Log copy: %" PRIu32"\n", M_Word0(pReal->actID), page);
+    }
+    printf("\tPage Number:                                  0x%" PRIx64" \n", pReal->pageNumber & 0x00FFFFFFFFFFFFFFLL);                   //!< Page Number 
+    printf("\tCopy Number:                                  %" PRIu64" \n", pReal->copyNumber & 0x00FFFFFFFFFFFFFFLL);                   //!< Copy Number 
+    printf("\tActuator ID:                                  %" PRIu64" \n", pReal->actID & 0x00FFFFFFFFFFFFFFLL);                        //!< Actuator ID  
+    printf("\tNumber of Reallocated Sectors:                       %" PRIu64" \n", pReal->numberReallocatedSectors & 0x00FFFFFFFFFFFFFFLL);              //!< Total Flash LED Events
+    printf("\tNumber of Reallocated Candidate Sectors:                      %" PRIu64" \n", pReal->numberReallocatedCandidates & 0x00FFFFFFFFFFFFFFLL);
+    printf("\tNumber of Reallocated Candidate Sectors:                      %" PRIu64" \n", pReal->numberReallocatedCandidates & 0x00FFFFFFFFFFFFFFLL);
+    for (i = 0; i < REALLOCATIONEVENTS; i++)
+    {
+        printf("\tReallocated Sectors Cause:                    %" PRIu64" \n", pReal->reallocatedCauses[i]);
+    }
+#endif
+    if (pReal->copyNumber == FACTORYCOPY)
+    {
+        snprintf((char*)myStr.c_str(), BASIC, "LUN Actuator 0x%" PRIx16" Reallocation From FACTORY page", M_Word0(pReal->actID));
+    }
+    else
+    {
+        snprintf((char*)myStr.c_str(), BASIC, "LUN Actuator 0x%" PRIx16" Reallocation From Farm Log copy: %" PRId32"", M_Word0(pReal->actID), page);
+    }
+    json_set_name(pageInfo, (char*)myStr.c_str());
+
+    set_json_64_bit_With_Status(pageInfo, "Page Number", pReal->pageNumber, true, m_showStatusBits);							                        //!< Page Number 
+    set_json_64_bit_With_Status(pageInfo, "Copy Number", pReal->copyNumber, false, m_showStatusBits);						                            //!< Copy Number 
+    set_json_64_bit_With_Status(pageInfo, "Actuator ID", pReal->actID, true, m_showStatusBits);						                                        //!< LUN ID 
+    set_json_64_bit_With_Status(pageInfo, "Number of Reallocated Sectors", pReal->numberReallocatedSectors, false, m_showStatusBits);											//!< Head Load Events 
+    set_json_64_bit_With_Status(pageInfo, "Number of Reallocated Candidate Sectors", pReal->numberReallocatedCandidates, false, m_showStatusBits);
+ 
+    for (i = 0; i < 15; i++)
+    {
+        set_json_64_bit_With_Status(pageInfo, "Reallocated Sectors Cause", pReal->reallocatedCauses[i] , false, m_showStatusBits);
+    }
+    json_push_back(masterData, pageInfo);
+
+    return SUCCESS;
+}
+
 //-----------------------------------------------------------------------------
 //
 //! \fn PrintAllPages()
@@ -3459,12 +3642,14 @@ void CSCSI_Farm_Log::print_All_Pages(JSONNODE *masterData)
                 case RESERVED_FOR_FUTURE_EXPANSION_31:
                     break;
                 case LUN_0_ACTUATOR:
-                    print_LUN_Actuator_Information(masterData, index, 0);
+                    print_LUN_Actuator_Information(masterData, index, 0, LUN_0_ACTUATOR);
                     break;
                 case LUN_0_FLASH_LED :
-                    print_LUN_Actuator_FLED_Info(masterData,index,0);
+                    print_LUN_Actuator_FLED_Info(masterData,index,0, LUN_0_FLASH_LED);
                     break;
-                case RESERVED_FOR_FUTURE_EXPANSION_41:
+                case LUN_REALLOCATION_0:
+                    print_LUN_Actuator_Reallocation(masterData, index, 0, LUN_REALLOCATION_0);
+                    break;
                 case RESERVED_FOR_FUTURE_EXPANSION_42:
                 case RESERVED_FOR_FUTURE_EXPANSION_43:
                 case RESERVED_FOR_FUTURE_EXPANSION_44:
@@ -3480,10 +3665,14 @@ void CSCSI_Farm_Log::print_All_Pages(JSONNODE *masterData)
                 case RESERVED_FOR_FUTURE_EXPANSION_54:
                     break;
                 case LUN_1_ACTUATOR:
-                    print_LUN_Actuator_Information(masterData, index, 1);
+                    print_LUN_Actuator_Information(masterData, index, 0, LUN_1_ACTUATOR);
                     break;
                 case LUN_1_FLASH_LED:
-                case RESERVED_FOR_FUTURE_EXPANSION_61:
+                    print_LUN_Actuator_FLED_Info(masterData, index, 0, LUN_1_FLASH_LED);
+                    break;
+                case LUN_REALLOCATION_1:
+                    print_LUN_Actuator_Reallocation(masterData, index, 0, LUN_REALLOCATION_1);
+                    break;
                 case RESERVED_FOR_FUTURE_EXPANSION_62:
                 case RESERVED_FOR_FUTURE_EXPANSION_63:
                 case RESERVED_FOR_FUTURE_EXPANSION_64:
@@ -3499,10 +3688,14 @@ void CSCSI_Farm_Log::print_All_Pages(JSONNODE *masterData)
                 case RESERVED_FOR_FUTURE_EXPANSION_74:
                     break;
                 case LUN_2_ACTUATOR:
-                    print_LUN_Actuator_Information(masterData,index, 2);
+                    print_LUN_Actuator_Information(masterData, index, 0, LUN_2_ACTUATOR);
                     break;
                 case LUN_2_FLASH_LED:
-                case RESERVED_FOR_FUTURE_EXPANSION_81:
+                    print_LUN_Actuator_FLED_Info(masterData, index, 0, LUN_2_FLASH_LED);
+                    break;
+                case LUN_REALLOCATION_2:
+                    print_LUN_Actuator_Reallocation(masterData, index, 0, LUN_REALLOCATION_2);
+                    break;
                 case RESERVED_FOR_FUTURE_EXPANSION_82:
                 case RESERVED_FOR_FUTURE_EXPANSION_83:
                 case RESERVED_FOR_FUTURE_EXPANSION_84:
@@ -3518,10 +3711,14 @@ void CSCSI_Farm_Log::print_All_Pages(JSONNODE *masterData)
                 case RESERVED_FOR_FUTURE_EXPANSION_94:
                     break;
                 case LUN_3_ACTUATOR:
-                    print_LUN_Actuator_Information(masterData, index,3);
+                    print_LUN_Actuator_Information(masterData, index, 0, LUN_3_ACTUATOR); 
                     break;
                 case LUN_3_FLASH_LED:
-                case RESERVED_FOR_FUTURE_EXPANSION_101:
+                    print_LUN_Actuator_FLED_Info(masterData, index, 0, LUN_3_FLASH_LED);
+                    break;
+                case LUN_REALLOCATION_3:
+                    print_LUN_Actuator_Reallocation(masterData, index, 0, LUN_REALLOCATION_3);
+                    break;
                 case RESERVED_FOR_FUTURE_EXPANSION_102:
                 case RESERVED_FOR_FUTURE_EXPANSION_103:
                 case RESERVED_FOR_FUTURE_EXPANSION_104:

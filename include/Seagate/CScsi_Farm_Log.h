@@ -31,6 +31,7 @@ namespace opensea_parser {
     {
     protected:
 #define FLASHEVENTS  8
+#define REALLOCATIONEVENTS 15
 
         std::vector <sScsiFarmFrame > vFarmFrame;
    
@@ -68,6 +69,7 @@ namespace opensea_parser {
         bool swap_Bytes_sScsiReliabilityStat(sScsiReliablility *ss);
         bool swap_Bytes_sLUNStruct(sLUNStruct *LUN);
         bool swap_Bytes_Flash_LED(sActuatorFLEDInfo *fled);
+        bool swap_Bytes_Reallocation_Data(sActReallocationData *real);
         bool get_Head_Info(sHeadInformation *phead, uint8_t *buffer);
         void set_Head_Header(std::string &headerName, eLogPageTypes index);
         void get_LUN_Info(sLUNStruct *pLUN, uint8_t *buffer);
@@ -83,8 +85,9 @@ namespace opensea_parser {
         eReturnValues print_Enviroment_Statistics_Page_07(JSONNODE *masterData, uint32_t page);
         eReturnValues print_Reli_Information(JSONNODE *masterData, uint32_t page);
         eReturnValues print_Head_Information(eLogPageTypes type, JSONNODE *masterData, uint32_t page);
-        eReturnValues print_LUN_Actuator_Information(JSONNODE *masterData, uint32_t page, uint32_t index);
-        eReturnValues print_LUN_Actuator_FLED_Info(JSONNODE *masterData, uint32_t page, uint32_t index);
+        eReturnValues print_LUN_Actuator_Information(JSONNODE *masterData, uint32_t page, uint32_t index, uint16_t actNum);
+        eReturnValues print_LUN_Actuator_FLED_Info(JSONNODE *masterData, uint32_t page, uint32_t index, uint16_t actNum);
+        eReturnValues print_LUN_Actuator_Reallocation(JSONNODE *masterData, uint32_t page, uint32_t index, uint16_t actNum);
     public:
         CSCSI_Farm_Log();
         CSCSI_Farm_Log(uint8_t *bufferData, size_t bufferSize,bool showStatus);
