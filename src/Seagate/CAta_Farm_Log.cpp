@@ -1093,11 +1093,11 @@ eReturnValues CATA_Farm_Log::Print_Head_Information(JSONNODE *masterData, uint32
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         printf("\tFly height inner clearance delta by Head  %d:   raw 0x%" PRIx64" inner, calculated %0.02f (debug)\n", loopCount, vFarmFrame[page].reliPage.flyHeightClearance[loopCount].inner, \
-            (float)static_cast<int16_t>(M_WordInt0(vFarmFrame[page].reliPage.flyHeightClearance[loopCount].inner)) / 10);                //!< [24][3] Applied fly height clearance delta per head in thousandths of one Angstrom.
+            (float)static_cast<int16_t>(M_WordInt0((check_Status_Strip_Status(vFarmFrame[page].reliPage.flyHeightClearance[loopCount].inner))) * .001));                //!< [24][3] Applied fly height clearance delta per head in thousandths of one Angstrom.
         printf("\tFly height middle clearance delta by Head  %d:   raw 0x%" PRIx64" middle, calculated %0.02f (debug)\n", loopCount, vFarmFrame[page].reliPage.flyHeightClearance[loopCount].middle, \
-            (float)static_cast<int16_t>(M_WordInt0(vFarmFrame[page].reliPage.flyHeightClearance[loopCount].middle)) / 10);               //!< [24][3] Applied fly height clearance delta per head in thousandths of one Angstrom.
+            (float)static_cast<int16_t>(M_WordInt0(check_Status_Strip_Status((vFarmFrame[page].reliPage.flyHeightClearance[loopCount].middle))) * .001));               //!< [24][3] Applied fly height clearance delta per head in thousandths of one Angstrom.
         printf("\tFly height outer clearance delta by Head  %d:   raw 0x%" PRIx64" outer, calculated %0.02f (debug)\n", loopCount, vFarmFrame[page].reliPage.flyHeightClearance[loopCount].outer, \
-            (float)static_cast<int16_t>(M_WordInt0(vFarmFrame[page].reliPage.flyHeightClearance[loopCount].outer)) / 10);                //!< [24][3] Applied fly height clearance delta per head in thousandths of one Angstrom.
+            (float)static_cast<int16_t>(M_WordInt0((check_Status_Strip_Status(vFarmFrame[page].reliPage.flyHeightClearance[loopCount].outer))) * .001));                //!< [24][3] Applied fly height clearance delta per head in thousandths of one Angstrom.
     }
     printf("\tNumber of disc slip recalibrations performed:  %" PRId64" (debug)\n", vFarmFrame[page].reliPage.diskSlipRecalPerformed & 0x00FFFFFFFFFFFFFFLL);                  //!< Number of disc slip recalibrations performed
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
