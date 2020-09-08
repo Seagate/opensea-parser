@@ -1005,6 +1005,151 @@ void CSCSI_Farm_Log::get_LUN_Info(sLUNStruct *pLUN, uint8_t *buffer)
 }
 //-----------------------------------------------------------------------------
 //
+//! \fn get_Assert_Code_Meaning()
+//
+//! \brief
+//!   Description: takes in the Assert code and will look up the meaning and fill in the string
+//
+//  Entry:
+//! \param meaning  =  meaning string
+//! \param code = the assert code 
+//
+//  Exit:
+//!   \return bool
+//
+//---------------------------------------------------------------------------
+void CSCSI_Farm_Log::get_Assert_Code_Meaning(std::string &meaning, uint16_t code)
+{
+    switch (code)
+    {
+    case ASSERT_UNKNOWN:
+        meaning = "Unknow";
+        break;
+    case MICROPROCESSOR_FAILED:
+        meaning = "Microprocessor Failed";
+        break;
+    case DRAM_FAILED_POWERUP_OR_WRAM_FAIL:
+    case SCC_FAILED_POWERUP_DIAGNOSTICS:
+    case FW_DOES_NOT_MATCH_THE_SCC_VERSION:
+    case UNIMPLEMENTED_OPCODE_INTERRUPT:
+    case POWER_UP_XOR_FAILURE_FOR_FIBER_CH:
+    case EEPROM_VERIFY_ERROR_EVEN_BYTE:
+    case EEPROM_ERASE_ERROR_EVEN_BYTE:
+    case DOWNLOAD_TPM_FAILED_0:
+    case DOWNLOAD_TPM_FAILED_1:
+    case DOWNLOAD_TPM_FAILED_2:
+    case DOWNLOAD_TPM_FAILED_3:
+    case DOWNLOAD_TPM_FAILED_4:
+    case DOWNLOAD_TPM_FAILED_5:
+    case DOWNLOAD_TPM_FAILED_6:
+    case DOWNLOAD_TPM_FAILED_7:
+    case DOWNLOAD_TPM_FAILED_8:
+    case DOWNLOAD_VOLTAGE_FAULT:
+    case FAILS_WRITING_ARRAY_DATA_TO_FLASH_0:
+    case FLASH_LOOKING_FOR_MEMORY_RANGE_ERROR:
+    case FAILS_WRITING_ARRAY_DATA_TO_FLASH_1:
+    case FAILS_WRITING_ARRAY_DATA_TO_FLASH_2:
+    case FAILS_WRITING_ARRAY_DATA_TO_FLASH_3:
+    case FAILS_WRITING_ARRAY_DATA_TO_FLASH_4:
+    case FAILS_WRITING_ARRAY_DATA_TO_FLASH_5:
+    case ALU_BUFFER_PARITY_ERROR:
+    case PREFETCH_TCM_ECC_ERROR:
+    case ERROR_INJECTION_ASSERT:
+    case DRAM_CONFIGURATION_PROCESS_FAILED:
+    case FDE_BUS_PARITY_ERROR:
+    case PREFETCH_VECTOR_OR_STACK_POINTER_OUT:
+    case ERROR_IN_WRITING_TO_READ_CHIP:
+    case IER_STACK_OVERFLOW:
+    case IER_STACK_UNDERFLOW:
+    case IER_STACK_NOT_EMPTY_ON_ENTRY_TO_SLEEP:
+    case IRAW_HAD_MISCOMPARE:
+    case UNDEFINED_INSTRUCTION:
+    case LOGGING_SAVE_FAILED_EXCEEDED_ALLOCATED:
+    case CANT_FIND_BACKPLANE_DATA_RATE:
+    case CONTROLLER_I_TCM_DOUBLE_BIT_ECC_ERROR:
+    case CONTROLLER_D_TCM_DOUBLE_BIT_ECC_ERROR:
+    case SERVO_I_TCM_DOUBLE_BIT_ECC_ERROR:
+    case SERVO_D_TCM_DOUBLE_BIT_ECC_ERROR:
+    case CDPRAM_UNRECOVERABLE_ERROR:
+    case SDPRAM_UNRECOVERABLE_ERROR:
+    case TCM_CRC_RESULT_IS_NON_ZERO:
+    case SWI_ASSERT_FLASH_CODE_BOOT:
+        meaning = "SWI Assert Flash Code Boot";
+        break;
+    case SWI_ASSERT_FLASH_CODE_NQNR:
+        meaning = "SWI Assert Flash Code NQNR";
+        break;
+    case SWI_ASSERT_FLASH_CODE_DISC:
+        meaning = "SWI Assert Flash Code DISC";
+        break;
+    case REMOTE_ASSERT:
+        meaning = "Remode Assert";
+        break;
+    case DRAM_INTEGRITY_FAILURE:
+        meaning = "DRAM Integrity Failure";
+        break;
+    case CLOCK_FAILURE:
+        meaning = "Clock Failure";
+        break;
+    case ASSERT_FLASH_CODE:
+        meaning = "Assert Flash Code";
+        break;
+    case ENSURE_FLASH_CODE:
+        meaning = "Ensure Flash Code";
+        break;
+    case REQUIRE_FLASH_CODE:
+        meaning = "Require Flash Code";
+        break;
+    case SMART_FLASH_CODE:
+        meaning = "SMART Flash Code";
+        break;
+    case SCSI_UNEXEPCTED_INTERRUPT:
+        meaning = "SCSI Unexpected Interrupt";
+        break;
+    case SCSI_TIMEOUT:
+        meaning = "SCSI Timeout";
+        break;
+    case ILLEGAL_STATUS_CODE:
+        meaning = "Illegal Status Code";
+        break;
+    case SCSI_UNDER_OVER_RUN_OCCURRED:
+        meaning = "SCSI Under Over Run Occurred";
+        break;
+    case UNEXPECTED_STATUS:
+        meaning = "Unexpected Status";
+        break;
+    case DIVIDE_BY_ZERO_INTERRUPT:
+        meaning = "Divide by Zero Interrupt";
+        break;
+    case DATA_ABORT_CACHE_ECC_ERROR:
+        meaning = "Data Abort Cache ECC Error";
+        break;
+    case DATA_ABORT_TCM_ECC_ERROR:
+        meaning = "Data Abort TCM ECC Error";
+        break;
+    case ABORT_INTERRUPT:
+        meaning = "Abort Interrupt";
+        break;
+    case SELF_SEEK_FAILURE:
+        meaning = "Self Seek Failure";
+        break;
+    case CONTROLLER_NUKED_BY_FDE:
+        meaning = "Controller Nuked By FDE";
+        break;
+    case FLASH_IOEDC_PARITY_ERROR:
+        meaning = "Flash IOEDC Parity Error";
+        break;
+    case SERIAL_PORT_DUMP_MODE:
+        meaning = "Serial Port Dump Mode";
+        break;
+    default:
+        meaning = "Unknow";
+        break;
+    }
+}
+
+//-----------------------------------------------------------------------------
+//
 //! \fn parse_Farm_Log()
 //
 //! \brief
@@ -3383,7 +3528,7 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_FLED_Info(JSONNODE *masterData,
     for (i = 0; i < FLASHEVENTS; i++)
     {
 
-        printf("\tAddress of Event %" PRIu16":                   0x%" PRIx64" \n", i,pFLED->flashLEDArray[i] & 0x00FFFFFFFFFFFFFFLL);           //!< Info on the last 8 Flash LED (assert) Events, wrapping array
+        printf("\tInformation of Event %" PRIu16":             0x%" PRIx64" \n", i,pFLED->flashLEDArray[i] & 0x00FFFFFFFFFFFFFFLL);           //!< Info on the last 8 Flash LED (assert) Events, wrapping array
         printf("\tTimeStamp of Event%" PRIu16":                  %" PRIu64" \n", i,pFLED->timestampForLED[i] & 0x00FFFFFFFFFFFFFFLL);         //!< Universal Timestamp (us) of last 8 Flash LED (assert) Events, wrapping array
         printf("\tPower Cycle Event %" PRIu16":                  %" PRIu64" \n", i,pFLED->powerCycleOfLED[i] & 0x00FFFFFFFFFFFFFFLL);         //!< SPower Cycle of the last 8 Flash LED (assert) Events, wrapping array
     }
@@ -3407,13 +3552,27 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_FLED_Info(JSONNODE *masterData,
     set_json_64_bit_With_Status(pageInfo, "Index of Last Flash LED", pFLED->index, false, m_showStatusBits);					       
     for (i = 0; i < FLASHEVENTS; i++)
     {
-        snprintf((char*)myStr.c_str(), BASIC, "Address of Event %" PRIu16"", i);
-        set_json_64_bit_With_Status(pageInfo, (char*)myStr.c_str(), pFLED->flashLEDArray[i],  true, m_showStatusBits);	           //!< Info on the last 8 Flash LED (assert) Events, wrapping array
-        snprintf((char*)myStr.c_str(), BASIC, "TimeStamp of Event %" PRIu16"", i);
-        snprintf((char*)timeStr.c_str(), BASIC, "%0.03f", static_cast<float>(M_Word0(pFLED->timestampForLED[i])) *.001);
-        set_json_string_With_Status(pageInfo, (char*)myStr.c_str(), (char*)timeStr.c_str(), pFLED->timestampForLED[i], m_showStatusBits);	         //!< Universal Timestamp (us) of last 8 Flash LED (assert) Events, wrapping array
+        JSONNODE *eventInfo = json_new(JSON_NODE);
+        snprintf((char*)myStr.c_str(), BASIC, "Event %" PRIu16"", i);
+        json_set_name(eventInfo, (char*)myStr.c_str());
+
+        set_json_64_bit_With_Status(eventInfo, "Address of Event", pFLED->flashLEDArray[i],  true, m_showStatusBits);	           //!< Info on the last 8 Flash LED (assert) Events, wrapping array
+        
+        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", M_Word2(check_Status_Strip_Status(pFLED->flashLEDArray[i])));
+        json_push_back(eventInfo, json_new_a("Flash LED Code", (char*)myStr.c_str()));
+        get_Assert_Code_Meaning(timeStr, M_Word2(check_Status_Strip_Status(pFLED->flashLEDArray[i])));
+        json_push_back(eventInfo, json_new_a("Flash LED Code Meaning", (char*)timeStr.c_str()));
+        snprintf((char*)myStr.c_str(), BASIC, "0x%08" PRIx32"", M_DoubleWord0(check_Status_Strip_Status(pFLED->flashLEDArray[i])));
+        json_push_back(eventInfo, json_new_a("Flash LED Address", (char*)myStr.c_str()));
+        
+
+        snprintf((char*)myStr.c_str(), BASIC, "TimeStamp of Event(hours) %" PRIu16"", i);
+        snprintf((char*)timeStr.c_str(), BASIC, "%0.03f", static_cast<double>((check_Status_Strip_Status(pFLED->timestampForLED[i])/ 3600000) *.001));
+        set_json_string_With_Status(eventInfo, (char*)myStr.c_str(), (char*)timeStr.c_str(), pFLED->timestampForLED[i], m_showStatusBits);//!< Universal Timestamp (us) of last 8 Flash LED (assert) Events, wrapping array
         snprintf((char*)myStr.c_str(), BASIC, "Power Cycle Event %" PRIu16"", i);
-        set_json_64_bit_With_Status(pageInfo, (char*)myStr.c_str(), pFLED->powerCycleOfLED[i], false, m_showStatusBits);	         //!< SPower Cycle of the last 8 Flash LED (assert) Events, wrapping array
+        set_json_64_bit_With_Status(eventInfo, (char*)myStr.c_str(), pFLED->powerCycleOfLED[i], false, m_showStatusBits);	         //!< Power Cycle of the last 8 Flash LED (assert) Events, wrapping array
+       
+        json_push_back(pageInfo, eventInfo);
     }
 
     json_push_back(masterData, pageInfo);
@@ -3467,12 +3626,11 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Reallocation(JSONNODE *masterDa
     printf("\tPage Number:                                  0x%" PRIx64" \n", pReal->pageNumber & 0x00FFFFFFFFFFFFFFLL);                   //!< Page Number 
     printf("\tCopy Number:                                  %" PRIu64" \n", pReal->copyNumber & 0x00FFFFFFFFFFFFFFLL);                   //!< Copy Number 
     printf("\tActuator ID:                                  %" PRIu64" \n", pReal->actID & 0x00FFFFFFFFFFFFFFLL);                        //!< Actuator ID  
-    printf("\tNumber of Reallocated Sectors:                       %" PRIu64" \n", pReal->numberReallocatedSectors & 0x00FFFFFFFFFFFFFFLL);              //!< Total Flash LED Events
-    printf("\tNumber of Reallocated Candidate Sectors:                      %" PRIu64" \n", pReal->numberReallocatedCandidates & 0x00FFFFFFFFFFFFFFLL);
-    printf("\tNumber of Reallocated Candidate Sectors:                      %" PRIu64" \n", pReal->numberReallocatedCandidates & 0x00FFFFFFFFFFFFFFLL);
+    printf("\tNumber of Reallocated Sectors:                %" PRIu64" \n", pReal->numberReallocatedSectors & 0x00FFFFFFFFFFFFFFLL);              //!< Total Flash LED Events
+    printf("\tNumber of Reallocated Candidate Sectors:      %" PRIu64" \n", pReal->numberReallocatedCandidates & 0x00FFFFFFFFFFFFFFLL);
     for (i = 0; i < REALLOCATIONEVENTS; i++)
     {
-        printf("\tReallocated Sectors Cause:                    %" PRIu64" \n", pReal->reallocatedCauses[i]);
+        printf("\tReallocated Sectors Cause:                    %" PRIu64" \n", pReal->reallocatedCauses[i] & 0x00FFFFFFFFFFFFFFLL);
     }
 #endif
     if (pReal->copyNumber == FACTORYCOPY)
