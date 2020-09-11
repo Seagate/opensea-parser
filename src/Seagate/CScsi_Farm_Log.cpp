@@ -1029,50 +1029,140 @@ void CSCSI_Farm_Log::get_Assert_Code_Meaning(std::string &meaning, uint16_t code
         meaning = "Microprocessor Failed";
         break;
     case DRAM_FAILED_POWERUP_OR_WRAM_FAIL:
+        meaning = "DRAM Failed powerup or WRAM Failed";
+        break;
     case SCC_FAILED_POWERUP_DIAGNOSTICS:
+        meaning = "SCC Failed Powerup Diagnostics";
+        break;
     case FW_DOES_NOT_MATCH_THE_SCC_VERSION:
+        meaning = "Firmware does not match teh SCC Version";
+        break;
     case UNIMPLEMENTED_OPCODE_INTERRUPT:
+        meaning = "Unimplemented opcode interrupt";
+        break;
     case POWER_UP_XOR_FAILURE_FOR_FIBER_CH:
+        meaning = "Power up XOR failure for fiber CH";
+        break;
     case EEPROM_VERIFY_ERROR_EVEN_BYTE:
+        meaning = "EEPROM verify error even byte";
+        break;
     case EEPROM_ERASE_ERROR_EVEN_BYTE:
+        meaning = "EEPROM erase error even byte";
+        break;
     case DOWNLOAD_TPM_FAILED_0:
+        meaning = "Download TPM failed 0";
+        break;
     case DOWNLOAD_TPM_FAILED_1:
+        meaning = "Download TPM failed 1";
+        break;
     case DOWNLOAD_TPM_FAILED_2:
+        meaning = "Download TPM failed 2";
+        break;
     case DOWNLOAD_TPM_FAILED_3:
+        meaning = "Download TPM failed 3";
+        break;
     case DOWNLOAD_TPM_FAILED_4:
+        meaning = "Download TPM failed 4";
+        break;
     case DOWNLOAD_TPM_FAILED_5:
+        meaning = "Download TPM failed 5";
+        break;
     case DOWNLOAD_TPM_FAILED_6:
+        meaning = "Download TPM failed 6";
+        break;
     case DOWNLOAD_TPM_FAILED_7:
+        meaning = "Download TPM failed 7";
+        break;
     case DOWNLOAD_TPM_FAILED_8:
+        meaning = "Download TPM failed 8";
+        break;
     case DOWNLOAD_VOLTAGE_FAULT:
+        meaning = "Download Voltage fault";
+        break;
     case FAILS_WRITING_ARRAY_DATA_TO_FLASH_0:
+        meaning = "Fails writting array data to flash 0";
+        break;
     case FLASH_LOOKING_FOR_MEMORY_RANGE_ERROR:
+        meaning = "Flash Looking for memory range error";
+        break;
     case FAILS_WRITING_ARRAY_DATA_TO_FLASH_1:
+        meaning = "Fails writting array data to flash 1";
+        break;
     case FAILS_WRITING_ARRAY_DATA_TO_FLASH_2:
+        meaning = "Fails writting array data to flash 2";
+        break;
     case FAILS_WRITING_ARRAY_DATA_TO_FLASH_3:
+        meaning = "Fails writting array data to flash 3";
+        break;
     case FAILS_WRITING_ARRAY_DATA_TO_FLASH_4:
+        meaning = "Fails writting array data to flash 4";
+        break;
     case FAILS_WRITING_ARRAY_DATA_TO_FLASH_5:
+        meaning = "Fails writting array data to flash 5";
+        break;
     case ALU_BUFFER_PARITY_ERROR:
+        meaning = "ALU buffer party error";
+        break;
     case PREFETCH_TCM_ECC_ERROR:
+        meaning = "perfetch TCM ECC error";
+        break;
     case ERROR_INJECTION_ASSERT:
+        meaning = "Error injection assert";
+        break;
     case DRAM_CONFIGURATION_PROCESS_FAILED:
+        meaning = "DRAM Configuration Process Failed";
+        break;
     case FDE_BUS_PARITY_ERROR:
+        meaning = "FDE Bus parity error";
+        break;
     case PREFETCH_VECTOR_OR_STACK_POINTER_OUT:
+        meaning = "Prefetch vector or stack pointer out";
+        break;
     case ERROR_IN_WRITING_TO_READ_CHIP:
+        meaning = "Error in writting to read chip";
+        break;
     case IER_STACK_OVERFLOW:
+        meaning = "IER Stack overflow";
+        break;
     case IER_STACK_UNDERFLOW:
+        meaning = "IER Stack underflow";
+        break;
     case IER_STACK_NOT_EMPTY_ON_ENTRY_TO_SLEEP:
+        meaning = "IER Stack Not Empty on Entry to Sleep";
+        break;
     case IRAW_HAD_MISCOMPARE:
+        meaning = "IRAW has miscompare";
+        break;
     case UNDEFINED_INSTRUCTION:
+        meaning = "Underfined instruction";
+        break;
     case LOGGING_SAVE_FAILED_EXCEEDED_ALLOCATED:
+        meaning = "Logging save failed exceeded allocated";
+        break;
     case CANT_FIND_BACKPLANE_DATA_RATE:
+        meaning = "Cant Find backplane data rate";
+        break;
     case CONTROLLER_I_TCM_DOUBLE_BIT_ECC_ERROR:
+        meaning = "Controller I TCM Double bit ECC Error";
+        break;
     case CONTROLLER_D_TCM_DOUBLE_BIT_ECC_ERROR:
+        meaning = "Controller D TCM double bit ECC Error";
+        break;
     case SERVO_I_TCM_DOUBLE_BIT_ECC_ERROR:
+        meaning = "Servo I TCM Double bit ECC Error";
+        break;
     case SERVO_D_TCM_DOUBLE_BIT_ECC_ERROR:
+        meaning = "Servo D TCM double bit ECC ERROR";
+        break;
     case CDPRAM_UNRECOVERABLE_ERROR:
+        meaning = "CDPRAM unrecoverable Error";
+        break;
     case SDPRAM_UNRECOVERABLE_ERROR:
+        meaning = "SDPRAM unrecoverable Error";
+        break;
     case TCM_CRC_RESULT_IS_NON_ZERO:
+        meaning = "TCM CRC result is non zero";
+        break;
     case SWI_ASSERT_FLASH_CODE_BOOT:
         meaning = "SWI Assert Flash Code Boot";
         break;
@@ -1147,7 +1237,75 @@ void CSCSI_Farm_Log::get_Assert_Code_Meaning(std::string &meaning, uint16_t code
         break;
     }
 }
-
+//-----------------------------------------------------------------------------
+//
+//! \fn get_Reallocation_Cause_Meanings()
+//
+//! \brief
+//!   Description:  parse out the meaning of the reallocation
+//
+//  Entry:
+//! \param meaning - string for the meaning of the cause
+//! \param code - code for the what the meaning is
+//
+//  Exit:
+//!   \return 
+//
+//---------------------------------------------------------------------------
+void CSCSI_Farm_Log::get_Reallocation_Cause_Meanings(std::string &meaning, uint16_t code)
+{
+    switch (code)
+    {
+        case HOST_READ_GENERIC:
+            meaning = "Host Read - Generic";
+                break;
+        case HOST_READ_UNCORRECTABLE:
+            meaning = "Host Read - Uncorrectable";
+            break;
+        case HOST_READ_RAW:
+            meaning = "Host Read - RAW";
+            break;
+        case HOST_WRITE_GENERIC:
+            meaning = "Host Write - Generic";
+            break;
+        case HOST_WRITE_UNCORRECTABLE:
+            meaning = "Host Write - Uncorrectable";
+            break;
+        case HOST_WRITE_RAW:
+            meaning = "Host Write - RAW";
+            break;
+        case BACKGROUND_READ_GENERIC:
+            meaning = "Background Read - Generic";
+            break;
+        case BACKGROUND_READ_RELIABILITY:
+            meaning = "Background Read - Reliability";
+            break;
+        case BACKGROUND_READ_RECOVERY:
+            meaning = "Background Read - Recovery";
+            break;
+        case BACKGROUND_READ_HOST_SELF_TEST:
+            meaning = "Background Read - Host Self Test";
+            break;
+        case BACKGROUND_WRITE_GENERIC:
+            meaning = "Background Write - Generic";
+            break;
+        case BACKGROUND_WRITE_RELIABILITY:
+            meaning = "Background Write - Reliability";
+            break;
+        case BACKGROUND_WRITE_RECOVERY:
+            meaning = "Background Write - Recovery";
+            break;
+        case BACKGROUND_WRITE_HOST_SELF_TEST:
+            meaning = "Background Write - Host Self Test";
+            break;
+        case SERVO_WEDGE:
+            meaning = "Servo Wedge";
+            break;
+        default:
+            meaning = "Unknown";
+            break;
+    }
+}
 //-----------------------------------------------------------------------------
 //
 //! \fn parse_Farm_Log()
@@ -3483,8 +3641,9 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Information(JSONNODE *masterDat
     set_json_64_bit_With_Status(pageInfo, "Number of LBAs Corrected by ISP", pLUN->correctedLBAbyISP, false, m_showStatusBits);                         //!< Number of LBAs Corrected by ISP  
     set_json_64_bit_With_Status(pageInfo, "Number of Valid Parity Sectors", pLUN->paritySectors, false, m_showStatusBits);                              //!< Number of Valid Parity Sectors  
     set_json_64_bit_With_Status(pageInfo, "RV Absulute Mean", pLUN->RVabsolue, false, m_showStatusBits);									            //!< RV Absulute Mean
-    set_json_64_bit_With_Status(pageInfo, "Max RV absulute Mean", pLUN->maxRVabsolue, false, m_showStatusBits);							                //!< Max RV absulute Mean
-    set_json_64_bit_With_Status(pageInfo, "Idle Time", pLUN->idleTime, false, m_showStatusBits);	                                                    //!< idle Time value from the most recent SMART Summary Frame
+    set_json_64_bit_With_Status(pageInfo, "Max RV absulute Mean", pLUN->maxRVabsolue, false, m_showStatusBits);							                //!< Max RV absulute Mean 
+    snprintf((char*)myStr.c_str(), BASIC, "%0.03lf", static_cast<double>(M_DoubleWord0(check_Status_Strip_Status(pLUN->idleTime))* 1.0) / 3600);
+    set_json_string_With_Status(pageInfo, "Idle Time (hours)", (char*)myStr.c_str(), pLUN->idleTime, m_showStatusBits);//!< idle Time value from the most recent SMART Summary Frame
 
     json_push_back(masterData, pageInfo);
 
@@ -3581,7 +3740,7 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_FLED_Info(JSONNODE *masterData,
         
 
         snprintf((char*)myStr.c_str(), BASIC, "TimeStamp of Event(hours) %" PRIu16"", i);
-        snprintf((char*)timeStr.c_str(), BASIC, "%0.03f", static_cast<double>((check_Status_Strip_Status(pFLED->timestampForLED[i])/ 3600000) *.001));
+        snprintf((char*)timeStr.c_str(), BASIC, "%0.03f", static_cast<double>(M_DoubleWord0(check_Status_Strip_Status(pFLED->timestampForLED[i]))/ 3600000) *.001);
         set_json_string_With_Status(eventInfo, (char*)myStr.c_str(), (char*)timeStr.c_str(), pFLED->timestampForLED[i], m_showStatusBits);//!< Universal Timestamp (us) of last 8 Flash LED (assert) Events, wrapping array
         snprintf((char*)myStr.c_str(), BASIC, "Power Cycle Event %" PRIu16"", i);
         set_json_64_bit_With_Status(eventInfo, (char*)myStr.c_str(), pFLED->powerCycleOfLED[i], false, m_showStatusBits);	         //!< Power Cycle of the last 8 Flash LED (assert) Events, wrapping array
@@ -3665,7 +3824,15 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Reallocation(JSONNODE *masterDa
  
     for (i = 0; i < 15; i++)
     {
-        set_json_64_bit_With_Status(pageInfo, "Reallocated Sectors Cause", pReal->reallocatedCauses[i] , false, m_showStatusBits);
+        JSONNODE *eventInfo = json_new(JSON_NODE);
+        snprintf((char*)myStr.c_str(), BASIC, "Reallocated Event %" PRIu16"", i);
+        json_set_name(eventInfo, (char*)myStr.c_str());
+
+        set_json_64_bit_With_Status(eventInfo, "Reallocated Sectors Cause", pReal->reallocatedCauses[i] , false, m_showStatusBits);
+        get_Reallocation_Cause_Meanings(myStr, M_Word0(pReal->reallocatedCauses[i]));
+        set_json_string_With_Status(eventInfo, "Reallocation Meaning", (char*)myStr.c_str(), pReal->reallocatedCauses[i], m_showStatusBits);
+
+        json_push_back(pageInfo, eventInfo);
     }
     json_push_back(masterData, pageInfo);
 

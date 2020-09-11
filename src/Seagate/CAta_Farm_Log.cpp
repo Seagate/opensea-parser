@@ -985,8 +985,9 @@ eReturnValues CATA_Farm_Log::Print_Reli_Information(JSONNODE *masterData, uint32
     set_json_64_bit_With_Status(pageInfo, "Number of Disc Slip Recalibrations Performed", vFarmFrame[page].reliPage.diskSlipRecalPerformed, false, m_showStatusBits);       //!< Number of disc slip recalibrations performed
     set_json_64_bit_With_Status(pageInfo, "Helium Pressure Threshold Tripped", vFarmFrame[page].reliPage.heliumPresureTrip, false, m_showStatusBits);                       //!< Helium Pressure Threshold Tripped ( 1- trip, 0 -no trip)//!< idle Time, Value from most recent SMART Summary Frame
     set_json_64_bit_With_Status(pageInfo, "RV Absolute Mean", vFarmFrame[page].reliPage.RVAbsoluteMean, false, m_showStatusBits);										    //!< RV Absolute Mean, value from the most recent SMART Frame
-    set_json_64_bit_With_Status(pageInfo, "Max RV Absolute Mean", vFarmFrame[page].reliPage.maxRVAbsluteMean, false, m_showStatusBits);									    //!< Max RV Absolute Mean, value from the most recent SMART Summary Frame
-    set_json_64_bit_With_Status(pageInfo, "Idle Time", vFarmFrame[page].reliPage.idleTime, false, m_showStatusBits);                                                        //!< Idle Time
+    set_json_64_bit_With_Status(pageInfo, "Max RV Absolute Mean", vFarmFrame[page].reliPage.maxRVAbsluteMean, false, m_showStatusBits);									    //!< Max RV Absolute Mean, value from the most recent SMART Summary Frame 
+    snprintf((char*)myStr.c_str(), BASIC, "%0.03lf", static_cast<double>(M_DoubleWord0(check_Status_Strip_Status(vFarmFrame[page].reliPage.idleTime))* 1.0) / 3600);
+    set_json_string_With_Status(pageInfo, "Idle Time (hours)", (char*)myStr.c_str(), vFarmFrame[page].reliPage.idleTime, m_showStatusBits);//!< Idle Time
 
     json_push_back(masterData, pageInfo);
     return SUCCESS;
