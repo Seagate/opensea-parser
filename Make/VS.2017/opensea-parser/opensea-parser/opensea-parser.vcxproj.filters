@@ -236,5 +236,8 @@
     <ClCompile Include="..\..\..\..\src\CAta_SMART_Log_Dir.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\src\Seagate\Farm_Helper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

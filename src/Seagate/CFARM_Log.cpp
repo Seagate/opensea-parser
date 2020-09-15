@@ -264,14 +264,14 @@ eReturnValues CFARMLog::parse_Device_Farm_Log(JSONNODE *masterJson)
     {
         CATA_Farm_Log *pCFarm;
         pCFarm = new CATA_Farm_Log((uint8_t *)bufferData, m_LogSize, m_shwoStatus);
-        if (pCFarm->Get_Log_Status() == IN_PROGRESS)
+        if (pCFarm->get_Log_Status() == IN_PROGRESS)
         {
 			try
 			{
 				retStatus = pCFarm->parse_Farm_Log();
 				if (retStatus == IN_PROGRESS)
 				{
-					pCFarm->Print_All_Pages(masterJson);
+					pCFarm->print_All_Pages(masterJson);
 					retStatus = SUCCESS;
 				}
 			}

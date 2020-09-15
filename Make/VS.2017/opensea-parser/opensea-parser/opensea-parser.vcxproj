@@ -598,6 +598,7 @@
     <ClCompile Include="..\..\..\..\src\Seagate\CAta_Farm_Log.cpp" />
     <ClCompile Include="..\..\..\..\src\Seagate\CFARM_Log.cpp" />
     <ClCompile Include="..\..\..\..\src\Seagate\CScsi_Farm_Log.cpp" />
+    <ClCompile Include="..\..\..\..\src\Seagate\Farm_Helper.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

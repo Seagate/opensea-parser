@@ -163,13 +163,13 @@ eReturnValues CATA_Farm_Log::parse_Farm_Log()
             pFarmFrame->driveInfo = *idInfo;
             sStringIdentifyData strIdInfo;
 
-            Create_Serial_Number(pFarmFrame->identStringInfo.serialNumber, idInfo);
-            Create_World_Wide_Name(pFarmFrame->identStringInfo.worldWideName, idInfo);
-            Create_Firmware_String(pFarmFrame->identStringInfo.firmwareRev, idInfo);
-            Create_Device_Interface_String(pFarmFrame->identStringInfo.deviceInterface, idInfo);
+            create_Serial_Number(pFarmFrame->identStringInfo.serialNumber, idInfo);
+            create_World_Wide_Name(pFarmFrame->identStringInfo.worldWideName, idInfo);
+            create_Firmware_String(pFarmFrame->identStringInfo.firmwareRev, idInfo);
+            create_Device_Interface_String(pFarmFrame->identStringInfo.deviceInterface, idInfo);
             if (m_MajorRev >= MAJORVERSION3)                    // must be higher then version 3.0 for the model number
             {
-                Create_Model_Number_String(pFarmFrame->identStringInfo.modelNumber, idInfo);
+                create_Model_Number_String(pFarmFrame->identStringInfo.modelNumber, idInfo);
             }
             else
             {
@@ -201,111 +201,10 @@ eReturnValues CATA_Farm_Log::parse_Farm_Log()
     delete (pFarmFrame);
     return retStatus;
 }
+
 //-----------------------------------------------------------------------------
 //
-//! \fn Get_Reallocated_Sector_By_Cause
-//
-//! \brief
-//!   Description: parser out the data for reason to why it was reallocated
-//
-//  Entry:
-//! \param description - string to give reason
-//
-//  Exit:
-//!   \return void
-//
-//---------------------------------------------------------------------------
-void CATA_Farm_Log::Get_Reallocated_Sector_By_Cause(std::string *description, uint64_t readWriteRetry)
-{
-
-    check_Status_Strip_Status(readWriteRetry);
-    switch (readWriteRetry)
-    {
-    case HOST_READ_GENERIC:
-    {
-        snprintf((char*)description->c_str(), BASIC, "Host Read Generic");
-        break;
-    }
-    case HOST_READ_UNCORRECTABLE:
-    {
-        snprintf((char*)description->c_str(), BASIC, "Host Read Uncorrectable");
-        break;
-    }
-    case HOST_READ_RAW:
-    {
-        snprintf((char*)description->c_str(), BASIC, "Host Read Raw");
-        break;
-    }
-    case HOST_WRITE_GENERIC:
-    {
-        snprintf((char*)description->c_str(), BASIC, "Host Write Generic");
-        break;
-    }
-    case HOST_WRITE_UNCORRECTABLE:
-    {
-        snprintf((char*)description->c_str(), BASIC, "Host Write Uncorrectable");
-        break;
-    }
-    case HOST_WRITE_RAW:
-    {
-        snprintf((char*)description->c_str(), BASIC, "Host Write Raw");
-        break;
-    }
-    case BACKGROUND_READ_GENERIC:
-    {
-        snprintf((char*)description->c_str(), BASIC, "Background Read Generic");
-        break;
-    }
-    case BACKGROUND_READ_RELIABILITY:
-    {
-        description->append("Background Read Reliability");
-    }
-    case BACKGROUND_READ_RECOVERY:
-    {
-        description->assign("Background Read Recovery");
-    }
-    case BACKGROUND_READ_HOST_SELF_TEST:
-    {
-        snprintf((char*)description->c_str(), BASIC, "Background Read Host Self Test");
-        break;
-    }
-    case BACKGROUND_WRITE_GENERIC:
-    {
-        snprintf((char*)description->c_str(), BASIC, "Background Write Generic");
-        break;
-    }
-    case BACKGROUND_WRITE_RELIABILITY:
-    {
-        snprintf((char*)description->c_str(), BASIC, "Background Write Reliability");
-        break;
-    }
-    case BACKGROUND_WRITE_RECOVERY:
-    {
-        snprintf((char*)description->c_str(), BASIC, "Background Write Recovery");
-        break;
-    }
-    case BACKGROUND_WRITE_HOST_SELF_TEST:
-    {
-        snprintf((char*)description->c_str(), BASIC, "Background Write Host Self Test");
-        break;
-    }
-    case SERVO_WEDGE:
-    {
-        snprintf((char*)description->c_str(), BASIC, "Servo Wedge");
-        break;
-    }
-
-    default:
-    {
-        snprintf((char*)description->c_str(), BASIC, "Unknown");
-        break;
-    }
-    }
-
-}
-//-----------------------------------------------------------------------------
-//
-//! \fn Print_Header()
+//! \fn print_Header()
 //
 //! \brief
 //!   Description:  print out the header information all data is done in Json format
@@ -317,7 +216,7 @@ void CATA_Farm_Log::Get_Reallocated_Sector_By_Cause(std::string *description, ui
 //!   \return SUCCESS
 //
 //---------------------------------------------------------------------------
-eReturnValues CATA_Farm_Log::Print_Header(JSONNODE *masterData)
+eReturnValues CATA_Farm_Log::print_Header(JSONNODE *masterData)
 {
     std::string myStr = "";
     myStr.resize(BASIC);
@@ -356,7 +255,7 @@ eReturnValues CATA_Farm_Log::Print_Header(JSONNODE *masterData)
 
 //-----------------------------------------------------------------------------
 //
-//! \fn Print_Drive_Information()
+//! \fn print_Drive_Information()
 //
 //! \brief
 //!   Description:  print out the drive information
@@ -369,7 +268,7 @@ eReturnValues CATA_Farm_Log::Print_Header(JSONNODE *masterData)
 //!   \return SUCCESS
 //
 //---------------------------------------------------------------------------
-eReturnValues CATA_Farm_Log::Print_Drive_Information(JSONNODE *masterData, uint32_t page)
+eReturnValues CATA_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint32_t page)
 {
     std::string myStr = " ";
     myStr.resize(BASIC);
@@ -510,7 +409,7 @@ eReturnValues CATA_Farm_Log::Print_Drive_Information(JSONNODE *masterData, uint3
 
 //-----------------------------------------------------------------------------
 //
-//! \fn PrintWorkLoad()
+//! \fn printWorkLoad()
 //
 //! \brief
 //!   Description:  print out the work load log information 
@@ -523,7 +422,7 @@ eReturnValues CATA_Farm_Log::Print_Drive_Information(JSONNODE *masterData, uint3
 //!   \return SUCCESS
 //
 //---------------------------------------------------------------------------
-eReturnValues CATA_Farm_Log::Print_Work_Load(JSONNODE *masterData, uint32_t page)
+eReturnValues CATA_Farm_Log::print_Work_Load(JSONNODE *masterData, uint32_t page)
 {
     std::string myStr = " ";
     myStr.resize(BASIC);
@@ -588,7 +487,7 @@ eReturnValues CATA_Farm_Log::Print_Work_Load(JSONNODE *masterData, uint32_t page
 
 //-----------------------------------------------------------------------------
 //
-//! \fn Print_Error_Information()
+//! \fn print_Error_Information()
 //
 //! \brief
 //!   Description:  print out the work load log information 
@@ -601,7 +500,7 @@ eReturnValues CATA_Farm_Log::Print_Work_Load(JSONNODE *masterData, uint32_t page
 //!   \return SUCCESS
 //
 //---------------------------------------------------------------------------
-eReturnValues CATA_Farm_Log::Print_Error_Information(JSONNODE *masterData, uint32_t page)
+eReturnValues CATA_Farm_Log::print_Error_Information(JSONNODE *masterData, uint32_t page)
 {
     std::string myStr = " ";
     uint32_t loopCount = 0;
@@ -724,7 +623,7 @@ eReturnValues CATA_Farm_Log::Print_Error_Information(JSONNODE *masterData, uint3
         if (check_For_Active_Status(&vFarmFrame[page].errorPage.reallocatedSectors[loopCount]))
         {
             snprintf((char *)myStr.c_str(), BASIC, "Reallocated sectors by cause meaning ");
-            Get_Reallocated_Sector_By_Cause(&myStr, vFarmFrame[page].errorPage.reallocatedSectors[loopCount]);
+            get_Reallocation_Cause_Meanings(myStr, M_Word0(vFarmFrame[page].errorPage.reallocatedSectors[loopCount]));
         }
 
     }
@@ -761,7 +660,7 @@ eReturnValues CATA_Farm_Log::Print_Error_Information(JSONNODE *masterData, uint3
 //!   \return SUCCESS
 //
 //---------------------------------------------------------------------------
-eReturnValues CATA_Farm_Log::Print_Enviroment_Information(JSONNODE *masterData, uint32_t page)
+eReturnValues CATA_Farm_Log::print_Enviroment_Information(JSONNODE *masterData, uint32_t page)
 {
     std::string myStr = " ";
     myStr.resize(BASIC);
@@ -886,7 +785,7 @@ eReturnValues CATA_Farm_Log::Print_Enviroment_Information(JSONNODE *masterData, 
 
 //-----------------------------------------------------------------------------
 //
-//! \fn Print_Reli_Information()
+//! \fn print_Reli_Information()
 //
 //! \brief
 //!   Description:  print out the Reli log information 
@@ -899,7 +798,7 @@ eReturnValues CATA_Farm_Log::Print_Enviroment_Information(JSONNODE *masterData, 
 //!   \return SUCCESS
 //
 //---------------------------------------------------------------------------
-eReturnValues CATA_Farm_Log::Print_Reli_Information(JSONNODE *masterData, uint32_t page)
+eReturnValues CATA_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint32_t page)
 {
     std::string myStr = " ";
     myStr.resize(BASIC);
@@ -994,7 +893,7 @@ eReturnValues CATA_Farm_Log::Print_Reli_Information(JSONNODE *masterData, uint32
 }
 //-----------------------------------------------------------------------------
 //
-//! \fn Print_Head_Information()
+//! \fn print_Head_Information()
 //
 //! \brief
 //!   Description:  print out the Reli head log information 
@@ -1007,7 +906,7 @@ eReturnValues CATA_Farm_Log::Print_Reli_Information(JSONNODE *masterData, uint32
 //!   \return SUCCESS
 //
 //---------------------------------------------------------------------------
-eReturnValues CATA_Farm_Log::Print_Head_Information(JSONNODE *masterData, uint32_t page)
+eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32_t page)
 {
     uint32_t loopCount = 0;
     std::string myStr = " ";
@@ -1404,7 +1303,7 @@ eReturnValues CATA_Farm_Log::Print_Head_Information(JSONNODE *masterData, uint32
 }
 //-----------------------------------------------------------------------------
 //
-//! \fn PrintAllPages()
+//! \fn printAllPages()
 //
 //! \brief
 //!   Description:  print out all the pages and the copies of each page
@@ -1415,22 +1314,22 @@ eReturnValues CATA_Farm_Log::Print_Head_Information(JSONNODE *masterData, uint32
 //!   \return 
 //
 //---------------------------------------------------------------------------
-void CATA_Farm_Log::Print_All_Pages(JSONNODE *masterData)
+void CATA_Farm_Log::print_All_Pages(JSONNODE *masterData)
 {
-    Print_Header(masterData);
+    print_Header(masterData);
     for (uint32_t index = 0; index < vFarmFrame.size(); ++index)
     {
 // #if defined _DEBUG
-        Print_Drive_Information(masterData, index);
-        Print_Work_Load(masterData, index);
+        print_Drive_Information(masterData, index);
+        print_Work_Load(masterData, index);
 // #endif
-        Print_Error_Information(masterData, index);
-        Print_Enviroment_Information(masterData, index);
-        Print_Reli_Information(masterData, index);
-        Print_Head_Information(masterData, index);
+        print_Error_Information(masterData, index);
+        print_Enviroment_Information(masterData, index);
+        print_Reli_Information(masterData, index);
+        print_Head_Information(masterData, index);
     }
 }
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 //
 //! \fn PrintPage()
 //
@@ -1444,16 +1343,16 @@ void CATA_Farm_Log::Print_All_Pages(JSONNODE *masterData)
 //!   \return 
 //
 //---------------------------------------------------------------------------
-void CATA_Farm_Log::Print_Page(JSONNODE *masterData, uint32_t page)
+void CATA_Farm_Log::print_Page(JSONNODE *masterData, uint32_t page)
 {
     if (page <= vFarmFrame.size())
     {
-        Print_Drive_Information(masterData, page);
-        Print_Work_Load(masterData, page);
-        Print_Error_Information(masterData, page);
-        Print_Enviroment_Information(masterData, page);
-        Print_Reli_Information(masterData, page);
-        Print_Head_Information(masterData, page);
+        print_Drive_Information(masterData, page);
+        print_Work_Load(masterData, page);
+        print_Error_Information(masterData, page);
+        print_Enviroment_Information(masterData, page);
+        print_Reli_Information(masterData, page);
+        print_Head_Information(masterData, page);
     }
 }
 //-----------------------------------------------------------------------------
@@ -1470,20 +1369,21 @@ void CATA_Farm_Log::Print_Page(JSONNODE *masterData, uint32_t page)
 //!   \return 
 //
 //---------------------------------------------------------------------------
-void CATA_Farm_Log::Print_Page_Without_Drive_Info(JSONNODE *masterData, uint32_t page)
+void CATA_Farm_Log::print_Page_Without_Drive_Info(JSONNODE *masterData, uint32_t page)
 {
     if (page <= vFarmFrame.size())
     {
-        Print_Work_Load(masterData, page);
-        Print_Error_Information(masterData, page);
-        Print_Enviroment_Information(masterData, page);
-        Print_Reli_Information(masterData, page);
-        Print_Head_Information(masterData, page);
+        print_Work_Load(masterData, page);
+        print_Error_Information(masterData, page);
+        print_Enviroment_Information(masterData, page);
+        print_Reli_Information(masterData, page);
+        print_Head_Information(masterData, page);
     }
+    
 }
 //-----------------------------------------------------------------------------
 //
-//! \fn Print_Page_One_Node()
+//! \fn print_Page_One_Node()
 //
 //! \brief
 //!   Description:  print out all the pages and the copies of each page but within same node
@@ -1494,13 +1394,13 @@ void CATA_Farm_Log::Print_Page_Without_Drive_Info(JSONNODE *masterData, uint32_t
 //!   \return 
 //
 //---------------------------------------------------------------------------
-void CATA_Farm_Log::Print_Page_One_Node(JSONNODE * masterData)
+void CATA_Farm_Log::print_Page_One_Node(JSONNODE * masterData)
 {
     if (vFarmFrame.size() > 0)
     {
         JSONNODE *pageInfo = json_new(JSON_NODE);
         json_set_name(pageInfo, "FARM Log");
-        Print_All_Pages(pageInfo);
+        print_All_Pages(pageInfo);
         json_push_back(masterData, pageInfo);
     }
 }

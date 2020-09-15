@@ -89,7 +89,6 @@ namespace opensea_parser {
         void set_Head_Header(std::string &headerName, eLogPageTypes index);
         void get_LUN_Info(sLUNStruct *pLUN, uint8_t *buffer);
         void get_Assert_Code_Meaning(std::string &meaning, uint16_t code );
-        void get_Reallocation_Cause_Meanings(std::string &meaning, uint16_t code);
 		
 		eReturnValues init_Header_Data();
         eReturnValues print_Header(JSONNODE *masterData);

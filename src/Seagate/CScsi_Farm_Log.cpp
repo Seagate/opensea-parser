@@ -40,7 +40,7 @@ CSCSI_Farm_Log::CSCSI_Farm_Log()
     , m_status(IN_PROGRESS)                                
 	, m_logParam()   
 	, m_pageParam()
-        , m_pDriveInfo() 
+    , m_pDriveInfo() 
 	, m_alreadySet(false)          
 	, m_showStatusBits(false)                      
 {                                                  
@@ -561,7 +561,14 @@ void CSCSI_Farm_Log::create_Model_Number_String(std::string &model, sGeneralDriv
 void CSCSI_Farm_Log::create_Year_Assembled_String(std::string &dateStr, uint16_t *date)
 {
     byte_Swap_16(date);
-    strncpy((char *)dateStr.c_str(), (char*)date, DATESIZE);
+    if (*date >= 0xFF)
+    {
+        dateStr = "00";
+    }
+    else
+    {
+        strncpy((char *)dateStr.c_str(), (char*)date, DATESIZE);
+    }
 }
 //-----------------------------------------------------------------------------
 //
@@ -1237,75 +1244,7 @@ void CSCSI_Farm_Log::get_Assert_Code_Meaning(std::string &meaning, uint16_t code
         break;
     }
 }
-//-----------------------------------------------------------------------------
-//
-//! \fn get_Reallocation_Cause_Meanings()
-//
-//! \brief
-//!   Description:  parse out the meaning of the reallocation
-//
-//  Entry:
-//! \param meaning - string for the meaning of the cause
-//! \param code - code for the what the meaning is
-//
-//  Exit:
-//!   \return 
-//
-//---------------------------------------------------------------------------
-void CSCSI_Farm_Log::get_Reallocation_Cause_Meanings(std::string &meaning, uint16_t code)
-{
-    switch (code)
-    {
-        case HOST_READ_GENERIC:
-            meaning = "Host Read - Generic";
-                break;
-        case HOST_READ_UNCORRECTABLE:
-            meaning = "Host Read - Uncorrectable";
-            break;
-        case HOST_READ_RAW:
-            meaning = "Host Read - RAW";
-            break;
-        case HOST_WRITE_GENERIC:
-            meaning = "Host Write - Generic";
-            break;
-        case HOST_WRITE_UNCORRECTABLE:
-            meaning = "Host Write - Uncorrectable";
-            break;
-        case HOST_WRITE_RAW:
-            meaning = "Host Write - RAW";
-            break;
-        case BACKGROUND_READ_GENERIC:
-            meaning = "Background Read - Generic";
-            break;
-        case BACKGROUND_READ_RELIABILITY:
-            meaning = "Background Read - Reliability";
-            break;
-        case BACKGROUND_READ_RECOVERY:
-            meaning = "Background Read - Recovery";
-            break;
-        case BACKGROUND_READ_HOST_SELF_TEST:
-            meaning = "Background Read - Host Self Test";
-            break;
-        case BACKGROUND_WRITE_GENERIC:
-            meaning = "Background Write - Generic";
-            break;
-        case BACKGROUND_WRITE_RELIABILITY:
-            meaning = "Background Write - Reliability";
-            break;
-        case BACKGROUND_WRITE_RECOVERY:
-            meaning = "Background Write - Recovery";
-            break;
-        case BACKGROUND_WRITE_HOST_SELF_TEST:
-            meaning = "Background Write - Host Self Test";
-            break;
-        case SERVO_WEDGE:
-            meaning = "Servo Wedge";
-            break;
-        default:
-            meaning = "Unknown";
-            break;
-    }
-}
+
 //-----------------------------------------------------------------------------
 //
 //! \fn parse_Farm_Log()
@@ -2213,17 +2152,19 @@ eReturnValues CSCSI_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint
 	set_json_64_bit_With_Status(pageInfo, "Timestamp of First SMART Summary Frame (ms)",vFarmFrame[page].driveInfo.firstTimeStamp, false, m_showStatusBits);		//!< Timestamp of first SMART Summary Frame in Power-On Hours Milliseconds
     set_json_64_bit_With_Status(pageInfo, "TimeStamp of Last SMART Summary Frame (ms)", vFarmFrame[page].driveInfo.lastTimeStamp, false, m_showStatusBits);			//!< Timestamp of latest SMART Summary Frame in Power-On Hours Milliseconds
 
-    myStr.resize(DATESIZE);
-    memset((char*)myStr.c_str(), 0, DATESIZE);
-    uint16_t year = M_Word1(vFarmFrame[page].driveInfo.dateOfAssembly);
-    uint16_t week = M_Word0(vFarmFrame[page].driveInfo.dateOfAssembly);
+    if (check_For_Active_Status(&vFarmFrame[page].driveInfo.dateOfAssembly))
+    {
+        myStr.resize(DATESIZE);
+        memset((char*)myStr.c_str(), 0, DATESIZE);
+        uint16_t year = M_Word1(vFarmFrame[page].driveInfo.dateOfAssembly);
+        uint16_t week = M_Word0(vFarmFrame[page].driveInfo.dateOfAssembly);
 
-    create_Year_Assembled_String(myStr, &year);
-    json_push_back(pageInfo, json_new_a("Year of Assembled", (char*)myStr.c_str()));
+        create_Year_Assembled_String(myStr, &year);
+        json_push_back(pageInfo, json_new_a("Year of Assembled", (char*)myStr.c_str()));
 
-    create_Year_Assembled_String(myStr, &week);
-    json_push_back(pageInfo, json_new_a("Week of Assembled", (char*)myStr.c_str()));
-
+        create_Year_Assembled_String(myStr, &week);
+        json_push_back(pageInfo, json_new_a("Week of Assembled", (char*)myStr.c_str()));
+    }
     json_push_back(masterData, pageInfo);
     return SUCCESS;
 }
@@ -3609,7 +3550,7 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Information(JSONNODE *masterDat
     printf("\tRV Absulute Mean:                             %" PRIu64" \n", pLUN->RVabsolue & 0x00FFFFFFFFFFFFFFLL);					//!< RV Absulute Mean
     printf("\tMax RV absulute Mean:                         %" PRIu64" \n", pLUN->maxRVabsolue & 0x00FFFFFFFFFFFFFFLL);				    //!< Max RV absulute Mean
     printf("\tIdle Time:                                    %" PRIu64" \n", pLUN->idleTime & 0x00FFFFFFFFFFFFFFLL);		                //!< idle Time value from the most recent SMART Summary Frame
-
+    printf("\tNumber of LBAs Corrected by Parity Sector:    %" PRIu64" \n", pLUN->lbasCorrectedByParity & 0x00FFFFFFFFFFFFFFLL); //!< Number of LBAs Corrected by Parity Sector
 #endif
     if (pLUN->copyNumber == FACTORYCOPY)
     {
@@ -3643,8 +3584,8 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Information(JSONNODE *masterDat
     set_json_64_bit_With_Status(pageInfo, "RV Absulute Mean", pLUN->RVabsolue, false, m_showStatusBits);									            //!< RV Absulute Mean
     set_json_64_bit_With_Status(pageInfo, "Max RV absulute Mean", pLUN->maxRVabsolue, false, m_showStatusBits);							                //!< Max RV absulute Mean 
     snprintf((char*)myStr.c_str(), BASIC, "%0.03lf", static_cast<double>(M_DoubleWord0(check_Status_Strip_Status(pLUN->idleTime))* 1.0) / 3600);
-    set_json_string_With_Status(pageInfo, "Idle Time (hours)", (char*)myStr.c_str(), pLUN->idleTime, m_showStatusBits);//!< idle Time value from the most recent SMART Summary Frame
-
+    set_json_string_With_Status(pageInfo, "Idle Time (hours)", (char*)myStr.c_str(), pLUN->idleTime, m_showStatusBits);                                 //!< idle Time value from the most recent SMART Summary Frame
+    set_json_64_bit_With_Status(pageInfo, "Number of LBAs Corrected by Parity Sector", pLUN->lbasCorrectedByParity, false, m_showStatusBits);           //!< Number of LBAs Corrected by Parity Sector
     json_push_back(masterData, pageInfo);
 
     return SUCCESS;

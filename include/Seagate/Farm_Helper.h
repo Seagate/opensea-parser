@@ -17,10 +17,12 @@
 #include <inttypes.h>
 #include "libjson.h"
 #include "Opensea_Parser_Helper.h"
+#include "Farm_Types.h"
 namespace opensea_parser {
 #ifndef FARMHELPER
 #define FARMHELPER
 
+    void get_Reallocation_Cause_Meanings(std::string &meaning, uint16_t code);
 
 	//-----------------------------------------------------------------------------
 	//
@@ -196,5 +198,7 @@ namespace opensea_parser {
 			json_push_back(nowNode, json_new_a((char *)myStr.c_str(), (char *)strValue.c_str()));
 		}
 	}
+    
+
 #endif 
 }
