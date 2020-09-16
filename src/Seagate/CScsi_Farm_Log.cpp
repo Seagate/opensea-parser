@@ -1898,10 +1898,10 @@ eReturnValues CSCSI_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint
         uint16_t year = M_Word1(vFarmFrame[page].driveInfo.dateOfAssembly);
         uint16_t week = M_Word0(vFarmFrame[page].driveInfo.dateOfAssembly);
 
-        create_Year_Assembled_String(myStr, &year);
+        create_Year_Assembled_String(myStr, year, true);
         json_push_back(pageInfo, json_new_a("Year of Assembled", (char*)myStr.c_str()));
 
-        create_Year_Assembled_String(myStr, &week);
+        create_Year_Assembled_String(myStr, week, true);
         json_push_back(pageInfo, json_new_a("Week of Assembled", (char*)myStr.c_str()));
     }
     else

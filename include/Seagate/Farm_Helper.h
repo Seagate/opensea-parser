@@ -23,7 +23,7 @@ namespace opensea_parser {
 #define FARMHELPER
 
     void get_Reallocation_Cause_Meanings(std::string &meaning, uint16_t code);
-    void create_Year_Assembled_String(std::string &dateStr, uint16_t *date);
+    void create_Year_Assembled_String(std::string &dateStr, uint16_t date, bool isSAS);
     void get_Assert_Code_Meaning(std::string &meaning, uint16_t code);
 	//-----------------------------------------------------------------------------
 	//

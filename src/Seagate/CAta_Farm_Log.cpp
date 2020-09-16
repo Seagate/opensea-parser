@@ -396,7 +396,7 @@ eReturnValues CATA_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint3
         set_Json_Bool(pageInfo, myStr, false);
     }
 
-    set_json_64_bit_With_Status(pageInfo, "Max Number of Available Sectors for Reassignment", vFarmFrame[page].driveInfo.maxNumberForReasign, true, m_showStatusBits);          //!< Max Number of Available Sectors for Reassignment – Value in disc sectors(started in 3.3 )
+    set_json_64_bit_With_Status(pageInfo, "Max Number of Available Sectors for Reassignment", vFarmFrame[page].driveInfo.maxNumberForReasign, false, m_showStatusBits);          //!< Max Number of Available Sectors for Reassignment – Value in disc sectors(started in 3.3 )
    
     //!< Date of Assembly in ASCII 
     if (check_For_Active_Status(&vFarmFrame[page].driveInfo.dateOfAssembly))
@@ -406,10 +406,10 @@ eReturnValues CATA_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint3
         uint16_t year = M_Word1(vFarmFrame[page].driveInfo.dateOfAssembly);
         uint16_t week = M_Word0(vFarmFrame[page].driveInfo.dateOfAssembly);
 
-        create_Year_Assembled_String(myStr, &year);
+        create_Year_Assembled_String(myStr, year, false);
         json_push_back(pageInfo, json_new_a("Year of Assembled", (char*)myStr.c_str()));
 
-        create_Year_Assembled_String(myStr, &week);
+        create_Year_Assembled_String(myStr, week, false);
         json_push_back(pageInfo, json_new_a("Week of Assembled", (char*)myStr.c_str()));
     }
     else
@@ -417,7 +417,7 @@ eReturnValues CATA_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint3
         json_push_back(pageInfo, json_new_a("Year of Assembled", "00"));
         json_push_back(pageInfo, json_new_a("Week of Assembled", "00"));
     }
-    set_json_64_bit_With_Status(pageInfo, "Depopulation Head Mask", vFarmFrame[page].driveInfo.depopulationHeadMask, true, m_showStatusBits);                                   //!< Depopulation Head Mask
+    set_json_64_bit_With_Status(pageInfo, "Depopulation Head Mask", vFarmFrame[page].driveInfo.depopulationHeadMask, false, m_showStatusBits);     //!< Depopulation Head Mask
     json_push_back(masterData, pageInfo);
 
     return SUCCESS;

@@ -335,15 +335,18 @@ void opensea_parser::get_Assert_Code_Meaning(std::string &meaning, uint16_t code
 //!   \return void
 //
 //---------------------------------------------------------------------------
-void opensea_parser::create_Year_Assembled_String(std::string &dateStr, uint16_t *date)
+void opensea_parser::create_Year_Assembled_String(std::string &dateStr, uint16_t date, bool isSAS)
 {
-    byte_Swap_16(date);
-    if (*date >= 0xFF)
+    if (isSAS)
+    {
+        byte_Swap_16(&date);
+    }
+    if (date >= 0xFFFF)
     {
         dateStr = "00";
     }
     else
     {
-        strncpy((char *)dateStr.c_str(), (char*)date, DATE_YEAR_DATE_SIZE);
+        strncpy((char *)dateStr.c_str(), (char*)&date, DATE_YEAR_DATE_SIZE);
     }
 }
