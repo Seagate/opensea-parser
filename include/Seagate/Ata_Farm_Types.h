@@ -90,6 +90,9 @@ typedef struct _sErrorStat
     uint64_t         reallocatedSectors[15];                    //!< Reallocated Secotors by cause(added 3.0)
     uint64_t         timestampForLED[8];                        //!< Universal Timestamp (us) of last 8 Flash LED (assert) Events, wrapping array (added 4.7)
     uint64_t         powerCycleOfLED[8];                        //<! Power Cycle of the last 8 Flash LED (assert) Events, wrapping array (added 4.7)
+    uint64_t         cumLifeTimeECCReadDueErrorRecovery;        //<! Cumulative Lifetime Unrecoverable Read errors due to Error Recovery Control 
+    uint64_t         cumLifeUnRecoveralbeReadByhead[24];        //<! Cumulative Lifetime Unrecoverable Read Repeating by head
+    uint64_t         cumLiveUnRecoveralbeReadUnique[24];        //<! Cumulative Lifetime Unrecoverable Read Unique by head
 }sErrorStat;
 
 typedef struct _sEnvironementStat

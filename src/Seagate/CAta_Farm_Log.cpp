@@ -231,8 +231,8 @@ eReturnValues CATA_Farm_Log::print_Header(JSONNODE *masterData)
     printf("\tLog Size                (debug) =   %" PRId64"  \n", header->logSize & 0x00FFFFFFFFFFFFFFLL);							//!< log size in bytes
     printf("\tPage Size               (debug) =   %" PRId64"  \n", header->pageSize & 0x00FFFFFFFFFFFFFFLL);						//!< page size in bytes
     printf("\tHeads Supported         (debug) =   %" PRId64"  \n", header->headsSupported & 0x00FFFFFFFFFFFFFFLL);					//!< Maximum Drive Heads Supported
-    printf("\tNumber of Copie         (debug) =   %" PRId64"  \n", header->copies & 0x00FFFFFFFFFFFFF);								//!< Number of Historical Copies
-    printf("\tReason for Frame Capture(debug) =   %" PRId64"  \n", header->copies & 0x00FFFFFFFFFFFFF);								//!< Reason for Frame Capture
+    printf("\tNumber of Copies        (debug) =   %" PRId64"  \n", header->copies & 0x00FFFFFFFFFFFFF);								//!< Number of Historical Copies
+    printf("\tReason for Frame Capture(debug) =   %" PRId64"  \n", header->reasonForFrameCpature & 0x00FFFFFFFFFFFFF);              //!< Reason for Frame Capture
 
 #endif
     json_set_name(pageInfo, "FARM Log Header");
@@ -247,6 +247,7 @@ eReturnValues CATA_Farm_Log::print_Header(JSONNODE *masterData)
     json_push_back(pageInfo, json_new_i("Heads Supported", static_cast<uint32_t>(check_Status_Strip_Status(header->headsSupported))));
     json_push_back(pageInfo, json_new_i("Number of Copies", static_cast<uint32_t>(check_Status_Strip_Status(header->copies))));
     json_push_back(pageInfo, json_new_i("Reason for Frame Capture", static_cast<uint32_t>(check_Status_Strip_Status(header->reasonForFrameCpature))));
+    get_SMART_Save_Flages(pageInfo, M_Byte0(header->reasonForFrameCpature));
 
     json_push_back(masterData, pageInfo);
 
@@ -311,6 +312,7 @@ eReturnValues CATA_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint3
     printf("\tTime of latest frame (milliseconds)(debug):      %" PRIu64" \n", vFarmFrame[page].driveInfo.timeStamp2 & 0x00FFFFFFFFFFFFFFLL);                                //!< Timestamp of latest SMART Summary Frame in Power-On Hours Milliseconds1
     printf("\tTime to ready of the last power cycle(debug):    %" PRIu64" \n", vFarmFrame[page].driveInfo.timeToReady & 0x00FFFFFFFFFFFFFFLL);                               //!< time to ready of the last power cycle
     printf("\tTime drive is held in staggered spin(debug):     %" PRIu64" \n", vFarmFrame[page].driveInfo.timeHeld & 0x00FFFFFFFFFFFFFFLL);                                  //!< time drive is held in staffered spin during the last power on sequence
+    printf("\tDepopulation Head Mask(debug):                   %" PRIu64" \n", vFarmFrame[page].driveInfo.depopulationHeadMask & 0x00FFFFFFFFFFFFFFLL);
 #endif
 
     // check the level of print form the eToolVerbosityLevels 
@@ -394,13 +396,26 @@ eReturnValues CATA_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint3
     }
 
     set_json_64_bit_With_Status(pageInfo, "Max Number of Available Sectors for Reassignment", vFarmFrame[page].driveInfo.maxNumberForReasign, true, m_showStatusBits);          //!< Max Number of Available Sectors for Reassignment – Value in disc sectors(started in 3.3 )
+   
+    //!< Date of Assembly in ASCII 
+    if (check_For_Active_Status(&vFarmFrame[page].driveInfo.dateOfAssembly))
+    {
+        myStr.resize(DATE_YEAR_DATE_SIZE);
+        memset((char*)myStr.c_str(), 0, DATE_YEAR_DATE_SIZE);
+        uint16_t year = M_Word1(vFarmFrame[page].driveInfo.dateOfAssembly);
+        uint16_t week = M_Word0(vFarmFrame[page].driveInfo.dateOfAssembly);
 
-    std::string date;
-    date.resize(DATE_SIZE);
-    memset((char*)date.c_str(), 0, DATE_SIZE);
-    strncpy((char *)date.c_str(), (char*)&vFarmFrame[page].driveInfo.dateOfAssembly, DATE_SIZE);
-    set_json_string_With_Status(pageInfo, "Date of Assembly", date, vFarmFrame[page].driveInfo.dateOfAssembly, m_showStatusBits);                                              //!< Date of Assembly in ASCII 
+        create_Year_Assembled_String(myStr, &year);
+        json_push_back(pageInfo, json_new_a("Year of Assembled", (char*)myStr.c_str()));
 
+        create_Year_Assembled_String(myStr, &week);
+        json_push_back(pageInfo, json_new_a("Week of Assembled", (char*)myStr.c_str()));
+    }
+    else
+    {
+        json_push_back(pageInfo, json_new_a("Year of Assembled", "00"));
+        json_push_back(pageInfo, json_new_a("Week of Assembled", "00"));
+    }
     set_json_64_bit_With_Status(pageInfo, "Depopulation Head Mask", vFarmFrame[page].driveInfo.depopulationHeadMask, true, m_showStatusBits);                                   //!< Depopulation Head Mask
     json_push_back(masterData, pageInfo);
 
@@ -437,14 +452,27 @@ eReturnValues CATA_Farm_Log::print_Work_Load(JSONNODE *masterData, uint32_t page
     {
         printf("\nWork Load From Farm Log copy %d", page);
     }
-    printf("\tRated Workload Percentaged(debug):               %" PRId64" \n", vFarmFrame[page].workLoadPage.workloadPercentage & 0x00FFFFFFFFFFFFFFLL);         //!< rated Workload Percentage
-    printf("\tTotal Number of Other Commands(debug):           %" PRId64" \n", vFarmFrame[page].workLoadPage.totalNumberofOtherCMDS & 0x00FFFFFFFFFFFFFFLL);     //!< Total Number Of Other Commands
-    printf("\tTotal Number of Write Commands(debug):           %" PRId64" \n", vFarmFrame[page].workLoadPage.totalWriteCommands & 0x00FFFFFFFFFFFFFFLL);         //!< Total Number of Write Commands
-    printf("\tTotal Number of Read Commands(debug):            %" PRId64" \n", vFarmFrame[page].workLoadPage.totalReadCommands & 0x00FFFFFFFFFFFFFFLL);          //!< Total Number of Read Commands
-    printf("\tLogical Sectors Written(debug):                  %" PRId64" \n", vFarmFrame[page].workLoadPage.logicalSecWritten & 0x00FFFFFFFFFFFFFFLL);          //!< Logical Sectors Written
-    printf("\tLogical Sectors Read(debug):                     %" PRId64" \n", vFarmFrame[page].workLoadPage.logicalSecRead & 0x00FFFFFFFFFFFFFFLL);             //!< Logical Sectors Read
-    printf("\tTotal Number of Random Read Cmds(debug):         %" PRId64" \n", vFarmFrame[page].workLoadPage.totalRandomReads & 0x00FFFFFFFFFFFFFFLL);           //!< Total Number of Random Read Commands
-    printf("\tTotal Number of Random Write Cmds(debug):        %" PRId64" \n", vFarmFrame[page].workLoadPage.totalRandomWrites & 0x00FFFFFFFFFFFFFFLL);          //!< Total Number of Random Write Commands
+    printf("\tRated Workload Percentaged(debug):               %" PRIu64" \n", vFarmFrame[page].workLoadPage.workloadPercentage & 0x00FFFFFFFFFFFFFFLL);         //!< rated Workload Percentage
+    printf("\tTotal Number of Other Commands(debug):           %" PRIu64" \n", vFarmFrame[page].workLoadPage.totalNumberofOtherCMDS & 0x00FFFFFFFFFFFFFFLL);     //!< Total Number Of Other Commands
+    printf("\tTotal Number of Write Commands(debug):           %" PRIu64" \n", vFarmFrame[page].workLoadPage.totalWriteCommands & 0x00FFFFFFFFFFFFFFLL);         //!< Total Number of Write Commands
+    printf("\tTotal Number of Read Commands(debug):            %" PRIu64" \n", vFarmFrame[page].workLoadPage.totalReadCommands & 0x00FFFFFFFFFFFFFFLL);          //!< Total Number of Read Commands
+    printf("\tLogical Sectors Written(debug):                  %" PRIu64" \n", vFarmFrame[page].workLoadPage.logicalSecWritten & 0x00FFFFFFFFFFFFFFLL);          //!< Logical Sectors Written
+    printf("\tLogical Sectors Read(debug):                     %" PRIu64" \n", vFarmFrame[page].workLoadPage.logicalSecRead & 0x00FFFFFFFFFFFFFFLL);             //!< Logical Sectors Read
+    printf("\tTotal Number of Random Read Cmds(debug):         %" PRIu64" \n", vFarmFrame[page].workLoadPage.totalRandomReads & 0x00FFFFFFFFFFFFFFLL);           //!< Total Number of Random Read Commands
+    printf("\tTotal Number of Random Write Cmds(debug):        %" PRIu64" \n", vFarmFrame[page].workLoadPage.totalRandomWrites & 0x00FFFFFFFFFFFFFFLL);          //!< Total Number of Random Write Commands
+    printf("\tLogical Sectors Written(debug):                  %" PRIu64" \n", vFarmFrame[page].workLoadPage.logicalSecWritten & 0x00FFFFFFFFFFFFFFLL); 				//!< Logical Sectors Written
+    printf("\tLogical Sectors Read(debug):                     %" PRIu64" \n", vFarmFrame[page].workLoadPage.logicalSecRead & 0x00FFFFFFFFFFFFFFLL); 					//!< Logical Sectors Read
+    printf("\tDither events during current power cycle(debug): %" PRIu64" \n", vFarmFrame[page].workLoadPage.dither & 0x00FFFFFFFFFFFFFFLL); 				//!< Number of dither events during current power cycle (added 3.4)
+    printf("\tDither was held off during random(debug):        %" PRIu64" \n", vFarmFrame[page].workLoadPage.ditherRandom & 0x00FFFFFFFFFFFFFFLL); 			//!< Number of times dither was held off during random workloads during current power cycle(added 3.4)
+    printf("\tDither was held off during sequential(debug):    %" PRIu64" \n", vFarmFrame[page].workLoadPage.ditherSequential & 0x00FFFFFFFFFFFFFFLL); 			//!< Number of times dither was held off during sequential workloads during current power cycle(added 3.4)
+    printf("\tRead cmds from 0-3.125% of LBA space(debug):     %" PRIu64" \n", vFarmFrame[page].workLoadPage.numberOfReadCmds1 & 0x00FFFFFFFFFFFFFFLL); 		//!< Number of Read commands from 0-3.125% of LBA space for last 3 SMART Summary Frames(added 4.4)
+    printf("\tRead cmds from 3.125-25% of LBA space(debug):    %" PRIu64" \n", vFarmFrame[page].workLoadPage.numberOfReadCmds2 & 0x00FFFFFFFFFFFFFFLL); 			//!< Number of Read commands from 3.125-25% of LBA space for last 3 SMART Summary Frames(added 4.4)
+    printf("\tRead cmds from 25-50% of LBA space(debug):       %" PRIu64" \n", vFarmFrame[page].workLoadPage.numberOfReadCmds3 & 0x00FFFFFFFFFFFFFFLL); 		//!< Number of Read commands from 25-50% of LBA space for last 3 SMART Summary Frames(added 4.4)
+    printf("\tRead cmds from 50-100% of LBA space(debug):      %" PRIu64" \n", vFarmFrame[page].workLoadPage.numberOfReadCmds4 & 0x00FFFFFFFFFFFFFFLL); 		//!< Number of Read commands from 50-100% of LBA space for last 3 SMART Summary Frames(added 4.4)
+    printf("\tWrite cmds from 0-3.125% of LBA space(debug):    %" PRIu64" \n", vFarmFrame[page].workLoadPage.numberOfWriteCmds1 & 0x00FFFFFFFFFFFFFFLL); 		//!< Number of Write commands from 0-3.125% of LBA space for last 3 SMART Summary Frames(added 4.4)
+    printf("\tWrite cmds from 3.125-25% of LBA space(debug):   %" PRIu64" \n", vFarmFrame[page].workLoadPage.numberOfWriteCmds2 & 0x00FFFFFFFFFFFFFFLL); 		//!< Number of Write commands from 3.125-25% of LBA space for last 3 SMART Summary Frames(added 4.4)
+    printf("\tWrite cmds from 25-50% of LBA space(debug):      %" PRIu64" \n", vFarmFrame[page].workLoadPage.numberOfWriteCmds3 & 0x00FFFFFFFFFFFFFFLL); 			//!< Number of Write commands from 25-50% of LBA space for last 3 SMART Summary Frames(added 4.4)
+    printf("\tWrite cmds from 50-100% of LBA space(debug):     %" PRIu64" \n", vFarmFrame[page].workLoadPage.numberOfWriteCmds4 & 0x00FFFFFFFFFFFFFFLL); 			//!< Number of Write commands from 50-100% of LBA space for last 3 SMART Summary Frames(added 4.4)
 #endif
 
     if (vFarmFrame[page].workLoadPage.copyNumber == FACTORYCOPY)
@@ -503,6 +531,9 @@ eReturnValues CATA_Farm_Log::print_Work_Load(JSONNODE *masterData, uint32_t page
 eReturnValues CATA_Farm_Log::print_Error_Information(JSONNODE *masterData, uint32_t page)
 {
     std::string myStr = " ";
+    std::string timeStr = " ";
+    myStr.resize(BASIC);
+    timeStr.resize(BASIC);
     uint32_t loopCount = 0;
     myStr.resize(BASIC);
     JSONNODE *pageInfo = json_new(JSON_NODE);
@@ -533,10 +564,18 @@ eReturnValues CATA_Farm_Log::print_Error_Information(JSONNODE *masterData, uint3
     printf("\tCTO Count Over 7.5s(debug):                      %" PRIu64" \n", vFarmFrame[page].errorPage.oversevenSecCTO & 0x00FFFFFFFFFFFFFFLL);           //!< CTO Count Over 7.5s (SMART Attribute
     printf("\tTotal Flash LED (Assert) Events(debug):          %" PRId64" \n", vFarmFrame[page].errorPage.totalFlashLED & 0x00FFFFFFFFFFFFFFLL);             //!< Total Flash LED (Assert) Events
     printf("\tIndex of the last Flash LED(debug):              %" PRId64" \n", vFarmFrame[page].errorPage.indexFlashLED & 0x00FFFFFFFFFFFFFFLL);             //!< index of the last Flash LED of the array
-    printf("\tUncorrectable errors(debug):                   %" PRId64" \n", vFarmFrame[page].errorPage.uncorrectables & 0x00FFFFFFFFFFFFFFLL);              //!< uncorrecatables errors (sata only)
-    for (loopCount = 0; loopCount < 8; ++loopCount)
+    printf("\tUncorrectable errors(debug):                     %" PRId64" \n", vFarmFrame[page].errorPage.uncorrectables & 0x00FFFFFFFFFFFFFFLL);              //!< uncorrecatables errors (sata only)
+    for (loopCount = 0; loopCount < FLASH_EVENTS; ++loopCount)
     {
         printf("\tFlash LED event # %d:                     %" PRIu64" \n", loopCount, vFarmFrame[page].errorPage.flashLEDArray[loopCount] & 0x00FFFFFFFFFFFFFFLL);          //!<Info on the last 8 Flash LED events Wrapping array.
+        printf("\tRead/Write retry events:                  %" PRIu64" \n",  vFarmFrame[page].errorPage.readWriteRetry[loopCount] & 0x00FFFFFFFFFFFFFFLL);
+        printf("\tTimestamp of event:                       %" PRIu64" \n",  vFarmFrame[page].errorPage.timestampForLED[loopCount] & 0x00FFFFFFFFFFFFFFLL);
+        printf("\tPower Cycle of event:                     %" PRIu64" \n",  vFarmFrame[page].errorPage.powerCycleOfLED[loopCount] & 0x00FFFFFFFFFFFFFFLL);
+
+    }
+    for (loopCount = 0; loopCount < REALLOCATIONEVENTS; loopCount++)
+    {
+        printf("\tReallocated Sectors Cause:                    %" PRIu64" \n", vFarmFrame[page].errorPage.reallocatedSectors[loopCount] & 0x00FFFFFFFFFFFFFFLL);
     }
 
 #endif
@@ -571,10 +610,30 @@ eReturnValues CATA_Farm_Log::print_Error_Information(JSONNODE *masterData, uint3
 
     set_json_int_With_Status(pageInfo, "Index of the last Flash LED", vFarmFrame[page].errorPage.indexFlashLED, m_showStatusBits);								//!< index of the last Flash LED of the array          
     set_json_64_bit_With_Status(pageInfo, "Uncorrectable errors", vFarmFrame[page].errorPage.uncorrectables, false, m_showStatusBits);							//!< uncorrecatables errors (sata only)
-    for (loopCount = 0; loopCount < 8; ++loopCount)
+
+    for (loopCount = 0; loopCount < FLASH_EVENTS; loopCount++)
     {
-        snprintf((char *)myStr.c_str(), BASIC, "Flash LED event # %" PRId32"", loopCount);
-        set_json_64_bit_With_Status(pageInfo, (char *)myStr.c_str(), vFarmFrame[page].errorPage.flashLEDArray[loopCount], false, m_showStatusBits);		          //!<Info on the last 8 Flash LED events Wrapping array.
+        JSONNODE *eventInfo = json_new(JSON_NODE);
+        snprintf((char*)myStr.c_str(), BASIC, "Event %" PRIu16"", loopCount);
+        json_set_name(eventInfo, (char*)myStr.c_str());
+
+        set_json_64_bit_With_Status(eventInfo, "Address of Event", vFarmFrame[page].errorPage.flashLEDArray[loopCount], true, m_showStatusBits);	           //!< Info on the last 8 Flash LED (assert) Events, wrapping array
+
+        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", M_Word2(check_Status_Strip_Status(vFarmFrame[page].errorPage.flashLEDArray[loopCount])));
+        json_push_back(eventInfo, json_new_a("Flash LED Code", (char*)myStr.c_str()));
+        get_Assert_Code_Meaning(timeStr, M_Word2(check_Status_Strip_Status(vFarmFrame[page].errorPage.flashLEDArray[loopCount])));
+        json_push_back(eventInfo, json_new_a("Flash LED Code Meaning", (char*)timeStr.c_str()));
+        snprintf((char*)myStr.c_str(), BASIC, "0x%08" PRIx32"", M_DoubleWord0(check_Status_Strip_Status(vFarmFrame[page].errorPage.flashLEDArray[loopCount])));
+        json_push_back(eventInfo, json_new_a("Flash LED Address", (char*)myStr.c_str()));
+
+
+        snprintf((char*)myStr.c_str(), BASIC, "TimeStamp of Event(hours) %" PRIu16"", loopCount);
+        snprintf((char*)timeStr.c_str(), BASIC, "%0.03f", static_cast<double>(M_DoubleWord0(check_Status_Strip_Status(vFarmFrame[page].errorPage.timestampForLED[loopCount])) / 3600000) *.001);
+        set_json_string_With_Status(eventInfo, (char*)myStr.c_str(), (char*)timeStr.c_str(), vFarmFrame[page].errorPage.timestampForLED[loopCount], m_showStatusBits);//!< Universal Timestamp (us) of last 8 Flash LED (assert) Events, wrapping array
+        snprintf((char*)myStr.c_str(), BASIC, "Power Cycle Event %" PRIu16"", loopCount);
+        set_json_64_bit_With_Status(eventInfo, (char*)myStr.c_str(), vFarmFrame[page].errorPage.powerCycleOfLED[loopCount], false, m_showStatusBits);	         //!< Power Cycle of the last 8 Flash LED (assert) Events, wrapping array
+
+        json_push_back(pageInfo, eventInfo);
     }
 
     if (m_MajorRev >= MAJORVERSION3 && m_MinorRev >= 2 && m_MinorRev <= 4)
@@ -611,34 +670,20 @@ eReturnValues CATA_Farm_Log::print_Error_Information(JSONNODE *masterData, uint3
         }
     }
 
-    /*for (loopCount = 1; loopCount <= 2; ++loopCount)
+    for (loopCount = 0; loopCount < REALLOCATIONEVENTS; loopCount++)
     {
-        snprintf((char *)myStr.c_str(), BASIC, "Super Parity On the Fly recovery counters # %" PRId32"", loopCount);
-        set_json_64_bit_With_Status(pageInfo, (char *)myStr.c_str(), vFarmFrame[page].errorPage.superParityOnTheFlyRecoveryCnt[loopCount], false, m_showStatusBits);		          //!< Super Parity On the Fly recovery counters
-    }*/
-    for (loopCount = 0; loopCount < 15; ++loopCount)
-    {
-        snprintf((char *)myStr.c_str(), BASIC, "Reallocated sectors by cause # %" PRId32"", loopCount);
-        set_json_64_bit_With_Status(pageInfo, (char *)myStr.c_str(), vFarmFrame[page].errorPage.reallocatedSectors[loopCount], false, m_showStatusBits);                    //!< Reallocated sectors by cause
-        if (check_For_Active_Status(&vFarmFrame[page].errorPage.reallocatedSectors[loopCount]))
-        {
-            snprintf((char *)myStr.c_str(), BASIC, "Reallocated sectors by cause meaning ");
-            get_Reallocation_Cause_Meanings(myStr, M_Word0(vFarmFrame[page].errorPage.reallocatedSectors[loopCount]));
-        }
+        JSONNODE *eventInfo = json_new(JSON_NODE);
+        snprintf((char*)myStr.c_str(), BASIC, "Reallocated Event %" PRIu16"", loopCount);
+        json_set_name(eventInfo, (char*)myStr.c_str());
 
+        set_json_64_bit_With_Status(eventInfo, "Reallocated Sectors Cause", vFarmFrame[page].errorPage.reallocatedSectors[loopCount], false, m_showStatusBits);
+        get_Reallocation_Cause_Meanings(myStr, M_Word0(vFarmFrame[page].errorPage.reallocatedSectors[loopCount]));
+        set_json_string_With_Status(eventInfo, "Reallocation Meaning", (char*)myStr.c_str(), vFarmFrame[page].errorPage.reallocatedSectors[loopCount], m_showStatusBits);
+
+        json_push_back(pageInfo, eventInfo);
     }
 
-    for (loopCount = 0; loopCount < 8; ++loopCount)
-    {
-        snprintf((char *)myStr.c_str(), BASIC, "Universal Timestamp(us) of Flash LED event # %" PRId32"", loopCount);
-        set_json_64_bit_With_Status(pageInfo, (char *)myStr.c_str(), vFarmFrame[page].errorPage.timestampForLED[loopCount], false, m_showStatusBits);		          //!<Info on the last 8 Flash LED events Wrapping array.
-    }
 
-    for (loopCount = 0; loopCount < 8; ++loopCount)
-    {
-        snprintf((char *)myStr.c_str(), BASIC, "Power Cycle of Flash LED event # %" PRId32"", loopCount);
-        set_json_64_bit_With_Status(pageInfo, (char *)myStr.c_str(), vFarmFrame[page].errorPage.powerCycleOfLED[loopCount], false, m_showStatusBits);		          //!<Info on the last 8 Flash LED events Wrapping array.
-    }
 
     json_push_back(masterData, pageInfo);
 

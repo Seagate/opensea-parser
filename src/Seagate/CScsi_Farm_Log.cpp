@@ -545,33 +545,6 @@ void CSCSI_Farm_Log::create_Model_Number_String(std::string &model, sGeneralDriv
 }
 //-----------------------------------------------------------------------------
 //
-//! \fn create_Year_Assembled_String()
-//
-//! \brief
-//!   Description:  fill in the date string from the date. used for year and week assembled
-//
-//  Entry:
-//! \param dateStr - pointer to the date string
-//! \param date  =  pointer to the date data
-//
-//  Exit:
-//!   \return void
-//
-//---------------------------------------------------------------------------
-void CSCSI_Farm_Log::create_Year_Assembled_String(std::string &dateStr, uint16_t *date)
-{
-    byte_Swap_16(date);
-    if (*date >= 0xFF)
-    {
-        dateStr = "00";
-    }
-    else
-    {
-        strncpy((char *)dateStr.c_str(), (char*)date, DATESIZE);
-    }
-}
-//-----------------------------------------------------------------------------
-//
 //! \fn swap_Bytes_sDriveInfo()
 //
 //! \brief
@@ -941,7 +914,7 @@ bool CSCSI_Farm_Log::swap_Bytes_Flash_LED(sActuatorFLEDInfo *fled)
     byte_Swap_64(&fled->totalFLEDEvents);
     byte_Swap_64(&fled->index);
     byte_Swap_64(&fled->pageNumber);
-    for (uint16_t i = 0; i < FLASHEVENTS; i++)
+    for (uint16_t i = 0; i < FLASH_EVENTS; i++)
     {
         byte_Swap_64(&fled->powerCycleOfLED[i]);
         byte_Swap_64(&fled->timestampForLED[i]);
@@ -1010,241 +983,6 @@ void CSCSI_Farm_Log::get_LUN_Info(sLUNStruct *pLUN, uint8_t *buffer)
     memcpy(&pLUN->pageHeader, (sScsiPageParameter *)&buffer[0], sizeof(sScsiPageParameter));
     swap_Bytes_sLUNStruct(pLUN);
 }
-//-----------------------------------------------------------------------------
-//
-//! \fn get_Assert_Code_Meaning()
-//
-//! \brief
-//!   Description: takes in the Assert code and will look up the meaning and fill in the string
-//
-//  Entry:
-//! \param meaning  =  meaning string
-//! \param code = the assert code 
-//
-//  Exit:
-//!   \return bool
-//
-//---------------------------------------------------------------------------
-void CSCSI_Farm_Log::get_Assert_Code_Meaning(std::string &meaning, uint16_t code)
-{
-    switch (code)
-    {
-    case ASSERT_UNKNOWN:
-        meaning = "Unknow";
-        break;
-    case MICROPROCESSOR_FAILED:
-        meaning = "Microprocessor Failed";
-        break;
-    case DRAM_FAILED_POWERUP_OR_WRAM_FAIL:
-        meaning = "DRAM Failed powerup or WRAM Failed";
-        break;
-    case SCC_FAILED_POWERUP_DIAGNOSTICS:
-        meaning = "SCC Failed Powerup Diagnostics";
-        break;
-    case FW_DOES_NOT_MATCH_THE_SCC_VERSION:
-        meaning = "Firmware does not match teh SCC Version";
-        break;
-    case UNIMPLEMENTED_OPCODE_INTERRUPT:
-        meaning = "Unimplemented opcode interrupt";
-        break;
-    case POWER_UP_XOR_FAILURE_FOR_FIBER_CH:
-        meaning = "Power up XOR failure for fiber CH";
-        break;
-    case EEPROM_VERIFY_ERROR_EVEN_BYTE:
-        meaning = "EEPROM verify error even byte";
-        break;
-    case EEPROM_ERASE_ERROR_EVEN_BYTE:
-        meaning = "EEPROM erase error even byte";
-        break;
-    case DOWNLOAD_TPM_FAILED_0:
-        meaning = "Download TPM failed 0";
-        break;
-    case DOWNLOAD_TPM_FAILED_1:
-        meaning = "Download TPM failed 1";
-        break;
-    case DOWNLOAD_TPM_FAILED_2:
-        meaning = "Download TPM failed 2";
-        break;
-    case DOWNLOAD_TPM_FAILED_3:
-        meaning = "Download TPM failed 3";
-        break;
-    case DOWNLOAD_TPM_FAILED_4:
-        meaning = "Download TPM failed 4";
-        break;
-    case DOWNLOAD_TPM_FAILED_5:
-        meaning = "Download TPM failed 5";
-        break;
-    case DOWNLOAD_TPM_FAILED_6:
-        meaning = "Download TPM failed 6";
-        break;
-    case DOWNLOAD_TPM_FAILED_7:
-        meaning = "Download TPM failed 7";
-        break;
-    case DOWNLOAD_TPM_FAILED_8:
-        meaning = "Download TPM failed 8";
-        break;
-    case DOWNLOAD_VOLTAGE_FAULT:
-        meaning = "Download Voltage fault";
-        break;
-    case FAILS_WRITING_ARRAY_DATA_TO_FLASH_0:
-        meaning = "Fails writting array data to flash 0";
-        break;
-    case FLASH_LOOKING_FOR_MEMORY_RANGE_ERROR:
-        meaning = "Flash Looking for memory range error";
-        break;
-    case FAILS_WRITING_ARRAY_DATA_TO_FLASH_1:
-        meaning = "Fails writting array data to flash 1";
-        break;
-    case FAILS_WRITING_ARRAY_DATA_TO_FLASH_2:
-        meaning = "Fails writting array data to flash 2";
-        break;
-    case FAILS_WRITING_ARRAY_DATA_TO_FLASH_3:
-        meaning = "Fails writting array data to flash 3";
-        break;
-    case FAILS_WRITING_ARRAY_DATA_TO_FLASH_4:
-        meaning = "Fails writting array data to flash 4";
-        break;
-    case FAILS_WRITING_ARRAY_DATA_TO_FLASH_5:
-        meaning = "Fails writting array data to flash 5";
-        break;
-    case ALU_BUFFER_PARITY_ERROR:
-        meaning = "ALU buffer party error";
-        break;
-    case PREFETCH_TCM_ECC_ERROR:
-        meaning = "perfetch TCM ECC error";
-        break;
-    case ERROR_INJECTION_ASSERT:
-        meaning = "Error injection assert";
-        break;
-    case DRAM_CONFIGURATION_PROCESS_FAILED:
-        meaning = "DRAM Configuration Process Failed";
-        break;
-    case FDE_BUS_PARITY_ERROR:
-        meaning = "FDE Bus parity error";
-        break;
-    case PREFETCH_VECTOR_OR_STACK_POINTER_OUT:
-        meaning = "Prefetch vector or stack pointer out";
-        break;
-    case ERROR_IN_WRITING_TO_READ_CHIP:
-        meaning = "Error in writting to read chip";
-        break;
-    case IER_STACK_OVERFLOW:
-        meaning = "IER Stack overflow";
-        break;
-    case IER_STACK_UNDERFLOW:
-        meaning = "IER Stack underflow";
-        break;
-    case IER_STACK_NOT_EMPTY_ON_ENTRY_TO_SLEEP:
-        meaning = "IER Stack Not Empty on Entry to Sleep";
-        break;
-    case IRAW_HAD_MISCOMPARE:
-        meaning = "IRAW has miscompare";
-        break;
-    case UNDEFINED_INSTRUCTION:
-        meaning = "Underfined instruction";
-        break;
-    case LOGGING_SAVE_FAILED_EXCEEDED_ALLOCATED:
-        meaning = "Logging save failed exceeded allocated";
-        break;
-    case CANT_FIND_BACKPLANE_DATA_RATE:
-        meaning = "Cant Find backplane data rate";
-        break;
-    case CONTROLLER_I_TCM_DOUBLE_BIT_ECC_ERROR:
-        meaning = "Controller I TCM Double bit ECC Error";
-        break;
-    case CONTROLLER_D_TCM_DOUBLE_BIT_ECC_ERROR:
-        meaning = "Controller D TCM double bit ECC Error";
-        break;
-    case SERVO_I_TCM_DOUBLE_BIT_ECC_ERROR:
-        meaning = "Servo I TCM Double bit ECC Error";
-        break;
-    case SERVO_D_TCM_DOUBLE_BIT_ECC_ERROR:
-        meaning = "Servo D TCM double bit ECC ERROR";
-        break;
-    case CDPRAM_UNRECOVERABLE_ERROR:
-        meaning = "CDPRAM unrecoverable Error";
-        break;
-    case SDPRAM_UNRECOVERABLE_ERROR:
-        meaning = "SDPRAM unrecoverable Error";
-        break;
-    case TCM_CRC_RESULT_IS_NON_ZERO:
-        meaning = "TCM CRC result is non zero";
-        break;
-    case SWI_ASSERT_FLASH_CODE_BOOT:
-        meaning = "SWI Assert Flash Code Boot";
-        break;
-    case SWI_ASSERT_FLASH_CODE_NQNR:
-        meaning = "SWI Assert Flash Code NQNR";
-        break;
-    case SWI_ASSERT_FLASH_CODE_DISC:
-        meaning = "SWI Assert Flash Code DISC";
-        break;
-    case REMOTE_ASSERT:
-        meaning = "Remode Assert";
-        break;
-    case DRAM_INTEGRITY_FAILURE:
-        meaning = "DRAM Integrity Failure";
-        break;
-    case CLOCK_FAILURE:
-        meaning = "Clock Failure";
-        break;
-    case ASSERT_FLASH_CODE:
-        meaning = "Assert Flash Code";
-        break;
-    case ENSURE_FLASH_CODE:
-        meaning = "Ensure Flash Code";
-        break;
-    case REQUIRE_FLASH_CODE:
-        meaning = "Require Flash Code";
-        break;
-    case SMART_FLASH_CODE:
-        meaning = "SMART Flash Code";
-        break;
-    case SCSI_UNEXEPCTED_INTERRUPT:
-        meaning = "SCSI Unexpected Interrupt";
-        break;
-    case SCSI_TIMEOUT:
-        meaning = "SCSI Timeout";
-        break;
-    case ILLEGAL_STATUS_CODE:
-        meaning = "Illegal Status Code";
-        break;
-    case SCSI_UNDER_OVER_RUN_OCCURRED:
-        meaning = "SCSI Under Over Run Occurred";
-        break;
-    case UNEXPECTED_STATUS:
-        meaning = "Unexpected Status";
-        break;
-    case DIVIDE_BY_ZERO_INTERRUPT:
-        meaning = "Divide by Zero Interrupt";
-        break;
-    case DATA_ABORT_CACHE_ECC_ERROR:
-        meaning = "Data Abort Cache ECC Error";
-        break;
-    case DATA_ABORT_TCM_ECC_ERROR:
-        meaning = "Data Abort TCM ECC Error";
-        break;
-    case ABORT_INTERRUPT:
-        meaning = "Abort Interrupt";
-        break;
-    case SELF_SEEK_FAILURE:
-        meaning = "Self Seek Failure";
-        break;
-    case CONTROLLER_NUKED_BY_FDE:
-        meaning = "Controller Nuked By FDE";
-        break;
-    case FLASH_IOEDC_PARITY_ERROR:
-        meaning = "Flash IOEDC Parity Error";
-        break;
-    case SERIAL_PORT_DUMP_MODE:
-        meaning = "Serial Port Dump Mode";
-        break;
-    default:
-        meaning = "Unknow";
-        break;
-    }
-}
-
 //-----------------------------------------------------------------------------
 //
 //! \fn parse_Farm_Log()
@@ -2024,14 +1762,14 @@ eReturnValues CSCSI_Farm_Log::print_Header(JSONNODE *masterData)
     JSONNODE *pageInfo = json_new(JSON_NODE);
     //sScsiFarmHeader *header = (sScsiFarmHeader *)&pBuf[4];                                                                // pointer to the header to get the signature
 #if defined _DEBUG
-    printf("\tLog Signature   =  0x%" PRIX64" \n", vFarmFrame[page].farmHeader.farmHeader.signature );                                  //!< Log Signature = 0x00004641524D4552
-    printf("\tMajor Revision =   %" PRIu64"  \n", vFarmFrame[page].farmHeader.farmHeader.majorRev & 0x00FFFFFFFFFFFFFFLL);                                    //!< Log Major rev
-    printf("\tMinor Revision =   %" PRIu64"  \n", vFarmFrame[page].farmHeader.farmHeader.minorRev & 0x00FFFFFFFFFFFFFFLL);                                    //!< minor rev 
-    printf("\tPages Supported =   %" PRIu64"  \n", vFarmFrame[page].farmHeader.farmHeader.pagesSupported & 0x00FFFFFFFFFFFFFFLL);                             //!< number of pages supported
-    printf("\tLog Size        =   %" PRIu64"  \n", vFarmFrame[page].farmHeader.farmHeader.logSize & 0x00FFFFFFFFFFFFFFLL);                                    //!< log size in bytes
-    printf("\tPage Size       =   %" PRIu64"  \n", vFarmFrame[page].farmHeader.farmHeader.pageSize & 0x00FFFFFFFFFFFFFFLL);                                   //!< page size in bytes
-    printf("\tHeads Supported =   %" PRIu64"  \n", vFarmFrame[page].farmHeader.farmHeader.headsSupported & 0x00FFFFFFFFFFFFFFLL);                             //!< Maximum Drive Heads Supported
-    printf("\tNumber of Copies=   %" PRIu64"  \n", vFarmFrame[page].farmHeader.farmHeader.copies & 0x00FFFFFFFFFFFFFLL);                                      //!< Number of Historical Copies
+    printf("\tLog Signature:                      0x%" PRIX64" \n", vFarmFrame[page].farmHeader.farmHeader.signature );                                  //!< Log Signature = 0x00004641524D4552
+    printf("\tMajor Revision:                      %" PRIu64"  \n", vFarmFrame[page].farmHeader.farmHeader.majorRev & 0x00FFFFFFFFFFFFFFLL);                                    //!< Log Major rev
+    printf("\tMinor Revision:                      %" PRIu64"  \n", vFarmFrame[page].farmHeader.farmHeader.minorRev & 0x00FFFFFFFFFFFFFFLL);                                    //!< minor rev 
+    printf("\tPages Supported:                     %" PRIu64"  \n", vFarmFrame[page].farmHeader.farmHeader.pagesSupported & 0x00FFFFFFFFFFFFFFLL);                             //!< number of pages supported
+    printf("\tLog Size:                            %" PRIu64"  \n", vFarmFrame[page].farmHeader.farmHeader.logSize & 0x00FFFFFFFFFFFFFFLL);                                    //!< log size in bytes
+    printf("\tPage Size:                           %" PRIu64"  \n", vFarmFrame[page].farmHeader.farmHeader.pageSize & 0x00FFFFFFFFFFFFFFLL);                                   //!< page size in bytes
+    printf("\tHeads Supported:                     %" PRIu64"  \n", vFarmFrame[page].farmHeader.farmHeader.headsSupported & 0x00FFFFFFFFFFFFFFLL);                             //!< Maximum Drive Heads Supported
+    printf("\tReason for Frame Capture(debug):     %" PRId64"  \n", vFarmFrame[page].farmHeader.farmHeader.reasonForFrameCpature & 0x00FFFFFFFFFFFFF);	      //!< Reason for Frame Capture
 #endif
     json_set_name(pageInfo, "FARM Log Header");
 
@@ -2043,7 +1781,8 @@ eReturnValues CSCSI_Farm_Log::print_Header(JSONNODE *masterData)
 	json_push_back(pageInfo, json_new_i("Log Size", static_cast<uint32_t>(check_Status_Strip_Status(vFarmFrame[page].farmHeader.farmHeader.logSize))));
 	json_push_back(pageInfo, json_new_i("Page Size", static_cast<uint32_t>(check_Status_Strip_Status(vFarmFrame[page].farmHeader.farmHeader.pageSize))));
 	json_push_back(pageInfo, json_new_i("Heads Supported", static_cast<uint32_t>(check_Status_Strip_Status(vFarmFrame[page].farmHeader.farmHeader.headsSupported))));
-	json_push_back(pageInfo, json_new_i("Number of Copies", static_cast<uint32_t>(check_Status_Strip_Status(vFarmFrame[page].farmHeader.farmHeader.copies ))));
+    json_push_back(pageInfo, json_new_i("Reason for Frame Capture", static_cast<uint32_t>(check_Status_Strip_Status(vFarmFrame[page].farmHeader.farmHeader.reasonForFrameCpature))));
+    get_SMART_Save_Flages(pageInfo, M_Byte0(vFarmFrame[page].farmHeader.farmHeader.reasonForFrameCpature));
 
     json_push_back(masterData, pageInfo);
 
@@ -2154,8 +1893,8 @@ eReturnValues CSCSI_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint
 
     if (check_For_Active_Status(&vFarmFrame[page].driveInfo.dateOfAssembly))
     {
-        myStr.resize(DATESIZE);
-        memset((char*)myStr.c_str(), 0, DATESIZE);
+        myStr.resize(DATE_YEAR_DATE_SIZE);
+        memset((char*)myStr.c_str(), 0, DATE_YEAR_DATE_SIZE);
         uint16_t year = M_Word1(vFarmFrame[page].driveInfo.dateOfAssembly);
         uint16_t week = M_Word0(vFarmFrame[page].driveInfo.dateOfAssembly);
 
@@ -2164,6 +1903,11 @@ eReturnValues CSCSI_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint
 
         create_Year_Assembled_String(myStr, &week);
         json_push_back(pageInfo, json_new_a("Week of Assembled", (char*)myStr.c_str()));
+    }
+    else
+    {
+        json_push_back(pageInfo, json_new_a("Year of Assembled", "00"));
+        json_push_back(pageInfo, json_new_a("Week of Assembled", "00"));
     }
     json_push_back(masterData, pageInfo);
     return SUCCESS;
@@ -3639,7 +3383,7 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_FLED_Info(JSONNODE *masterData,
     printf("\tActuator ID:                                  %" PRIu64" \n", pFLED->actID & 0x00FFFFFFFFFFFFFFLL);                        //!< Actuator ID  
     printf("\tTotal Flash LED Events:                       %" PRIu64" \n", pFLED->totalFLEDEvents & 0x00FFFFFFFFFFFFFFLL);              //!< Total Flash LED Events
     printf("\tIndex of Last Flash LED:                      %" PRIu64" \n", pFLED->index & 0x00FFFFFFFFFFFFFFLL);                        //!< Index of last entry in FLED Info array below, in case the array wraps
-    for (i = 0; i < FLASHEVENTS; i++)
+    for (i = 0; i < FLASH_EVENTS; i++)
     {
 
         printf("\tInformation of Event %" PRIu16":             0x%" PRIx64" \n", i,pFLED->flashLEDArray[i] & 0x00FFFFFFFFFFFFFFLL);           //!< Info on the last 8 Flash LED (assert) Events, wrapping array
@@ -3664,7 +3408,7 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_FLED_Info(JSONNODE *masterData,
     set_json_64_bit_With_Status(pageInfo, "Actuator ID", pFLED->actID, false, m_showStatusBits);						                                        //!< LUN ID 
     set_json_64_bit_With_Status(pageInfo, "Total Flash LED Evnets", pFLED->totalFLEDEvents, false, m_showStatusBits);											//!< Head Load Events 
     set_json_64_bit_With_Status(pageInfo, "Index of Last Flash LED", pFLED->index, false, m_showStatusBits);					       
-    for (i = 0; i < FLASHEVENTS; i++)
+    for (i = 0; i < FLASH_EVENTS; i++)
     {
         JSONNODE *eventInfo = json_new(JSON_NODE);
         snprintf((char*)myStr.c_str(), BASIC, "Event %" PRIu16"", i);
@@ -3763,7 +3507,7 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Reallocation(JSONNODE *masterDa
     set_json_64_bit_With_Status(pageInfo, "Number of Reallocated Sectors", pReal->numberReallocatedSectors, false, m_showStatusBits);											//!< Head Load Events 
     set_json_64_bit_With_Status(pageInfo, "Number of Reallocated Candidate Sectors", pReal->numberReallocatedCandidates, false, m_showStatusBits);
  
-    for (i = 0; i < 15; i++)
+    for (i = 0; i < REALLOCATIONEVENTS; i++)
     {
         JSONNODE *eventInfo = json_new(JSON_NODE);
         snprintf((char*)myStr.c_str(), BASIC, "Reallocated Event %" PRIu16"", i);
