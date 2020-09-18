@@ -583,7 +583,10 @@ bool CSCSI_Farm_Log::swap_Bytes_sDriveInfo(sScsiDriveInfo *di)
     byte_Swap_64(&di->lastTimeStamp);
     byte_Swap_64(&di->worldWideName);
     byte_Swap_64(&di->worldWideName2);
-    byte_Swap_64(&di->dateOfAssembly);
+    if (di->pPageHeader.plen > 0xf0)
+    {
+        byte_Swap_64(&di->dateOfAssembly);
+    }
     return true;
 }
 //-----------------------------------------------------------------------------
@@ -618,6 +621,7 @@ bool CSCSI_Farm_Log::swap_Bytes_sDrive_Info_Page_06(sGeneralDriveInfoPage06 *gd)
     
     return true;
 }
+
 //-----------------------------------------------------------------------------
 //
 //! \fn create_Device_Interface_String()
@@ -644,14 +648,18 @@ bool CSCSI_Farm_Log::swap_Bytes_sWorkLoadStat(sScsiWorkLoadStat *wl)
     byte_Swap_64(&wl->workLoad.totalReadCommands);
     byte_Swap_64(&wl->workLoad.totalWriteCommands);
     byte_Swap_64(&wl->workLoad.workloadPercentage);
-    byte_Swap_64(&wl->workLoad.totalReadCmdsFromFrames1);
-    byte_Swap_64(&wl->workLoad.totalReadCmdsFromFrames2);
-    byte_Swap_64(&wl->workLoad.totalReadCmdsFromFrames3);
-    byte_Swap_64(&wl->workLoad.totalReadCmdsFromFrames4);   
-    byte_Swap_64(&wl->workLoad.totalWriteCmdsFromFrames1);
-    byte_Swap_64(&wl->workLoad.totalWriteCmdsFromFrames2);
-    byte_Swap_64(&wl->workLoad.totalWriteCmdsFromFrames3);
-    byte_Swap_64(&wl->workLoad.totalWriteCmdsFromFrames4);
+    // found a log where the length of the workload log does not match the spec. Need to check for the 0x50 length
+    if (wl->PageHeader.plen > 0x50)
+    {
+        byte_Swap_64(&wl->workLoad.totalReadCmdsFromFrames1);
+        byte_Swap_64(&wl->workLoad.totalReadCmdsFromFrames2);
+        byte_Swap_64(&wl->workLoad.totalReadCmdsFromFrames3);
+        byte_Swap_64(&wl->workLoad.totalReadCmdsFromFrames4);
+        byte_Swap_64(&wl->workLoad.totalWriteCmdsFromFrames1);
+        byte_Swap_64(&wl->workLoad.totalWriteCmdsFromFrames2);
+        byte_Swap_64(&wl->workLoad.totalWriteCmdsFromFrames3);
+        byte_Swap_64(&wl->workLoad.totalWriteCmdsFromFrames4);
+    }
     return true;
 }
 //-----------------------------------------------------------------------------
@@ -734,12 +742,15 @@ bool CSCSI_Farm_Log::swap_Bytes_sEnvironmentStat(sScsiEnvironmentStat *es)
     byte_Swap_64(&es->minTemp);
     byte_Swap_16(&es->pPageHeader.pramCode);
     byte_Swap_64(&es->pageNumber);
-    byte_Swap_64(&es->average12v);
-    byte_Swap_64(&es->average5v);
-    byte_Swap_64(&es->max12v);
-    byte_Swap_64(&es->max5v);
-    byte_Swap_64(&es->min12v);
-    byte_Swap_64(&es->min5v);
+    if (es->pPageHeader.plen > 0xa0)
+    {
+        byte_Swap_64(&es->average12v);
+        byte_Swap_64(&es->average5v);
+        byte_Swap_64(&es->max12v);
+        byte_Swap_64(&es->max5v);
+        byte_Swap_64(&es->min12v);
+        byte_Swap_64(&es->min5v);
+    }
     return true;
 }
 
@@ -1039,6 +1050,10 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                         if (headerAlreadyFound == false)                                    // check to see if we have already found the header
                         {
                             m_pHeader = (sScsiFarmHeader *)&pBuf[offset];                    // get the Farm Header information
+                            if (m_pHeader->pPageHeader.plen > 0x40)
+                            {
+                                byte_Swap_64(&m_pHeader->farmHeader.reasonForFrameCpature);  // need to swap the header information
+                            }
                             memcpy((sScsiFarmHeader *)&pFarmFrame->farmHeader, m_pHeader, sizeof(sScsiFarmHeader));
                             offset += (m_pageParam->plen + sizeof(sScsiPageParameter));
                             headerAlreadyFound = true;                                      // set the header to true so we will not look at the data a second time
@@ -1067,12 +1082,12 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                    
                 case  WORKLOAD_STATISTICS_PARAMETER:
                     {
-                       
+                      
                         sScsiWorkLoadStat *pworkLoad = NULL; 										// get the work load information
                         pworkLoad = (sScsiWorkLoadStat *)&pBuf[offset ];
                         swap_Bytes_sWorkLoadStat(pworkLoad);
                         memcpy((sScsiWorkLoadStat *)&pFarmFrame->workLoadPage, pworkLoad, sizeof(sScsiWorkLoadStat));
-                        offset += (m_pageParam->plen + sizeof(sScsiPageParameter));
+                        offset += (pworkLoad->PageHeader.plen + sizeof(sScsiPageParameter));
                     }
                     break;
                    
@@ -1760,7 +1775,7 @@ eReturnValues CSCSI_Farm_Log::print_Header(JSONNODE *masterData)
 	uint32_t page = 0;
     std::string myStr = "";
     JSONNODE *pageInfo = json_new(JSON_NODE);
-    //sScsiFarmHeader *header = (sScsiFarmHeader *)&pBuf[4];                                                                // pointer to the header to get the signature
+                                                          
 #if defined _DEBUG
     printf("\tLog Signature:                      0x%" PRIX64" \n", vFarmFrame[page].farmHeader.farmHeader.signature );                                  //!< Log Signature = 0x00004641524D4552
     printf("\tMajor Revision:                      %" PRIu64"  \n", vFarmFrame[page].farmHeader.farmHeader.majorRev & 0x00FFFFFFFFFFFFFFLL);                                    //!< Log Major rev
@@ -2041,15 +2056,18 @@ eReturnValues CSCSI_Farm_Log::print_WorkLoad(JSONNODE *masterData, uint32_t page
     set_json_string_With_Status(pageInfo, "Logical Sectors Written", (char*)myStr.c_str(), vFarmFrame[page].workLoadPage.workLoad.logicalSecWritten, m_showStatusBits);					//!< Logical Sectors Written
     snprintf((char*)myStr.c_str(), BASIC, "%llu", vFarmFrame[page].workLoadPage.workLoad.logicalSecRead & 0x00FFFFFFFFFFFFFFLL);
     set_json_string_With_Status(pageInfo, "Logical Sectors Read", (char*)myStr.c_str(), vFarmFrame[page].workLoadPage.workLoad.logicalSecRead, m_showStatusBits);						//!< Logical Sectors Read
-    set_json_64_bit_With_Status(pageInfo, "Number of Read commands from 0-3.125% of LBA space", vFarmFrame[page].workLoadPage.workLoad.totalReadCmdsFromFrames1, false, m_showStatusBits);		//!< Number of Read commands from 0-3.125% of LBA space for last 3 SMART Summary Frames
-    set_json_64_bit_With_Status(pageInfo, "Number of Read commands from 3.125-25% of LBA space", vFarmFrame[page].workLoadPage.workLoad.totalReadCmdsFromFrames2, false, m_showStatusBits);		//!< Number of Read commands from 3.125-25% of LBA space for last 3 SMART Summary Frames
-    set_json_64_bit_With_Status(pageInfo, "Number of Read commands from 25-50% of LBA space", vFarmFrame[page].workLoadPage.workLoad.totalReadCmdsFromFrames3, false, m_showStatusBits);		//!< Number of Read commands from 25-50% of LBA space for last 3 SMART Summary Frames
-    set_json_64_bit_With_Status(pageInfo, "Number of Read commands from 50-100% of LBA space", vFarmFrame[page].workLoadPage.workLoad.totalReadCmdsFromFrames4, false, m_showStatusBits);		//!< Number of Read commands from 50-100% of LBA space for last 3 SMART Summary Frames 
-    set_json_64_bit_With_Status(pageInfo, "Number of Write commands from 0-3.125% of LBA space", vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames1, false, m_showStatusBits);	//!< Number of Write commands from 0-3.125% of LBA space for last 3 SMART Summary Frames
-    set_json_64_bit_With_Status(pageInfo, "Number of Write commands from 3.125-25% of LBA space", vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames2, false, m_showStatusBits);	//!< Number of Write commands from 3.125-25% of LBA space for last 3 SMART Summary Frames
-    set_json_64_bit_With_Status(pageInfo, "Number of Write commands from 25-50% of LBA space", vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames3, false, m_showStatusBits);		//!< Number of Write commands from 25-50% of LBA space for last 3 SMART Summary Frames
-    set_json_64_bit_With_Status(pageInfo, "Number of Write commands from 50-100% of LBA space", vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames4, false, m_showStatusBits);		//!< Number of Write commands from 50-100% of LBA space for last 3 SMART Summary Frames 
-
+    // found a log where the length of the workload log does not match the spec. Need to check for the 0x50 length
+    if (vFarmFrame[page].workLoadPage.PageHeader.plen > 0x50)
+    {
+        set_json_64_bit_With_Status(pageInfo, "Number of Read commands from 0-3.125% of LBA space", vFarmFrame[page].workLoadPage.workLoad.totalReadCmdsFromFrames1, false, m_showStatusBits);		//!< Number of Read commands from 0-3.125% of LBA space for last 3 SMART Summary Frames
+        set_json_64_bit_With_Status(pageInfo, "Number of Read commands from 3.125-25% of LBA space", vFarmFrame[page].workLoadPage.workLoad.totalReadCmdsFromFrames2, false, m_showStatusBits);		//!< Number of Read commands from 3.125-25% of LBA space for last 3 SMART Summary Frames
+        set_json_64_bit_With_Status(pageInfo, "Number of Read commands from 25-50% of LBA space", vFarmFrame[page].workLoadPage.workLoad.totalReadCmdsFromFrames3, false, m_showStatusBits);		//!< Number of Read commands from 25-50% of LBA space for last 3 SMART Summary Frames
+        set_json_64_bit_With_Status(pageInfo, "Number of Read commands from 50-100% of LBA space", vFarmFrame[page].workLoadPage.workLoad.totalReadCmdsFromFrames4, false, m_showStatusBits);		//!< Number of Read commands from 50-100% of LBA space for last 3 SMART Summary Frames 
+        set_json_64_bit_With_Status(pageInfo, "Number of Write commands from 0-3.125% of LBA space", vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames1, false, m_showStatusBits);	//!< Number of Write commands from 0-3.125% of LBA space for last 3 SMART Summary Frames
+        set_json_64_bit_With_Status(pageInfo, "Number of Write commands from 3.125-25% of LBA space", vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames2, false, m_showStatusBits);	//!< Number of Write commands from 3.125-25% of LBA space for last 3 SMART Summary Frames
+        set_json_64_bit_With_Status(pageInfo, "Number of Write commands from 25-50% of LBA space", vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames3, false, m_showStatusBits);		//!< Number of Write commands from 25-50% of LBA space for last 3 SMART Summary Frames
+        set_json_64_bit_With_Status(pageInfo, "Number of Write commands from 50-100% of LBA space", vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames4, false, m_showStatusBits);		//!< Number of Write commands from 50-100% of LBA space for last 3 SMART Summary Frames 
+    }
     json_push_back(masterData, pageInfo);
 
     return SUCCESS;
@@ -2372,24 +2390,24 @@ eReturnValues CSCSI_Farm_Log::print_Enviroment_Statistics_Page_07(JSONNODE *mast
     }
     json_set_name(pageInfo, (char*)myStr.c_str());
 
-    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].envStatPage07.average12v)) / 1000), \
-        static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].envStatPage07.average12v)) % 1000));
+    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", static_cast<uint16_t>(M_Word0(check_Status_Strip_Status(vFarmFrame[page].envStatPage07.average12v)) / 1000), \
+        static_cast<uint16_t>(M_Word0(check_Status_Strip_Status(vFarmFrame[page].envStatPage07.average12v)) % 1000));
     set_json_string_With_Status(pageInfo, "Current 12 volts", (char*)myStr.c_str(), vFarmFrame[page].envStatPage07.average12v, m_showStatusBits);
-    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].envStatPage07.min12v)) / 1000), \
-        static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].envStatPage07.min12v)) % 1000));
+    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", static_cast<uint16_t>(M_Word0(check_Status_Strip_Status(vFarmFrame[page].envStatPage07.min12v)) / 1000), \
+        static_cast<uint16_t>(M_Word0(check_Status_Strip_Status(vFarmFrame[page].envStatPage07.min12v)) % 1000));
     set_json_string_With_Status(pageInfo, "Minimum 12 volts", (char*)myStr.c_str(), vFarmFrame[page].envStatPage07.min12v, m_showStatusBits);
-    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].envStatPage07.max12v)) / 1000), \
-        static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].envStatPage07.max12v)) % 1000));
+    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", static_cast<uint16_t>(M_Word0(check_Status_Strip_Status(vFarmFrame[page].envStatPage07.max12v)) / 1000), \
+        static_cast<uint16_t>(M_Word0(check_Status_Strip_Status(vFarmFrame[page].envStatPage07.max12v)) % 1000));
     set_json_string_With_Status(pageInfo, "Maximum 12 volts", (char*)myStr.c_str(), vFarmFrame[page].envStatPage07.max12v, m_showStatusBits);
 
-    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].envStatPage07.average5v)) / 1000), \
-        static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].envStatPage07.average5v)) % 1000));
+    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", (M_Word0(check_Status_Strip_Status(vFarmFrame[page].envStatPage07.average5v)) / 1000), \
+        static_cast<uint16_t>(M_Word0(check_Status_Strip_Status(vFarmFrame[page].envStatPage07.average5v)) % 1000));
     set_json_string_With_Status(pageInfo, "Current 5 volts", (char*)myStr.c_str(), vFarmFrame[page].envStatPage07.average5v, m_showStatusBits);
-    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].envStatPage07.min5v)) / 1000), \
-        static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].envStatPage07.min5v)) % 1000));
+    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", (M_Word0(check_Status_Strip_Status(vFarmFrame[page].envStatPage07.min5v)) / 1000), \
+        M_Word0(check_Status_Strip_Status(vFarmFrame[page].envStatPage07.min5v)) % 1000);
     set_json_string_With_Status(pageInfo, "Maximum 5 volts", (char*)myStr.c_str(), vFarmFrame[page].envStatPage07.min5v, m_showStatusBits);
-    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].envStatPage07.max5v)) / 1000), \
-        static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].envStatPage07.max5v)) % 1000));
+    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", (M_Word0(check_Status_Strip_Status(vFarmFrame[page].envStatPage07.max5v)) / 1000), \
+        M_Word0(check_Status_Strip_Status(vFarmFrame[page].envStatPage07.max5v)) % 1000);
     set_json_string_With_Status(pageInfo, "Maximum 5 volts", (char*)myStr.c_str(), vFarmFrame[page].envStatPage07.max5v, m_showStatusBits);
     
     json_push_back(masterData, pageInfo);
@@ -3376,7 +3394,7 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_FLED_Info(JSONNODE *masterData,
     }
     else
     {
-        printf("\nActuator 0x%" PRIx16" FLED Info From Farm Log copy: %" PRIu32"\n", M_Word0(pFLED->actID), page);
+        printf("\nActuator 0x%" PRIx16" FLED Info From Farm Log copy %" PRIu32"\n", M_Word0(pFLED->actID), page);
     }
     printf("\tPage Number:                                  0x%" PRIx64" \n", pFLED->pageNumber & 0x00FFFFFFFFFFFFFFLL);                   //!< Page Number 
     printf("\tCopy Number:                                  %" PRIu64" \n", pFLED->copyNumber & 0x00FFFFFFFFFFFFFFLL);                   //!< Copy Number 
@@ -3399,7 +3417,7 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_FLED_Info(JSONNODE *masterData,
     }
     else
     {
-        snprintf((char*)myStr.c_str(), BASIC, "Actuator Flash LED Information 0x%" PRIx16" From Farm Log copy: %" PRId32"", M_Word0(pFLED->actID), page);
+        snprintf((char*)myStr.c_str(), BASIC, "Actuator Flash LED Information 0x%" PRIx16" From Farm Log copy %" PRId32"", M_Word0(pFLED->actID), page);
     }
     json_set_name(pageInfo, (char*)myStr.c_str());
 
@@ -3479,7 +3497,7 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Reallocation(JSONNODE *masterDa
     }
     else
     {
-        printf("\nLUN Actuator 0x%" PRIx16" Reallocation From Farm Log copy: %" PRIu32"\n", M_Word0(pReal->actID), page);
+        printf("\nLUN Actuator 0x%" PRIx16" Reallocation From Farm Log copy %" PRIu32"\n", M_Word0(pReal->actID), page);
     }
     printf("\tPage Number:                                  0x%" PRIx64" \n", pReal->pageNumber & 0x00FFFFFFFFFFFFFFLL);                   //!< Page Number 
     printf("\tCopy Number:                                  %" PRIu64" \n", pReal->copyNumber & 0x00FFFFFFFFFFFFFFLL);                   //!< Copy Number 
@@ -3488,7 +3506,8 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Reallocation(JSONNODE *masterDa
     printf("\tNumber of Reallocated Candidate Sectors:      %" PRIu64" \n", pReal->numberReallocatedCandidates & 0x00FFFFFFFFFFFFFFLL);
     for (i = 0; i < REALLOCATIONEVENTS; i++)
     {
-        printf("\tReallocated Sectors Cause:                    %" PRIu64" \n", pReal->reallocatedCauses[i] & 0x00FFFFFFFFFFFFFFLL);
+        get_Reallocation_Cause_Meanings(myStr, i);
+        printf("\t%-33s:            %" PRIu64" \n",(char*)myStr.c_str(), pReal->reallocatedCauses[i] & 0x00FFFFFFFFFFFFFFLL);
     }
 #endif
     if (pReal->copyNumber == FACTORYCOPY)
@@ -3509,15 +3528,8 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Reallocation(JSONNODE *masterDa
  
     for (i = 0; i < REALLOCATIONEVENTS; i++)
     {
-        JSONNODE *eventInfo = json_new(JSON_NODE);
-        snprintf((char*)myStr.c_str(), BASIC, "Reallocated Event %" PRIu16"", i);
-        json_set_name(eventInfo, (char*)myStr.c_str());
-
-        set_json_64_bit_With_Status(eventInfo, "Reallocated Sectors Cause", pReal->reallocatedCauses[i] , false, m_showStatusBits);
-        get_Reallocation_Cause_Meanings(myStr, M_Word0(pReal->reallocatedCauses[i]));
-        set_json_string_With_Status(eventInfo, "Reallocation Meaning", (char*)myStr.c_str(), pReal->reallocatedCauses[i], m_showStatusBits);
-
-        json_push_back(pageInfo, eventInfo);
+        get_Reallocation_Cause_Meanings(myStr, i);
+        set_json_64_bit_With_Status(pageInfo, (char*)myStr.c_str(), pReal->reallocatedCauses[i] , false, m_showStatusBits);
     }
     json_push_back(masterData, pageInfo);
 

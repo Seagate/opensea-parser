@@ -683,17 +683,10 @@ eReturnValues CATA_Farm_Log::print_Error_Information(JSONNODE *masterData, uint3
         }
     }
 
-    for (loopCount = 0; loopCount < REALLOCATIONEVENTS; loopCount++)
+    for (loopCount = 0; loopCount < REALLOCATIONEVENTS; loopCount)
     {
-        JSONNODE *eventInfo = json_new(JSON_NODE);
-        snprintf((char*)myStr.c_str(), BASIC, "Reallocated Event %" PRIu32"", loopCount);
-        json_set_name(eventInfo, (char*)myStr.c_str());
-
-        set_json_64_bit_With_Status(eventInfo, "Reallocated Sectors Cause", vFarmFrame[page].errorPage.reallocatedSectors[loopCount], false, m_showStatusBits);
-        get_Reallocation_Cause_Meanings(myStr, M_Word0(vFarmFrame[page].errorPage.reallocatedSectors[loopCount]));
-        set_json_string_With_Status(eventInfo, "Reallocation Meaning", (char*)myStr.c_str(), vFarmFrame[page].errorPage.reallocatedSectors[loopCount], m_showStatusBits);
-
-        json_push_back(pageInfo, eventInfo);
+        get_Reallocation_Cause_Meanings(myStr, loopCount);
+        set_json_64_bit_With_Status(pageInfo, (char*)myStr.c_str(), vFarmFrame[page].errorPage.reallocatedSectors[loopCount], false, m_showStatusBits);
     }
 
     set_json_64_bit_With_Status(pageInfo, "Cum Lifetime Unrecoverable Read errors due to ERC", vFarmFrame[page].errorPage.cumLifeTimeECCReadDueErrorRecovery, false, m_showStatusBits);
@@ -759,42 +752,42 @@ eReturnValues CATA_Farm_Log::print_Enviroment_Information(JSONNODE *masterData, 
     printf("\tCurrent Relative Humidity (debug):               %" PRIu64" \n", vFarmFrame[page].environmentPage.humidity & 0x00FFFFFFFFFFFFFFLL);         //!< Current Relative Humidity (in units of .1%)
     printf("\tHumidity Mixed Ratio (debug):                    %" PRIu64" \n", ((vFarmFrame[page].environmentPage.humidityRatio & 0x00FFFFFFFFFFFFFFLL) / 8)); //!< Humidity Mixed Ratio multiplied by 8 (divide by 8 to get actual value)
     printf("\tCurrent Motor Power (debug):                     %" PRIu64" \n", vFarmFrame[page].environmentPage.currentMotorPower & 0x00FFFFFFFFFFFFFFLL); //!< Current Motor Power, value from most recent SMART Summary Frame6 
-    printf("\tCurrent 12 volts (debug):                      0x%" PRIx64" Translation %" PRIu16". % 02" PRId16"  \n", vFarmFrame[page].environmentPage.current12v & 0x00FFFFFFFFFFFFFFLL, \
+    printf("\tCurrent 12 volts (debug):                      0x%" PRIx64" Translation %" PRIu16". % 03" PRId16"  \n", vFarmFrame[page].environmentPage.current12v & 0x00FFFFFFFFFFFFFFLL, \
         (M_Word0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.current12v)) / 1000), (M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.current12v)) % 1000) );
 
-    printf("\tMinimum 12 volts (debug):                      0x%" PRIx64" Translation %" PRIu16". % 02" PRId16"  \n", vFarmFrame[page].environmentPage.min12v & 0x00FFFFFFFFFFFFFFLL, \
+    printf("\tMinimum 12 volts (debug):                      0x%" PRIx64" Translation %" PRIu16". % 03" PRId16"  \n", vFarmFrame[page].environmentPage.min12v & 0x00FFFFFFFFFFFFFFLL, \
         (M_Word0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.min12v)) / 1000), (M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.min12v)) % 1000));
  
-    printf("\tMaximum 12 volts (debug):                      0x%" PRIx64" Translation %" PRIu16". % 02" PRId16"  \n", vFarmFrame[page].environmentPage.max12v & 0x00FFFFFFFFFFFFFFLL, \
+    printf("\tMaximum 12 volts (debug):                      0x%" PRIx64" Translation %" PRIu16". % 03" PRId16"  \n", vFarmFrame[page].environmentPage.max12v & 0x00FFFFFFFFFFFFFFLL, \
         (M_Word0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.max12v)) / 1000), (M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.max12v)) % 1000));
 
 
-    printf("\tCurrent 5 volts (debug):                       0x%" PRIx64" Translation %" PRIu16". % 02" PRId16"  \n", vFarmFrame[page].environmentPage.current5v & 0x00FFFFFFFFFFFFFFLL, \
+    printf("\tCurrent 5 volts (debug):                       0x%" PRIx64" Translation %" PRIu16". % 03" PRId16"  \n", vFarmFrame[page].environmentPage.current5v & 0x00FFFFFFFFFFFFFFLL, \
         (M_Word0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.current5v)) / 1000), (M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.current5v)) % 1000));
 
-    printf("\tMaximum 5 volts (debug):                       0x%" PRIx64" Translation %" PRIu16". % 02" PRId16"  \n", vFarmFrame[page].environmentPage.min5v & 0x00FFFFFFFFFFFFFFLL, \
+    printf("\tMaximum 5 volts (debug):                       0x%" PRIx64" Translation %" PRIu16". % 03" PRId16"  \n", vFarmFrame[page].environmentPage.min5v & 0x00FFFFFFFFFFFFFFLL, \
         (M_Word0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.min5v)) / 1000), (M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.min5v)) % 1000));
 
-    printf("\tMaximum 5 volts (debug):                       0x%" PRIx64" Translation %" PRIu16". % 02" PRId16"  \n", vFarmFrame[page].environmentPage.max5v & 0x00FFFFFFFFFFFFFFLL, \
+    printf("\tMaximum 5 volts (debug):                       0x%" PRIx64" Translation %" PRIu16". % 03" PRId16"  \n", vFarmFrame[page].environmentPage.max5v & 0x00FFFFFFFFFFFFFFLL, \
         (M_Word0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.max5v)) / 1000), (M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.max5v)) % 1000));
 
 
-    printf("\t12V Power Average (debug):                     0x%" PRIx64" Translation %" PRIu16". % 02" PRId16" \n", vFarmFrame[page].environmentPage.powerAvg12v & 0x00FFFFFFFFFFFFFFLL, \
+    printf("\t12V Power Average (debug):                     0x%" PRIx64" Translation %" PRIu16". % 03" PRId16" \n", vFarmFrame[page].environmentPage.powerAvg12v & 0x00FFFFFFFFFFFFFFLL, \
         static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.powerAvg12v)) / 1000), static_cast<uint16_t>(vFarmFrame[page].environmentPage.powerAvg12v % 1000));
 
-    printf("\t12V Power Minimum (debug):                     0x%" PRIx64" Translation %" PRIu16". % 02" PRId16" \n", vFarmFrame[page].environmentPage.powerMin12v & 0x00FFFFFFFFFFFFFFLL, \
+    printf("\t12V Power Minimum (debug):                     0x%" PRIx64" Translation %" PRIu16". % 03" PRId16" \n", vFarmFrame[page].environmentPage.powerMin12v & 0x00FFFFFFFFFFFFFFLL, \
         static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.powerMin12v)) / 1000), static_cast<uint16_t>(vFarmFrame[page].environmentPage.powerMin12v % 1000));
 
-    printf("\t12V Power Maximum (debug):                     0x%" PRIx64" Translation %" PRIu16". % 02" PRId16" \n", vFarmFrame[page].environmentPage.powerMax12v & 0x00FFFFFFFFFFFFFFLL, \
+    printf("\t12V Power Maximum (debug):                     0x%" PRIx64" Translation %" PRIu16". % 03" PRId16" \n", vFarmFrame[page].environmentPage.powerMax12v & 0x00FFFFFFFFFFFFFFLL, \
         static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.powerMax12v)) / 1000), static_cast<uint16_t>(vFarmFrame[page].environmentPage.powerMax12v % 1000));
 
-    printf("\t5V Power Average(debug):                       0x%" PRIx64" Translation %" PRIu16". % 02" PRId16"  \n", vFarmFrame[page].environmentPage.powerAvg5v & 0x00FFFFFFFFFFFFFFLL, \
+    printf("\t5V Power Average(debug):                       0x%" PRIx64" Translation %" PRIu16". % 03" PRId16"  \n", vFarmFrame[page].environmentPage.powerAvg5v & 0x00FFFFFFFFFFFFFFLL, \
         static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.powerAvg5v)) / 1000), static_cast<uint16_t>(vFarmFrame[page].environmentPage.powerAvg5v % 1000));
     
-    printf("\t5V Power Minimum (debug):                      0x%" PRIx64" Translation %" PRIu16". % 02" PRId16"  \n", vFarmFrame[page].environmentPage.powerMin5v & 0x00FFFFFFFFFFFFFFLL, \
+    printf("\t5V Power Minimum (debug):                      0x%" PRIx64" Translation %" PRIu16". % 03" PRId16"  \n", vFarmFrame[page].environmentPage.powerMin5v & 0x00FFFFFFFFFFFFFFLL, \
         static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.powerMin5v)) / 1000), static_cast<uint16_t>(vFarmFrame[page].environmentPage.powerMin5v % 1000));
     
-    printf("\t5V Power Maximum (debug):                      0x%" PRIx64" Translation %" PRIu16". % 02" PRId16" \n", vFarmFrame[page].environmentPage.powerMax5v & 0x00FFFFFFFFFFFFFFLL, \
+    printf("\t5V Power Maximum (debug):                      0x%" PRIx64" Translation %" PRIu16". % 03" PRId16" \n", vFarmFrame[page].environmentPage.powerMax5v & 0x00FFFFFFFFFFFFFFLL, \
         static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.powerMax5v)) / 1000), static_cast<uint16_t>(vFarmFrame[page].environmentPage.powerMax5v % 1000));
 
 
@@ -846,40 +839,40 @@ eReturnValues CATA_Farm_Log::print_Enviroment_Information(JSONNODE *masterData, 
     set_json_int_With_Status(pageInfo, "Current Motor Power", vFarmFrame[page].environmentPage.currentMotorPower, m_showStatusBits);												//!< Current Motor Power, value from most recent SMART Summary Frame6
 
 
-    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%02" PRId16"", (M_Word0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.current12v)) / 1000), \
-        (M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.current12v)) % 1000));
+    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", (M_Word0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.current12v)) / 1000), \
+        (M_Word0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.current12v)) % 1000));
     set_json_string_With_Status(pageInfo, "Current 12 volts", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.current12v, m_showStatusBits);
-    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%02" PRId16"", (M_Word0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.min12v)) / 1000), \
-        (M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.min12v)) % 1000));
+    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", (M_Word0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.min12v)) / 1000), \
+        (M_Word0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.min12v)) % 1000));
     set_json_string_With_Status(pageInfo, "Minimum 12 volts", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.min12v, m_showStatusBits);
-    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%02" PRId16"", (M_Word0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.max12v)) / 1000), \
-        (M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.max12v)) % 1000));
+    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", (M_Word0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.max12v)) / 1000), \
+        (M_Word0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.max12v)) % 1000));
     set_json_string_With_Status(pageInfo, "Maximum 12 volts", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.max12v, m_showStatusBits);
 
-    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%" PRId16"", (M_Word0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.current5v)) / 1000), \
-        (M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.current5v)) % 1000));
+    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", (M_Word0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.current5v)) / 1000), \
+        (M_Word0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.current5v)) % 1000));
     set_json_string_With_Status(pageInfo, "Current 5 volts", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.current5v, m_showStatusBits);
-    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%02" PRId16"", (M_Word0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.min5v)) / 1000), \
-        (M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.min5v)) % 1000));
+    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", (M_Word0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.min5v)) / 1000), \
+        (M_Word0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.min5v)) % 1000));
     set_json_string_With_Status(pageInfo, "Maximum 5 volts", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.min5v, m_showStatusBits);
-    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%02" PRId16"", (M_Word0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.max5v)) / 1000), \
-        (M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.max5v)) % 1000));
+    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", (M_Word0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.max5v)) / 1000), \
+        (M_Word0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.max5v)) % 1000));
     set_json_string_With_Status(pageInfo, "Maximum 5 volts", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.max5v, m_showStatusBits);
 
 
     
-    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%02" PRId16"", static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.powerAvg12v)) / 1000), static_cast<uint16_t>(vFarmFrame[page].environmentPage.powerAvg12v % 1000));
+    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", M_Word0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.powerAvg12v)) / 1000, M_Word0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.powerAvg12v)) % 1000);
     set_json_string_With_Status(pageInfo, "12V Power Average", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.powerAvg12v, m_showStatusBits);
-    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%02" PRId16"", static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.powerMin12v)) / 1000), static_cast<uint16_t>(vFarmFrame[page].environmentPage.powerMin12v % 1000));
+    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", M_Word0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.powerMin12v)) / 1000, M_Word0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.powerMin12v)) % 1000);
     set_json_string_With_Status(pageInfo, "12V Power Minimum", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.powerMin12v, m_showStatusBits);
-    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%02" PRId16"", static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.powerMax12v)) / 1000), static_cast<uint16_t>(vFarmFrame[page].environmentPage.powerMax12v % 1000));
+    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", M_Word0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.powerMax12v)) / 1000, M_Word0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.powerMax12v)) % 1000);
     set_json_string_With_Status(pageInfo, "12V Power Maximum", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.powerMax12v, m_showStatusBits);
 
-    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%" PRId16"", static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.powerAvg5v)) / 1000), static_cast<uint16_t>(vFarmFrame[page].environmentPage.powerAvg5v % 1000));
+    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", M_Word0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.powerAvg5v)) / 1000, M_Word0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.powerAvg5v)) % 1000);
     set_json_string_With_Status(pageInfo, "5V Power Average", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.powerAvg5v, m_showStatusBits);
-    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%02" PRId16"", static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.powerMin5v)) / 1000), static_cast<uint16_t>(vFarmFrame[page].environmentPage.powerMin5v % 1000));
+    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", M_Word0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.powerMin5v)) / 1000, M_Word0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.powerMin5v)) % 1000);
     set_json_string_With_Status(pageInfo, "5V Power Minimum", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.powerMin5v, m_showStatusBits);
-    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%02" PRId16"", static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.powerMax5v)) / 1000), static_cast<uint16_t>(vFarmFrame[page].environmentPage.powerMax5v % 1000));
+    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", M_Word0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.powerMax5v)) / 1000, M_Word0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.powerMax5v)) % 1000);
     set_json_string_With_Status(pageInfo, "5V Power Maximum", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.powerMax5v, m_showStatusBits);
  
 
