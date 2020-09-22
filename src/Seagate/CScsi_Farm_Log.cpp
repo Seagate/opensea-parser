@@ -1068,9 +1068,8 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                 case  GENERAL_DRIVE_INFORMATION_PARAMETER:
                     {
                         m_pDriveInfo = (sScsiDriveInfo *)&pBuf[offset ];														// get the id drive information at the time.
-                        swap_Bytes_sDriveInfo(m_pDriveInfo);
                         memcpy(&pFarmFrame->driveInfo,m_pDriveInfo, sizeof(sScsiDriveInfo));
-
+                        swap_Bytes_sDriveInfo(&pFarmFrame->driveInfo);
                         create_Serial_Number(pFarmFrame->identStringInfo.serialNumber, m_pDriveInfo);							// create the serial number
                         create_World_Wide_Name(pFarmFrame->identStringInfo.worldWideName, m_pDriveInfo);						// create the wwwn
                         create_Firmware_String(pFarmFrame->identStringInfo.firmwareRev, m_pDriveInfo);							// create the firmware string
@@ -1085,8 +1084,8 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                       
                         sScsiWorkLoadStat *pworkLoad = NULL; 										// get the work load information
                         pworkLoad = (sScsiWorkLoadStat *)&pBuf[offset ];
-                        swap_Bytes_sWorkLoadStat(pworkLoad);
-                        memcpy((sScsiWorkLoadStat *)&pFarmFrame->workLoadPage, pworkLoad, sizeof(sScsiWorkLoadStat));
+                        memcpy((sScsiWorkLoadStat *)&pFarmFrame->workLoadPage, pworkLoad, pworkLoad->PageHeader.plen);
+                        swap_Bytes_sWorkLoadStat(&pFarmFrame->workLoadPage);
                         offset += (pworkLoad->PageHeader.plen + sizeof(sScsiPageParameter));
                     }
                     break;
@@ -1097,16 +1096,15 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     {
                         sScsiErrorStat *pError;                                                     // get the error status
                         pError = (sScsiErrorStat *)&pBuf[offset];
-                        memcpy((sScsiErrorStat *)&pFarmFrame->errorPage.errorStat, pError, sizeof(sScsiErrorStat));
+                        memcpy((sScsiErrorStat *)&pFarmFrame->errorPage.errorStat, pError, pError->pPageHeader.plen);
                         swap_Bytes_sErrorStat(&pFarmFrame->errorPage);
-                        //memcpy((sScsiErrorStat *)&pFarmFrame->errorPage.errorStat, pError, sizeof(sScsiErrorStat));
                         offset += (pError->pPageHeader.plen + sizeof(sScsiPageParameter));
                     }
                     else
                     {
                         sScsiErrorVersion4 *pError;                                                     // get the error status
                         pError = (sScsiErrorVersion4 *)&pBuf[offset];
-                        memcpy((sScsiErrorVersion4 *)&pFarmFrame->errorPage.errorV4, pError, sizeof(sScsiErrorVersion4));
+                        memcpy((sScsiErrorVersion4 *)&pFarmFrame->errorPage.errorV4, pError, pError->pPageHeader.plen);
                         swap_Bytes_sErrorStat(&pFarmFrame->errorPage);
                         offset += (pError->pPageHeader.plen + sizeof(sScsiPageParameter));
                     }
@@ -1117,8 +1115,8 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                 {
                     sScsiEnvironmentStat *pEnvironment;                            // get the envirmonent information 
                     pEnvironment = (sScsiEnvironmentStat *)&pBuf[offset];
-                    swap_Bytes_sEnvironmentStat(pEnvironment);
-                    memcpy((sScsiEnvironmentStat *)&pFarmFrame->environmentPage, pEnvironment, sizeof(sScsiEnvironmentStat));
+                    memcpy((sScsiEnvironmentStat *)&pFarmFrame->environmentPage, pEnvironment, pEnvironment->pPageHeader.plen);
+                    swap_Bytes_sEnvironmentStat(&pFarmFrame->environmentPage);
                     offset += (pEnvironment->pPageHeader.plen + sizeof(sScsiPageParameter));
                 }
                 break;
@@ -1129,7 +1127,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     {
                         sScsiReliabilityStat *pReli;                                              // get the Reliabliity stat
                         pReli = (sScsiReliabilityStat *)&pBuf[offset];
-                        memcpy((sScsiReliabilityStat *)&pFarmFrame->reliPage, pReli, sizeof(sScsiReliabilityStat));
+                        memcpy((sScsiReliabilityStat *)&pFarmFrame->reliPage, pReli, pReli->pPageHeader.plen);
                         swap_Bytes_sScsiReliabilityStat(&pFarmFrame->reliPage);
                         offset += (pReli->pPageHeader.plen + sizeof(sScsiPageParameter));
                     }
@@ -1137,7 +1135,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     {
                         sScsiReliStatVersion4 *pReli;                                              // get the Reliabliity stat
                         pReli = (sScsiReliStatVersion4 *)&pBuf[offset];
-                        memcpy((sScsiReliStatVersion4 *)&pFarmFrame->reliPage, pReli, sizeof(sScsiReliStatVersion4));
+                        memcpy((sScsiReliStatVersion4 *)&pFarmFrame->reliPage, pReli, pReli->pPageHeader.plen);
                         swap_Bytes_sScsiReliabilityStat(&pFarmFrame->reliPage);
                         offset += (pReli->pPageHeader.plen + sizeof(sScsiPageParameter));
                     }
@@ -1147,8 +1145,8 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                 {
                     sGeneralDriveInfoPage06 *pDriveInfo;                                              
                     pDriveInfo = (sGeneralDriveInfoPage06 *)&pBuf[offset];
-                    swap_Bytes_sDrive_Info_Page_06(pDriveInfo);
-                    memcpy((sGeneralDriveInfoPage06 *)&pFarmFrame->gDPage06, pDriveInfo, sizeof(sGeneralDriveInfoPage06));
+                    memcpy((sGeneralDriveInfoPage06 *)&pFarmFrame->gDPage06, pDriveInfo, pDriveInfo->pPageHeader.plen);
+                    swap_Bytes_sDrive_Info_Page_06(&pFarmFrame->gDPage06);
                     create_Model_Number_String(pFarmFrame->identStringInfo.modelNumber, pDriveInfo);
                     offset += (pDriveInfo->pPageHeader.plen + sizeof(sScsiPageParameter));
                 }
@@ -1157,8 +1155,8 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                 {
                     sScsiEnvStatPage07 *pEnvStat;
                     pEnvStat = (sScsiEnvStatPage07 *)&pBuf[offset];
-                    swap_Bytes_EnvironmentPage07(pEnvStat);
-                    memcpy((sScsiEnvStatPage07 *)&pFarmFrame->envStatPage07, pEnvStat, sizeof(sScsiEnvStatPage07));
+                    memcpy((sScsiEnvStatPage07 *)&pFarmFrame->envStatPage07, pEnvStat, pEnvStat->pPageHeader.plen);
+                    swap_Bytes_EnvironmentPage07(&pFarmFrame->envStatPage07);
                     offset += (pEnvStat->pPageHeader.plen + sizeof(sScsiPageParameter));
                 }
                 break;
@@ -1611,134 +1609,112 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                 break;
                 case LUN_0_ACTUATOR:
                 {
-                    sLUNStruct *pLUNInfo = new sLUNStruct;
-                    memcpy(pLUNInfo,&pBuf[offset],sizeof(sLUNStruct));
-                    swap_Bytes_sLUNStruct(pLUNInfo);
-                    memcpy(&pFarmFrame->vLUN50,pLUNInfo,sizeof(sLUNStruct));
+                    sLUNStruct *pLUNInfo;
+                    pLUNInfo = (sLUNStruct *)&pBuf[offset];
+                    memcpy(&pFarmFrame->vLUN50,pLUNInfo, pLUNInfo->pageHeader.plen);
+                    swap_Bytes_sLUNStruct(&pFarmFrame->vLUN50);
                     offset += (pLUNInfo->pageHeader.plen + sizeof(sScsiPageParameter));
 
-                    delete pLUNInfo;
                 }
                 break;
                 case LUN_0_FLASH_LED:
                 {
-                    sActuatorFLEDInfo *pFLEDInfo = new sActuatorFLEDInfo;
-                    memcpy(pFLEDInfo, &pBuf[offset], sizeof(sActuatorFLEDInfo));
-                    swap_Bytes_Flash_LED(pFLEDInfo);
-                    memcpy(&pFarmFrame->fled51, pFLEDInfo, sizeof(sActuatorFLEDInfo));
+                    sActuatorFLEDInfo *pFLEDInfo;
+                    pFLEDInfo = (sActuatorFLEDInfo *)&pBuf[offset];
+                    memcpy(&pFarmFrame->fled51, pFLEDInfo, pFLEDInfo->pageHeader.plen);
+                    swap_Bytes_Flash_LED(&pFarmFrame->fled51);
                     offset += (pFLEDInfo->pageHeader.plen + sizeof(sScsiPageParameter));
 
-                    delete pFLEDInfo;
                 }
                 break;
                 case LUN_REALLOCATION_0:
                 {
-                    sActReallocationData *pReall = new sActReallocationData();
-                    memcpy(pReall, &pBuf[offset], sizeof(sActReallocationData));
-                    //pLUNInfo = (sLUNStruct *)&pBuf[offset];
-                    swap_Bytes_Reallocation_Data(pReall);
-                    memcpy(&pFarmFrame->reall52, pReall, sizeof(sActReallocationData));
+                    sActReallocationData *pReall;
+                    pReall = (sActReallocationData *)&pBuf[offset];
+                    memcpy(&pFarmFrame->reall52, pReall, pReall->pageHeader.plen);
+                    swap_Bytes_Reallocation_Data(&pFarmFrame->reall52);
                     offset += (pReall->pageHeader.plen + sizeof(sScsiPageParameter));
-                    delete pReall;
                 }
                 break;
                 case LUN_1_ACTUATOR:
-                    {
-                        sLUNStruct *pLUNInfo = new sLUNStruct();
-                        memcpy(pLUNInfo, &pBuf[offset], sizeof(sLUNStruct));
-                        //pLUNInfo = (sLUNStruct *)&pBuf[offset];;
-                        swap_Bytes_sLUNStruct(pLUNInfo);
-                        memcpy(&pFarmFrame->vLUN70, pLUNInfo, sizeof(sLUNStruct));
-                        offset += (pLUNInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                        delete pLUNInfo;
-                    }
+                {
+                    sLUNStruct *pLUNInfo;
+                    pLUNInfo = (sLUNStruct *)&pBuf[offset];
+                    memcpy(&pFarmFrame->vLUN60, pLUNInfo, pLUNInfo->pageHeader.plen);
+                    swap_Bytes_sLUNStruct(&pFarmFrame->vLUN60);
+                    offset += (pLUNInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                }
                 break;
                 case LUN_1_FLASH_LED:
                 {
-                    sActuatorFLEDInfo *pFLEDInfo = new sActuatorFLEDInfo;
-                    memcpy(pFLEDInfo, &pBuf[offset], sizeof(sActuatorFLEDInfo));
-                    swap_Bytes_Flash_LED(pFLEDInfo);
-                    memcpy(&pFarmFrame->fled51, pFLEDInfo, sizeof(sActuatorFLEDInfo));
+                    sActuatorFLEDInfo *pFLEDInfo;
+                    pFLEDInfo = (sActuatorFLEDInfo *)&pBuf[offset];
+                    memcpy(&pFarmFrame->fled61, pFLEDInfo, pFLEDInfo->pageHeader.plen);
+                    swap_Bytes_Flash_LED(&pFarmFrame->fled61);
                     offset += (pFLEDInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-
-                    delete pFLEDInfo;
                 }
                 break;
                 case LUN_REALLOCATION_1:
                 {
-                    sActReallocationData *pReall = new sActReallocationData();
-                    memcpy(pReall, &pBuf[offset], sizeof(sActReallocationData));
-                    //pLUNInfo = (sLUNStruct *)&pBuf[offset];
-                    swap_Bytes_Reallocation_Data(pReall);
-                    memcpy(&pFarmFrame->reall52, pReall, sizeof(sActReallocationData));
+                    sActReallocationData *pReall;
+                    pReall = (sActReallocationData *)&pBuf[offset];
+                    memcpy(&pFarmFrame->reall62, pReall, pReall->pageHeader.plen);
+                    swap_Bytes_Reallocation_Data(&pFarmFrame->reall62);
                     offset += (pReall->pageHeader.plen + sizeof(sScsiPageParameter));
-                    delete pReall;
                 }
                 break;
                 case LUN_2_ACTUATOR:
                 {
-                    sLUNStruct *pLUNInfo = new sLUNStruct();
-                    memcpy(pLUNInfo, &pBuf[offset], sizeof(sLUNStruct));
-                    //pLUNInfo = (sLUNStruct *)&pBuf[offset];;
-                    swap_Bytes_sLUNStruct(pLUNInfo);
-                    memcpy(&pFarmFrame->vLUN70, pLUNInfo, sizeof(sLUNStruct));
+                    sLUNStruct *pLUNInfo;
+                    pLUNInfo = (sLUNStruct *)&pBuf[offset];
+                    memcpy(&pFarmFrame->vLUN70, pLUNInfo, pLUNInfo->pageHeader.plen);
+                    swap_Bytes_sLUNStruct(&pFarmFrame->vLUN70);
                     offset += (pLUNInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                    delete pLUNInfo;
                 }
                 break;
                 case LUN_2_FLASH_LED:
                 {
-                    sActuatorFLEDInfo *pFLEDInfo = new sActuatorFLEDInfo;
-                    memcpy(pFLEDInfo, &pBuf[offset], sizeof(sActuatorFLEDInfo));
-                    swap_Bytes_Flash_LED(pFLEDInfo);
-                    memcpy(&pFarmFrame->fled51, pFLEDInfo, sizeof(sActuatorFLEDInfo));
+                    sActuatorFLEDInfo *pFLEDInfo;
+                    pFLEDInfo = (sActuatorFLEDInfo *)&pBuf[offset];
+                    memcpy(&pFarmFrame->fled71, pFLEDInfo, pFLEDInfo->pageHeader.plen);
+                    swap_Bytes_Flash_LED(&pFarmFrame->fled71);
                     offset += (pFLEDInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-
-                    delete pFLEDInfo;
                 }
                 break;
                 case LUN_REALLOCATION_2:
                 {
-                    sActReallocationData *pReall = new sActReallocationData();
-                    memcpy(pReall, &pBuf[offset], sizeof(sActReallocationData));
-                    //pLUNInfo = (sLUNStruct *)&pBuf[offset];
-                    swap_Bytes_Reallocation_Data(pReall);
-                    memcpy(&pFarmFrame->reall52, pReall, sizeof(sActReallocationData));
+                    sActReallocationData *pReall;
+                    pReall = (sActReallocationData *)&pBuf[offset];
+                    memcpy(&pFarmFrame->reall72, pReall, pReall->pageHeader.plen);
+                    swap_Bytes_Reallocation_Data(&pFarmFrame->reall72);
                     offset += (pReall->pageHeader.plen + sizeof(sScsiPageParameter));
-                    delete pReall;
                 }
                 break;
                 case LUN_3_ACTUATOR:
-                    {
-                        sLUNStruct *pLUNInfo = new sLUNStruct();
-                        memcpy(pLUNInfo, &pBuf[offset], sizeof(sLUNStruct));
-                        //pLUNInfo = (sLUNStruct *)&pBuf[offset];
-                        swap_Bytes_sLUNStruct(pLUNInfo);
-                        memcpy(&pFarmFrame->vLUN80, pLUNInfo, sizeof(sLUNStruct));
-                        offset += (pLUNInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                        delete pLUNInfo;
-                    }
-                    break;
+                {
+                    sLUNStruct *pLUNInfo;
+                    pLUNInfo = (sLUNStruct *)&pBuf[offset];
+                    memcpy(&pFarmFrame->vLUN80, pLUNInfo, pLUNInfo->pageHeader.plen);
+                    swap_Bytes_sLUNStruct(&pFarmFrame->vLUN80);
+                    offset += (pLUNInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                }
+                break;
                 case LUN_3_FLASH_LED:
                 {
-                    sActuatorFLEDInfo *pFLEDInfo = new sActuatorFLEDInfo;
-                    memcpy(pFLEDInfo, &pBuf[offset], sizeof(sActuatorFLEDInfo));
-                    swap_Bytes_Flash_LED(pFLEDInfo);
-                    memcpy(&pFarmFrame->fled51, pFLEDInfo, sizeof(sActuatorFLEDInfo));
+                    sActuatorFLEDInfo *pFLEDInfo;
+                    pFLEDInfo = (sActuatorFLEDInfo *)&pBuf[offset];
+                    memcpy(&pFarmFrame->fled81, pFLEDInfo, pFLEDInfo->pageHeader.plen);
+                    swap_Bytes_Flash_LED(&pFarmFrame->fled81);
                     offset += (pFLEDInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-
-                    delete pFLEDInfo;
                 }
                 break;
                 case LUN_REALLOCATION_3:
                 {
-                    sActReallocationData *pReall = new sActReallocationData();
-                    memcpy(pReall, &pBuf[offset], sizeof(sActReallocationData));
-                    //pLUNInfo = (sLUNStruct *)&pBuf[offset];
-                    swap_Bytes_Reallocation_Data(pReall);
-                    memcpy(&pFarmFrame->reall52, pReall, sizeof(sActReallocationData));
+                    sActReallocationData *pReall;
+                    pReall = (sActReallocationData *)&pBuf[offset];
+                    memcpy(&pFarmFrame->reall82, pReall, pReall->pageHeader.plen);
+                    swap_Bytes_Reallocation_Data(&pFarmFrame->reall82);
                     offset += (pReall->pageHeader.plen + sizeof(sScsiPageParameter));
-                    delete pReall;
                 }
                 break;
                 default:
@@ -1950,11 +1926,11 @@ eReturnValues CSCSI_Farm_Log::print_General_Drive_Information_Continued(JSONNODE
 
     if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
     {
-        snprintf((char*)myStr.c_str(), BASIC, "Drive Informatio From FACTORY page");
+        snprintf((char*)myStr.c_str(), BASIC, "GeneralDrive Informatio From FACTORY page");
     }
     else
     {
-        snprintf((char*)myStr.c_str(), BASIC, "Drive Information From Farm Log copy %" PRId32"", page);
+        snprintf((char*)myStr.c_str(), BASIC, "General  Drive Information From Farm Log copy %" PRId32"", page);
     }
     json_set_name(pageInfo, (char*)myStr.c_str());
 
@@ -1981,11 +1957,11 @@ eReturnValues CSCSI_Farm_Log::print_General_Drive_Information_Continued(JSONNODE
 
     set_json_64_bit_With_Status(pageInfo, "Max Number of Available Sectors for Reassignment", vFarmFrame[page].gDPage06.maxNumAvaliableSectors, false, m_showStatusBits);          //!< Max Number of Available Sectors for Reassignment – Value in disc sectors(started in 3.3 )
     snprintf((char*)myStr.c_str(), BASIC, "%0.03f", static_cast<float>(M_Word0(vFarmFrame[page].gDPage06.timeToReady)) * .001);
-    set_json_string_With_Status(pageInfo, "Time to ready of the last power cycle", (char*)myStr.c_str(), vFarmFrame[page].gDPage06.timeToReady, m_showStatusBits);			//!< time to ready of the last power cycle
+    set_json_string_With_Status(pageInfo, "Time to ready of the last power cycle (sec)", (char*)myStr.c_str(), vFarmFrame[page].gDPage06.timeToReady, m_showStatusBits);			//!< time to ready of the last power cycle
     snprintf((char*)myStr.c_str(), BASIC, "%0.03f", static_cast<float>(M_Word0(vFarmFrame[page].gDPage06.holdTime)) *.001);
-    set_json_string_With_Status(pageInfo, "Time drive is held in staggered spin", (char*)myStr.c_str(), vFarmFrame[page].gDPage06.holdTime,  m_showStatusBits);                //!< time drive is held in staggered spin during the last power on sequence
+    set_json_string_With_Status(pageInfo, "Time drive is held in staggered spin (sec)", (char*)myStr.c_str(), vFarmFrame[page].gDPage06.holdTime,  m_showStatusBits);                //!< time drive is held in staggered spin during the last power on sequence
     snprintf((char*)myStr.c_str(), BASIC, "%0.03f", static_cast<float>(M_Word0(vFarmFrame[page].gDPage06.servoSpinUpTime)) * .001);
-    set_json_string_With_Status(pageInfo, "Lst Servo Spin up Time", (char*)myStr.c_str(), vFarmFrame[page].gDPage06.servoSpinUpTime, m_showStatusBits);			//!< time to ready of the last power cycle
+    set_json_string_With_Status(pageInfo, "Last Servo Spin up Time (sec)", (char*)myStr.c_str(), vFarmFrame[page].gDPage06.servoSpinUpTime, m_showStatusBits);			//!< time to ready of the last power cycle
 
     json_push_back(masterData, pageInfo);
     return SUCCESS;
@@ -2377,7 +2353,7 @@ eReturnValues CSCSI_Farm_Log::print_Enviroment_Statistics_Page_07(JSONNODE *mast
     printf("\tMinimum 12 volts:                         %" PRIu64" \n", vFarmFrame[page].envStatPage07.min12v & 0x00FFFFFFFFFFFFFFLL);
     printf("\tMaximum 12 volts:                         %" PRIu64" \n", vFarmFrame[page].envStatPage07.max12v & 0x00FFFFFFFFFFFFFFLL);
     printf("\tCurrent 5 volts:                          %" PRIu64" \n", vFarmFrame[page].envStatPage07.average5v & 0x00FFFFFFFFFFFFFFLL);
-    printf("\tMaximum 5 volts:                          %" PRIu64" \n", vFarmFrame[page].envStatPage07.min5v & 0x00FFFFFFFFFFFFFFLL);
+    printf("\tMinimum 5 volts:                          %" PRIu64" \n", vFarmFrame[page].envStatPage07.min5v & 0x00FFFFFFFFFFFFFFLL);
     printf("\tMaximum 5 volts:                          %" PRIu64" \n", vFarmFrame[page].envStatPage07.max5v & 0x00FFFFFFFFFFFFFFLL);
 #endif
     if (vFarmFrame[page].envStatPage07.copyNumber == FACTORYCOPY)
@@ -2405,7 +2381,7 @@ eReturnValues CSCSI_Farm_Log::print_Enviroment_Statistics_Page_07(JSONNODE *mast
     set_json_string_With_Status(pageInfo, "Current 5 volts", (char*)myStr.c_str(), vFarmFrame[page].envStatPage07.average5v, m_showStatusBits);
     snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", (M_Word0(check_Status_Strip_Status(vFarmFrame[page].envStatPage07.min5v)) / 1000), \
         M_Word0(check_Status_Strip_Status(vFarmFrame[page].envStatPage07.min5v)) % 1000);
-    set_json_string_With_Status(pageInfo, "Maximum 5 volts", (char*)myStr.c_str(), vFarmFrame[page].envStatPage07.min5v, m_showStatusBits);
+    set_json_string_With_Status(pageInfo, "Minimum 5 volts", (char*)myStr.c_str(), vFarmFrame[page].envStatPage07.min5v, m_showStatusBits);
     snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", (M_Word0(check_Status_Strip_Status(vFarmFrame[page].envStatPage07.max5v)) / 1000), \
         M_Word0(check_Status_Strip_Status(vFarmFrame[page].envStatPage07.max5v)) % 1000);
     set_json_string_With_Status(pageInfo, "Maximum 5 volts", (char*)myStr.c_str(), vFarmFrame[page].envStatPage07.max5v, m_showStatusBits);
@@ -2891,7 +2867,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
 #if defined _DEBUG
                 printf("\tCurrent H2SAT trimmed mean bits in error by Head %" PRIu32":  by Test Zone 0:      %" PRIu64" \n", loopCount, vFarmFrame[page].currentH2STTrimmedbyHeadZone0.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Current H2SAT trimmed mean bits in error by Head, by Test Zone 0
 #endif
-                snprintf((char*)myHeader.c_str(), BASIC, "Current H2SAT trimmed mean bits in error Head number %" PRIu32"", loopCount); // Head count
+                snprintf((char*)myHeader.c_str(), BASIC, "Current H2SAT trimmed mean bits Znoe 0 error Head number %" PRIu32"", loopCount); // Head count
                 snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].currentH2STTrimmedbyHeadZone0.headValue[loopCount])*.10));
                 set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].currentH2STTrimmedbyHeadZone0.headValue[loopCount], m_showStatusBits); //!< Current H2SAT trimmed mean bits in error by Head, by Test Zone 0
             }
@@ -2902,7 +2878,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
 #if defined _DEBUG
                 printf("\tCurrent H2SAT trimmed mean bits in error by Head %" PRIu32": by Test Zone 1:      %" PRIu64" \n", loopCount, vFarmFrame[page].currentH2STTrimmedbyHeadZone1.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Current H2SAT trimmed mean bits in error by Head, by Test Zone 1
 #endif
-                snprintf((char*)myHeader.c_str(), BASIC, "Current H2SAT trimmed mean bits in error Head number %" PRIu32"", loopCount); // Head count
+                snprintf((char*)myHeader.c_str(), BASIC, "Current H2SAT trimmed mean bits Zone 1 error Head number %" PRIu32"", loopCount); // Head count
                 snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].currentH2STTrimmedbyHeadZone1.headValue[loopCount])*.10));
                 set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].currentH2STTrimmedbyHeadZone1.headValue[loopCount], m_showStatusBits); //!< Current H2SAT trimmed mean bits in error by Head, by Test Zone 1
             }
