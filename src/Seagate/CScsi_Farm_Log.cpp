@@ -1050,11 +1050,8 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                         if (headerAlreadyFound == false)                                    // check to see if we have already found the header
                         {
                             m_pHeader = (sScsiFarmHeader *)&pBuf[offset];                    // get the Farm Header information
-                            if (m_pHeader->pPageHeader.plen > 0x40)
-                            {
-                                byte_Swap_64(&m_pHeader->farmHeader.reasonForFrameCpature);  // need to swap the header information
-                            }
-                            memcpy((sScsiFarmHeader *)&pFarmFrame->farmHeader, m_pHeader, sizeof(sScsiFarmHeader));
+                            memcpy((sScsiFarmHeader *)&pFarmFrame->farmHeader, m_pHeader, m_pageParam->plen);
+                            byte_Swap_64(&pFarmFrame->farmHeader.farmHeader.reasonForFrameCpature);  // need to swap the header information
                             offset += (m_pageParam->plen + sizeof(sScsiPageParameter));
                             headerAlreadyFound = true;                                      // set the header to true so we will not look at the data a second time
                         }
@@ -1067,9 +1064,10 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
  
                 case  GENERAL_DRIVE_INFORMATION_PARAMETER:
                     {
-                        m_pDriveInfo = (sScsiDriveInfo *)&pBuf[offset ];														// get the id drive information at the time.
-                        memcpy(&pFarmFrame->driveInfo,m_pDriveInfo, sizeof(sScsiDriveInfo));
-                        swap_Bytes_sDriveInfo(&pFarmFrame->driveInfo);
+                        m_pDriveInfo = (sScsiDriveInfo *)&pBuf[offset ];
+                        swap_Bytes_sDriveInfo(m_pDriveInfo);// get the id drive information at the time.
+                        memcpy(&pFarmFrame->driveInfo,m_pDriveInfo, m_pDriveInfo->pPageHeader.plen);
+                        
                         create_Serial_Number(pFarmFrame->identStringInfo.serialNumber, m_pDriveInfo);							// create the serial number
                         create_World_Wide_Name(pFarmFrame->identStringInfo.worldWideName, m_pDriveInfo);						// create the wwwn
                         create_Firmware_String(pFarmFrame->identStringInfo.firmwareRev, m_pDriveInfo);							// create the firmware string
@@ -2278,9 +2276,9 @@ eReturnValues CSCSI_Farm_Log::print_Enviroment_Information(JSONNODE *masterData,
 	snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.curentTemp))*.10));							//!< Current Temperature in Celsius
 	set_json_string_With_Status(pageInfo, "Current Temperature (Celsius)", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.curentTemp, m_showStatusBits);
 	snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.highestTemp))*.10));						//!< Highest Average Long Term Temperature
-	set_json_string_With_Status(pageInfo, "Highest Average Temperature", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.highestTemp, m_showStatusBits);		
+	set_json_string_With_Status(pageInfo, "Highest Temperature", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.highestTemp, m_showStatusBits);		
 	snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.lowestTemp))*.10));							//!< Lowest Average Long Term Temperature
-	set_json_string_With_Status(pageInfo, "Lowest Average Temperature", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.lowestTemp, m_showStatusBits);			
+	set_json_string_With_Status(pageInfo, "Lowest Temperature", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.lowestTemp, m_showStatusBits);			
 	snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.maxTemp))*1.00));							//!< Specified Max Operating Temperature
 	set_json_string_With_Status(pageInfo, "Specified Max Operating Temperature", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.maxTemp, m_showStatusBits);					
 	snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.minTemp))*1.00));							//!< Specified Min Operating Temperature
@@ -2633,7 +2631,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
 #if defined _DEBUG
                 printf("\tDVGA Skip Write 0 by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].dvgaSkipWriteDetectByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< DVGA Skip Write
 #endif
-                snprintf((char*)myHeader.c_str(), BASIC, "VGA Skip Write for Head %" PRIu32"", loopCount); // Head count
+                snprintf((char*)myHeader.c_str(), BASIC, "DVGA Skip Write Detect for Head %" PRIu32"", loopCount); // Head count
                 set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].dvgaSkipWriteDetectByHead.headValue[loopCount], false, m_showStatusBits); //!< DVGA Skip Write
             }
             break;
@@ -2643,7 +2641,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
 #if defined _DEBUG
                 printf("\tRVGA Skip Write 0 by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].rvgaSkipWriteDetectByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< RVGA Skip Write
 #endif
-                snprintf((char*)myHeader.c_str(), BASIC, "RVGA Skip Write for Head %" PRIu32"", loopCount); // Head count
+                snprintf((char*)myHeader.c_str(), BASIC, "RVGA Skip Write Detect for Head %" PRIu32"", loopCount); // Head count
                 set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].rvgaSkipWriteDetectByHead.headValue[loopCount], false, m_showStatusBits); //!< RVGA Skip Write
             }
             break;
@@ -2653,7 +2651,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
 #if defined _DEBUG
                 printf("\tFVGA Skip Write 0 by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fvgaSkipWriteDetectByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< FVGA Skip Write 
 #endif
-                snprintf((char*)myHeader.c_str(), BASIC, "FVGA Skip Write for Head %" PRIu32"", loopCount); // Head count
+                snprintf((char*)myHeader.c_str(), BASIC, "FVGA Skip Write Detect for Head %" PRIu32"", loopCount); // Head count
                 set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].fvgaSkipWriteDetectByHead.headValue[loopCount], false, m_showStatusBits); //!< FVGA Skip Write 
             }
             break;
@@ -2663,7 +2661,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
 #if defined _DEBUG
                 printf("\tSkip Write Detect Threshold Exceeded Count by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].skipWriteDectedThresholdExceededByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Skip Write Detect Threshold Exceeded Count
 #endif
-                snprintf((char*)myHeader.c_str(), BASIC, "Skip Write Detect Threshold Exceeded Count For Head %" PRIu32"", loopCount); // Head count
+                snprintf((char*)myHeader.c_str(), BASIC, "Skip Write Detect Threshold Exceeded for Head %" PRIu32"", loopCount); // Head count
                 set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].skipWriteDectedThresholdExceededByHead.headValue[loopCount], false, m_showStatusBits);  //!< Skip Write Detect Threshold Exceeded Count
             }
             break;
@@ -2703,9 +2701,9 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
 #if defined _DEBUG
-                printf("\tMR Head Resistance from Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].mrHeadResistanceByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< MR Head Resistance from most recent SMART Summary Frame
+                printf("\tMR Head Resistance for Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].mrHeadResistanceByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< MR Head Resistance from most recent SMART Summary Frame
 #endif
-                snprintf((char*)myHeader.c_str(), BASIC, "MR Head Resistance from Head %" PRIu32"", loopCount); // Head count
+                snprintf((char*)myHeader.c_str(), BASIC, "MR Head Resistance for Head %" PRIu32"", loopCount); // Head count
                 set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].mrHeadResistanceByHead.headValue[loopCount], false, m_showStatusBits);  //!< MR Head Resistance from most recent SMART Summary Frame
             }
             break;
@@ -2867,7 +2865,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
 #if defined _DEBUG
                 printf("\tCurrent H2SAT trimmed mean bits in error by Head %" PRIu32":  by Test Zone 0:      %" PRIu64" \n", loopCount, vFarmFrame[page].currentH2STTrimmedbyHeadZone0.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Current H2SAT trimmed mean bits in error by Head, by Test Zone 0
 #endif
-                snprintf((char*)myHeader.c_str(), BASIC, "Current H2SAT trimmed mean bits Znoe 0 error Head number %" PRIu32"", loopCount); // Head count
+                snprintf((char*)myHeader.c_str(), BASIC, "Current H2SAT trimmed mean bits Zone 0 error Head number %" PRIu32"", loopCount); // Head count
                 snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].currentH2STTrimmedbyHeadZone0.headValue[loopCount])*.10));
                 set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].currentH2STTrimmedbyHeadZone0.headValue[loopCount], m_showStatusBits); //!< Current H2SAT trimmed mean bits in error by Head, by Test Zone 0
             }
@@ -2933,7 +2931,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
 #if defined _DEBUG
                 printf("\tFly height clearance delta outer by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].appliedFlyHeightByHeadOuter.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Applied fly height clearance delta per head in thousandths of one Angstrom: Outer by Head
 #endif
-                snprintf((char*)myHeader.c_str(), BASIC, "Fly height clearance delta outer by Headr %" PRIu32"", loopCount); // Head count
+                snprintf((char*)myHeader.c_str(), BASIC, "Fly height clearance delta outer by Head %" PRIu32"", loopCount); // Head count
                 snprintf((char*)myStr.c_str(), BASIC, "%0.03f", static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].appliedFlyHeightByHeadOuter.headValue[loopCount]))*.001));   //!< Applied fly height clearance delta per head in thousandths of one Angstrom: Outer by Head
                 set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].appliedFlyHeightByHeadOuter.headValue[loopCount], m_showStatusBits);
             }
