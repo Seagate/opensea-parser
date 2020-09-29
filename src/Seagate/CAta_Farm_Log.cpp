@@ -586,7 +586,7 @@ eReturnValues CATA_Farm_Log::print_Error_Information(JSONNODE *masterData, uint3
         printf("\tReallocated Sectors Cause %" PRIu32":                     %" PRIu64" \n", loopCount,vFarmFrame[page].errorPage.reallocatedSectors[loopCount] & 0x00FFFFFFFFFFFFFFLL);
     }
     printf("\tCum Lifetime Unrecoverable Read errors due to ERC:          %" PRIu64" \n", vFarmFrame[page].errorPage.cumLifeTimeECCReadDueErrorRecovery & 0x00FFFFFFFFFFFFFFLL);
-    for (loopCount = 0; loopCount < MAX_HEAD_COUNT; ++loopCount)
+    for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         printf("\tCum Lifetime Unrecoverable Read Repeating by head %" PRIu32":        %" PRIu64" \n", loopCount, vFarmFrame[page].errorPage.cumLifeUnRecoveralbeReadByhead[loopCount] & 0x00FFFFFFFFFFFFFFLL);      //!< Cumulative Lifetime Unrecoverable Read Repeating by head
         printf("\tCum Lifetime Unrecoverable Read Unique by head %" PRIu32":           %" PRIu64" \n", loopCount, vFarmFrame[page].errorPage.cumLiveUnRecoveralbeReadUnique[loopCount] & 0x00FFFFFFFFFFFFFFLL);   //!< Cumulative Lifetime Unrecoverable Read Unique by head
@@ -683,19 +683,23 @@ eReturnValues CATA_Farm_Log::print_Error_Information(JSONNODE *masterData, uint3
         }
     }
 
-    for (loopCount = 0; loopCount < REALLOCATIONEVENTS; loopCount)
+    for (loopCount = 0; loopCount < REALLOCATIONEVENTS; loopCount++)
     {
         get_Reallocation_Cause_Meanings(myStr, loopCount);
         set_json_64_bit_With_Status(pageInfo, (char*)myStr.c_str(), vFarmFrame[page].errorPage.reallocatedSectors[loopCount], false, m_showStatusBits);
     }
 
     set_json_64_bit_With_Status(pageInfo, "Cum Lifetime Unrecoverable Read errors due to ERC", vFarmFrame[page].errorPage.cumLifeTimeECCReadDueErrorRecovery, false, m_showStatusBits);
-    for (loopCount = 0; loopCount < MAX_HEAD_COUNT; ++loopCount)
+    for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
-        snprintf((char*)myStr.c_str(), BASIC, "Cum Lifetime Unrecoverable Read Repeating by head %" PRIu32"", loopCount);
-        set_json_64_bit_With_Status(pageInfo, (char*)myStr.c_str(), vFarmFrame[page].errorPage.cumLifeUnRecoveralbeReadByhead[loopCount], false, m_showStatusBits);      //!< Cumulative Lifetime Unrecoverable Read Repeating by head
-        snprintf((char*)myStr.c_str(), BASIC, "Cum Lifetime Unrecoverable Read Unique by head %" PRIu32"", loopCount);
-        set_json_64_bit_With_Status(pageInfo, (char*)myStr.c_str(), vFarmFrame[page].errorPage.cumLiveUnRecoveralbeReadUnique[loopCount], false, m_showStatusBits);   //!< Cumulative Lifetime Unrecoverable Read Unique by head
+        JSONNODE *eventInfo = json_new(JSON_NODE);
+        snprintf((char*)myStr.c_str(), BASIC, "Cum Lifetime Unrecoverable by head %" PRIu16"", loopCount);
+        json_set_name(eventInfo, (char*)myStr.c_str());
+
+        set_json_64_bit_With_Status(eventInfo, "Cum Lifetime Unrecoverable Read Repeating", vFarmFrame[page].errorPage.cumLifeUnRecoveralbeReadByhead[loopCount], false, m_showStatusBits);      //!< Cumulative Lifetime Unrecoverable Read Repeating by head
+        set_json_64_bit_With_Status(eventInfo, "Cum Lifetime Unrecoverable Read Unique", vFarmFrame[page].errorPage.cumLiveUnRecoveralbeReadUnique[loopCount], false, m_showStatusBits);   //!< Cumulative Lifetime Unrecoverable Read Unique by head
+
+        json_push_back(pageInfo, eventInfo);
     }
 
     json_push_back(masterData, pageInfo);
