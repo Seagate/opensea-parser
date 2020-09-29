@@ -20,7 +20,8 @@
 #include <cmath>
 #include "common.h"
 #include "libjson.h"
-//#include "Opensea_Parser_Helper.h"
+#include "Farm_Helper.h"
+#include "Farm_Common.h"
 #include "Scsi_Farm_Types.h"
 
 namespace opensea_parser {
@@ -49,6 +50,7 @@ namespace opensea_parser {
         sScsiDriveInfo              *m_pDriveInfo;                                    //!< Drive information pointer with header information
         bool                        m_alreadySet;                                     //!< set true one it's already set..  (APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_OUTER)
 		bool						m_showStatusBits;								  //!< show the status bits of each entry
+        CFarmCommon         _common;
 
 		void create_Serial_Number(std::string &serialNumber, const sScsiDriveInfo * const idInfo);
 		void create_World_Wide_Name(std::string &worldWideName, const sScsiDriveInfo * const idInfo);

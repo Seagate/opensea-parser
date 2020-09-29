@@ -15,8 +15,8 @@
 #pragma once
 
 #include <inttypes.h>
-#include "Opensea_Parser_Helper.h"
-#include "Farm_Helper.h"
+//#include "Opensea_Parser_Helper.h"
+//#include "Farm_Helper.h"
 
 #define MAX_HEAD_COUNT			24
 #define FARMSIGNATURE           0x00004641524D4552

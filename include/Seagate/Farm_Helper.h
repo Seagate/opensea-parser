@@ -15,16 +15,16 @@
 #pragma once
 
 #include <inttypes.h>
+#include "common.h"
 #include "libjson.h"
 #include "Opensea_Parser_Helper.h"
 #include "Farm_Types.h"
+
+
 namespace opensea_parser {
 #ifndef FARMHELPER
 #define FARMHELPER
 
-    void get_Reallocation_Cause_Meanings(std::string &meaning, uint16_t code);
-    void create_Year_Assembled_String(std::string &dateStr, uint16_t date, bool isSAS);
-    void get_Assert_Code_Meaning(std::string &meaning, uint16_t code);
 	//-----------------------------------------------------------------------------
 	//
 	//! \fn set_json_64_bit_With_Status()
@@ -116,27 +116,25 @@ namespace opensea_parser {
 	{
 		std::string printStr = " ";
 		printStr.resize(BASIC);
-
-
 		if (showStatusBits)
 		{
 			JSONNODE *bigBit = json_new(JSON_NODE);
 			json_set_name(bigBit, (char *)myStr.c_str());
 			if ((value & BIT63) == BIT63)
 			{
-				opensea_parser::set_Json_Bool(bigBit, "Field Supported", true);
+				set_Json_Bool(bigBit, "Field Supported", true);
 			}
 			else
 			{
-				opensea_parser::set_Json_Bool(bigBit, "Field Supported", false);
+				set_Json_Bool(bigBit, "Field Supported", false);
 			}
 			if ((value & BIT62) == BIT62)
 			{
-				opensea_parser::set_Json_Bool(bigBit, "Field Valid", true);
+				set_Json_Bool(bigBit, "Field Valid", true);
 			}
 			else
 			{
-				opensea_parser::set_Json_Bool(bigBit, "Field Valid", false);
+				set_Json_Bool(bigBit, "Field Valid", false);
 			}
 			value = check_Status_Strip_Status(value);
 			json_push_back(bigBit, json_new_i((char *)myStr.c_str(), static_cast<int32_t>(M_DoubleWord0(value))));
@@ -177,19 +175,19 @@ namespace opensea_parser {
 			json_set_name(bigBit, (char *)myStr.c_str());
 			if ((value & BIT63) == BIT63)
 			{
-				opensea_parser::set_Json_Bool(bigBit, "Field Supported", true);
+				set_Json_Bool(bigBit, "Field Supported", true);
 			}
 			else
 			{
-				opensea_parser::set_Json_Bool(bigBit, "Field Supported", false);
+				set_Json_Bool(bigBit, "Field Supported", false);
 			}
 			if ((value & BIT62) == BIT62)
 			{
-				opensea_parser::set_Json_Bool(bigBit, "Field Valid", true);
+				set_Json_Bool(bigBit, "Field Valid", true);
 			}
 			else
 			{
-				opensea_parser::set_Json_Bool(bigBit, "Field Valid", false);
+				set_Json_Bool(bigBit, "Field Valid", false);
 			}
 			json_push_back(bigBit, json_new_a((char *)myStr.c_str(), (char *)strValue.c_str()));
 			json_push_back(nowNode, bigBit);
@@ -199,7 +197,6 @@ namespace opensea_parser {
 			json_push_back(nowNode, json_new_a((char *)myStr.c_str(), (char *)strValue.c_str()));
 		}
 	}
-    
-
+   
 #endif 
 }

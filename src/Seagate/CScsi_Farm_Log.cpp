@@ -1887,10 +1887,10 @@ eReturnValues CSCSI_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint
         uint16_t year = M_Word1(vFarmFrame[page].driveInfo.dateOfAssembly);
         uint16_t week = M_Word0(vFarmFrame[page].driveInfo.dateOfAssembly);
 
-        create_Year_Assembled_String(myStr, year, true);
+        _common.create_Year_Assembled_String(myStr, year, true);
         json_push_back(pageInfo, json_new_a("Year of Assembled", (char*)myStr.c_str()));
 
-        create_Year_Assembled_String(myStr, week, true);
+        _common.create_Year_Assembled_String(myStr, week, true);
         json_push_back(pageInfo, json_new_a("Week of Assembled", (char*)myStr.c_str()));
     }
     else
@@ -3410,7 +3410,7 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_FLED_Info(JSONNODE *masterData,
         
         snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", M_Word2(check_Status_Strip_Status(pFLED->flashLEDArray[i])));
         json_push_back(eventInfo, json_new_a("Flash LED Code", (char*)myStr.c_str()));
-        get_Assert_Code_Meaning(timeStr, M_Word2(check_Status_Strip_Status(pFLED->flashLEDArray[i])));
+        _common.get_Assert_Code_Meaning(timeStr, M_Word2(check_Status_Strip_Status(pFLED->flashLEDArray[i])));
         json_push_back(eventInfo, json_new_a("Flash LED Code Meaning", (char*)timeStr.c_str()));
         snprintf((char*)myStr.c_str(), BASIC, "0x%08" PRIx32"", M_DoubleWord0(check_Status_Strip_Status(pFLED->flashLEDArray[i])));
         json_push_back(eventInfo, json_new_a("Flash LED Address", (char*)myStr.c_str()));
@@ -3480,7 +3480,8 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Reallocation(JSONNODE *masterDa
     printf("\tNumber of Reallocated Candidate Sectors:      %" PRIu64" \n", pReal->numberReallocatedCandidates & 0x00FFFFFFFFFFFFFFLL);
     for (i = 0; i < REALLOCATIONEVENTS; i++)
     {
-        get_Reallocation_Cause_Meanings(myStr, i);
+        
+        _common.get_Reallocation_Cause_Meanings(myStr, i);
         printf("\t%-33s:            %" PRIu64" \n",(char*)myStr.c_str(), pReal->reallocatedCauses[i] & 0x00FFFFFFFFFFFFFFLL);
     }
 #endif
@@ -3502,7 +3503,7 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Reallocation(JSONNODE *masterDa
  
     for (i = 0; i < REALLOCATIONEVENTS; i++)
     {
-        get_Reallocation_Cause_Meanings(myStr, i);
+        _common.get_Reallocation_Cause_Meanings(myStr, i);
         set_json_64_bit_With_Status(pageInfo, (char*)myStr.c_str(), pReal->reallocatedCauses[i] , false, m_showStatusBits);
     }
     json_push_back(masterData, pageInfo);

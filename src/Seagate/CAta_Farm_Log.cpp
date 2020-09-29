@@ -396,7 +396,7 @@ eReturnValues CATA_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint3
         set_Json_Bool(pageInfo, myStr, false);
     }
 
-    set_json_64_bit_With_Status(pageInfo, "Max Number of Available Sectors for Reassignment", vFarmFrame[page].driveInfo.maxNumberForReasign, false, m_showStatusBits);          //!< Max Number of Available Sectors for Reassignment – Value in disc sectors(started in 3.3 )
+    set_json_64_bit_With_Status(pageInfo, "Max Number of Available Sectors for Reassignment", vFarmFrame[page].driveInfo.maxNumberForReasign, false, m_showStatusBits);          //!< Max Number of Available Sectors for Reassignment ï¿½ Value in disc sectors(started in 3.3 )
    
     //!< Date of Assembly in ASCII 
     if (check_For_Active_Status(&vFarmFrame[page].driveInfo.dateOfAssembly))
@@ -406,10 +406,10 @@ eReturnValues CATA_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint3
         uint16_t year = M_Word1(vFarmFrame[page].driveInfo.dateOfAssembly);
         uint16_t week = M_Word0(vFarmFrame[page].driveInfo.dateOfAssembly);
 
-        create_Year_Assembled_String(myStr, year, false);
+        _common.create_Year_Assembled_String(myStr, year, false);
         json_push_back(pageInfo, json_new_a("Year of Assembled", (char*)myStr.c_str()));
 
-        create_Year_Assembled_String(myStr, week, false);
+        _common.create_Year_Assembled_String(myStr, week, false);
         json_push_back(pageInfo, json_new_a("Week of Assembled", (char*)myStr.c_str()));
     }
     else
@@ -586,7 +586,7 @@ eReturnValues CATA_Farm_Log::print_Error_Information(JSONNODE *masterData, uint3
         printf("\tReallocated Sectors Cause %" PRIu32":                     %" PRIu64" \n", loopCount,vFarmFrame[page].errorPage.reallocatedSectors[loopCount] & 0x00FFFFFFFFFFFFFFLL);
     }
     printf("\tCum Lifetime Unrecoverable Read errors due to ERC:          %" PRIu64" \n", vFarmFrame[page].errorPage.cumLifeTimeECCReadDueErrorRecovery & 0x00FFFFFFFFFFFFFFLL);
-    for (loopCount = 0; loopCount < m_heads; ++loopCount)
+    for (loopCount = 0; loopCount < MAX_HEAD_COUNT; ++loopCount)
     {
         printf("\tCum Lifetime Unrecoverable Read Repeating by head %" PRIu32":        %" PRIu64" \n", loopCount, vFarmFrame[page].errorPage.cumLifeUnRecoveralbeReadByhead[loopCount] & 0x00FFFFFFFFFFFFFFLL);      //!< Cumulative Lifetime Unrecoverable Read Repeating by head
         printf("\tCum Lifetime Unrecoverable Read Unique by head %" PRIu32":           %" PRIu64" \n", loopCount, vFarmFrame[page].errorPage.cumLiveUnRecoveralbeReadUnique[loopCount] & 0x00FFFFFFFFFFFFFFLL);   //!< Cumulative Lifetime Unrecoverable Read Unique by head
@@ -634,7 +634,7 @@ eReturnValues CATA_Farm_Log::print_Error_Information(JSONNODE *masterData, uint3
 
         snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", M_Word2(check_Status_Strip_Status(vFarmFrame[page].errorPage.flashLEDArray[loopCount])));
         json_push_back(eventInfo, json_new_a("Flash LED Code", (char*)myStr.c_str()));
-        get_Assert_Code_Meaning(timeStr, M_Word2(check_Status_Strip_Status(vFarmFrame[page].errorPage.flashLEDArray[loopCount])));
+        _common.get_Assert_Code_Meaning(timeStr, M_Word2(check_Status_Strip_Status(vFarmFrame[page].errorPage.flashLEDArray[loopCount])));
         json_push_back(eventInfo, json_new_a("Flash LED Code Meaning", (char*)timeStr.c_str()));
         snprintf((char*)myStr.c_str(), BASIC, "0x%08" PRIx32"", M_DoubleWord0(check_Status_Strip_Status(vFarmFrame[page].errorPage.flashLEDArray[loopCount])));
         json_push_back(eventInfo, json_new_a("Flash LED Address", (char*)myStr.c_str()));
@@ -683,9 +683,9 @@ eReturnValues CATA_Farm_Log::print_Error_Information(JSONNODE *masterData, uint3
         }
     }
 
-    for (loopCount = 0; loopCount < REALLOCATIONEVENTS; loopCount++)
+    for (loopCount = 0; loopCount < REALLOCATIONEVENTS; ++loopCount)
     {
-        get_Reallocation_Cause_Meanings(myStr, loopCount);
+        _common.get_Reallocation_Cause_Meanings(myStr, loopCount);
         set_json_64_bit_With_Status(pageInfo, (char*)myStr.c_str(), vFarmFrame[page].errorPage.reallocatedSectors[loopCount], false, m_showStatusBits);
     }
 
