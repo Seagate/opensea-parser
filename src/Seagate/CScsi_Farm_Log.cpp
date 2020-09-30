@@ -1803,7 +1803,7 @@ eReturnValues CSCSI_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint
 #if defined _DEBUG
     if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
     {
-        printf("\nDrive Information From FACTORY page\n");
+        printf("\nDrive Information From Farm Log copy FACTORY\n");
     }
     else
     {
@@ -1838,7 +1838,7 @@ eReturnValues CSCSI_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint
 #endif
     if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
     {
-        snprintf((char*)myStr.c_str(), BASIC, "Drive Information From FACTORY page");
+        snprintf((char*)myStr.c_str(), BASIC, "Drive Information From Farm Log copy FACTORY");
     }
     else
     {
@@ -1924,7 +1924,7 @@ eReturnValues CSCSI_Farm_Log::print_General_Drive_Information_Continued(JSONNODE
 
     if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
     {
-        snprintf((char*)myStr.c_str(), BASIC, "GeneralDrive Informatio From FACTORY page");
+        snprintf((char*)myStr.c_str(), BASIC, "GeneralDrive Informatio From Farm Log copy FACTORY");
     }
     else
     {
@@ -1988,7 +1988,7 @@ eReturnValues CSCSI_Farm_Log::print_WorkLoad(JSONNODE *masterData, uint32_t page
 #if defined _DEBUG
     if (vFarmFrame[page].workLoadPage.workLoad.copyNumber == FACTORYCOPY)
     {
-        printf("\nWork Load From FACTORY page");
+        printf("\nWork Load From Farm Log copy FACTORY");
     }
     else
     {
@@ -2013,7 +2013,7 @@ eReturnValues CSCSI_Farm_Log::print_WorkLoad(JSONNODE *masterData, uint32_t page
 #endif
     if (vFarmFrame[page].workLoadPage.workLoad.copyNumber == FACTORYCOPY)
     {
-        snprintf((char*)myStr.c_str(), BASIC, "Work Load From FACTORY page");
+        snprintf((char*)myStr.c_str(), BASIC, "Work Load From Farm Log copy FACTORY");
     }
     else
     {
@@ -2071,7 +2071,7 @@ eReturnValues CSCSI_Farm_Log::print_Error_Information(JSONNODE *masterData, uint
 #if defined _DEBUG
     if (vFarmFrame[page].errorPage.errorStat.copyNumber == FACTORYCOPY)
     {
-        printf("\nError Information From FACTORY page \n");
+        printf("\nError Information From Farm Log copy FACTORY \n");
     }
     else
     {
@@ -2099,7 +2099,7 @@ eReturnValues CSCSI_Farm_Log::print_Error_Information(JSONNODE *masterData, uint
 #endif
     if (vFarmFrame[page].errorPage.errorStat.copyNumber == FACTORYCOPY)
     {
-        snprintf((char*)myStr.c_str(), BASIC, "Error Information From FACTORY page");
+        snprintf((char*)myStr.c_str(), BASIC, "Error Information From Farm Log copy FACTORY");
     }
     else
     {
@@ -2146,7 +2146,7 @@ eReturnValues CSCSI_Farm_Log::print_Error_Information_Version_4(JSONNODE *master
 #if defined _DEBUG
     if (vFarmFrame[page].errorPage.errorV4.copyNumber == FACTORYCOPY)
     {
-        printf("\nError Information From FACTORY page \n");
+        printf("\nError Information From Farm Log copy FACTORY \n");
     }
     else
     {
@@ -2181,7 +2181,7 @@ eReturnValues CSCSI_Farm_Log::print_Error_Information_Version_4(JSONNODE *master
 #endif
     if (vFarmFrame[page].errorPage.errorV4.copyNumber == FACTORYCOPY)
     {
-        snprintf((char*)myStr.c_str(), BASIC, "Error Information From FACTORY page");
+        snprintf((char*)myStr.c_str(), BASIC, "Error Information From Farm Log copy FACTORY");
     }
     else
     {
@@ -2231,7 +2231,7 @@ eReturnValues CSCSI_Farm_Log::print_Enviroment_Information(JSONNODE *masterData,
 #if defined _DEBUG
     if (vFarmFrame[page].environmentPage.copyNumber == FACTORYCOPY)
     {
-        printf( "Environment Information From FACTORY page \n");
+        printf( "Environment Information From Farm Log copy FACTORY \n");
     }
     else
     {
@@ -2265,7 +2265,7 @@ eReturnValues CSCSI_Farm_Log::print_Enviroment_Information(JSONNODE *masterData,
 #endif
     if (vFarmFrame[page].environmentPage.copyNumber == FACTORYCOPY)
     {
-        snprintf((char*)myStr.c_str(), BASIC, "Environment Information From FACTORY page");
+        snprintf((char*)myStr.c_str(), BASIC, "Environment Information From Farm Log copy FACTORY");
     }
     else
     {
@@ -2341,7 +2341,7 @@ eReturnValues CSCSI_Farm_Log::print_Enviroment_Statistics_Page_07(JSONNODE *mast
 #if defined _DEBUG
     if (vFarmFrame[page].envStatPage07.copyNumber == FACTORYCOPY)
     {
-        printf("Environment Information Continued From FACTORY page \n");
+        printf("Environment Information Continued From Farm Log copy FACTORY \n");
     }
     else
     {
@@ -2356,7 +2356,7 @@ eReturnValues CSCSI_Farm_Log::print_Enviroment_Statistics_Page_07(JSONNODE *mast
 #endif
     if (vFarmFrame[page].envStatPage07.copyNumber == FACTORYCOPY)
     {
-        snprintf((char*)myStr.c_str(), BASIC, "Environment Information Continued From FACTORY page");
+        snprintf((char*)myStr.c_str(), BASIC, "Environment Information Continued From Farm Log copy FACTORY");
     }
     else
     {
@@ -2413,7 +2413,7 @@ eReturnValues CSCSI_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint3
 #if defined _DEBUG
         if (vFarmFrame[page].reliPage.reli.copyNumber == FACTORYCOPY)
         {
-            printf("Reliability Information From FACTORY page");
+            printf("Reliability Information From Farm Log copy FACTORY");
         }
         else
         {
@@ -2450,7 +2450,7 @@ eReturnValues CSCSI_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint3
 #endif
         if (vFarmFrame[page].reliPage.reli.copyNumber == FACTORYCOPY)
         {
-            snprintf((char*)myStr.c_str(), BASIC, "Reliability Information From FACTORY page");
+            snprintf((char*)myStr.c_str(), BASIC, "Reliability Information From Farm Log copy FACTORY");
         }
         else
         {
@@ -2484,7 +2484,7 @@ eReturnValues CSCSI_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint3
 #if defined _DEBUG
         if (vFarmFrame[page].reliPage.reli.copyNumber == FACTORYCOPY)
         {
-            printf("Reliability Information From FACTORY page");
+            printf("Reliability Information From Farm Log copy FACTORY");
         }
         else
         {
@@ -2521,7 +2521,7 @@ eReturnValues CSCSI_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint3
 #endif
         if (vFarmFrame[page].reliPage.reli.copyNumber == FACTORYCOPY)
         {
-            snprintf((char*)myStr.c_str(), BASIC, "Reliability Information From FACTORY page");
+            snprintf((char*)myStr.c_str(), BASIC, "Reliability Information From Farm Log copy FACTORY");
         }
         else
         {
@@ -3258,7 +3258,7 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Information(JSONNODE *masterDat
 #if defined _DEBUG
     if (pLUN->copyNumber == FACTORYCOPY)
     {
-        printf("LUN Actuator 0x%" PRIx16" Information From FACTORY page", M_Word0(pLUN->LUNID));
+        printf("LUN Actuator 0x%" PRIx16" Information From Farm Log copy FACTORY", M_Word0(pLUN->LUNID));
     }
     else
     {
@@ -3290,7 +3290,7 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Information(JSONNODE *masterDat
 #endif
     if (pLUN->copyNumber == FACTORYCOPY)
     {
-        snprintf((char*)myStr.c_str(), BASIC, "LUN Actuator 0x%" PRIX16" Information From FACTORY page",M_Word0(pLUN->LUNID));
+        snprintf((char*)myStr.c_str(), BASIC, "LUN Actuator 0x%" PRIX16" Information From Farm Log copy FACTORY",M_Word0(pLUN->LUNID));
     }
     else
     {
@@ -3364,7 +3364,7 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_FLED_Info(JSONNODE *masterData,
 #if defined _DEBUG
     if (pFLED->copyNumber == FACTORYCOPY)
     {
-        printf("Actuator 0x%" PRIx16" FLED Info From FACTORY page", M_Word0(pFLED->actID));
+        printf("Actuator 0x%" PRIx16" FLED Info From Farm Log copy FACTORY", M_Word0(pFLED->actID));
     }
     else
     {
@@ -3387,7 +3387,7 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_FLED_Info(JSONNODE *masterData,
 #endif
     if (pFLED->copyNumber == FACTORYCOPY)
     {
-        snprintf((char*)myStr.c_str(), BASIC, "Actuator Flash LED 0x%" PRIx16" Information From FACTORY page", M_Word0(pFLED->actID));
+        snprintf((char*)myStr.c_str(), BASIC, "Actuator Flash LED 0x%" PRIx16" Information From Farm Log copy FACTORY", M_Word0(pFLED->actID));
     }
     else
     {
@@ -3467,7 +3467,7 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Reallocation(JSONNODE *masterDa
 #if defined _DEBUG
     if (pReal->copyNumber == FACTORYCOPY)
     {
-        printf("LUN Actuator 0x%" PRIx16" Reallocation From FACTORY page", M_Word0(pReal->actID));
+        printf("LUN Actuator 0x%" PRIx16" Reallocation From Farm Log copy FACTORY", M_Word0(pReal->actID));
     }
     else
     {
@@ -3487,7 +3487,7 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Reallocation(JSONNODE *masterDa
 #endif
     if (pReal->copyNumber == FACTORYCOPY)
     {
-        snprintf((char*)myStr.c_str(), BASIC, "LUN Actuator 0x%" PRIx16" Reallocation From FACTORY page", M_Word0(pReal->actID));
+        snprintf((char*)myStr.c_str(), BASIC, "LUN Actuator 0x%" PRIx16" Reallocation From Farm Log copy FACTORY", M_Word0(pReal->actID));
     }
     else
     {

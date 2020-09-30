@@ -279,7 +279,7 @@ eReturnValues CATA_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint3
 #if defined _DEBUG
     if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
     {
-        printf("\nDrive Information From FACTORY page \n");
+        printf("\nDrive Information From Farm Log copy FACTORY \n");
     }
     else
     {
@@ -319,7 +319,7 @@ eReturnValues CATA_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint3
     // check the level of print form the eToolVerbosityLevels 
     if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
     {
-        snprintf((char*)myStr.c_str(), BASIC, "Drive Information From FACTORY page");
+        snprintf((char*)myStr.c_str(), BASIC, "Drive Information From Farm Log copy FACTORY");
     }
     else
     {
@@ -447,7 +447,7 @@ eReturnValues CATA_Farm_Log::print_Work_Load(JSONNODE *masterData, uint32_t page
 #if defined _DEBUG
     if (vFarmFrame[page].workLoadPage.copyNumber == FACTORYCOPY)
     {
-        printf("\nWork Load Information From FACTORY page \n");
+        printf("\nWork Load From Farm Log copy FACTORY \n");
     }
     else
     {
@@ -478,11 +478,11 @@ eReturnValues CATA_Farm_Log::print_Work_Load(JSONNODE *masterData, uint32_t page
 
     if (vFarmFrame[page].workLoadPage.copyNumber == FACTORYCOPY)
     {
-        snprintf((char*)myStr.c_str(), BASIC, "Work Load Information From FACTORY page \n");
+        snprintf((char*)myStr.c_str(), BASIC, "Work Load From Farm Log copy FACTORY");
     }
     else
     {
-        snprintf((char*)myStr.c_str(), BASIC, "Work Load From Farm Log copy %" PRId32" \n", page);
+        snprintf((char*)myStr.c_str(), BASIC, "Work Load From Farm Log copy %" PRId32"", page);
     }
     json_set_name(pageInfo, (char*)myStr.c_str());
 
@@ -542,7 +542,7 @@ eReturnValues CATA_Farm_Log::print_Error_Information(JSONNODE *masterData, uint3
 #if defined _DEBUG
     if (vFarmFrame[page].errorPage.copyNumber == FACTORYCOPY)
     {
-        printf("\nError Information From FACTORY page \n");
+        printf("\nError Information From Farm Log copy FACTORY \n");
     }
     else
     {
@@ -595,7 +595,7 @@ eReturnValues CATA_Farm_Log::print_Error_Information(JSONNODE *masterData, uint3
 
     if (vFarmFrame[page].errorPage.copyNumber == FACTORYCOPY)
     {
-        snprintf((char*)myStr.c_str(), BASIC, "Error Information From FACTORY page");
+        snprintf((char*)myStr.c_str(), BASIC, "Error Information From Farm Log copy FACTORYe");
     }
     else
     {
@@ -731,7 +731,7 @@ eReturnValues CATA_Farm_Log::print_Enviroment_Information(JSONNODE *masterData, 
 #if defined _DEBUG
     if (vFarmFrame[page].environmentPage.copyNumber == FACTORYCOPY)
     {
-        printf("\nEnvironment Information From FACTORY page");
+        printf("\nEnvironment Information From Farm Log copy FACTORY");
     }
     else
     {
@@ -799,7 +799,7 @@ eReturnValues CATA_Farm_Log::print_Enviroment_Information(JSONNODE *masterData, 
 #endif
     if (vFarmFrame[page].environmentPage.copyNumber == FACTORYCOPY)
     {
-        snprintf((char*)myStr.c_str(), BASIC, "Environment Information From FACTORY page");
+        snprintf((char*)myStr.c_str(), BASIC, "Environment Information From Farm Log copy FACTORY");
     }
     else
     {
@@ -913,7 +913,7 @@ eReturnValues CATA_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint32
     double remander = 0;
     if (vFarmFrame[page].reliPage.copyNumber == FACTORYCOPY)
     {
-        printf("\nReliability Information From FACTORY page");
+        printf("\nReliability Information From Farm Log copy FACTORY");
     }
     else
     {
@@ -952,7 +952,7 @@ eReturnValues CATA_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint32
 #endif
     if (vFarmFrame[page].reliPage.copyNumber == FACTORYCOPY)
     {
-        snprintf((char*)myStr.c_str(), BASIC, "Reliability Information From FACTORY page");
+        snprintf((char*)myStr.c_str(), BASIC, "Reliability Information From Farm Log copy FACTORY");
     }
     else
     {
@@ -1023,7 +1023,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
     double remander = 0;
     if (vFarmFrame[page].reliPage.copyNumber == FACTORYCOPY)
     {
-        printf("\n Head Information From FACTORY page");
+        printf("\n Head Information From Farm Log copy FACTORY");
     }
     else
     {
@@ -1138,7 +1138,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
 
     if (vFarmFrame[page].reliPage.copyNumber == FACTORYCOPY)
     {
-        snprintf((char*)myStr.c_str(), BASIC, "Head Information From FACTORY page");
+        snprintf((char*)myStr.c_str(), BASIC, "Head Information From Farm Log copy FACTORY");
     }
     else
     {
