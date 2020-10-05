@@ -2821,7 +2821,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
 #if defined _DEBUG
-                printf("\tWrite POS in sec value by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].writePowerOnHours.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);
+                printf("\tWrite Power On in Sec value by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].writePowerOnHours.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "Write POS in sec value by Head %" PRIu32"", loopCount); // Head count
                 set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].writePowerOnHours.headValue[loopCount], false, m_showStatusBits);

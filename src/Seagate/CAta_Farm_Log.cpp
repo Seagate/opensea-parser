@@ -1318,7 +1318,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
-        snprintf((char *)myHeader.c_str(), BASIC, "Write POS in sec value by Head %" PRId32"", loopCount);
+        snprintf((char *)myHeader.c_str(), BASIC, "Write Power On in Sec value by Head %" PRId32"", loopCount);
         snprintf((char*)myStr.c_str(), BASIC, "%0.04f", static_cast<double>(M_DoubleWord0(vFarmFrame[page].reliPage.writePOH[loopCount])) / 3600);
         set_json_string_With_Status(headInfo, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].reliPage.writePOH[loopCount], m_showStatusBits);                         //!< [24] write POS in sec value from most recent SMART Frame by head
     }
