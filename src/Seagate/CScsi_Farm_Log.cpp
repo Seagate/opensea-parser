@@ -2773,7 +2773,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
 #if defined _DEBUG
                 printf("\tNumber of Reallocated Sectors by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].ResidentGlistEntries.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);
 #endif
-                snprintf((char*)myHeader.c_str(), BASIC, "Number of Resident G-List by Head %" PRIu32"", loopCount); // Head count
+                snprintf((char*)myHeader.c_str(), BASIC, "Number of Reallocated Sectors by Head %" PRIu32"", loopCount); // Head count
                 set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].ResidentGlistEntries.headValue[loopCount], false, m_showStatusBits);
             }
             break;
@@ -2781,9 +2781,9 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
 #if defined _DEBUG
-                printf("\tNumber of Pending Entries by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].ResidentPlistEntries.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);
+                printf("\tNumber of Reallocation Candidate Sectors by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].ResidentPlistEntries.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);
 #endif
-                snprintf((char*)myHeader.c_str(), BASIC, "Number of Pending Entries by Head %" PRIu32"", loopCount); // Head count
+                snprintf((char*)myHeader.c_str(), BASIC, "Number of Reallocation Candidate Sectors by Head %" PRIu32"", loopCount); // Head count
                 set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].ResidentPlistEntries.headValue[loopCount], false, m_showStatusBits);
             }
             break;

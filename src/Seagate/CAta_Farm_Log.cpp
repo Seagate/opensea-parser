@@ -1293,12 +1293,12 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
-        snprintf((char *)myHeader.c_str(), BASIC, "Number of Resident G-List by Head %" PRId32"", loopCount);
+        snprintf((char *)myHeader.c_str(), BASIC, "Number of Reallocated Sectors by Head %" PRId32"", loopCount);
         set_json_64_bit_With_Status(headInfo, (char*)myHeader.c_str(), vFarmFrame[page].reliPage.gList[loopCount], false, m_showStatusBits);							//!< [24] Number of Reallocated Sectors per head
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
-        snprintf((char *)myHeader.c_str(), BASIC, "Number of Pending Entries by Head %" PRId32"", loopCount);
+        snprintf((char *)myHeader.c_str(), BASIC, "Number of Reallocation Candidate Sectors by Head %" PRId32"", loopCount);
         set_json_64_bit_With_Status(headInfo, (char*)myHeader.c_str(), vFarmFrame[page].reliPage.pendingEntries[loopCount], false, m_showStatusBits);                   //!< [24] Number of Reallocation Candidate Sectors per head
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
