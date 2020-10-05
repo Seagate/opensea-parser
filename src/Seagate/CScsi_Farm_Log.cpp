@@ -484,9 +484,9 @@ void CSCSI_Farm_Log::create_Firmware_String(std::string &firmwareRev, const sScs
     uint64_t firm2 = idInfo->firmwareRev & 0x00FFFFFFFFFFFFFFLL;
     firm = (firm2 | (firm1 << 32));
     byte_Swap_64(&firm);
-	firmwareRev.resize(FIRMWARE_REV_LEN);
-	memset((char *)firmwareRev.c_str(), 0, FIRMWARE_REV_LEN);
-	strncpy((char *)firmwareRev.c_str(), (char*)&firm, FIRMWARE_REV_LEN);
+	firmwareRev.resize(8);
+	memset((char *)firmwareRev.c_str(), 0, 8);
+	strncpy((char *)firmwareRev.c_str(), (char*)&firm, 8);
 }
 //-----------------------------------------------------------------------------
 //
