@@ -1105,7 +1105,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
     printf("\tNumber of disc slip recalibrations performed:  %" PRId64" (debug)\n", vFarmFrame[page].reliPage.diskSlipRecalPerformed & 0x00FFFFFFFFFFFFFFLL);                  //!< Number of disc slip recalibrations performed
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
-        printf("\tNumber of Resident G-List by Head %d:  %" PRId64" (debug)\n", loopCount, vFarmFrame[page].reliPage.gList[loopCount] & 0x00FFFFFFFFFFFFFFLL);                //!< [24] Number of Resident G-List per Head
+        printf("\tNumber of Reallocated Sectors by Head %d:  %" PRId64" (debug)\n", loopCount, vFarmFrame[page].reliPage.gList[loopCount] & 0x00FFFFFFFFFFFFFFLL);                //!< [24] Number of Resident G-List per Head
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
