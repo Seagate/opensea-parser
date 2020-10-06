@@ -368,7 +368,7 @@ eReturnValues CATA_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint3
     set_json_64_bit_With_Status(pageInfo, "Spin-up Time", vFarmFrame[page].driveInfo.spinUpTime, false, m_showStatusBits);										//!< SMART Spin-Up time in milliseconds
 
     set_json_64_bit_With_Status(pageInfo, "NVC Status @ power on", vFarmFrame[page].driveInfo.NVC_StatusATPowerOn, false, m_showStatusBits);					//!< NVC Status on Power-on
-    set_json_64_bit_With_Status(pageInfo, "Time Available to save (in 100us)", vFarmFrame[page].driveInfo.timeAvailable, false, m_showStatusBits);							//!< Time Available to Save User Data to Media Over Last Power Cycle (in 100us)
+    set_json_64_bit_With_Status(pageInfo, "NVC Time Available to save (in 100us)", vFarmFrame[page].driveInfo.timeAvailable, false, m_showStatusBits);							//!< Time Available to Save User Data to Media Over Last Power Cycle (in 100us)
     snprintf((char*)myStr.c_str(), BASIC, "%llu", vFarmFrame[page].driveInfo.timeStamp1 & 0x00FFFFFFFFFFFFFFLL);
     set_json_string_With_Status(pageInfo, "Timestamp of First SMART Summary Frame (ms)", (char*)myStr.c_str(), vFarmFrame[page].driveInfo.timeStamp1, m_showStatusBits);
     snprintf((char*)myStr.c_str(), BASIC, "%llu", vFarmFrame[page].driveInfo.timeStamp2 & 0x00FFFFFFFFFFFFFFLL);
