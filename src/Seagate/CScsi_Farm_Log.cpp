@@ -2831,9 +2831,9 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
 #if defined _DEBUG
-                printf("\tWrite Power On in Sec value by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].writePowerOnHours.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);
+                printf("\tWrite Power On in Seconds value by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].writePowerOnHours.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);
 #endif
-                snprintf((char*)myHeader.c_str(), BASIC, "Write Power on in Sec value by Head %" PRIu32"", loopCount); // Head count
+                snprintf((char*)myHeader.c_str(), BASIC, "Write Power on in Seconds value by Head %" PRIu32"", loopCount); // Head count
                 set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].writePowerOnHours.headValue[loopCount], false, m_showStatusBits);
                 //snprintf((char*)myStr.c_str(), BASIC, "%0.04f", (check_for_signed_int(M_Word0(check_Status_Strip_Status(vFarmFrame[page].writePowerOnHours.headValue[loopCount])), 16) /216000));
                 //set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].writePowerOnHours.headValue[loopCount], m_showStatusBits);
@@ -3017,10 +3017,10 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 double decimal = static_cast<double>(M_DoubleWordInt0(dsHead));  // get 3:0 for the Deciaml Part of the float
 
 #if defined _DEBUG
-                printf("\tFAFH HF / LF Relative Amplitude by Head%" PRIu32":  raw 0x%" PRIx64", calculated %f (debug)\n" , \
+                printf("\tFAFH HF - LF Relative Amplitude by Head%" PRIu32":  raw 0x%" PRIx64", calculated %f (debug)\n" , \
                     loopCount, vFarmFrame[page].fafhRelativeApmlitude.headValue[loopCount], static_cast<double>(M_DoubleWordInt0(check_Status_Strip_Status(vFarmFrame[page].fafhRelativeApmlitude.headValue[loopCount]))) * .01);  //!< Disc Slip in micro-inches 
 #endif
-                snprintf((char*)myHeader.c_str(), BASIC, "FAFH HF / LF Relative Amplitude by Head %" PRIu32"", loopCount);     // Head count
+                snprintf((char*)myHeader.c_str(), BASIC, "FAFH HF - LF Relative Amplitude by Head %" PRIu32"", loopCount);     // Head count
                 snprintf((char*)myStr.c_str(), BASIC, "%f", static_cast<double>(M_DoubleWordInt0(check_Status_Strip_Status(vFarmFrame[page].fafhRelativeApmlitude.headValue[loopCount]))) * .01);
                 set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].fafhRelativeApmlitude.headValue[loopCount], m_showStatusBits);
             }
