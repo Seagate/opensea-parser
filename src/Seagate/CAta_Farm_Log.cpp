@@ -627,7 +627,7 @@ eReturnValues CATA_Farm_Log::print_Error_Information(JSONNODE *masterData, uint3
     for (loopCount = 0; loopCount < FLASH_EVENTS; loopCount++)
     {
         JSONNODE *eventInfo = json_new(JSON_NODE);
-        snprintf((char*)myStr.c_str(), BASIC, "Event %" PRIu16"", loopCount);
+        snprintf((char*)myStr.c_str(), BASIC, "Flash LED Event %" PRIu16"", loopCount);
         json_set_name(eventInfo, (char*)myStr.c_str());
 
         set_json_64_bit_With_Status(eventInfo, "Address of Event", vFarmFrame[page].errorPage.flashLEDArray[loopCount], true, m_showStatusBits);	           //!< Info on the last 8 Flash LED (assert) Events, wrapping array
@@ -653,34 +653,36 @@ eReturnValues CATA_Farm_Log::print_Error_Information(JSONNODE *masterData, uint3
     {
         for (loopCount = 0; loopCount <= 7; ++loopCount)
         {
-            snprintf((char *)myStr.c_str(), BASIC, "Read Write Retry Error Type # %" PRIx32"", loopCount);
-            set_json_64_bit_With_Status(pageInfo, (char *)myStr.c_str(), M_Byte6(check_Status_Strip_Status(vFarmFrame[page].errorPage.readWriteRetry[loopCount])), false, m_showStatusBits);
-            snprintf((char *)myStr.c_str(), BASIC, "Read Write Retry Log Entry # %" PRIx32"", loopCount);
-            set_json_64_bit_With_Status(pageInfo, (char *)myStr.c_str(), M_Byte5(check_Status_Strip_Status(vFarmFrame[page].errorPage.readWriteRetry[loopCount])), false, m_showStatusBits);
-            snprintf((char *)myStr.c_str(), BASIC, "Read Write Retry Zone Group # %" PRIx32"", loopCount);
-            set_json_64_bit_With_Status(pageInfo, (char *)myStr.c_str(), M_Word1(check_Status_Strip_Status(vFarmFrame[page].errorPage.readWriteRetry[loopCount])), false, m_showStatusBits);
-            snprintf((char *)myStr.c_str(), BASIC, "Read Write Retry Head # %" PRIx32"", loopCount);
-            set_json_64_bit_With_Status(pageInfo, (char *)myStr.c_str(), M_Nibble3(check_Status_Strip_Status(vFarmFrame[page].errorPage.readWriteRetry[loopCount])), false, m_showStatusBits);
-            snprintf((char *)myStr.c_str(), BASIC, "Read Write Retry Count # %" PRIx32"", loopCount);
-            set_json_64_bit_With_Status(pageInfo, (char *)myStr.c_str(), M_Byte0(check_Status_Strip_Status(vFarmFrame[page].errorPage.readWriteRetry[loopCount])), false, m_showStatusBits);
+            JSONNODE *rwrInfo = json_new(JSON_NODE);
+            snprintf((char*)myStr.c_str(), BASIC, "Read Write Retry # %" PRIu16"", loopCount);
+            json_set_name(rwrInfo, (char*)myStr.c_str());
+
+            set_json_64_bit_With_Status(pageInfo, "Log Entry #", M_Byte5(check_Status_Strip_Status(vFarmFrame[page].errorPage.readWriteRetry[loopCount])), false, m_showStatusBits);
+            set_json_64_bit_With_Status(pageInfo, "Error Type #", M_Byte6(check_Status_Strip_Status(vFarmFrame[page].errorPage.readWriteRetry[loopCount])), false, m_showStatusBits);
+            set_json_64_bit_With_Status(pageInfo, "Zone Group #", M_Word1(check_Status_Strip_Status(vFarmFrame[page].errorPage.readWriteRetry[loopCount])), false, m_showStatusBits);
+            set_json_64_bit_With_Status(pageInfo, "Head #", M_Nibble3(check_Status_Strip_Status(vFarmFrame[page].errorPage.readWriteRetry[loopCount])), false, m_showStatusBits);
+            set_json_64_bit_With_Status(pageInfo, "Count #", M_Byte0(check_Status_Strip_Status(vFarmFrame[page].errorPage.readWriteRetry[loopCount])), false, m_showStatusBits);
+          
+            json_push_back(pageInfo, rwrInfo);
         }
     }
     else
     {
         for (loopCount = 0; loopCount <= 7; ++loopCount)
         {
-            snprintf((char *)myStr.c_str(), BASIC, "Read Write Retry Error Type # %" PRIx32"", loopCount);
-            set_json_64_bit_With_Status(pageInfo, (char *)myStr.c_str(), M_Byte6(check_Status_Strip_Status(vFarmFrame[page].errorPage.readWriteRetry[loopCount])), false, m_showStatusBits);
-            snprintf((char *)myStr.c_str(), BASIC, "Read Write Retry Log Entry # %" PRIx32"", loopCount);
-            set_json_64_bit_With_Status(pageInfo, (char *)myStr.c_str(), M_Word2(check_Status_Strip_Status(vFarmFrame[page].errorPage.readWriteRetry[loopCount])), false, m_showStatusBits);
-            snprintf((char *)myStr.c_str(), BASIC, "Read Write Retry Zone Group # %" PRIx32"", loopCount);
-            set_json_64_bit_With_Status(pageInfo, (char *)myStr.c_str(), M_Word1(check_Status_Strip_Status(vFarmFrame[page].errorPage.readWriteRetry[loopCount])), false, m_showStatusBits);
-            snprintf((char *)myStr.c_str(), BASIC, "Read Write Retry Head # %" PRIx32"", loopCount);
-            set_json_64_bit_With_Status(pageInfo, (char *)myStr.c_str(), M_Byte1(check_Status_Strip_Status(vFarmFrame[page].errorPage.readWriteRetry[loopCount])), false, m_showStatusBits);
-            snprintf((char *)myStr.c_str(), BASIC, "Read Write Retry Count # %" PRIx32"", loopCount);
-            set_json_64_bit_With_Status(pageInfo, (char *)myStr.c_str(), M_Byte0(check_Status_Strip_Status(vFarmFrame[page].errorPage.readWriteRetry[loopCount])), false, m_showStatusBits);
+            JSONNODE *rwrInfo = json_new(JSON_NODE);
+            snprintf((char*)myStr.c_str(), BASIC, "Read Write Retry # %" PRIu16"", loopCount);
+            json_set_name(rwrInfo, (char*)myStr.c_str());
 
+            set_json_64_bit_With_Status(rwrInfo, "Log Entry #", M_Word2(check_Status_Strip_Status(vFarmFrame[page].errorPage.readWriteRetry[loopCount])), false, m_showStatusBits);
+            set_json_64_bit_With_Status(rwrInfo, "Error Type #", M_Byte6(check_Status_Strip_Status(vFarmFrame[page].errorPage.readWriteRetry[loopCount])), false, m_showStatusBits);
+            set_json_64_bit_With_Status(rwrInfo, "Zone Group #", M_Word1(check_Status_Strip_Status(vFarmFrame[page].errorPage.readWriteRetry[loopCount])), false, m_showStatusBits);
+            set_json_64_bit_With_Status(rwrInfo, "Head #", M_Byte1(check_Status_Strip_Status(vFarmFrame[page].errorPage.readWriteRetry[loopCount])), false, m_showStatusBits);
+            set_json_64_bit_With_Status(rwrInfo, "Count #", M_Byte0(check_Status_Strip_Status(vFarmFrame[page].errorPage.readWriteRetry[loopCount])), false, m_showStatusBits);
+
+            json_push_back(pageInfo, rwrInfo);
         }
+
     }
 
     for (loopCount = 0; loopCount < REALLOCATIONEVENTS; ++loopCount)
