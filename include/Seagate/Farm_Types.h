@@ -127,7 +127,7 @@ typedef struct _sStringIdentifyData
     std::string worldWideName;									//!< World Wide Name of the device
     std::string deviceInterface;								//!< Device Interface 
     std::string firmwareRev;									//!< Firmware Rev
-    std::string modelNumber;                                    //!< Model Number (2.15 and newer will have this)
+    std::string modelNumber;                                    //!< Model Number (4.3 and newer will have this)
 }sStringIdentifyData;
 
 typedef struct _sFarmHeader
