@@ -20,7 +20,8 @@
 #include <cmath>
 #include "common.h"
 #include "libjson.h"
-#include "Opensea_Parser_Helper.h"
+#include "Farm_Helper.h"
+#include "Farm_Common.h"
 #include "Ata_Farm_Types.h"
 
 namespace opensea_parser {
@@ -31,24 +32,6 @@ namespace opensea_parser {
     class CATA_Farm_Log 
     {
         protected:
-            typedef enum _eReallocatedSectorsCause
-            {
-                HOST_READ_GENERIC,
-                HOST_READ_UNCORRECTABLE,
-                HOST_READ_RAW,
-                HOST_WRITE_GENERIC,
-                HOST_WRITE_UNCORRECTABLE,
-                HOST_WRITE_RAW,
-                BACKGROUND_READ_GENERIC,
-                BACKGROUND_READ_RELIABILITY,
-                BACKGROUND_READ_RECOVERY,
-                BACKGROUND_READ_HOST_SELF_TEST,
-                BACKGROUND_WRITE_GENERIC,
-                BACKGROUND_WRITE_RELIABILITY,
-                BACKGROUND_WRITE_RECOVERY,
-                BACKGROUND_WRITE_HOST_SELF_TEST,
-                SERVO_WEDGE,
-            }eReallocatedSectorsCause;
 
             std::vector <sFarmFrame > vFarmFrame;
             std::vector <sFarmFrame >vBlankFarmFrame;
@@ -65,14 +48,15 @@ namespace opensea_parser {
             uint8_t                     *pBuf;                              //!< pointer to the buffer data that is the binary of FARM LOG
             uint32_t                    m_MajorRev;                         //!< holds the Major Revision number
             uint32_t                    m_MinorRev;                         //!< holds the minor revision number
+            CFarmCommon         _common;
 
-            eReturnValues Print_Header(JSONNODE *masterData);
-            eReturnValues Print_Drive_Information(JSONNODE *masterData, uint32_t page);
-            eReturnValues Print_Work_Load(JSONNODE *masterData, uint32_t page);
-            eReturnValues Print_Error_Information(JSONNODE *masterData, uint32_t page);
-            eReturnValues Print_Enviroment_Information(JSONNODE *masterData, uint32_t page);
-            eReturnValues Print_Reli_Information(JSONNODE *masterData, uint32_t page);
-            eReturnValues Print_Head_Information(JSONNODE *masterData, uint32_t page);
+            eReturnValues print_Header(JSONNODE *masterData);
+            eReturnValues print_Drive_Information(JSONNODE *masterData, uint32_t page);
+            eReturnValues print_Work_Load(JSONNODE *masterData, uint32_t page);
+            eReturnValues print_Error_Information(JSONNODE *masterData, uint32_t page);
+            eReturnValues print_Enviroment_Information(JSONNODE *masterData, uint32_t page);
+            eReturnValues print_Reli_Information(JSONNODE *masterData, uint32_t page);
+            eReturnValues print_Head_Information(JSONNODE *masterData, uint32_t page);
 			//-----------------------------------------------------------------------------
 			//
 			//! \fn Create_Serial_Number()
@@ -88,7 +72,7 @@ namespace opensea_parser {
 			//!   \return serialNumber = the string serialNumber
 			//
 			//---------------------------------------------------------------------------
-			inline void Create_Serial_Number(std::string &serialNumber, const sDriveInfo * const idInfo)
+			inline void create_Serial_Number(std::string &serialNumber, const sDriveInfo * const idInfo)
 			{
 				uint64_t sn = 0;
 				sn = (idInfo->serialNumber & 0x00FFFFFFFFFFFFFFLL) | ((idInfo->serialNumber2 & 0x00FFFFFFFFFFFFFFLL) << 32);
@@ -112,7 +96,7 @@ namespace opensea_parser {
 			//!   \return wordWideName = the string wordWideName
 			//
 			//---------------------------------------------------------------------------
-			inline void Create_World_Wide_Name(std::string &worldWideName, const sDriveInfo * const idInfo)
+			inline void create_World_Wide_Name(std::string &worldWideName, const sDriveInfo * const idInfo)
 			{
 				uint64_t wwn = 0;
 				uint64_t wwn1 = idInfo->worldWideName2 & 0x00FFFFFFFFFFFFFFLL;
@@ -139,7 +123,7 @@ namespace opensea_parser {
 			//!   \return firmwareRev = the string firmwareRev
 			//
 			//---------------------------------------------------------------------------
-			inline void Create_Firmware_String(std::string &firmwareRev, const sDriveInfo * const idInfo)
+			inline void create_Firmware_String(std::string &firmwareRev, const sDriveInfo * const idInfo)
 			{
 				uint64_t firm = 0;
 				firm = (idInfo->firmware & 0x00FFFFFFFFFFFFFFLL);
@@ -163,7 +147,7 @@ namespace opensea_parser {
             //!   \return modelNumber = the string Model number
             //
             //---------------------------------------------------------------------------
-            inline void Create_Model_Number_String(std::string &modelNumber, const sDriveInfo * const idInfo)
+            inline void create_Model_Number_String(std::string &modelNumber, const sDriveInfo * const idInfo)
             {
                 #define MAXSIZE  10
                 uint64_t model[MAXSIZE] = { 0,0,0,0,0,0,0,0,0,0 };
@@ -204,7 +188,7 @@ namespace opensea_parser {
 			//!   \return dInterface = the string dInterface
 			//
 			//---------------------------------------------------------------------------
-			inline void Create_Device_Interface_String(std::string &dInterface, const sDriveInfo * const idInfo)
+			inline void create_Device_Interface_String(std::string &dInterface, const sDriveInfo * const idInfo)
 			{
 				uint64_t dFace = 0;
 				dFace = (idInfo->deviceInterface & 0x00FFFFFFFFFFFFFFLL);
@@ -220,15 +204,15 @@ namespace opensea_parser {
             CATA_Farm_Log( uint8_t *bufferData, size_t bufferSize, bool showStatus);
             virtual ~CATA_Farm_Log();
             eReturnValues parse_Farm_Log();
-            void Get_Reallocated_Sector_By_Cause(std::string *description, uint64_t readWriteRetry);
-            void Print_All_Pages(JSONNODE *masterData);
-            void Print_Page(JSONNODE *masterData, uint32_t page);
-            void Print_Page_Without_Drive_Info(JSONNODE *masterData, uint32_t page);
-            void Print_Page_One_Node(JSONNODE *masterData);
-            virtual eReturnValues Get_Log_Status(){ return m_status; };
-            virtual void Get_Serial_Number(std::string sn){ sn.assign( vFarmFrame[0].identStringInfo.serialNumber); };
-            virtual void Get_Firmware_String(std::string firmware){ firmware.assign(vFarmFrame[0].identStringInfo.firmwareRev); };
-			virtual void Get_World_Wide_Name(std::string wwn) {wwn.assign(vFarmFrame[0].identStringInfo.worldWideName);};
+            void get_Reallocated_Sector_By_Cause(std::string *description, uint64_t readWriteRetry);
+            void print_All_Pages(JSONNODE *masterData);
+            void print_Page(JSONNODE *masterData, uint32_t page);
+            void print_Page_Without_Drive_Info(JSONNODE *masterData, uint32_t page);
+            void print_Page_One_Node(JSONNODE *masterData);
+            virtual eReturnValues get_Log_Status(){ return m_status; };
+            virtual void get_Serial_Number(std::string sn){ sn.assign( vFarmFrame[0].identStringInfo.serialNumber); };
+            virtual void get_Firmware_String(std::string firmware){ firmware.assign(vFarmFrame[0].identStringInfo.firmwareRev); };
+			virtual void get_World_Wide_Name(std::string wwn) {wwn.assign(vFarmFrame[0].identStringInfo.worldWideName);};
     };
 #endif //!ATAFARM
 }

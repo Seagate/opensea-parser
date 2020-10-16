@@ -90,6 +90,9 @@ typedef struct _sErrorStat
     uint64_t         reallocatedSectors[15];                    //!< Reallocated Secotors by cause(added 3.0)
     uint64_t         timestampForLED[8];                        //!< Universal Timestamp (us) of last 8 Flash LED (assert) Events, wrapping array (added 4.7)
     uint64_t         powerCycleOfLED[8];                        //<! Power Cycle of the last 8 Flash LED (assert) Events, wrapping array (added 4.7)
+    uint64_t         cumLifeTimeECCReadDueErrorRecovery;        //<! Cumulative Lifetime Unrecoverable Read errors due to Error Recovery Control 
+    uint64_t         cumLifeUnRecoveralbeReadByhead[24];        //<! Cumulative Lifetime Unrecoverable Read Repeating by head
+    uint64_t         cumLiveUnRecoveralbeReadUnique[24];        //<! Cumulative Lifetime Unrecoverable Read Unique by head
 }sErrorStat;
 
 typedef struct _sEnvironementStat
@@ -147,8 +150,8 @@ typedef struct _sflyHeight
 
 typedef struct _sAtaReliabilityStat
 {
-    uint64_t         pageNumber;                                  //!< Page Number = 5
-    uint64_t         copyNumber;                                  //!< Copy Number
+    uint64_t        pageNumber;                                  //!< Page Number = 5
+    uint64_t        copyNumber;                                  //!< Copy Number
     int64_t         lastIDDTest;                                 //!< Timestamp of last IDD test
     int64_t         cmdLastIDDTest;                              //!< Sub-command of last IDD test
     uint64_t        discSlip[MAX_HEAD_COUNT];                    //!< [24] Disc Slip in micro-inches by Head
@@ -209,15 +212,16 @@ typedef struct _sAtaReliabilityStat
     sflyHeight      FAFHBitErrorRate[MAX_HEAD_COUNT];            //!< [24][3] FAFH Bit Error Rate, write then read BER on reserved tracks (added in 4.5)
     sflyHeight      FAFHLowFrequency[MAX_HEAD_COUNT];            //<! [24][3] FAFH Low Frequency Passive Clearance in ADC counts (added in 4.5)
     sflyHeight      FAFHHighFrequency[MAX_HEAD_COUNT];           //<! [24][3] FAFH High Frequency Passive Clearance in ADC counts (added in 4.5)
+    uint64_t        numberLBACorrectedByParitySector;            //<! Number of LBAs Corrected by Parity Sector
 }sAtaReliabilityStat;
 
 typedef struct _sFarmFrame
 {
-    sDriveInfo              driveInfo;                          //!< drive information page
-    sStringIdentifyData     identStringInfo;                    //!< all the string information from the drive information page
-    sWorkLoadStat           workLoadPage;                       //!< work load data page
+    sDriveInfo              driveInfo;                          //<! drive information page
+    sStringIdentifyData     identStringInfo;                    //<! all the string information from the drive information page
+    sWorkLoadStat           workLoadPage;                       //<! work load data page
     sErrorStat              errorPage;                          //<! error data page
     sEnvironementStat       environmentPage;                    //<! environment information page 
-    sAtaReliabilityStat     reliPage;                           //!< reliability information page
+    sAtaReliabilityStat     reliPage;                           //<! reliability information page
 }sFarmFrame;
 #pragma pack(pop)

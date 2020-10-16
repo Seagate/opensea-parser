@@ -135,6 +135,9 @@
     <ClInclude Include="..\..\..\..\include\CAta_SMART_Log_Dir.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\include\Seagate\Farm_Common.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\src\CAta_Device_Stat_Log.cpp">
@@ -234,6 +237,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\src\CAta_SMART_Log_Dir.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\Seagate\Farm_Common.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
