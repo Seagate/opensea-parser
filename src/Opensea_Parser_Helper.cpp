@@ -151,6 +151,12 @@ void opensea_parser::get_SMART_Save_Flages(JSONNODE *headerNode, uint8_t flag)
     case SMART_FRAME_FLAG_DRIVE_SELF_TEST_COMPLETE_WITH_FAILURE:
         json_push_back(headerNode, json_new_a("SMART Save Flag", "DST Test Completed with Failure"));
         break;
+    case SMART_FRAME_FLAG_DEFECT_LIST_COMMAND:
+        json_push_back(headerNode, json_new_a("SMART Save Flag", "Defect List Command"));
+        break;
+    case SMART_FRAME_FLAG_F7_CDB_TRIGGER :
+        json_push_back(headerNode, json_new_a("SMART Save Flag", "F7 CDB Trigger"));
+        break;
     default:
         json_push_back(headerNode, json_new_a("SMART Save Flag", "Did not match any value"));
         break;
