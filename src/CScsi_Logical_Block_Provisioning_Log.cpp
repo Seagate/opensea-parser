@@ -2,7 +2,7 @@
 // CScsi_Logical_Block_Provisioning_Logg.cpp  Definition of Logical Block Provisioning Log page
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
+// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -203,7 +203,7 @@ void CScsiLBAProvisionLog::process_LBA_Provision_Data(JSONNODE *lbaData)
 {
 	std::string myStr = "";
 	myStr.resize(BASIC);
-#if defined( _DEBUG)
+#if defined _DEBUG
 	printf("Logical Block Provisioning Log \n");
 #endif
 	byte_Swap_16(&m_Provision->paramCode);

@@ -2,7 +2,7 @@
 // CScsi_Background_Operation_Log.cpp  Definition of Background Operation log page reports parameters that are specific to background operations.
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
+// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -58,7 +58,7 @@ CScsiOperationLog::CScsiOperationLog()
 //
 //---------------------------------------------------------------------------
 CScsiOperationLog::CScsiOperationLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength)
-	: pData(buffer)
+	: pData(NULL)
 	, m_OperationName("Background Operation Log")
 	, m_OperationsStatus(IN_PROGRESS)
 	, m_PageLength(pageLength)
@@ -69,7 +69,13 @@ CScsiOperationLog::CScsiOperationLog(uint8_t * buffer, size_t bufferSize, uint16
 	{
 		printf("%s \n", m_OperationName.c_str());
 	}
-	if (buffer != NULL)
+    pData = new uint8_t[pageLength];								// new a buffer to the point				
+#ifndef _WIN64
+    memcpy(pData, buffer, pageLength);
+#else
+    memcpy_s(pData, pageLength, buffer, pageLength);// copy the buffer data to the class member pBuf
+#endif
+	if (pData != NULL)
 	{
 		m_OperationsStatus = IN_PROGRESS;
 	}
@@ -96,7 +102,11 @@ CScsiOperationLog::CScsiOperationLog(uint8_t * buffer, size_t bufferSize, uint16
 //---------------------------------------------------------------------------
 CScsiOperationLog::~CScsiOperationLog()
 {
-
+    if (pData != NULL)
+    {
+        delete[] pData;
+        pData = NULL;
+    }
 }
 //-----------------------------------------------------------------------------
 //
@@ -161,7 +171,7 @@ void CScsiOperationLog::process_Background_Operations_Data(JSONNODE *operationDa
 {
 	std::string myStr = "";
 	myStr.resize(BASIC);
-#if defined( _DEBUG)
+#if defined _DEBUG
 	printf("Cache Event Description \n");
 #endif
 	byte_Swap_16(&m_Operation->paramCode);

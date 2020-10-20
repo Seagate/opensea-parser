@@ -3,7 +3,7 @@
 //
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
+// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -28,6 +28,8 @@ using namespace opensea_parser;
 //---------------------------------------------------------------------------
 CAta_Ext_DST_Log::CAta_Ext_DST_Log(const std::string &fileName, JSONNODE *masterData)
     :m_name("Ext DST Log")                                         //!< name of the class
+    , pData()
+    , m_logSize(0)
     , m_status(IN_PROGRESS)
 {
 	CLog *cCLog;
@@ -51,6 +53,7 @@ CAta_Ext_DST_Log::CAta_Ext_DST_Log(const std::string &fileName, JSONNODE *master
 				byte_Swap_16(&idCheck->pageLength);  // now that we know it's not scsi we need to flip the bytes back
 				m_status = parse_Ext_Self_Test_Log( masterData);
 			}
+            delete [] pData;
         }
     }
     else
@@ -79,6 +82,7 @@ CAta_Ext_DST_Log::CAta_Ext_DST_Log(uint8_t *pBufferData, JSONNODE *masterData)
 	pData = pBufferData;
     m_logSize = 0;
     m_status = parse_Ext_Self_Test_Log( masterData);
+    pData = NULL;
 }
 //-----------------------------------------------------------------------------
 //
@@ -94,9 +98,73 @@ CAta_Ext_DST_Log::CAta_Ext_DST_Log(uint8_t *pBufferData, JSONNODE *masterData)
 //---------------------------------------------------------------------------
 CAta_Ext_DST_Log::~CAta_Ext_DST_Log()
 {
-    if (pData != NULL)
+
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn Get_Status_Meaning
+//
+//! \brief
+//!   Description: fill in a string of the meaning of the status data
+//
+//  Entry:
+//! \param meaning - string to fill in the meaing
+//! \param status - the status to fill in the meaing 
+//
+//  Exit:
+//!   \return eReturnValues success
+//
+//---------------------------------------------------------------------------
+void CAta_Ext_DST_Log::Get_Status_Meaning(std::string &meaning,uint8_t status)
+{
+    meaning.resize(BASIC);
+    if (status == 0x00)
     {
-        delete []pData;
+        meaning = "Self Test completed without error.";
+    }
+    else if (status == 0x01)
+    {
+        meaning = "Was Aborted by the host";
+    }
+    else if (status == 0x02)
+    {
+        meaning = "Was interepted by the host with a hard reset of a soft reset";
+    }
+    else if (status == 0x03)
+    {
+        meaning = "unknown error and Self Test was unable to complete";
+    }
+    else if (status == 0x04)
+    {
+        meaning = "Completed and has faild and the element is unknown";
+    }
+    else if (status == 0x05)
+    {
+        meaning = "Completed With an electrical element failing";
+    }
+    else if (status == 0x06)
+    {
+        meaning = "Completed having a servo element failure";
+    }
+    else if (status == 0x07)
+    {
+        meaning = "Completed having a read element failure";
+    }
+    else if (status == 0x08)
+    {
+        meaning = "Completed having handling damage";
+    }
+    else if (status == 0x09)
+    {
+        meaning = "Completed having suspected handling damage";
+    }
+    else if (status == 0x15)
+    {
+        meaning = "Self Test is in progress";
+    }
+    else
+    {
+        meaning ="Reserved";
     }
 }
 //-----------------------------------------------------------------------------
@@ -150,6 +218,9 @@ eReturnValues CAta_Ext_DST_Log::parse_Ext_Self_Test_Log( JSONNODE *masterData)
         json_push_back(runInfo, json_new_a("Timestamp", (char*)myStr.c_str()));
         snprintf((char*)myStr.c_str(), BASIC, "0x%02x", int(StatusByte));
         json_push_back(runInfo, json_new_a("Status Byte", (char*)myStr.c_str()));
+        Get_Status_Meaning(myStr,StatusByte);
+        json_push_back(runInfo, json_new_a("Status Meaning",(char*)myStr.c_str()));
+
         snprintf((char*)myStr.c_str(), BASIC, "0x%02x", checkPointByte);
         json_push_back(runInfo, json_new_a("CheckPoint Byte", (char*)myStr.c_str()));
         snprintf((char*)myStr.c_str(), BASIC, "%u", compTime);
@@ -163,6 +234,7 @@ eReturnValues CAta_Ext_DST_Log::parse_Ext_Self_Test_Log( JSONNODE *masterData)
     json_push_back(masterData, DstJson);
 
     return SUCCESS;
+
 }
 
 

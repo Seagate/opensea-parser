@@ -2,7 +2,7 @@
 // CAta_Power_Conditions_Log.cpp   Implementation of Base class CAtaLog
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
+// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -131,9 +131,13 @@ CAtaPowerConditionsLog::CAtaPowerConditionsLog(tDataPtr pData, JSONNODE *masterD
 	, m_standbyYPowerConditions(NULL), m_standbyZPowerConditions(NULL)
 	, conditionFlags()
 {
-
-    m_powerConditionLog = (uint8_t*)pData.pData;
-
+    m_powerConditionLog = new uint8_t[pData.DataLen];								// new a buffer to the point				
+#ifndef _WIN64
+    memcpy(m_powerConditionLog, (uint8_t*)pData.pData, pData.DataLen);
+#else
+    memcpy_s(m_powerConditionLog, pData.DataLen, (uint8_t*)pData.pData, pData.DataLen);// copy the buffer data to the class member pBuf
+#endif
+ 
     if (m_powerConditionLog != NULL)
     {
         m_conditionFlags = &conditionFlags;
@@ -346,7 +350,7 @@ eReturnValues CAtaPowerConditionsLog::printPowerLogDescriptor(JSONNODE *masterDa
 	get_Power_Condition_Flags(logDescriptor->bitFlags);
 	if (logDescriptor != NULL)
 	{
-#if defined( _DEBUG)
+#if defined _DEBUG
 		printf("\nReserved \n");
 		printf("Power Condition Flags\n");
 		printf("     Power Condition Supported                 : %" PRIu8" \n", m_conditionFlags->powerSupportBit);
@@ -412,7 +416,7 @@ void CAtaPowerConditionsLog::printPowerConditionFlag(JSONNODE *masterData)
 	if (m_conditionFlags != NULL)
 	{
 
-#if defined( _DEBUG)
+#if defined _DEBUG
 		printf("Power Condition Supported            = %d   \n", m_conditionFlags->powerSupportBit);
 		printf("Power Condition Saveable             = %d   \n", m_conditionFlags->powerSaveableBit);
 		printf("Power Condition Changeable           = %d   \n", m_conditionFlags->powerChangeableBit);

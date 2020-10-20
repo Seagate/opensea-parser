@@ -3,7 +3,7 @@
 //
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
+// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -34,6 +34,8 @@ namespace opensea_parser {
 		DST_FAILURE_FIRST_SEGMENT = 0x05,
 		DST_FAILURE_SECOND_SEGMENT = 0x06,
 		DST_FAILURE_CHECK_NUMBER_FOR_SEGMENT = 0x07,
+        DST_FAILURE_HANDLING_DAMAGE = 0x08,
+        DST_FAILURE_SUSPECTED_HANDLING_DAMAGE =0x09,   
 		DST_IN_PROGRESS = 0x0f
 	};
 	enum m_DST_Test_Type

@@ -2,7 +2,7 @@
 // CScsi_Application_Client_Log.cpp  Definition of Application Client Log where clients store information
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
+// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -117,7 +117,7 @@ void CScsiApplicationLog::process_Client_Data(JSONNODE *appData)
 {
 	std::string myStr = "";
 	myStr.resize(BASIC);
-#if defined( _DEBUG)
+#if defined _DEBUG
 	printf("Application Client Description \n");
 #endif
 	byte_Swap_16(&m_App->paramCode);

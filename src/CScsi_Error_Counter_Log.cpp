@@ -2,7 +2,7 @@
 // CScsi_Error_Counter_Log.cpp  Definition of Error Counter for READ WRITE VERIFY ERRORS
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
+// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -278,7 +278,7 @@ void CScsiErrorCounterLog::process_Error_Data(JSONNODE *errorData)
 	myStr.resize(BASIC);
 	std::string myHeader = "";
 	myHeader.resize(BASIC);
-#if defined( _DEBUG)
+#if defined _DEBUG
 	printf("Error Counter Log  \n");
 #endif
 	byte_Swap_16(&m_Error->paramCode);

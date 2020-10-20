@@ -2,7 +2,7 @@
 // CScsi_Cache_Statistics_Log.cpp  Definition of Cache Statistics page for SAS
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
+// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -176,7 +176,7 @@ void CScsiCacheLog::process_Cache_Event_Data(JSONNODE *cacheData)
     bool discriptionIsFound = false;
 	std::string myStr = "";
 	myStr.resize(BASIC);
-#if defined( _DEBUG)
+#if defined _DEBUG
 	printf("Cache Event Description \n");
 #endif
     if (m_Value != 0)

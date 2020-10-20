@@ -2,7 +2,7 @@
 // CFARM_Log.cpp   Implementation of class CFARMLog
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
+// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -34,6 +34,7 @@ CFARMLog::CFARMLog()
 	, m_status(IN_PROGRESS)
 	, m_isScsi(false)
 	, m_shwoStatus(false)
+    , m_bufferdelete(false)
 {
 
 }
@@ -59,6 +60,7 @@ CFARMLog::CFARMLog(const std::string & fileName,bool showStatus)
 	, m_status(IN_PROGRESS)
 	, m_isScsi(false)
 	, m_shwoStatus(showStatus)
+    , m_bufferdelete(true)
 {
 	CLog *cCLog;
 	cCLog = new CLog(fileName);
@@ -109,6 +111,7 @@ CFARMLog::CFARMLog(const std::string & fileName)
 	, m_status(IN_PROGRESS)
 	, m_isScsi(false)
 	, m_shwoStatus(false)
+    , m_bufferdelete(true)
 {
 	CLog *cCLog;
 	cCLog = new CLog(fileName);
@@ -161,6 +164,7 @@ CFARMLog::CFARMLog(uint8_t *bufferData, size_t bufferSize, bool showStatus)
 	, m_status(IN_PROGRESS)
 	, m_isScsi(false)
 	, m_shwoStatus(showStatus)
+    , m_bufferdelete(false)
 {
 	if (bufferData != NULL)
 	{
@@ -188,9 +192,12 @@ CFARMLog::CFARMLog(uint8_t *bufferData, size_t bufferSize, bool showStatus)
 //---------------------------------------------------------------------------
 CFARMLog::~CFARMLog()
 {
-    if (bufferData != NULL)
+    if (m_bufferdelete)
     {
-        delete [] bufferData;
+        if (bufferData != NULL)
+        {
+            delete[] bufferData;
+        }
     }
 }
 //-----------------------------------------------------------------------------
@@ -244,20 +251,12 @@ eReturnValues CFARMLog::parse_Device_Farm_Log(JSONNODE *masterJson)
         pCFarm = new CSCSI_Farm_Log((uint8_t *)bufferData, m_LogSize, m_shwoStatus);
         if (pCFarm->get_Log_Status() == SUCCESS)
         {
-			try
-			{
-				retStatus = pCFarm->parse_Farm_Log();
-				if (retStatus == IN_PROGRESS)
-				{
-					pCFarm->print_All_Pages(masterJson);
-					retStatus = SUCCESS;
-				}
-			}
-			catch (...)
-			{
-				delete (pCFarm);
-				return MEMORY_FAILURE;
-			}
+            pCFarm->print_All_Pages(masterJson);
+            retStatus = SUCCESS;
+        }
+        else
+        {
+            retStatus = pCFarm->get_Log_Status() ;
         }
         delete( pCFarm);
     }

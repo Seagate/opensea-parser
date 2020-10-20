@@ -2,7 +2,7 @@
 // CScsi_Supported_LogPages_Log.cpp Definition for parsing the supported log pages 
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
+// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -209,6 +209,11 @@ void CScsiSupportedLog::get_Supported_And_Subpage_Description(std::string *descr
 			snprintf((char*)description->c_str(), BASIC, "Solid State Media");
 			break;
 		}
+        case ZONED_DEVICE_STATISTICS:
+        {
+            snprintf((char*)description->c_str(), BASIC, "Zoned Device Statistics");
+            break;
+        }
 		case BACKGROUND_SCAN:
 		{
 			if (m_ShowSubPage && m_SubPage == 0x02)
@@ -273,7 +278,7 @@ void CScsiSupportedLog::process_Supported_Data(JSONNODE *SupportData)
 	myStr.resize(BASIC);
 	std::string myHeader = "";
 	myHeader.resize(BASIC);
-#if defined( _DEBUG)
+#if defined _DEBUG
 	printf("Supported Log Pages \n");
 #endif
 

@@ -2,7 +2,7 @@
 // CScsi_Temperature_Log.cpp  Implementation of CScsi Temperature Log class
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
+// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -116,7 +116,7 @@ void CScsiTemperatureLog::get_Temp(JSONNODE *tempData)
 {
 	std::string myStr = "";
 	myStr.resize(BASIC);
-#if defined( _DEBUG)
+#if defined _DEBUG
 	printf("Temperature Log Page \n");
 	printf("\tParameter Code =   0x%04" PRIx16"  \n", m_Page->paramCode);
 #endif

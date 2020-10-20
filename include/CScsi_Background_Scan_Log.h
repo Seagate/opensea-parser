@@ -2,7 +2,7 @@
 //
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
+// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -26,13 +26,13 @@ namespace opensea_parser {
 		uint16_t		paramCode;							//<! The PARAMETER CODE field is defined
 		uint8_t			paramControlByte;					//<! binary format list log parameter
 		uint8_t			paramLength;						//<! The PARAMETER LENGTH field 
-		uint32_t		powerOnMinutes;						//<! Accumulated Power on Minutes
+		uint32_t		timeStamp;						    //<! Time Stamp (Minutes)
 		uint8_t			reserved;
 		uint8_t			status;								//<! background scan status
 		uint16_t		scansPerformed;						//<! number of background scans performed
 		uint16_t		mediumProgress;						//<! background medium scan progress
 		uint16_t		mediumPerformed;					//<! background medium scan performed
-		_sBackgroundScanStatusParameters() : paramCode(0), paramControlByte(0), paramLength(0), powerOnMinutes(0), reserved(0), status(0), \
+		_sBackgroundScanStatusParameters() : paramCode(0), paramControlByte(0), paramLength(0), timeStamp(0), reserved(0), status(0), \
 			scansPerformed(0), mediumProgress(0), mediumPerformed(0) {};
 	} sScanStatusParams;
 	typedef struct _sBackgroundScanEncountersParameters

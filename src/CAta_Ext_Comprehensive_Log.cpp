@@ -42,11 +42,12 @@ CExtComp::CExtComp()
 //
 //
 //---------------------------------------------------------------------------
-CExtComp::CExtComp(uint8_t *buffer, JSONNODE *masterData)
+CExtComp::CExtComp(uint8_t *buffer, size_t logSize, JSONNODE *masterData)
 	:pData(buffer)
-	, m_logSize(0)
+	, m_logSize(logSize)
 	, m_name("Ext Comp Log")
 	, m_status(IN_PROGRESS)
+    , fileName(false)
 {
 
 	if (buffer != NULL)                           // if the buffer is null then exit something did go right
@@ -74,6 +75,7 @@ CExtComp::CExtComp(const std::string &fileName, JSONNODE *masterData)
 	, m_logSize()
     , m_name("Ext Comp Log")
     , m_status(IN_PROGRESS)
+    , fileName(true)
 {
 	CLog *cCLog;
 	cCLog = new CLog(fileName);
@@ -125,9 +127,12 @@ CExtComp::CExtComp(const std::string &fileName, JSONNODE *masterData)
 //---------------------------------------------------------------------------
 CExtComp::~CExtComp()
 {
-    if (pData != NULL)
+    if (fileName)
     {
-        delete [] pData;
+        if (pData != NULL)
+        {
+            delete[] pData;
+        }
     }
 }
 //-----------------------------------------------------------------------------
@@ -252,7 +257,7 @@ eReturnValues CExtComp::parse_Ext_Comp_Structure(uint32_t structNumber, uint32_t
             timeStamp = pData[wOffset + 14];
             word_Swap_32(&timeStamp);
             wOffset += 18;
-#if defined(_DEBUG)
+#if defined _DEBUG
 			printf("\nControl  Feature  Count  lowLBA   midLBA  hiLBA device  command  timeStamp");
             printf("\n0x%02x     0x%04x   0x%04x 0x%04x   0x%04x  0x%04x 0x%02x   0x%02x      %d \n", \
                 deviceControl, \
@@ -304,7 +309,7 @@ eReturnValues CExtComp::parse_Ext_Comp_Structure(uint32_t structNumber, uint32_t
             (lowLBA)));
         byte_Swap_16(&lifeTime);
         wOffset += 34;
-#if defined (_DEBUG)
+#if defined _DEBUG
         printf("%x %x %x %x %x %x %x %x %x %d \n", \
             deviceControl, \
             errorField, \

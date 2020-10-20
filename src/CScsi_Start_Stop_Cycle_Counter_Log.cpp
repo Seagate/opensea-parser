@@ -2,7 +2,7 @@
 // CScsi_Start_Stop_Counter_Log.cpp  Implementation of CScsi start stop cycle counter Log class
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
+// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -30,7 +30,8 @@ using namespace opensea_parser;
 //
 //---------------------------------------------------------------------------
 CScsiStartStop::CScsiStartStop()
-	: m_SSName("Start Stop Log")
+	: pData(NULL)
+    , m_SSName("Start Stop Log")
 	, m_StartStatus(IN_PROGRESS)
 	, m_PageLength(0)
     , m_SubPage(0)
@@ -53,7 +54,8 @@ CScsiStartStop::CScsiStartStop()
 //
 //---------------------------------------------------------------------------
 CScsiStartStop::CScsiStartStop(uint8_t * buffer, size_t bufferSize, JSONNODE *masterData)
-	: m_SSName("Start Stop Log")
+	: pData(NULL)
+    , m_SSName("Start Stop Log")
 	, m_StartStatus(IN_PROGRESS)
 	, m_PageLength(0)
     , m_SubPage(0)
@@ -61,15 +63,28 @@ CScsiStartStop::CScsiStartStop(uint8_t * buffer, size_t bufferSize, JSONNODE *ma
 {
 	if (buffer != NULL)
 	{
-		if (bufferSize >= (sizeof(sStartStopStruct)+sizeof(sLogPageStruct)))				// check for invaid log size < need to add in the size of the log page header
-		{
-			m_Page = (sStartStopStruct *)buffer;				// set a buffer to the point to the log page info
-			m_StartStatus = parse_Start_Stop_Log(masterData);
-		}
-		else
-		{
-			m_StartStatus = static_cast<eReturnValues>(INVALID_LENGTH);
-		}
+        pData = new uint8_t[bufferSize];								// new a buffer to the point				
+#ifndef _WIN64
+        memcpy(pData, buffer, bufferSize);
+#else
+        memcpy_s(pData, bufferSize, buffer, bufferSize);// copy the buffer data to the class member pBuf
+#endif
+        if (pData != NULL)
+        {
+            if (bufferSize >= (sizeof(sStartStopStruct) + sizeof(sLogPageStruct)))				// check for invaid log size < need to add in the size of the log page header
+            {
+                m_Page = (sStartStopStruct *)pData;				// set a buffer to the point to the log page info
+                m_StartStatus = parse_Start_Stop_Log(masterData);
+            }
+            else
+            {
+                m_StartStatus = static_cast<eReturnValues>(INVALID_LENGTH);
+            }
+        }
+        else
+        {
+            m_StartStatus = MEMORY_FAILURE;
+        }
 	}
 	else
 	{
@@ -94,7 +109,11 @@ CScsiStartStop::CScsiStartStop(uint8_t * buffer, size_t bufferSize, JSONNODE *ma
 //---------------------------------------------------------------------------
 CScsiStartStop::~CScsiStartStop()
 {
-
+    if (pData != NULL)
+    {
+        delete[] pData;
+        pData = NULL;
+    }
 }
 //-----------------------------------------------------------------------------
 //
@@ -217,13 +236,15 @@ eReturnValues CScsiStartStop::week_Year_Print(JSONNODE *data,uint16_t param, uin
 	JSONNODE *dateInfo = json_new(JSON_NODE);
 	json_set_name(dateInfo, (char *)strHeader.c_str());
 	
-
-	snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", param);
-	json_push_back(dateInfo, json_new_a("Parameter Code", (char*)myStr.c_str()));
-	snprintf((char*)myStr.c_str(), BASIC, "%" PRId8"", paramlength);
-	json_push_back(dateInfo, json_new_a("Parameter Length", (char*)myStr.c_str()));
-	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", paramConByte);
-	json_push_back(dateInfo, json_new_a("Control Byte", (char*)myStr.c_str()));
+    if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+    {
+        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", param);
+        json_push_back(dateInfo, json_new_a("Parameter Code", (char*)myStr.c_str()));
+        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu8"", paramlength);
+        json_push_back(dateInfo, json_new_a("Parameter Length", (char*)myStr.c_str()));
+        snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", paramConByte);
+        json_push_back(dateInfo, json_new_a("Control Byte", (char*)myStr.c_str()));
+    }
 	myStr.resize(YEARSIZE);
 	memset((char*)myStr.c_str(), 0, YEARSIZE);
     if (year != 0x20202020)
@@ -271,12 +292,15 @@ eReturnValues CScsiStartStop::get_Count(JSONNODE *countData, uint16_t param, uin
 	JSONNODE *countInfo = json_new(JSON_NODE);
 	json_set_name(countInfo, (char *)strHeader.c_str());
 
-	snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", param);
-	json_push_back(countInfo, json_new_a("Parameter Code", (char*)myStr.c_str()));
-	snprintf((char*)myStr.c_str(), BASIC, "%" PRId8"", paramlength);
-	json_push_back(countInfo, json_new_a("Parameter Length", (char*)myStr.c_str()));
-	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", paramConByte);
-	json_push_back(countInfo, json_new_a("Control Byte", (char*)myStr.c_str()));
+    if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+    {
+        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", param);
+        json_push_back(countInfo, json_new_a("Parameter Code", (char*)myStr.c_str()));
+        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu8"", paramlength);
+        json_push_back(countInfo, json_new_a("Parameter Length", (char*)myStr.c_str()));
+        snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", paramConByte);
+        json_push_back(countInfo, json_new_a("Control Byte", (char*)myStr.c_str()));
+    }
 	byte_Swap_32(&count);
 	json_push_back(countInfo, json_new_i((char *)strCount.c_str(),  count )); 
 

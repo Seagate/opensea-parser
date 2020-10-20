@@ -3,7 +3,7 @@
 //
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
+// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -67,6 +67,7 @@ namespace opensea_parser {
 	{
 	private:
 	protected:
+        uint8_t                     *pData;                     //<! pointer to the data buffer
 		std::string					m_SSName;					//<! class name	
 		eReturnValues				m_StartStatus;			    //<! status of the class
 		uint16_t					m_PageLength;				//<! byte swapped length of the page

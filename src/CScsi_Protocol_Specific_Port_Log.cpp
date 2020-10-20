@@ -2,7 +2,7 @@
 // CScsi_Protocol_Specific_Port_Log.h   Definition of Protocol-Specific Port log page for SAS
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
+// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -54,8 +54,8 @@ CScsiProtocolPortLog::CScsiProtocolPortLog()
 //  Exit:
 //
 //---------------------------------------------------------------------------
-CScsiProtocolPortLog::CScsiProtocolPortLog(uint8_t * buffer, size_t bufferSize)
-	:pData(buffer)
+CScsiProtocolPortLog::CScsiProtocolPortLog(uint8_t *buffer, size_t bufferSize)
+	:pData()
 	, m_PSPName("Protocol Port Log")
 	, m_PSPStatus(IN_PROGRESS)
 	, m_PageLength(0)
@@ -65,7 +65,13 @@ CScsiProtocolPortLog::CScsiProtocolPortLog(uint8_t * buffer, size_t bufferSize)
 	{
 		printf("%s \n", m_PSPName.c_str());
 	}
-	if (buffer != NULL)
+    pData = new uint8_t[bufferSize];								// new a buffer to the point				
+#ifndef _WIN64
+    memcpy(pData, buffer, bufferSize);
+#else
+    memcpy_s(pData, bufferSize, buffer, bufferSize);           // copy the buffer data to the class member pBuf
+#endif
+	if (pData != NULL)
 	{
 		m_PSPStatus = IN_PROGRESS;
 	}
@@ -92,7 +98,11 @@ CScsiProtocolPortLog::CScsiProtocolPortLog(uint8_t * buffer, size_t bufferSize)
 //---------------------------------------------------------------------------
 CScsiProtocolPortLog::~CScsiProtocolPortLog()
 {
-
+    if (pData != NULL)
+    {
+        delete[] pData;
+        pData = NULL;
+    }
 }
 //-----------------------------------------------------------------------------
 //
@@ -112,7 +122,7 @@ void CScsiProtocolPortLog::process_Events_Data(JSONNODE *eventData)
 {
 	std::string myStr = "";
 	myStr.resize(BASIC);
-#if defined( _DEBUG)
+#if defined _DEBUG
 	printf("Phy Event Description \n");
 #endif
 	snprintf((char*)myStr.c_str(), BASIC, "Phy Event Description %" PRId8"",m_Event->eventSource);
@@ -121,6 +131,9 @@ void CScsiProtocolPortLog::process_Events_Data(JSONNODE *eventData)
 
 	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Event->eventSource);
 	json_push_back(eventInfo, json_new_a("Phy Event Source", (char*)myStr.c_str()));
+
+    byte_Swap_32(&m_Event->event);              // need to byte swap on SAS 
+    byte_Swap_32(&m_Event->threshold);          // need to byte swap on SAS 
 	snprintf((char*)myStr.c_str(), BASIC, "0x%08" PRIx32"", m_Event->event);
 	json_push_back(eventInfo, json_new_a("Phy Event", (char*)myStr.c_str()));
 	snprintf((char*)myStr.c_str(), BASIC, "0x%08" PRIx32"", m_Event->threshold);
@@ -301,7 +314,7 @@ void CScsiProtocolPortLog::process_Descriptor_Information(JSONNODE *descData)
 {
 	std::string myStr = "";
 	myStr.resize(BASIC);
-#if defined( _DEBUG)
+#if defined _DEBUG
 	printf("Descriptor Information \n");
 #endif
 
@@ -373,7 +386,7 @@ void CScsiProtocolPortLog::process_List_Information(JSONNODE *listData)
 {
 	std::string myStr = "";
 	myStr.resize(BASIC);
-#if defined( _DEBUG)
+#if defined _DEBUG
 	printf("List Information \n");
 #endif
 	
@@ -438,7 +451,7 @@ eReturnValues CScsiProtocolPortLog::get_Data(JSONNODE *masterData)
 				for (uint32_t events = 1; events <= m_Descriptor->numberOfEvents; events++)
 				{
 					// check the length to the end of the buffer
-					if ((offset + m_Descriptor->phyEventLength) < m_bufferLength)
+					if ((offset + m_Descriptor->phyEventLength) <= m_bufferLength)
 					{
 						m_Event = (sPhyEventDescriptor *)&pData[offset];
 						offset += m_Descriptor->phyEventLength;

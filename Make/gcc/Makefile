@@ -19,6 +19,8 @@ MINOR=0
 PATCH=14
 
 UNAME := $(shell uname -s)
+OS=$(shell uname)
+
 ifeq ($(UNAME),Darwin)
     LXXFLAGS += -shared -undefined dynamic_lookup -Wall
 else 
@@ -41,6 +43,7 @@ LIB_SRC_FILES = \
     $(SRC_DIR)CAta_Identify_Log.cpp\
     $(SRC_DIR)CAta_Power_Condition_Log.cpp\
     $(SRC_DIR)CAta_NCQ_Command_Error_Log.cpp\
+    $(SRC_DIR)CAta_SMART_Log_Dir.cpp\
     $(SRC_DIR)CScsi_Log.cpp\
     $(SRC_DIR)CScsi_Application_Client_Log.cpp\
     $(SRC_DIR)CScsi_Background_Operation_Log.cpp\
@@ -58,8 +61,11 @@ LIB_SRC_FILES = \
     $(SRC_DIR)CScsi_Power_Condition_Transitions_Log.cpp\
     $(SRC_DIR)CScsi_Protocol_Specific_Port_Log.cpp\
     $(SRC_DIR)CScsi_Self_Test_Results_Log.cpp\
+    $(SRC_DIR)CScsi_Solid_State_Drive_Log.cpp\
     $(SRC_DIR)CScsi_Start_Stop_Cycle_Counter_Log.cpp\
     $(SRC_DIR)CScsi_Supported_LogPages_Log.cpp\
+    $(SRC_DIR)CScsi_Zoned_Device_Statistics_Log.cpp\
+    $(SRC_DIR)/Seagate/Farm_Common.cpp\
     $(SRC_DIR)/Seagate/CFARM_Log.cpp\
     $(SRC_DIR)/Seagate/CAta_Farm_Log.cpp\
     $(SRC_DIR)/Seagate/CScsi_Farm_Log.cpp\
@@ -78,7 +84,7 @@ FILE_OUTPUT_DIR=lib
 
 .PHONY: all 
 
-all: clean mkoutputdir $(LIBS)
+all: clean mkoutputdir $(LIBS) done
 
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) $(PROJECT_DEFINES) $(INC_DIR) $< -o $@
@@ -88,12 +94,24 @@ $(LIBS): $(LIB_OBJ_FILES)
 	$(ARCHIVE) cq $(FILE_OUTPUT_DIR)/$@ $(LIB_OBJ_FILES)
 # Removing the line below since we don't need a shared object for this right now...a static library is enough for the common stuff
 	$(CXX) $(LXXFLAGS) $(LIB_OBJ_FILES) -o lib$(NAME).so.$(VERSION)
-clean:
+clean: banner
 	rm -f $(SRC_DIR)*.o
 	rm -f $(SRC_DIR)Seagate/*.o
 	rm -f $(FILE_OUTPUT_DIR)/lib$(NAME).a $(FILE_OUTPUT_DIR)/lib$(NAME).so.$(VERSION) *.o ../../src/*.o ../../src/Seagate/*.o
 	rm -rf $(FILE_OUTPUT_DIR)
+	@echo "============================================================"
+	@echo "       CLEANED"
+	@echo "============================================================"
 	
 mkoutputdir:
 	mkdir -p $(FILE_OUTPUT_DIR)
 
+banner:
+	@echo "============================================================"
+	@echo "opensea-parser Makefile version: "$(MAJOR).$(MINOR).$(PATCH)  "OS: "$(OS)
+	@echo "============================================================"
+
+done:
+	@echo "============================================================"
+	@echo "Build of opensea-parser has completed "
+	@echo "============================================================"

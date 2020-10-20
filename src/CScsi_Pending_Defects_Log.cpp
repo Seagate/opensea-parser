@@ -1,7 +1,7 @@
 // CScsi_Pending_Defects_Log..cpp  Definition for parsing the pending defecs
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
+// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -59,7 +59,7 @@ CScsiPendingDefectsLog::CScsiPendingDefectsLog()
 //
 //---------------------------------------------------------------------------
 CScsiPendingDefectsLog::CScsiPendingDefectsLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength)
-	: pData(buffer)
+	: pData(NULL)
 	, m_PlistName("Pending Defect Log")
 	, m_PlistStatus(IN_PROGRESS)
 	, m_PageLength(pageLength)
@@ -71,7 +71,13 @@ CScsiPendingDefectsLog::CScsiPendingDefectsLog(uint8_t * buffer, size_t bufferSi
 	{
 		printf("%s \n", m_PlistName.c_str());
 	}
-	if (buffer != NULL)
+    pData = new uint8_t[pageLength];								// new a buffer to the point				
+#ifndef _WIN64
+    memcpy(pData, buffer, pageLength);
+#else
+    memcpy_s(pData, pageLength, buffer, pageLength);// copy the buffer data to the class member pBuf
+#endif
+	if (pData != NULL)
 	{
 		m_PlistStatus = IN_PROGRESS;
 	}
@@ -98,7 +104,11 @@ CScsiPendingDefectsLog::CScsiPendingDefectsLog(uint8_t * buffer, size_t bufferSi
 //---------------------------------------------------------------------------
 CScsiPendingDefectsLog::~CScsiPendingDefectsLog()
 {
-
+    if (pData != NULL)
+    {
+        delete[] pData;
+        pData = NULL;
+    }
 }
 //-----------------------------------------------------------------------------
 //
@@ -119,7 +129,7 @@ void CScsiPendingDefectsLog::process_PList_Data(JSONNODE *pendingData)
 	std::string myStr = "";
 	myStr.resize(BASIC);
 
-#if defined( _DEBUG)
+#if defined _DEBUG
 	printf("Pending Defect Log  \n");
 #endif
 	byte_Swap_16(&m_PlistDefect->paramCode);
@@ -157,7 +167,7 @@ void CScsiPendingDefectsLog::process_PList_Count(JSONNODE *pendingCount)
 {
 	std::string myStr = "";
 	myStr.resize(BASIC);
-#if defined( _DEBUG)
+#if defined _DEBUG
 	printf("Pending Defect Count \n");
 #endif
 	byte_Swap_16(&m_PListCountParam->paramCode);

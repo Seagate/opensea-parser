@@ -2,7 +2,7 @@
 // CScsi_Background_Scan_Log.cpp  Definition of Background Scan Log Page
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
+// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -60,7 +60,7 @@ CScsiScanLog::CScsiScanLog()
 //
 //---------------------------------------------------------------------------
 CScsiScanLog::CScsiScanLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength)
-	: pData(buffer)
+	: pData(NULL)
 	, m_ScanName("Background Scan Log")
 	, m_ScanStatus(IN_PROGRESS)
 	, m_PageLength(pageLength)
@@ -73,7 +73,13 @@ CScsiScanLog::CScsiScanLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLen
 	{
 		printf("%s \n", m_ScanName.c_str());
 	}
-	if (buffer != NULL)
+    pData = new uint8_t[pageLength];								// new a buffer to the point				
+#ifndef _WIN64
+    memcpy(pData, buffer, pageLength);
+#else
+    memcpy_s(pData, bufferSize, buffer, pageLength);// copy the buffer data to the class member pBuf
+#endif
+	if (pData != NULL)
 	{
 		m_ScanStatus = IN_PROGRESS;
 	}
@@ -100,7 +106,11 @@ CScsiScanLog::CScsiScanLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLen
 //---------------------------------------------------------------------------
 CScsiScanLog::~CScsiScanLog()
 {
-
+    if (pData != NULL)
+    {
+        delete[] pData;
+        pData = NULL;
+    }
 }
 //-----------------------------------------------------------------------------
 //
@@ -189,7 +199,7 @@ void CScsiScanLog::process_Scan_Status_Data(JSONNODE *scanData)
 {
 	std::string myStr = "";
 	myStr.resize(BASIC);
-#if defined( _DEBUG)
+#if defined _DEBUG
 	printf("Background Scan Status Description \n");
 #endif
 	byte_Swap_16(&m_ScanParam->paramCode);
@@ -204,8 +214,8 @@ void CScsiScanLog::process_Scan_Status_Data(JSONNODE *scanData)
 	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_ScanParam->paramLength);
 	json_push_back(statusInfo, json_new_a("Background Scan Status Length ", (char*)myStr.c_str()));
 
-	byte_Swap_32(&m_ScanParam->powerOnMinutes);
-	json_push_back(statusInfo, json_new_i("Power On Minutes", static_cast<uint32_t>(m_ScanParam->powerOnMinutes)));
+	byte_Swap_32(&m_ScanParam->timeStamp);
+	json_push_back(statusInfo, json_new_i("SMART Time Stamp", static_cast<uint32_t>(m_ScanParam->timeStamp)));
 	get_Scan_Status_Description(&myStr);
 	json_push_back(statusInfo, json_new_i((char*)myStr.c_str(), static_cast<uint32_t>(m_ScanParam->status)));
 	byte_Swap_16(&m_ScanParam->scansPerformed);
@@ -302,7 +312,7 @@ void CScsiScanLog::process_Defect_Data(JSONNODE *defectData)
 	myStr.resize(BASIC);
 	std::string headerStr = "";
 	headerStr.resize(BASIC);
-#if defined( _DEBUG)
+#if defined _DEBUG
 	printf("Background Scan Defect Description \n");
 #endif
 	byte_Swap_16(&m_defect->paramCode);
@@ -370,7 +380,7 @@ void CScsiScanLog::process_other_param_data(JSONNODE *scanData, size_t offset)
     myStr.resize(BASIC);
     std::string headerStr = "";
     headerStr.resize(BASIC);
-#if defined( _DEBUG)
+#if defined _DEBUG
     printf("Background Scan Defect Description \n");
 #endif
     byte_Swap_16(&m_ParamHeader->paramCode);

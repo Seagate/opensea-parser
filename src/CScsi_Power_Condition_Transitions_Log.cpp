@@ -2,7 +2,7 @@
 // CScsi_Power_Condition_Transitions_Log.h  Definition of Power Condition Transistions Log Page for SAS
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
+// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -57,7 +57,7 @@ CScsiPowerConditiontLog::CScsiPowerConditiontLog()
 //
 //---------------------------------------------------------------------------
 CScsiPowerConditiontLog::CScsiPowerConditiontLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength)
-	: pData(buffer)
+	: pData(NULL)
 	, m_PowerName("Power Condition Transitions Log")
 	, m_PowerStatus(IN_PROGRESS)
 	, m_PageLength(pageLength)
@@ -68,7 +68,13 @@ CScsiPowerConditiontLog::CScsiPowerConditiontLog(uint8_t * buffer, size_t buffer
 	{
 		printf("%s \n", m_PowerName.c_str());
 	}
-	if (buffer != NULL)
+    pData = new uint8_t[pageLength];								// new a buffer to the point				
+#ifndef _WIN64
+    memcpy(pData, buffer, pageLength);
+#else
+    memcpy_s(pData, pageLength, buffer, pageLength);// copy the buffer data to the class member pBuf
+#endif
+	if (pData != NULL)
 	{
 		m_PowerStatus = IN_PROGRESS;
 	}
@@ -95,7 +101,11 @@ CScsiPowerConditiontLog::CScsiPowerConditiontLog(uint8_t * buffer, size_t buffer
 //---------------------------------------------------------------------------
 CScsiPowerConditiontLog::~CScsiPowerConditiontLog()
 {
-
+    if (pData != NULL)
+    {
+        delete[] pData;
+        pData = NULL;
+    }
 }
 //-----------------------------------------------------------------------------
 //
@@ -180,7 +190,7 @@ void CScsiPowerConditiontLog::process_List_Information(JSONNODE *powerData)
     bool typeFound = false;
 	std::string myStr = "";
 	myStr.resize(BASIC);
-#if defined( _DEBUG)
+#if defined _DEBUG
 	printf("Power Condition Transitions Log Page\n");
 #endif
 	byte_Swap_16(&m_PowerParam->paramCode);

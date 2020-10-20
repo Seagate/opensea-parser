@@ -2,7 +2,7 @@
 // CScsi_Factory_Log.cpp  Definition of Factory Log page for SAS
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates, All Rights Reserved
+// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -120,7 +120,7 @@ void CScsiFactoryLog::process_Factorty_Data(JSONNODE *factoryData)
 	myStr.resize(BASIC);
     if (m_Value != 0)
     {
-#if defined( _DEBUG)
+#if defined _DEBUG
         printf("Factory Description \n");
 #endif
         byte_Swap_16(&m_factory->paramCode);
