@@ -645,33 +645,30 @@ eReturnValues CAta_Identify_log::parse_Device_Info()
 
     // security
     m_sDriveInfo.SecurityID = identWordPtr[128];
-    if (m_sDriveInfo.SecurityID != 0X0000)
+    if (m_sDriveInfo.IDSecurityStatus != 0)
     {
-        if (m_sDriveInfo.SecurityID  & BIT6) //bit 6
+        if (m_sDriveInfo.IDSecurityStatus  & BIT6) //bit 6
         {
             m_sDriveInfo.sSecurityInfo.supported = true;
         }
-        if (m_sDriveInfo.SecurityID  & BIT5) //bit 5
-        {
-            m_sDriveInfo.sSecurityInfo.masterPasswordCapability = true;
-        }
-        if (m_sDriveInfo.SecurityID  & BIT4) //bit 4
+        m_sDriveInfo.sSecurityInfo.masterPasswordCapability = m_sDriveInfo.IDSecurityStatus  & BIT5; //bit 5
+        if (m_sDriveInfo.IDSecurityStatus  & BIT4) //bit 4
         {
             m_sDriveInfo.sSecurityInfo.enhancedSecurityEraseSupported = true;
         }
-        if (m_sDriveInfo.SecurityID  & BIT3) //bit 3
+        if (m_sDriveInfo.IDSecurityStatus  & BIT3) //bit 3
         {
             m_sDriveInfo.sSecurityInfo.securityCountExpired = true;
         }
-        if (m_sDriveInfo.SecurityID  & BIT2) //bit 2
+        if (m_sDriveInfo.IDSecurityStatus  & BIT2) //bit 2
         {
             m_sDriveInfo.sSecurityInfo.frozen = true;
         }
-        if (m_sDriveInfo.SecurityID  & BIT1) //bit 1
+        if (m_sDriveInfo.IDSecurityStatus  & BIT1) //bit 1
         {
             m_sDriveInfo.sSecurityInfo.locked = true;
         }
-        if (m_sDriveInfo.SecurityID  & BIT0) //bit 0
+        if (m_sDriveInfo.IDSecurityStatus  & BIT0) //bit 0
         {
             m_sDriveInfo.sSecurityInfo.enabled = true;
         }
@@ -991,7 +988,7 @@ eReturnValues CAta_Identify_log::print_Identify_Information(JSONNODE *masterData
 
         opensea_parser::set_Json_Bool(secruity, "Security Supported", m_sDriveInfo.sSecurityInfo.supported);
 
-        opensea_parser::set_Json_Bool(secruity, "Master Password Capability", m_sDriveInfo.sSecurityInfo.masterPasswordCapability);
+        json_push_back(secruity, json_new_i("Master Password Capability", m_sDriveInfo.sSecurityInfo.masterPasswordCapability));
 
         opensea_parser::set_Json_Bool(secruity, "Enhanced Security Erase Supported", m_sDriveInfo.sSecurityInfo.enhancedSecurityEraseSupported);
 
@@ -3774,7 +3771,7 @@ bool CAta_Identify_Log_06::get_Security_Settings(JSONNODE *si)
 
         opensea_parser::set_Json_Bool(securityBits, "Security Supported", m_sSInformation.supported);
 
-        opensea_parser::set_Json_Bool(securityBits, "Master Password Capability", m_sSInformation.masterPasswordCapability);
+        json_push_back(securityBits, json_new_i("Master Password Capability", m_sSInformation.masterPasswordCapability));
 
         opensea_parser::set_Json_Bool(securityBits, "Enhanced Security Erase Supported", m_sSInformation.enhancedSecurityEraseSupported);
 
