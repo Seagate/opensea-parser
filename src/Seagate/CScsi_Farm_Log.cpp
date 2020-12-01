@@ -427,7 +427,7 @@ void CSCSI_Farm_Log::create_Serial_Number(std::string &serialNumber, const sScsi
 	uint64_t sn2 = idInfo->serialNumber2 & 0x00FFFFFFFFFFFFFFLL;
     if (m_MajorRev < MAJORVERSION3)
     { 
-        sn = (sn1 << 32 | (sn2 ));
+        sn = (sn2 << 32 | (sn1 ));
         byte_Swap_64(&sn);
     }
     else
