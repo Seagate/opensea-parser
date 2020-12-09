@@ -96,13 +96,13 @@ namespace opensea_parser {
 	typedef struct _sSecurityInformation
 	{
 		bool                    supported;
-		bool                    masterPasswordCapability;
+		uint8_t                 masterPasswordCapability;
 		bool                    enhancedSecurityEraseSupported;
 		bool                    securityCountExpired;
 		bool                    frozen;
 		bool                    locked;
 		bool                    enabled;
-		_sSecurityInformation() : supported(false), masterPasswordCapability(false), enhancedSecurityEraseSupported(false), securityCountExpired(false), frozen(false), locked(false), enabled(false) {};
+		_sSecurityInformation() : supported(false), masterPasswordCapability(0), enhancedSecurityEraseSupported(false), securityCountExpired(false), frozen(false), locked(false), enabled(false) {};
 	}sSecurityinformation;
 
 	typedef struct _sCapacityUnitInformation

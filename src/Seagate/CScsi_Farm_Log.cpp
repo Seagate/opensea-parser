@@ -427,7 +427,7 @@ void CSCSI_Farm_Log::create_Serial_Number(std::string &serialNumber, const sScsi
 	uint64_t sn2 = idInfo->serialNumber2 & 0x00FFFFFFFFFFFFFFLL;
     if (m_MajorRev < MAJORVERSION3)
     { 
-        sn = (sn1 << 32 | (sn2 ));
+        sn = (sn2 << 32 | (sn1 ));
         byte_Swap_64(&sn);
     }
     else
@@ -2883,7 +2883,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tCurrent H2SAT trimmed mean bits in error by Head %" PRIu32":  by Test Zone 0:      %" PRIu64" \n", loopCount, vFarmFrame[page].currentH2STTrimmedbyHeadZone0.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Current H2SAT trimmed mean bits in error by Head, by Test Zone 0
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "Current H2SAT trimmed mean bits in error Zone 0 by Head %" PRIu32"", loopCount); // Head count
-                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].currentH2STTrimmedbyHeadZone0.headValue[loopCount])*.10));
+                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_Word0(vFarmFrame[page].currentH2STTrimmedbyHeadZone0.headValue[loopCount])*.10));
                 set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].currentH2STTrimmedbyHeadZone0.headValue[loopCount], m_showStatusBits); //!< Current H2SAT trimmed mean bits in error by Head, by Test Zone 0
             }
             break;
@@ -2894,7 +2894,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tCurrent H2SAT trimmed mean bits in error by Head %" PRIu32": by Test Zone 1:      %" PRIu64" \n", loopCount, vFarmFrame[page].currentH2STTrimmedbyHeadZone1.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Current H2SAT trimmed mean bits in error by Head, by Test Zone 1
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "Current H2SAT trimmed mean bits in error Zone 1 by Head %" PRIu32"", loopCount); // Head count
-                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].currentH2STTrimmedbyHeadZone1.headValue[loopCount])*.10));
+                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_Word0(vFarmFrame[page].currentH2STTrimmedbyHeadZone1.headValue[loopCount])*.10));
                 set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].currentH2STTrimmedbyHeadZone1.headValue[loopCount], m_showStatusBits); //!< Current H2SAT trimmed mean bits in error by Head, by Test Zone 1
             }
             break;
@@ -2905,7 +2905,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tCurrent H2SAT trimmed mean bits in error by Head %" PRIu32" , by Test Zone 2:      %" PRIu64" \n", loopCount, vFarmFrame[page].currentH2STTrimmedbyHeadZone2.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Current H2SAT trimmed mean bits in error by Head, by Test Zone 2
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "Current H2SAT trimmed mean bits in error Zone 2 by Head %" PRIu32"", loopCount); // Head count
-                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].currentH2STTrimmedbyHeadZone2.headValue[loopCount])*.10));
+                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_Word0(vFarmFrame[page].currentH2STTrimmedbyHeadZone2.headValue[loopCount])*.10));
                 set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].currentH2STTrimmedbyHeadZone2.headValue[loopCount], m_showStatusBits);//!< Current H2SAT trimmed mean bits in error by Head, by Test Zone 2
             }
             break;
@@ -2916,7 +2916,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tCurrent H2SAT iterations to converge by Head %" PRIu32" , by Test Zone 0:      %" PRIu64" \n", loopCount, vFarmFrame[page].currentH2STIterationsByHeadZone0.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Current H2SAT iterations to cnverge by Head, by Test Zone 0
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "Current H2SAT iterations to converge Test Zone 0 by Head %" PRIu32"", loopCount); // Head count
-                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].currentH2STIterationsByHeadZone0.headValue[loopCount])*.10));
+                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_Word0(vFarmFrame[page].currentH2STIterationsByHeadZone0.headValue[loopCount])*.10));
                 set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].currentH2STIterationsByHeadZone0.headValue[loopCount], m_showStatusBits);  //!< Current H2SAT iterations to cnverge by Head, by Test Zone 0
             }
             break;
@@ -2927,7 +2927,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tCurrent H2SAT iterations to converge by Head %" PRIu32" , by Test Zone 1:      %" PRIu64" \n", loopCount, vFarmFrame[page].currentH2STIterationsByHeadZone1.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Current H2SAT iterations to cnverge by Head, by Test Zone 1
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "Current H2SAT iterations to converge Test Zone 1 by Head %" PRIu32"", loopCount); // Head count
-                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].currentH2STIterationsByHeadZone1.headValue[loopCount])*.10));
+                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_Word0(vFarmFrame[page].currentH2STIterationsByHeadZone1.headValue[loopCount])*.10));
                 set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].currentH2STIterationsByHeadZone1.headValue[loopCount], m_showStatusBits);  //!< Current H2SAT iterations to cnverge by Head, by Test Zone 1
             }
             break;
@@ -2938,7 +2938,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tCurrent H2SAT iterations to converge by Head %" PRIu32" , by Test Zone 2:      %" PRIu64" \n", loopCount, vFarmFrame[page].currentH2STIterationsByHeadZone2.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Current H2SAT iterations to cnverge by Head, by Test Zone 2
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "Current H2SAT iterations to converge Test Zone 2 by Head %" PRIu32"", loopCount); // Head count
-                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].currentH2STIterationsByHeadZone2.headValue[loopCount])*.10));
+                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_Word0(vFarmFrame[page].currentH2STIterationsByHeadZone2.headValue[loopCount])*.10));
                 set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].currentH2STIterationsByHeadZone2.headValue[loopCount], m_showStatusBits); //!< Current H2SAT iterations to cnverge by Head, by Test Zone 2
             }
             break;

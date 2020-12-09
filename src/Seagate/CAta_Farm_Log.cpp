@@ -1256,25 +1256,25 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         snprintf((char*)myHeader.c_str(), BASIC, "Current H2SAT trimmed mean bits in error Zone 2 by Head %" PRIu32"", loopCount); // Head count
-        snprintf((char*)myStr.c_str(), BASIC, "%0.01f", static_cast<float> (M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].reliPage.currentH2SAT[loopCount].outer)) *.1));
+        snprintf((char*)myStr.c_str(), BASIC, "%0.01f", static_cast<float> (M_Word0(check_Status_Strip_Status(vFarmFrame[page].reliPage.currentH2SAT[loopCount].outer)) *.1));
         set_json_string_With_Status(headInfo, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].reliPage.currentH2SAT[loopCount].outer, m_showStatusBits);   //!< [24] Current H2SAT trimmed mean bits in error by Head, by Test Zone 9,
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         snprintf((char *)myHeader.c_str(), BASIC, "Current H2SAT iterations to converge Test Zone 0 by Head %" PRIu32"", loopCount);
-        snprintf((char*)myStr.c_str(), BASIC, "%0.01f", static_cast<int8_t>(M_Byte0(check_Status_Strip_Status(vFarmFrame[page].reliPage.currentH2SATIterations[loopCount].inner))) *.1);
+        snprintf((char*)myStr.c_str(), BASIC, "%0.01f", static_cast<float> (M_Word0(check_Status_Strip_Status(vFarmFrame[page].reliPage.currentH2SATIterations[loopCount].inner))) *.1);
         set_json_string_With_Status(headInfo, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].reliPage.currentH2SATIterations[loopCount].inner, m_showStatusBits);        //!< [24] Qword[24][3] Current H2SAT iterations to converge by Head, by Test Zone 9, 11
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         snprintf((char*)myHeader.c_str(), BASIC, "Current H2SAT iterations to converge Test Zone 1 by Head %" PRIu32"", loopCount); // Head count
-        snprintf((char*)myStr.c_str(), BASIC, "%0.01f", static_cast<int8_t>(M_Byte0(check_Status_Strip_Status(vFarmFrame[page].reliPage.currentH2SATIterations[loopCount].middle)))*.1);
+        snprintf((char*)myStr.c_str(), BASIC, "%0.01f", static_cast<float> (M_Word0(check_Status_Strip_Status(vFarmFrame[page].reliPage.currentH2SATIterations[loopCount].middle)))*.1);
         set_json_string_With_Status(headInfo, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].reliPage.currentH2SATIterations[loopCount].middle, m_showStatusBits);		//!< [24] Qword[24][3] Current H2SAT iterations to converge by Head, by Test Zone 9, 11
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         snprintf((char*)myHeader.c_str(), BASIC, "Current H2SAT iterations to converge Test Zone 2 by Head %" PRIu32"", loopCount); // Head count
-        snprintf((char*)myStr.c_str(), BASIC, "%0.01f", (float)static_cast<int8_t>(M_Byte0(check_Status_Strip_Status(vFarmFrame[page].reliPage.currentH2SATIterations[loopCount].outer))) *.1);
+        snprintf((char*)myStr.c_str(), BASIC, "%0.01f", static_cast<float> (M_Word0(check_Status_Strip_Status(vFarmFrame[page].reliPage.currentH2SATIterations[loopCount].outer))) *.1);
         set_json_string_With_Status(headInfo, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].reliPage.currentH2SATIterations[loopCount].outer, m_showStatusBits);			//!< [24] Qword[24][3] Current H2SAT iterations to converge by Head, by Test Zone 9, 11
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
@@ -1290,7 +1290,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         snprintf((char *)myHeader.c_str(), BASIC, "Current H2SAT asymmetry by Head %" PRIu32"", loopCount);
-        snprintf((char*)myStr.c_str(), BASIC, "%0.01f", static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].reliPage.currentH2SATasymmetry[loopCount])))  * .1);
+        snprintf((char*)myStr.c_str(), BASIC, "%0.01f", static_cast<float>(M_Word0(check_Status_Strip_Status(vFarmFrame[page].reliPage.currentH2SATasymmetry[loopCount])))  * .1);
         set_json_string_With_Status(headInfo, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].reliPage.currentH2SATasymmetry[loopCount], m_showStatusBits);             //!< [24] Qword[24] Current H2SAT asymmetry by Head, averaged across Test Zones
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
