@@ -364,8 +364,8 @@ typedef struct _sScsiReliabilityStat
 	uint64_t            microActuatorLockOut;                        //!< Micro Actuator Lock-out, head mask accumulated over last 3 Summary Frames8
 	uint64_t            diskSlipRecalPerformed;                      //!< Number of disc slip recalibrations performed
 	uint64_t            heliumPressuretThreshold;                    //!< helium Pressure Threshold Trip
-	uint64_t            rvAbsuluteMean;                              //!< RV Absulute Mean
-	uint64_t            maxRVAbsuluteMean;                           //!< Max RV absulute Mean
+	uint64_t            rvAbsoluteMean;                              //!< RV Absolute Mean
+	uint64_t            maxRVAbsoluteMean;                           //!< Max RV absolute Mean
 	uint64_t            idleTime;                                    //!< idle Time value from the most recent SMART Summary Frame
 }sScsiReliabilityStat;
 

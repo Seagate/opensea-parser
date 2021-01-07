@@ -821,14 +821,14 @@ bool CSCSI_Farm_Log::swap_Bytes_sScsiReliabilityStat(sScsiReliablility *ss)
         byte_Swap_64(&ss->reli.idleTime);
         byte_Swap_64(&ss->reli.lastIDDTest);
         byte_Swap_16(&ss->reli.pPageHeader.pramCode);
-        byte_Swap_64(&ss->reli.maxRVAbsuluteMean);
+        byte_Swap_64(&ss->reli.maxRVAbsoluteMean);
         byte_Swap_64(&ss->reli.microActuatorLockOut);
         byte_Swap_64(&ss->reli.numberDOSScans);
         byte_Swap_64(&ss->reli.numberLBACorrect);
         byte_Swap_64(&ss->reli.numberRAWops);
         byte_Swap_64(&ss->reli.numberValidParitySec);
         byte_Swap_64(&ss->reli.pageNumber);
-        byte_Swap_64(&ss->reli.rvAbsuluteMean);
+        byte_Swap_64(&ss->reli.rvAbsoluteMean);
         byte_Swap_64(&ss->reli.scrubsAfterIDD);
         byte_Swap_64(&ss->reli.scrubsBeforeIDD);
         byte_Swap_64(&ss->reli.servoStatus);
@@ -2460,8 +2460,8 @@ eReturnValues CSCSI_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint3
         printf("\tMicro Actuator Lock-out accumulated:      %" PRIu64" \n", vFarmFrame[page].reliPage.reli.microActuatorLockOut & 0x00FFFFFFFFFFFFFFLL);				//!< Micro Actuator Lock-out, head mask accumulated over last 3 Summary Frames
         printf("\t# of Disc Slip Recalibrations Performed : %" PRIu64" \n", vFarmFrame[page].reliPage.reli.diskSlipRecalPerformed & 0x00FFFFFFFFFFFFFFLL);			//!< Number of disc slip recalibrations performed
         printf("\tHelium Pressure Threshold Trip:           %" PRIu64" \n", vFarmFrame[page].reliPage.reli.heliumPressuretThreshold & 0x00FFFFFFFFFFFFFFLL);			//!< helium Pressure Threshold Trip
-        printf("\tRV Absulute Mean:                         %" PRIu64" \n", vFarmFrame[page].reliPage.reli.rvAbsuluteMean & 0x00FFFFFFFFFFFFFFLL);					//!< RV Absulute Mean
-        printf("\tMax RV absulute Mean:                     %" PRIu64" \n", vFarmFrame[page].reliPage.reli.maxRVAbsuluteMean & 0x00FFFFFFFFFFFFFFLL);				//!< Max RV absulute Mean
+        printf("\tRV Absolute Mean:                         %" PRIu64" \n", vFarmFrame[page].reliPage.reli.rvAbsoluteMean & 0x00FFFFFFFFFFFFFFLL);					//!< RV Absulute Mean
+        printf("\tMax RV absolute Mean:                     %" PRIu64" \n", vFarmFrame[page].reliPage.reli.maxRVAbsoluteMean & 0x00FFFFFFFFFFFFFFLL);				//!< Max RV absulute Mean
         printf("\tIdle Time value from the most recent SMART Summary Frame:     %" PRIu64" \n", vFarmFrame[page].reliPage.reli.idleTime & 0x00FFFFFFFFFFFFFFLL);		//!< idle Time value from the most recent SMART Summary Frame
 
 #endif
@@ -2475,7 +2475,7 @@ eReturnValues CSCSI_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint3
         }
         json_set_name(pageInfo, (char*)myStr.c_str());
 
-        set_json_64_bit_With_Status(pageInfo, "TimeStamp of last IDD test", vFarmFrame[page].reliPage.reli.lastIDDTest, false, m_showStatusBits);							//!< Timestamp of last IDD test
+        set_json_64_bit_With_Status(pageInfo, "Timestamp of last IDD test", vFarmFrame[page].reliPage.reli.lastIDDTest, false, m_showStatusBits);							//!< Timestamp of last IDD test
         set_json_64_bit_With_Status(pageInfo, "Sub-Command of Last IDD Test", vFarmFrame[page].reliPage.reli.cmdLastIDDTest, false, m_showStatusBits);						//!< Sub-command of last IDD test
         set_json_64_bit_With_Status(pageInfo, "Number of Reallocated Sector Reclamations", vFarmFrame[page].reliPage.reli.gListReclamed, false, m_showStatusBits);						//!< Number of G-List Reclamations 
         set_json_64_bit_With_Status(pageInfo, "Servo Status", vFarmFrame[page].reliPage.reli.servoStatus, false, m_showStatusBits);											//!< Servo Status (follows standard DST error code definitions)
@@ -2492,8 +2492,8 @@ eReturnValues CSCSI_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint3
         set_json_64_bit_With_Status(pageInfo, "Micro Actuator Lock-out accumulated", vFarmFrame[page].reliPage.reli.microActuatorLockOut, false, m_showStatusBits);			//!< Micro Actuator Lock-out, head mask accumulated over last 3 Summary Frames8
         set_json_64_bit_With_Status(pageInfo, "Number of Disc Slip Recalibrations Performed", vFarmFrame[page].reliPage.reli.diskSlipRecalPerformed, false, m_showStatusBits);	            //!< Number of disc slip recalibrations performed
         set_json_64_bit_With_Status(pageInfo, "Helium Pressure Threshold Trip", vFarmFrame[page].reliPage.reli.heliumPressuretThreshold, false, m_showStatusBits);			//!< helium Pressure Threshold Trip
-        set_json_64_bit_With_Status(pageInfo, "RV Absulute Mean", vFarmFrame[page].reliPage.reli.rvAbsuluteMean, false, m_showStatusBits);									//!< RV Absulute Mean
-        set_json_64_bit_With_Status(pageInfo, "Max RV absulute Mean", vFarmFrame[page].reliPage.reli.maxRVAbsuluteMean, false, m_showStatusBits);							//!< Max RV absulute Mean
+        set_json_64_bit_With_Status(pageInfo, "RV Absolute Mean", vFarmFrame[page].reliPage.reli.rvAbsoluteMean, false, m_showStatusBits);									//!< RV Absulute Mean
+        set_json_64_bit_With_Status(pageInfo, "Max RV absolute Mean", vFarmFrame[page].reliPage.reli.maxRVAbsoluteMean, false, m_showStatusBits);							//!< Max RV absulute Mean
         set_json_64_bit_With_Status(pageInfo, "Idle Time value from the most recent SMART Summary Frame", vFarmFrame[page].reliPage.reli.idleTime, false, m_showStatusBits);	//!< idle Time value from the most recent SMART Summary Frame
     }
     else
