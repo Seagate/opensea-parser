@@ -429,33 +429,36 @@ eReturnValues CScsiScanLog::get_Scan_Data(JSONNODE *masterData)
 		json_set_name(pageInfo, "Background Scan Log - 15h");
         m_ScanParam = (sScanStatusParams *)&pData[0];
 		process_Scan_Status_Data(pageInfo);
-		for (size_t offset = ((size_t)m_ScanParam->paramLength + 4); offset < (((size_t)m_PageLength) - sizeof(sScanFindingsParams)); )
-		{
-			if (offset < m_bufferLength && offset < UINT16_MAX)
-			{
-                uint16_t paramCode = *(reinterpret_cast<uint16_t*>(&pData[offset]));
-                byte_Swap_16(&paramCode);
-                if (paramCode >= 0x0001 && paramCode <= 0x0800)
+        if ((m_ScanParam->paramLength + 4) < m_PageLength)
+        {
+            for (size_t offset = ((size_t)m_ScanParam->paramLength + 4); offset < (((size_t)m_PageLength) - sizeof(sScanFindingsParams)); )
+            {
+                if (offset < m_bufferLength && offset < UINT16_MAX)
                 {
-                    m_defect = (sScanFindingsParams *)&pData[offset];
-                    process_Defect_Data(pageInfo);
-                    //offset += sizeof(sScanFindingsParams);
-                    offset += m_defect->paramLength + 4;
+                    uint16_t paramCode = *(reinterpret_cast<uint16_t*>(&pData[offset]));
+                    byte_Swap_16(&paramCode);
+                    if (paramCode >= 0x0001 && paramCode <= 0x0800)
+                    {
+                        m_defect = (sScanFindingsParams *)&pData[offset];
+                        process_Defect_Data(pageInfo);
+                        //offset += sizeof(sScanFindingsParams);
+                        offset += m_defect->paramLength + 4;
+                    }
+                    else //if (paramCode >= 0x8000) //TODO: Nayana to check with Tim how to skip ssd part here
+                    {
+                        m_ParamHeader = (sBackgroundScanParamHeader*)&pData[offset];
+                        process_other_param_data(pageInfo, offset);
+                        offset += m_ParamHeader->paramLength + 4;
+                    }
                 }
-                else //if (paramCode >= 0x8000) //TODO: Nayana to check with Tim how to skip ssd part here
+                else
                 {
-                    m_ParamHeader = (sBackgroundScanParamHeader*)&pData[offset];                   
-                    process_other_param_data(pageInfo,offset);
-                    offset += m_ParamHeader->paramLength + 4;
-                }				
-			}
-			else
-			{
-				json_push_back(masterData, pageInfo);
-				return BAD_PARAMETER;
-			}
+                    json_push_back(masterData, pageInfo);
+                    return BAD_PARAMETER;
+                }
 
-		}
+            }
+        }
 
 		json_push_back(masterData, pageInfo);
 		retStatus = SUCCESS;
