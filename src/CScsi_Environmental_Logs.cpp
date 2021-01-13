@@ -69,7 +69,7 @@ CScsiEnvironmentLog::CScsiEnvironmentLog(uint8_t *bufferData, size_t bufferSize,
 		pData = bufferData;
 		m_Page = (sLogPageStruct *)bufferData;				// set a buffer to the point to the log page info
 		m_PageLength = m_Page->pageLength;
-		byte_Swap_16(&m_PageLength);						// get the length of the page and byte swap it
+		//byte_Swap_16(&m_PageLength);						// get the length of the page and byte swap it
 		m_EnvStatus = figureout_What_Log_To_Parsed(masterData);					// init the data for getting the log  
 	}
 	else
