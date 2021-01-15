@@ -290,7 +290,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 					std::cout << "Start Stop Cycle Log Found" << std::endl;
 				}
 				CScsiStartStop *cSS;
-				cSS = new CScsiStartStop((uint8_t *)&bufferData[4], m_LogSize, masterData);
+				cSS = new CScsiStartStop((uint8_t *)&bufferData[4], m_Page->pageLength, masterData);
 				retStatus = cSS->get_Log_Status();
 				delete(cSS);
 			}
