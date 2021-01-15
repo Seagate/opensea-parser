@@ -3019,7 +3019,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
         {
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
-                uint64_t dsHead = check_Status_Strip_Status(vFarmFrame[page].fafhRelativeApmlitude.headValue[loopCount]);
+                //uint64_t dsHead = check_Status_Strip_Status(vFarmFrame[page].fafhRelativeApmlitude.headValue[loopCount]);
                 //int16_t whole = M_WordInt2(dsHead);							// get 5:4 whole part of the float
                 //double decimal = static_cast<double>(M_DoubleWordInt0(dsHead));  // get 3:0 for the Deciaml Part of the float
 
