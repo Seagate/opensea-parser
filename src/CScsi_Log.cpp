@@ -290,7 +290,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 					std::cout << "Start Stop Cycle Log Found" << std::endl;
 				}
 				CScsiStartStop *cSS;
-				cSS = new CScsiStartStop((uint8_t *)&bufferData[4], m_LogSize, masterData);
+				cSS = new CScsiStartStop((uint8_t *)&bufferData[4], m_Page->pageLength, masterData);
 				retStatus = cSS->get_Log_Status();
 				delete(cSS);
 			}
@@ -401,7 +401,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				}
 				CScsiProtocolPortLog * cPSP;
 				cPSP = new CScsiProtocolPortLog((uint8_t *)&bufferData[4], m_LogSize);
-				cPSP->set_PSP_Page_Length(m_Page->pageLength);
+				cPSP->set_PSP_Page_Length_NoSwap(m_Page->pageLength);
 				retStatus = cPSP->parse_Protocol_Port_Log(masterData);
 				delete (cPSP);
 			}
@@ -484,7 +484,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 					std::cout << "Not Found" << std::endl;
 				}
 				std::cout << "not supported" << std::endl;
-				retStatus = SUCCESS;
+				retStatus = static_cast<eReturnValues>(NOT_SUPPORTED);
 			}
 			break;
 			}
@@ -493,10 +493,10 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 		{
 			if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 			{
-				std::cout << "Invalid Length" << std::endl;
+				std::cout << "Not Found" << std::endl;
 			}
-			std::cout << "Invalid Length    check --LogType" << std::endl;
-			retStatus = static_cast<eReturnValues>(INVALID_LENGTH);
+			std::cout << "not supported    check --logType" << std::endl;
+			retStatus = static_cast<eReturnValues>(NOT_SUPPORTED);
 		}
 	}
 	else

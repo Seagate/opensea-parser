@@ -161,7 +161,7 @@ eReturnValues CScsiTemperatureLog::get_Data(JSONNODE *masterData)
 			byte_Swap_16(&m_Page->paramCode);
 			get_Temp(pageInfo);
 			// Check to make sure we still have engough data to increment the m_Page
-			if ((param + (2* tempSize) + sizeof(sLogPageStruct)) > m_pDataSize && param + tempSize < m_PageLength || param > UINT32_MAX)
+			if (((param + (2* tempSize) + sizeof(sLogPageStruct)) > m_pDataSize && param + tempSize < m_PageLength) || param > UINT32_MAX)
 			{
 				json_push_back(masterData, pageInfo);
 				return BAD_PARAMETER;

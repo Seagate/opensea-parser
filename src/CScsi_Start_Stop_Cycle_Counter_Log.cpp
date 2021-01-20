@@ -71,7 +71,7 @@ CScsiStartStop::CScsiStartStop(uint8_t * buffer, size_t bufferSize, JSONNODE *ma
 #endif
         if (pData != NULL)
         {
-            if (bufferSize >= (sizeof(sStartStopStruct) + sizeof(sLogPageStruct)))				// check for invaid log size < need to add in the size of the log page header
+            if (bufferSize >= sizeof(sStartStopStruct))				// check for invaid log size < need to add in the size of the log page header
             {
                 m_Page = (sStartStopStruct *)pData;				// set a buffer to the point to the log page info
                 m_StartStatus = parse_Start_Stop_Log(masterData);

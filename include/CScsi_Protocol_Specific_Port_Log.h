@@ -95,6 +95,7 @@ namespace opensea_parser {
 		virtual ~CScsiProtocolPortLog();
 		virtual eReturnValues get_Log_Status() { return m_PSPStatus; };
 		virtual void set_PSP_Page_Length(uint16_t page) { m_PageLength = page; byte_Swap_16(&m_PageLength); };
+        virtual void set_PSP_Page_Length_NoSwap(uint16_t page) { m_PageLength = page; };
 		virtual eReturnValues parse_Protocol_Port_Log(JSONNODE *masterData) { return get_Data(masterData); };
 	};
 #endif
