@@ -29,11 +29,11 @@ using namespace opensea_parser;
 //
 //---------------------------------------------------------------------------
 CFARMLog::CFARMLog()
-	:bufferData()
-	, m_LogSize(0)
-	, m_status(IN_PROGRESS)
-	, m_isScsi(false)
-	, m_shwoStatus(false)
+    :bufferData()
+    , m_LogSize(0)
+    , m_status(IN_PROGRESS)
+    , m_isScsi(false)
+    , m_shwoStatus(false)
     , m_bufferdelete(false)
 {
 
@@ -55,41 +55,41 @@ CFARMLog::CFARMLog()
 //
 //---------------------------------------------------------------------------
 CFARMLog::CFARMLog(const std::string & fileName,bool showStatus)
-	:bufferData()
-	, m_LogSize(0)
-	, m_status(IN_PROGRESS)
-	, m_isScsi(false)
-	, m_shwoStatus(showStatus)
+    :bufferData()
+    , m_LogSize(0)
+    , m_status(IN_PROGRESS)
+    , m_isScsi(false)
+    , m_shwoStatus(showStatus)
     , m_bufferdelete(true)
 {
-	CLog *cCLog;
-	cCLog = new CLog(fileName);
-	if (cCLog->get_Log_Status() == SUCCESS)
-	{
-		if (cCLog->get_Buffer() != NULL)
-		{
-			m_LogSize = cCLog->get_Size();
-			bufferData = new uint8_t[m_LogSize];								// new a buffer to the point				
+    CLog *cCLog;
+    cCLog = new CLog(fileName);
+    if (cCLog->get_Log_Status() == SUCCESS)
+    {
+        if (cCLog->get_Buffer() != NULL)
+        {
+            m_LogSize = cCLog->get_Size();
+            bufferData = new uint8_t[m_LogSize];                                // new a buffer to the point                
 #ifndef _WIN64
-			memcpy(bufferData, cCLog->get_Buffer(), m_LogSize);
+            memcpy(bufferData, cCLog->get_Buffer(), m_LogSize);
 #else
-			memcpy_s(bufferData, m_LogSize, cCLog->get_Buffer(), m_LogSize);// copy the buffer data to the class member pBuf
+            memcpy_s(bufferData, m_LogSize, cCLog->get_Buffer(), m_LogSize);// copy the buffer data to the class member pBuf
 #endif
-			m_isScsi = is_Device_Scsi();
+            m_isScsi = is_Device_Scsi();
 
-			m_status = IN_PROGRESS;
-		}
-		else
-		{
+            m_status = IN_PROGRESS;
+        }
+        else
+        {
 
-			m_status = FAILURE;
-		}
-	}
-	else
-	{
-		m_status = cCLog->get_Log_Status();
-	}
-	delete (cCLog);
+            m_status = FAILURE;
+        }
+    }
+    else
+    {
+        m_status = cCLog->get_Log_Status();
+    }
+    delete (cCLog);
 }
 //-----------------------------------------------------------------------------
 //
@@ -106,41 +106,41 @@ CFARMLog::CFARMLog(const std::string & fileName,bool showStatus)
 //
 //---------------------------------------------------------------------------
 CFARMLog::CFARMLog(const std::string & fileName)
-	:bufferData()
-	, m_LogSize(0)
-	, m_status(IN_PROGRESS)
-	, m_isScsi(false)
-	, m_shwoStatus(false)
+    :bufferData()
+    , m_LogSize(0)
+    , m_status(IN_PROGRESS)
+    , m_isScsi(false)
+    , m_shwoStatus(false)
     , m_bufferdelete(true)
 {
-	CLog *cCLog;
-	cCLog = new CLog(fileName);
-	if (cCLog->get_Log_Status() == SUCCESS)
-	{
-		if (cCLog->get_Buffer() != NULL)
-		{
-			m_LogSize = cCLog->get_Size();
-			bufferData = new uint8_t[m_LogSize];								// new a buffer to the point				
+    CLog *cCLog;
+    cCLog = new CLog(fileName);
+    if (cCLog->get_Log_Status() == SUCCESS)
+    {
+        if (cCLog->get_Buffer() != NULL)
+        {
+            m_LogSize = cCLog->get_Size();
+            bufferData = new uint8_t[m_LogSize];                                // new a buffer to the point                
 #ifndef _WIN64
-			memcpy(bufferData, cCLog->get_Buffer(), m_LogSize);
+            memcpy(bufferData, cCLog->get_Buffer(), m_LogSize);
 #else
-			memcpy_s(bufferData, m_LogSize, cCLog->get_Buffer(), m_LogSize);// copy the buffer data to the class member pBuf
+            memcpy_s(bufferData, m_LogSize, cCLog->get_Buffer(), m_LogSize);// copy the buffer data to the class member pBuf
 #endif
-			m_isScsi = is_Device_Scsi();
+            m_isScsi = is_Device_Scsi();
 
-			m_status = IN_PROGRESS;
-		}
-		else
-		{
+            m_status = IN_PROGRESS;
+        }
+        else
+        {
 
-			m_status = FAILURE;
-		}
-	}
-	else
-	{
-		m_status = cCLog->get_Log_Status();
-	}
-	delete (cCLog);
+            m_status = FAILURE;
+        }
+    }
+    else
+    {
+        m_status = cCLog->get_Log_Status();
+    }
+    delete (cCLog);
 }
 //-----------------------------------------------------------------------------
 //
@@ -159,23 +159,23 @@ CFARMLog::CFARMLog(const std::string & fileName)
 //
 //---------------------------------------------------------------------------
 CFARMLog::CFARMLog(uint8_t *bufferData, size_t bufferSize, bool showStatus)
-	:bufferData(bufferData)
-	, m_LogSize(bufferSize)
-	, m_status(IN_PROGRESS)
-	, m_isScsi(false)
-	, m_shwoStatus(showStatus)
+    :bufferData(bufferData)
+    , m_LogSize(bufferSize)
+    , m_status(IN_PROGRESS)
+    , m_isScsi(false)
+    , m_shwoStatus(showStatus)
     , m_bufferdelete(false)
 {
-	if (bufferData != NULL)
-	{
-		m_isScsi = is_Device_Scsi();
-		m_status = IN_PROGRESS;
+    if (bufferData != NULL)
+    {
+        m_isScsi = is_Device_Scsi();
+        m_status = IN_PROGRESS;
 }
-	else
-	{
+    else
+    {
 
-		m_status = FAILURE;
-	}
+        m_status = FAILURE;
+    }
 }
 //-----------------------------------------------------------------------------
 //
@@ -266,23 +266,84 @@ eReturnValues CFARMLog::parse_Device_Farm_Log(JSONNODE *masterJson)
         pCFarm = new CATA_Farm_Log((uint8_t *)bufferData, m_LogSize, m_shwoStatus);
         if (pCFarm->get_Log_Status() == IN_PROGRESS)
         {
-			try
-			{
-				retStatus = pCFarm->parse_Farm_Log();
-				if (retStatus == IN_PROGRESS)
-				{
-					pCFarm->print_All_Pages(masterJson);
-					retStatus = SUCCESS;
-				}
-			}
-			catch (...)
-			{
-				delete (pCFarm);
-				return MEMORY_FAILURE;
-			}
+            try
+            {
+                retStatus = pCFarm->parse_Farm_Log();
+                if (retStatus == IN_PROGRESS)
+                {
+                    pCFarm->print_All_Pages(masterJson);
+                    retStatus = SUCCESS;
+                }
+            }
+            catch (...)
+            {
+                delete (pCFarm);
+                return MEMORY_FAILURE;
+            }
             
         }
         delete (pCFarm);
     }
     return retStatus;
+}
+
+
+//-----------------------------------------------------------------------------
+//
+//! \fn parse_Device_Farm_Log_And_Analyze()
+//
+//! \brief
+//!   Description:  parse out the Farm Log into a vector called Farm Frame.
+//
+//  Entry:
+//! \param pData - pointer to the buffer
+//
+//  Exit:
+//!   \return Helth of the drive
+//
+//---------------------------------------------------------------------------
+eAnalyzeStatus CFARMLog::parse_Device_Farm_Log_And_Analyze()
+{
+    eReturnValues retStatus = MEMORY_FAILURE;
+    eAnalyzeStatus anzStatus = UNDEFINED;
+    if (m_isScsi)
+    {
+        CSCSI_Farm_Log *pCFarm;
+        pCFarm = new CSCSI_Farm_Log((uint8_t *)bufferData, m_LogSize, m_shwoStatus);
+        if (pCFarm->get_Log_Status() == SUCCESS)
+        {
+            // No support for SAS yet
+            anzStatus = UNDEFINED;
+        }
+        else
+        {
+            retStatus = pCFarm->get_Log_Status();
+        }
+        delete(pCFarm);
+    }
+    else
+    {
+        CATA_Farm_Log *pCFarm;
+        pCFarm = new CATA_Farm_Log((uint8_t *)bufferData, m_LogSize, m_shwoStatus);
+        if (pCFarm->get_Log_Status() == IN_PROGRESS)
+        {
+            try
+            {
+                retStatus = pCFarm->parse_Farm_Log();
+                if (retStatus == IN_PROGRESS)
+                {
+                    // Analyze the Log
+                    anzStatus = pCFarm->parse_and_Analyze_Farm_Log();
+                }
+            }
+            catch (...)
+            {
+                delete (pCFarm);
+                return UNDEFINED;
+            }
+
+        }
+        delete (pCFarm);
+    }
+    return anzStatus;
 }

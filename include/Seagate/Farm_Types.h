@@ -18,7 +18,7 @@
 //#include "Opensea_Parser_Helper.h"
 //#include "Farm_Helper.h"
 
-#define MAX_HEAD_COUNT			24
+#define MAX_HEAD_COUNT          24
 #define FARMSIGNATURE           0x00004641524D4552
 #define MAJORVERSION2           2
 #define MAJORVERSION3           3
@@ -120,13 +120,26 @@ typedef enum _eReallocationCauses
     SERVO_WEDGE,
 }eReallocationCauses;
 
+typedef enum _eAnalyzeStatus
+{
+    NTF = 0,
+    PRESSURE = 1,
+    FW_ASSERTION = 2,
+    DATA_PATH = 3,
+    SEEK_HARD_ERROR = 4, 
+    UNRECOVERABLE_SERVO = 5, 
+    UNRECOVERABLE_WRITE = 6, 
+    UNRECOVERABLE_READ_GLIST = 7, 
+    UNDEFINED,
+}eAnalyzeStatus;
+
 
 typedef struct _sStringIdentifyData
 {
-    std::string serialNumber;									//!< seiral number of the drive
-    std::string worldWideName;									//!< World Wide Name of the device
-    std::string deviceInterface;								//!< Device Interface 
-    std::string firmwareRev;									//!< Firmware Rev
+    std::string serialNumber;                                   //!< seiral number of the drive
+    std::string worldWideName;                                  //!< World Wide Name of the device
+    std::string deviceInterface;                                //!< Device Interface 
+    std::string firmwareRev;                                    //!< Firmware Rev
     std::string modelNumber;                                    //!< Model Number (4.3 and newer will have this)
 }sStringIdentifyData;
 
