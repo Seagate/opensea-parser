@@ -2,7 +2,7 @@
 // CScsi_Power_Condition_Transitions_Log.h  Definition of Power Condition Transistions Log Page for SAS
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2021 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
