@@ -347,3 +347,92 @@ eAnalyzeStatus CFARMLog::parse_Device_Farm_Log_And_Analyze()
     }
     return anzStatus;
 }
+
+
+//-----------------------------------------------------------------------------
+//
+//! \fn print_Drive_Health()
+//
+//! \brief
+//!   Description:  print out the drive health information
+//
+//  Entry:
+//! \param masterData - pointer to the json data that will be printed or passed on
+//! \param analyzeStatus  = Drive health info. 
+//
+//  Exit:
+//!   \return SUCCESS
+//
+//---------------------------------------------------------------------------
+eReturnValues CFARMLog::print_Drive_Health(JSONNODE *masterData, eAnalyzeStatus  analyzeStatus)
+{
+    std::string myStr = " ";
+    myStr.resize(BASIC);
+    JSONNODE *pageInfo = json_new(JSON_NODE);
+
+    snprintf((char*)myStr.c_str(), BASIC, "Drive Health Information ");
+    json_set_name(pageInfo, (char*)myStr.c_str());
+
+    /*
+     * Get Drive health status.
+     */
+        
+    switch (analyzeStatus)
+    {
+    case NTF:
+    {
+        json_push_back(pageInfo, json_new_a("Drive Health", "NTF"));
+    }
+    break;
+    case PRESSURE:
+    {
+        json_push_back(pageInfo, json_new_a("Drive Health", "PRESSURE"));
+    }
+    break;
+    case FW_ASSERTION:
+    {
+        json_push_back(pageInfo, json_new_a("Drive Health", "FW_ASSERTION"));
+    }
+    break;
+    case DATA_PATH:
+    {
+        json_push_back(pageInfo, json_new_a("Drive Health", "DATA_PATH"));
+    }
+    break;
+    case SEEK_HARD_ERROR:
+    {
+        json_push_back(pageInfo, json_new_a("Drive Health", "SEEK_HARD_ERROR"));
+    }
+    break;
+    case UNRECOVERABLE_SERVO:
+    {
+        json_push_back(pageInfo, json_new_a("Drive Health", "UNRECOVERABLE_SERVO"));
+    }
+    break;
+    case UNRECOVERABLE_WRITE:
+    {
+        json_push_back(pageInfo, json_new_a("Drive Health", "UNRECOVERABLE_WRITE"));
+    }
+    break;
+    case UNRECOVERABLE_READ_GLIST:
+    {
+        json_push_back(pageInfo, json_new_a("Drive Health", "UNRECOVERABLE_READ_GLIST"));
+    }
+    break;
+    case UNDEFINED:
+    {
+        json_push_back(pageInfo, json_new_a("Drive Health", "UNDEFINED_ERROR"));
+    }
+    break;
+    default:
+    {
+        json_push_back(pageInfo, json_new_a("Drive Health", "UNDEFINED Error"));
+    }
+    break;
+    }
+
+
+    json_push_back(masterData, pageInfo);
+
+    return SUCCESS;
+}

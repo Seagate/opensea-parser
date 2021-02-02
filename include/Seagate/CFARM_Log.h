@@ -44,6 +44,7 @@ namespace opensea_parser {
         eReturnValues get_FARM_Status() { return m_status; };
         eReturnValues parse_Device_Farm_Log( JSONNODE *masterData);
         eAnalyzeStatus parse_Device_Farm_Log_And_Analyze();
+        eReturnValues print_Drive_Health(JSONNODE *masterData, eAnalyzeStatus  analyzeStatus);
 
     };
 #endif
