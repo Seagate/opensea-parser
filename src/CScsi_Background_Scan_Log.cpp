@@ -172,7 +172,7 @@ void CScsiScanLog::get_Scan_Status_Description(std::string *scan)
 		}
 		case 0x08:
 		{
-			snprintf((char*)scan->c_str(), BASIC, "Background medium scan halted, waiting for Background Medium Interval timer expiration");
+			snprintf((char*)scan->c_str(), BASIC, "Background medium scan halted, waiting for Interval timer expiration");
 			break;
 		}
 		default:
@@ -268,12 +268,12 @@ void CScsiScanLog::get_Scan_Defect_Status_Description(std::string *defect)
 		}
 		case 0x05:
 		{
-			snprintf((char*)defect->c_str(), BASIC, "Error Corrected, Device rewriting the LBA without Performing Reassign Operation.");
+			snprintf((char*)defect->c_str(), BASIC, "Error Corrected, Rewriting the LBA without Performing Reassign Operation");
 			break;
 		}
 		case 0x06:
 		{
-			snprintf((char*)defect->c_str(), BASIC, "Application Client caused automatic write reassignment for the LBA or LBPRZ");
+			snprintf((char*)defect->c_str(), BASIC, "Application Client caused automatic write reassignment for the LBA");
 			break;
 		}
 		case 0x07:

@@ -139,13 +139,13 @@ bool CScsiCacheLog::get_Cache_Parameter_Code_Description(std::string *cache)
 	}
 	case 0x0003:
 	{
-		snprintf((char*)cache->c_str(), BASIC, "Number of READ and WRITE Commands lengths equal or less than the current segment size");
+		snprintf((char*)cache->c_str(), BASIC, "# of R and W Commands lengths equal or less than the current segment size");
         descriptionFound = true;
 		break;
 	}
 	case 0x0004:
 	{
-		snprintf((char*)cache->c_str(), BASIC, "Number of READ and WRITE Commands lengths greater than the current segment size");
+		snprintf((char*)cache->c_str(), BASIC, "# of READ and WRITE Commands lengths greater than the current segment size");
         descriptionFound = true;
 		break;
 	}

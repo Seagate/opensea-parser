@@ -70,7 +70,7 @@ namespace opensea_parser {
         bool swap_Bytes_Flash_LED(sActuatorFLEDInfo *fled);
         bool swap_Bytes_Reallocation_Data(sActReallocationData *real);
         bool get_Head_Info(sHeadInformation *phead, uint8_t *buffer);
-        void set_Head_Header(std::string &headerName, eLogPageTypes index);
+        bool set_Head_Header(std::string &headerName, eLogPageTypes index);
         void get_LUN_Info(sLUNStruct *pLUN, uint8_t *buffer);
 		
 		eReturnValues init_Header_Data();

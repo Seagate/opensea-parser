@@ -205,9 +205,9 @@ bool CSCSI_Farm_Log::strip_Active_Status(uint64_t *value)
 //!  Void 
 //
 //---------------------------------------------------------------------------
-void CSCSI_Farm_Log::set_Head_Header(std::string &headerName, eLogPageTypes index)
+bool CSCSI_Farm_Log::set_Head_Header(std::string &headerName, eLogPageTypes index)
 {
-
+    bool ret = true;
     switch (index)
     {
     case FARM_HEADER_PARAMETER:
@@ -401,9 +401,11 @@ void CSCSI_Farm_Log::set_Head_Header(std::string &headerName, eLogPageTypes inde
         break;
     default:
         headerName = "Something is wrong. Please report error SAS FARM 615";
+        ret = false;
         break;
 
     }
+    return ret;
 }
 //-----------------------------------------------------------------------------
 //
@@ -2580,9 +2582,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
     std::string myHeader = " ";
     myHeader.resize(BASIC);
 
-    set_Head_Header(myHeader, type);
-
-    if (type == NULL)
+    if (set_Head_Header(myHeader, type) == false)
     {
         return FAILURE;
     }
