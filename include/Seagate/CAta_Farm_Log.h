@@ -158,11 +158,11 @@ namespace opensea_parser {
                 }
                 // temp string for coping the hex to text, have to resize for c98 issues
                 std::string tempStr = "";
-                tempStr.resize(BASIC);
-                modelNumber.resize(BASIC);
+                tempStr.resize(MAXSIZE);
+                modelNumber.resize(MAXSIZE);
                 // memset them to 0
-                memset((char *)modelNumber.c_str(), 0, BASIC);
-                memset((char *)tempStr.c_str(), 0, BASIC);
+                memset((char *)modelNumber.c_str(), 0, MAXSIZE);
+                memset((char *)tempStr.c_str(), 0, MAXSIZE);
                 // loop to copy the info into the modeleNumber string
                 for (uint8_t n = 0; n < MAXSIZE; n++)
                 {
