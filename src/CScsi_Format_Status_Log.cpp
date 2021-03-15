@@ -244,25 +244,28 @@ void CScsiFormatStatusLog::process_Format_Status_Data_Variable_Length(JSONNODE *
     char* innerStr = (char*)calloc(60, sizeof(char));
     uint8_t offset = 0;
 
-    for (uint8_t outer = 0; outer < m_Format->paramLength - 1; )
+    if (innerMsg != NULL)
     {
-        snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIX32 "", lineNumber);
-        sprintf(innerMsg, "%02" PRIX8 "", m_FormatDataOutParamValue[offset++]);
-        // inner loop for creating a single ling of the buffer data
-        for (uint8_t inner = 1; inner < 16 && offset < m_Format->paramLength - 1; inner++)
+        for (uint8_t outer = 0; outer < m_Format->paramLength - 1; )
         {
-            sprintf(innerStr, "%02" PRIX8"", m_FormatDataOutParamValue[offset]);
-            if (inner % 4 == 0)
+            snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIX32 "", lineNumber);
+            sprintf(innerMsg, "%02" PRIX8 "", m_FormatDataOutParamValue[offset++]);
+            // inner loop for creating a single ling of the buffer data
+            for (uint8_t inner = 1; inner < 16 && offset < m_Format->paramLength - 1; inner++)
             {
-                strncat(innerMsg, " ", 1);
+                sprintf(innerStr, "%02" PRIX8"", m_FormatDataOutParamValue[offset]);
+                if (inner % 4 == 0)
+                {
+                        strncat(innerMsg, " ", 2);
+                }
+                strncat(innerMsg, innerStr, 3);
+                offset++;
             }
-            strncat(innerMsg, innerStr, 2);
-            offset++;
+            // push the line to the json node
+            json_push_back(formatInfo, json_new_a((char*)myStr.c_str(), innerMsg));
+            outer = offset;
+            lineNumber = outer;
         }
-        // push the line to the json node
-        json_push_back(formatInfo, json_new_a((char*)myStr.c_str(), innerMsg));
-        outer = offset;
-        lineNumber = outer;
     }
     safe_Free(innerMsg);  //free the string
     safe_Free(innerStr);  // free the string
