@@ -2960,7 +2960,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tFly height clearance delta inner by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].appliedFlyHeightByHeadInner.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Applied fly height clearance delta per head in thousandths of one Angstrom: Inner by Head
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "Fly height clearance delta inner by Head %" PRIu32"", loopCount); // Head count
-                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].appliedFlyHeightByHeadInner.headValue[loopCount]))*.001));   //!< Applied fly height clearance delta per head in thousandths of one Angstrom: Inner by Head
+                snprintf((char*)myStr.c_str(), BASIC, "%0.03f", static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].appliedFlyHeightByHeadInner.headValue[loopCount]))*.001));   //!< Applied fly height clearance delta per head in thousandths of one Angstrom: Inner by Head
                 set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].appliedFlyHeightByHeadInner.headValue[loopCount], m_showStatusBits);
             }
             break;
@@ -2971,7 +2971,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tFly height clearance delta middle by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].appliedFlyHeightByHeadMiddle.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Applied fly height clearance delta per head in thousandths of one Angstrom: middle by Head
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "Fly height clearance delta middle by Head %" PRIu32"", loopCount);     // Head count
-                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].appliedFlyHeightByHeadMiddle.headValue[loopCount])) *.001));   //!< Applied fly height clearance delta per head in thousandths of one Angstrom:middle by Head
+                snprintf((char*)myStr.c_str(), BASIC, "%0.03f", static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].appliedFlyHeightByHeadMiddle.headValue[loopCount])) *.001));   //!< Applied fly height clearance delta per head in thousandths of one Angstrom:middle by Head
                 set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].appliedFlyHeightByHeadMiddle.headValue[loopCount], m_showStatusBits);
             }
             break;
