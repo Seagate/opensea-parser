@@ -103,7 +103,7 @@ CLog::~CLog()
 //!   \return eReturnValues
 //
 //---------------------------------------------------------------------------
-void CLog::get_CLog(const std::string & fileName)
+void CLog::get_CLog(const std::string &fileName)
 {
     m_logStatus = IN_PROGRESS;
     std::ifstream fb(m_fileName.c_str(), std::ios::in | std::ios::binary);
