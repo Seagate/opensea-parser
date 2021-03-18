@@ -84,9 +84,9 @@ namespace opensea_parser {
         eReturnValues print_Enviroment_Statistics_Page_07(JSONNODE *masterData, uint32_t page);
         eReturnValues print_Reli_Information(JSONNODE *masterData, uint32_t page);
         eReturnValues print_Head_Information(eLogPageTypes type, JSONNODE *masterData, uint32_t page);
-        eReturnValues print_LUN_Actuator_Information(JSONNODE *masterData, uint32_t page, uint32_t index, uint16_t actNum);
-        eReturnValues print_LUN_Actuator_FLED_Info(JSONNODE *masterData, uint32_t page, uint32_t index, uint16_t actNum);
-        eReturnValues print_LUN_Actuator_Reallocation(JSONNODE *masterData, uint32_t page, uint32_t index, uint16_t actNum);
+        eReturnValues print_LUN_Actuator_Information(JSONNODE *masterData, uint32_t page, uint16_t actNum);
+        eReturnValues print_LUN_Actuator_FLED_Info(JSONNODE *masterData, uint32_t page, uint16_t actNum);
+        eReturnValues print_LUN_Actuator_Reallocation(JSONNODE *masterData, uint32_t page, uint16_t actNum);
     public:
         CSCSI_Farm_Log();
         CSCSI_Farm_Log(uint8_t *bufferData, size_t bufferSize,bool showStatus);

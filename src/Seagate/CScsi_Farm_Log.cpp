@@ -3255,7 +3255,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
 //!   \return SUCCESS
 //
 //---------------------------------------------------------------------------
-eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Information(JSONNODE *masterData, uint32_t page, uint32_t index, uint16_t actNum)
+eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Information(JSONNODE *masterData, uint32_t page, uint16_t actNum)
 {
     std::string myStr = " ";
     myStr.resize(BASIC);
@@ -3358,7 +3358,7 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Information(JSONNODE *masterDat
 //!   \return SUCCESS
 //
 //---------------------------------------------------------------------------
-eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_FLED_Info(JSONNODE *masterData, uint32_t page, uint32_t index, uint16_t actNum)
+eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_FLED_Info(JSONNODE *masterData, uint32_t page,  uint16_t actNum)
 {
 
     uint16_t i = 0;
@@ -3462,7 +3462,7 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_FLED_Info(JSONNODE *masterData,
 //!   \return SUCCESS
 //
 //---------------------------------------------------------------------------
-eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Reallocation(JSONNODE *masterData, uint32_t page, uint32_t index,uint16_t actNum)
+eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Reallocation(JSONNODE *masterData, uint32_t page, uint16_t actNum)
 {
     uint16_t i = 0;
     std::string myStr = " ";
@@ -3670,13 +3670,13 @@ void CSCSI_Farm_Log::print_All_Pages(JSONNODE *masterData)
                 case RESERVED_FOR_FUTURE_EXPANSION_31:
                     break;
                 case LUN_0_ACTUATOR:
-                    print_LUN_Actuator_Information(masterData, index, 0, LUN_0_ACTUATOR);
+                    print_LUN_Actuator_Information(masterData, index, LUN_0_ACTUATOR);
                     break;
                 case LUN_0_FLASH_LED :
-                    print_LUN_Actuator_FLED_Info(masterData,index,0, LUN_0_FLASH_LED);
+                    print_LUN_Actuator_FLED_Info(masterData,index,LUN_0_FLASH_LED);
                     break;
                 case LUN_REALLOCATION_0:
-                    print_LUN_Actuator_Reallocation(masterData, index, 0, LUN_REALLOCATION_0);
+                    print_LUN_Actuator_Reallocation(masterData, index, LUN_REALLOCATION_0);
                     break;
                 case RESERVED_FOR_FUTURE_EXPANSION_42:
                 case RESERVED_FOR_FUTURE_EXPANSION_43:
@@ -3693,13 +3693,13 @@ void CSCSI_Farm_Log::print_All_Pages(JSONNODE *masterData)
                 case RESERVED_FOR_FUTURE_EXPANSION_54:
                     break;
                 case LUN_1_ACTUATOR:
-                    print_LUN_Actuator_Information(masterData, index, 0, LUN_1_ACTUATOR);
+                    print_LUN_Actuator_Information(masterData, index, LUN_1_ACTUATOR);
                     break;
                 case LUN_1_FLASH_LED:
-                    print_LUN_Actuator_FLED_Info(masterData, index, 0, LUN_1_FLASH_LED);
+                    print_LUN_Actuator_FLED_Info(masterData, index, LUN_1_FLASH_LED);
                     break;
                 case LUN_REALLOCATION_1:
-                    print_LUN_Actuator_Reallocation(masterData, index, 0, LUN_REALLOCATION_1);
+                    print_LUN_Actuator_Reallocation(masterData, index,LUN_REALLOCATION_1);
                     break;
                 case RESERVED_FOR_FUTURE_EXPANSION_62:
                 case RESERVED_FOR_FUTURE_EXPANSION_63:
@@ -3716,13 +3716,13 @@ void CSCSI_Farm_Log::print_All_Pages(JSONNODE *masterData)
                 case RESERVED_FOR_FUTURE_EXPANSION_74:
                     break;
                 case LUN_2_ACTUATOR:
-                    print_LUN_Actuator_Information(masterData, index, 0, LUN_2_ACTUATOR);
+                    print_LUN_Actuator_Information(masterData, index, LUN_2_ACTUATOR);
                     break;
                 case LUN_2_FLASH_LED:
-                    print_LUN_Actuator_FLED_Info(masterData, index, 0, LUN_2_FLASH_LED);
+                    print_LUN_Actuator_FLED_Info(masterData, index,  LUN_2_FLASH_LED);
                     break;
                 case LUN_REALLOCATION_2:
-                    print_LUN_Actuator_Reallocation(masterData, index, 0, LUN_REALLOCATION_2);
+                    print_LUN_Actuator_Reallocation(masterData, index, LUN_REALLOCATION_2);
                     break;
                 case RESERVED_FOR_FUTURE_EXPANSION_82:
                 case RESERVED_FOR_FUTURE_EXPANSION_83:
@@ -3739,13 +3739,13 @@ void CSCSI_Farm_Log::print_All_Pages(JSONNODE *masterData)
                 case RESERVED_FOR_FUTURE_EXPANSION_94:
                     break;
                 case LUN_3_ACTUATOR:
-                    print_LUN_Actuator_Information(masterData, index, 0, LUN_3_ACTUATOR); 
+                    print_LUN_Actuator_Information(masterData, index,LUN_3_ACTUATOR); 
                     break;
                 case LUN_3_FLASH_LED:
-                    print_LUN_Actuator_FLED_Info(masterData, index, 0, LUN_3_FLASH_LED);
+                    print_LUN_Actuator_FLED_Info(masterData, index, LUN_3_FLASH_LED);
                     break;
                 case LUN_REALLOCATION_3:
-                    print_LUN_Actuator_Reallocation(masterData, index, 0, LUN_REALLOCATION_3);
+                    print_LUN_Actuator_Reallocation(masterData, index, LUN_REALLOCATION_3);
                     break;
                 case RESERVED_FOR_FUTURE_EXPANSION_102:
                 case RESERVED_FOR_FUTURE_EXPANSION_103:
