@@ -28,6 +28,9 @@ namespace opensea_parser {
 #ifndef SCSIFARM
 #define SCSIFARM
 
+#define FARMLOGPAGE 0x3D
+#define FARMSUBPAGE 0x03
+#define FARMSUBPAGEFACTORY 0x04
     class CSCSI_Farm_Log 
     {
     protected:

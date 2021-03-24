@@ -1771,6 +1771,30 @@ eReturnValues CSCSI_Farm_Log::print_Header(JSONNODE *masterData)
     printf("\tHeads Supported:                     %" PRIu64"  \n", vFarmFrame[page].farmHeader.farmHeader.headsSupported & 0x00FFFFFFFFFFFFFFLL);                             //!< Maximum Drive Heads Supported
     printf("\tReason for Frame Capture(debug):     %" PRId64"  \n", vFarmFrame[page].farmHeader.farmHeader.reasonForFrameCpature & 0x00FFFFFFFFFFFFF);	      //!< Reason for Frame Capture
 #endif
+#if defined (PREPYTHON)
+    json_push_back(masterData, json_new_a("name", "farm_log"));
+    JSONNODE* label = json_new(JSON_NODE);
+    json_set_name(label, "labels");
+    json_push_back(label, json_new_a("stat_type", "farm log header"));
+
+    snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIX64"", check_Status_Strip_Status(vFarmFrame[page].farmHeader.farmHeader.signature));
+    json_push_back(label, json_new_a("log signature", (char*)myStr.c_str()));
+    json_push_back(label, json_new_i("major revision", static_cast<uint32_t>(check_Status_Strip_Status(vFarmFrame[page].farmHeader.farmHeader.majorRev))));
+    json_push_back(label, json_new_i("minor revision", static_cast<uint32_t>(check_Status_Strip_Status(vFarmFrame[page].farmHeader.farmHeader.minorRev))));
+    json_push_back(label, json_new_i("pages supported", static_cast<uint32_t>(check_Status_Strip_Status(vFarmFrame[page].farmHeader.farmHeader.pagesSupported))));
+    json_push_back(label, json_new_i("heads supported", static_cast<uint32_t>(check_Status_Strip_Status(vFarmFrame[page].farmHeader.farmHeader.headsSupported))));
+    json_push_back(label, json_new_i("log size", static_cast<uint32_t>(check_Status_Strip_Status(vFarmFrame[page].farmHeader.farmHeader.logSize))));
+    json_push_back(label, json_new_i("page size", static_cast<uint32_t>(check_Status_Strip_Status(vFarmFrame[page].farmHeader.farmHeader.pageSize))));
+    json_push_back(label, json_new_i("reason for frame capture", static_cast<uint32_t>(check_Status_Strip_Status(vFarmFrame[page].farmHeader.farmHeader.reasonForFrameCpature))));
+    get_SMART_Save_Flages(label, M_Byte0(vFarmFrame[page].farmHeader.farmHeader.reasonForFrameCpature));
+
+    json_push_back(label, json_new_a("units", "count"));
+    snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, FARM_HEADER_PARAMETER);
+    json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
+    json_push_back(masterData, label);
+    json_push_back(masterData, json_new_i("value",0));
+
+#else
     json_set_name(pageInfo, "FARM Log Header");
 
     snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIX64"", check_Status_Strip_Status(vFarmFrame[page].farmHeader.farmHeader.signature));
@@ -1785,7 +1809,7 @@ eReturnValues CSCSI_Farm_Log::print_Header(JSONNODE *masterData)
     get_SMART_Save_Flages(pageInfo, M_Byte0(vFarmFrame[page].farmHeader.farmHeader.reasonForFrameCpature));
 
     json_push_back(masterData, pageInfo);
-
+#endif
     return SUCCESS;
 }
 
@@ -1847,6 +1871,102 @@ eReturnValues CSCSI_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint
     printf("\tTime of latest frame (milliseconds):      %" PRIu64" \n", vFarmFrame[page].driveInfo.lastTimeStamp & 0x00FFFFFFFFFFFFFFLL);								//!< Timestamp of latest SMART Summary Frame in Power-On Hours Milliseconds1
 
 #endif
+#if defined (PREPYTHON)
+
+    json_push_back(masterData, json_new_a("name", "farm_log"));
+    JSONNODE* label = json_new(JSON_NODE);
+    json_set_name(label, "labels");
+    json_push_back(label, json_new_a("stat_type", "drive_information"));
+
+    if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
+    {
+        json_push_back(label, json_new_a("page", "factory"));
+    }
+    else
+    {
+        json_push_back(label, json_new_i("page", page));  
+    }
+
+    snprintf((char*)myStr.c_str(), BASIC, "%s", vFarmFrame[page].identStringInfo.serialNumber.c_str());
+    json_push_back(label, json_new_a("serial number", (char*)myStr.c_str()));
+    snprintf((char*)myStr.c_str(), BASIC, "%s", vFarmFrame[page].identStringInfo.worldWideName.c_str());
+    json_push_back(label, json_new_a("world wide name", (char*)myStr.c_str()));
+    snprintf((char*)myStr.c_str(), BASIC, "%s", vFarmFrame[page].identStringInfo.firmwareRev.c_str());																//!< Firmware Revision [0:3]
+    json_push_back(label, json_new_a("firmware rev", (char*)myStr.c_str()));
+
+    if (vFarmFrame[page].identStringInfo.modelNumber == "")
+    {
+        vFarmFrame[page].identStringInfo.modelNumber = "ST12345678";
+    }
+    snprintf((char*)myStr.c_str(), BASIC, "%s", vFarmFrame[page].identStringInfo.modelNumber.c_str());
+    json_push_back(label, json_new_a("model number", (char*)myStr.c_str()));
+
+    snprintf((char*)myStr.c_str(), BASIC, "%s", vFarmFrame[page].identStringInfo.deviceInterface.c_str());
+    json_push_back(label, json_new_a("device interface", (char*)myStr.c_str()));
+    snprintf((char*)myStr.c_str(), BASIC, "%llu", vFarmFrame[page].driveInfo.deviceCapacity & 0x00FFFFFFFFFFFFFFLL);
+    set_json_string_With_Status(label, "device capacity in sectors", (char*)myStr.c_str(), vFarmFrame[page].driveInfo.deviceCapacity, m_showStatusBits);
+    set_json_64_bit_With_Status(label, "physical sector size", vFarmFrame[page].driveInfo.psecSize, false, m_showStatusBits);									//!< Physical Sector Size in Bytes
+    set_json_64_bit_With_Status(label, "logical sector size", vFarmFrame[page].driveInfo.lsecSize, false, m_showStatusBits);										//!< Logical Sector Size in Bytes
+    set_json_64_bit_With_Status(label, "device buffer size", vFarmFrame[page].driveInfo.deviceBufferSize, false, m_showStatusBits);								//!< Device Buffer Size in Bytes
+    
+    set_json_64_bit_With_Status(label, "device form factor", vFarmFrame[page].driveInfo.factor, false, m_showStatusBits);										//!< Device Form Factor (ID Word 168)
+
+    set_json_64_bit_With_Status(label, "rotation rate", vFarmFrame[page].driveInfo.rotationRate, false, m_showStatusBits);										//!< Rotational Rate of Device (ID Word 217)
+    set_json_64_bit_With_Status(label, "power on hour", vFarmFrame[page].driveInfo.poh, false, m_showStatusBits);                                                //!< Power-on Hour
+    if (m_MajorRev < MAJORVERSION4)
+    {
+        set_json_64_bit_With_Status(label, "head load events", vFarmFrame[page].driveInfo.headLoadEvents, false, m_showStatusBits);									//!< Head Load Events
+    }
+    set_json_64_bit_With_Status(label, "power cycle count", vFarmFrame[page].driveInfo.powerCycleCount, false, m_showStatusBits);								//!< Power Cycle Count
+    set_json_64_bit_With_Status(label, "hardware reset count", vFarmFrame[page].driveInfo.resetCount, false, m_showStatusBits);									//!< Hardware Reset Count
+    set_json_64_bit_With_Status(label, "nvc status @ power on", vFarmFrame[page].driveInfo.NVC_StatusATPowerOn, false, m_showStatusBits);						//!< NVC Status on Power-on
+    set_json_64_bit_With_Status(label, "nvc time available to save (in 100us)", vFarmFrame[page].driveInfo.timeAvailable, false, m_showStatusBits);					//!< Time Available to Save User Data to Media Over Last Power Cycle (in 100us)
+    set_json_64_bit_With_Status(label, "timestamp of first smart summary frame (ms)", vFarmFrame[page].driveInfo.firstTimeStamp, false, m_showStatusBits);		//!< Timestamp of first SMART Summary Frame in Power-On Hours Milliseconds
+    set_json_64_bit_With_Status(label, "timeStamp of last smart summary frame (ms)", vFarmFrame[page].driveInfo.lastTimeStamp, false, m_showStatusBits);			//!< Timestamp of latest SMART Summary Frame in Power-On Hours Milliseconds
+
+    if (check_For_Active_Status(&vFarmFrame[page].driveInfo.dateOfAssembly) || \
+        (vFarmFrame[page].driveInfo.dateOfAssembly < 0x40000000 && vFarmFrame[page].driveInfo.dateOfAssembly > 0x3030))
+    {
+        myStr.resize(DATE_YEAR_DATE_SIZE);
+        memset((char*)myStr.c_str(), 0, DATE_YEAR_DATE_SIZE);
+        uint16_t year = M_Word1(vFarmFrame[page].driveInfo.dateOfAssembly);
+        uint16_t week = M_Word0(vFarmFrame[page].driveInfo.dateOfAssembly);
+
+        _common.create_Year_Assembled_String(myStr, year, true);
+        json_push_back(pageInfo, json_new_a("year of assembled", (char*)myStr.c_str()));
+
+        _common.create_Year_Assembled_String(myStr, week, true);
+        json_push_back(label, json_new_a("week of assembled", (char*)myStr.c_str()));
+    }
+    else
+    {
+        json_push_back(label, json_new_a("year of assembled", "00"));
+        json_push_back(label, json_new_a("week of assembled", "00"));
+    }
+    json_push_back(label, json_new_a("units", "count"));
+    snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, GENERAL_DRIVE_INFORMATION_PARAMETER);
+    json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
+    json_push_back(masterData, label);
+    json_push_back(masterData, json_new_i("value", 0));
+    
+
+    //!< Number of Heads
+    json_push_back(masterData, json_new_a("name", "farm_log"));
+    JSONNODE* head = json_new(JSON_NODE);
+    json_set_name(head, "labels");
+    json_push_back(head, json_new_a("stat_type", "number of heads"));	
+    if (check_Status_Strip_Status(vFarmFrame[page].driveInfo.heads) != 0)
+    {
+        m_heads = check_Status_Strip_Status(vFarmFrame[page].driveInfo.heads);
+    }
+    json_push_back(head, json_new_a("units", "count"));
+    snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, GENERAL_DRIVE_INFORMATION_PARAMETER);
+    json_push_back(head, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
+    json_push_back(masterData, head);
+    json_push_back(masterData, json_new_i("value", vFarmFrame[page].driveInfo.heads));
+
+#else
+
     if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
     {
         snprintf((char*)myStr.c_str(), BASIC, "Drive Information From Farm Log copy FACTORY");
@@ -1918,6 +2038,7 @@ eReturnValues CSCSI_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint
         json_push_back(pageInfo, json_new_a("Week of Assembled", "00"));
     }
     json_push_back(masterData, pageInfo);
+#endif
     return SUCCESS;
 }
 //-----------------------------------------------------------------------------
@@ -1939,11 +2060,57 @@ eReturnValues CSCSI_Farm_Log::print_General_Drive_Information_Continued(JSONNODE
 {
     std::string myStr = " ";
     myStr.resize(BASIC);
+
+#if defined (PREPYTHON)
+    json_push_back(masterData, json_new_a("name", "farm_log"));
+    JSONNODE* label = json_new(JSON_NODE);
+    json_set_name(label, "labels");
+    json_push_back(label, json_new_a("stat_type", "general drive information"));
+    if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
+    {
+        json_push_back(label, json_new_a("page", "factory"));
+    }
+    else
+    {
+        json_push_back(label, json_new_i("page", page));
+    }
+    json_push_back(label, json_new_a("units", "count"));
+    json_push_back(label, json_new_i( "depopulation head mask", vFarmFrame[page].gDPage06.Depop));                                   //!< Depopulation Head Mask
+    std::string type = "cmr";
+    if (vFarmFrame[page].gDPage06.driveType & BIT0)
+    {
+        type = "smr";
+    }
+    json_push_back(label, json_new_a("drive recording type", (char*)type.c_str()));
+
+    myStr = "has drive been depopped";
+    if (check_Status_Strip_Status(vFarmFrame[page].gDPage06.Depop) != 0)
+    {
+        set_Json_Bool(label, myStr, true);
+    }
+    else
+    {
+        set_Json_Bool(label, myStr, false);
+    }
+
+    json_push_back(label, json_new_i("max number of available sectors for reassignment", vFarmFrame[page].gDPage06.maxNumAvaliableSectors));          //!< Max Number of Available Sectors for Reassignment – Value in disc sectors(started in 3.3 )
+    snprintf((char*)myStr.c_str(), BASIC, "%0.03f", static_cast<float>(M_Word0(vFarmFrame[page].gDPage06.timeToReady)) * .001);
+    json_push_back(label, json_new_a("time to ready of the last power cycle (sec)", (char*)myStr.c_str()));			//!< time to ready of the last power cycle
+    snprintf((char*)myStr.c_str(), BASIC, "%0.03f", static_cast<float>(M_Word0(vFarmFrame[page].gDPage06.holdTime)) * .001);
+    json_push_back(label, json_new_a("Time drive is held in staggered spin (sec)", (char*)myStr.c_str()));                //!< time drive is held in staggered spin during the last power on sequence
+    snprintf((char*)myStr.c_str(), BASIC, "%0.03f", static_cast<float>(M_Word0(vFarmFrame[page].gDPage06.servoSpinUpTime)) * .001);
+    json_push_back(label, json_new_a("last servo spin up time (sec)", (char*)myStr.c_str()));			//!< time to ready of the last power cycle
+    snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, GENERAL_DRIVE_INFORMATION_06);
+    json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
+    json_push_back(masterData, label);
+    json_push_back(masterData, json_new_i("value", 0));
+#else
+
     JSONNODE *pageInfo = json_new(JSON_NODE);
 
     if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
     {
-        snprintf((char*)myStr.c_str(), BASIC, "GeneralDrive Informatio From Farm Log copy FACTORY");
+        snprintf((char*)myStr.c_str(), BASIC, "General Drive Informatio From Farm Log copy FACTORY");
     }
     else
     {
@@ -1981,6 +2148,7 @@ eReturnValues CSCSI_Farm_Log::print_General_Drive_Information_Continued(JSONNODE
     set_json_string_With_Status(pageInfo, "Last Servo Spin up Time (sec)", (char*)myStr.c_str(), vFarmFrame[page].gDPage06.servoSpinUpTime, m_showStatusBits);			//!< time to ready of the last power cycle
 
     json_push_back(masterData, pageInfo);
+#endif
     return SUCCESS;
 }
 //-----------------------------------------------------------------------------
@@ -2030,13 +2198,57 @@ eReturnValues CSCSI_Farm_Log::print_WorkLoad(JSONNODE *masterData, uint32_t page
     printf("\tNumber of Write commands from 25-50%% of LBA space    %llu  \n", vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames3 & 0x00FFFFFFFFFFFFFFLL);		//!< Number of Write commands from 25-50% of LBA space for last 3 SMART Summary Frames
     printf("\tNumber of Write commands from 50-100%% of LBA space   %llu  \n", vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames4 & 0x00FFFFFFFFFFFFFFLL);		//!< Number of Write commands from 50-100% of LBA space for last 3 SMART Summary Frames 
 #endif
-    if (vFarmFrame[page].workLoadPage.workLoad.copyNumber == FACTORYCOPY)
+#if defined (PREPYTHON)
+    json_push_back(masterData, json_new_a("name", "farm_log"));
+    JSONNODE* label = json_new(JSON_NODE);
+    json_set_name(label, "labels");
+    json_push_back(label, json_new_a("stat_type", "workload information"));
+    if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
     {
-        snprintf((char*)myStr.c_str(), BASIC, "Work Load From Farm Log copy FACTORY");
+        json_push_back(label, json_new_a("page", "factory"));
     }
     else
     {
-        snprintf((char*)myStr.c_str(), BASIC, "Work Load From Farm Log copy %" PRId32"", page);
+        json_push_back(label, json_new_i("page", page));
+    }
+    json_push_back(label, json_new_a("units", "count"));
+
+    json_push_back(label, json_new_i("rated workload percentaged", vFarmFrame[page].workLoadPage.workLoad.workloadPercentage));				//!< rated Workload Percentage
+    json_push_back(label, json_new_i("total number of read commands", vFarmFrame[page].workLoadPage.workLoad.totalReadCommands));			//!< Total Number of Read Commands
+    json_push_back(label, json_new_i("total number of write commands", vFarmFrame[page].workLoadPage.workLoad.totalWriteCommands));			//!< Total Number of Write Commands
+    json_push_back(label, json_new_i("total number of random read commands", vFarmFrame[page].workLoadPage.workLoad.totalRandomReads));			//!< Total Number of Random Read Commands
+    json_push_back(label, json_new_i("total number of random write commands", vFarmFrame[page].workLoadPage.workLoad.totalRandomWrites));		//!< Total Number of Random Write Commands
+    json_push_back(label, json_new_i("total number of other commands", vFarmFrame[page].workLoadPage.workLoad.totalNumberofOtherCMDS));		//!< Total Number Of Other Commands
+    snprintf((char*)myStr.c_str(), BASIC, "%" PRId64"", vFarmFrame[page].workLoadPage.workLoad.logicalSecWritten & 0x00FFFFFFFFFFFFFFLL);
+    json_push_back(label, json_new_a("logical sectors written", (char*)myStr.c_str()));					//!< Logical Sectors Written
+    snprintf((char*)myStr.c_str(), BASIC, "%" PRId64"", vFarmFrame[page].workLoadPage.workLoad.logicalSecRead & 0x00FFFFFFFFFFFFFFLL);
+    json_push_back(label, json_new_a( "logical sectors read", (char*)myStr.c_str()));						//!< Logical Sectors Read
+    // found a log where the length of the workload log does not match the spec. Need to check for the 0x50 length
+    if (vFarmFrame[page].workLoadPage.PageHeader.plen > 0x50)
+    {
+        json_push_back(label, json_new_i("number of read commands from 0-3.125% of LBA space", vFarmFrame[page].workLoadPage.workLoad.totalReadCmdsFromFrames1));		//!< Number of Read commands from 0-3.125% of LBA space for last 3 SMART Summary Frames
+        json_push_back(label, json_new_i("number of read commands from 3.125-25% of LBA space", vFarmFrame[page].workLoadPage.workLoad.totalReadCmdsFromFrames2));		//!< Number of Read commands from 3.125-25% of LBA space for last 3 SMART Summary Frames
+        json_push_back(label, json_new_i("number of read commands from 25-50% of LBA space", vFarmFrame[page].workLoadPage.workLoad.totalReadCmdsFromFrames3));		//!< Number of Read commands from 25-50% of LBA space for last 3 SMART Summary Frames
+        json_push_back(label, json_new_i("number of read commands from 50-100% of LBA space", vFarmFrame[page].workLoadPage.workLoad.totalReadCmdsFromFrames4));		//!< Number of Read commands from 50-100% of LBA space for last 3 SMART Summary Frames 
+        json_push_back(label, json_new_i("number of write commands from 0-3.125% of LBA space", vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames1));	//!< Number of Write commands from 0-3.125% of LBA space for last 3 SMART Summary Frames
+        json_push_back(label, json_new_i("number of write commands from 3.125-25% of LBA space", vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames2));	//!< Number of Write commands from 3.125-25% of LBA space for last 3 SMART Summary Frames
+        json_push_back(label, json_new_i("number of write commands from 25-50% of LBA space", vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames3));		//!< Number of Write commands from 25-50% of LBA space for last 3 SMART Summary Frames
+        json_push_back(label, json_new_i("number of write commands from 50-100% of LBA space", vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames4));		//!< Number of Write commands from 50-100% of LBA space for last 3 SMART Summary Frames 
+    }
+
+    snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, GENERAL_DRIVE_INFORMATION_06);
+    json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
+    json_push_back(masterData, label);
+    json_push_back(masterData, json_new_i("value", 0));
+
+#else
+    if (vFarmFrame[page].workLoadPage.workLoad.copyNumber == FACTORYCOPY)
+    {
+        snprintf((char*)myStr.c_str(), BASIC, "Workload From Farm Log copy FACTORY");
+    }
+    else
+    {
+        snprintf((char*)myStr.c_str(), BASIC, "Workload From Farm Log copy %" PRId32"", page);
     }
     json_set_name(pageInfo, (char*)myStr.c_str());
     set_json_64_bit_With_Status(pageInfo, "Rated Workload Percentaged",vFarmFrame[page].workLoadPage.workLoad.workloadPercentage, false, m_showStatusBits);				//!< rated Workload Percentage
@@ -2062,7 +2274,7 @@ eReturnValues CSCSI_Farm_Log::print_WorkLoad(JSONNODE *masterData, uint32_t page
         set_json_64_bit_With_Status(pageInfo, "Number of Write commands from 50-100% of LBA space", vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames4, false, m_showStatusBits);		//!< Number of Write commands from 50-100% of LBA space for last 3 SMART Summary Frames 
     }
     json_push_back(masterData, pageInfo);
-
+#endif
     return SUCCESS;
 }
 
@@ -2116,6 +2328,38 @@ eReturnValues CSCSI_Farm_Log::print_Error_Information(JSONNODE *masterData, uint
     printf("\tFRU code if smart trip:                   %llu \n", vFarmFrame[page].errorPage.errorStat.FRUCode & 0x00FFFFFFFFFFFFFFLL);
     printf("\tSuper Parity on the Fly Recovery          %llu \n", vFarmFrame[page].errorPage.errorStat.parity & 0x00FFFFFFFFFFFFFFLL);
 #endif
+#if defined (PREPYTHON)
+    json_push_back(masterData, json_new_a("name", "farm_log"));
+    JSONNODE* label = json_new(JSON_NODE);
+    json_set_name(label, "labels");
+    json_push_back(label, json_new_a("stat_type", "error information"));
+    if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
+    {
+        json_push_back(label, json_new_a("page", "factory"));
+    }
+    else
+    {
+        json_push_back(label, json_new_i("page", page));
+    }
+    json_push_back(label, json_new_a("units", "count"));
+
+    json_push_back(label, json_new_i("Unrecoverable read errors", vFarmFrame[page].errorPage.errorStat.totalReadECC));							//!< Number of Unrecoverable Read Errors
+    json_push_back(label, json_new_i("Unrecoverable write errors", vFarmFrame[page].errorPage.errorStat.totalWriteECC));						//!< Number of Unrecoverable Write Errors
+    json_push_back(label, json_new_i("number of reallocated sectors", vFarmFrame[page].errorPage.errorStat.totalReallocations));				//!< Number of Reallocated Sectors
+    json_push_back(label, json_new_i("number of mechanical start failures", vFarmFrame[page].errorPage.errorStat.totalMechanicalFails));		//!< Number of Mechanical Start Failures
+    json_push_back(label, json_new_i("number of reallocated candidate sectors", vFarmFrame[page].errorPage.errorStat.totalReallocatedCanidates)); //!< Number of Reallocated Candidate Sectors
+    json_push_back(label, json_new_i("number of ioedc errors", vFarmFrame[page].errorPage.errorStat.attrIOEDCErrors));					//!< Number of IOEDC Errors (SMART Attribute 184 Raw)
+    json_push_back(label, json_new_i("total flash led events", vFarmFrame[page].errorPage.errorStat.totalFlashLED));				    //!< Total Flash LED (Assert) Events
+    json_push_back(label, json_new_i("smart trip fru code", vFarmFrame[page].errorPage.errorStat.FRUCode));		                                //!< FRU code if smart trip from most recent SMART Frame
+    json_push_back(label, json_new_i("super parity on the fly recovery", vFarmFrame[page].errorPage.errorStat.parity));                         //!< Super Parity on the Fly Recovery
+
+
+    snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, GENERAL_DRIVE_INFORMATION_06);
+    json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
+    json_push_back(masterData, label);
+    json_push_back(masterData, json_new_i("value", 0));
+
+#else
     if (vFarmFrame[page].errorPage.errorStat.copyNumber == FACTORYCOPY)
     {
         snprintf((char*)myStr.c_str(), BASIC, "Error Information From Farm Log copy FACTORY");
@@ -2137,7 +2381,7 @@ eReturnValues CSCSI_Farm_Log::print_Error_Information(JSONNODE *masterData, uint
     set_json_64_bit_With_Status(pageInfo, "Super Parity on the Fly Recovery", vFarmFrame[page].errorPage.errorStat.parity, false, m_showStatusBits);                      //!< Super Parity on the Fly Recovery
 
     json_push_back(masterData, pageInfo);
-
+#endif
     return SUCCESS;
 }
 
@@ -2198,6 +2442,42 @@ eReturnValues CSCSI_Farm_Log::print_Error_Information_Version_4(JSONNODE *master
     printf("\tPhy Reset Problem Port A                  %llu \n", vFarmFrame[page].errorPage.errorV4.portAPhyResetProblem & 0x00FFFFFFFFFFFFFFLL);
     printf("\tPhy Reset Problem Port B                  %llu \n", vFarmFrame[page].errorPage.errorV4.portBPhyResetProblem & 0x00FFFFFFFFFFFFFFLL);
 #endif
+#if defined (PREPYTHON)
+    json_push_back(masterData, json_new_a("name", "farm_log"));
+    JSONNODE* label = json_new(JSON_NODE);
+    json_set_name(label, "labels");
+    json_push_back(label, json_new_a("stat_type", "error information version 4"));
+    if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
+    {
+        json_push_back(label, json_new_a("page", "factory"));
+    }
+    else
+    {
+        json_push_back(label, json_new_i("page", page));
+    }
+    json_push_back(label, json_new_a("units", "count"));
+
+    json_push_back(label, json_new_i("unrecoverable read errors", vFarmFrame[page].errorPage.errorV4.totalReadECC));							//!< number of unrecoverable read errors
+    json_push_back(label, json_new_i("unrecoverable write errors", vFarmFrame[page].errorPage.errorV4.totalWriteECC));							//!< number of unrecoverable write errors
+    json_push_back(label, json_new_i("number of mechanical start failures", vFarmFrame[page].errorPage.errorV4.totalMechanicalFails));			//!< number of mechanical start failures
+    json_push_back(label, json_new_i("number of ioedc errors (raw)", vFarmFrame[page].errorPage.errorV4.attrIOEDCErrors));						//!< number of ioedc errors (smart attribute 184 raw)   
+    json_push_back(label, json_new_i("fru code if smart trip from most recent smart frame", vFarmFrame[page].errorPage.errorV4.FRUCode));		//!< fru code if smart trip from most recent smart frame
+    json_push_back(label, json_new_i("invalid dword count port a ", vFarmFrame[page].errorPage.errorV4.portAInvalidDwordCount));
+    json_push_back(label, json_new_i("invalid dword count port b", vFarmFrame[page].errorPage.errorV4.portBInvalidDwordCount));
+    json_push_back(label, json_new_i("disparity error count port a", vFarmFrame[page].errorPage.errorV4.portADisparityErrorCount));
+    json_push_back(label, json_new_i("disparity error count port b", vFarmFrame[page].errorPage.errorV4.portBDisparityErrorCount));
+    json_push_back(label, json_new_i("loss of dword sync port a", vFarmFrame[page].errorPage.errorV4.portALossDwordSync));
+    json_push_back(label, json_new_i("loss of dword sync port b", vFarmFrame[page].errorPage.errorV4.portBLossDwordSync));
+    json_push_back(label, json_new_i("phy reset problem port a", vFarmFrame[page].errorPage.errorV4.portAPhyResetProblem));
+    json_push_back(label, json_new_i("phy reset problem port b", vFarmFrame[page].errorPage.errorV4.portBPhyResetProblem));
+
+
+    snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, GENERAL_DRIVE_INFORMATION_06);
+    json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
+    json_push_back(masterData, label);
+    json_push_back(masterData, json_new_i("value", 0));
+
+#else
     if (vFarmFrame[page].errorPage.errorV4.copyNumber == FACTORYCOPY)
     {
         snprintf((char*)myStr.c_str(), BASIC, "Error Information From Farm Log copy FACTORY");
@@ -2223,7 +2503,7 @@ eReturnValues CSCSI_Farm_Log::print_Error_Information_Version_4(JSONNODE *master
     set_json_64_bit_With_Status(pageInfo, "Phy Reset Problem Port B", vFarmFrame[page].errorPage.errorV4.portBPhyResetProblem, false, m_showStatusBits);
 
     json_push_back(masterData, pageInfo);
-
+#endif
     return SUCCESS;
 }
 //-----------------------------------------------------------------------------
@@ -2282,6 +2562,68 @@ eReturnValues CSCSI_Farm_Log::print_Enviroment_Information(JSONNODE *masterData,
     printf("\5v Power Min(mw):                          %" PRIu64" \n", vFarmFrame[page].environmentPage.min5v & 0x00FFFFFFFFFFFFFFLL);				
     printf("\5v Power Max(mw):                          %" PRIu64" \n", vFarmFrame[page].environmentPage.max5v & 0x00FFFFFFFFFFFFFFLL);	
 #endif
+
+#if defined (PREPYTHON)
+    json_push_back(masterData, json_new_a("name", "farm_log"));
+    JSONNODE* label = json_new(JSON_NODE);
+    json_set_name(label, "labels");
+    json_push_back(label, json_new_a("stat_type", "environment information"));
+    if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
+    {
+        json_push_back(label, json_new_a("page", "factory"));
+    }
+    else
+    {
+        json_push_back(label, json_new_i("page", page));
+    }
+    json_push_back(label, json_new_a("units", "count"));
+
+    snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.curentTemp)) * .10));							//!< Current Temperature in Celsius
+    json_push_back(label, json_new_a("current temperature (celsius)", (char*)myStr.c_str()));
+    snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.highestTemp)) * .10));						//!< Highest Average Long Term Temperature
+    json_push_back(label, json_new_a("highest temperature", (char*)myStr.c_str()));
+    snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.lowestTemp)) * .10));							//!< Lowest Average Long Term Temperature
+    json_push_back(label, json_new_a("lowest temperature", (char*)myStr.c_str()));
+    snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.maxTemp)) * 1.00));							//!< Specified Max Operating Temperature
+    json_push_back(label, json_new_a("specified max operating temperature", (char*)myStr.c_str()));
+    snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.minTemp)) * 1.00));							//!< Specified Min Operating Temperature
+    json_push_back(label, json_new_a("specified min operating temperature", (char*)myStr.c_str()));
+    snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.humidity)) * 0.1));							//!< Current Relative Humidity (in units of .1%)
+    json_push_back(label, json_new_a("current relative humidity", (char*)myStr.c_str()));
+    snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.humidityRatio)) / 8.0));						//!< Humidity Mixed Ratio multiplied by 8 (divide by 8 to get actual value)
+    json_push_back(label, json_new_a("humidity mixed ratio", (char*)myStr.c_str()));
+    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16"", M_Word0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.currentMotorPower)));
+    json_push_back(label, json_new_i("current motor power", M_Word0(vFarmFrame[page].environmentPage.currentMotorPower)));					    //!< Current Motor Power, value from most recent SMART Summary Frame6
+    
+    if (m_MajorRev >= 4)
+    {
+        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.average12v)) / 1000), \
+            static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.average12v)) % 1000));
+        json_push_back(label, json_new_a("12V Power Average", (char*)myStr.c_str()));
+        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.min12v)) / 1000), \
+            static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.min12v)) % 1000));
+        json_push_back(label, json_new_a("12V Power Minimum", (char*)myStr.c_str()));
+        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.max12v)) / 1000), \
+            static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.max12v)) % 1000));
+        json_push_back(label, json_new_a("12V Power Maximum", (char*)myStr.c_str()));
+
+        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.average5v)) / 1000), \
+            static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.average5v)) % 1000));
+        json_push_back(label, json_new_a("5V Power Average", (char*)myStr.c_str()));
+        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.min5v)) / 1000), \
+            static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.min5v)) % 1000));
+        json_push_back(label, json_new_a("5V Power Minimum", (char*)myStr.c_str()));
+        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.max5v)) / 1000), \
+            static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.max5v)) % 1000));
+        json_push_back(label, json_new_a("5V power maximum", (char*)myStr.c_str()));
+    }
+
+
+    snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, ENVIRONMENTAL_STATISTICS_PARAMETER);
+    json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
+    json_push_back(masterData, label);
+    json_push_back(masterData, json_new_i("value", 0));
+#else
     if (vFarmFrame[page].environmentPage.copyNumber == FACTORYCOPY)
     {
         snprintf((char*)myStr.c_str(), BASIC, "Environment Information From Farm Log copy FACTORY");
@@ -2333,7 +2675,7 @@ eReturnValues CSCSI_Farm_Log::print_Enviroment_Information(JSONNODE *masterData,
     }
 
     json_push_back(masterData, pageInfo);
-
+#endif
     return SUCCESS;
 }
 //-----------------------------------------------------------------------------
@@ -2373,6 +2715,50 @@ eReturnValues CSCSI_Farm_Log::print_Enviroment_Statistics_Page_07(JSONNODE *mast
     printf("\tMinimum 5 volts:                          %" PRIu64" \n", vFarmFrame[page].envStatPage07.min5v & 0x00FFFFFFFFFFFFFFLL);
     printf("\tMaximum 5 volts:                          %" PRIu64" \n", vFarmFrame[page].envStatPage07.max5v & 0x00FFFFFFFFFFFFFFLL);
 #endif
+#if defined (PREPYTHON)
+    json_push_back(masterData, json_new_a("name", "farm_log"));
+    JSONNODE* label = json_new(JSON_NODE);
+    json_set_name(label, "labels");
+    json_push_back(label, json_new_a("stat_type", "environment information"));
+    if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
+    {
+        json_push_back(label, json_new_a("page", "factory"));
+    }
+    else
+    {
+        json_push_back(label, json_new_i("page", page));
+    }
+    json_push_back(label, json_new_a("units", "count"));
+
+
+    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", static_cast<uint16_t>(M_Word0(check_Status_Strip_Status(vFarmFrame[page].envStatPage07.average12v)) / 1000), \
+        static_cast<uint16_t>(M_Word0(check_Status_Strip_Status(vFarmFrame[page].envStatPage07.average12v)) % 1000));
+    json_push_back(label, json_new_a("current 12 volts", (char*)myStr.c_str()));
+ 
+    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", static_cast<uint16_t>(M_Word0(check_Status_Strip_Status(vFarmFrame[page].envStatPage07.min12v)) / 1000), \
+        static_cast<uint16_t>(M_Word0(check_Status_Strip_Status(vFarmFrame[page].envStatPage07.min12v)) % 1000));
+    json_push_back(label, json_new_a("Minimum 12 volts", (char*)myStr.c_str()));
+    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", static_cast<uint16_t>(M_Word0(check_Status_Strip_Status(vFarmFrame[page].envStatPage07.max12v)) / 1000), \
+        static_cast<uint16_t>(M_Word0(check_Status_Strip_Status(vFarmFrame[page].envStatPage07.max12v)) % 1000));
+    json_push_back(label, json_new_a("Maximum 12 volts", (char*)myStr.c_str()));
+
+    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", (M_Word0(check_Status_Strip_Status(vFarmFrame[page].envStatPage07.average5v)) / 1000), \
+        static_cast<uint16_t>(M_Word0(check_Status_Strip_Status(vFarmFrame[page].envStatPage07.average5v)) % 1000));
+    json_push_back(label, json_new_a("Current 5 volts", (char*)myStr.c_str()));
+    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", (M_Word0(check_Status_Strip_Status(vFarmFrame[page].envStatPage07.min5v)) / 1000), \
+        M_Word0(check_Status_Strip_Status(vFarmFrame[page].envStatPage07.min5v)) % 1000);
+    json_push_back(label, json_new_a("Minimum 5 volts", (char*)myStr.c_str()));
+    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", (M_Word0(check_Status_Strip_Status(vFarmFrame[page].envStatPage07.max5v)) / 1000), \
+        M_Word0(check_Status_Strip_Status(vFarmFrame[page].envStatPage07.max5v)) % 1000);
+    json_push_back(label, json_new_a("Maximum 5 volts", (char*)myStr.c_str()));
+    
+
+
+    snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, ENVIRONMENT_STATISTICS_PAMATER_07);
+    json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
+    json_push_back(masterData, label);
+    json_push_back(masterData, json_new_i("value", 0));
+#else
     if (vFarmFrame[page].envStatPage07.copyNumber == FACTORYCOPY)
     {
         snprintf((char*)myStr.c_str(), BASIC, "Environment Information Continued From Farm Log copy FACTORY");
@@ -2404,7 +2790,7 @@ eReturnValues CSCSI_Farm_Log::print_Enviroment_Statistics_Page_07(JSONNODE *mast
     set_json_string_With_Status(pageInfo, "Maximum 5 volts", (char*)myStr.c_str(), vFarmFrame[page].envStatPage07.max5v, m_showStatusBits);
     
     json_push_back(masterData, pageInfo);
-
+#endif
     return SUCCESS;
 }
 //-----------------------------------------------------------------------------
@@ -2427,9 +2813,10 @@ eReturnValues CSCSI_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint3
     std::string myStr = " ";
     myStr.resize(BASIC);
     JSONNODE *pageInfo = json_new(JSON_NODE);
+    
+#if defined _DEBUG
     if (m_MajorRev < 4)
     {
-#if defined _DEBUG
         if (vFarmFrame[page].reliPage.reli.copyNumber == FACTORYCOPY)
         {
             printf("Reliability Information From Farm Log copy FACTORY");
@@ -2465,8 +2852,83 @@ eReturnValues CSCSI_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint3
         printf("\tRV Absolute Mean:                         %" PRIu64" \n", vFarmFrame[page].reliPage.reli.rvAbsoluteMean & 0x00FFFFFFFFFFFFFFLL);					//!< RV Absulute Mean
         printf("\tMax RV absolute Mean:                     %" PRIu64" \n", vFarmFrame[page].reliPage.reli.maxRVAbsoluteMean & 0x00FFFFFFFFFFFFFFLL);				//!< Max RV absulute Mean
         printf("\tIdle Time value from the most recent SMART Summary Frame:     %" PRIu64" \n", vFarmFrame[page].reliPage.reli.idleTime & 0x00FFFFFFFFFFFFFFLL);		//!< idle Time value from the most recent SMART Summary Frame
-
+    }
 #endif
+#if defined (PREPYTHON)
+    if (m_MajorRev < 4)
+    {
+        json_push_back(masterData, json_new_a("name", "farm_log"));
+        JSONNODE* label = json_new(JSON_NODE);
+        json_set_name(label, "labels");
+        json_push_back(label, json_new_a("stat_type", "reliability information"));
+        if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
+        {
+            json_push_back(label, json_new_a("page", "factory"));
+        }
+        else
+        {
+            json_push_back(label, json_new_i("page", page));
+        }
+        json_push_back(label, json_new_a("units", "count"));
+
+
+        json_push_back(label, json_new_i("timestamp of last idd test", vFarmFrame[page].reliPage.reli.lastIDDTest));							//!< Timestamp of last IDD test
+        json_push_back(label, json_new_i("sub-command of Last idd test", vFarmFrame[page].reliPage.reli.cmdLastIDDTest));						//!< Sub-command of last IDD test
+        json_push_back(label, json_new_i("number of reallocated sector reclamations", vFarmFrame[page].reliPage.reli.gListReclamed));			//!< Number of G-List Reclamations 
+        json_push_back(label, json_new_i("servo status", vFarmFrame[page].reliPage.reli.servoStatus));											//!< Servo Status (follows standard DST error code definitions)
+        json_push_back(label, json_new_i("number of slipped sectors before idd scan", vFarmFrame[page].reliPage.reli.altsBeforeIDD));			//!< Number of Alt List Entries Before IDD Scan
+        json_push_back(label, json_new_i("number of slipped sectors after idd scan", vFarmFrame[page].reliPage.reli.altsAfterIDD));				//!< Number of Alt List Entries After IDD Scan
+        json_push_back(label, json_new_i("number of resident reallocated sectors before idd scan", vFarmFrame[page].reliPage.reli.gListBeforIDD));				//!< Number of Resident G-List Entries Before IDD Scan
+        json_push_back(label, json_new_i("number of resident reallocated sectors after idd scan", vFarmFrame[page].reliPage.reli.gListAfterIDD));				//!< Number of Resident G-List Entries After IDD Scan
+        json_push_back(label, json_new_i("number of successfully scrubbed sectors before idd scan", vFarmFrame[page].reliPage.reli.scrubsBeforeIDD));			//!< Number of Scrub List Entries Before IDD Scan
+        json_push_back(label, json_new_i("number of successfully scrubbed sectors after idd scan", vFarmFrame[page].reliPage.reli.scrubsAfterIDD));				//!< Number of Scrub List Entries After IDD Scan
+        json_push_back(label, json_new_i("number of dos scans performed", vFarmFrame[page].reliPage.reli.numberDOSScans));						//!< Number of DOS Scans Performed
+        json_push_back(label, json_new_i("number of lbas corrected by isp", vFarmFrame[page].reliPage.reli.numberLBACorrect));					//!< Number of LBAs Corrected by ISP
+        json_push_back(label, json_new_i("number of valid parity sectors", vFarmFrame[page].reliPage.reli.numberValidParitySec));				//!< Number of Valid Parity Sectors
+        json_push_back(label, json_new_i("number of raw operations", vFarmFrame[page].reliPage.reli.numberRAWops));								//!< Number of RAW Operations
+        json_push_back(label, json_new_i("micro actuator lock-out accumulated", vFarmFrame[page].reliPage.reli.microActuatorLockOut));			//!< Micro Actuator Lock-out, head mask accumulated over last 3 Summary Frames8
+        json_push_back(label, json_new_i("number of disc slip recalibrations performed", vFarmFrame[page].reliPage.reli.diskSlipRecalPerformed));	            //!< Number of disc slip recalibrations performed
+        json_push_back(label, json_new_i("helium pressure threshold trip", vFarmFrame[page].reliPage.reli.heliumPressuretThreshold));			//!< helium Pressure Threshold Trip
+        json_push_back(label, json_new_i("rv absolute mean", vFarmFrame[page].reliPage.reli.rvAbsoluteMean));									//!< RV Absulute Mean
+        json_push_back(label, json_new_i("max rv absolute mean", vFarmFrame[page].reliPage.reli.maxRVAbsoluteMean));							//!< Max RV absulute Mean
+        json_push_back(label, json_new_i("idle time value from the most recent smart summary frame", vFarmFrame[page].reliPage.reli.idleTime));	//!< idle Time value from the most recent SMART Summary Frame
+
+        snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, RELIABILITY_STATISTICS_PARAMETER);
+        json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
+        json_push_back(masterData, label);
+        json_push_back(masterData, json_new_i("value", 0));
+    }
+    else
+    {
+        json_push_back(masterData, json_new_a("name", "farm_log"));
+        JSONNODE* label = json_new(JSON_NODE);
+        json_set_name(label, "labels");
+        json_push_back(label, json_new_a("stat_type", "reliability information"));
+        if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
+        {
+            json_push_back(label, json_new_a("page", "factory"));
+        }
+        else
+        {
+            json_push_back(label, json_new_i("page", page));
+        }
+        json_push_back(label, json_new_a("units", "count"));
+
+        json_push_back(label, json_new_i("number of raw operations", vFarmFrame[page].reliPage.reli4.numberRAWops));								//!< Number of RAW Operations
+        json_push_back(label, json_new_i("cumulative lifetime ecc due to erc", vFarmFrame[page].reliPage.reli4.cumECCDueToERC));
+        json_push_back(label, json_new_i("micro actuator lock-out accumulated", vFarmFrame[page].reliPage.reli4.microActuatorLockOut));			//!< Micro Actuator Lock-out, head mask accumulated over last 3 Summary Frames8
+        json_push_back(label, json_new_i("number of disc slip recalibrations performed", vFarmFrame[page].reliPage.reli4.diskSlipRecalPerformed));	            //!< Number of disc slip recalibrations performed
+        json_push_back(label, json_new_i("helium pressure threshold tripped", vFarmFrame[page].reliPage.reli4.heliumPressuretThreshold));			//!< helium Pressure Threshold Trip
+
+        snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, RELIABILITY_STATISTICS_PARAMETER);
+        json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
+        json_push_back(masterData, label);
+        json_push_back(masterData, json_new_i("value", 0));
+    }
+
+#else
+    if (m_MajorRev < 4)
+    {
         if (vFarmFrame[page].reliPage.reli.copyNumber == FACTORYCOPY)
         {
             snprintf((char*)myStr.c_str(), BASIC, "Reliability Information From Farm Log copy FACTORY");
@@ -2554,8 +3016,9 @@ eReturnValues CSCSI_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint3
         set_json_64_bit_With_Status(pageInfo, "Number of Disc Slip Recalibrations Performed", vFarmFrame[page].reliPage.reli4.diskSlipRecalPerformed, false, m_showStatusBits);	            //!< Number of disc slip recalibrations performed
         set_json_64_bit_With_Status(pageInfo, "Helium Pressure Threshold Tripped", vFarmFrame[page].reliPage.reli4.heliumPressuretThreshold, false, m_showStatusBits);			//!< helium Pressure Threshold Trip
     }
-    json_push_back(masterData, pageInfo);
 
+    json_push_back(masterData, pageInfo);
+#endif
     return SUCCESS;
 }
 //-----------------------------------------------------------------------------
@@ -2614,7 +3077,33 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "Disc Slip in micro-inches for Head %" PRIu32"", loopCount); // Head count
                 snprintf((char*)myStr.c_str(), BASIC, "%" PRIi16".%04.0f", whole,decimal);                                      //!< Disc Slip in micro-inches by Head
+                
+#if defined (PREPYTHON)
+                snprintf((char*)myHeader.c_str(), BASIC, "disc_Slip_in_micro-inches_for_head_%" PRIu32"", loopCount); // Head count
+                json_push_back(headPage, json_new_a("name", (char*)myHeader.c_str()));
+                JSONNODE* label = json_new(JSON_NODE);
+                json_set_name(label, "labels");
+                json_push_back(label, json_new_a("stat_type", "head information"));
+                if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
+                {
+                    json_push_back(label, json_new_a("page", "factory"));
+                }
+                else
+                {
+                    json_push_back(label, json_new_i("page", page));
+                }
+                json_push_back(label, json_new_a("units", "micro-inches"));
+
+                snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, DISC_SLIP_IN_MICRO_INCHES_BY_HEAD);
+                json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
+                json_push_back(headPage, label);
+
+                snprintf((char*)myStr.c_str(), BASIC, "%" PRIi16".%04.0f", whole, decimal);                                      //!< Disc Slip in micro-inches by Head
+
+                json_push_back(headPage, json_new_a("value", (char*)myStr.c_str()));
+#else
                 set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].discSlipPerHead.headValue[loopCount], m_showStatusBits);
+#endif
             }
             break;
         case BIT_ERROR_RATE_OF_ZONE_0_BY_DRIVE_HEAD:
@@ -2628,8 +3117,33 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tBit Error Rate of Zone 0 by Head %" PRIu32":  raw 0x%" PRIx64", %" PRIi16".%04.0f \n", loopCount, vFarmFrame[page].bitErrorRateByHead.headValue[loopCount], whole, decimal);  //!< Bit Error Rate of Zone 0 by Drive Head
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "Bit Error Rate of Zone 0 for Head %" PRIu32"", loopCount); // Head count
-                snprintf((char*)myStr.c_str(), BASIC, "%" PRIi16".%04.0f", whole, decimal);                                     //!< Bit Error Rate of Zone 0 by Drive Head
+                snprintf((char*)myStr.c_str(), BASIC, "%" PRIi16".%04.0f", whole, decimal);   
+#if defined (PREPYTHON)
+                snprintf((char*)myHeader.c_str(), BASIC, "bit_error_rate_of_zone_0_by_head_%" PRIu32"", loopCount); // Head count
+                json_push_back(headPage, json_new_a("name", (char*)myHeader.c_str()));
+                JSONNODE* label = json_new(JSON_NODE);
+                json_set_name(label, "labels");
+                json_push_back(label, json_new_a("stat_type", "head information"));
+                if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
+                {
+                    json_push_back(label, json_new_a("page", "factory"));
+                }
+                else
+                {
+                    json_push_back(label, json_new_i("page", page));
+                }
+                json_push_back(label, json_new_a("units", "ber"));
+
+                snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, BIT_ERROR_RATE_OF_ZONE_0_BY_DRIVE_HEAD);
+                json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
+                json_push_back(headPage, label);
+                //snprintf((char*)myHeader.c_str(), BASIC, "bit error rate of zone 0 for Head %" PRIu32"", loopCount); // Head count
+                snprintf((char*)myStr.c_str(), BASIC, "%" PRIi16".%04.0f", whole, decimal);
+
+                json_push_back(headPage, json_new_a("value", (char*)myStr.c_str()));    
+#else
                 set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].bitErrorRateByHead.headValue[loopCount], m_showStatusBits);
+#endif
             }
             break;
         case DOS_WRITE_REFRESH_COUNT:
@@ -2639,7 +3153,31 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tDOS Write Refresh Count by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].dosWriteRefreshCountByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< DOS Write Refresh Count
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "DOS Write Refresh Count for Head %" PRIu32"", loopCount); // Head count
+#if defined (PREPYTHON)
+                snprintf((char*)myHeader.c_str(), BASIC, "dos_write_refresh_count_for_head_%" PRIu32"", loopCount); // Head count
+                json_push_back(headPage, json_new_a("name", (char*)myHeader.c_str()));
+                JSONNODE* label = json_new(JSON_NODE);
+                json_set_name(label, "labels");
+                json_push_back(label, json_new_a("stat_type", "head information"));
+                if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
+                {
+                    json_push_back(label, json_new_a("page", "factory"));
+                }
+                else
+                {
+                    json_push_back(label, json_new_i("page", page));
+                }
+                json_push_back(label, json_new_a("units", "count"));
+
+                snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, DOS_WRITE_REFRESH_COUNT);
+                json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
+                json_push_back(headPage, label);
+                //snprintf((char*)myHeader.c_str(), BASIC, "bit error rate of zone 0 for Head %" PRIu32"", loopCount); // Head count
+                
+                json_push_back(headPage, json_new_i("value", vFarmFrame[page].dosWriteRefreshCountByHead.headValue[loopCount]));
+#else
                 set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].dosWriteRefreshCountByHead.headValue[loopCount], false, m_showStatusBits);  //!< DOS Write Refresh Count
+#endif
             }
             break;
         case DVGA_SKIP_WRITE_DETECT_BY_HEAD:
@@ -2649,7 +3187,30 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tDVGA Skip Write 0 by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].dvgaSkipWriteDetectByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< DVGA Skip Write
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "DVGA Skip Write Detect for Head %" PRIu32"", loopCount); // Head count
+#if defined (PREPYTHON)
+                snprintf((char*)myHeader.c_str(), BASIC, "dvga_skip_write_detect_for_head_%" PRIu32"", loopCount); // Head count
+                json_push_back(headPage, json_new_a("name", (char*)myHeader.c_str()));
+                JSONNODE* label = json_new(JSON_NODE);
+                json_set_name(label, "labels");
+                json_push_back(label, json_new_a("stat_type", "head information"));
+                if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
+                {
+                    json_push_back(label, json_new_a("page", "factory"));
+                }
+                else
+                {
+                    json_push_back(label, json_new_i("page", page));
+                }
+                json_push_back(label, json_new_a("units", "count"));
+
+                snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, DVGA_SKIP_WRITE_DETECT_BY_HEAD);
+                json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
+                json_push_back(headPage, label);
+
+                json_push_back(headPage, json_new_i("value", vFarmFrame[page].dvgaSkipWriteDetectByHead.headValue[loopCount]));
+#else
                 set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].dvgaSkipWriteDetectByHead.headValue[loopCount], false, m_showStatusBits); //!< DVGA Skip Write
+#endif
             }
             break;
         case RVGA_SKIP_WRITE_DETECT_BY_HEAD:
@@ -2659,7 +3220,30 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tRVGA Skip Write 0 by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].rvgaSkipWriteDetectByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< RVGA Skip Write
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "RVGA Skip Write Detect for Head %" PRIu32"", loopCount); // Head count
+#if defined (PREPYTHON)
+                snprintf((char*)myHeader.c_str(), BASIC, "rvga_skip_write_detect_for_head_%" PRIu32"", loopCount); // Head count
+                json_push_back(headPage, json_new_a("name", (char*)myHeader.c_str()));
+                JSONNODE* label = json_new(JSON_NODE);
+                json_set_name(label, "labels");
+                json_push_back(label, json_new_a("stat_type", "head information"));
+                if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
+                {
+                    json_push_back(label, json_new_a("page", "factory"));
+                }
+                else
+                {
+                    json_push_back(label, json_new_i("page", page));
+                }
+                json_push_back(label, json_new_a("units", "count"));
+
+                snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, RVGA_SKIP_WRITE_DETECT_BY_HEAD);
+                json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
+                json_push_back(headPage, label);
+
+                json_push_back(headPage, json_new_i("value", vFarmFrame[page].rvgaSkipWriteDetectByHead.headValue[loopCount]));
+#else
                 set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].rvgaSkipWriteDetectByHead.headValue[loopCount], false, m_showStatusBits); //!< RVGA Skip Write
+#endif
             }
             break;
         case FVGA_SKIP_WRITE_DETECT_BY_HEAD:
@@ -2669,7 +3253,30 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tFVGA Skip Write 0 by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fvgaSkipWriteDetectByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< FVGA Skip Write 
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "FVGA Skip Write Detect for Head %" PRIu32"", loopCount); // Head count
+#if defined (PREPYTHON)
+                snprintf((char*)myHeader.c_str(), BASIC, "fvga_skip_write_detect_for_head_%" PRIu32"", loopCount); // Head count
+                json_push_back(headPage, json_new_a("name", (char*)myHeader.c_str()));
+                JSONNODE* label = json_new(JSON_NODE);
+                json_set_name(label, "labels");
+                json_push_back(label, json_new_a("stat_type", "head information"));
+                if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
+                {
+                    json_push_back(label, json_new_a("page", "factory"));
+                }
+                else
+                {
+                    json_push_back(label, json_new_i("page", page));
+                }
+                json_push_back(label, json_new_a("units", "count"));
+
+                snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, RVGA_SKIP_WRITE_DETECT_BY_HEAD);
+                json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
+                json_push_back(headPage, label);
+
+                json_push_back(headPage, json_new_i("value", vFarmFrame[page].fvgaSkipWriteDetectByHead.headValue[loopCount]));
+#else
                 set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].fvgaSkipWriteDetectByHead.headValue[loopCount], false, m_showStatusBits); //!< FVGA Skip Write 
+#endif
             }
             break;
         case SKIP_WRITE_DETECT_THRESHOLD_EXCEEDED_COUNT_BY_HEAD:
@@ -2679,7 +3286,30 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tSkip Write Detect Threshold Exceeded Count by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].skipWriteDectedThresholdExceededByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Skip Write Detect Threshold Exceeded Count
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "Skip Write Detect Threshold Exceeded for Head %" PRIu32"", loopCount); // Head count
+#if defined (PREPYTHON)
+                snprintf((char*)myHeader.c_str(), BASIC, "skip_write_detect_threshold_exceeded_for_head_%" PRIu32"", loopCount); // Head count
+                json_push_back(headPage, json_new_a("name", (char*)myHeader.c_str()));
+                JSONNODE* label = json_new(JSON_NODE);
+                json_set_name(label, "labels");
+                json_push_back(label, json_new_a("stat_type", "head information"));
+                if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
+                {
+                    json_push_back(label, json_new_a("page", "factory"));
+                }
+                else
+                {
+                    json_push_back(label, json_new_i("page", page));
+                }
+                json_push_back(label, json_new_a("units", "count"));
+
+                snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, SKIP_WRITE_DETECT_THRESHOLD_EXCEEDED_COUNT_BY_HEAD);
+                json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
+                json_push_back(headPage, label);
+
+                json_push_back(headPage, json_new_i("value", vFarmFrame[page].skipWriteDectedThresholdExceededByHead.headValue[loopCount]));
+#else
                 set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].skipWriteDectedThresholdExceededByHead.headValue[loopCount], false, m_showStatusBits);  //!< Skip Write Detect Threshold Exceeded Count
+#endif
             }
             break;
         case ACFF_SINE_1X_VALUE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD:
@@ -2690,7 +3320,30 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "ACFF Sine 1X for Head %" PRIu32"", loopCount); // Head count
                 snprintf((char*)myStr.c_str(), BASIC, "%" PRIi8"", static_cast<int8_t>(check_for_signed_int(M_Byte0(check_Status_Strip_Status(vFarmFrame[page].acffSine1xValueByHead.headValue[loopCount])), 8)) * 16);
+#if defined (PREPYTHON)
+                snprintf((char*)myHeader.c_str(), BASIC, "acff_sine_1x_for_head_%" PRIu32"", loopCount); // Head count
+                json_push_back(headPage, json_new_a("name", (char*)myHeader.c_str()));
+                JSONNODE* label = json_new(JSON_NODE);
+                json_set_name(label, "labels");
+                json_push_back(label, json_new_a("stat_type", "head information"));
+                if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
+                {
+                    json_push_back(label, json_new_a("page", "factory"));
+                }
+                else
+                {
+                    json_push_back(label, json_new_i("page", page));
+                }
+                json_push_back(label, json_new_a("units", "count"));
+
+                snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, ACFF_SINE_1X_VALUE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD);
+                json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
+                json_push_back(headPage, label);
+                snprintf((char*)myStr.c_str(), BASIC, "%" PRIi8"", static_cast<int8_t>(check_for_signed_int(M_Byte0(check_Status_Strip_Status(vFarmFrame[page].acffSine1xValueByHead.headValue[loopCount])), 8)) * 16);
+                json_push_back(headPage, json_new_a("value", (char*)myStr.c_str()));
+#else
                 set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].acffSine1xValueByHead.headValue[loopCount], m_showStatusBits);  //!< ACFF Sine 1X, value from most recent SMART Summary Frame
+#endif
             }
             break;
         case ACFF_COSINE_1X_VALUE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD:
@@ -2701,7 +3354,30 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "ACFF Cosine 1X for Head %" PRIu32"", loopCount); // Head count
                 snprintf((char*)myStr.c_str(), BASIC, "%" PRIi8"", (static_cast<int8_t>(check_for_signed_int(M_Byte0(check_Status_Strip_Status(vFarmFrame[page].acffCosine1xValueByHead.headValue[loopCount])), 8)) * 16));
+#if defined (PREPYTHON)
+                snprintf((char*)myHeader.c_str(), BASIC, "acff_cosine_1x_for_head_%" PRIu32"", loopCount); // Head count
+                json_push_back(headPage, json_new_a("name", (char*)myHeader.c_str()));
+                JSONNODE* label = json_new(JSON_NODE);
+                json_set_name(label, "labels");
+                json_push_back(label, json_new_a("stat_type", "head information"));
+                if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
+                {
+                    json_push_back(label, json_new_a("page", "factory"));
+                }
+                else
+                {
+                    json_push_back(label, json_new_i("page", page));
+                }
+                json_push_back(label, json_new_a("units", "count"));
+
+                snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, ACFF_COSINE_1X_VALUE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD);
+                json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
+                json_push_back(headPage, label);
+                snprintf((char*)myStr.c_str(), BASIC, "%" PRIi8"", (static_cast<int8_t>(check_for_signed_int(M_Byte0(check_Status_Strip_Status(vFarmFrame[page].acffCosine1xValueByHead.headValue[loopCount])), 8)) * 16));
+                json_push_back(headPage, json_new_a("value", (char*)myStr.c_str()));
+#else
                 set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].acffCosine1xValueByHead.headValue[loopCount], m_showStatusBits);  //!< ACFF Cosine 1X, value from most recent SMART Summary Frame
+#endif
             }
             break;
         case PZT_CALIBRATION_VALUE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD:
@@ -2711,7 +3387,30 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tPZT Calibration for Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].pztCalibrationValueByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< PZT Calibration, value from most recent SMART Summary Frame
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "PZT Calibration for Head %" PRIu32"", loopCount); // Head count
+#if defined (PREPYTHON)
+                snprintf((char*)myHeader.c_str(), BASIC, "pzt_calibration_for_head_%" PRIu32"", loopCount); // Head count
+                json_push_back(headPage, json_new_a("name", (char*)myHeader.c_str()));
+                JSONNODE* label = json_new(JSON_NODE);
+                json_set_name(label, "labels");
+                json_push_back(label, json_new_a("stat_type", "head information"));
+                if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
+                {
+                    json_push_back(label, json_new_a("page", "factory"));
+                }
+                else
+                {
+                    json_push_back(label, json_new_i("page", page));
+                }
+                json_push_back(label, json_new_a("units", "count"));
+
+                snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, PZT_CALIBRATION_VALUE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD);
+                json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
+                json_push_back(headPage, label);
+
+                json_push_back(headPage, json_new_i("value", vFarmFrame[page].pztCalibrationValueByHead.headValue[loopCount]));
+#else
                 set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].pztCalibrationValueByHead.headValue[loopCount], false, m_showStatusBits);  //!< PZT Calibration, value from most recent SMART SummaryFrame
+#endif
             }
             break;
         case MR_HEAD_RESISTANCE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD:
@@ -2721,7 +3420,30 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tMR Head Resistance for Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].mrHeadResistanceByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< MR Head Resistance from most recent SMART Summary Frame
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "MR Head Resistance for Head %" PRIu32"", loopCount); // Head count
+#if defined (PREPYTHON)
+                snprintf((char*)myHeader.c_str(), BASIC, "mr_head_resistance_for_head_%" PRIu32"", loopCount); // Head count
+                json_push_back(headPage, json_new_a("name", (char*)myHeader.c_str()));
+                JSONNODE* label = json_new(JSON_NODE);
+                json_set_name(label, "labels");
+                json_push_back(label, json_new_a("stat_type", "head information"));
+                if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
+                {
+                    json_push_back(label, json_new_a("page", "factory"));
+                }
+                else
+                {
+                    json_push_back(label, json_new_i("page", page));
+                }
+                json_push_back(label, json_new_a("units", "count"));
+
+                snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, MR_HEAD_RESISTANCE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD);
+                json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
+                json_push_back(headPage, label);
+
+                json_push_back(headPage, json_new_i("value", vFarmFrame[page].mrHeadResistanceByHead.headValue[loopCount]));
+#else
                 set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].mrHeadResistanceByHead.headValue[loopCount], false, m_showStatusBits);  //!< MR Head Resistance from most recent SMART Summary Frame
+#endif
             }
             break;
         case NUMBER_OF_TMD_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD:
@@ -2731,7 +3453,30 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tNumber of TMD for Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].numberOfTMDByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Number of TMD over last 3 SMART Summary Frame
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "Number of TMD for Head %" PRIu32"", loopCount); // Head count
+#if defined (PREPYTHON)
+                snprintf((char*)myHeader.c_str(), BASIC, "number_of_tmd_for_head_%" PRIu32"", loopCount); // Head count
+                json_push_back(headPage, json_new_a("name", (char*)myHeader.c_str()));
+                JSONNODE* label = json_new(JSON_NODE);
+                json_set_name(label, "labels");
+                json_push_back(label, json_new_a("stat_type", "head information"));
+                if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
+                {
+                    json_push_back(label, json_new_a("page", "factory"));
+                }
+                else
+                {
+                    json_push_back(label, json_new_i("page", page));
+                }
+                json_push_back(label, json_new_a("units", "count"));
+
+                snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, NUMBER_OF_TMD_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD);
+                json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
+                json_push_back(headPage, label);
+
+                json_push_back(headPage, json_new_i("value", vFarmFrame[page].numberOfTMDByHead.headValue[loopCount]));
+#else
                 set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].numberOfTMDByHead.headValue[loopCount], false, m_showStatusBits);  //!< Number of TMD over last 3 SMART Summary Frame
+#endif
             }
             break;
         case VELOCITY_OBSERVER_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD:
@@ -2741,7 +3486,30 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tVelocity Observer by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].velocityObserverByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Velocity Observer over last 3 SMART Summary Frame
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "Velocity Observer by Head %" PRIu32"", loopCount); // Head count
+#if defined (PREPYTHON)
+                snprintf((char*)myHeader.c_str(), BASIC, "velocity_observer_by_head_%" PRIu32"", loopCount); // Head count
+                json_push_back(headPage, json_new_a("name", (char*)myHeader.c_str()));
+                JSONNODE* label = json_new(JSON_NODE);
+                json_set_name(label, "labels");
+                json_push_back(label, json_new_a("stat_type", "head information"));
+                if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
+                {
+                    json_push_back(label, json_new_a("page", "factory"));
+                }
+                else
+                {
+                    json_push_back(label, json_new_i("page", page));
+                }
+                json_push_back(label, json_new_a("units", "count"));
+
+                snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, VELOCITY_OBSERVER_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD);
+                json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
+                json_push_back(headPage, label);
+
+                json_push_back(headPage, json_new_i("value", vFarmFrame[page].velocityObserverByHead.headValue[loopCount]));
+#else
                 set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].velocityObserverByHead.headValue[loopCount], false, m_showStatusBits); //!< Velocity Observer over last 3 SMART Summary Frame
+#endif
             }
             break;
         case NUMBER_OF_VELOCITY_OBSERVER_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD:
@@ -2751,7 +3519,30 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tNumber of Velocity Observer by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].numberOfVelocityObservedByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Number of Velocity Observer over last 3 SMART Summary Frame
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "Number of Velocity Observer by Head %" PRIu32"", loopCount); // Head count
+#if defined (PREPYTHON)
+                snprintf((char*)myHeader.c_str(), BASIC, "number_of_velocity_observer_by_head_%" PRIu32"", loopCount); // Head count
+                json_push_back(headPage, json_new_a("name", (char*)myHeader.c_str()));
+                JSONNODE* label = json_new(JSON_NODE);
+                json_set_name(label, "labels");
+                json_push_back(label, json_new_a("stat_type", "head information"));
+                if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
+                {
+                    json_push_back(label, json_new_a("page", "factory"));
+                }
+                else
+                {
+                    json_push_back(label, json_new_i("page", page));
+                }
+                json_push_back(label, json_new_a("units", "count"));
+
+                snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, NUMBER_OF_VELOCITY_OBSERVER_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD);
+                json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
+                json_push_back(headPage, label);
+
+                json_push_back(headPage, json_new_i("value", vFarmFrame[page].numberOfVelocityObservedByHead.headValue[loopCount]));
+#else
                 set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].numberOfVelocityObservedByHead.headValue[loopCount], false, m_showStatusBits); //!< Number of Velocity Observer over last 3 SMART Summary Frame
+#endif
             }
             break;
         case CURRENT_H2SAT_PERCENTAGE_OF_CODEWORDS_AT_ITERATION_LEVEL_BY_HEAD_AVERAGED_ACROSS_TEST_ZONES:
@@ -2761,7 +3552,30 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tCurrent H2SAT percentage of codewords at iteration level by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].currentH2SATPercentagedbyHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Current H2SAT percentage of codewords at iteration level
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "Current H2SAT percentage of codewords at iteration level by Head %" PRIu32"", loopCount); // Head count
+#if defined (PREPYTHON)
+                snprintf((char*)myHeader.c_str(), BASIC, "current_h2sat_percentage_of_codeword_at_iteration_level_by_head_%" PRIu32"", loopCount); // Head count
+                json_push_back(headPage, json_new_a("name", (char*)myHeader.c_str()));
+                JSONNODE* label = json_new(JSON_NODE);
+                json_set_name(label, "labels");
+                json_push_back(label, json_new_a("stat_type", "head information"));
+                if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
+                {
+                    json_push_back(label, json_new_a("page", "factory"));
+                }
+                else
+                {
+                    json_push_back(label, json_new_i("page", page));
+                }
+                json_push_back(label, json_new_a("units", "percentage"));
+
+                snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, CURRENT_H2SAT_PERCENTAGE_OF_CODEWORDS_AT_ITERATION_LEVEL_BY_HEAD_AVERAGED_ACROSS_TEST_ZONES);
+                json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
+                json_push_back(headPage, label);
+
+                json_push_back(headPage, json_new_i("value", vFarmFrame[page].currentH2SATPercentagedbyHead.headValue[loopCount]));
+#else
                 set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].currentH2SATPercentagedbyHead.headValue[loopCount], false, m_showStatusBits);  //!< Current H2SAT percentage of codewords at iteration level
+#endif
             }
             break;
         case CURRENT_H2SAT_AMPLITUDE_BY_HEAD_AVERAGED_ACROSS_TEST_ZONES:
@@ -2771,7 +3585,30 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tCurrent H2SAT amplitude by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].currentH2STAmplituedByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Current H2SAT amplitude, averaged across Test Zone
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "Current H2SAT amplitude by Head %" PRIu32"", loopCount); // Head count
+#if defined (PREPYTHON)
+                snprintf((char*)myHeader.c_str(), BASIC, "current_h2sat_amplitude_by_head_%" PRIu32"", loopCount); // Head count
+                json_push_back(headPage, json_new_a("name", (char*)myHeader.c_str()));
+                JSONNODE* label = json_new(JSON_NODE);
+                json_set_name(label, "labels");
+                json_push_back(label, json_new_a("stat_type", "head information"));
+                if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
+                {
+                    json_push_back(label, json_new_a("page", "factory"));
+                }
+                else
+                {
+                    json_push_back(label, json_new_i("page", page));
+                }
+                json_push_back(label, json_new_a("units", "count"));
+
+                snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, CURRENT_H2SAT_AMPLITUDE_BY_HEAD_AVERAGED_ACROSS_TEST_ZONES);
+                json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
+                json_push_back(headPage, label);
+
+                json_push_back(headPage, json_new_i("value", vFarmFrame[page].currentH2STAmplituedByHead.headValue[loopCount]));
+#else
                 set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].currentH2STAmplituedByHead.headValue[loopCount], false, m_showStatusBits);  //!< Current H2SAT amplitude, averaged across Test Zone
+#endif
             }
             break;
         case CURRENT_H2SAT_ASYMMETRY_BY_HEAD_AVERAGED_ACROSS_TEST_ZONES:
@@ -2781,7 +3618,30 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tCurrent H2SAT asymmetry by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].currentH2STAsymmetryByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Current H2SAT asymmetry, averaged across Test Zone
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "Current H2SAT asymmetry by Head %" PRIu32"", loopCount); // Head count
+#if defined (PREPYTHON)
+                snprintf((char*)myHeader.c_str(), BASIC, "current_h2sat_asymmetry_by_head_%" PRIu32"", loopCount); // Head count
+                json_push_back(headPage, json_new_a("name", (char*)myHeader.c_str()));
+                JSONNODE* label = json_new(JSON_NODE);
+                json_set_name(label, "labels");
+                json_push_back(label, json_new_a("stat_type", "head information"));
+                if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
+                {
+                    json_push_back(label, json_new_a("page", "factory"));
+                }
+                else
+                {
+                    json_push_back(label, json_new_i("page", page));
+                }
+                json_push_back(label, json_new_a("units", "count"));
+
+                snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, CURRENT_H2SAT_ASYMMETRY_BY_HEAD_AVERAGED_ACROSS_TEST_ZONES);
+                json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
+                json_push_back(headPage, label);
+
+                json_push_back(headPage, json_new_i("value", vFarmFrame[page].currentH2STAsymmetryByHead.headValue[loopCount]));
+#else
                 set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].currentH2STAsymmetryByHead.headValue[loopCount], false, m_showStatusBits);  //!< Current H2SAT asymmetry, averaged across Test Zone
+#endif
             }
             break;
         case NUMBER_OF_RESIDENT_GLIST_ENTRIES:
@@ -2791,7 +3651,30 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tNumber of Reallocated Sectors by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].ResidentGlistEntries.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "Number of Reallocated Sectors by Head %" PRIu32"", loopCount); // Head count
+#if defined (PREPYTHON)
+                snprintf((char*)myHeader.c_str(), BASIC, "number_of_reallocated_sectors_by_head_%" PRIu32"", loopCount); // Head count
+                json_push_back(headPage, json_new_a("name", (char*)myHeader.c_str()));
+                JSONNODE* label = json_new(JSON_NODE);
+                json_set_name(label, "labels");
+                json_push_back(label, json_new_a("stat_type", "head information"));
+                if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
+                {
+                    json_push_back(label, json_new_a("page", "factory"));
+                }
+                else
+                {
+                    json_push_back(label, json_new_i("page", page));
+                }
+                json_push_back(label, json_new_a("units", "count"));
+
+                snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, NUMBER_OF_RESIDENT_GLIST_ENTRIES);
+                json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
+                json_push_back(headPage, label);
+
+                json_push_back(headPage, json_new_i("value", vFarmFrame[page].ResidentGlistEntries.headValue[loopCount]));
+#else
                 set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].ResidentGlistEntries.headValue[loopCount], false, m_showStatusBits);
+#endif
             }
             break;
         case NUMBER_OF_PENDING_ENTRIES:
@@ -2801,7 +3684,30 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tNumber of Reallocation Candidate Sectors by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].ResidentPlistEntries.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "Number of Reallocation Candidate Sectors by Head %" PRIu32"", loopCount); // Head count
+#if defined (PREPYTHON)
+                snprintf((char*)myHeader.c_str(), BASIC, "number_of_reallocated_candidate_sectors_by_head_%" PRIu32"", loopCount); // Head count
+                json_push_back(headPage, json_new_a("name", (char*)myHeader.c_str()));
+                JSONNODE* label = json_new(JSON_NODE);
+                json_set_name(label, "labels");
+                json_push_back(label, json_new_a("stat_type", "head information"));
+                if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
+                {
+                    json_push_back(label, json_new_a("page", "factory"));
+                }
+                else
+                {
+                    json_push_back(label, json_new_i("page", page));
+                }
+                json_push_back(label, json_new_a("units", "count"));
+
+                snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, NUMBER_OF_PENDING_ENTRIES);
+                json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
+                json_push_back(headPage, label);
+
+                json_push_back(headPage, json_new_i("value", vFarmFrame[page].ResidentPlistEntries.headValue[loopCount]));
+#else
                 set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].ResidentPlistEntries.headValue[loopCount], false, m_showStatusBits);
+#endif
             }
             break;
         case DOS_OUGHT_TO_SCAN_COUNT_PER_HEAD:
@@ -2811,7 +3717,30 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tDOS Ought to scan count by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].DOSOoughtToScan.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "DOS Ought to scan count by Head %" PRIu32"", loopCount); // Head count
+#if defined (PREPYTHON)
+                snprintf((char*)myHeader.c_str(), BASIC, "dos_ought_to_scan_count_by_head_%" PRIu32"", loopCount); // Head count
+                json_push_back(headPage, json_new_a("name", (char*)myHeader.c_str()));
+                JSONNODE* label = json_new(JSON_NODE);
+                json_set_name(label, "labels");
+                json_push_back(label, json_new_a("stat_type", "head information"));
+                if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
+                {
+                    json_push_back(label, json_new_a("page", "factory"));
+                }
+                else
+                {
+                    json_push_back(label, json_new_i("page", page));
+                }
+                json_push_back(label, json_new_a("units", "count"));
+
+                snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, DOS_OUGHT_TO_SCAN_COUNT_PER_HEAD);
+                json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
+                json_push_back(headPage, label);
+
+                json_push_back(headPage, json_new_i("value", vFarmFrame[page].DOSOoughtToScan.headValue[loopCount]));
+#else
                 set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].DOSOoughtToScan.headValue[loopCount], false, m_showStatusBits);
+#endif
             }
             break;
         case DOS_NEED_TO_SCAN_COUNT_PER_HEAD:
@@ -2821,7 +3750,30 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tDOS needs to scans count by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].DOSNeedToScan.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "DOS needs to scans count by Head %" PRIu32"", loopCount); // Head count
+#if defined (PREPYTHON)
+                snprintf((char*)myHeader.c_str(), BASIC, "dos_needs_to_scan_count_by_head_%" PRIu32"", loopCount); // Head count
+                json_push_back(headPage, json_new_a("name", (char*)myHeader.c_str()));
+                JSONNODE* label = json_new(JSON_NODE);
+                json_set_name(label, "labels");
+                json_push_back(label, json_new_a("stat_type", "head information"));
+                if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
+                {
+                    json_push_back(label, json_new_a("page", "factory"));
+                }
+                else
+                {
+                    json_push_back(label, json_new_i("page", page));
+                }
+                json_push_back(label, json_new_a("units", "count"));
+
+                snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, DOS_NEED_TO_SCAN_COUNT_PER_HEAD);
+                json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
+                json_push_back(headPage, label);
+
+                json_push_back(headPage, json_new_i("value", vFarmFrame[page].DOSNeedToScan.headValue[loopCount]));
+#else
                 set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].DOSNeedToScan.headValue[loopCount], false, m_showStatusBits);
+#endif
             }
             break;
         case DOS_WRITE_FAULT_SCAN_COUNT_PER_HEAD:
@@ -2831,7 +3783,30 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tDOS write Fault scans by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].DOSWriteFaultScan.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "DOS write Fault scans by Head %" PRIu32"", loopCount); // Head count
+#if defined (PREPYTHON)
+                snprintf((char*)myHeader.c_str(), BASIC, "dos_write_fault_scans_by_head_%" PRIu32"", loopCount); // Head count
+                json_push_back(headPage, json_new_a("name", (char*)myHeader.c_str()));
+                JSONNODE* label = json_new(JSON_NODE);
+                json_set_name(label, "labels");
+                json_push_back(label, json_new_a("stat_type", "head information"));
+                if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
+                {
+                    json_push_back(label, json_new_a("page", "factory"));
+                }
+                else
+                {
+                    json_push_back(label, json_new_i("page", page));
+                }
+                json_push_back(label, json_new_a("units", "count"));
+
+                snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, DOS_WRITE_FAULT_SCAN_COUNT_PER_HEAD);
+                json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
+                json_push_back(headPage, label);
+
+                json_push_back(headPage, json_new_i("value", vFarmFrame[page].DOSWriteFaultScan.headValue[loopCount]));
+#else
                 set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].DOSWriteFaultScan.headValue[loopCount], false, m_showStatusBits);
+#endif
             }
             break;
         case WRITE_POWERON_HOURS_FROM_MOST_RECENT_SMART:
@@ -2843,7 +3818,30 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 snprintf((char*)myHeader.c_str(), BASIC, "Write Power On (hrs) by Head %" PRIu32"", loopCount); // Head count
                 //set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].writePowerOnHours.headValue[loopCount], false, m_showStatusBits);
                 snprintf((char*)myStr.c_str(), BASIC, "%0.04f", ROUNDF((static_cast<double>( M_DoubleWord0(vFarmFrame[page].writePowerOnHours.headValue[loopCount])) /3600),1000));
+#if defined (PREPYTHON)
+                snprintf((char*)myHeader.c_str(), BASIC, "write_power_on_by_head_%" PRIu32"", loopCount); // Head count
+                json_push_back(headPage, json_new_a("name", (char*)myHeader.c_str()));
+                JSONNODE* label = json_new(JSON_NODE);
+                json_set_name(label, "labels");
+                json_push_back(label, json_new_a("stat_type", "head information"));
+                if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
+                {
+                    json_push_back(label, json_new_a("page", "factory"));
+                }
+                else
+                {
+                    json_push_back(label, json_new_i("page", page));
+                }
+                json_push_back(label, json_new_a("units", "hrs"));
+
+                snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, WRITE_POWERON_HOURS_FROM_MOST_RECENT_SMART);
+                json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
+                json_push_back(headPage, label);
+                snprintf((char*)myStr.c_str(), BASIC, "%0.04f", ROUNDF((static_cast<double>(M_DoubleWord0(vFarmFrame[page].writePowerOnHours.headValue[loopCount])) / 3600), 1000));
+                json_push_back(headPage, json_new_a("value", (char*)myStr.c_str()));
+#else
                 set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].writePowerOnHours.headValue[loopCount], m_showStatusBits);
+#endif
             }
             break;
         case DOS_WRITE_COUNT_THRESHOLD_PER_HEAD:
@@ -2852,8 +3850,31 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
 #if defined _DEBUG
                 printf("\tDOS Write Count Threshold by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].dosWriteCount.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);
 #endif
+#if defined (PREPYTHON)
+                snprintf((char*)myHeader.c_str(), BASIC, "dos_write_count_threshold_by_head_%" PRIu32"", loopCount); // Head count
+                json_push_back(headPage, json_new_a("name", (char*)myHeader.c_str()));
+                JSONNODE* label = json_new(JSON_NODE);
+                json_set_name(label, "labels");
+                json_push_back(label, json_new_a("stat_type", "head information"));
+                if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
+                {
+                    json_push_back(label, json_new_a("page", "factory"));
+                }
+                else
+                {
+                    json_push_back(label, json_new_i("page", page));
+                }
+                json_push_back(label, json_new_a("units", "count"));
+
+                snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, DOS_WRITE_COUNT_THRESHOLD_PER_HEAD);
+                json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
+                json_push_back(headPage, label);
+
+                json_push_back(headPage, json_new_i("value", vFarmFrame[page].dosWriteCount.headValue[loopCount]));
+#else
                 snprintf((char*)myHeader.c_str(), BASIC, "DOS Write Count Threshold by Head %" PRIu32"", loopCount); // Head count
                 set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].dosWriteCount.headValue[loopCount], false, m_showStatusBits);
+#endif
             }
             break;
         case CUM_LIFETIME_UNRECOVERALBE_READ_REPET_PER_HEAD:
@@ -2863,7 +3884,30 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tCumlative Lifetime Unrecoverable Read Repeat per head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].cumECCReadRepeat.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "Cumlative Lifetime Unrecoverable Read Repeat %" PRIu32"", loopCount); // Head count
+#if defined (PREPYTHON)
+                snprintf((char*)myHeader.c_str(), BASIC, "cumlative_lifetime_unrecoverable_read_repeat_%" PRIu32"", loopCount); // Head count
+                json_push_back(headPage, json_new_a("name", (char*)myHeader.c_str()));
+                JSONNODE* label = json_new(JSON_NODE);
+                json_set_name(label, "labels");
+                json_push_back(label, json_new_a("stat_type", "head information"));
+                if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
+                {
+                    json_push_back(label, json_new_a("page", "factory"));
+                }
+                else
+                {
+                    json_push_back(label, json_new_i("page", page));
+                }
+                json_push_back(label, json_new_a("units", "count"));
+
+                snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, CUM_LIFETIME_UNRECOVERALBE_READ_REPET_PER_HEAD);
+                json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
+                json_push_back(headPage, label);
+
+                json_push_back(headPage, json_new_i("value", vFarmFrame[page].cumECCReadRepeat.headValue[loopCount]));
+#else
                 set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].cumECCReadRepeat.headValue[loopCount], false, m_showStatusBits);
+#endif
             }
             break;
         case CUM_LIFETIME_UNRECOVERABLE_READ_UNIQUE_PER_HEAD:
@@ -2873,7 +3917,30 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tCumlative Lifetime Unrecoverable Read Unique per head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].cumECCReadUnique.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "Cumlative Lifetime Unrecoverable Read Unique %" PRIu32"", loopCount); // Head count
+#if defined (PREPYTHON)
+                snprintf((char*)myHeader.c_str(), BASIC, "cumlative_lifetime_unrecoverable_read_unique_%" PRIu32"", loopCount); // Head count
+                json_push_back(headPage, json_new_a("name", (char*)myHeader.c_str()));
+                JSONNODE* label = json_new(JSON_NODE);
+                json_set_name(label, "labels");
+                json_push_back(label, json_new_a("stat_type", "head information"));
+                if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
+                {
+                    json_push_back(label, json_new_a("page", "factory"));
+                }
+                else
+                {
+                    json_push_back(label, json_new_i("page", page));
+                }
+                json_push_back(label, json_new_a("units", "count"));
+
+                snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, CUM_LIFETIME_UNRECOVERABLE_READ_UNIQUE_PER_HEAD);
+                json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
+                json_push_back(headPage, label);
+
+                json_push_back(headPage, json_new_i("value", vFarmFrame[page].cumECCReadUnique.headValue[loopCount]));
+#else
                 set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].cumECCReadUnique.headValue[loopCount], false, m_showStatusBits);
+#endif
             }
             break;
         case CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_0:
@@ -2883,8 +3950,31 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tCurrent H2SAT trimmed mean bits in error by Head %" PRIu32":  by Test Zone 0:      %" PRIu64" \n", loopCount, vFarmFrame[page].currentH2STTrimmedbyHeadZone0.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Current H2SAT trimmed mean bits in error by Head, by Test Zone 0
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "Current H2SAT trimmed mean bits in error Zone 0 by Head %" PRIu32"", loopCount); // Head count
+#if defined (PREPYTHON)
+                snprintf((char*)myHeader.c_str(), BASIC, "current_h2sat_trimmed_mean-bits_in_error_zone0_by_head_%" PRIu32"", loopCount); // Head count
+                json_push_back(headPage, json_new_a("name", (char*)myHeader.c_str()));
+                JSONNODE* label = json_new(JSON_NODE);
+                json_set_name(label, "labels");
+                json_push_back(label, json_new_a("stat_type", "head information"));
+                if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
+                {
+                    json_push_back(label, json_new_a("page", "factory"));
+                }
+                else
+                {
+                    json_push_back(label, json_new_i("page", page));
+                }
+                json_push_back(label, json_new_a("units", "count"));
+
+                snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_0);
+                json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
+                json_push_back(headPage, label);
+                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_Word0(vFarmFrame[page].currentH2STTrimmedbyHeadZone0.headValue[loopCount]) * .10));
+                json_push_back(headPage, json_new_a("value", (char*)myStr.c_str()));
+#else
                 snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_Word0(vFarmFrame[page].currentH2STTrimmedbyHeadZone0.headValue[loopCount])*.10));
                 set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].currentH2STTrimmedbyHeadZone0.headValue[loopCount], m_showStatusBits); //!< Current H2SAT trimmed mean bits in error by Head, by Test Zone 0
+#endif
             }
             break;
         case CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_1:
@@ -2894,8 +3984,31 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tCurrent H2SAT trimmed mean bits in error by Head %" PRIu32": by Test Zone 1:      %" PRIu64" \n", loopCount, vFarmFrame[page].currentH2STTrimmedbyHeadZone1.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Current H2SAT trimmed mean bits in error by Head, by Test Zone 1
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "Current H2SAT trimmed mean bits in error Zone 1 by Head %" PRIu32"", loopCount); // Head count
+#if defined (PREPYTHON)
+                snprintf((char*)myHeader.c_str(), BASIC, "current_h2sat_trimmed_mean-bits_in_error_zone_1_by_head_%" PRIu32"", loopCount); // Head count
+                json_push_back(headPage, json_new_a("name", (char*)myHeader.c_str()));
+                JSONNODE* label = json_new(JSON_NODE);
+                json_set_name(label, "labels");
+                json_push_back(label, json_new_a("stat_type", "head information"));
+                if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
+                {
+                    json_push_back(label, json_new_a("page", "factory"));
+                }
+                else
+                {
+                    json_push_back(label, json_new_i("page", page));
+                }
+                json_push_back(label, json_new_a("units", "count"));
+
+                snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_1);
+                json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
+                json_push_back(headPage, label);
+                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_Word0(vFarmFrame[page].currentH2STTrimmedbyHeadZone1.headValue[loopCount]) * .10));
+                json_push_back(headPage, json_new_a("value", (char*)myStr.c_str()));
+#else
                 snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_Word0(vFarmFrame[page].currentH2STTrimmedbyHeadZone1.headValue[loopCount])*.10));
                 set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].currentH2STTrimmedbyHeadZone1.headValue[loopCount], m_showStatusBits); //!< Current H2SAT trimmed mean bits in error by Head, by Test Zone 1
+#endif
             }
             break;
         case CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_2:
@@ -2905,8 +4018,31 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tCurrent H2SAT trimmed mean bits in error by Head %" PRIu32" , by Test Zone 2:      %" PRIu64" \n", loopCount, vFarmFrame[page].currentH2STTrimmedbyHeadZone2.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Current H2SAT trimmed mean bits in error by Head, by Test Zone 2
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "Current H2SAT trimmed mean bits in error Zone 2 by Head %" PRIu32"", loopCount); // Head count
+#if defined (PREPYTHON)
+                snprintf((char*)myHeader.c_str(), BASIC, "current_h2sat_trimmed_mean-bits_in_error_zone_2_by_head_%" PRIu32"", loopCount); // Head count
+                json_push_back(headPage, json_new_a("name", (char*)myHeader.c_str()));
+                JSONNODE* label = json_new(JSON_NODE);
+                json_set_name(label, "labels");
+                json_push_back(label, json_new_a("stat_type", "head information"));
+                if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
+                {
+                    json_push_back(label, json_new_a("page", "factory"));
+                }
+                else
+                {
+                    json_push_back(label, json_new_i("page", page));
+                }
+                json_push_back(label, json_new_a("units", "count"));
+
+                snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_2);
+                json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
+                json_push_back(headPage, label);
+                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_Word0(vFarmFrame[page].currentH2STTrimmedbyHeadZone2.headValue[loopCount]) * .10));
+                json_push_back(headPage, json_new_a("value", (char*)myStr.c_str()));
+#else
                 snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_Word0(vFarmFrame[page].currentH2STTrimmedbyHeadZone2.headValue[loopCount])*.10));
                 set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].currentH2STTrimmedbyHeadZone2.headValue[loopCount], m_showStatusBits);//!< Current H2SAT trimmed mean bits in error by Head, by Test Zone 2
+#endif
             }
             break;
         case CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_0:
@@ -2916,8 +4052,31 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tCurrent H2SAT iterations to converge by Head %" PRIu32" , by Test Zone 0:      %" PRIu64" \n", loopCount, vFarmFrame[page].currentH2STIterationsByHeadZone0.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Current H2SAT iterations to cnverge by Head, by Test Zone 0
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "Current H2SAT iterations to converge Test Zone 0 by Head %" PRIu32"", loopCount); // Head count
+#if defined (PREPYTHON)
+                snprintf((char*)myHeader.c_str(), BASIC, "current_h2sat_iteration_to_converage_test_zone_0_by_head_%" PRIu32"", loopCount); // Head count
+                json_push_back(headPage, json_new_a("name", (char*)myHeader.c_str()));
+                JSONNODE* label = json_new(JSON_NODE);
+                json_set_name(label, "labels");
+                json_push_back(label, json_new_a("stat_type", "head information"));
+                if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
+                {
+                    json_push_back(label, json_new_a("page", "factory"));
+                }
+                else
+                {
+                    json_push_back(label, json_new_i("page", page));
+                }
+                json_push_back(label, json_new_a("units", "count"));
+
+                snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_0);
+                json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
+                json_push_back(headPage, label);
+                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_Word0(vFarmFrame[page].currentH2STIterationsByHeadZone0.headValue[loopCount]) * .10));
+                json_push_back(headPage, json_new_a("value", (char*)myStr.c_str()));
+#else
                 snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_Word0(vFarmFrame[page].currentH2STIterationsByHeadZone0.headValue[loopCount])*.10));
                 set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].currentH2STIterationsByHeadZone0.headValue[loopCount], m_showStatusBits);  //!< Current H2SAT iterations to cnverge by Head, by Test Zone 0
+#endif
             }
             break;
         case CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_1:
@@ -2927,8 +4086,31 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tCurrent H2SAT iterations to converge by Head %" PRIu32" , by Test Zone 1:      %" PRIu64" \n", loopCount, vFarmFrame[page].currentH2STIterationsByHeadZone1.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Current H2SAT iterations to cnverge by Head, by Test Zone 1
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "Current H2SAT iterations to converge Test Zone 1 by Head %" PRIu32"", loopCount); // Head count
+#if defined (PREPYTHON)
+                snprintf((char*)myHeader.c_str(), BASIC, "current_h2sat_iteration_to_converage_test_zone_1_by_head_%" PRIu32"", loopCount); // Head count
+                json_push_back(headPage, json_new_a("name", (char*)myHeader.c_str()));
+                JSONNODE* label = json_new(JSON_NODE);
+                json_set_name(label, "labels");
+                json_push_back(label, json_new_a("stat_type", "head information"));
+                if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
+                {
+                    json_push_back(label, json_new_a("page", "factory"));
+                }
+                else
+                {
+                    json_push_back(label, json_new_i("page", page));
+                }
+                json_push_back(label, json_new_a("units", "count"));
+
+                snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_1);
+                json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
+                json_push_back(headPage, label);
+                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_Word0(vFarmFrame[page].currentH2STIterationsByHeadZone1.headValue[loopCount]) * .10));
+                json_push_back(headPage, json_new_a("value", (char*)myStr.c_str()));
+#else
                 snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_Word0(vFarmFrame[page].currentH2STIterationsByHeadZone1.headValue[loopCount])*.10));
                 set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].currentH2STIterationsByHeadZone1.headValue[loopCount], m_showStatusBits);  //!< Current H2SAT iterations to cnverge by Head, by Test Zone 1
+#endif
             }
             break;
         case CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_2:
@@ -2938,8 +4120,31 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tCurrent H2SAT iterations to converge by Head %" PRIu32" , by Test Zone 2:      %" PRIu64" \n", loopCount, vFarmFrame[page].currentH2STIterationsByHeadZone2.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Current H2SAT iterations to cnverge by Head, by Test Zone 2
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "Current H2SAT iterations to converge Test Zone 2 by Head %" PRIu32"", loopCount); // Head count
+#if defined (PREPYTHON)
+                snprintf((char*)myHeader.c_str(), BASIC, "current_h2sat_iteration_to_converage_test_zone_2_by_head_%" PRIu32"", loopCount); // Head count
+                json_push_back(headPage, json_new_a("name", (char*)myHeader.c_str()));
+                JSONNODE* label = json_new(JSON_NODE);
+                json_set_name(label, "labels");
+                json_push_back(label, json_new_a("stat_type", "head information"));
+                if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
+                {
+                    json_push_back(label, json_new_a("page", "factory"));
+                }
+                else
+                {
+                    json_push_back(label, json_new_i("page", page));
+                }
+                json_push_back(label, json_new_a("units", "count"));
+
+                snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_2);
+                json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
+                json_push_back(headPage, label);
+                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_Word0(vFarmFrame[page].currentH2STIterationsByHeadZone2.headValue[loopCount]) * .10));
+                json_push_back(headPage, json_new_a("value", (char*)myStr.c_str()));
+#else
                 snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_Word0(vFarmFrame[page].currentH2STIterationsByHeadZone2.headValue[loopCount])*.10));
                 set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].currentH2STIterationsByHeadZone2.headValue[loopCount], m_showStatusBits); //!< Current H2SAT iterations to cnverge by Head, by Test Zone 2
+#endif
             }
             break;
         case APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_OUTER:
@@ -2949,8 +4154,31 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tFly height clearance delta outer by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].appliedFlyHeightByHeadOuter.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Applied fly height clearance delta per head in thousandths of one Angstrom: Outer by Head
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "Fly height clearance delta outer by Head %" PRIu32"", loopCount); // Head count
+#if defined (PREPYTHON)
+                snprintf((char*)myHeader.c_str(), BASIC, "fly_height_clearance_delta_outer_by_head_%" PRIu32"", loopCount); // Head count
+                json_push_back(headPage, json_new_a("name", (char*)myHeader.c_str()));
+                JSONNODE* label = json_new(JSON_NODE);
+                json_set_name(label, "labels");
+                json_push_back(label, json_new_a("stat_type", "head information"));
+                if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
+                {
+                    json_push_back(label, json_new_a("page", "factory"));
+                }
+                else
+                {
+                    json_push_back(label, json_new_i("page", page));
+                }
+                json_push_back(label, json_new_a("units", "count"));
+
+                snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_OUTER);
+                json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
+                json_push_back(headPage, label);
+                snprintf((char*)myStr.c_str(), BASIC, "%0.03f", static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].appliedFlyHeightByHeadOuter.headValue[loopCount])) * .001));
+                json_push_back(headPage, json_new_a("value", (char*)myStr.c_str()));
+#else
                 snprintf((char*)myStr.c_str(), BASIC, "%0.03f", static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].appliedFlyHeightByHeadOuter.headValue[loopCount]))*.001));   //!< Applied fly height clearance delta per head in thousandths of one Angstrom: Outer by Head
                 set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].appliedFlyHeightByHeadOuter.headValue[loopCount], m_showStatusBits);
+#endif
             }
             break;
         case APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_INNER:
@@ -2960,8 +4188,31 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tFly height clearance delta inner by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].appliedFlyHeightByHeadInner.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Applied fly height clearance delta per head in thousandths of one Angstrom: Inner by Head
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "Fly height clearance delta inner by Head %" PRIu32"", loopCount); // Head count
+#if defined (PREPYTHON)
+                snprintf((char*)myHeader.c_str(), BASIC, "fly_height_clearance_delta_inner_by_head_%" PRIu32"", loopCount); // Head count
+                json_push_back(headPage, json_new_a("name", (char*)myHeader.c_str()));
+                JSONNODE* label = json_new(JSON_NODE);
+                json_set_name(label, "labels");
+                json_push_back(label, json_new_a("stat_type", "head information"));
+                if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
+                {
+                    json_push_back(label, json_new_a("page", "factory"));
+                }
+                else
+                {
+                    json_push_back(label, json_new_i("page", page));
+                }
+                json_push_back(label, json_new_a("units", "count"));
+
+                snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_INNER);
+                json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
+                json_push_back(headPage, label);
+                snprintf((char*)myStr.c_str(), BASIC, "%0.03f", static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].appliedFlyHeightByHeadInner.headValue[loopCount])) * .001));
+                json_push_back(headPage, json_new_a("value", (char*)myStr.c_str()));
+#else
                 snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].appliedFlyHeightByHeadInner.headValue[loopCount]))*.001));   //!< Applied fly height clearance delta per head in thousandths of one Angstrom: Inner by Head
                 set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].appliedFlyHeightByHeadInner.headValue[loopCount], m_showStatusBits);
+#endif
             }
             break;
         case APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_MIDDLE:
@@ -2971,8 +4222,31 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tFly height clearance delta middle by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].appliedFlyHeightByHeadMiddle.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Applied fly height clearance delta per head in thousandths of one Angstrom: middle by Head
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "Fly height clearance delta middle by Head %" PRIu32"", loopCount);     // Head count
+#if defined (PREPYTHON)
+                snprintf((char*)myHeader.c_str(), BASIC, "fly_height_clearance_delta_middle_by_head_%" PRIu32"", loopCount); // Head count
+                json_push_back(headPage, json_new_a("name", (char*)myHeader.c_str()));
+                JSONNODE* label = json_new(JSON_NODE);
+                json_set_name(label, "labels");
+                json_push_back(label, json_new_a("stat_type", "head information"));
+                if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
+                {
+                    json_push_back(label, json_new_a("page", "factory"));
+                }
+                else
+                {
+                    json_push_back(label, json_new_i("page", page));
+                }
+                json_push_back(label, json_new_a("units", "count"));
+
+                snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_MIDDLE);
+                json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
+                json_push_back(headPage, label);
+                snprintf((char*)myStr.c_str(), BASIC, "%0.03f", static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].appliedFlyHeightByHeadMiddle.headValue[loopCount])) * .001));
+                json_push_back(headPage, json_new_a("value", (char*)myStr.c_str()));
+#else
                 snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].appliedFlyHeightByHeadMiddle.headValue[loopCount])) *.001));   //!< Applied fly height clearance delta per head in thousandths of one Angstrom:middle by Head
                 set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].appliedFlyHeightByHeadMiddle.headValue[loopCount], m_showStatusBits);
+#endif
             }
             break;
         case RESERVED_FOR_FUTURE_EXPANSION_10:
@@ -2998,8 +4272,31 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tSecond MR Head Resistance by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].secondMRHeadResistanceByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Second MR Head Resistance
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "Second MR Head Resistance by Head %" PRIu32"", loopCount);     // Head count
+#if defined (PREPYTHON)
+                snprintf((char*)myHeader.c_str(), BASIC, "second_mr_head_resistance_by_head_%" PRIu32"", loopCount); // Head count
+                json_push_back(headPage, json_new_a("name", (char*)myHeader.c_str()));
+                JSONNODE* label = json_new(JSON_NODE);
+                json_set_name(label, "labels");
+                json_push_back(label, json_new_a("stat_type", "head information"));
+                if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
+                {
+                    json_push_back(label, json_new_a("page", "factory"));
+                }
+                else
+                {
+                    json_push_back(label, json_new_i("page", page));
+                }
+                json_push_back(label, json_new_a("units", "count"));
+
+                snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, SECOND_MR_HEAD_RESISTANCE);
+                json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
+                json_push_back(headPage, label);
+                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].secondMRHeadResistanceByHead.headValue[loopCount]) * .1));
+                json_push_back(headPage, json_new_a("value", (char*)myStr.c_str()));
+#else
                 snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].secondMRHeadResistanceByHead.headValue[loopCount]) *.1));   //!< Second MR Head Resistance
                 set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].secondMRHeadResistanceByHead.headValue[loopCount], m_showStatusBits);
+#endif
             }
         }
         break;
@@ -3011,7 +4308,30 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tFAFH Measurement Status by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fafhMeasurementStatus.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< FAFH Measurement Status
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "FAFH Measurement Status by Head %" PRIu32"", loopCount);     // Head count
+#if defined (PREPYTHON)
+                snprintf((char*)myHeader.c_str(), BASIC, "fafh_measurement_status_by_head_%" PRIu32"", loopCount); // Head count
+                json_push_back(headPage, json_new_a("name", (char*)myHeader.c_str()));
+                JSONNODE* label = json_new(JSON_NODE);
+                json_set_name(label, "labels");
+                json_push_back(label, json_new_a("stat_type", "head information"));
+                if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
+                {
+                    json_push_back(label, json_new_a("page", "factory"));
+                }
+                else
+                {
+                    json_push_back(label, json_new_i("page", page));
+                }
+                json_push_back(label, json_new_a("units", "count"));
+
+                snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, FAFH_MEASUREMENT_STATUS);
+                json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
+                json_push_back(headPage, label);
+                
+                json_push_back(headPage, json_new_i("value", vFarmFrame[page].fafhMeasurementStatus.headValue[loopCount]));
+#else
                 set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].fafhMeasurementStatus.headValue[loopCount], false, m_showStatusBits);
+#endif
             }
         }
         break;
@@ -3028,8 +4348,31 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                     loopCount, vFarmFrame[page].fafhRelativeApmlitude.headValue[loopCount], static_cast<double>(M_DoubleWordInt0(check_Status_Strip_Status(vFarmFrame[page].fafhRelativeApmlitude.headValue[loopCount]))) * .1);  //!< Disc Slip in micro-inches 
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "FAFH HF-LF Relative Amplitude by Head %" PRIu32"", loopCount);     // Head count
+#if defined (PREPYTHON)
+                snprintf((char*)myHeader.c_str(), BASIC, "fafh_hf-lf_relative_amplitude_by_head_%" PRIu32"", loopCount); // Head count
+                json_push_back(headPage, json_new_a("name", (char*)myHeader.c_str()));
+                JSONNODE* label = json_new(JSON_NODE);
+                json_set_name(label, "labels");
+                json_push_back(label, json_new_a("stat_type", "head information"));
+                if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
+                {
+                    json_push_back(label, json_new_a("page", "factory"));
+                }
+                else
+                {
+                    json_push_back(label, json_new_i("page", page));
+                }
+                json_push_back(label, json_new_a("units", "count"));
+
+                snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, FAFH_HF_LF_RELATIVE_APMLITUDE);
+                json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
+                json_push_back(headPage, label);
+                snprintf((char*)myStr.c_str(), BASIC, "%04.2f", static_cast<double>(M_DoubleWordInt0(check_Status_Strip_Status(vFarmFrame[page].fafhRelativeApmlitude.headValue[loopCount]))) * .1);
+                json_push_back(headPage, json_new_a("value", (char*)myStr.c_str()));
+#else
                 snprintf((char*)myStr.c_str(), BASIC, "%04.2f", static_cast<double>(M_DoubleWordInt0(check_Status_Strip_Status(vFarmFrame[page].fafhRelativeApmlitude.headValue[loopCount]))) * .1);
                 set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].fafhRelativeApmlitude.headValue[loopCount], m_showStatusBits);
+#endif
             }
         }
         break;
@@ -3044,8 +4387,31 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tFAFH Bit Error Rate 0 by Head %" PRIu32":     raw 0x%" PRIx64"  calculated %" PRIi16".%03.0f (debug)\n", loopCount, vFarmFrame[page].fafh_bit_error_rate_0.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL, whole,decimal);
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "FAFH Bit Error Rate 0 by Head %" PRIu32"", loopCount);     // Head count
+#if defined (PREPYTHON)
+                snprintf((char*)myHeader.c_str(), BASIC, "fafh_bit_error_rate_0_by_head_%" PRIu32"", loopCount); // Head count
+                json_push_back(headPage, json_new_a("name", (char*)myHeader.c_str()));
+                JSONNODE* label = json_new(JSON_NODE);
+                json_set_name(label, "labels");
+                json_push_back(label, json_new_a("stat_type", "head information"));
+                if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
+                {
+                    json_push_back(label, json_new_a("page", "factory"));
+                }
+                else
+                {
+                    json_push_back(label, json_new_i("page", page));
+                }
+                json_push_back(label, json_new_a("units", "ber"));
+
+                snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, FAFH_BIT_ERROR_RATE_0);
+                json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
+                json_push_back(headPage, label);
+                snprintf((char*)myStr.c_str(), BASIC, "%" PRIi16".%04.0f", whole, decimal);
+                json_push_back(headPage, json_new_a("value", (char*)myStr.c_str()));
+#else
                 snprintf((char*)myStr.c_str(), BASIC, "%" PRIi16".%04.0f", whole, decimal);
                 set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].fafh_bit_error_rate_0.headValue[loopCount], m_showStatusBits);
+#endif
             }
         }
         break;
@@ -3060,8 +4426,31 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tFAFH Bit Error Rate 1 by Head %" PRIu32":     raw 0x%" PRIx64"  calculated %" PRIi16".%03.0f (debug)\n", loopCount, vFarmFrame[page].fafh_bit_error_rate_1.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL, whole, decimal);
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "FAFH Bit Error Rate 1 by Head %" PRIu32"", loopCount);     // Head count
+#if defined (PREPYTHON)
+                snprintf((char*)myHeader.c_str(), BASIC, "fafh_bit_error_rate_1_by_head_%" PRIu32"", loopCount); // Head count
+                json_push_back(headPage, json_new_a("name", (char*)myHeader.c_str()));
+                JSONNODE* label = json_new(JSON_NODE);
+                json_set_name(label, "labels");
+                json_push_back(label, json_new_a("stat_type", "head information"));
+                if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
+                {
+                    json_push_back(label, json_new_a("page", "factory"));
+                }
+                else
+                {
+                    json_push_back(label, json_new_i("page", page));
+                }
+                json_push_back(label, json_new_a("units", "ber"));
+
+                snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, FAFH_BIT_ERROR_RATE_1);
+                json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
+                json_push_back(headPage, label);
+                snprintf((char*)myStr.c_str(), BASIC, "%" PRIi16".%04.0f", whole, decimal);
+                json_push_back(headPage, json_new_a("value", (char*)myStr.c_str()));
+#else
                 snprintf((char*)myStr.c_str(), BASIC, "%" PRIi16".%04.0f", whole, decimal);
                 set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].fafh_bit_error_rate_1.headValue[loopCount], m_showStatusBits);
+#endif
             }
         }
         break;
@@ -3076,8 +4465,31 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tFAFH Bit Error Rate 2 by Head %" PRIu32":     raw 0x%" PRIx64"  calculated %" PRIi16".%03.0f (debug)\n", loopCount, vFarmFrame[page].fafh_bit_error_rate_2.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL, whole, decimal);
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "FAFH Bit Error Rate 2 by Head %" PRIu32"", loopCount);     // Head count
+#if defined (PREPYTHON)
+                snprintf((char*)myHeader.c_str(), BASIC, "fafh_bit_error_rate_2_by_head_%" PRIu32"", loopCount); // Head count
+                json_push_back(headPage, json_new_a("name", (char*)myHeader.c_str()));
+                JSONNODE* label = json_new(JSON_NODE);
+                json_set_name(label, "labels");
+                json_push_back(label, json_new_a("stat_type", "head information"));
+                if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
+                {
+                    json_push_back(label, json_new_a("page", "factory"));
+                }
+                else
+                {
+                    json_push_back(label, json_new_i("page", page));
+                }
+                json_push_back(label, json_new_a("units", "ber"));
+
+                snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, FAFH_BIT_ERROR_RATE_2);
+                json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
+                json_push_back(headPage, label);
+                snprintf((char*)myStr.c_str(), BASIC, "%" PRIi16".%04.0f", whole, decimal);
+                json_push_back(headPage, json_new_a("value", (char*)myStr.c_str()));
+#else
                 snprintf((char*)myStr.c_str(), BASIC, "%" PRIi16".%04.0f", whole, decimal);
                 set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].fafh_bit_error_rate_2.headValue[loopCount], m_showStatusBits);
+#endif
             }
         }
         break;
@@ -3089,8 +4501,31 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tFAFH Low Frequency 0 by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fafhLowFrequency_0.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "FAFH Low Frequency 0 by Head %" PRIu32"", loopCount);     // Head count
+#if defined (PREPYTHON)
+                snprintf((char*)myHeader.c_str(), BASIC, "fafh_low_frequency_0_by_head_%" PRIu32"", loopCount); // Head count
+                json_push_back(headPage, json_new_a("name", (char*)myHeader.c_str()));
+                JSONNODE* label = json_new(JSON_NODE);
+                json_set_name(label, "labels");
+                json_push_back(label, json_new_a("stat_type", "head information"));
+                if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
+                {
+                    json_push_back(label, json_new_a("page", "factory"));
+                }
+                else
+                {
+                    json_push_back(label, json_new_i("page", page));
+                }
+                json_push_back(label, json_new_a("units", "count"));
+
+                snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, FAFH_LOW_FREQUENCY_0);
+                json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
+                json_push_back(headPage, label);
+                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].fafhLowFrequency_0.headValue[loopCount]) * .001));
+                json_push_back(headPage, json_new_a("value", (char*)myStr.c_str()));
+#else
                 snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].fafhLowFrequency_0.headValue[loopCount]) *.001));  
                 set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].fafhLowFrequency_0.headValue[loopCount], m_showStatusBits);
+#endif
             }
         }
         break;
@@ -3102,8 +4537,31 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tFAFH Low Frequency 1 by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fafhLowFrequency_1.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "FAFH Low Frequency 1 by Head %" PRIu32"", loopCount);     // Head count
+#if defined (PREPYTHON)
+                snprintf((char*)myHeader.c_str(), BASIC, "fafh_low_frequency_1_by_head_%" PRIu32"", loopCount); // Head count
+                json_push_back(headPage, json_new_a("name", (char*)myHeader.c_str()));
+                JSONNODE* label = json_new(JSON_NODE);
+                json_set_name(label, "labels");
+                json_push_back(label, json_new_a("stat_type", "head information"));
+                if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
+                {
+                    json_push_back(label, json_new_a("page", "factory"));
+                }
+                else
+                {
+                    json_push_back(label, json_new_i("page", page));
+                }
+                json_push_back(label, json_new_a("units", "count"));
+
+                snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, FAFH_LOW_FREQUENCY_1);
+                json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
+                json_push_back(headPage, label);
+                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].fafhLowFrequency_1.headValue[loopCount]) * .001));
+                json_push_back(headPage, json_new_a("value", (char*)myStr.c_str()));
+#else
                 snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].fafhLowFrequency_1.headValue[loopCount]) *.001));   
                 set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].fafhLowFrequency_1.headValue[loopCount], m_showStatusBits);
+#endif
             }
         }
         break;
@@ -3115,8 +4573,31 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tFAFH Low Frequency 2 by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fafhLowFrequency_2.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "FAFH Low Frequency 2 by Head %" PRIu32"", loopCount);     // Head count
+#if defined (PREPYTHON)
+                snprintf((char*)myHeader.c_str(), BASIC, "fafh_low_frequency_2_by_head_%" PRIu32"", loopCount); // Head count
+                json_push_back(headPage, json_new_a("name", (char*)myHeader.c_str()));
+                JSONNODE* label = json_new(JSON_NODE);
+                json_set_name(label, "labels");
+                json_push_back(label, json_new_a("stat_type", "head information"));
+                if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
+                {
+                    json_push_back(label, json_new_a("page", "factory"));
+                }
+                else
+                {
+                    json_push_back(label, json_new_i("page", page));
+                }
+                json_push_back(label, json_new_a("units", "count"));
+
+                snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, FAFH_LOW_FREQUENCY_2);
+                json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
+                json_push_back(headPage, label);
+                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].fafhLowFrequency_2.headValue[loopCount]) * .001));
+                json_push_back(headPage, json_new_a("value", (char*)myStr.c_str()));
+#else
                 snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].fafhLowFrequency_2.headValue[loopCount]) *.001));   
                 set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].fafhLowFrequency_2.headValue[loopCount], m_showStatusBits);
+#endif
             }
         }
         break;
@@ -3128,8 +4609,31 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tFAFH High Frequency 0 by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fafhHighFrequency_0.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "FAFH High Frequency 0 by Head %" PRIu32"", loopCount);     // Head count
+#if defined (PREPYTHON)
+                snprintf((char*)myHeader.c_str(), BASIC, "fafh_high_frequency_0_by_head_%" PRIu32"", loopCount); // Head count
+                json_push_back(headPage, json_new_a("name", (char*)myHeader.c_str()));
+                JSONNODE* label = json_new(JSON_NODE);
+                json_set_name(label, "labels");
+                json_push_back(label, json_new_a("stat_type", "head information"));
+                if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
+                {
+                    json_push_back(label, json_new_a("page", "factory"));
+                }
+                else
+                {
+                    json_push_back(label, json_new_i("page", page));
+                }
+                json_push_back(label, json_new_a("units", "count"));
+
+                snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, FAFH_HIGH_FREQUENCY_0);
+                json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
+                json_push_back(headPage, label);
+                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].fafhHighFrequency_0.headValue[loopCount]) * .001));
+                json_push_back(headPage, json_new_a("value", (char*)myStr.c_str()));
+#else
                 snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].fafhHighFrequency_0.headValue[loopCount]) *.001));   
                 set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].fafhHighFrequency_0.headValue[loopCount], m_showStatusBits);
+#endif
             }
         }
         break;
@@ -3141,8 +4645,31 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tFAFH High Frequency 1 by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fafhHighFrequency_1.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "FAFH High Frequency 1 by Head %" PRIu32"", loopCount);     // Head count
+#if defined (PREPYTHON)
+                snprintf((char*)myHeader.c_str(), BASIC, "fafh_high_frequency_1_by_head_%" PRIu32"", loopCount); // Head count
+                json_push_back(headPage, json_new_a("name", (char*)myHeader.c_str()));
+                JSONNODE* label = json_new(JSON_NODE);
+                json_set_name(label, "labels");
+                json_push_back(label, json_new_a("stat_type", "head information"));
+                if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
+                {
+                    json_push_back(label, json_new_a("page", "factory"));
+                }
+                else
+                {
+                    json_push_back(label, json_new_i("page", page));
+                }
+                json_push_back(label, json_new_a("units", "count"));
+
+                snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, FAFH_HIGH_FREQUENCY_1);
+                json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
+                json_push_back(headPage, label);
+                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].fafhHighFrequency_1.headValue[loopCount]) * .001));
+                json_push_back(headPage, json_new_a("value", (char*)myStr.c_str()));
+#else
                 snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].fafhHighFrequency_1.headValue[loopCount]) *.001));  
                 set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].fafhHighFrequency_1.headValue[loopCount], m_showStatusBits);
+#endif
             }
         }
         break;
@@ -3154,8 +4681,31 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tFAFH High Frequency 2 by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fafhHighFrequency_2.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "FAFH High Frequency 2 by Head %" PRIu32"", loopCount);     // Head count
+#if defined (PREPYTHON)
+                snprintf((char*)myHeader.c_str(), BASIC, "fafh_high_frequency_2_by_head_%" PRIu32"", loopCount); // Head count
+                json_push_back(headPage, json_new_a("name", (char*)myHeader.c_str()));
+                JSONNODE* label = json_new(JSON_NODE);
+                json_set_name(label, "labels");
+                json_push_back(label, json_new_a("stat_type", "head information"));
+                if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
+                {
+                    json_push_back(label, json_new_a("page", "factory"));
+                }
+                else
+                {
+                    json_push_back(label, json_new_i("page", page));
+                }
+                json_push_back(label, json_new_a("units", "count"));
+
+                snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, FAFH_HIGH_FREQUENCY_2);
+                json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
+                json_push_back(headPage, label);
+                snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].fafhHighFrequency_2.headValue[loopCount]) * .001));
+                json_push_back(headPage, json_new_a("value", (char*)myStr.c_str()));
+#else
                 snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].fafhHighFrequency_2.headValue[loopCount]) *.001));  
                 set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].fafhHighFrequency_2.headValue[loopCount], m_showStatusBits);
+#endif
             }
         }
         break;
