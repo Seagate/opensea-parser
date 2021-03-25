@@ -113,7 +113,7 @@ CScsiZonedDeviceStatisticsLog::~CScsiZonedDeviceStatisticsLog()
 //!   \return void
 //
 //---------------------------------------------------------------------------
-bool CScsiZonedDeviceStatisticsLog::get_ZDS_Parameter_Code_Description(uint16_t paramCode, std::string *zdsString)
+bool CScsiZonedDeviceStatisticsLog::get_ZDS_Parameter_Code_Description(std::string *zdsString)
 {
     bool descriptionFound = false;
     switch (m_ZDSParam->paramCode)
@@ -220,7 +220,7 @@ void CScsiZonedDeviceStatisticsLog::process_Zoned_Device_Statistics_Data(JSONNOD
         printf("Zoned Device Statistics Log  \n");
 #endif
         byte_Swap_16(&m_ZDSParam->paramCode);
-        descriptionFound = get_ZDS_Parameter_Code_Description(m_ZDSParam->paramCode, &myHeader);
+        descriptionFound = get_ZDS_Parameter_Code_Description( &myHeader);
 
         JSONNODE *zdsInfo = json_new(JSON_NODE);
         json_set_name(zdsInfo, (char*)myHeader.c_str());
