@@ -210,7 +210,7 @@ eReturnValues CExtComp::parse_Ext_Comp_Structure(uint32_t structNumber, uint32_t
     uint16_t hiLBA = 0;
     uint8_t  deviceHead = 0;
     uint8_t  commandField = 0;
-    uint8_t  reserved = 0;
+    //uint8_t  reserved = 0;
     uint32_t timeStamp = 0;
     uint8_t  errorField = 0;
     uint8_t  status = 0;
@@ -253,7 +253,7 @@ eReturnValues CExtComp::parse_Ext_Comp_Structure(uint32_t structNumber, uint32_t
             hiLBA = pData[wOffset + 9];
             deviceHead = pData[wOffset + 11];
             commandField = pData[wOffset + 12];
-            reserved = pData[wOffset + 13];
+            //reserved = pData[wOffset + 13];
             timeStamp = pData[wOffset + 14];
             word_Swap_32(&timeStamp);
             wOffset += 18;
@@ -294,7 +294,7 @@ eReturnValues CExtComp::parse_Ext_Comp_Structure(uint32_t structNumber, uint32_t
 
         }
         //printf("offset = %d \n",wOffset);
-        reserved = pData[wOffset];
+        //reserved = pData[wOffset];
         errorField = pData[wOffset + 1];
         countField = pData[wOffset + 3];
         lowLBA = pData[wOffset + 5];
