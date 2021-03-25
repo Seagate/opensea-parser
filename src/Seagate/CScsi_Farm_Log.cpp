@@ -1904,10 +1904,10 @@ eReturnValues CSCSI_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint
     snprintf((char*)myStr.c_str(), BASIC, "%s", vFarmFrame[page].identStringInfo.deviceInterface.c_str());
     json_push_back(label, json_new_a("device interface", (char*)myStr.c_str()));
     snprintf((char*)myStr.c_str(), BASIC, "%llu", vFarmFrame[page].driveInfo.deviceCapacity & 0x00FFFFFFFFFFFFFFLL);
-    set_json_string_With_Status(label, "device capacity in sectors", (char*)myStr.c_str(), vFarmFrame[page].driveInfo.deviceCapacity, m_showStatusBits);
+    json_push_back(label, json_new_a("device capacity in sectors", (char*)myStr.c_str()));
     set_json_64_bit_With_Status(label, "physical sector size", vFarmFrame[page].driveInfo.psecSize, false, m_showStatusBits);									//!< Physical Sector Size in Bytes
     set_json_64_bit_With_Status(label, "logical sector size", vFarmFrame[page].driveInfo.lsecSize, false, m_showStatusBits);										//!< Logical Sector Size in Bytes
-    set_json_64_bit_With_Status(label, "device buffer size", vFarmFrame[page].driveInfo.deviceBufferSize, false, m_showStatusBits);								//!< Device Buffer Size in Bytes
+    json_push_back(label, json_new_i("device buffer size", vFarmFrame[page].driveInfo.deviceBufferSize & 0x00FFFFFFFFFFFFFFLL));								//!< Device Buffer Size in Bytes
     
     set_json_64_bit_With_Status(label, "device form factor", vFarmFrame[page].driveInfo.factor, false, m_showStatusBits);										//!< Device Form Factor (ID Word 168)
 
@@ -1963,7 +1963,7 @@ eReturnValues CSCSI_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint
     snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, GENERAL_DRIVE_INFORMATION_PARAMETER);
     json_push_back(head, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
     json_push_back(masterData, head);
-    json_push_back(masterData, json_new_i("value", vFarmFrame[page].driveInfo.heads));
+    json_push_back(masterData, json_new_i("value", M_Word0(vFarmFrame[page].driveInfo.heads)));
 
 #else
 
@@ -2213,12 +2213,13 @@ eReturnValues CSCSI_Farm_Log::print_WorkLoad(JSONNODE *masterData, uint32_t page
     }
     json_push_back(label, json_new_a("units", "count"));
 
-    json_push_back(label, json_new_i("rated workload percentaged", vFarmFrame[page].workLoadPage.workLoad.workloadPercentage));				//!< rated Workload Percentage
-    json_push_back(label, json_new_i("total number of read commands", vFarmFrame[page].workLoadPage.workLoad.totalReadCommands));			//!< Total Number of Read Commands
-    json_push_back(label, json_new_i("total number of write commands", vFarmFrame[page].workLoadPage.workLoad.totalWriteCommands));			//!< Total Number of Write Commands
-    json_push_back(label, json_new_i("total number of random read commands", vFarmFrame[page].workLoadPage.workLoad.totalRandomReads));			//!< Total Number of Random Read Commands
-    json_push_back(label, json_new_i("total number of random write commands", vFarmFrame[page].workLoadPage.workLoad.totalRandomWrites));		//!< Total Number of Random Write Commands
-    json_push_back(label, json_new_i("total number of other commands", vFarmFrame[page].workLoadPage.workLoad.totalNumberofOtherCMDS));		//!< Total Number Of Other Commands
+    snprintf((char*)myStr.c_str(), BASIC, "%" PRId64"", vFarmFrame[page].workLoadPage.workLoad.workloadPercentage & 0x00FFFFFFFFFFFFFFLL);
+    json_push_back(label, json_new_a("rated workload percentaged", (char*)myStr.c_str()));				//!< rated Workload Percentage
+    json_push_back(label, json_new_i("total number of read commands", vFarmFrame[page].workLoadPage.workLoad.totalReadCommands & 0x00FFFFFFFFFFFFFFLL));			//!< Total Number of Read Commands
+    json_push_back(label, json_new_i("total number of write commands", vFarmFrame[page].workLoadPage.workLoad.totalWriteCommands & 0x00FFFFFFFFFFFFFFLL));			//!< Total Number of Write Commands
+    json_push_back(label, json_new_i("total number of random read commands", vFarmFrame[page].workLoadPage.workLoad.totalRandomReads & 0x00FFFFFFFFFFFFFFLL));			//!< Total Number of Random Read Commands
+    json_push_back(label, json_new_i("total number of random write commands", vFarmFrame[page].workLoadPage.workLoad.totalRandomWrites & 0x00FFFFFFFFFFFFFFLL));		//!< Total Number of Random Write Commands
+    json_push_back(label, json_new_i("total number of other commands", vFarmFrame[page].workLoadPage.workLoad.totalNumberofOtherCMDS & 0x00FFFFFFFFFFFFFFLL));		//!< Total Number Of Other Commands
     snprintf((char*)myStr.c_str(), BASIC, "%" PRId64"", vFarmFrame[page].workLoadPage.workLoad.logicalSecWritten & 0x00FFFFFFFFFFFFFFLL);
     json_push_back(label, json_new_a("logical sectors written", (char*)myStr.c_str()));					//!< Logical Sectors Written
     snprintf((char*)myStr.c_str(), BASIC, "%" PRId64"", vFarmFrame[page].workLoadPage.workLoad.logicalSecRead & 0x00FFFFFFFFFFFFFFLL);
@@ -2226,14 +2227,14 @@ eReturnValues CSCSI_Farm_Log::print_WorkLoad(JSONNODE *masterData, uint32_t page
     // found a log where the length of the workload log does not match the spec. Need to check for the 0x50 length
     if (vFarmFrame[page].workLoadPage.PageHeader.plen > 0x50)
     {
-        json_push_back(label, json_new_i("number of read commands from 0-3.125% of LBA space", vFarmFrame[page].workLoadPage.workLoad.totalReadCmdsFromFrames1));		//!< Number of Read commands from 0-3.125% of LBA space for last 3 SMART Summary Frames
-        json_push_back(label, json_new_i("number of read commands from 3.125-25% of LBA space", vFarmFrame[page].workLoadPage.workLoad.totalReadCmdsFromFrames2));		//!< Number of Read commands from 3.125-25% of LBA space for last 3 SMART Summary Frames
-        json_push_back(label, json_new_i("number of read commands from 25-50% of LBA space", vFarmFrame[page].workLoadPage.workLoad.totalReadCmdsFromFrames3));		//!< Number of Read commands from 25-50% of LBA space for last 3 SMART Summary Frames
-        json_push_back(label, json_new_i("number of read commands from 50-100% of LBA space", vFarmFrame[page].workLoadPage.workLoad.totalReadCmdsFromFrames4));		//!< Number of Read commands from 50-100% of LBA space for last 3 SMART Summary Frames 
-        json_push_back(label, json_new_i("number of write commands from 0-3.125% of LBA space", vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames1));	//!< Number of Write commands from 0-3.125% of LBA space for last 3 SMART Summary Frames
-        json_push_back(label, json_new_i("number of write commands from 3.125-25% of LBA space", vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames2));	//!< Number of Write commands from 3.125-25% of LBA space for last 3 SMART Summary Frames
-        json_push_back(label, json_new_i("number of write commands from 25-50% of LBA space", vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames3));		//!< Number of Write commands from 25-50% of LBA space for last 3 SMART Summary Frames
-        json_push_back(label, json_new_i("number of write commands from 50-100% of LBA space", vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames4));		//!< Number of Write commands from 50-100% of LBA space for last 3 SMART Summary Frames 
+        json_push_back(label, json_new_i("number of read commands from 0-3.125% of LBA space", vFarmFrame[page].workLoadPage.workLoad.totalReadCmdsFromFrames1 & 0x00FFFFFFFFFFFFFFLL));		//!< Number of Read commands from 0-3.125% of LBA space for last 3 SMART Summary Frames
+        json_push_back(label, json_new_i("number of read commands from 3.125-25% of LBA space", vFarmFrame[page].workLoadPage.workLoad.totalReadCmdsFromFrames2 & 0x00FFFFFFFFFFFFFFLL));		//!< Number of Read commands from 3.125-25% of LBA space for last 3 SMART Summary Frames
+        json_push_back(label, json_new_i("number of read commands from 25-50% of LBA space", vFarmFrame[page].workLoadPage.workLoad.totalReadCmdsFromFrames3 & 0x00FFFFFFFFFFFFFFLL));		//!< Number of Read commands from 25-50% of LBA space for last 3 SMART Summary Frames
+        json_push_back(label, json_new_i("number of read commands from 50-100% of LBA space", vFarmFrame[page].workLoadPage.workLoad.totalReadCmdsFromFrames4 & 0x00FFFFFFFFFFFFFFLL));		//!< Number of Read commands from 50-100% of LBA space for last 3 SMART Summary Frames 
+        json_push_back(label, json_new_i("number of write commands from 0-3.125% of LBA space", vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames1 & 0x00FFFFFFFFFFFFFFLL));	//!< Number of Write commands from 0-3.125% of LBA space for last 3 SMART Summary Frames
+        json_push_back(label, json_new_i("number of write commands from 3.125-25% of LBA space", vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames2 & 0x00FFFFFFFFFFFFFFLL));	//!< Number of Write commands from 3.125-25% of LBA space for last 3 SMART Summary Frames
+        json_push_back(label, json_new_i("number of write commands from 25-50% of LBA space", vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames3 & 0x00FFFFFFFFFFFFFFLL));		//!< Number of Write commands from 25-50% of LBA space for last 3 SMART Summary Frames
+        json_push_back(label, json_new_i("number of write commands from 50-100% of LBA space", vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames4 & 0x00FFFFFFFFFFFFFFLL));		//!< Number of Write commands from 50-100% of LBA space for last 3 SMART Summary Frames 
     }
 
     snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, GENERAL_DRIVE_INFORMATION_06);
@@ -2343,15 +2344,15 @@ eReturnValues CSCSI_Farm_Log::print_Error_Information(JSONNODE *masterData, uint
     }
     json_push_back(label, json_new_a("units", "count"));
 
-    json_push_back(label, json_new_i("Unrecoverable read errors", vFarmFrame[page].errorPage.errorStat.totalReadECC));							//!< Number of Unrecoverable Read Errors
-    json_push_back(label, json_new_i("Unrecoverable write errors", vFarmFrame[page].errorPage.errorStat.totalWriteECC));						//!< Number of Unrecoverable Write Errors
-    json_push_back(label, json_new_i("number of reallocated sectors", vFarmFrame[page].errorPage.errorStat.totalReallocations));				//!< Number of Reallocated Sectors
-    json_push_back(label, json_new_i("number of mechanical start failures", vFarmFrame[page].errorPage.errorStat.totalMechanicalFails));		//!< Number of Mechanical Start Failures
-    json_push_back(label, json_new_i("number of reallocated candidate sectors", vFarmFrame[page].errorPage.errorStat.totalReallocatedCanidates)); //!< Number of Reallocated Candidate Sectors
-    json_push_back(label, json_new_i("number of ioedc errors", vFarmFrame[page].errorPage.errorStat.attrIOEDCErrors));					//!< Number of IOEDC Errors (SMART Attribute 184 Raw)
-    json_push_back(label, json_new_i("total flash led events", vFarmFrame[page].errorPage.errorStat.totalFlashLED));				    //!< Total Flash LED (Assert) Events
-    json_push_back(label, json_new_i("smart trip fru code", vFarmFrame[page].errorPage.errorStat.FRUCode));		                                //!< FRU code if smart trip from most recent SMART Frame
-    json_push_back(label, json_new_i("super parity on the fly recovery", vFarmFrame[page].errorPage.errorStat.parity));                         //!< Super Parity on the Fly Recovery
+    json_push_back(label, json_new_i("Unrecoverable read errors", vFarmFrame[page].errorPage.errorStat.totalReadECC & 0x00FFFFFFFFFFFFFFLL));							//!< Number of Unrecoverable Read Errors
+    json_push_back(label, json_new_i("Unrecoverable write errors", vFarmFrame[page].errorPage.errorStat.totalWriteECC & 0x00FFFFFFFFFFFFFFLL));						//!< Number of Unrecoverable Write Errors
+    json_push_back(label, json_new_i("number of reallocated sectors", vFarmFrame[page].errorPage.errorStat.totalReallocations & 0x00FFFFFFFFFFFFFFLL));				//!< Number of Reallocated Sectors
+    json_push_back(label, json_new_i("number of mechanical start failures", vFarmFrame[page].errorPage.errorStat.totalMechanicalFails & 0x00FFFFFFFFFFFFFFLL));		//!< Number of Mechanical Start Failures
+    json_push_back(label, json_new_i("number of reallocated candidate sectors", vFarmFrame[page].errorPage.errorStat.totalReallocatedCanidates & 0x00FFFFFFFFFFFFFFLL)); //!< Number of Reallocated Candidate Sectors
+    json_push_back(label, json_new_i("number of ioedc errors", vFarmFrame[page].errorPage.errorStat.attrIOEDCErrors & 0x00FFFFFFFFFFFFFFLL));					//!< Number of IOEDC Errors (SMART Attribute 184 Raw)
+    json_push_back(label, json_new_i("total flash led events", vFarmFrame[page].errorPage.errorStat.totalFlashLED & 0x00FFFFFFFFFFFFFFLL));				    //!< Total Flash LED (Assert) Events
+    json_push_back(label, json_new_i("smart trip fru code", vFarmFrame[page].errorPage.errorStat.FRUCode & 0x00FFFFFFFFFFFFFFLL));		                                //!< FRU code if smart trip from most recent SMART Frame
+    json_push_back(label, json_new_i("super parity on the fly recovery", vFarmFrame[page].errorPage.errorStat.parity & 0x00FFFFFFFFFFFFFFLL));                         //!< Super Parity on the Fly Recovery
 
 
     snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, GENERAL_DRIVE_INFORMATION_06);
@@ -2457,19 +2458,19 @@ eReturnValues CSCSI_Farm_Log::print_Error_Information_Version_4(JSONNODE *master
     }
     json_push_back(label, json_new_a("units", "count"));
 
-    json_push_back(label, json_new_i("unrecoverable read errors", vFarmFrame[page].errorPage.errorV4.totalReadECC));							//!< number of unrecoverable read errors
-    json_push_back(label, json_new_i("unrecoverable write errors", vFarmFrame[page].errorPage.errorV4.totalWriteECC));							//!< number of unrecoverable write errors
-    json_push_back(label, json_new_i("number of mechanical start failures", vFarmFrame[page].errorPage.errorV4.totalMechanicalFails));			//!< number of mechanical start failures
-    json_push_back(label, json_new_i("number of ioedc errors (raw)", vFarmFrame[page].errorPage.errorV4.attrIOEDCErrors));						//!< number of ioedc errors (smart attribute 184 raw)   
-    json_push_back(label, json_new_i("fru code if smart trip from most recent smart frame", vFarmFrame[page].errorPage.errorV4.FRUCode));		//!< fru code if smart trip from most recent smart frame
-    json_push_back(label, json_new_i("invalid dword count port a ", vFarmFrame[page].errorPage.errorV4.portAInvalidDwordCount));
-    json_push_back(label, json_new_i("invalid dword count port b", vFarmFrame[page].errorPage.errorV4.portBInvalidDwordCount));
-    json_push_back(label, json_new_i("disparity error count port a", vFarmFrame[page].errorPage.errorV4.portADisparityErrorCount));
-    json_push_back(label, json_new_i("disparity error count port b", vFarmFrame[page].errorPage.errorV4.portBDisparityErrorCount));
-    json_push_back(label, json_new_i("loss of dword sync port a", vFarmFrame[page].errorPage.errorV4.portALossDwordSync));
-    json_push_back(label, json_new_i("loss of dword sync port b", vFarmFrame[page].errorPage.errorV4.portBLossDwordSync));
-    json_push_back(label, json_new_i("phy reset problem port a", vFarmFrame[page].errorPage.errorV4.portAPhyResetProblem));
-    json_push_back(label, json_new_i("phy reset problem port b", vFarmFrame[page].errorPage.errorV4.portBPhyResetProblem));
+    json_push_back(label, json_new_i("unrecoverable read errors", M_DoubleWordInt0(vFarmFrame[page].errorPage.errorV4.totalReadECC)));							//!< number of unrecoverable read errors
+    json_push_back(label, json_new_i("unrecoverable write errors", M_DoubleWordInt0(vFarmFrame[page].errorPage.errorV4.totalWriteECC)));							//!< number of unrecoverable write errors
+    json_push_back(label, json_new_i("number of mechanical start failures", M_DoubleWordInt0(vFarmFrame[page].errorPage.errorV4.totalMechanicalFails)));			//!< number of mechanical start failures
+    json_push_back(label, json_new_i("number of ioedc errors (raw)", M_DoubleWordInt0(vFarmFrame[page].errorPage.errorV4.attrIOEDCErrors)));						//!< number of ioedc errors (smart attribute 184 raw)   
+    json_push_back(label, json_new_i("fru code if smart trip from most recent smart frame", M_DoubleWordInt0(vFarmFrame[page].errorPage.errorV4.FRUCode)));		//!< fru code if smart trip from most recent smart frame
+    json_push_back(label, json_new_i("invalid dword count port a ", M_DoubleWordInt0(vFarmFrame[page].errorPage.errorV4.portAInvalidDwordCount)));
+    json_push_back(label, json_new_i("invalid dword count port b", M_DoubleWordInt0(vFarmFrame[page].errorPage.errorV4.portBInvalidDwordCount)));
+    json_push_back(label, json_new_i("disparity error count port a", M_DoubleWordInt0(vFarmFrame[page].errorPage.errorV4.portADisparityErrorCount)));
+    json_push_back(label, json_new_i("disparity error count port b", M_DoubleWordInt0(vFarmFrame[page].errorPage.errorV4.portBDisparityErrorCount)));
+    json_push_back(label, json_new_i("loss of dword sync port a", M_DoubleWordInt0(vFarmFrame[page].errorPage.errorV4.portALossDwordSync)));
+    json_push_back(label, json_new_i("loss of dword sync port b", M_DoubleWordInt0(vFarmFrame[page].errorPage.errorV4.portBLossDwordSync)));
+    json_push_back(label, json_new_i("phy reset problem port a", M_DoubleWordInt0(vFarmFrame[page].errorPage.errorV4.portAPhyResetProblem)));
+    json_push_back(label, json_new_i("phy reset problem port b", M_DoubleWordInt0(vFarmFrame[page].errorPage.errorV4.portBPhyResetProblem)));
 
 
     snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, GENERAL_DRIVE_INFORMATION_06);
@@ -4855,6 +4856,55 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Information(JSONNODE *masterDat
     printf("\tIdle Time:                                    %" PRIu64" \n", pLUN->idleTime & 0x00FFFFFFFFFFFFFFLL);		                //!< idle Time value from the most recent SMART Summary Frame
     printf("\tNumber of LBAs Corrected by Parity Sector:    %" PRIu64" \n", pLUN->lbasCorrectedByParity & 0x00FFFFFFFFFFFFFFLL); //!< Number of LBAs Corrected by Parity Sector
 #endif
+#if defined (PREPYTHON)
+    json_push_back(masterData, json_new_a("name", "fram log"));
+    JSONNODE* label = json_new(JSON_NODE);
+    json_set_name(label, "labels");
+    json_push_back(label, json_new_a("stat_type", "lun actuator information"));
+    if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
+    {
+        json_push_back(label, json_new_a("page", "factory"));
+    }
+    else
+    {
+        json_push_back(label, json_new_i("page", actNum));
+    }
+    json_push_back(label, json_new_a("units", "count"));
+
+
+
+    json_push_back(label, json_new_i("page number", M_DoubleWordInt0(pLUN->pageNumber)));							                        //!< Page Number 
+    json_push_back(label, json_new_i("copy number ", M_DoubleWordInt0(pLUN->copyNumber)));						                            //!< Copy Number 
+    json_push_back(label, json_new_i("lun actuator id", M_DoubleWordInt0(pLUN->LUNID)));						                                //!< LUN ID 
+    json_push_back(label, json_new_i("head load events", M_DoubleWordInt0(pLUN->headLoadEvents)));											//!< Head Load Events 
+    json_push_back(label, json_new_i("number of reallocated sectors", M_DoubleWordInt0(pLUN->reallocatedSectors)));					        //!< Number of Reallocated Sectors 
+    json_push_back(label, json_new_i("number of reallocated sectors candidate", M_DoubleWordInt0(pLUN->reallocatedSectors)));				//!< Number of Reallocated Candidate Sectors  
+    json_push_back(label, json_new_i("timeStamp of last idd test", M_DoubleWordInt0(pLUN->timeStampOfIDD)));						            //!< Timestamp of last IDD test  
+    json_push_back(label, json_new_i("sub-Command of last idd Test", M_DoubleWordInt0(pLUN->subCmdOfIDD)));				                    //!< Sub-command of last IDD test 
+    json_push_back(label, json_new_i("number of reallocated sector reclamations", M_DoubleWordInt0(pLUN->reclamedGlist)));				                //!< Number of G-list reclamations  
+    json_push_back(label, json_new_i("servo status", M_DoubleWordInt0(pLUN->servoStatus)));				                                    //!< Servo Status  
+    json_push_back(label, json_new_i("number of slipped sectors before idd scan", M_DoubleWordInt0(pLUN->slippedSectorsBeforeIDD)));			//!< Number of Slipped Sectors Before IDD Scan 
+    json_push_back(label, json_new_i("number of slipped sectors after idd scan", M_DoubleWordInt0(pLUN->slippedSectorsAfterIDD)));			//!< Number of Slipped Sectors After IDD Scan 
+    json_push_back(label, json_new_i("number of resident reallocated sectors before idd scan", M_DoubleWordInt0(pLUN->residentReallocatedBeforeIDD)));	//!< Number of Resident Reallocated Sectors Before IDD Scan
+    json_push_back(label, json_new_i("number of resident reallocated sectors after idd scan", M_DoubleWordInt0(pLUN->residentReallocatedAfterIDD)));	//!< Number of Resident Reallocated Sectors After IDD Scan
+    json_push_back(label, json_new_i("successfully scrubbed sectors before idd scan", M_DoubleWordInt0(pLUN->successScrubbedBeforeIDD)));	//!< Number of Successfully Scrubbed Sectors Before IDD Scan 
+    json_push_back(label, json_new_i("successfully scrubbed sectors after idd scan", M_DoubleWordInt0(pLUN->successScrubbedAfterIDD)));		//!< Number of Successfully Scrubbed Sectors After IDD Scan 
+    json_push_back(label, json_new_i("number of dos scans performed", M_DoubleWordInt0(pLUN->dosScansPerformed)));	                        //!< Number of DOS Scans Performed 
+    json_push_back(label, json_new_i("number of lbas corrected by isp", M_DoubleWordInt0(pLUN->correctedLBAbyISP)));                         //!< Number of LBAs Corrected by ISP  
+    json_push_back(label, json_new_i("number of valid parity sectors", M_DoubleWordInt0(pLUN->paritySectors)));                              //!< Number of Valid Parity Sectors  
+    json_push_back(label, json_new_i("rv absulute mean", M_DoubleWordInt0(pLUN->RVabsolue)));									            //!< RV Absulute Mean
+    json_push_back(label, json_new_i("max rv absolute mean", M_DoubleWordInt0(pLUN->maxRVabsolue)));							                //!< Max RV absulute Mean 
+    snprintf((char*)myStr.c_str(), BASIC, "%0.03lf", static_cast<double>(M_DoubleWord0(check_Status_Strip_Status(pLUN->idleTime)) * 1.0) / 3600);
+    json_push_back(label, json_new_a("idle time (hours)", (char*)myStr.c_str()));                                 //!< idle Time value from the most recent SMART Summary Frame
+    json_push_back(label, json_new_i("number of lbas corrected by parity sector", M_DoubleWordInt0(pLUN->lbasCorrectedByParity)));           //!< Number of LBAs Corrected by Parity Sector
+
+
+    snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, actNum);
+    json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
+    json_push_back(masterData, label);
+    json_push_back(masterData, json_new_i("value", 0));
+
+#else
     if (pLUN->copyNumber == FACTORYCOPY)
     {
         snprintf((char*)myStr.c_str(), BASIC, "LUN Actuator 0x%" PRIX16" Information From Farm Log copy FACTORY",M_Word0(pLUN->LUNID));
@@ -4890,7 +4940,7 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Information(JSONNODE *masterDat
     set_json_string_With_Status(pageInfo, "Idle Time (hours)", (char*)myStr.c_str(), pLUN->idleTime, m_showStatusBits);                                 //!< idle Time value from the most recent SMART Summary Frame
     set_json_64_bit_With_Status(pageInfo, "Number of LBAs Corrected by Parity Sector", pLUN->lbasCorrectedByParity, false, m_showStatusBits);           //!< Number of LBAs Corrected by Parity Sector
     json_push_back(masterData, pageInfo);
-
+#endif
     return SUCCESS;
 }
 //-----------------------------------------------------------------------------
@@ -4952,6 +5002,53 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_FLED_Info(JSONNODE *masterData,
 
 
 #endif
+#if defined (PREPYTHON)
+    json_push_back(masterData, json_new_a("name", "farm log"));
+    JSONNODE* label = json_new(JSON_NODE);
+    json_set_name(label, "labels");
+    json_push_back(label, json_new_a("stat_type", "lun actuator information"));
+    if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
+    {
+        json_push_back(label, json_new_a("page", "factory"));
+    }
+    else
+    {
+        json_push_back(label, json_new_i("page", actNum));
+    }
+    json_push_back(label, json_new_a("units", "count"));
+
+    json_push_back(label, json_new_i("Page Number", M_DoubleWordInt0(pFLED->pageNumber)));							 //!< Page Number 
+    json_push_back(label, json_new_i("Copy Number", M_DoubleWordInt0(pFLED->copyNumber)));						     //!< Copy Number 
+    json_push_back(label, json_new_i("Actuator ID", M_DoubleWordInt0(pFLED->actID)));						             //!< LUN ID 
+    json_push_back(label, json_new_i("Total Flash LED Evnets", M_DoubleWordInt0(pFLED->totalFLEDEvents)));				 //!< Head Load Events 
+    json_push_back(label, json_new_i("Index of Last Flash LED", M_DoubleWordInt0(pFLED->index)));
+    for (i = 0; i < FLASH_EVENTS; i++)
+    {
+
+        json_push_back(label, json_new_i("event", i));
+
+        json_push_back(label, json_new_i("Address of Event", M_DoubleWordInt0(pFLED->flashLEDArray[i])));	           //!< Info on the last 8 Flash LED (assert) Events, wrapping array
+
+        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", M_Word2(check_Status_Strip_Status(pFLED->flashLEDArray[i])));
+        json_push_back(label, json_new_a("Flash LED Code", (char*)myStr.c_str()));
+        _common.get_Assert_Code_Meaning(timeStr, M_Word2(check_Status_Strip_Status(pFLED->flashLEDArray[i])));
+        json_push_back(label, json_new_a("Flash LED Code Meaning", (char*)timeStr.c_str()));
+        snprintf((char*)myStr.c_str(), BASIC, "0x%08" PRIx32"", M_DoubleWord0(check_Status_Strip_Status(pFLED->flashLEDArray[i])));
+        json_push_back(label, json_new_a("Flash LED Address", (char*)myStr.c_str()));
+
+
+        snprintf((char*)myStr.c_str(), BASIC, "TimeStamp of Event(hours) %" PRIu16"", i);
+        snprintf((char*)timeStr.c_str(), BASIC, "%0.03f", static_cast<double>(M_DoubleWord0(check_Status_Strip_Status(pFLED->timestampForLED[i])) / 3600000) * .001);
+        json_push_back(label, json_new_a((char*)myStr.c_str(), (char*)timeStr.c_str()));            //!< Universal Timestamp (us) of last 8 Flash LED (assert) Events, wrapping array
+        snprintf((char*)myStr.c_str(), BASIC, "Power Cycle Event %" PRIu16"", i);
+        json_push_back(label, json_new_i((char*)myStr.c_str(), M_DoubleWordInt0(pFLED->powerCycleOfLED[i])));	         //!< Power Cycle of the last 8 Flash LED (assert) Events, wrapping array
+    }
+    snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, actNum);
+    json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
+    json_push_back(masterData, label);
+    json_push_back(masterData, json_new_i("value", 0));
+
+#else
     if (pFLED->copyNumber == FACTORYCOPY)
     {
         snprintf((char*)myStr.c_str(), BASIC, "Actuator Flash LED 0x%" PRIx16" Information From Farm Log copy FACTORY", M_Word0(pFLED->actID));
@@ -4993,7 +5090,7 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_FLED_Info(JSONNODE *masterData,
     }
 
     json_push_back(masterData, pageInfo);
-
+#endif
     return SUCCESS;
 }
 
@@ -5052,6 +5149,38 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Reallocation(JSONNODE *masterDa
         printf("\t%-33s:            %" PRIu64" \n",(char*)myStr.c_str(), pReal->reallocatedCauses[i] & 0x00FFFFFFFFFFFFFFLL);
     }
 #endif
+#if defined (PREPYTHON)
+    json_push_back(masterData, json_new_a("name", "farm log"));
+    JSONNODE* label = json_new(JSON_NODE);
+    json_set_name(label, "labels");
+    json_push_back(label, json_new_a("stat_type", "lun actuator information"));
+    if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
+    {
+        json_push_back(label, json_new_a("page", "factory"));
+    }
+    else
+    {
+        json_push_back(label, json_new_i("page", actNum));
+    }
+    json_push_back(label, json_new_a("units", "count"));
+
+    json_push_back(label, json_new_i("Page Number", M_DoubleWordInt0(pReal->pageNumber)));							                        //!< Page Number 
+    json_push_back(label, json_new_i("Copy Number", M_DoubleWordInt0(pReal->copyNumber)));						                            //!< Copy Number 
+    json_push_back(label, json_new_i("Actuator ID", M_DoubleWordInt0(pReal->actID)));						                                        //!< LUN ID 
+    json_push_back(label, json_new_i("Number of Reallocated Sectors", M_DoubleWordInt0(pReal->numberReallocatedSectors)));											//!< Head Load Events 
+    json_push_back(label, json_new_i("Number of Reallocated Candidate Sectors", M_DoubleWordInt0(pReal->numberReallocatedCandidates)));
+
+    for (i = 0; i < REALLOCATIONEVENTS; i++)
+    {
+        _common.get_Reallocation_Cause_Meanings(myStr, i);
+        json_push_back(label, json_new_i((char*)myStr.c_str(), M_DoubleWordInt0(pReal->reallocatedCauses[i])));
+    }
+    snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, actNum);
+    json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
+    json_push_back(masterData, label);
+    json_push_back(masterData, json_new_i("value", 0));
+
+#else
     if (pReal->copyNumber == FACTORYCOPY)
     {
         snprintf((char*)myStr.c_str(), BASIC, "LUN Actuator 0x%" PRIx16" Reallocation From Farm Log copy FACTORY", M_Word0(pReal->actID));
@@ -5074,7 +5203,7 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Reallocation(JSONNODE *masterDa
         set_json_64_bit_With_Status(pageInfo, (char*)myStr.c_str(), pReal->reallocatedCauses[i] , false, m_showStatusBits);
     }
     json_push_back(masterData, pageInfo);
-
+#endif
     return SUCCESS;
 }
 
