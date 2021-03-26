@@ -1144,7 +1144,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     {
                         sScsiReliStatVersion4 *pReli;                                              // get the Reliabliity stat
                         pReli = (sScsiReliStatVersion4 *)&pBuf[offset];
-                        memcpy((sScsiReliStatVersion4 *)&pFarmFrame->reliPage, pReli, pReli->pPageHeader.plen + 4);
+                        memcpy((sScsiReliStatVersion4 *)&pFarmFrame->reliPage.reli4, pReli, pReli->pPageHeader.plen + 4);
                         swap_Bytes_sScsiReliabilityStat(&pFarmFrame->reliPage);
                         offset += (pReli->pPageHeader.plen + sizeof(sScsiPageParameter));
                     }
@@ -3076,8 +3076,6 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tDisc Slip in micro-inches for Head %" PRIu32":  raw 0x%" PRIx64", calculated %" PRIi16".%04.0f (debug) \n" \
                     , loopCount, vFarmFrame[page].discSlipPerHead.headValue[loopCount], whole, decimal);  //!< Disc Slip in micro-inches
 #endif
-                snprintf((char*)myHeader.c_str(), BASIC, "Disc Slip in micro-inches for Head %" PRIu32"", loopCount); // Head count
-                snprintf((char*)myStr.c_str(), BASIC, "%" PRIi16".%04.0f", whole,decimal);                                      //!< Disc Slip in micro-inches by Head
                 
 #if defined (PREPYTHON)
                 snprintf((char*)myHeader.c_str(), BASIC, "disc_Slip_in_micro-inches_for_head_%" PRIu32"", loopCount); // Head count
@@ -3103,6 +3101,9 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
 
                 json_push_back(headPage, json_new_a("value", (char*)myStr.c_str()));
 #else
+                snprintf((char*)myHeader.c_str(), BASIC, "Disc Slip in micro-inches for Head %" PRIu32"", loopCount); // Head count
+                snprintf((char*)myStr.c_str(), BASIC, "%" PRIi16".%04.0f", whole, decimal);                                      //!< Disc Slip in micro-inches by Head
+
                 set_json_string_With_Status(headPage, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].discSlipPerHead.headValue[loopCount], m_showStatusBits);
 #endif
             }
@@ -5150,7 +5151,7 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Reallocation(JSONNODE *masterDa
     }
 #endif
 #if defined (PREPYTHON)
-    json_push_back(masterData, json_new_a("name", "farm log"));
+    json_push_back(masterData, json_new_a("name", "device_storage_farm_log"));
     JSONNODE* label = json_new(JSON_NODE);
     json_set_name(label, "labels");
     json_push_back(label, json_new_a("stat_type", "lun actuator information"));
@@ -5225,7 +5226,6 @@ void CSCSI_Farm_Log::print_All_Pages(JSONNODE *masterData)
     if (vFarmFrame.size() > 0)
     {
         print_Header(masterData);
-        //set_Head_Header(myHeader, type);
         JSONNODE *headPage = json_new(JSON_NODE);
         json_set_name(headPage, "Head Information From Farm Log copy 0");
         for (uint32_t index = 0; index < vFarmFrame.size(); ++index)
@@ -5311,7 +5311,7 @@ void CSCSI_Farm_Log::print_All_Pages(JSONNODE *masterData)
                 case RESERVED_FOR_FUTURE_EXPANSION_18:
                 case RESERVED_FOR_FUTURE_EXPANSION_19:
                 case SECOND_MR_HEAD_RESISTANCE:
-                    print_Head_Information(vFarmFrame.at(index).vFramesFound.at(pramCode), headPage, index);
+                    print_Head_Information(vFarmFrame.at(index).vFramesFound.at(pramCode), headPage, index);   
                     break;
                 case FAFH_MEASUREMENT_STATUS:            // FAFH Measurement Status, bitwise OR across all diameters per head
                     print_Head_Information(vFarmFrame.at(index).vFramesFound.at(pramCode), headPage, index);
@@ -5346,6 +5346,7 @@ void CSCSI_Farm_Log::print_All_Pages(JSONNODE *masterData)
                 case FAFH_HIGH_FREQUENCY_2:              // FAFH High Frequency Passive Clearance in ADC counts Diameter 2 : outer
                     print_Head_Information(vFarmFrame.at(index).vFramesFound.at(pramCode), headPage, index);
                     break;
+
                 case RESERVED_FOR_FUTURE_EXPANSION_31:
                     break;
                 case LUN_0_ACTUATOR:
@@ -5448,7 +5449,9 @@ void CSCSI_Farm_Log::print_All_Pages(JSONNODE *masterData)
                 }
             }
         }
+#if !defined (PREPYTHON)
         json_push_back(masterData, headPage);
+#endif
     }
 }
 //-----------------------------------------------------------------------------
@@ -5532,17 +5535,25 @@ void CSCSI_Farm_Log::print_Page_Without_Drive_Info(JSONNODE *masterData, uint32_
             print_Error_Information(masterData, page);
             print_Enviroment_Information(masterData, page);
             print_Reli_Information(masterData, page);
+#if defined (PREPYTHON)
+            for (uint32_t frame = 0; frame < vFarmFrame.at(page).vFramesFound.size(); frame++)
+            {
+                print_Head_Information(vFarmFrame.at(page).vFramesFound.at(frame), masterData, page);
+            }
+#else
             JSONNODE *headInfoPage = json_new(JSON_NODE);
             std::string myStr = " ";
             myStr.resize(BASIC);
             snprintf((char*)myStr.c_str(), BASIC, "Head Information From Farm Log copy: %" PRId32"", page);
 
             json_set_name(headInfoPage, (char*)myStr.c_str());
+
             for (uint32_t frame = 0; frame < vFarmFrame.at(page).vFramesFound.size(); frame++)
             {
-                print_Head_Information(vFarmFrame.at(page).vFramesFound.at(frame), masterData, page);
+                print_Head_Information(vFarmFrame.at(page).vFramesFound.at(frame), headInfoPage, page);
             }
             json_push_back(masterData, headInfoPage);
+#endif
         }
     }
 }
