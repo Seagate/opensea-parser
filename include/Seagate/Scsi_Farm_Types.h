@@ -287,6 +287,7 @@ typedef struct _sScsiErrorStatVersion4
     uint64_t            reserved10;									//!< Reserved
     uint64_t            reserved11;								    //!< reserved
     uint64_t            reserved12;									//!< Reserved
+    uint64_t            reserved13;									//!< Reserved
     uint64_t            FRUCode;									//!< FRU code if smart trip from most recent SMART Frame (SAS only) 
     uint64_t            portAInvalidDwordCount;                     //!< Invalid DWord Count (Port A)
     uint64_t            portBInvalidDwordCount;                     //!< Invalid DWord Count (Port B)
