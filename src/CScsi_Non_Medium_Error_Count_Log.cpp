@@ -126,6 +126,22 @@ void CScsiNonMediumErrorCountLog::process_Non_Medium_Error_Count_Data(JSONNODE *
 		printf("Non-Medium Error Count Log Parameters\n");
 #endif
 		byte_Swap_16(&m_CountErrors->paramCode);
+#if defined (PREPYTHON)
+		JSONNODE* label = json_new(JSON_NODE);
+		json_set_name(label, "labels");
+		snprintf((char*)myStr.c_str(), BASIC, "Non-Medium Error Count Log Parameters 0x%04" PRIx16"", m_CountErrors->paramCode);
+		json_push_back(label, json_new_a("stat_type", (char*)myStr.c_str()));
+
+
+		json_push_back(label, json_new_a("units", "count"));
+	
+		snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRIx8":0x%" PRIx16":0x%" PRIx8":%" PRId8"", NONMEDIUMERRORLOG, NONMEDIUMERRORSUBPAGE, m_CountErrors->paramCode, m_CountErrors->paramControlByte, m_CountErrors->paramLength);
+		json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
+		json_push_back(countData, label);
+		snprintf((char*)myStr.c_str(), BASIC, "%" PRIu64"", m_Value);
+		json_push_back(countData, json_new_a("value", (char*)myStr.c_str()));
+
+#else
 
 		snprintf((char*)myStr.c_str(), BASIC, "Non-Medium Error Count Log Parameters 0x%04" PRIx16"", m_CountErrors->paramCode);
 		JSONNODE *cacheInfo = json_new(JSON_NODE);
@@ -148,6 +164,7 @@ void CScsiNonMediumErrorCountLog::process_Non_Medium_Error_Count_Data(JSONNODE *
 		}
 
 		json_push_back(countData, cacheInfo);
+#endif
 	}
 }
 //-----------------------------------------------------------------------------
@@ -251,6 +268,108 @@ eReturnValues CScsiNonMediumErrorCountLog::get_Non_Medium_Error_Count_Data(JSONN
 			}
 		}
 		json_push_back(masterData, pageInfo);
+		retStatus = SUCCESS;
+	}
+	else
+	{
+		retStatus = MEMORY_FAILURE;
+	}
+	return retStatus;
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn get_Flat_Non_Medium_Error_Count_Data
+//
+//! \brief
+//!   Description: parser out the data for the Non-Medium Error Count Log
+//
+//  Entry:
+//! \param masterData - Json node that holds all the data 
+//
+//  Exit:
+//!   \return eReturnValues
+//
+//---------------------------------------------------------------------------
+eReturnValues CScsiNonMediumErrorCountLog::get_Flat_Non_Medium_Error_Count_Data(JSONNODE* masterData)
+{
+	eReturnValues retStatus = IN_PROGRESS;
+	if (pData != NULL)
+	{
+		for (size_t offset = 0; offset < m_PageLength; )
+		{
+			if (offset < m_bufferLength && offset < UINT16_MAX)
+			{
+				m_CountErrors = (sNonMediumErrorCount*)&pData[offset];
+				offset += sizeof(sNonMediumErrorCount);
+				switch (m_CountErrors->paramLength)
+				{
+				case 1:
+				{
+					if ((offset + m_CountErrors->paramLength) < m_bufferLength)
+					{
+						m_Value = pData[offset];
+						offset += m_CountErrors->paramLength;
+					}
+					else
+					{
+						return BAD_PARAMETER;
+					}
+					break;
+				}
+				case 2:
+				{
+					if ((offset + m_CountErrors->paramLength) < m_bufferLength)
+					{
+						m_Value = M_BytesTo2ByteValue(pData[offset], pData[offset + 1]);
+						offset += m_CountErrors->paramLength;
+					}
+					else
+					{
+						return BAD_PARAMETER;
+					}
+					break;
+				}
+				case 4:
+				{
+					if ((offset + m_CountErrors->paramLength) < m_bufferLength)
+					{
+						m_Value = M_BytesTo4ByteValue(pData[offset], pData[offset + 1], pData[offset + 2], pData[offset + 3]);
+						offset += m_CountErrors->paramLength;
+					}
+					else
+					{
+						return BAD_PARAMETER;
+					}
+					break;
+				}
+				case 8:
+				{
+					if ((offset + m_CountErrors->paramLength) < m_bufferLength)
+					{
+						m_Value = M_BytesTo8ByteValue(pData[offset], pData[offset + 1], pData[offset + 2], pData[offset + 3], pData[offset + 4], pData[offset + 5], pData[offset + 6], pData[offset + 7]);
+						offset += m_CountErrors->paramLength;
+					}
+					else
+					{
+						return BAD_PARAMETER;
+					}
+					break;
+				}
+				default:
+				{
+					return BAD_PARAMETER;
+					break;
+				}
+				}
+				process_Non_Medium_Error_Count_Data(masterData);
+
+				json_push_back(masterData, json_new_a("name", "device_storage_nonmedium_error"));
+			}
+			else
+			{
+				return BAD_PARAMETER;
+			}
+		}
 		retStatus = SUCCESS;
 	}
 	else

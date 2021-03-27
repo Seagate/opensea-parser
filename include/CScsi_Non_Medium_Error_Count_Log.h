@@ -21,6 +21,10 @@
 namespace opensea_parser {
 #ifndef SCSIMEDIUMLOG
 #define SCSIMEDIUMLOG
+
+#define NONMEDIUMERRORLOG 0x6
+#define NONMEDIUMERRORSUBPAGE 0x00
+
 #pragma pack(push, 1)
 	typedef struct _sNonMediumErrorCountParameters
 	{
@@ -47,12 +51,20 @@ namespace opensea_parser {
 
 		void process_Non_Medium_Error_Count_Data(JSONNODE *countData);
 		eReturnValues get_Non_Medium_Error_Count_Data(JSONNODE *masterData);
+		eReturnValues get_Flat_Non_Medium_Error_Count_Data(JSONNODE* masterData);
 	public:
 		CScsiNonMediumErrorCountLog();
 		CScsiNonMediumErrorCountLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength);
 		virtual ~CScsiNonMediumErrorCountLog();
 		virtual eReturnValues get_Log_Status() { return m_NMECStatus; };
-		virtual eReturnValues parse_Non_Medium_Error_Count_Log(JSONNODE *masterData) { return get_Non_Medium_Error_Count_Data(masterData); };
+		virtual eReturnValues parse_Non_Medium_Error_Count_Log(JSONNODE *masterData) 
+		{ 
+#if defined (PREPYTHON)
+			return get_Flat_Non_Medium_Error_Count_Data(masterData);
+#else
+			return get_Non_Medium_Error_Count_Data(masterData); 
+#endif
+		};
 
 	};
 #endif
