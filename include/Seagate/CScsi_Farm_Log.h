@@ -77,6 +77,7 @@ namespace opensea_parser {
         void get_LUN_Info(sLUNStruct *pLUN, uint8_t *buffer);
 		
 		eReturnValues init_Header_Data();
+        eReturnValues init_buffer_Header_Data();
         eReturnValues print_Header(JSONNODE *masterData);
         eReturnValues print_Drive_Information(JSONNODE *masterData, uint32_t page);
         eReturnValues print_General_Drive_Information_Continued(JSONNODE *masterData, uint32_t page);
@@ -92,6 +93,7 @@ namespace opensea_parser {
         eReturnValues print_LUN_Actuator_Reallocation(JSONNODE *masterData, uint32_t page, uint16_t actNum);
     public:
         CSCSI_Farm_Log();
+        CSCSI_Farm_Log(uint8_t* bufferData, size_t bufferSize);
         CSCSI_Farm_Log(uint8_t *bufferData, size_t bufferSize,bool showStatus);
         virtual ~CSCSI_Farm_Log();
         eReturnValues parse_Farm_Log();

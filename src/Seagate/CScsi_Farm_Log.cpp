@@ -63,6 +63,69 @@ CSCSI_Farm_Log::CSCSI_Farm_Log()
 //
 //---------------------------------------------------------------------------
 
+CSCSI_Farm_Log::CSCSI_Farm_Log(uint8_t* bufferData, size_t bufferSize)
+    : m_totalPages()
+    , m_logSize(bufferSize)
+    , m_pageSize(0)
+    , m_heads(0)
+    , m_MaxHeads(0)
+    , m_copies(0)
+    , m_MajorRev(0)
+    , m_MinorRev(0)
+    , pBuf(NULL)
+    , m_status(IN_PROGRESS)
+    , m_logParam()
+    , m_pageParam()
+    , m_pHeader()
+    , m_pDriveInfo()
+    , m_alreadySet(false)
+    , m_showStatusBits(false)
+{
+    m_status = IN_PROGRESS;
+    if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+    {
+        printf("SCSI FARM Log \n");
+    }
+
+    pBuf = new uint8_t[bufferSize];								// new a buffer to the point				
+#ifndef _WIN64
+    memcpy(pBuf, bufferData, bufferSize);
+#else
+    memcpy_s(pBuf, bufferSize, bufferData, bufferSize);// copy the buffer data to the class member pBuf
+#endif
+    if (pBuf != NULL)
+    {
+        if (init_buffer_Header_Data() == SUCCESS)							// init the data for getting the log
+        {
+            m_status = parse_Farm_Log();
+        }
+        else
+        {
+            m_status = FAILURE;
+        }
+    }
+    else
+    {
+        m_status = FAILURE;
+    }
+    delete[] pBuf;
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn CSCSI_Farm_Log::CSCSI_Farm_Log()
+//
+//! \brief
+//!   Description: default Class constructor
+//
+//  Entry:
+//! \parma securityPrintLevel = the level of the print
+//! \param bufferData = pointer to the buffer data.
+//
+//  Exit:
+//!   \return 
+//
+//---------------------------------------------------------------------------
+
 CSCSI_Farm_Log::CSCSI_Farm_Log( uint8_t *bufferData, size_t bufferSize, bool showStatus)
 	: m_totalPages()                                       
 	, m_logSize(0)                                             
@@ -70,16 +133,22 @@ CSCSI_Farm_Log::CSCSI_Farm_Log( uint8_t *bufferData, size_t bufferSize, bool sho
 	, m_heads(0)                                   
 	, m_MaxHeads(0)                                
 	, m_copies(0)
+    , m_MajorRev(0)
     , m_MinorRev(0)
     , pBuf(NULL)
     , m_status(IN_PROGRESS)                                
 	, m_logParam()
 	, m_pageParam()
+    , m_pHeader()
     , m_pDriveInfo() 
 	, m_alreadySet(false)          
 	, m_showStatusBits(showStatus)
 {
     m_status = IN_PROGRESS;
+    if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+    {
+        printf("SCSI FARM Log \n");
+    }
 
 	pBuf = new uint8_t[bufferSize];								// new a buffer to the point				
 #ifndef _WIN64
@@ -124,6 +193,48 @@ CSCSI_Farm_Log::~CSCSI_Farm_Log()
     {
         vFarmFrame.clear();                                    // clear the vector
     }
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn init_Header_Data()
+//
+//! \brief
+//!   Description:  initialize teh header data and the objects member data.
+//
+//  Entry:
+//! None
+//
+//  Exit:
+//!   \return eReturnValues - MEMORY_FAILURE - if the buffer is NULL
+//
+//---------------------------------------------------------------------------
+eReturnValues CSCSI_Farm_Log::init_buffer_Header_Data()
+{
+    if (pBuf == NULL)
+    {
+        return MEMORY_FAILURE;
+    }
+    else
+    {
+        //m_logParam = (sScsiLogParameter*)&pBuf[0];
+        //m_logSize = m_logParam->length;									    // set the class log size 
+        //byte_Swap_16(&m_logSize);
+
+        m_pHeader = (sScsiFarmHeader*)&pBuf[0];
+        swap_Bytes_sFarmHeader(m_pHeader);											// swap all the bytes for the header
+        m_totalPages = M_DoubleWord0(m_pHeader->farmHeader.pagesSupported);			// get the total pages
+        m_pageSize = M_DoubleWord0(m_pHeader->farmHeader.pageSize);					// get the page size
+        if (check_For_Active_Status(&m_pHeader->farmHeader.headsSupported))			// the the number of heads if supported
+        {
+            if ((m_pHeader->farmHeader.headsSupported & 0x00FFFFFFFFFFFFFFLL) > 0)
+            {
+                m_heads = M_DoubleWord0(m_pHeader->farmHeader.headsSupported);
+                m_MaxHeads = M_DoubleWord0(m_pHeader->farmHeader.headsSupported);
+            }
+        }
+        m_copies = M_DoubleWord0(m_pHeader->farmHeader.copies);						// finish up with the number of copies (not supported "YET" in SAS)
+    }
+    return SUCCESS;
 }
 //-----------------------------------------------------------------------------
 //
@@ -1022,9 +1133,14 @@ void CSCSI_Farm_Log::get_LUN_Info(sLUNStruct *pLUN, uint8_t *buffer)
 //---------------------------------------------------------------------------
 eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
 {
-    uint64_t offset = 4;                                                                    // the first page starts at offset 4                                   
+    uint64_t offset = 0;                                                                    // the first page starts at offset 4                                   
     bool headerAlreadyFound = false;                                                        // set to false, for files that are missing data
     sScsiFarmFrame *pFarmFrame = new sScsiFarmFrame();								       	// create the pointer to the union
+
+    if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+    {
+        printf("SCSI parse FARM Log\n");
+    }
 
     if (pBuf == NULL)
     {
@@ -1032,6 +1148,15 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
     }
     uint64_t signature = m_pHeader->farmHeader.signature & 0x00FFFFFFFFFFFFFFLL;
     m_MajorRev = M_DoubleWord0(m_pHeader->farmHeader.majorRev);
+    if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+    {
+        printf("SCSI parse 0x%" PRIx64" \n", m_pHeader->farmHeader.signature);
+        printf("SCSI parse 0x%" PRIx64" \n", m_pHeader->farmHeader.majorRev);
+        printf("SCSI parse 0x%" PRIx64" \n", m_pHeader->farmHeader.minorRev);
+        printf("SCSI parse 0x%" PRIx64" \n", m_pHeader->farmHeader.pageSize);
+        printf("SCSI parse 0x%" PRIx64" \n", m_pHeader->farmHeader.headsSupported);
+        printf("SCSI parse 0x%" PRIx64" \n", m_pHeader->farmHeader.logSize);
+    }
     if (signature != FARMSIGNATURE || signature == 0x00FFFFFFFFFFFFFF)
     {
         return VALIDATION_FAILURE;
@@ -1053,6 +1178,12 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                 if (!headerAlreadyFound || (m_pageParam->pramCode != 0x0000 && m_pageParam->pramCode < 0x008F))
                 {
                     pFarmFrame->vFramesFound.push_back((eLogPageTypes)m_pageParam->pramCode);                // collect all the log page types in a vector to pump them out at the end
+                }
+                if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+                {
+                    printf("param param length 0x%" PRIx8" \n", m_pageParam->plen);
+                    printf("param param code 0x04%" PRIx16" \n", m_pageParam->pramCode);
+                    printf("param param controlbyte 0x%" PRIx8" \n", m_pageParam->pramControl);
                 }
                 switch (m_pageParam->pramCode)
                 {
