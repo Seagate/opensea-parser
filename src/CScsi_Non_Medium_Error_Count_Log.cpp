@@ -301,11 +301,17 @@ eReturnValues CScsiNonMediumErrorCountLog::get_Flat_Non_Medium_Error_Count_Data(
 			{
 				m_CountErrors = (sNonMediumErrorCount*)&pData[offset];
 				offset += sizeof(sNonMediumErrorCount);
+				if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+				{
+					printf("param length 0x%" PRIx8" \n", m_CountErrors->paramLength);
+					printf("param code 0x%" PRIx16" \n", m_CountErrors->paramCode);
+					printf("param controlbyte 0x%" PRIx8" \n", m_CountErrors->paramControlByte);
+				}
 				switch (m_CountErrors->paramLength)
 				{
 				case 1:
 				{
-					if ((offset + m_CountErrors->paramLength) < m_bufferLength)
+					if ((offset + m_CountErrors->paramLength) <= m_bufferLength)
 					{
 						m_Value = pData[offset];
 						offset += m_CountErrors->paramLength;
@@ -318,7 +324,7 @@ eReturnValues CScsiNonMediumErrorCountLog::get_Flat_Non_Medium_Error_Count_Data(
 				}
 				case 2:
 				{
-					if ((offset + m_CountErrors->paramLength) < m_bufferLength)
+					if ((offset + m_CountErrors->paramLength) <= m_bufferLength)
 					{
 						m_Value = M_BytesTo2ByteValue(pData[offset], pData[offset + 1]);
 						offset += m_CountErrors->paramLength;
@@ -331,7 +337,7 @@ eReturnValues CScsiNonMediumErrorCountLog::get_Flat_Non_Medium_Error_Count_Data(
 				}
 				case 4:
 				{
-					if ((offset + m_CountErrors->paramLength) < m_bufferLength)
+					if ((offset + m_CountErrors->paramLength) <= m_bufferLength)
 					{
 						m_Value = M_BytesTo4ByteValue(pData[offset], pData[offset + 1], pData[offset + 2], pData[offset + 3]);
 						offset += m_CountErrors->paramLength;
@@ -344,7 +350,7 @@ eReturnValues CScsiNonMediumErrorCountLog::get_Flat_Non_Medium_Error_Count_Data(
 				}
 				case 8:
 				{
-					if ((offset + m_CountErrors->paramLength) < m_bufferLength)
+					if ((offset + m_CountErrors->paramLength) <= m_bufferLength)
 					{
 						m_Value = M_BytesTo8ByteValue(pData[offset], pData[offset + 1], pData[offset + 2], pData[offset + 3], pData[offset + 4], pData[offset + 5], pData[offset + 6], pData[offset + 7]);
 						offset += m_CountErrors->paramLength;
