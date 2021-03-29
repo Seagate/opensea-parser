@@ -14,7 +14,7 @@ NAME=opensea-parser
 #Change the Major version when major interface changes are made.
 MAJOR=0
 #Change the Minor version when new features are added. 
-MINOR=0
+MINOR=1
 #Change the patch version when only bug fixes are made.
 PATCH=14
 
@@ -31,9 +31,10 @@ VERSION=$(MAJOR).$(MINOR).$(PATCH)
 SRC_DIR=../../src/
 INC_DIR=-I../../include -I../../include/Seagate -I../../../opensea-common/include -I../../../libjson
 CXX ?= g++
-CXXFLAGS ?= -Wall
+CXXFLAGS ?= -Wall -Wextra
 CXXFLAGS += -c -fPIC -std=c++98 -I.
 ARCHIVE ?= ar
+LFLAGS ?= -Wall-Wl,--whole-archive ../../../opensea-common/Make/gcc/lib/$(FILE_OUTPUT_DIR)/libopensea-common.a -Wl,--no-whole-archive
 LIB_SRC_FILES = \
     $(SRC_DIR)Opensea_Parser_Helper.cpp\
     $(SRC_DIR)CLog.cpp\
@@ -82,7 +83,10 @@ FILE_OUTPUT_DIR=lib
 
 #-include $(DEPFILES)
 
-.PHONY: all 
+.PHONY: all
+ 
+python: PROJECT_DEFINES += -DPREPYTHON
+python: all 
 
 all: clean mkoutputdir $(LIBS) done
 
@@ -94,6 +98,8 @@ $(LIBS): $(LIB_OBJ_FILES)
 	$(ARCHIVE) cq $(FILE_OUTPUT_DIR)/$@ $(LIB_OBJ_FILES)
 # Removing the line below since we don't need a shared object for this right now...a static library is enough for the common stuff
 	$(CXX) $(LXXFLAGS) $(LIB_OBJ_FILES) -o lib$(NAME).so.$(VERSION)
+	cd $(FILE_OUTPUT_DIR) && ln -s lib$(NAME).so* lib$(NAME).so
+
 clean: banner
 	rm -f $(SRC_DIR)*.o
 	rm -f $(SRC_DIR)Seagate/*.o
