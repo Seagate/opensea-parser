@@ -219,10 +219,14 @@ typedef struct _sScsiDriveInfo
 	uint64_t            poh;                                        //!< Power-on Hours
 	uint64_t            reserved3;									//!< reserved
 	uint64_t            reserved4;									//!< reserved
-	uint64_t            headLoadEvents;                             //!< Head Load Events
+    union {
+        uint64_t            headLoadEvents;                         //!< Head Load Events
+        uint64_t            reserved5;								//!< reserved
+    };
+	
 	uint64_t            powerCycleCount;                            //!< Power Cycle Count
 	uint64_t            resetCount;                                 //!< Hardware Reset Count
-	uint64_t            reserved5;                                  //!< reserved
+	uint64_t            reserved6;                                  //!< reserved
 	uint64_t            NVC_StatusATPowerOn;                        //!< NVC Status on Power-on
 	uint64_t            timeAvailable;                              //!< Time Available to Save User Data to Media Over Last Power Cycle (in 100us)
 	uint64_t            firstTimeStamp;                             //!< Timestamp of first SMART Summary Frame in Power-On Hours Milliseconds
@@ -230,7 +234,7 @@ typedef struct _sScsiDriveInfo
     uint64_t            dateOfAssembly;                             //!< Date of Assembly in ASCII “YYWW” where YY is the year and WW is the calendar week
 	_sScsiDriveInfo() :pageNumber(0), copyNumber(0), serialNumber(0), serialNumber2(0), worldWideName(0), worldWideName2(0), deviceInterface(0), deviceCapacity(0), \
 		psecSize(0), lsecSize(0), deviceBufferSize(0), heads(0), factor(0), rotationRate(0), firmware(0), firmwareRev(0), reserved(0), reserved1(0), reserved2(0), poh(0), reserved3(0), \
-		reserved4(0), headLoadEvents(0), powerCycleCount(0), resetCount(0), reserved5(0), NVC_StatusATPowerOn(0), timeAvailable(0), firstTimeStamp(0), lastTimeStamp(0), dateOfAssembly(0) {};
+		reserved4(0), headLoadEvents(0), powerCycleCount(0), resetCount(0), reserved6(0), NVC_StatusATPowerOn(0), timeAvailable(0), firstTimeStamp(0), lastTimeStamp(0), dateOfAssembly(0) {};
 }sScsiDriveInfo;
 
 typedef struct _sScsiWorkLoadStat
@@ -261,6 +265,7 @@ typedef struct _sScsiErrorStat
 	uint64_t            reserved8;									//!< Reserved
 	uint64_t            totalFlashLED;								//!< Total Flash LED (Assert) Events
 	uint64_t            reserved9;									//!< Reserved
+    uint64_t            reserved10;									//!< Reserved
 	uint64_t            FRUCode;									//!< FRU code if smart trip from most recent SMART Frame (SAS only) 
     uint64_t            parity;                                     //!< Super Parity on the Fly Recovery
 }sScsiErrorStat;
@@ -287,6 +292,7 @@ typedef struct _sScsiErrorStatVersion4
     uint64_t            reserved10;									//!< Reserved
     uint64_t            reserved11;								    //!< reserved
     uint64_t            reserved12;									//!< Reserved
+    uint64_t            reserved13;									//!< Reserved
     uint64_t            FRUCode;									//!< FRU code if smart trip from most recent SMART Frame (SAS only) 
     uint64_t            portAInvalidDwordCount;                     //!< Invalid DWord Count (Port A)
     uint64_t            portBInvalidDwordCount;                     //!< Invalid DWord Count (Port B)
@@ -450,8 +456,14 @@ typedef struct _sLUNStruct
     uint64_t            copyNumber;                                 //!< Copy Number
     uint64_t            LUNID;                                      //!< LUN ID
     uint64_t            headLoadEvents;                             //!< Head Load Events
-    uint64_t            reallocatedSectors;                         //!< Number of Reallocated Sectors
-    uint64_t            reallocatedCandidates;                      //!< Number of Reallocated Candidate Sectors
+    union {
+        uint64_t            reallocatedSectors;                         //!< Number of Reallocated Sectors
+        uint64_t            reserved;                                   //!< Number of Reallocated Sectors
+    };
+    union {
+        uint64_t            reallocatedCandidates;                      //!< Number of Reallocated Candidate Sectors
+        uint64_t            reserved1;                                   //!< Number of Reallocated Sectors
+    };
     uint64_t            timeStampOfIDD;                             //!< Timestamp of last IDD test
     uint64_t            subCmdOfIDD;                                //!< Sub - command of last IDD test
     uint64_t            reclamedGlist;                              //!< Number of G - list reclamations
