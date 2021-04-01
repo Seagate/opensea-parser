@@ -369,7 +369,7 @@ eReturnValues CScsiNonMediumErrorCountLog::get_Flat_Non_Medium_Error_Count_Data(
 				}
 				process_Non_Medium_Error_Count_Data(masterData);
 
-				json_push_back(masterData, json_new_a("name", "device_storage_nonmedium_error"));
+				json_push_back(masterData, json_new_a("name", "non_medium_error"));
 			}
 			else
 			{
