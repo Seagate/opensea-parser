@@ -451,8 +451,8 @@ typedef struct _sLUNStruct
     uint64_t            copyNumber;                                 //!< Copy Number
     uint64_t            LUNID;                                      //!< LUN ID
     uint64_t            headLoadEvents;                             //!< Head Load Events
-    uint64_t            reallocatedSectors;                         //!< Number of Reallocated Sectors
-    uint64_t            reallocatedCandidates;                      //!< Number of Reallocated Candidate Sectors
+    uint64_t            reserved;                                   //!< Reserved
+    uint64_t            reserved1;                                  //!< Reserved
     uint64_t            timeStampOfIDD;                             //!< Timestamp of last IDD test
     uint64_t            subCmdOfIDD;                                //!< Sub - command of last IDD test
     uint64_t            reclamedGlist;                              //!< Number of G - list reclamations
