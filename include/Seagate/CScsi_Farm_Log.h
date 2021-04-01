@@ -91,6 +91,10 @@ namespace opensea_parser {
         eReturnValues print_LUN_Actuator_Information(JSONNODE *masterData, uint32_t page, uint16_t actNum);
         eReturnValues print_LUN_Actuator_FLED_Info(JSONNODE *masterData, uint32_t page, uint16_t actNum);
         eReturnValues print_LUN_Actuator_Reallocation(JSONNODE *masterData, uint32_t page, uint16_t actNum);
+        void prePython_Str(JSONNODE* masterData, const char* name, const char* statType, const char* header, \
+             const char* unit, uint16_t pageNum, const char* value);
+        void prePython_int(JSONNODE* masterData, const char* name, const char* statType, const char* header, \
+            const char* unit, uint16_t pageNum, uint32_t value);
     public:
         CSCSI_Farm_Log();
         CSCSI_Farm_Log(uint8_t* bufferData, size_t bufferSize);
