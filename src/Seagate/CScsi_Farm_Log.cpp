@@ -2283,34 +2283,14 @@ eReturnValues CSCSI_Farm_Log::print_WorkLoad(JSONNODE *masterData, uint32_t page
     printf("\tNumber of Write commands from 50-100%% of LBA space   %llu  \n", vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames4 & 0x00FFFFFFFFFFFFFFLL);		//!< Number of Write commands from 50-100% of LBA space for last 3 SMART Summary Frames 
 #endif
 #if defined (PREPYTHON)
-    json_push_back(masterData, json_new_a("name", "device_storage_farm_log"));
-    JSONNODE* label = json_new(JSON_NODE);
-    json_set_name(label, "labels");
-    json_push_back(label, json_new_a("stat_type", "workload information"));
-    if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
-    {
-        json_push_back(label, json_new_a("page", "factory"));
-    }
-    else
-    {
-        json_push_back(label, json_new_i("page", page));
-    }
-    json_push_back(label, json_new_a("units", "count"));
-
-    snprintf((char*)myStr.c_str(), BASIC, "%" PRId64"", vFarmFrame[page].workLoadPage.workLoad.workloadPercentage & 0x00FFFFFFFFFFFFFFLL);
-    json_push_back(label, json_new_a("rated workload percentaged", (char*)myStr.c_str()));				//!< rated Workload Percentage
-    json_push_back(label, json_new_i("total number of read commands", vFarmFrame[page].workLoadPage.workLoad.totalReadCommands & 0x00FFFFFFFFFFFFFFLL));			//!< Total Number of Read Commands
-    json_push_back(label, json_new_i("total number of write commands", vFarmFrame[page].workLoadPage.workLoad.totalWriteCommands & 0x00FFFFFFFFFFFFFFLL));			//!< Total Number of Write Commands
-    json_push_back(label, json_new_i("total number of random read commands", vFarmFrame[page].workLoadPage.workLoad.totalRandomReads & 0x00FFFFFFFFFFFFFFLL));			//!< Total Number of Random Read Commands
-    json_push_back(label, json_new_i("total number of random write commands", vFarmFrame[page].workLoadPage.workLoad.totalRandomWrites & 0x00FFFFFFFFFFFFFFLL));		//!< Total Number of Random Write Commands
-    json_push_back(label, json_new_i("total number of other commands", vFarmFrame[page].workLoadPage.workLoad.totalNumberofOtherCMDS & 0x00FFFFFFFFFFFFFFLL));		//!< Total Number Of Other Commands
-    snprintf((char*)myStr.c_str(), BASIC, "%" PRId64"", vFarmFrame[page].workLoadPage.workLoad.logicalSecWritten & 0x00FFFFFFFFFFFFFFLL);
-    json_push_back(label, json_new_a("logical sectors written", (char*)myStr.c_str()));					//!< Logical Sectors Written
-    snprintf((char*)myStr.c_str(), BASIC, "%" PRId64"", vFarmFrame[page].workLoadPage.workLoad.logicalSecRead & 0x00FFFFFFFFFFFFFFLL);
-    json_push_back(label, json_new_a( "logical sectors read", (char*)myStr.c_str()));						//!< Logical Sectors Read
-    // found a log where the length of the workload log does not match the spec. Need to check for the 0x50 length
     if (vFarmFrame[page].workLoadPage.PageHeader.plen > 0x50)
     {
+        json_push_back(masterData, json_new_a("name", "device_storage_farm_log"));
+        JSONNODE* label = json_new(JSON_NODE);
+        json_set_name(label, "labels");
+        json_push_back(label, json_new_a("stat_type", "workload information"));
+        // found a log where the length of the workload log does not match the spec. Need to check for the 0x50 length
+    
         json_push_back(label, json_new_i("number of read commands from 0-3.125% of LBA space", vFarmFrame[page].workLoadPage.workLoad.totalReadCmdsFromFrames1 & 0x00FFFFFFFFFFFFFFLL));		//!< Number of Read commands from 0-3.125% of LBA space for last 3 SMART Summary Frames
         json_push_back(label, json_new_i("number of read commands from 3.125-25% of LBA space", vFarmFrame[page].workLoadPage.workLoad.totalReadCmdsFromFrames2 & 0x00FFFFFFFFFFFFFFLL));		//!< Number of Read commands from 3.125-25% of LBA space for last 3 SMART Summary Frames
         json_push_back(label, json_new_i("number of read commands from 25-50% of LBA space", vFarmFrame[page].workLoadPage.workLoad.totalReadCmdsFromFrames3 & 0x00FFFFFFFFFFFFFFLL));		//!< Number of Read commands from 25-50% of LBA space for last 3 SMART Summary Frames
@@ -2319,12 +2299,30 @@ eReturnValues CSCSI_Farm_Log::print_WorkLoad(JSONNODE *masterData, uint32_t page
         json_push_back(label, json_new_i("number of write commands from 3.125-25% of LBA space", vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames2 & 0x00FFFFFFFFFFFFFFLL));	//!< Number of Write commands from 3.125-25% of LBA space for last 3 SMART Summary Frames
         json_push_back(label, json_new_i("number of write commands from 25-50% of LBA space", vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames3 & 0x00FFFFFFFFFFFFFFLL));		//!< Number of Write commands from 25-50% of LBA space for last 3 SMART Summary Frames
         json_push_back(label, json_new_i("number of write commands from 50-100% of LBA space", vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames4 & 0x00FFFFFFFFFFFFFFLL));		//!< Number of Write commands from 50-100% of LBA space for last 3 SMART Summary Frames 
+    
+        json_push_back(label, json_new_a("units", "count"));
+            snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, WORKLOAD_STATISTICS_PARAMETER);
+        json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
+        json_push_back(masterData, label);
+        json_push_back(masterData, json_new_i("value", 0));
     }
 
-    snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, GENERAL_DRIVE_INFORMATION_06);
-    json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
-    json_push_back(masterData, label);
-    json_push_back(masterData, json_new_i("value", 0));
+
+    snprintf((char*)myStr.c_str(), BASIC, "%" PRId64"", vFarmFrame[page].workLoadPage.workLoad.workloadPercentage & 0x00FFFFFFFFFFFFFFLL);
+    prePython_Str(masterData, "stat", "rated workload percentaged", "workload", "count", WORKLOAD_STATISTICS_PARAMETER, (char*)myStr.c_str());
+    prePython_int(masterData, "read", "total number of read commands", "workload", "cmd", WORKLOAD_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].workLoadPage.workLoad.totalReadCommands));
+    prePython_int(masterData, "write", "total number of write commands", "workload", "cmd", WORKLOAD_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].workLoadPage.workLoad.totalWriteCommands));
+    prePython_int(masterData, "read", "total number of random read commands", "workload", "cmd", WORKLOAD_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].workLoadPage.workLoad.totalRandomReads));
+    prePython_int(masterData, "write", "total number of random write commands", "workload", "cmd", WORKLOAD_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].workLoadPage.workLoad.totalRandomWrites));
+    prePython_int(masterData, "other", "total number of other commands", "workload", "cmd", WORKLOAD_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].workLoadPage.workLoad.totalNumberofOtherCMDS));
+
+    snprintf((char*)myStr.c_str(), BASIC, "%" PRId64"", vFarmFrame[page].workLoadPage.workLoad.logicalSecWritten & 0x00FFFFFFFFFFFFFFLL);
+    prePython_Str(masterData, "write", "logical sectors written", "workload", "cmd", WORKLOAD_STATISTICS_PARAMETER, (char*)myStr.c_str());
+    snprintf((char*)myStr.c_str(), BASIC, "%" PRId64"", vFarmFrame[page].workLoadPage.workLoad.logicalSecRead & 0x00FFFFFFFFFFFFFFLL);
+    prePython_Str(masterData, "read", "logical sectors read", "workload", "cmd", WORKLOAD_STATISTICS_PARAMETER, (char*)myStr.c_str());
+    
+
+
 
 #else
     if (vFarmFrame[page].workLoadPage.workLoad.copyNumber == FACTORYCOPY)
@@ -2414,35 +2412,31 @@ eReturnValues CSCSI_Farm_Log::print_Error_Information(JSONNODE *masterData, uint
     printf("\tSuper Parity on the Fly Recovery          %llu \n", vFarmFrame[page].errorPage.errorStat.parity & 0x00FFFFFFFFFFFFFFLL);
 #endif
 #if defined (PREPYTHON)
-    json_push_back(masterData, json_new_a("name", "device_storage_farm_log"));
+    /*
+    json_push_back(masterData, json_new_a("name", "farm_log"));
     JSONNODE* label = json_new(JSON_NODE);
     json_set_name(label, "labels");
     json_push_back(label, json_new_a("stat_type", "error information"));
-    if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
-    {
-        json_push_back(label, json_new_a("page", "factory"));
-    }
-    else
-    {
-        json_push_back(label, json_new_i("page", page));
-    }
+
     json_push_back(label, json_new_a("units", "count"));
 
-    json_push_back(label, json_new_i("Unrecoverable read errors", vFarmFrame[page].errorPage.errorStat.totalReadECC & 0x00FFFFFFFFFFFFFFLL));							//!< Number of Unrecoverable Read Errors
-    json_push_back(label, json_new_i("Unrecoverable write errors", vFarmFrame[page].errorPage.errorStat.totalWriteECC & 0x00FFFFFFFFFFFFFFLL));						//!< Number of Unrecoverable Write Errors
-    json_push_back(label, json_new_i("number of reallocated sectors", vFarmFrame[page].errorPage.errorStat.totalReallocations & 0x00FFFFFFFFFFFFFFLL));				//!< Number of Reallocated Sectors
-    json_push_back(label, json_new_i("number of mechanical start failures", vFarmFrame[page].errorPage.errorStat.totalMechanicalFails & 0x00FFFFFFFFFFFFFFLL));		//!< Number of Mechanical Start Failures
-    json_push_back(label, json_new_i("number of reallocated candidate sectors", vFarmFrame[page].errorPage.errorStat.totalReallocatedCanidates & 0x00FFFFFFFFFFFFFFLL)); //!< Number of Reallocated Candidate Sectors
-    json_push_back(label, json_new_i("number of ioedc errors", vFarmFrame[page].errorPage.errorStat.attrIOEDCErrors & 0x00FFFFFFFFFFFFFFLL));					//!< Number of IOEDC Errors (SMART Attribute 184 Raw)
-    json_push_back(label, json_new_i("total flash led events", vFarmFrame[page].errorPage.errorStat.totalFlashLED & 0x00FFFFFFFFFFFFFFLL));				    //!< Total Flash LED (Assert) Events
-    json_push_back(label, json_new_i("smart trip fru code", vFarmFrame[page].errorPage.errorStat.FRUCode & 0x00FFFFFFFFFFFFFFLL));		                                //!< FRU code if smart trip from most recent SMART Frame
-    json_push_back(label, json_new_i("super parity on the fly recovery", vFarmFrame[page].errorPage.errorStat.parity & 0x00FFFFFFFFFFFFFFLL));                         //!< Super Parity on the Fly Recovery
-
-
-    snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, GENERAL_DRIVE_INFORMATION_06);
+    snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, ERROR_STATISTICS_PARAMETER);
     json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
     json_push_back(masterData, label);
     json_push_back(masterData, json_new_i("value", 0));
+    */
+
+    prePython_int(masterData, "read error", "unrecoverable read errors", "error information", "count", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorStat.totalReadECC));
+    prePython_int(masterData, "write error", "unrecoverable write errors", "error information", "count", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorStat.totalWriteECC));                           //!< number of unrecoverable write errors
+    prePython_int(masterData, "read error", "reallocated sectors", "error information", "count", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorStat.totalReallocations));
+    prePython_int(masterData, "mechanical error", "number of mechanical start failures", "error information", "count", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorStat.totalMechanicalFails));
+    prePython_int(masterData, "read error", "number of reallocated candidate sectors", "error information", "count", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorStat.totalReallocatedCanidates));
+   
+    prePython_int(masterData, "error", "number of ioedc errors", "error information", "count", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorStat.attrIOEDCErrors));
+    prePython_int(masterData, "stat", "fru code if smart trip from most recent smart frame", "error information", "count", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorStat.FRUCode));
+    prePython_int(masterData, "error", "total flash led events", "error information", "count", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorStat.totalFlashLED));
+    prePython_int(masterData, "error", "super parity on the fly recovery", "error information", "count", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorStat.parity));
+   
 
 #else
     if (vFarmFrame[page].errorPage.errorStat.copyNumber == FACTORYCOPY)
@@ -2528,6 +2522,7 @@ eReturnValues CSCSI_Farm_Log::print_Error_Information_Version_4(JSONNODE *master
     printf("\tPhy Reset Problem Port B                  %llu \n", vFarmFrame[page].errorPage.errorV4.portBPhyResetProblem & 0x00FFFFFFFFFFFFFFLL);
 #endif
 #if defined (PREPYTHON)
+    /*
     json_push_back(masterData, json_new_a("name", "farm_log"));
     JSONNODE* label = json_new(JSON_NODE);
     json_set_name(label, "labels");
@@ -2538,10 +2533,10 @@ eReturnValues CSCSI_Farm_Log::print_Error_Information_Version_4(JSONNODE *master
     json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
     json_push_back(masterData, label);
     json_push_back(masterData, json_new_i("value", 0));
-
+    */
 
     prePython_int(masterData, "read error", "unrecoverable read errors", "error information", "count", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorV4.totalReadECC));		
-    prePython_int(masterData, "write error", "unrecoverable write errors", "error information", "volts", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorV4.totalWriteECC));//!< number of unrecoverable write errors
+    prePython_int(masterData, "write error", "unrecoverable write errors", "error information", "count", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorV4.totalWriteECC));                           //!< number of unrecoverable write errors
     prePython_int(masterData, "mechanical error", "number of mechanical start failures", "error information", "count", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorV4.totalMechanicalFails));
     prePython_int(masterData, "errors", "number of ioedc errors", "error information", "count", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorV4.attrIOEDCErrors));
     prePython_int(masterData, "stat", "fru code if smart trip from most recent smart frame", "error information", "count", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorV4.FRUCode));
@@ -2669,33 +2664,32 @@ eReturnValues CSCSI_Farm_Log::print_Enviroment_Information(JSONNODE *masterData,
     snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.humidity)) * 0.1));							//!< Current Relative Humidity (in units of .1%)
     prePython_Str(masterData, "stat", "current relative humidity", "environment information", "count", ENVIRONMENTAL_STATISTICS_PARAMETER, (char*)myStr.c_str());
     snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.humidityRatio)) / 8.0));						//!< Humidity Mixed Ratio multiplied by 8 (divide by 8 to get actual value)
-    prePython_Str(masterData, "stat", "humidity mixed ratio", "environment information", "ratio", ENVIRONMENTAL_STATISTICS_PARAMETER, (char*)myStr.c_str());
-
-					 
+    prePython_Str(masterData, "stat", "humidity mixed ratio", "environment information", "ratio", ENVIRONMENTAL_STATISTICS_PARAMETER, (char*)myStr.c_str());				 
     prePython_int(masterData, "stat", "current motor power", "environment information", "count", ENVIRONMENTAL_STATISTICS_PARAMETER, M_Word0(vFarmFrame[page].environmentPage.currentMotorPower));
     if (m_MajorRev >= 4)
     {
-        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.average12v)) / 1000), \
-            static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.average12v)) % 1000));
-        prePython_Str(masterData, "stat", "12V Power Averag", "environment information", "volts", ENVIRONMENTAL_STATISTICS_PARAMETER, (char*)myStr.c_str());
+        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", static_cast<uint16_t>(M_WordInt0(vFarmFrame[page].environmentPage.average12v) / 1000), \
+            static_cast<uint16_t>(M_WordInt0(vFarmFrame[page].environmentPage.average12v)% 1000));
+        prePython_Str(masterData, "stat", "power average 12v", "environment information", "volts", ENVIRONMENTAL_STATISTICS_PARAMETER, (char*)myStr.c_str());
+
         snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.min12v)) / 1000), \
             static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.min12v)) % 1000));
-        prePython_Str(masterData, "stat", "12V Power Minimum", "environment information", "volts", ENVIRONMENTAL_STATISTICS_PARAMETER, (char*)myStr.c_str());
+        prePython_Str(masterData, "stat", "power minimum 12v", "environment information", "volts", ENVIRONMENTAL_STATISTICS_PARAMETER, (char*)myStr.c_str());
         snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.max12v)) / 1000), \
             static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.max12v)) % 1000));
-        prePython_Str(masterData, "stat", "12V Power Maximum", "environment information", "volts", ENVIRONMENTAL_STATISTICS_PARAMETER, (char*)myStr.c_str());
+        prePython_Str(masterData, "stat", "power maximum 12v", "environment information", "volts", ENVIRONMENTAL_STATISTICS_PARAMETER, (char*)myStr.c_str());
 
         snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.average5v)) / 1000), \
             static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.average5v)) % 1000));
-        prePython_Str(masterData, "stat", "Maximum 5 volts", "environment information", "volts", ENVIRONMENTAL_STATISTICS_PARAMETER, (char*)myStr.c_str());
+        prePython_Str(masterData, "stat", "power average 5v", "environment information", "volts", ENVIRONMENTAL_STATISTICS_PARAMETER, (char*)myStr.c_str());
 
         snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.min5v)) / 1000), \
             static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.min5v)) % 1000));
-        prePython_Str(masterData, "stat", "5V Power Minimum", "environment information", "volts", ENVIRONMENTAL_STATISTICS_PARAMETER, (char*)myStr.c_str());
+        prePython_Str(masterData, "stat", "power minimum 5v", "environment information", "volts", ENVIRONMENTAL_STATISTICS_PARAMETER, (char*)myStr.c_str());
 
         snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.max5v)) / 1000), \
             static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.max5v)) % 1000));
-        prePython_Str(masterData, "stat", "5V power maximum", "environment information", "volts", ENVIRONMENTAL_STATISTICS_PARAMETER, (char*)myStr.c_str());
+        prePython_Str(masterData, "stat", "power maximum 5v", "environment information", "volts", ENVIRONMENTAL_STATISTICS_PARAMETER, (char*)myStr.c_str());
 
     }
 
@@ -2805,8 +2799,8 @@ eReturnValues CSCSI_Farm_Log::print_Enviroment_Statistics_Page_07(JSONNODE *mast
     json_push_back(masterData, label);
     json_push_back(masterData, json_new_i("value", 0));
 
-    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", static_cast<uint16_t>(M_Word0(check_Status_Strip_Status(vFarmFrame[page].envStatPage07.average12v)) / 1000), \
-        static_cast<uint16_t>(M_Word0(check_Status_Strip_Status(vFarmFrame[page].envStatPage07.average12v)) % 1000));
+    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", static_cast<uint16_t>(M_Word0(vFarmFrame[page].envStatPage07.average12v) / 1000), \
+        static_cast<uint16_t>(M_Word0(vFarmFrame[page].envStatPage07.average12v) % 1000));
     prePython_Str(masterData, "stat", "current 12 volts", "environment information", "volts", ENVIRONMENT_STATISTICS_PAMATER_07, (char*)myStr.c_str());
  
     snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", static_cast<uint16_t>(M_Word0(check_Status_Strip_Status(vFarmFrame[page].envStatPage07.min12v)) / 1000), \
@@ -3151,7 +3145,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 
 #if defined (PREPYTHON)
                 snprintf((char*)myHeader.c_str(), BASIC, "disc_Slip_in_micro-inches"); // Head count
-                json_push_back(headPage, json_new_a("name", "stat head"));
+                
                 JSONNODE* label = json_new(JSON_NODE);
                 json_set_name(label, "labels");
                 json_push_back(label, json_new_a("stat_type", (char*)myHeader.c_str()));
@@ -3165,6 +3159,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 snprintf((char*)myStr.c_str(), BASIC, "%" PRIi16".%04.0f", whole, decimal);                                      //!< Disc Slip in micro-inches by Head
 
                 json_push_back(headPage, json_new_a("value", (char*)myStr.c_str()));
+                json_push_back(headPage, json_new_a("name", "stat head"));
 #else
                 snprintf((char*)myHeader.c_str(), BASIC, "Disc Slip in micro-inches for Head %" PRIu32"", loopCount); // Head count
                 snprintf((char*)myStr.c_str(), BASIC, "%" PRIi16".%04.0f", whole, decimal);                                      //!< Disc Slip in micro-inches by Head
@@ -5341,7 +5336,7 @@ void CSCSI_Farm_Log::prePython_Str(JSONNODE* masterData, const char* name, const
 {
     std::string myStr;
     myStr.resize(BASIC);
-    json_push_back(masterData, json_new_a("name", name));
+    
     JSONNODE* label = json_new(JSON_NODE);
     json_set_name(label, "labels");
     json_push_back(label, json_new_a("stat_type", statType));
@@ -5352,6 +5347,7 @@ void CSCSI_Farm_Log::prePython_Str(JSONNODE* masterData, const char* name, const
     json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
     json_push_back(masterData, label);
     json_push_back(masterData, json_new_a("value", value));
+    json_push_back(masterData, json_new_a("name", name));
 }
 
 //-----------------------------------------------------------------------------
@@ -5373,12 +5369,12 @@ void CSCSI_Farm_Log::prePython_int(JSONNODE* masterData, const char* name, const
 {
     std::string myStr;
     myStr.resize(BASIC);
-    json_push_back(masterData, json_new_a("name", name));
+    
     JSONNODE* label = json_new(JSON_NODE);
     json_set_name(label, "labels");
     json_push_back(label, json_new_a("stat_type", statType));
 
-    json_push_back(label, json_new_a("location", header));
+    //json_push_back(label, json_new_a("location", header));
 
     json_push_back(label, json_new_a("units", unit));
 
@@ -5386,5 +5382,6 @@ void CSCSI_Farm_Log::prePython_int(JSONNODE* masterData, const char* name, const
     json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
     json_push_back(masterData, label);
     json_push_back(masterData, json_new_i("value", value));
+    json_push_back(masterData, json_new_a("name", name));
 }
 
