@@ -411,6 +411,7 @@ namespace opensea_parser {
 		return false;
 	}
     void get_SMART_Save_Flages(JSONNODE *headerNode, uint8_t flag);
+	void get_SMART_Save_Flages_String(std::string &reason, uint8_t flag);
 #endif // !OPENSEA_PARSER
 }
 

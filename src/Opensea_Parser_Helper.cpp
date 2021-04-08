@@ -162,3 +162,147 @@ void opensea_parser::get_SMART_Save_Flages(JSONNODE *headerNode, uint8_t flag)
         break;
     }
 }
+//-----------------------------------------------------------------------------
+//
+//! \fn get_SMART_Save_Flages()
+//
+//! \brief
+//!   Description:  gets the command timeout values from the raw data
+//
+//  Entry:
+//! \param headerNode - the json node that we will be adding the data to
+//! \param flag - the uint8 value from the buffer
+//
+//  Exit:
+//!   \return bool 
+//
+//---------------------------------------------------------------------------
+void opensea_parser::get_SMART_Save_Flages_String(std::string& reason, uint8_t flag)
+{
+    switch (flag)
+    {
+    case SMART_FRAME_FLAG_SAVED_AT_MSI_PERIOD:
+        reason =  "MSI PERIOD";
+        break;
+    case SMART_FRAME_FLAG_SAVED_DUE_TO_COLD_START:
+        reason = "Cold Start";
+        break;
+    case SMART_FRAME_FLAG_SAVED_DUE_TO_SCSI_REZERO_COMMAND:
+        reason = "SCSI Rezero Command";
+        break;
+    case SMART_FRAME_FLAG_SAVED_DUE_TO_03_XX_ERROR:
+        reason = "03 XX Error";
+        break;
+    case SMART_FRAME_FLAG_SAVED_DUE_TO_04_XX_ERROR:
+        reason = "04 XX Errror";
+        break;
+    case SMART_FRAME_FLAG_SAVED_DUE_TO_1_5D_ERROR_FOR_PREDICTIVE_FAILURE:
+        reason = "5D Error for Predictive Failure";
+        break;
+    case SMART_FRAME_FLAG_SAVED_DUE_TO_FACTORY_COMMAND:
+        reason = "Factory Command";
+        break;
+    case  SMART_FRAME_FLAG_SAVED_DUE_TO_SEND_DIAGNOSTIC_COMMAND_WITH_SELFTEST_BIT_SET:
+        reason = "Diag Command with Selftest bit set";
+        break;
+    case SMART_FRAME_FLAG_SAVED_DUE_TO_SCSI_0B_08_ERROR:
+        reason = "SCSI 0B 08 Error";
+        break;
+    case SMART_FRAME_FLAG_SAVED_DUE_TO_SCSI_09_XX_ERROR:
+        reason = "SCSI 09 XX Error";
+        break;
+    case SMART_FRAME_FLAG_SAVED_DUE_TO_SCSI_REZERO_COMMAND_WITH_HARD_RESET:
+        reason = "SCSI Rezero Command with hard reset";
+        break;
+    case SMART_FRAME_FLAG_SAVED_DUE_TO_0B_01_WARNING:
+        reason = "0B 01 Warning";
+        break;
+    case SMART_FRAME_FLAG_SAVED_DUE_TO_POWER_DOWN:
+        reason = "Power Down";
+        break;
+    case SMART_FRAME_FLAG_SAVED_DUE_TO_BEGINNING_OF_SCSI_FORMAT_OPERATION:
+        reason = "SCSI Format Operation";
+        break;
+    case SMART_FRAME_FLAG_SAVED_DUE_TO_RESET_FLASH_LED_ERROR:
+        reason = "Reset Flash Led Error";
+        break;
+    case SMART_FRAME_FLAG_RESERVED:
+        reason = "Reserved";
+        break;
+    case SMART_FRAME_FLAG_SAVED_DUE_TO_SCSI_DOWNLOAD_COMMAND:
+        reason = "SCSI Download Command";
+        break;
+    case SMART_FRAME_FLAG_SAVED_DUE_TO_SCSI_TRIP_ALGORITHM:
+        reason = "SCSI Trip Algorithm";
+        break;
+    case SMART_FRAME_FLAG_SAVED_DUE_TO_NHT_HEALTH_TRIP:
+        reason = "NHT Health Trip";
+        break;
+    case SMART_FRAME_FLAG_DUE_TO_ISSRA_WARNING:
+        reason = "ISSRA Warning";
+        break;
+    case SMART_FRAME_FLAG_DUE_TO_FACTORY_COMMAND_SAVE:
+        reason = "Factory Command Save";
+        break;
+    case SMART_FRAME_FLAG_DUE_TO_EXIT_REMANUFACTURING:
+        reason = "Exit Remanufacturing";
+        break;
+    case SMART_FRAME_FLAG_DUE_TO_HITACHI_ORM_OR_HD_TEST:
+        reason = "Hitachi ORM or HD test";
+        break;
+    case SMART_FRAME_FLAG_STOP_UNIT_FRAME:
+        reason = "Unit Frame";
+        break;
+    case SMART_FRAME_FLAG_INTERIM_FRAME_10MIN_IDLE_TIME:
+        reason = "10 minute IDLE Time";
+        break;
+    case SMART_FRAME_FLAG_SAVED_DUE_TO_WRITE_PROTECT_INVOCATION:
+        reason = "Write Protect Invocation";
+        break;
+    case SMART_FRAME_FLAG_SAVED_DUE_TO_FACTORY_COMMAND_TO_INVOCATE_A_FRAME_THAT_CAN_BE_INTERRUPTABLE:
+        reason = "Invocate a frame that can be interruptable";
+        break;
+    case SMART_FRAME_FLAG_SAVED_DUE_TO_SMART_SCT_COMMAND:
+        reason = "SCT Command";
+        break;
+    case SMART_FRAME_FLAG_SAVED_DUE_TO_HEAD_UNLOADING:
+        reason = "Head Unloading";
+        break;
+    case SMART_FRAME_FLAG_SAVED_DUE_TO_START_OF_SANITIZE_COMMAND:
+        reason = "Start of Sanitize Command";
+        break;
+    case SMART_FRAME_FLAG_SAVED_DUE_TO_END_OF_SANITIZE_COMMAND:
+        reason = "End of Sanitize Command";
+        break;
+    case SMART_FRAME_FLAG_SAVED_DUE_TO_FORMAT_COMPLETION:
+        reason = "Format Completion";
+        break;
+    case SMART_FRAME_FLAG_UNRECOVERED_WRITE_NVC_RESET_FRAME:
+        reason = "Unrecovered write NVC Reset Frame";
+        break;
+    case SMART_FRAME_FLAG_QUICK_FORMAT_FINISH:
+        reason = "Quick Format Finish (SAS)";
+        break;
+    case SMART_FRAME_FLAG_SATA_DEVICE_FAULT:
+        reason = "Sata Device Fault";
+        break;
+    case SMART_FRAME_FLAG_SATA_UNCORRECTABLE_ERROR:
+        reason = "Uncorrectable Error";
+        break;
+    case SMART_FRAME_FLAG_SATA_ERC_UNCORRETABLE_ERROR:
+        reason = "ERC Uncorrectable Error";
+        break;
+    case SMART_FRAME_FLAG_DRIVE_SELF_TEST_COMPLETE_WITH_FAILURE:
+        reason = "DST Test Completed with Failure";
+        break;
+    case SMART_FRAME_FLAG_DEFECT_LIST_COMMAND:
+        reason = "Defect List Command";
+        break;
+    case SMART_FRAME_FLAG_F7_CDB_TRIGGER:
+        reason = "F7 CDB Trigger";
+        break;
+    default:
+        reason = "Did not match any value";
+        break;
+    }
+}
