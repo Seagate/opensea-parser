@@ -263,6 +263,9 @@ typedef struct _sScsiErrorStat
 	uint64_t            reserved9;									//!< Reserved
 	uint64_t            FRUCode;									//!< FRU code if smart trip from most recent SMART Frame (SAS only) 
     uint64_t            parity;                                     //!< Super Parity on the Fly Recovery
+    _sScsiErrorStat() :pageNumber(0), copyNumber(0), totalReadECC(0), totalWriteECC(0), totalReallocations(0), reserved(0), totalMechanicalFails(0), totalReallocatedCanidates(0),
+        reserved1(0), reserved2(0), reserved3(0), reserved4(0), reserved5(0), attrIOEDCErrors(0), reserved6(0), reserved7(0), reserved8(0), totalFlashLED(0),
+        reserved9(0), FRUCode(0), parity(0) {};
 }sScsiErrorStat;
 
 typedef struct _sScsiErrorStatVersion4
