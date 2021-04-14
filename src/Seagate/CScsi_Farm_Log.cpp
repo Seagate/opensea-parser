@@ -1134,7 +1134,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     {
                         sScsiReliabilityStat *pReli;                                              // get the Reliabliity stat
                         pReli = (sScsiReliabilityStat *)&pBuf[offset];
-                        memcpy((sScsiReliabilityStat *)&pFarmFrame->reliPage, pReli, pReli->pPageHeader.plen + 4);
+                        memcpy((sScsiReliabilityStat *)&pFarmFrame->reliPage.reli, pReli, pReli->pPageHeader.plen + 4);
                         swap_Bytes_sScsiReliabilityStat(&pFarmFrame->reliPage);
                         offset += (pReli->pPageHeader.plen + sizeof(sScsiPageParameter));
                     }
