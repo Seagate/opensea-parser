@@ -196,6 +196,7 @@ typedef struct _sWorkLoadStat
         uint64_t        numberOfWriteCmds1;                     //!< ATA - Number of Write commands from 0-3.125% of LBA space for last 3 SMART Summary Frames (added 4.4)
         uint64_t        totalWriteCmdsFromFrames4;              //!< SCSI - Number of Write commands from 50-100% of LBA space for last 3 SMART Summary Frames (added 4.4)
     };
+
     uint64_t        numberOfWriteCmds2;                         //!< ATA - Number of Write commands from 3.125-25% of LBA space for last 3 SMART Summary Frames (added 4.4)
     uint64_t        numberOfWriteCmds3;                         //!< ATA - Number of Write commands from 25-50% of LBA space for last 3 SMART Summary Frames (added 4.4)
     uint64_t        numberOfWriteCmds4;                         //!< ATA - Number of Write commands from 50-100% of LBA space for last 3 SMART Summary Frames (added 4.4)
@@ -203,6 +204,57 @@ typedef struct _sWorkLoadStat
         totalNumberofOtherCMDS(0), logicalSecWritten(0), logicalSecRead(0), dither(0), ditherRandom(0), ditherSequential(0), numberOfReadCmds1(0), numberOfReadCmds2(0), \
         numberOfReadCmds3(0), numberOfReadCmds4(0), numberOfWriteCmds1(0), numberOfWriteCmds2(0), numberOfWriteCmds3(0), numberOfWriteCmds4(0) {};
 }sWorkLoadStat;
+
+
+typedef struct _sWorkLoadStat4_21
+{
+    uint64_t        pageNumber;
+    uint64_t        copyNumber;
+    uint64_t        workloadPercentage;                         //!< rated Workload Percentage
+    uint64_t        totalReadCommands;                          //!< Total Number of Read Commands
+    uint64_t        totalWriteCommands;                         //!< Total Number of Write Commands
+    uint64_t        totalRandomReads;                           //!< Total Number of Random Read Commands
+    uint64_t        totalRandomWrites;                          //!< Total Number of Random Write Commands
+    uint64_t        totalNumberofOtherCMDS;                     //!< Total Number Of Other Commands
+    uint64_t        logicalSecWritten;                          //!< Logical Sectors Written
+    uint64_t        logicalSecRead;                             //!< Logical Sectors Read
+
+    uint64_t        numDitherEvt;                               //!< Number of dither events during current power cycle
+    uint64_t        numRandWLDitherHoldOff;                     //!< Number of times dither was held off during random workloads during current power cycle
+    uint64_t        numSequentialWLDitherHoldOff;               //!< Number of times dither was held off during sequential workloads during current power cycle
+    uint64_t        numRead0;                                   //!< Number of Read commands from 0-3.125% of LBA space for last 3 SMART summary Frames
+    uint64_t        numRead1;                                   //!< Number of Read commands from 3.125-25% of LBA space for last 3 SMART Summary Frames
+    uint64_t        numRead2;                                   //!< Number of Read commands from 25-50% of LBA space for last 3 SMART Summary Frames
+    uint64_t        numRead3;                                   //!< Number of Read commands from 50-100% of LBA space for last 3 SMART Summary Frames
+    uint64_t        numWrite0;                                  //!< Number of Write commands from 0-3.125% of LBA space for last 3 SMART Summary Frames
+    uint64_t        numWrite1;                                  //!< Number of Write commands from 3.125-25% of LBA space for last 3 SMART Summary Frames
+    uint64_t        numWrite2;                                  //!< Number of Write commands from 25-50% of LBA space for last 3 SMART Summary Frames
+    uint64_t        numWrite3;                                  //!< Number of Write commands from 50-100% of LBA space for last 3 SMART Summary Frames
+    uint64_t        numReadTransferSmall;                       //!< Number of Read Commands of transfer length <=16KB space for last 3 SMART Summary Frames                                                            
+    uint64_t        numReadTransferMid1;                        //!< Number of Read Commands of transfer length (16KB – 512KB] for last 3 SMART Summary Frames
+    uint64_t        numReadTransferMid2;                        //!< Number of Read Commands of transfer length (512KB – 2MB] for last 3 SMART Summary Frames 
+    uint64_t        numReadTransferLarge;                       //!< Number of Read Commands of transfer length > 2MB for last 3 SMART Summary Frames
+    uint64_t        numWriteTransferSmall;                      //!< Number of Write Commands of transfer length <=16KB for last 3 SMART Summary Frames
+    uint64_t        numWriteTransferMid1;                       //!< Number of Write Commands of transfer length (16KB – 512KB] for last 3 SMART Summary Frames
+    uint64_t        numWriteTransferMid2;                       //!< Number of Write Commands of transfer length (512KB – 2MB] for last 3 SMART Summary Frames
+    uint64_t        numWriteTransferLarge;                      //!< Number of Write Commands of transfer length > 2MB for last 3 SMART Summary Frames
+    uint64_t        cntQueueDepth1;                             //!< Count of Queue Depth =1 at 30s intervals for last 3 SMART Summary Frames
+    uint64_t        cntQueueDepth2;                             //!< Count of Queue Depth =2 at 30s intervals for last 3 SMART Summary Frames
+    uint64_t        cntQueueDepth3to4;                          //!< Count of Queue Depth =3-4 at 30s intervals for last 3 SMART Summary Frames
+    uint64_t        cntQueueDepth5to8;                          //!< Count of Queue Depth =5-8 at 30s intervals for last 3 SMART Summary Frames
+    uint64_t        cntQueueDepth9to16;                         //!< Count of Queue Depth =9-16 at 30s intervals for last 3 SMART Summary Frames
+    uint64_t        cntQueueDepth17to32;                        //!< Count of Queue Depth =17-32 at 30s intervals for last 3 SMART Summary Frames
+    uint64_t        cntQueueDepth33to64;                        //!< Count of Queue Depth =33-64 at 30s intervals for last 3 SMART Summary Frames
+    uint64_t        cntQueueDepthmorethan64;                    //!< Count of Queue Depth >64 at 30s intervals for last 3 SMART Summary Frames
+    uint64_t        numDithEvtAct1;                             //!< Number of dither events during current power cycle, Actuator 1
+    uint64_t        numRandWLDitherHoldOffAct1;                 //!< Number of times dither was held off during random workloads during current power cycle, Actuator 1
+    uint64_t        numSequentialWLDitherHoldOffAct1;               //!< Number of times dither was held off during sequential workloads during current power cycle, Actuator 1
+    _sWorkLoadStat4_21() : pageNumber(0), copyNumber(0), workloadPercentage(0), totalReadCommands(0), totalWriteCommands(0), totalRandomReads(0), totalRandomWrites(0), \
+        totalNumberofOtherCMDS(0), logicalSecWritten(0), logicalSecRead(0), numDitherEvt(0), numRandWLDitherHoldOff(0), numSequentialWLDitherHoldOff(0), numRead0(0), numRead1(0), \
+        numRead2(0), numRead3(0), numWrite0(0), numWrite1(0), numWrite2(0), numWrite3(0), numReadTransferSmall(0), numReadTransferMid1(0), numReadTransferMid2(0), numWriteTransferLarge(0), 
+        cntQueueDepth1(0), cntQueueDepth2(0), cntQueueDepth3to4(0), cntQueueDepth5to8(0), cntQueueDepth9to16(0), cntQueueDepth17to32(0), cntQueueDepth33to64(0), cntQueueDepthmorethan64(0), 
+        numDithEvtAct1(0), numRandWLDitherHoldOffAct1(0), numSequentialWLDitherHoldOffAct1(0) {};
+}sWorkLoadStat4_21;
 
 #pragma pack(pop)
 

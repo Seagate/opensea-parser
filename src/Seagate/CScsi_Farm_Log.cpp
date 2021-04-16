@@ -218,7 +218,7 @@ void CSCSI_Farm_Log::set_Head_Header(std::string &headerName, eLogPageTypes inde
     case RELIABILITY_STATISTICS_PARAMETER:
     case GENERAL_DRIVE_INFORMATION_06:
     case ENVIRONMENT_STATISTICS_PAMATER_07:
-    case RESERVED_FOR_FUTURE_STATISTICS_3:
+    case WORKLOAD_STATISTICS_PAMATER_08:
     case RESERVED_FOR_FUTURE_STATISTICS_4:
     case RESERVED_FOR_FUTURE_STATISTICS_5:
     case RESERVED_FOR_FUTURE_STATISTICS_6:
@@ -793,6 +793,37 @@ bool CSCSI_Farm_Log::swap_Bytes_EnvironmentPage07(sScsiEnvStatPage07 *ep)
 
 //-----------------------------------------------------------------------------
 //
+//! \fn swap_Bytes_WorkloadPage08()
+//
+//! \brief
+//!   Description:  takes the pointer to the structure an does a byte swap on all the data for the environment stat
+//
+//  Entry:
+//! \param ep  =  pointer to the environment stat
+//
+//  Exit:
+//!   \return bool
+//
+//---------------------------------------------------------------------------
+bool CSCSI_Farm_Log::swap_Bytes_WorkloadPage08(sScsiWorkloadStatPage08 *ep)
+{
+    byte_Swap_64(&ep->pageNumber);
+    byte_Swap_64(&ep->copyNumber);
+    byte_Swap_64(&ep->countQueDepth1);
+    byte_Swap_64(&ep->countQueDepth2);
+    byte_Swap_64(&ep->countQueDepth3_4);
+    byte_Swap_64(&ep->countQueDepth5_8);
+    byte_Swap_64(&ep->countQueDepth9_16);
+    byte_Swap_64(&ep->countQueDepth17_32);
+    byte_Swap_64(&ep->countQueDepth33_64);
+    byte_Swap_64(&ep->countQueDepth_gt_64);
+    return true;
+}
+
+
+
+//-----------------------------------------------------------------------------
+//
 //! \fn swap_Bytes_sScsiReliabilityStat()
 //
 //! \brief
@@ -1167,7 +1198,14 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     offset += (pEnvStat->pPageHeader.plen + sizeof(sScsiPageParameter));
                 }
                 break;
-                case  RESERVED_FOR_FUTURE_STATISTICS_3:
+                case  WORKLOAD_STATISTICS_PAMATER_08:
+                {
+                    sScsiWorkloadStatPage08 *pWorkloadStat;
+                    pWorkloadStat = (sScsiWorkloadStatPage08 *)&pBuf[offset];
+                    memcpy((sScsiWorkloadStatPage08 *)&pFarmFrame->workloadStatPage08, pWorkloadStat, pWorkloadStat->pPageHeader.plen + 4);
+                    swap_Bytes_WorkloadPage08(&pFarmFrame->workloadStatPage08);
+                    offset += (pWorkloadStat->pPageHeader.plen + sizeof(sScsiPageParameter));
+                }
                 case  RESERVED_FOR_FUTURE_STATISTICS_4:
                 case  RESERVED_FOR_FUTURE_STATISTICS_5:
                 case  RESERVED_FOR_FUTURE_STATISTICS_6:
@@ -2414,6 +2452,96 @@ eReturnValues CSCSI_Farm_Log::print_Enviroment_Statistics_Page_07(JSONNODE *mast
 
     return SUCCESS;
 }
+
+
+//-----------------------------------------------------------------------------
+//
+//! \fn print_Workload_Statistics_Page_08()
+//
+//! \brief
+//!   Description:  print out the Workload log information 
+//
+//  Entry:
+//! \param masterData - pointer to the json data that will be printed or passed on
+//! \param page  = the page copy number of the data we want to print. 
+//
+//  Exit:
+//!   \return SUCCESS
+//
+//---------------------------------------------------------------------------
+eReturnValues CSCSI_Farm_Log::print_Workload_Statistics_Page_08(JSONNODE *masterData, uint32_t page)
+{
+    std::string myStr = " ";
+    myStr.resize(BASIC);
+    JSONNODE *pageInfo = json_new(JSON_NODE);
+
+#if defined _DEBUG
+    if (vFarmFrame[page].workloadStatPage08.copyNumber == FACTORYCOPY)
+    {
+        printf("Workload Information Continued From Farm Log copy FACTORY \n");
+    }
+    else
+    {
+        printf("\nWorkload Information Continued From Farm Log copy %d: \n", page);
+    }
+    printf("\tCount of Queue Depth =1 at 30s intervals for last 3 SMART Summary Frames:    %" PRIu64" \n", vFarmFrame[page].workloadStatPage08.countQueDepth1 & 0x00FFFFFFFFFFFFFFLL);
+    printf("\tCount of Queue Depth =2 at 30s intervals for last 3 SMART Summary Frames:    %" PRIu64" \n", vFarmFrame[page].workloadStatPage08.countQueDepth2 & 0x00FFFFFFFFFFFFFFLL);
+    printf("\tCount of Queue Depth 2-4 at 30s intervals for last 3 SMART Summary Frames:   %" PRIu64" \n", vFarmFrame[page].workloadStatPage08.countQueDepth3_4 & 0x00FFFFFFFFFFFFFFLL);
+    printf("\tCount of Queue Depth 5-8 at 30s intervals for last 3 SMART Summary Frames:   %" PRIu64" \n", vFarmFrame[page].workloadStatPage08.countQueDepth5_8 & 0x00FFFFFFFFFFFFFFLL);
+    printf("\tCount of Queue Depth 9-16 at 30s intervals for last 3 SMART Summary Frames:  %" PRIu64" \n", vFarmFrame[page].workloadStatPage08.countQueDepth9_16 & 0x00FFFFFFFFFFFFFFLL);
+    printf("\tCount of Queue Depth 17-32 at 30s intervals for last 3 SMART Summary Frames: %" PRIu64" \n", vFarmFrame[page].workloadStatPage08.countQueDepth17_32 & 0x00FFFFFFFFFFFFFFLL);
+    printf("\tCount of Queue Depth 33-64 at 30s intervals for last 3 SMART Summary Frames: %" PRIu64" \n", vFarmFrame[page].workloadStatPage08.countQueDepth33_64 & 0x00FFFFFFFFFFFFFFLL);
+    printf("\tCount of Queue Depth gt 64  at 30s intervals for last 3 SMART Summary Frames:%" PRIu64" \n", vFarmFrame[page].workloadStatPage08.countQueDepth_gt_64 & 0x00FFFFFFFFFFFFFFLL);
+    
+
+#endif
+    if (vFarmFrame[page].workloadStatPage08.copyNumber == FACTORYCOPY)
+    {
+        snprintf((char*)myStr.c_str(), BASIC, "Workload Information Continued From Farm Log copy FACTORY");
+    }
+    else
+    {
+        snprintf((char*)myStr.c_str(), BASIC, "Workload Information Continued From Farm Log copy %" PRId32"", page);
+    }
+    json_set_name(pageInfo, (char*)myStr.c_str());
+
+    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", static_cast<uint16_t>(M_Word0(check_Status_Strip_Status(vFarmFrame[page].workloadStatPage08.countQueDepth1)) / 1000), \
+        static_cast<uint16_t>(M_Word0(check_Status_Strip_Status(vFarmFrame[page].workloadStatPage08.countQueDepth1)) % 1000));
+    set_json_string_With_Status(pageInfo, "Count of Queue Depth =1 at 30s intervals for last 3 SMART Summary Frames", (char*)myStr.c_str(), vFarmFrame[page].workloadStatPage08.countQueDepth1, m_showStatusBits);
+
+    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", static_cast<uint16_t>(M_Word0(check_Status_Strip_Status(vFarmFrame[page].workloadStatPage08.countQueDepth2)) / 1000), \
+        static_cast<uint16_t>(M_Word0(check_Status_Strip_Status(vFarmFrame[page].workloadStatPage08.countQueDepth2)) % 1000));
+    set_json_string_With_Status(pageInfo, "Count of Queue Depth =2 at 30s intervals for last 3 SMART Summary Frames", (char*)myStr.c_str(), vFarmFrame[page].workloadStatPage08.countQueDepth2, m_showStatusBits);
+
+    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", static_cast<uint16_t>(M_Word0(check_Status_Strip_Status(vFarmFrame[page].workloadStatPage08.countQueDepth3_4)) / 1000), \
+        static_cast<uint16_t>(M_Word0(check_Status_Strip_Status(vFarmFrame[page].workloadStatPage08.countQueDepth3_4)) % 1000));
+    set_json_string_With_Status(pageInfo, "Count of Queue Depth 2-4 at 30s intervals for last 3 SMART Summary Frames", (char*)myStr.c_str(), vFarmFrame[page].workloadStatPage08.countQueDepth3_4, m_showStatusBits);
+
+    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", (M_Word0(check_Status_Strip_Status(vFarmFrame[page].workloadStatPage08.countQueDepth5_8)) / 1000), \
+        static_cast<uint16_t>(M_Word0(check_Status_Strip_Status(vFarmFrame[page].workloadStatPage08.countQueDepth5_8)) % 1000));
+    set_json_string_With_Status(pageInfo, "Count of Queue Depth 5-8 at 30s intervals for last 3 SMART Summary Frames", (char*)myStr.c_str(), vFarmFrame[page].workloadStatPage08.countQueDepth5_8, m_showStatusBits);
+
+    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", (M_Word0(check_Status_Strip_Status(vFarmFrame[page].workloadStatPage08.countQueDepth9_16)) / 1000), \
+        M_Word0(check_Status_Strip_Status(vFarmFrame[page].workloadStatPage08.countQueDepth9_16)) % 1000);
+    set_json_string_With_Status(pageInfo, "Count of Queue Depth 9-16 at 30s intervals for last 3 SMART Summary Frames", (char*)myStr.c_str(), vFarmFrame[page].workloadStatPage08.countQueDepth9_16, m_showStatusBits);
+
+    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", (M_Word0(check_Status_Strip_Status(vFarmFrame[page].workloadStatPage08.countQueDepth17_32)) / 1000), \
+        M_Word0(check_Status_Strip_Status(vFarmFrame[page].workloadStatPage08.countQueDepth17_32)) % 1000);
+    set_json_string_With_Status(pageInfo, "Count of Queue Depth 17-32 at 30s intervals for last 3 SMART Summary Frames", (char*)myStr.c_str(), vFarmFrame[page].workloadStatPage08.countQueDepth17_32, m_showStatusBits);
+
+    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", (M_Word0(check_Status_Strip_Status(vFarmFrame[page].workloadStatPage08.countQueDepth33_64)) / 1000), \
+        M_Word0(check_Status_Strip_Status(vFarmFrame[page].workloadStatPage08.countQueDepth33_64)) % 1000);
+    set_json_string_With_Status(pageInfo, "MCount of Queue Depth 33-64 at 30s intervals for last 3 SMART Summary Frames", (char*)myStr.c_str(), vFarmFrame[page].workloadStatPage08.countQueDepth33_64, m_showStatusBits);
+
+    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", (M_Word0(check_Status_Strip_Status(vFarmFrame[page].workloadStatPage08.countQueDepth_gt_64)) / 1000), \
+        M_Word0(check_Status_Strip_Status(vFarmFrame[page].workloadStatPage08.countQueDepth_gt_64)) % 1000);
+    set_json_string_With_Status(pageInfo, "Count of Queue Depth gt 64  at 30s intervals for last 3 SMART Summary Frames", (char*)myStr.c_str(), vFarmFrame[page].workloadStatPage08.countQueDepth_gt_64, m_showStatusBits);
+
+    json_push_back(masterData, pageInfo);
+
+    return SUCCESS;
+}
+
 //-----------------------------------------------------------------------------
 //
 //! \fn print_Reli_Information()
@@ -3607,6 +3735,9 @@ void CSCSI_Farm_Log::print_All_Pages(JSONNODE *masterData)
                     break;
                 case ENVIRONMENT_STATISTICS_PAMATER_07:
                     print_Enviroment_Statistics_Page_07(masterData, index);
+                    break;
+                case WORKLOAD_STATISTICS_PAMATER_08:
+                    print_Workload_Statistics_Page_08(masterData, index);
                     break;
                 case DISC_SLIP_IN_MICRO_INCHES_BY_HEAD:
                 case BIT_ERROR_RATE_OF_ZONE_0_BY_DRIVE_HEAD:

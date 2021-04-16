@@ -29,7 +29,7 @@ typedef enum _eLogPageTypes
 	RELIABILITY_STATISTICS_PARAMETER,
 	GENERAL_DRIVE_INFORMATION_06,
 	ENVIRONMENT_STATISTICS_PAMATER_07,     
-	RESERVED_FOR_FUTURE_STATISTICS_3,
+    WORKLOAD_STATISTICS_PAMATER_08,
 	RESERVED_FOR_FUTURE_STATISTICS_4,
 	RESERVED_FOR_FUTURE_STATISTICS_5,
 	RESERVED_FOR_FUTURE_STATISTICS_6,
@@ -240,7 +240,12 @@ typedef struct _sScsiDriveInfo
 typedef struct _sScsiWorkLoadStat
 {
 	sScsiPageParameter  PageHeader;								//!< pointer the farm header page parameter
-	sWorkLoadStat		workLoad;									//!< structure of the work load Stat
+    //union 
+    //{
+        sWorkLoadStat		workLoad;									//!< structure of the work load Stat
+     //   sWorkLoadStat4_21		workLoad4_21;									//!< structure of the work load Stat
+    //};
+	
 }sScsiWorkLoadStat;
 
 typedef struct _sScsiErrorStat
@@ -443,6 +448,21 @@ typedef struct _sScsiEnvironmentStatPage07
     uint64_t            max5v;                                      //!< 5V Power Max(mw) - Highest of last 3 SMART summary frames
 }sScsiEnvStatPage07;
 
+typedef struct _sScsiWorkloadStatPage07
+{
+    sScsiPageParameter  pPageHeader;								//!< pointer the farm header page parameter
+    uint64_t            pageNumber;									//!< Page Number = 7
+    uint64_t            copyNumber;									//!< Copy Number
+    uint64_t            countQueDepth1;                             //!< Count of Queue Depth =1 at 30s intervals for last 3 SMART Summary Frames
+    uint64_t            countQueDepth2;                             //!< Count of Queue Depth =2 at 30s intervals for last 3 SMART Summary Frames
+    uint64_t            countQueDepth3_4;                           //!< Count of Queue Depth 3-4 at 30s intervals for last 3 SMART Summary Frames
+    uint64_t            countQueDepth5_8;                           //!< Count of Queue Depth 5-8 at 30s intervals for last 3 SMART Summary Frames
+    uint64_t            countQueDepth9_16;                          //!< Count of Queue Depth 9-16 at 30s intervals for last 3 SMART Summary Frames
+    uint64_t            countQueDepth17_32;                         //!< Count of Queue Depth 17-32 at 30s intervals for last 3 SMART Summary Frames
+    uint64_t            countQueDepth33_64;                         //!< Count of Queue Depth 33-64 at 30s intervals for last 3 SMART Summary Frames
+    uint64_t            countQueDepth_gt_64;                        //!< Count of Queue Depth greater than 64 at 30s intervals for last 3 SMART Summary Frames
+}sScsiWorkloadStatPage08;
+
 typedef struct _sHeadInformation
 {
 	sScsiPageParameter  pageHeader;                                  //!<  header page parameters
@@ -518,7 +538,8 @@ typedef struct _sScsiFarmFrame
     sScsiReliablility       reliPage;                               //!< reliability data
     sGeneralDriveInfoPage06 gDPage06;                               //!< Gerneral Drive Information Page 06
     sScsiEnvStatPage07      envStatPage07;                          //!< Environment Stat Page 07
-	sHeadInformation        discSlipPerHead;
+    sScsiWorkloadStatPage08 workloadStatPage08;                     //!< Workload Stat Page 08
+    sHeadInformation        discSlipPerHead;
 	sHeadInformation        bitErrorRateByHead;
 	sHeadInformation        dosWriteRefreshCountByHead;
 	sHeadInformation        dvgaSkipWriteDetectByHead;
