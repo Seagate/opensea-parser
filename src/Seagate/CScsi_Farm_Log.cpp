@@ -2075,14 +2075,18 @@ eReturnValues CSCSI_Farm_Log::print_WorkLoad(JSONNODE *masterData, uint32_t page
     printf("\tNumber of Write commands from 25-50%% of LBA space    %llu  \n", vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames3 & 0x00FFFFFFFFFFFFFFLL);		//!< Number of Write commands from 25-50% of LBA space for last 3 SMART Summary Frames
     printf("\tNumber of Write commands from 50-100%% of LBA space   %llu  \n", vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames4 & 0x00FFFFFFFFFFFFFFLL);		//!< Number of Write commands from 50-100% of LBA space for last 3 SMART Summary Frames
     //4.21
-    printf("\tNumber of Read Commands of transfer length <=16KB for last 3 SMART Summary Frames   %llu  \n", vFarmFrame[page].workLoadPage.workLoad.numReadTransferSmall & 0x00FFFFFFFFFFFFFFLL);		//!< Number of Read commands from 0-3.125% of LBA space for last 3 SMART Summary Frames
-    printf("\tNumber of Read Commands of transfer length (16KB – 512KB] for last 3 SMART Summary Frames  %llu  \n", vFarmFrame[page].workLoadPage.workLoad.numReadTransferMid1 & 0x00FFFFFFFFFFFFFFLL);		//!< Number of Read commands from 3.125-25% of LBA space for last 3 SMART Summary Frames
-    printf("\tNumber of Read Commands of transfer length (512KB – 2MB] for last 3 SMART Summary Frames     %llu  \n", vFarmFrame[page].workLoadPage.workLoad.numReadTransferMid2 & 0x00FFFFFFFFFFFFFFLL);		//!< Number of Read commands from 25-50% of LBA space for last 3 SMART Summary Frames
-    printf("\tNumber of Read Commands of transfer length > 2MB for last 3 SMART Summary Frames    %llu  \n", vFarmFrame[page].workLoadPage.workLoad.numReadTransferLarge & 0x00FFFFFFFFFFFFFFLL);		//!< Number of Read commands from 50-100% of LBA space for last 3 SMART Summary Frames 
-    printf("\tNumber of Write Commands of transfer length <=16KB for last 3 SMART Summary Frames  %llu  \n", vFarmFrame[page].workLoadPage.workLoad.numWriteTransferSmall & 0x00FFFFFFFFFFFFFFLL);	    //!< Number of Write commands from 0-3.125% of LBA space for last 3 SMART Summary Frames
-    printf("\tNumber of Write Commands of transfer length (16KB – 512KB] for last 3 SMART Summary Frames %llu  \n", vFarmFrame[page].workLoadPage.workLoad.numWriteTransferMid1 & 0x00FFFFFFFFFFFFFFLL);	    //!< Number of Write commands from 3.125-25% of LBA space for last 3 SMART Summary Frames
-    printf("\tNumber of Write Commands of transfer length (512KB – 2MB] for last 3 SMART Summary Frames    %llu  \n", vFarmFrame[page].workLoadPage.workLoad.numWriteTransferMid2 & 0x00FFFFFFFFFFFFFFLL);		//!< Number of Write commands from 25-50% of LBA space for last 3 SMART Summary Frames
-    printf("\tNumber of Write Commands of transfer length > 2MB for last 3 SMART Summary Frames   %llu  \n", vFarmFrame[page].workLoadPage.workLoad.numWriteTransferLarge & 0x00FFFFFFFFFFFFFFLL);		//!< Number of Write commands from 50-100% of LBA space for last 3 SMART Summary Frames
+    if (m_MajorRev > 4 && m_MinorRev > 20) {
+        printf("\tNumber of Read Commands of transfer length <=16KB for last 3 SMART Summary Frames   %llu  \n", vFarmFrame[page].workLoadPage.workLoad.numReadTransferSmall & 0x00FFFFFFFFFFFFFFLL);		//!< Number of Read commands from 0-3.125% of LBA space for last 3 SMART Summary Frames
+        printf("\tNumber of Read Commands of transfer length (16KB – 512KB] for last 3 SMART Summary Frames  %llu  \n", vFarmFrame[page].workLoadPage.workLoad.numReadTransferMid1 & 0x00FFFFFFFFFFFFFFLL);		//!< Number of Read commands from 3.125-25% of LBA space for last 3 SMART Summary Frames
+        printf("\tNumber of Read Commands of transfer length (512KB – 2MB] for last 3 SMART Summary Frames     %llu  \n", vFarmFrame[page].workLoadPage.workLoad.numReadTransferMid2 & 0x00FFFFFFFFFFFFFFLL);		//!< Number of Read commands from 25-50% of LBA space for last 3 SMART Summary Frames
+        printf("\tNumber of Read Commands of transfer length > 2MB for last 3 SMART Summary Frames    %llu  \n", vFarmFrame[page].workLoadPage.workLoad.numReadTransferLarge & 0x00FFFFFFFFFFFFFFLL);		//!< Number of Read commands from 50-100% of LBA space for last 3 SMART Summary Frames 
+        printf("\tNumber of Write Commands of transfer length <=16KB for last 3 SMART Summary Frames  %llu  \n", vFarmFrame[page].workLoadPage.workLoad.numWriteTransferSmall & 0x00FFFFFFFFFFFFFFLL);	    //!< Number of Write commands from 0-3.125% of LBA space for last 3 SMART Summary Frames
+        printf("\tNumber of Write Commands of transfer length (16KB – 512KB] for last 3 SMART Summary Frames %llu  \n", vFarmFrame[page].workLoadPage.workLoad.numWriteTransferMid1 & 0x00FFFFFFFFFFFFFFLL);	    //!< Number of Write commands from 3.125-25% of LBA space for last 3 SMART Summary Frames
+        printf("\tNumber of Write Commands of transfer length (512KB – 2MB] for last 3 SMART Summary Frames    %llu  \n", vFarmFrame[page].workLoadPage.workLoad.numWriteTransferMid2 & 0x00FFFFFFFFFFFFFFLL);		//!< Number of Write commands from 25-50% of LBA space for last 3 SMART Summary Frames
+        printf("\tNumber of Write Commands of transfer length > 2MB for last 3 SMART Summary Frames   %llu  \n", vFarmFrame[page].workLoadPage.workLoad.numWriteTransferLarge & 0x00FFFFFFFFFFFFFFLL);		//!< Number of Write commands from 50-100% of LBA space for last 3 SMART Summary Frames
+    
+    }
+    
 
 #endif
     if (vFarmFrame[page].workLoadPage.workLoad.copyNumber == FACTORYCOPY)
@@ -2118,14 +2122,18 @@ eReturnValues CSCSI_Farm_Log::print_WorkLoad(JSONNODE *masterData, uint32_t page
     }
 
     // 4.21
-    set_json_64_bit_With_Status(pageInfo, "Number of Read Commands of transfer length <=16KB for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.workLoad.numReadTransferSmall, false, m_showStatusBits);
-    set_json_64_bit_With_Status(pageInfo, "Number of Read Commands of transfer length (16KB – 512KB] for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.workLoad.numReadTransferMid1, false, m_showStatusBits);
-    set_json_64_bit_With_Status(pageInfo, "Number of Read Commands of transfer length (512KB – 2MB] for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.workLoad.numReadTransferMid2, false, m_showStatusBits);
-    set_json_64_bit_With_Status(pageInfo, "Number of Read Commands of transfer length > 2MB for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.workLoad.numReadTransferLarge, false, m_showStatusBits);
-    set_json_64_bit_With_Status(pageInfo, "Number of Write Commands of transfer length <=16KB for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.workLoad.numWriteTransferSmall, false, m_showStatusBits);
-    set_json_64_bit_With_Status(pageInfo, "Number of Write Commands of transfer length (16KB – 512KB] for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.workLoad.numWriteTransferMid1, false, m_showStatusBits);
-    set_json_64_bit_With_Status(pageInfo, "Number of Write Commands of transfer length (512KB – 2MB] for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.workLoad.numWriteTransferMid2, false, m_showStatusBits);
-    set_json_64_bit_With_Status(pageInfo, "Number of Write Commands of transfer length > 2MB for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.workLoad.numWriteTransferLarge, false, m_showStatusBits);
+    if (m_MajorRev > 4 && m_MinorRev > 20)
+    {
+        set_json_64_bit_With_Status(pageInfo, "Number of Read Commands of transfer length <=16KB for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.workLoad.numReadTransferSmall, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Number of Read Commands of transfer length (16KB – 512KB] for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.workLoad.numReadTransferMid1, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Number of Read Commands of transfer length (512KB – 2MB] for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.workLoad.numReadTransferMid2, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Number of Read Commands of transfer length > 2MB for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.workLoad.numReadTransferLarge, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Number of Write Commands of transfer length <=16KB for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.workLoad.numWriteTransferSmall, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Number of Write Commands of transfer length (16KB – 512KB] for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.workLoad.numWriteTransferMid1, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Number of Write Commands of transfer length (512KB – 2MB] for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.workLoad.numWriteTransferMid2, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Number of Write Commands of transfer length > 2MB for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.workLoad.numWriteTransferLarge, false, m_showStatusBits);
+    }
+    
     json_push_back(masterData, pageInfo);
 
     return SUCCESS;
@@ -2491,74 +2499,77 @@ eReturnValues CSCSI_Farm_Log::print_Enviroment_Statistics_Page_07(JSONNODE *mast
 //---------------------------------------------------------------------------
 eReturnValues CSCSI_Farm_Log::print_Workload_Statistics_Page_08(JSONNODE *masterData, uint32_t page)
 {
-    std::string myStr = " ";
-    myStr.resize(BASIC);
-    JSONNODE *pageInfo = json_new(JSON_NODE);
+    if (m_MajorRev > 4 && m_MinorRev > 20)
+    {
+    
+        std::string myStr = " ";
+        myStr.resize(BASIC);
+        JSONNODE *pageInfo = json_new(JSON_NODE);
 
-#if defined _DEBUG
-    if (vFarmFrame[page].workloadStatPage08.copyNumber == FACTORYCOPY)
-    {
-        printf("Workload Information Continued From Farm Log copy FACTORY \n");
-    }
-    else
-    {
-        printf("\nWorkload Information Continued From Farm Log copy %d: \n", page);
-    }
-    printf("\tCount of Queue Depth =1 at 30s intervals for last 3 SMART Summary Frames:    %" PRIu64" \n", vFarmFrame[page].workloadStatPage08.countQueDepth1 & 0x00FFFFFFFFFFFFFFLL);
-    printf("\tCount of Queue Depth =2 at 30s intervals for last 3 SMART Summary Frames:    %" PRIu64" \n", vFarmFrame[page].workloadStatPage08.countQueDepth2 & 0x00FFFFFFFFFFFFFFLL);
-    printf("\tCount of Queue Depth 2-4 at 30s intervals for last 3 SMART Summary Frames:   %" PRIu64" \n", vFarmFrame[page].workloadStatPage08.countQueDepth3_4 & 0x00FFFFFFFFFFFFFFLL);
-    printf("\tCount of Queue Depth 5-8 at 30s intervals for last 3 SMART Summary Frames:   %" PRIu64" \n", vFarmFrame[page].workloadStatPage08.countQueDepth5_8 & 0x00FFFFFFFFFFFFFFLL);
-    printf("\tCount of Queue Depth 9-16 at 30s intervals for last 3 SMART Summary Frames:  %" PRIu64" \n", vFarmFrame[page].workloadStatPage08.countQueDepth9_16 & 0x00FFFFFFFFFFFFFFLL);
-    printf("\tCount of Queue Depth 17-32 at 30s intervals for last 3 SMART Summary Frames: %" PRIu64" \n", vFarmFrame[page].workloadStatPage08.countQueDepth17_32 & 0x00FFFFFFFFFFFFFFLL);
-    printf("\tCount of Queue Depth 33-64 at 30s intervals for last 3 SMART Summary Frames: %" PRIu64" \n", vFarmFrame[page].workloadStatPage08.countQueDepth33_64 & 0x00FFFFFFFFFFFFFFLL);
-    printf("\tCount of Queue Depth gt 64  at 30s intervals for last 3 SMART Summary Frames:%" PRIu64" \n", vFarmFrame[page].workloadStatPage08.countQueDepth_gt_64 & 0x00FFFFFFFFFFFFFFLL);
+    #if defined _DEBUG
+        if (vFarmFrame[page].workloadStatPage08.copyNumber == FACTORYCOPY)
+        {
+            printf("Workload Information Continued From Farm Log copy FACTORY \n");
+        }
+        else
+        {
+            printf("\nWorkload Information Continued From Farm Log copy %d: \n", page);
+        }
+        printf("\tCount of Queue Depth =1 at 30s intervals for last 3 SMART Summary Frames:    %" PRIu64" \n", vFarmFrame[page].workloadStatPage08.countQueDepth1 & 0x00FFFFFFFFFFFFFFLL);
+        printf("\tCount of Queue Depth =2 at 30s intervals for last 3 SMART Summary Frames:    %" PRIu64" \n", vFarmFrame[page].workloadStatPage08.countQueDepth2 & 0x00FFFFFFFFFFFFFFLL);
+        printf("\tCount of Queue Depth 2-4 at 30s intervals for last 3 SMART Summary Frames:   %" PRIu64" \n", vFarmFrame[page].workloadStatPage08.countQueDepth3_4 & 0x00FFFFFFFFFFFFFFLL);
+        printf("\tCount of Queue Depth 5-8 at 30s intervals for last 3 SMART Summary Frames:   %" PRIu64" \n", vFarmFrame[page].workloadStatPage08.countQueDepth5_8 & 0x00FFFFFFFFFFFFFFLL);
+        printf("\tCount of Queue Depth 9-16 at 30s intervals for last 3 SMART Summary Frames:  %" PRIu64" \n", vFarmFrame[page].workloadStatPage08.countQueDepth9_16 & 0x00FFFFFFFFFFFFFFLL);
+        printf("\tCount of Queue Depth 17-32 at 30s intervals for last 3 SMART Summary Frames: %" PRIu64" \n", vFarmFrame[page].workloadStatPage08.countQueDepth17_32 & 0x00FFFFFFFFFFFFFFLL);
+        printf("\tCount of Queue Depth 33-64 at 30s intervals for last 3 SMART Summary Frames: %" PRIu64" \n", vFarmFrame[page].workloadStatPage08.countQueDepth33_64 & 0x00FFFFFFFFFFFFFFLL);
+        printf("\tCount of Queue Depth gt 64  at 30s intervals for last 3 SMART Summary Frames:%" PRIu64" \n", vFarmFrame[page].workloadStatPage08.countQueDepth_gt_64 & 0x00FFFFFFFFFFFFFFLL);
     
 
-#endif
-    if (vFarmFrame[page].workloadStatPage08.copyNumber == FACTORYCOPY)
-    {
-        snprintf((char*)myStr.c_str(), BASIC, "Workload Information Continued From Farm Log copy FACTORY");
+    #endif
+        if (vFarmFrame[page].workloadStatPage08.copyNumber == FACTORYCOPY)
+        {
+            snprintf((char*)myStr.c_str(), BASIC, "Workload Information Continued From Farm Log copy FACTORY");
+        }
+        else
+        {
+            snprintf((char*)myStr.c_str(), BASIC, "Workload Information Continued From Farm Log copy %" PRId32"", page);
+        }
+        json_set_name(pageInfo, (char*)myStr.c_str());
+
+        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", static_cast<uint16_t>(M_Word0(check_Status_Strip_Status(vFarmFrame[page].workloadStatPage08.countQueDepth1)) / 1000), \
+            static_cast<uint16_t>(M_Word0(check_Status_Strip_Status(vFarmFrame[page].workloadStatPage08.countQueDepth1)) % 1000));
+        set_json_string_With_Status(pageInfo, "Count of Queue Depth =1 at 30s intervals for last 3 SMART Summary Frames", (char*)myStr.c_str(), vFarmFrame[page].workloadStatPage08.countQueDepth1, m_showStatusBits);
+
+        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", static_cast<uint16_t>(M_Word0(check_Status_Strip_Status(vFarmFrame[page].workloadStatPage08.countQueDepth2)) / 1000), \
+            static_cast<uint16_t>(M_Word0(check_Status_Strip_Status(vFarmFrame[page].workloadStatPage08.countQueDepth2)) % 1000));
+        set_json_string_With_Status(pageInfo, "Count of Queue Depth =2 at 30s intervals for last 3 SMART Summary Frames", (char*)myStr.c_str(), vFarmFrame[page].workloadStatPage08.countQueDepth2, m_showStatusBits);
+
+        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", static_cast<uint16_t>(M_Word0(check_Status_Strip_Status(vFarmFrame[page].workloadStatPage08.countQueDepth3_4)) / 1000), \
+            static_cast<uint16_t>(M_Word0(check_Status_Strip_Status(vFarmFrame[page].workloadStatPage08.countQueDepth3_4)) % 1000));
+        set_json_string_With_Status(pageInfo, "Count of Queue Depth 2-4 at 30s intervals for last 3 SMART Summary Frames", (char*)myStr.c_str(), vFarmFrame[page].workloadStatPage08.countQueDepth3_4, m_showStatusBits);
+
+        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", (M_Word0(check_Status_Strip_Status(vFarmFrame[page].workloadStatPage08.countQueDepth5_8)) / 1000), \
+            static_cast<uint16_t>(M_Word0(check_Status_Strip_Status(vFarmFrame[page].workloadStatPage08.countQueDepth5_8)) % 1000));
+        set_json_string_With_Status(pageInfo, "Count of Queue Depth 5-8 at 30s intervals for last 3 SMART Summary Frames", (char*)myStr.c_str(), vFarmFrame[page].workloadStatPage08.countQueDepth5_8, m_showStatusBits);
+
+        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", (M_Word0(check_Status_Strip_Status(vFarmFrame[page].workloadStatPage08.countQueDepth9_16)) / 1000), \
+            M_Word0(check_Status_Strip_Status(vFarmFrame[page].workloadStatPage08.countQueDepth9_16)) % 1000);
+        set_json_string_With_Status(pageInfo, "Count of Queue Depth 9-16 at 30s intervals for last 3 SMART Summary Frames", (char*)myStr.c_str(), vFarmFrame[page].workloadStatPage08.countQueDepth9_16, m_showStatusBits);
+
+        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", (M_Word0(check_Status_Strip_Status(vFarmFrame[page].workloadStatPage08.countQueDepth17_32)) / 1000), \
+            M_Word0(check_Status_Strip_Status(vFarmFrame[page].workloadStatPage08.countQueDepth17_32)) % 1000);
+        set_json_string_With_Status(pageInfo, "Count of Queue Depth 17-32 at 30s intervals for last 3 SMART Summary Frames", (char*)myStr.c_str(), vFarmFrame[page].workloadStatPage08.countQueDepth17_32, m_showStatusBits);
+
+        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", (M_Word0(check_Status_Strip_Status(vFarmFrame[page].workloadStatPage08.countQueDepth33_64)) / 1000), \
+            M_Word0(check_Status_Strip_Status(vFarmFrame[page].workloadStatPage08.countQueDepth33_64)) % 1000);
+        set_json_string_With_Status(pageInfo, "MCount of Queue Depth 33-64 at 30s intervals for last 3 SMART Summary Frames", (char*)myStr.c_str(), vFarmFrame[page].workloadStatPage08.countQueDepth33_64, m_showStatusBits);
+
+        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", (M_Word0(check_Status_Strip_Status(vFarmFrame[page].workloadStatPage08.countQueDepth_gt_64)) / 1000), \
+            M_Word0(check_Status_Strip_Status(vFarmFrame[page].workloadStatPage08.countQueDepth_gt_64)) % 1000);
+        set_json_string_With_Status(pageInfo, "Count of Queue Depth gt 64  at 30s intervals for last 3 SMART Summary Frames", (char*)myStr.c_str(), vFarmFrame[page].workloadStatPage08.countQueDepth_gt_64, m_showStatusBits);
+
+        json_push_back(masterData, pageInfo);
     }
-    else
-    {
-        snprintf((char*)myStr.c_str(), BASIC, "Workload Information Continued From Farm Log copy %" PRId32"", page);
-    }
-    json_set_name(pageInfo, (char*)myStr.c_str());
-
-    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", static_cast<uint16_t>(M_Word0(check_Status_Strip_Status(vFarmFrame[page].workloadStatPage08.countQueDepth1)) / 1000), \
-        static_cast<uint16_t>(M_Word0(check_Status_Strip_Status(vFarmFrame[page].workloadStatPage08.countQueDepth1)) % 1000));
-    set_json_string_With_Status(pageInfo, "Count of Queue Depth =1 at 30s intervals for last 3 SMART Summary Frames", (char*)myStr.c_str(), vFarmFrame[page].workloadStatPage08.countQueDepth1, m_showStatusBits);
-
-    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", static_cast<uint16_t>(M_Word0(check_Status_Strip_Status(vFarmFrame[page].workloadStatPage08.countQueDepth2)) / 1000), \
-        static_cast<uint16_t>(M_Word0(check_Status_Strip_Status(vFarmFrame[page].workloadStatPage08.countQueDepth2)) % 1000));
-    set_json_string_With_Status(pageInfo, "Count of Queue Depth =2 at 30s intervals for last 3 SMART Summary Frames", (char*)myStr.c_str(), vFarmFrame[page].workloadStatPage08.countQueDepth2, m_showStatusBits);
-
-    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", static_cast<uint16_t>(M_Word0(check_Status_Strip_Status(vFarmFrame[page].workloadStatPage08.countQueDepth3_4)) / 1000), \
-        static_cast<uint16_t>(M_Word0(check_Status_Strip_Status(vFarmFrame[page].workloadStatPage08.countQueDepth3_4)) % 1000));
-    set_json_string_With_Status(pageInfo, "Count of Queue Depth 2-4 at 30s intervals for last 3 SMART Summary Frames", (char*)myStr.c_str(), vFarmFrame[page].workloadStatPage08.countQueDepth3_4, m_showStatusBits);
-
-    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", (M_Word0(check_Status_Strip_Status(vFarmFrame[page].workloadStatPage08.countQueDepth5_8)) / 1000), \
-        static_cast<uint16_t>(M_Word0(check_Status_Strip_Status(vFarmFrame[page].workloadStatPage08.countQueDepth5_8)) % 1000));
-    set_json_string_With_Status(pageInfo, "Count of Queue Depth 5-8 at 30s intervals for last 3 SMART Summary Frames", (char*)myStr.c_str(), vFarmFrame[page].workloadStatPage08.countQueDepth5_8, m_showStatusBits);
-
-    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", (M_Word0(check_Status_Strip_Status(vFarmFrame[page].workloadStatPage08.countQueDepth9_16)) / 1000), \
-        M_Word0(check_Status_Strip_Status(vFarmFrame[page].workloadStatPage08.countQueDepth9_16)) % 1000);
-    set_json_string_With_Status(pageInfo, "Count of Queue Depth 9-16 at 30s intervals for last 3 SMART Summary Frames", (char*)myStr.c_str(), vFarmFrame[page].workloadStatPage08.countQueDepth9_16, m_showStatusBits);
-
-    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", (M_Word0(check_Status_Strip_Status(vFarmFrame[page].workloadStatPage08.countQueDepth17_32)) / 1000), \
-        M_Word0(check_Status_Strip_Status(vFarmFrame[page].workloadStatPage08.countQueDepth17_32)) % 1000);
-    set_json_string_With_Status(pageInfo, "Count of Queue Depth 17-32 at 30s intervals for last 3 SMART Summary Frames", (char*)myStr.c_str(), vFarmFrame[page].workloadStatPage08.countQueDepth17_32, m_showStatusBits);
-
-    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", (M_Word0(check_Status_Strip_Status(vFarmFrame[page].workloadStatPage08.countQueDepth33_64)) / 1000), \
-        M_Word0(check_Status_Strip_Status(vFarmFrame[page].workloadStatPage08.countQueDepth33_64)) % 1000);
-    set_json_string_With_Status(pageInfo, "MCount of Queue Depth 33-64 at 30s intervals for last 3 SMART Summary Frames", (char*)myStr.c_str(), vFarmFrame[page].workloadStatPage08.countQueDepth33_64, m_showStatusBits);
-
-    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", (M_Word0(check_Status_Strip_Status(vFarmFrame[page].workloadStatPage08.countQueDepth_gt_64)) / 1000), \
-        M_Word0(check_Status_Strip_Status(vFarmFrame[page].workloadStatPage08.countQueDepth_gt_64)) % 1000);
-    set_json_string_With_Status(pageInfo, "Count of Queue Depth gt 64  at 30s intervals for last 3 SMART Summary Frames", (char*)myStr.c_str(), vFarmFrame[page].workloadStatPage08.countQueDepth_gt_64, m_showStatusBits);
-
-    json_push_back(masterData, pageInfo);
-
     return SUCCESS;
 }
 
