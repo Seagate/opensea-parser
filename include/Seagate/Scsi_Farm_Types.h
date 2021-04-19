@@ -239,12 +239,8 @@ typedef struct _sScsiDriveInfo
 
 typedef struct _sScsiWorkLoadStat
 {
-	sScsiPageParameter  PageHeader;								//!< pointer the farm header page parameter
-    //union 
-    //{
-        sWorkLoadStat		workLoad;									//!< structure of the work load Stat
-     //   sWorkLoadStat4_21		workLoad4_21;									//!< structure of the work load Stat
-    //};
+	sScsiPageParameter  PageHeader;								//!< pointer the farm header page parameter 
+    sWorkLoadStat		workLoad;									//!< structure of the work load Stat
 	
 }sScsiWorkLoadStat;
 

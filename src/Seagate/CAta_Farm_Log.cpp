@@ -480,6 +480,28 @@ eReturnValues CATA_Farm_Log::print_Work_Load(JSONNODE *masterData, uint32_t page
     printf("\tWrite cmds from 3.125-25%% of LBA space(debug):   %" PRIu64" \n", vFarmFrame[page].workLoadPage.numberOfWriteCmds2 & 0x00FFFFFFFFFFFFFFLL); 		//!< Number of Write commands from 3.125-25% of LBA space for last 3 SMART Summary Frames(added 4.4)
     printf("\tWrite cmds from 25-50%% of LBA space(debug):      %" PRIu64" \n", vFarmFrame[page].workLoadPage.numberOfWriteCmds3 & 0x00FFFFFFFFFFFFFFLL); 			//!< Number of Write commands from 25-50% of LBA space for last 3 SMART Summary Frames(added 4.4)
     printf("\tWrite cmds from 50-100%% of LBA space(debug):     %" PRIu64" \n", vFarmFrame[page].workLoadPage.numberOfWriteCmds4 & 0x00FFFFFFFFFFFFFFLL); 			//!< Number of Write commands from 50-100% of LBA space for last 3 SMART Summary Frames(added 4.4)
+    //4.21
+    printf("\tNumber of Read Commands of transfer length <=16KB for last 3 SMART Summary Frames   %llu  \n", vFarmFrame[page].workLoadPage.numReadTransferSmallATA & 0x00FFFFFFFFFFFFFFLL);		//!< Number of Read commands from 0-3.125% of LBA space for last 3 SMART Summary Frames
+    printf("\tNumber of Read Commands of transfer length (16KB – 512KB] for last 3 SMART Summary Frames  %llu  \n", vFarmFrame[page].workLoadPage.numReadTransferMid1ATA & 0x00FFFFFFFFFFFFFFLL);		//!< Number of Read commands from 3.125-25% of LBA space for last 3 SMART Summary Frames
+    printf("\tNumber of Read Commands of transfer length (512KB – 2MB] for last 3 SMART Summary Frames     %llu  \n", vFarmFrame[page].workLoadPage.numReadTransferMid2ATA & 0x00FFFFFFFFFFFFFFLL);		//!< Number of Read commands from 25-50% of LBA space for last 3 SMART Summary Frames
+    printf("\tNumber of Read Commands of transfer length > 2MB for last 3 SMART Summary Frames    %llu  \n", vFarmFrame[page].workLoadPage.numReadTransferLargeATA & 0x00FFFFFFFFFFFFFFLL);		//!< Number of Read commands from 50-100% of LBA space for last 3 SMART Summary Frames 
+    printf("\tNumber of Write Commands of transfer length <=16KB for last 3 SMART Summary Frames  %llu  \n", vFarmFrame[page].workLoadPage.numWriteTransferSmallATA & 0x00FFFFFFFFFFFFFFLL);	    //!< Number of Write commands from 0-3.125% of LBA space for last 3 SMART Summary Frames
+    printf("\tNumber of Write Commands of transfer length (16KB – 512KB] for last 3 SMART Summary Frames %llu  \n", vFarmFrame[page].workLoadPage.numWriteTransferMid1ATA & 0x00FFFFFFFFFFFFFFLL);	    //!< Number of Write commands from 3.125-25% of LBA space for last 3 SMART Summary Frames
+    printf("\tNumber of Write Commands of transfer length (512KB – 2MB] for last 3 SMART Summary Frames    %llu  \n", vFarmFrame[page].workLoadPage.numWriteTransferMid2ATA & 0x00FFFFFFFFFFFFFFLL);		//!< Number of Write commands from 25-50% of LBA space for last 3 SMART Summary Frames
+    printf("\tNumber of Write Commands of transfer length > 2MB for last 3 SMART Summary Frames   %llu  \n", vFarmFrame[page].workLoadPage.numWriteTransferLargeATA & 0x00FFFFFFFFFFFFFFLL);		//!< Number of Write commands from 50-100% of LBA space for last 3 SMART Summary Frames
+    printf("\tCount of Queue Depth =1 at 30s intervals for last 3 SMART Summary Frames   %llu  \n", vFarmFrame[page].workLoadPage.cntQueueDepth1 & 0x00FFFFFFFFFFFFFFLL);
+    printf("\tCount of Queue Depth =2 at 30s intervals for last 3 SMART Summary Frames   %llu  \n", vFarmFrame[page].workLoadPage.cntQueueDepth2 & 0x00FFFFFFFFFFFFFFLL);
+    printf("\tCount of Queue Depth =3-4 at 30s intervals for last 3 SMART Summary Frames   %llu  \n", vFarmFrame[page].workLoadPage.cntQueueDepth3to4 & 0x00FFFFFFFFFFFFFFLL);
+    printf("\tCount of Queue Depth =5-8 at 30s intervals for last 3 SMART Summary Frames   %llu  \n", vFarmFrame[page].workLoadPage.cntQueueDepth5to8 & 0x00FFFFFFFFFFFFFFLL);
+    printf("\tCount of Queue Depth =9-16 at 30s intervals for last 3 SMART Summary Frames   %llu  \n", vFarmFrame[page].workLoadPage.cntQueueDepth9to16 & 0x00FFFFFFFFFFFFFFLL);
+    printf("\tCount of Queue Depth =17-32 at 30s intervals for last 3 SMART Summary Frames   %llu  \n", vFarmFrame[page].workLoadPage.cntQueueDepth17to32 & 0x00FFFFFFFFFFFFFFLL);
+    printf("\tCount of Queue Depth =33-64 at 30s intervals for last 3 SMART Summary Frames   %llu  \n", vFarmFrame[page].workLoadPage.cntQueueDepth33to64 & 0x00FFFFFFFFFFFFFFLL);
+    printf("\tCount of Queue Depth >64 at 30s intervals for last 3 SMART Summary Frames   %llu  \n", vFarmFrame[page].workLoadPage.cntQueueDepthmorethan64 & 0x00FFFFFFFFFFFFFFLL);
+    printf("\tNumber of dither events during current power cycle, Actuator 1   %llu  \n", vFarmFrame[page].workLoadPage.numDithEvtAct1 & 0x00FFFFFFFFFFFFFFLL);
+    printf("\tNumber of times dither was held off during random workloads during current power cycle, Actuator 1   %llu  \n", vFarmFrame[page].workLoadPage.numRandWLDitherHoldOffAct1 & 0x00FFFFFFFFFFFFFFLL);
+    printf("\tNumber of times dither was held off during sequential workloads during current power cycle, Actuator 1   %llu  \n", vFarmFrame[page].workLoadPage.numSequentialWLDitherHoldOffAct1 & 0x00FFFFFFFFFFFFFFLL);
+    
+
 #endif
 
     if (vFarmFrame[page].workLoadPage.copyNumber == FACTORYCOPY)
@@ -514,7 +536,40 @@ eReturnValues CATA_Farm_Log::print_Work_Load(JSONNODE *masterData, uint32_t page
     set_json_64_bit_With_Status(pageInfo, "Number of Write commands from 3.125-25% of LBA space for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.numberOfWriteCmds2, false, m_showStatusBits);		//!< Number of Write commands from 3.125-25% of LBA space for last 3 SMART Summary Frames(added 4.4)
     set_json_64_bit_With_Status(pageInfo, "Number of Write commands from 25-50% of LBA space for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.numberOfWriteCmds3, false, m_showStatusBits);			//!< Number of Write commands from 25-50% of LBA space for last 3 SMART Summary Frames(added 4.4)
     set_json_64_bit_With_Status(pageInfo, "Number of Write commands from 50-100% of LBA space for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.numberOfWriteCmds4, false, m_showStatusBits);			//!< Number of Write commands from 50-100% of LBA space for last 3 SMART Summary Frames(added 4.4)
-
+    //4.21
+    set_json_64_bit_With_Status(pageInfo, "Number of Read Commands of transfer length <=16KB for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.numReadTransferSmallATA, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Number of Read Commands of transfer length (16KB – 512KB] for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.numReadTransferMid1ATA, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Number of Read Commands of transfer length (512KB – 2MB] for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.numReadTransferMid2ATA, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Number of Read Commands of transfer length > 2MB for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.numReadTransferLargeATA, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Number of Write Commands of transfer length <=16KB for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.numWriteTransferSmallATA, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Number of Write Commands of transfer length (16KB – 512KB] for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.numWriteTransferMid1ATA, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Number of Write Commands of transfer length (512KB – 2MB] for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.numWriteTransferMid2ATA, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Number of Write Commands of transfer length > 2MB for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.numWriteTransferLargeATA, false, m_showStatusBits);
+    printf("\tCount of Queue Depth =1 at 30s intervals for last 3 SMART Summary Frames   %llu  \n", vFarmFrame[page].workLoadPage.cntQueueDepth1 & 0x00FFFFFFFFFFFFFFLL);
+    set_json_64_bit_With_Status(pageInfo, "Count of Queue Depth =1 at 30s intervals for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.cntQueueDepth1, false, m_showStatusBits);
+    printf("\tCount of Queue Depth =2 at 30s intervals for last 3 SMART Summary Frames   %llu  \n", vFarmFrame[page].workLoadPage.cntQueueDepth2 & 0x00FFFFFFFFFFFFFFLL);
+    set_json_64_bit_With_Status(pageInfo, "Count of Queue Depth =2 at 30s intervals for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.cntQueueDepth2, false, m_showStatusBits);
+    printf("\tCount of Queue Depth =3-4 at 30s intervals for last 3 SMART Summary Frames   %llu  \n", vFarmFrame[page].workLoadPage.cntQueueDepth3to4 & 0x00FFFFFFFFFFFFFFLL);
+    set_json_64_bit_With_Status(pageInfo, "Count of Queue Depth =3-4 at 30s intervals for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.cntQueueDepth3to4, false, m_showStatusBits);
+    printf("\tCount of Queue Depth =5-8 at 30s intervals for last 3 SMART Summary Frames   %llu  \n", vFarmFrame[page].workLoadPage.cntQueueDepth5to8 & 0x00FFFFFFFFFFFFFFLL);
+    set_json_64_bit_With_Status(pageInfo, "Count of Queue Depth =5-8 at 30s intervals for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.cntQueueDepth5to8, false, m_showStatusBits);
+    printf("\tCount of Queue Depth =9-16 at 30s intervals for last 3 SMART Summary Frames   %llu  \n", vFarmFrame[page].workLoadPage.cntQueueDepth9to16 & 0x00FFFFFFFFFFFFFFLL);
+    set_json_64_bit_With_Status(pageInfo, "Count of Queue Depth =9-16 at 30s intervals for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.cntQueueDepth9to16, false, m_showStatusBits);
+    printf("\tCount of Queue Depth =17-32 at 30s intervals for last 3 SMART Summary Frames   %llu  \n", vFarmFrame[page].workLoadPage.cntQueueDepth17to32 & 0x00FFFFFFFFFFFFFFLL);
+    set_json_64_bit_With_Status(pageInfo, "Count of Queue Depth =17-32 at 30s intervals for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.cntQueueDepth17to32, false, m_showStatusBits);
+    printf("\tCount of Queue Depth =33-64 at 30s intervals for last 3 SMART Summary Frames   %llu  \n", vFarmFrame[page].workLoadPage.cntQueueDepth33to64 & 0x00FFFFFFFFFFFFFFLL);
+    set_json_64_bit_With_Status(pageInfo, "Count of Queue Depth =33-64 at 30s intervals for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.cntQueueDepth33to64, false, m_showStatusBits);
+    printf("\tCount of Queue Depth >64 at 30s intervals for last 3 SMART Summary Frames   %llu  \n", vFarmFrame[page].workLoadPage.cntQueueDepthmorethan64 & 0x00FFFFFFFFFFFFFFLL);
+    set_json_64_bit_With_Status(pageInfo, "Count of Queue Depth >64 at 30s intervals for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.cntQueueDepthmorethan64, false, m_showStatusBits);
+    printf("\tNumber of dither events during current power cycle, Actuator 1   %llu  \n", vFarmFrame[page].workLoadPage.numDithEvtAct1 & 0x00FFFFFFFFFFFFFFLL);
+    set_json_64_bit_With_Status(pageInfo, "Number of dither events during current power cycle, Actuator 1", vFarmFrame[page].workLoadPage.numDithEvtAct1, false, m_showStatusBits);
+    printf("\tNumber of times dither was held off during random workloads during current power cycle, Actuator 1   %llu  \n", vFarmFrame[page].workLoadPage.numRandWLDitherHoldOffAct1 & 0x00FFFFFFFFFFFFFFLL);
+    set_json_64_bit_With_Status(pageInfo, "Number of times dither was held off during random workloads during current power cycle, Actuator 1", vFarmFrame[page].workLoadPage.numRandWLDitherHoldOffAct1, false, m_showStatusBits);
+    printf("\tNumber of times dither was held off during sequential workloads during current power cycle, Actuator 1   %llu  \n", vFarmFrame[page].workLoadPage.numSequentialWLDitherHoldOffAct1 & 0x00FFFFFFFFFFFFFFLL);
+    set_json_64_bit_With_Status(pageInfo, "Number of times dither was held off during sequential workloads during current power cycle, Actuator 1", vFarmFrame[page].workLoadPage.numSequentialWLDitherHoldOffAct1, false, m_showStatusBits);
+    
+    
+    
     json_push_back(masterData, pageInfo);
 
     return SUCCESS;
@@ -1534,7 +1589,49 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
         snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<double>(M_DoubleWord0(vFarmFrame[page].reliPage.FAFHHighFrequency[loopCount].outer)) / 10.0);
         set_json_string_With_Status(headInfo, (char*)myHeader.c_str(), (char*)myStr.c_str(), false, m_showStatusBits);					//!< [24][3] FAFH High Frequency Passive Clearance in ADC counts
     }
+    //4.21
+    for (loopCount = 0; loopCount < m_heads; ++loopCount)
+    {
+        snprintf((char *)myHeader.c_str(), BASIC, "Number of total Laser Field Adjust iterations performed per head %" PRIu32"", loopCount);
+        set_json_64_bit_With_Status(headInfo, (char*)myHeader.c_str(), vFarmFrame[page].reliPage.numberOfLFAIterations[loopCount], false, m_showStatusBits);					//!< [24] DOS Write Count Threshold per head
+    }
 
+   for (loopCount = 0; loopCount < m_heads; ++loopCount)
+    {
+        snprintf((char *)myHeader.c_str(), BASIC, "Laser Operating Current by outer  head Diameter %" PRIu32"", loopCount);
+        snprintf((char*)myStr.c_str(), BASIC, "%0.01f", static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].reliPage.laserOperCurrent[loopCount].inner))));
+        set_json_string_With_Status(headInfo, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].reliPage.laserOperCurrent[loopCount].inner, m_showStatusBits);    
+    }
+    for (loopCount = 0; loopCount < m_heads; ++loopCount)
+    {
+        snprintf((char*)myHeader.c_str(), BASIC, "Laser Operating Current by inner  head Diameter %" PRIu32"", loopCount); // Head count
+        snprintf((char*)myStr.c_str(), BASIC, "%0.01f", static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].reliPage.laserOperCurrent[loopCount].middle)) ));
+        set_json_string_With_Status(headInfo, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].reliPage.laserOperCurrent[loopCount].middle, m_showStatusBits);   
+    }
+    for (loopCount = 0; loopCount < m_heads; ++loopCount)
+    {
+        snprintf((char*)myHeader.c_str(), BASIC, "Laser Operating Current by middle  head Diameter %" PRIu32"", loopCount); // Head count
+        snprintf((char*)myStr.c_str(), BASIC, "%0.01f", static_cast<float> (M_Word0(check_Status_Strip_Status(vFarmFrame[page].reliPage.laserOperCurrent[loopCount].outer)) ));
+        set_json_string_With_Status(headInfo, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].reliPage.laserOperCurrent[loopCount].outer, m_showStatusBits);  
+    }
+    for (loopCount = 0; loopCount < m_heads; ++loopCount)
+    {
+        snprintf((char *)myHeader.c_str(), BASIC, "Post LFA Optimal BER by outer head Diameter %" PRIu32"", loopCount);
+        snprintf((char*)myStr.c_str(), BASIC, "%0.01f", static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].reliPage.postLFABER[loopCount].inner)) ));
+        set_json_string_With_Status(headInfo, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].reliPage.postLFABER[loopCount].inner, m_showStatusBits);
+    }
+    for (loopCount = 0; loopCount < m_heads; ++loopCount)
+    {
+        snprintf((char*)myHeader.c_str(), BASIC, "Post LFA Optimal BER by inner head Diameter %" PRIu32"", loopCount); // Head count
+        snprintf((char*)myStr.c_str(), BASIC, "%0.01f", static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].reliPage.postLFABER[loopCount].middle)) ));
+        set_json_string_With_Status(headInfo, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].reliPage.postLFABER[loopCount].middle, m_showStatusBits);
+    }
+        for (loopCount = 0; loopCount < m_heads; ++loopCount)
+    {
+        snprintf((char*)myHeader.c_str(), BASIC, "Post LFA Optimal BER by middle head Diameter %" PRIu32"", loopCount); // Head count
+        snprintf((char*)myStr.c_str(), BASIC, "%0.01f", static_cast<float> (M_Word0(check_Status_Strip_Status(vFarmFrame[page].reliPage.postLFABER[loopCount].outer))));
+        set_json_string_With_Status(headInfo, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].reliPage.postLFABER[loopCount].outer, m_showStatusBits);
+    }
     json_push_back(masterData, headInfo);
     return SUCCESS;
 }
