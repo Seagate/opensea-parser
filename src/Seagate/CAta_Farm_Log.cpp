@@ -314,6 +314,8 @@ eReturnValues CATA_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint3
     printf("\tTime to ready of the last power cycle(debug):    %" PRIu64" \n", vFarmFrame[page].driveInfo.timeToReady & 0x00FFFFFFFFFFFFFFLL);                               //!< time to ready of the last power cycle
     printf("\tTime drive is held in staggered spin(debug):     %" PRIu64" \n", vFarmFrame[page].driveInfo.timeHeld & 0x00FFFFFFFFFFFFFFLL);                                  //!< time drive is held in staffered spin during the last power on sequence
     printf("\tDepopulation Head Mask(debug):                   %" PRIu64" \n", vFarmFrame[page].driveInfo.depopulationHeadMask & 0x00FFFFFFFFFFFFFFLL);
+    printf("\tHead Flight Hours, Actuator 1:                   %" PRIu64" \n", vFarmFrame[page].driveInfo.headFlightHoursAct1 & 0x00FFFFFFFFFFFFFFLL);
+    printf("\tHead Load Events, Actuator 1:                    %" PRIu64" \n", vFarmFrame[page].driveInfo.headLoadEventsAct1 & 0x00FFFFFFFFFFFFFFLL);
 #endif
 
     // check the level of print form the eToolVerbosityLevels 
@@ -418,6 +420,14 @@ eReturnValues CATA_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint3
         json_push_back(pageInfo, json_new_a("Week of Assembled", "00"));
     }
     set_json_64_bit_With_Status(pageInfo, "Depopulation Head Mask", vFarmFrame[page].driveInfo.depopulationHeadMask, false, m_showStatusBits);     //!< Depopulation Head Mask
+
+    //version 4.21
+    if (m_MajorRev >= 4 && m_MinorRev > 20) 
+    {
+        set_json_64_bit_With_Status(pageInfo, "Head Flight Hours, Actuator 1", vFarmFrame[page].driveInfo.headFlightHoursAct1, false, m_showStatusBits);     //!< Head Flight Hours, Actuator 1
+        set_json_64_bit_With_Status(pageInfo, "Head Load Events, Actuator 1", vFarmFrame[page].driveInfo.headLoadEventsAct1, false, m_showStatusBits);     //!< Head Load Events, Actuator 1
+    }
+    
     json_push_back(masterData, pageInfo);
 
     return SUCCESS;
@@ -474,6 +484,32 @@ eReturnValues CATA_Farm_Log::print_Work_Load(JSONNODE *masterData, uint32_t page
     printf("\tWrite cmds from 3.125-25%% of LBA space(debug):   %" PRIu64" \n", vFarmFrame[page].workLoadPage.numberOfWriteCmds2 & 0x00FFFFFFFFFFFFFFLL); 		//!< Number of Write commands from 3.125-25% of LBA space for last 3 SMART Summary Frames(added 4.4)
     printf("\tWrite cmds from 25-50%% of LBA space(debug):      %" PRIu64" \n", vFarmFrame[page].workLoadPage.numberOfWriteCmds3 & 0x00FFFFFFFFFFFFFFLL); 			//!< Number of Write commands from 25-50% of LBA space for last 3 SMART Summary Frames(added 4.4)
     printf("\tWrite cmds from 50-100%% of LBA space(debug):     %" PRIu64" \n", vFarmFrame[page].workLoadPage.numberOfWriteCmds4 & 0x00FFFFFFFFFFFFFFLL); 			//!< Number of Write commands from 50-100% of LBA space for last 3 SMART Summary Frames(added 4.4)
+    //4.21
+    if (m_MajorRev >= 4 && m_MinorRev > 20)
+    {
+        printf("\tNumber of Read Commands of transfer length <=16KB for last 3 SMART Summary Frames   %llu  \n", vFarmFrame[page].workLoadPage.numReadTransferSmallATA & 0x00FFFFFFFFFFFFFFLL);		
+        printf("\tNumber of Read Commands of transfer length (16KB – 512KB] for last 3 SMART Summary Frames  %llu  \n", vFarmFrame[page].workLoadPage.numReadTransferMid1ATA & 0x00FFFFFFFFFFFFFFLL);		
+        printf("\tNumber of Read Commands of transfer length (512KB – 2MB] for last 3 SMART Summary Frames     %llu  \n", vFarmFrame[page].workLoadPage.numReadTransferMid2ATA & 0x00FFFFFFFFFFFFFFLL);		
+        printf("\tNumber of Read Commands of transfer length > 2MB for last 3 SMART Summary Frames    %llu  \n", vFarmFrame[page].workLoadPage.numReadTransferLargeATA & 0x00FFFFFFFFFFFFFFLL);		
+        printf("\tNumber of Write Commands of transfer length <=16KB for last 3 SMART Summary Frames  %llu  \n", vFarmFrame[page].workLoadPage.numWriteTransferSmallATA & 0x00FFFFFFFFFFFFFFLL);	
+        printf("\tNumber of Write Commands of transfer length (16KB – 512KB] for last 3 SMART Summary Frames %llu  \n", vFarmFrame[page].workLoadPage.numWriteTransferMid1ATA & 0x00FFFFFFFFFFFFFFLL);	
+        printf("\tNumber of Write Commands of transfer length (512KB – 2MB] for last 3 SMART Summary Frames    %llu  \n", vFarmFrame[page].workLoadPage.numWriteTransferMid2ATA & 0x00FFFFFFFFFFFFFFLL);		
+        printf("\tNumber of Write Commands of transfer length > 2MB for last 3 SMART Summary Frames   %llu  \n", vFarmFrame[page].workLoadPage.numWriteTransferLargeATA & 0x00FFFFFFFFFFFFFFLL);	
+        printf("\tCount of Queue Depth =1 at 30s intervals for last 3 SMART Summary Frames   %llu  \n", vFarmFrame[page].workLoadPage.cntQueueDepth1 & 0x00FFFFFFFFFFFFFFLL);
+        printf("\tCount of Queue Depth =2 at 30s intervals for last 3 SMART Summary Frames   %llu  \n", vFarmFrame[page].workLoadPage.cntQueueDepth2 & 0x00FFFFFFFFFFFFFFLL);
+        printf("\tCount of Queue Depth =3-4 at 30s intervals for last 3 SMART Summary Frames   %llu  \n", vFarmFrame[page].workLoadPage.cntQueueDepth3to4 & 0x00FFFFFFFFFFFFFFLL);
+        printf("\tCount of Queue Depth =5-8 at 30s intervals for last 3 SMART Summary Frames   %llu  \n", vFarmFrame[page].workLoadPage.cntQueueDepth5to8 & 0x00FFFFFFFFFFFFFFLL);
+        printf("\tCount of Queue Depth =9-16 at 30s intervals for last 3 SMART Summary Frames   %llu  \n", vFarmFrame[page].workLoadPage.cntQueueDepth9to16 & 0x00FFFFFFFFFFFFFFLL);
+        printf("\tCount of Queue Depth =17-32 at 30s intervals for last 3 SMART Summary Frames   %llu  \n", vFarmFrame[page].workLoadPage.cntQueueDepth17to32 & 0x00FFFFFFFFFFFFFFLL);
+        printf("\tCount of Queue Depth =33-64 at 30s intervals for last 3 SMART Summary Frames   %llu  \n", vFarmFrame[page].workLoadPage.cntQueueDepth33to64 & 0x00FFFFFFFFFFFFFFLL);
+        printf("\tCount of Queue Depth >64 at 30s intervals for last 3 SMART Summary Frames   %llu  \n", vFarmFrame[page].workLoadPage.cntQueueDepthmorethan64 & 0x00FFFFFFFFFFFFFFLL);
+        printf("\tNumber of dither events during current power cycle, Actuator 1   %llu  \n", vFarmFrame[page].workLoadPage.numDithEvtAct1 & 0x00FFFFFFFFFFFFFFLL);
+        printf("\tNumber of times dither was held off during random workloads during current power cycle, Actuator 1   %llu  \n", vFarmFrame[page].workLoadPage.numRandWLDitherHoldOffAct1 & 0x00FFFFFFFFFFFFFFLL);
+        printf("\tNumber of times dither was held off during sequential workloads during current power cycle, Actuator 1   %llu  \n", vFarmFrame[page].workLoadPage.numSequentialWLDitherHoldOffAct1 & 0x00FFFFFFFFFFFFFFLL);
+    }
+    
+    
+
 #endif
 
     if (vFarmFrame[page].workLoadPage.copyNumber == FACTORYCOPY)
@@ -508,7 +544,30 @@ eReturnValues CATA_Farm_Log::print_Work_Load(JSONNODE *masterData, uint32_t page
     set_json_64_bit_With_Status(pageInfo, "Number of Write commands from 3.125-25% of LBA space for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.numberOfWriteCmds2, false, m_showStatusBits);		//!< Number of Write commands from 3.125-25% of LBA space for last 3 SMART Summary Frames(added 4.4)
     set_json_64_bit_With_Status(pageInfo, "Number of Write commands from 25-50% of LBA space for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.numberOfWriteCmds3, false, m_showStatusBits);			//!< Number of Write commands from 25-50% of LBA space for last 3 SMART Summary Frames(added 4.4)
     set_json_64_bit_With_Status(pageInfo, "Number of Write commands from 50-100% of LBA space for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.numberOfWriteCmds4, false, m_showStatusBits);			//!< Number of Write commands from 50-100% of LBA space for last 3 SMART Summary Frames(added 4.4)
-
+    //4.21
+    if (m_MajorRev >= 4 && m_MinorRev > 20)
+    {
+    
+    }
+    set_json_64_bit_With_Status(pageInfo, "Number of Read Commands of transfer length <=16KB for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.numReadTransferSmallATA, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Number of Read Commands of transfer length (16KB – 512KB] for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.numReadTransferMid1ATA, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Number of Read Commands of transfer length (512KB – 2MB] for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.numReadTransferMid2ATA, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Number of Read Commands of transfer length > 2MB for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.numReadTransferLargeATA, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Number of Write Commands of transfer length <=16KB for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.numWriteTransferSmallATA, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Number of Write Commands of transfer length (16KB – 512KB] for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.numWriteTransferMid1ATA, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Number of Write Commands of transfer length (512KB – 2MB] for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.numWriteTransferMid2ATA, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Number of Write Commands of transfer length > 2MB for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.numWriteTransferLargeATA, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Count of Queue Depth =1 at 30s intervals for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.cntQueueDepth1, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Count of Queue Depth =2 at 30s intervals for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.cntQueueDepth2, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Count of Queue Depth =3-4 at 30s intervals for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.cntQueueDepth3to4, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Count of Queue Depth =5-8 at 30s intervals for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.cntQueueDepth5to8, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Count of Queue Depth =9-16 at 30s intervals for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.cntQueueDepth9to16, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Count of Queue Depth =17-32 at 30s intervals for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.cntQueueDepth17to32, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Count of Queue Depth =33-64 at 30s intervals for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.cntQueueDepth33to64, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Count of Queue Depth >64 at 30s intervals for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.cntQueueDepthmorethan64, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Number of dither events during current power cycle, Actuator 1", vFarmFrame[page].workLoadPage.numDithEvtAct1, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Number of times dither was held off during random workloads during current power cycle, Actuator 1", vFarmFrame[page].workLoadPage.numRandWLDitherHoldOffAct1, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Number of times dither was held off during sequential workloads during current power cycle, Actuator 1", vFarmFrame[page].workLoadPage.numSequentialWLDitherHoldOffAct1, false, m_showStatusBits);
     json_push_back(masterData, pageInfo);
 
     return SUCCESS;
@@ -591,6 +650,30 @@ eReturnValues CATA_Farm_Log::print_Error_Information(JSONNODE *masterData, uint3
         printf("\tCum Lifetime Unrecoverable Read Repeating by head %" PRIu32":        %" PRIu64" \n", loopCount, vFarmFrame[page].errorPage.cumLifeUnRecoveralbeReadByhead[loopCount] & 0x00FFFFFFFFFFFFFFLL);      //!< Cumulative Lifetime Unrecoverable Read Repeating by head
         printf("\tCum Lifetime Unrecoverable Read Unique by head %" PRIu32":           %" PRIu64" \n", loopCount, vFarmFrame[page].errorPage.cumLiveUnRecoveralbeReadUnique[loopCount] & 0x00FFFFFFFFFFFFFFLL);   //!< Cumulative Lifetime Unrecoverable Read Unique by head
     }
+    //verion 4.21
+    if (m_MajorRev >= 4 && m_MinorRev > 20)
+    {
+        printf("\tNumber of Reallocated Sectors, Actuator 1 %" PRIu32":        %" PRIu64" \n", loopCount, vFarmFrame[page].errorPage.reallocSectorsAct1 & 0x00FFFFFFFFFFFFFFLL);  
+        printf("\tNumber of Reallocation Candidate Sectors , Actuator 1 %" PRIu32":           %" PRIu64" \n", loopCount, vFarmFrame[page].errorPage.reallocCandidatesAct1 & 0x00FFFFFFFFFFFFFFLL); 
+        printf("\tTotal Flash LED (Assert) Events, Actuator 1 %" PRIu32":        %" PRIu64" \n", loopCount, vFarmFrame[page].errorPage.totalFlashLEDEvents & 0x00FFFFFFFFFFFFFFLL);  
+        printf("\tIndex of last entry in FLED Info array below, in case the array wraps, Actuator 1 %" PRIu32":           %" PRIu64" \n", loopCount, vFarmFrame[page].errorPage.lastIDXFLEDInfoAct1 & 0x00FFFFFFFFFFFFFFLL); 
+        for (loopCount = 0; loopCount < FLASH_EVENTS; ++loopCount)
+        {
+            printf("\tInfo on the last 8 Flash LED (assert) Events, wrapping array, Actuator 1 %" PRIu32":        %" PRIu64" \n", loopCount, vFarmFrame[page].errorPage.last8FLEDEventsAct1[loopCount] & 0x00FFFFFFFFFFFFFFLL);    
+            printf("\tInfo on the last 8 Read/Write Retry events, wrapping array, Actuator 1 %" PRIu32":           %" PRIu64" \n", loopCount, vFarmFrame[page].errorPage.last8ReadWriteRetryEvts[loopCount] & 0x00FFFFFFFFFFFFFFLL); 
+        }
+        for (loopCount = 0; loopCount < REALLOCATIONEVENTS; loopCount++)
+        {
+            printf("\tReallocated sectors by cause, Actuator 1 %" PRIu32":        %" PRIu64" \n", loopCount, vFarmFrame[page].errorPage.reallocSectorsByCauseAct1[loopCount] & 0x00FFFFFFFFFFFFFFLL);      
+        }
+
+        for (loopCount = 0; loopCount < FLASH_EVENTS; ++loopCount)
+        {
+            printf("\tUniversal Timestamp (us) of last 8 Flash LED (assert) Events, wrapping array, Actuator 1 %" PRIu32":        %" PRIu64" \n", loopCount, vFarmFrame[page].errorPage.last8FLEDEvtsAct1[loopCount] & 0x00FFFFFFFFFFFFFFLL);    
+            printf("\tPower Cycle of the last 8 Flash LED (assert) Events, wrapping array, Actuator 1 %" PRIu32":           %" PRIu64" \n", loopCount, vFarmFrame[page].errorPage.last8FLEDEvtsPowerCycleAct1[loopCount] & 0x00FFFFFFFFFFFFFFLL); 
+        }
+    }
+    
 #endif
 
     if (vFarmFrame[page].errorPage.copyNumber == FACTORYCOPY)
@@ -682,7 +765,7 @@ eReturnValues CATA_Farm_Log::print_Error_Information(JSONNODE *masterData, uint3
 
             json_push_back(pageInfo, rwrInfo);
         }
-
+        set_json_64_bit_With_Status(pageInfo, "Total Flash LED (Assert) Events", vFarmFrame[page].errorPage.totalFlashLED, false, m_showStatusBits);				//!< Total Flash LED (Assert) Events
     }
 
     for (loopCount = 0; loopCount < REALLOCATIONEVENTS; ++loopCount)
@@ -697,13 +780,45 @@ eReturnValues CATA_Farm_Log::print_Error_Information(JSONNODE *masterData, uint3
         JSONNODE *eventInfo = json_new(JSON_NODE);
         snprintf((char*)myStr.c_str(), BASIC, "Cum Lifetime Unrecoverable by head %" PRIu16"", loopCount);
         json_set_name(eventInfo, (char*)myStr.c_str());
-
         set_json_64_bit_With_Status(eventInfo, "Cum Lifetime Unrecoverable Read Repeating", vFarmFrame[page].errorPage.cumLifeUnRecoveralbeReadByhead[loopCount], false, m_showStatusBits);      //!< Cumulative Lifetime Unrecoverable Read Repeating by head
         set_json_64_bit_With_Status(eventInfo, "Cum Lifetime Unrecoverable Read Unique", vFarmFrame[page].errorPage.cumLiveUnRecoveralbeReadUnique[loopCount], false, m_showStatusBits);   //!< Cumulative Lifetime Unrecoverable Read Unique by head
-
         json_push_back(pageInfo, eventInfo);
     }
+    if (m_MajorRev >= 4 && m_MinorRev > 20)
+    {
+        set_json_64_bit_With_Status(pageInfo, "Number of Reallocated Sectors, Actuator 1", vFarmFrame[page].errorPage.reallocSectorsAct1, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Number of Reallocated Candidate Sectors, Actuator 1", vFarmFrame[page].errorPage.reallocCandidatesAct1, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Total Flash LED (Assert) Events, Actuator 1", vFarmFrame[page].errorPage.totalFlashLEDEvents, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Index of last entry in FLED Info array below, in case the array wraps, Actuator 1", vFarmFrame[page].errorPage.lastIDXFLEDInfoAct1, false, m_showStatusBits);
+        for (loopCount = 0; loopCount < FLASH_EVENTS; ++loopCount)
+        {
+            JSONNODE *eventInfo = json_new(JSON_NODE);
+            snprintf((char*)myStr.c_str(), BASIC, "Actuator 1,Flash , %" PRIu16"", loopCount);
+            json_set_name(eventInfo, (char*)myStr.c_str());
+            set_json_64_bit_With_Status(eventInfo, "Info on the Flash LED (assert) Events, wrapping array, Actuator 1", vFarmFrame[page].errorPage.last8FLEDEventsAct1[loopCount], false, m_showStatusBits);      //!< Cumulative Lifetime Unrecoverable Read Repeating by head
+            set_json_64_bit_With_Status(eventInfo, "Info on the Read/Write Retry events, wrapping array, Actuator 1", vFarmFrame[page].errorPage.last8ReadWriteRetryEvts[loopCount], false, m_showStatusBits);   //!
+            json_push_back(pageInfo, eventInfo);
+        }
+        for (loopCount = 0; loopCount < REALLOCATIONEVENTS; loopCount++)
+        {
+            JSONNODE *eventInfo = json_new(JSON_NODE);
+            snprintf((char*)myStr.c_str(), BASIC, "Actuator 1,Reallocated sector , %" PRIu16"", loopCount);
+            json_set_name(eventInfo, (char*)myStr.c_str());
+            set_json_64_bit_With_Status(eventInfo, "Reallocated sectors by cause, Actuator 1", vFarmFrame[page].errorPage.reallocSectorsByCauseAct1[loopCount], false, m_showStatusBits);      //!< Cumulative Lifetime Unrecoverable Read Repeating by head
+            json_push_back(pageInfo, eventInfo);
+        }
 
+        for (loopCount = 0; loopCount < FLASH_EVENTS; ++loopCount)
+        {
+            JSONNODE *eventInfo = json_new(JSON_NODE);
+            snprintf((char*)myStr.c_str(), BASIC, "Actuator 1,Reallocated sector , %" PRIu16"", loopCount);
+            json_set_name(eventInfo, (char*)myStr.c_str());
+            set_json_64_bit_With_Status(eventInfo, "Universal Timestamp (us) of last 8 Flash LED (assert) Events, wrapping array, Actuator 1", vFarmFrame[page].errorPage.last8FLEDEvtsAct1[loopCount], false, m_showStatusBits);      //!< Cumulative Lifetime Unrecoverable Read Repeating by head
+            set_json_64_bit_With_Status(eventInfo, "Power Cycle of the last 8 Flash LED (assert) Events, wrapping array, Actuator 1", vFarmFrame[page].errorPage.last8FLEDEvtsPowerCycleAct1[loopCount], false, m_showStatusBits);      //!< Cumulative Lifetime Unrecoverable Read Repeating by head
+            json_push_back(pageInfo, eventInfo);
+        }
+    }
+    
     json_push_back(masterData, pageInfo);
 
     return SUCCESS;
@@ -795,9 +910,23 @@ eReturnValues CATA_Farm_Log::print_Enviroment_Information(JSONNODE *masterData, 
     
     printf("\t5V Power Maximum (debug):                      0x%" PRIx64" Translation %" PRIu16". % 03" PRId16" \n", vFarmFrame[page].environmentPage.powerMax5v & 0x00FFFFFFFFFFFFFFLL, \
         static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.powerMax5v)) / 1000), static_cast<uint16_t>(vFarmFrame[page].environmentPage.powerMax5v % 1000));
-
-
-
+    //version 4_21
+    if (m_MajorRev >= 4 && m_MinorRev > 20)
+    {
+        printf("Current Low Frequency Vibe Score - Actuator 0:      %" PRIu64" \n", vFarmFrame[page].environmentPage.currLFVibeAct0 & 0x00FFFFFFFFFFFFFFLL); //!< Current Low Frequency Vibe Score - Actuator 0
+        printf("\tCurrent Mid Frequency Vibe Score - Actuator 0:    %" PRIu64" \n", vFarmFrame[page].environmentPage.currMFVibeAct0 & 0x00FFFFFFFFFFFFFFLL); //!< Current Mid Frequency Vibe Score - Actuator 0
+        printf("\tCurrent High Frequency Vibe Score - Actuator 0:   %" PRIu64" \n", vFarmFrame[page].environmentPage.currHFVibeAct0 & 0x00FFFFFFFFFFFFFFLL); //!< Current High Frequency Vibe Score - Actuator 0
+        printf("\tWorst Low Frequency Vibe Score - Actuator 0       %" PRIu64" \n", vFarmFrame[page].environmentPage.worstLFVibeAct0 & 0x00FFFFFFFFFFFFFFLL); //!< Worst Low Frequency Vibe Score - Actuator 0 
+        printf("\tWorst Mid Frequency Vibe Score - Actuator 0:      %" PRIu64" \n", vFarmFrame[page].environmentPage.worstMFVibeAct0 & 0x00FFFFFFFFFFFFFFLL); //!< Worst Mid Frequency Vibe Score - Actuator 0
+        printf("\tWorst High Frequency Vibe Score - Actuator 0:     %" PRIu64" \n", vFarmFrame[page].environmentPage.worstHFVibeAct0 & 0x00FFFFFFFFFFFFFFLL); //!< Worst High Frequency Vibe Score - Actuator 0
+        printf("\tCurrent Low Frequency Vibe Score - Actuator 1:    %" PRIu64" \n", vFarmFrame[page].environmentPage.currLFVibeAct1 & 0x00FFFFFFFFFFFFFFLL); //!< Current Low Frequency Vibe Score - Actuator 1
+        printf("\tCurrent Mid Frequency Vibe Score - Actuator 1:    %" PRIu64" \n", vFarmFrame[page].environmentPage.currMFVibeAct1 & 0x00FFFFFFFFFFFFFFLL); //!< Current Mid Frequency Vibe Score - Actuator 1
+        printf("\tCurrent High Frequency Vibe Score - Actuator 1:   %" PRIu64" \n", vFarmFrame[page].environmentPage.currHFVibeAct1 & 0x00FFFFFFFFFFFFFFLL); //!< Current High Frequency Vibe Score - Actuator 1
+        printf("\tWorst Low Frequency Vibe Score - Actuator 1:      %" PRIu64" \n", vFarmFrame[page].environmentPage.worstLFVibeAct1 & 0x00FFFFFFFFFFFFFFLL); //!< Worst Low Frequency Vibe Score - Actuator 1
+        printf("\tWorst Mid Frequency Vibe Score - Actuator 1:      %" PRIu64" \n", vFarmFrame[page].environmentPage.worstMFVibeAct1 & 0x00FFFFFFFFFFFFFFLL); //!< Worst mid Frequency Vibe Score - Actuator 1
+        printf("\tWorst High Frequency Vibe Score - Actuator 1:     %" PRIu64" \n", vFarmFrame[page].environmentPage.worstHFVibeAct1 & 0x00FFFFFFFFFFFFFFLL); //!< Worst High Frequency Vibe Score - Actuator 1
+    }
+    
 #endif
     if (vFarmFrame[page].environmentPage.copyNumber == FACTORYCOPY)
     {
@@ -881,7 +1010,34 @@ eReturnValues CATA_Farm_Log::print_Enviroment_Information(JSONNODE *masterData, 
     snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16".%03" PRIu16"", M_Word0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.powerMax5v)) / 1000, M_Word0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.powerMax5v)) % 1000);
     set_json_string_With_Status(pageInfo, "5V Power Maximum", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.powerMax5v, m_showStatusBits);
  
-
+    if (m_MajorRev >= 4 && m_MinorRev > 20)
+    {
+        snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.currLFVibeAct0)));
+        set_json_string_With_Status(pageInfo, "Current Low Frequency Vibe Score - Actuator 0:", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.currLFVibeAct0, m_showStatusBits);					
+        snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.currMFVibeAct0)));
+        set_json_string_With_Status(pageInfo, "Current Mid Frequency Vibe Score - Actuator 0:", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.currMFVibeAct0, m_showStatusBits);					
+        snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.currHFVibeAct0)));
+        set_json_string_With_Status(pageInfo, "Current High Frequency Vibe Score - Actuator 0:", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.currHFVibeAct0, m_showStatusBits);					
+        snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.worstLFVibeAct0)));
+        set_json_string_With_Status(pageInfo, "Worst Low Frequency Vibe Score - Actuator 0:", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.worstLFVibeAct0, m_showStatusBits);					
+        snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.worstMFVibeAct0)));
+        set_json_string_With_Status(pageInfo, "Worst Mid Frequency Vibe Score - Actuator 0:", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.worstMFVibeAct0, m_showStatusBits);					
+        snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.worstHFVibeAct0)));
+        set_json_string_With_Status(pageInfo, "Worst High Frequency Vibe Score - Actuator 0:", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.worstHFVibeAct0, m_showStatusBits);					
+        snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.currLFVibeAct1)));
+        set_json_string_With_Status(pageInfo, "Current Low Frequency Vibe Score - Actuator 1:", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.currLFVibeAct1, m_showStatusBits);					
+        snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.currMFVibeAct1)));
+        set_json_string_With_Status(pageInfo, "Current Mid Frequency Vibe Score - Actuator 1:", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.currMFVibeAct1, m_showStatusBits);					
+        snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.currHFVibeAct1)));
+        set_json_string_With_Status(pageInfo, "Current High Frequency Vibe Score - Actuator 1:", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.currHFVibeAct1, m_showStatusBits);					
+        snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.worstLFVibeAct1)));
+        set_json_string_With_Status(pageInfo, "Worst Low Frequency Vibe Score - Actuator 1:", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.worstLFVibeAct1, m_showStatusBits);					
+        snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.worstMFVibeAct1)));
+        set_json_string_With_Status(pageInfo, "Worst Mid Frequency Vibe Score - Actuator 1:", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.worstMFVibeAct1, m_showStatusBits);					
+        snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.worstHFVibeAct1)));
+        set_json_string_With_Status(pageInfo, "Worst High Frequency Vibe Score - Actuator 1:", (char*)myStr.c_str(), vFarmFrame[page].environmentPage.worstHFVibeAct1, m_showStatusBits);					
+    }
+    
     json_push_back(masterData, pageInfo);
 
     return SUCCESS;
@@ -946,11 +1102,37 @@ eReturnValues CATA_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint32
     printf("\tSeek Error Rate (SMART Attr 7 Worst)(debug):     %" PRIu64" \n", vFarmFrame[page].reliPage.attrSeekErrorRateWorst & 0x00FFFFFFFFFFFFFFLL);          //!< Seek Error Rate (SMART Attribute 7 Worst)
     printf("\tHigh Priority Unload Events (Raw) (debug):       0x%016" PRIx64" \n", vFarmFrame[page].reliPage.attrUnloadEventsRaw & 0x00FFFFFFFFFFFFFFLL);             //!< High Priority Unload Events (SMART Attribute 192 Raw)
     printf("\tMicro Actuator Lock-out accumulated (debug):     %" PRIu64" \n", vFarmFrame[page].reliPage.microActuatorLockOUt & 0x00FFFFFFFFFFFFFFLL);             //!< Micro Actuator Lock-out, head mask accumulated over last 3 Summary Frames8
+    //version4_21
+    if (m_MajorRev >= 4 && m_MinorRev > 20)
+    {
+        printf("\tRV Absolute Mean (debug):                        %" PRIu64" \n", vFarmFrame[page].reliPage.RVAbsoluteMean & 0x00FFFFFFFFFFFFFFLL);						//!< RV Absolute Mean, value from the most recent SMART Frame
+        printf("\tMax RV Absolute Meane (debug):                   %" PRIu64" \n", vFarmFrame[page].reliPage.maxRVAbsluteMean & 0x00FFFFFFFFFFFFFFLL);						//!< Max RV Absolute Mean, value from the most recent SMART Summary Frame
+        printf("\tIdle Time (debug):                               %" PRIu64" \n", vFarmFrame[page].reliPage.idleTime & 0x00FFFFFFFFFFFFFFLL);								//!< idle Time, Value from most recent SMART Summary Frame
+        printf("\tNumber of LBAs Corrected by Parity Sector (debug)%" PRIu64" \n", vFarmFrame[page].reliPage.numberLBACorrectedByParitySector & 0x00FFFFFFFFFFFFFFLL);	    //!< Number of LBAs Corrected by Parity Sector
+        printf("\tPrimary Super Parity Coverage Percentae, Actuator 0%" PRIu64" \n", vFarmFrame[page].reliPage.SuperParityCovPercent & 0x00FFFFFFFFFFFFFFLL);	            //!< Number of LBAs Corrected by Parity Sector
+        printf("\tTimestamp of last IDD test in Hours(POH), Actuator 1%" PRIu64" \n", vFarmFrame[page].reliPage.lastIDDTimeAct1 & 0x00FFFFFFFFFFFFFFLL);	            //!< Number of LBAs Corrected by Parity Sector
+        printf("\tSub Command of last IDD Test, Actuator 1" PRIu64" \n", vFarmFrame[page].reliPage.cmdLastIDDTestAct1 & 0x00FFFFFFFFFFFFFFLL);	            //!< Number of LBAs Corrected by Parity Sector
+        printf("\tNumber of Reallocated Sector Reclamations, Actuator 1%" PRIu64" \n", vFarmFrame[page].reliPage.reallocSectorReclamAct1 & 0x00FFFFFFFFFFFFFFLL);	            //!< Number of LBAs Corrected by Parity Sector
+        printf("\tServo Status (follows standard DST error code definitions), Actuator 1%" PRIu64" \n", vFarmFrame[page].reliPage.servoStatusAct1 & 0x00FFFFFFFFFFFFFFLL);	            //!< Number of LBAs Corrected by Parity Sector
+        printf("\tNumber of Slipped Sectors Before IDD Scan, Actuator 1%" PRIu64" \n", vFarmFrame[page].reliPage.slippedSectorsBefIDDAct1 & 0x00FFFFFFFFFFFFFFLL);	            //!< Number of LBAs Corrected by Parity Sector
+        printf("\tNumber of Slipped Sectors After IDD Scan, Actuator 1%" PRIu64" \n", vFarmFrame[page].reliPage.slippedSectorsAftIDDAct1 & 0x00FFFFFFFFFFFFFFLL);	            //!< Number of LBAs Corrected by Parity Sector
+        printf("\tNumber of Resident Reallocated Sectors Before IDD Scan, Actuator 1%" PRIu64" \n", vFarmFrame[page].reliPage.resReallocSectorsBefIDDAct1 & 0x00FFFFFFFFFFFFFFLL);	            //!< Number of LBAs Corrected by Parity Sector
+        printf("\tNumber of Resident Reallocated Sectors After IDD Scan, Actuator 1%" PRIu64" \n", vFarmFrame[page].reliPage.resReallocSectorsAftIDDAct1 & 0x00FFFFFFFFFFFFFFLL);	            //!< Number of LBAs Corrected by Parity Sector
+        printf("\tNumber of Successfully Scrubbed Sectors Before IDD Scan, Actuator 1%" PRIu64" \n", vFarmFrame[page].reliPage.scrubbedSectorsBefIDDAct1 & 0x00FFFFFFFFFFFFFFLL);	            //!< Number of LBAs Corrected by Parity Sector
+        printf("\tNumber of Successfully Scrubbed Sectors After IDD Scan, Actuator 1%" PRIu64" \n", vFarmFrame[page].reliPage.scrubbedSectorsAftIDDAct1 & 0x00FFFFFFFFFFFFFFLL);	            //!< Number of LBAs Corrected by Parity Sector
+        printf("\tNumber of DOS Scans Performed, Actuator 1%" PRIu64" \n", vFarmFrame[page].reliPage.DOSScansAct1 & 0x00FFFFFFFFFFFFFFLL);	            //!< Number of LBAs Corrected by Parity Sector
+        printf("\tNumber of LBAs Corrected by ISP, Acuator 1%" PRIu64" \n", vFarmFrame[page].reliPage.correctedLBAsAct1 & 0x00FFFFFFFFFFFFFFLL);	            //!< Number of LBAs Corrected by Parity Sector
+        printf("\t Number of Valid Parity Sectors, Actuator 1%" PRIu64" \n", vFarmFrame[page].reliPage.validParitySectAct1 & 0x00FFFFFFFFFFFFFFLL);	            //!< Number of LBAs Corrected by Parity Sector
+        printf("\tRV Absolute Mean, value from most recent SMART Summary Frame in rad/s^2, Actuator 1%" PRIu64" \n", vFarmFrame[page].reliPage.rvAbsMeanAct1 & 0x00FFFFFFFFFFFFFFLL);	            //!< Number of LBAs Corrected by Parity Sector
+        printf("\tMax RV Absolute Mean, value from most recent SMART Summary Frame in rad/s^2, Actuator %" PRIu64" \n", vFarmFrame[page].reliPage.rvAbsMeanMaxAct1 & 0x00FFFFFFFFFFFFFFLL);	            //!< Number of LBAs Corrected by Parity Sector
+        printf("\tIdle Time, value from most recent SMART Summary Frame in seconds, Actuator 1%" PRIu64" \n", vFarmFrame[page].reliPage.idleTimeAct1 & 0x00FFFFFFFFFFFFFFLL);	            //!< Number of LBAs Corrected by Parity Sector
+        printf("\tNumber of LBAs Corrected by Parity Sector, Actuator 1%" PRIu64" \n", vFarmFrame[page].reliPage.parityCorrLBAAct1 & 0x00FFFFFFFFFFFFFFLL);	            //!< Number of LBAs Corrected by Parity Sector
+        printf("\tPrimary Super Parity Coverage Percentage, Actuator 1%" PRIu64" \n", vFarmFrame[page].reliPage.superParityCovPercentAct1 & 0x00FFFFFFFFFFFFFFLL);	            //!< Number of LBAs Corrected by Parity Sector
+    }
+    
 
-    printf("\tRV Absolute Mean (debug):                        %" PRIu64" \n", vFarmFrame[page].reliPage.RVAbsoluteMean & 0x00FFFFFFFFFFFFFFLL);						//!< RV Absolute Mean, value from the most recent SMART Frame
-    printf("\tMax RV Absolute Meane (debug):                   %" PRIu64" \n", vFarmFrame[page].reliPage.maxRVAbsluteMean & 0x00FFFFFFFFFFFFFFLL);						//!< Max RV Absolute Mean, value from the most recent SMART Summary Frame
-    printf("\tIdle Time (debug):                               %" PRIu64" \n", vFarmFrame[page].reliPage.idleTime & 0x00FFFFFFFFFFFFFFLL);								//!< idle Time, Value from most recent SMART Summary Frame
-    printf("\tNumber of LBAs Corrected by Parity Sector (debug)%" PRIu64" \n", vFarmFrame[page].reliPage.numberLBACorrectedByParitySector & 0x00FFFFFFFFFFFFFFLL);	    //!< Number of LBAs Corrected by Parity Sector 
+
+
 #endif
     if (vFarmFrame[page].reliPage.copyNumber == FACTORYCOPY)
     {
@@ -983,16 +1165,37 @@ eReturnValues CATA_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint32
     set_json_64_bit_With_Status(pageInfo, "Seek Error Rate (SMART Attr 7 Normalized)", vFarmFrame[page].reliPage.attrSeekErrorRateNormal, false, m_showStatusBits);         //!< Seek Error Rate (SMART Attribute 7 Normalized)
     set_json_64_bit_With_Status(pageInfo, "Seek Error Rate (SMART Attr 7 Worst)", vFarmFrame[page].reliPage.attrSeekErrorRateWorst, false, m_showStatusBits);			    //!< Seek Error Rate (SMART Attribute 7 Worst)
     set_json_64_bit_With_Status(pageInfo, "High Priority Unload Events", vFarmFrame[page].reliPage.attrUnloadEventsRaw, false, m_showStatusBits);					        //!< High Priority Unload Events (SMART Attribute 192 Raw)
-    set_json_64_bit_With_Status(pageInfo, "Micro Actuator Lock-out accumulated", vFarmFrame[page].reliPage.microActuatorLockOUt, false, m_showStatusBits);				    //!< Micro Actuator Lock-out, head mask accumulated over last 3 Summary Frames8
-
+    set_json_64_bit_With_Status(pageInfo, "Micro Actuator Lock-out accumulated", vFarmFrame[page].reliPage.microActuatorLockOUt, false, m_showStatusBits);				    //!< Micro Actuator Lock-out, head mask accumulated over last 3 Summary Frames
     set_json_64_bit_With_Status(pageInfo, "Number of Disc Slip Recalibrations Performed", vFarmFrame[page].reliPage.diskSlipRecalPerformed, false, m_showStatusBits);       //!< Number of disc slip recalibrations performed
     set_json_64_bit_With_Status(pageInfo, "Helium Pressure Threshold Tripped", vFarmFrame[page].reliPage.heliumPresureTrip, false, m_showStatusBits);                       //!< Helium Pressure Threshold Tripped ( 1- trip, 0 -no trip)//!< idle Time, Value from most recent SMART Summary Frame
-    set_json_64_bit_With_Status(pageInfo, "RV Absolute Mean", vFarmFrame[page].reliPage.RVAbsoluteMean, false, m_showStatusBits);										    //!< RV Absolute Mean, value from the most recent SMART Frame
-    set_json_64_bit_With_Status(pageInfo, "Max RV Absolute Mean", vFarmFrame[page].reliPage.maxRVAbsluteMean, false, m_showStatusBits);									    //!< Max RV Absolute Mean, value from the most recent SMART Summary Frame 
-    snprintf((char*)myStr.c_str(), BASIC, "%0.03lf", static_cast<double>(M_DoubleWord0(check_Status_Strip_Status(vFarmFrame[page].reliPage.idleTime))* 1.0) / 3600);
-    set_json_string_With_Status(pageInfo, "Idle Time (hours)", (char*)myStr.c_str(), vFarmFrame[page].reliPage.idleTime, m_showStatusBits);                                 //!< Idle Time
-    set_json_64_bit_With_Status(pageInfo, "Number of LBAs Corrected by Parity Sector", vFarmFrame[page].reliPage.numberLBACorrectedByParitySector, false, m_showStatusBits);//!< Number of LBAs Corrected by Parity Sector 
-
+    
+    if (m_MajorRev >= 4 && m_MinorRev > 20)
+    {
+        set_json_string_With_Status(pageInfo, "Idle Time (hours)", (char*)myStr.c_str(), vFarmFrame[page].reliPage.idleTime, m_showStatusBits);                                 
+        set_json_64_bit_With_Status(pageInfo, "Number of LBAs Corrected by Parity Sector", vFarmFrame[page].reliPage.numberLBACorrectedByParitySector, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "", vFarmFrame[page].reliPage.numberLBACorrectedByParitySector, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Primary Super Parity Coverage Percentae, Actuator 0", vFarmFrame[page].reliPage.SuperParityCovPercent, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Timestamp of last IDD test in Hours(POH), Actuator 1", vFarmFrame[page].reliPage.lastIDDTimeAct1, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Sub Command of last IDD Test, Actuator 1", vFarmFrame[page].reliPage.cmdLastIDDTestAct1, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Number of Reallocated Sector Reclamations, Actuator 1", vFarmFrame[page].reliPage.reallocSectorReclamAct1, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Servo Status (follows standard DST error code definitions), Actuator 1", vFarmFrame[page].reliPage.servoStatusAct1, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Number of Slipped Sectors Before IDD Scan, Actuator ", vFarmFrame[page].reliPage.slippedSectorsBefIDDAct1, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Number of Slipped Sectors After IDD Scan, Actuator 1", vFarmFrame[page].reliPage.slippedSectorsAftIDDAct1, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Number of Resident Reallocated Sectors Before IDD Scan, Actuator 1", vFarmFrame[page].reliPage.resReallocSectorsBefIDDAct1, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Number of Resident Reallocated Sectors After IDD Scan, Actuator 1", vFarmFrame[page].reliPage.resReallocSectorsAftIDDAct1, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Number of Successfully Scrubbed Sectors Before IDD Scan, Actuator 1", vFarmFrame[page].reliPage.scrubbedSectorsBefIDDAct1, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Number of Successfully Scrubbed Sectors After IDD Scan, Actuator 1", vFarmFrame[page].reliPage.scrubbedSectorsAftIDDAct1, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Number of DOS Scans Performed, Actuator 1", vFarmFrame[page].reliPage.DOSScansAct1, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Number of LBAs Corrected by ISP, Acuator 1", vFarmFrame[page].reliPage.correctedLBAsAct1, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Number of Valid Parity Sectors, Actuator 1", vFarmFrame[page].reliPage.validParitySectAct1, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "RV Absolute Mean, value from most recent SMART Summary Frame in rad for each s^2, Actuator 1", vFarmFrame[page].reliPage.rvAbsMeanAct1, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Max RV Absolute Mean, value from most recent SMART Summary Frame in rad or each s^2, Actuator", vFarmFrame[page].reliPage.rvAbsMeanMaxAct1, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Idle Time, value from most recent SMART Summary Frame in seconds, Actuator 1", vFarmFrame[page].reliPage.idleTimeAct1, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Number of LBAs Corrected by Parity Sector, Actuator 1", vFarmFrame[page].reliPage.parityCorrLBAAct1, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Primary Super Parity Coverage Percentage, Actuator 1", vFarmFrame[page].reliPage.superParityCovPercentAct1, false, m_showStatusBits);
+    }
+    
+    
     json_push_back(masterData, pageInfo);
     return SUCCESS;
 }
@@ -1405,7 +1608,53 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
         snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<double>(M_DoubleWord0(vFarmFrame[page].reliPage.FAFHHighFrequency[loopCount].outer)) / 10.0);
         set_json_string_With_Status(headInfo, (char*)myHeader.c_str(), (char*)myStr.c_str(), false, m_showStatusBits);					//!< [24][3] FAFH High Frequency Passive Clearance in ADC counts
     }
+    //4.21
+    if (m_MajorRev >= 4 && m_MinorRev > 20) {
+        for (loopCount = 0; loopCount < m_heads; ++loopCount)
+        {
+            snprintf((char *)myHeader.c_str(), BASIC, "Number of total Laser Field Adjust iterations performed per head %" PRIu32"", loopCount);
+            set_json_64_bit_With_Status(headInfo, (char*)myHeader.c_str(), vFarmFrame[page].reliPage.numberOfLFAIterations[loopCount], false, m_showStatusBits);					//!< [24] DOS Write Count Threshold per head
+        }
 
+        for (loopCount = 0; loopCount < m_heads; ++loopCount)
+        {
+            snprintf((char *)myHeader.c_str(), BASIC, "Laser Operating Current by outer  head Diameter %" PRIu32"", loopCount);
+            snprintf((char*)myStr.c_str(), BASIC, "%0.01f", static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].reliPage.laserOperCurrent[loopCount].inner))));
+            set_json_string_With_Status(headInfo, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].reliPage.laserOperCurrent[loopCount].inner, m_showStatusBits);
+        }
+        for (loopCount = 0; loopCount < m_heads; ++loopCount)
+        {
+            snprintf((char*)myHeader.c_str(), BASIC, "Laser Operating Current by inner  head Diameter %" PRIu32"", loopCount); // Head count
+            snprintf((char*)myStr.c_str(), BASIC, "%0.01f", static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].reliPage.laserOperCurrent[loopCount].middle))));
+            set_json_string_With_Status(headInfo, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].reliPage.laserOperCurrent[loopCount].middle, m_showStatusBits);
+        }
+        for (loopCount = 0; loopCount < m_heads; ++loopCount)
+        {
+            snprintf((char*)myHeader.c_str(), BASIC, "Laser Operating Current by middle  head Diameter %" PRIu32"", loopCount); // Head count
+            snprintf((char*)myStr.c_str(), BASIC, "%0.01f", static_cast<float> (M_Word0(check_Status_Strip_Status(vFarmFrame[page].reliPage.laserOperCurrent[loopCount].outer))));
+            set_json_string_With_Status(headInfo, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].reliPage.laserOperCurrent[loopCount].outer, m_showStatusBits);
+        }
+        for (loopCount = 0; loopCount < m_heads; ++loopCount)
+        {
+            snprintf((char *)myHeader.c_str(), BASIC, "Post LFA Optimal BER by outer head Diameter %" PRIu32"", loopCount);
+            snprintf((char*)myStr.c_str(), BASIC, "%0.01f", static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].reliPage.postLFABER[loopCount].inner))));
+            set_json_string_With_Status(headInfo, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].reliPage.postLFABER[loopCount].inner, m_showStatusBits);
+        }
+        for (loopCount = 0; loopCount < m_heads; ++loopCount)
+        {
+            snprintf((char*)myHeader.c_str(), BASIC, "Post LFA Optimal BER by inner head Diameter %" PRIu32"", loopCount); // Head count
+            snprintf((char*)myStr.c_str(), BASIC, "%0.01f", static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].reliPage.postLFABER[loopCount].middle))));
+            set_json_string_With_Status(headInfo, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].reliPage.postLFABER[loopCount].middle, m_showStatusBits);
+        }
+        for (loopCount = 0; loopCount < m_heads; ++loopCount)
+        {
+            snprintf((char*)myHeader.c_str(), BASIC, "Post LFA Optimal BER by middle head Diameter %" PRIu32"", loopCount); // Head count
+            snprintf((char*)myStr.c_str(), BASIC, "%0.01f", static_cast<float> (M_Word0(check_Status_Strip_Status(vFarmFrame[page].reliPage.postLFABER[loopCount].outer))));
+            set_json_string_With_Status(headInfo, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].reliPage.postLFABER[loopCount].outer, m_showStatusBits);
+        }
+    
+    }
+    
     json_push_back(masterData, headInfo);
     return SUCCESS;
 }

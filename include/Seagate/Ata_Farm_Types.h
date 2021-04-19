@@ -59,6 +59,8 @@ typedef struct _sDriveInfo
     uint64_t        maxNumberForReasign;                        //!< Max Number of Available Sectors for Reassignment – Value in disc sectors(started in 3.3 )
     uint64_t        dateOfAssembly;                             //!< Date of Assembly in ASCII “YYWW” where YY is the year and WW is the calendar week(started in 4.2)
     uint64_t        depopulationHeadMask;                       //!< Depopulation Head Mask(started in 4.7)
+    uint64_t        headFlightHoursAct1;                        //!< Head Flight Hours, Actuator1
+    uint64_t        headLoadEventsAct1;                         //!< Head Load Events, Actuator 1
 }sDriveInfo;
 
 typedef struct _sErrorStat
@@ -93,6 +95,16 @@ typedef struct _sErrorStat
     uint64_t         cumLifeTimeECCReadDueErrorRecovery;        //<! Cumulative Lifetime Unrecoverable Read errors due to Error Recovery Control 
     uint64_t         cumLifeUnRecoveralbeReadByhead[24];        //<! Cumulative Lifetime Unrecoverable Read Repeating by head
     uint64_t         cumLiveUnRecoveralbeReadUnique[24];        //<! Cumulative Lifetime Unrecoverable Read Unique by head
+//version 4.21
+    uint64_t         reallocSectorsAct1;                        //!< Number of Reallocated sectors, Actuator 1
+    uint64_t         reallocCandidatesAct1;                        //!< Number of Reallocation Candidate Sectors, Actuator 1
+    uint64_t         totalFlashLEDEvents;                       //!< Total Flash LED (Assert) Events, Actuator 1 
+    uint64_t         lastIDXFLEDInfoAct1;                       //!< Index of last entry in FLED Info array below, in case the array wraps, Actuator 1
+    uint64_t         last8FLEDEventsAct1[8];                    //!< Info on the last 8 Flash LED (assert) Events, wrapping array, Actuator 1
+    uint64_t         last8ReadWriteRetryEvts[8];                //!< Info on the last 8 Read/Write Retry events, wrapping array, Actuator 1
+    uint64_t         reallocSectorsByCauseAct1[15];             //!< Reallocated sectors by cause, Actuator 1
+    uint64_t         last8FLEDEvtsAct1[8];                      //!< Universal Timestamp (us) of last 8 Flash LED (assert) Events, wrapping array, Actuator 1
+    uint64_t         last8FLEDEvtsPowerCycleAct1[8];            //!< Power Cycle of the last 8 Flash LED (assert) Events, wrapping array, Actuator 1
 }sErrorStat;
 
 typedef struct _sEnvironementStat
@@ -129,6 +141,19 @@ typedef struct _sEnvironementStat
     uint64_t         powerAvg5v;                                //!< 5V Power Average(mw) - Average of the three summary frames (4.3)
     uint64_t         powerMin5v;                                //!< 5V Power Min(mw) - Lowest of last 3 SMART summary frames (4.3)
     uint64_t         powerMax5v;                                //!< 5V Power Max(mw) - Highest of last 3 SMART summary frames (4.3)
+    //v4.21
+    uint64_t         currLFVibeAct0;                            //!< Current Low Frequency Vibe Score - Actuator 0 
+    uint64_t         currMFVibeAct0;                            //!< Current Mid Frequency Vibe Score - Actuator 0
+    uint64_t         currHFVibeAct0;                            //!< Current High Frequency Vibe Score - Actuator 0
+    uint64_t         worstLFVibeAct0;                           //!< Worst Low Frequency Vibe Score - Actuator 0
+    uint64_t         worstMFVibeAct0;                           //!< Worst Mid Frequency Vibe Score - Actuator 0
+    uint64_t         worstHFVibeAct0;                           //!< Worst High Frequency Vibe Score - Actuator 0
+    uint64_t         currLFVibeAct1;                            //!< Current Low Frequency Vibe Score - Acutator 1
+    uint64_t         currMFVibeAct1;                            //!< Current Mid Frequency Vibe Score - Actuator 1
+    uint64_t         currHFVibeAct1;                            //!< Current High Frequency Vibe Score - Actuator 1
+    uint64_t         worstLFVibeAct1;                           //!< Worst Low Frequency Vibe Score - Actuator 1
+    uint64_t         worstMFVibeAct1;                           //!< Worst Mid Frequency Vibe Score - Actuator 1
+    uint64_t         worstHFVibeAct1;                           //!< Worst High Frequency Vibe Score - Actuator 1
 }sEnvironementStat;
 
 typedef struct _sHeadInfo
@@ -213,6 +238,29 @@ typedef struct _sAtaReliabilityStat
     sflyHeight      FAFHLowFrequency[MAX_HEAD_COUNT];            //<! [24][3] FAFH Low Frequency Passive Clearance in ADC counts (added in 4.5)
     sflyHeight      FAFHHighFrequency[MAX_HEAD_COUNT];           //<! [24][3] FAFH High Frequency Passive Clearance in ADC counts (added in 4.5)
     uint64_t        numberLBACorrectedByParitySector;            //<! Number of LBAs Corrected by Parity Sector
+    //4.21
+    uint64_t        SuperParityCovPercent;                       //!< Primary Super Parity Coverage Percentae, Actuator 0
+    uint64_t        numberOfLFAIterations[MAX_HEAD_COUNT];       //!< Number of total Laser Field Adjust iterations performed per head
+    sflyHeight      laserOperCurrent[MAX_HEAD_COUNT];            //!< Laser Operating Current by head Diameter 0: Outer Diameter 1: Inner Diameter 2: Middle
+    sflyHeight      postLFABER[MAX_HEAD_COUNT];                  //!< Post LFA Optimal BER by head Diameter 0: Outer Diameter 1: Inner Diameter 2: Middle
+    uint64_t        lastIDDTimeAct1;                             //!< Timestamp of last IDD test in Hours(POH), Actuator 1
+    uint64_t        cmdLastIDDTestAct1;                          //!< Sub Command of last IDD Test, Actuator 1
+    uint64_t        reallocSectorReclamAct1;                     //!< Number of Reallocated Sector Reclamations, Actuator 1
+    uint64_t        servoStatusAct1;                             //!< Servo Status (follows standard DST error code definitions), Actuator 1
+    uint64_t        slippedSectorsBefIDDAct1;                    //!< Number of Slipped Sectors Before IDD Scan, Actuator 1
+    uint64_t        slippedSectorsAftIDDAct1;                    //!< Number of Slipped Sectors After IDD Scan, Actuator 1
+    uint64_t        resReallocSectorsBefIDDAct1;                 //!< Number of Resident Reallocated Sectors Before IDD Scan, Actuator 1
+    uint64_t        resReallocSectorsAftIDDAct1;                 //!< Number of Resident Reallocated Sectors After IDD Scan, Actuator 1
+    uint64_t        scrubbedSectorsBefIDDAct1;                   //!< Number of Successfully Scrubbed Sectors Before IDD Scan, Actuator 1
+    uint64_t        scrubbedSectorsAftIDDAct1;                   //!< Number of Successfully Scrubbed Sectors After IDD Scan, Actuator 1
+    uint64_t        DOSScansAct1;                                //!< Number of DOS Scans Performed, Actuator 1
+    uint64_t        correctedLBAsAct1;                           //!< Number of LBAs Corrected by ISP, Acuator 1
+    uint64_t        validParitySectAct1;                         //!< Number of Valid Parity Sectors, Actuator 1
+    uint64_t        rvAbsMeanAct1;                               //!< RV Absolute Mean, value from most recent SMART Summary Frame in rad/s^2, Actuator 1
+    uint64_t        rvAbsMeanMaxAct1;                            //!< Max RV Absolute Mean, value from most recent SMART Summary Frame in rad/s^2, Actuator 1
+    uint64_t        idleTimeAct1;                                //!< Idle Time, value from most recent SMART Summary Frame in seconds, Actuator 1                  
+    uint64_t        parityCorrLBAAct1;                           //!< Number of LBAs Corrected by Parity Sector, Actuator 1
+    uint64_t        superParityCovPercentAct1;                   //!< Primary Super Parity Coverage Percentage, Actuator 1 
 }sAtaReliabilityStat;
 
 typedef struct _sFarmFrame
