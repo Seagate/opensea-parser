@@ -97,7 +97,7 @@ namespace opensea_parser {
             const char* unit, int pageNum, int64_t value);
         void prePython_Float(JSONNODE* masterData, const char* name, const char* statType, const char* header, \
             const char* unit, int pageNum, double value);
-        void prePython_Head(JSONNODE* masterData, const char* name, const char* statType, uint32_t headNumber, \
+        void prePython_Head_Float(JSONNODE* masterData, const char* name, const char* statType, uint32_t headNumber, \
             const char* unit, int pageNum, double value);
         void prePython_Head_Int(JSONNODE* masterData, const char* name, const char* statType, uint32_t headNumber, \
             const char* unit, int pageNum, int64_t value);
