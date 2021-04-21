@@ -149,7 +149,7 @@ eReturnValues CScsiStartStop::parse_Start_Stop_Log(JSONNODE *masterData)
 	byte_Swap_16(&m_Page->accountParamCode);
 	if (accountingDate == m_Page->accountParamCode)
 	{
-		retStatus = week_Year_Print(pageInfo, m_Page->accountParamCode, m_Page->paramLength2, m_Page->paramControlByte2, m_Page->accYear, m_Page->accWeek, "Accounting Data","Accounting Year", "Accounting Week");
+		retStatus = week_Year_Print(pageInfo, m_Page->accountParamCode, m_Page->paramLength2, m_Page->paramControlByte2, m_Page->accYear, m_Page->accWeek, "Accounting Date","Accounting Year", "Accounting Week");
 	}
 	else
 	{
