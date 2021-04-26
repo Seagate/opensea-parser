@@ -63,6 +63,7 @@ namespace opensea_parser {
 
 		void process_Client_Data(JSONNODE *appData);
 		eReturnValues get_Client_Data(JSONNODE *masterData);
+		eReturnValues get_PrePython_Client_Data(JSONNODE* masterData);
 	public:
 		CScsiApplicationLog();
 		CScsiApplicationLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength);

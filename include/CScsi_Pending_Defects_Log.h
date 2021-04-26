@@ -57,12 +57,21 @@ namespace opensea_parser {
 		void process_PList_Data(JSONNODE *pendingData);
 		void process_PList_Count(JSONNODE *pendingCount);
 		eReturnValues get_Plist_Data(JSONNODE *masterData);
+		eReturnValues get_PrePython_Plist_Data(JSONNODE* masterData);
+
 	public:
 		CScsiPendingDefectsLog();
 		CScsiPendingDefectsLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength);
 		virtual ~CScsiPendingDefectsLog();
 		virtual eReturnValues get_Log_Status() { return m_PlistStatus; };
-		virtual eReturnValues parse_Supported_Log_Pages_Log(JSONNODE *masterData) { return get_Plist_Data(masterData); };
+		virtual eReturnValues parse_Supported_Log_Pages_Log(JSONNODE *masterData) 
+		{ 
+#if defined (PREPYTHON)
+			return get_PrePython_Plist_Data(masterData);
+#else
+			return get_Plist_Data(masterData); 
+#endif
+		};
 
 	};
 #endif

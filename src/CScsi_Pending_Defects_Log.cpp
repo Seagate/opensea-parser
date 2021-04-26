@@ -128,6 +128,37 @@ void CScsiPendingDefectsLog::process_PList_Data(JSONNODE *pendingData)
 {
 	std::string myStr = "";
 	myStr.resize(BASIC);
+#if defined (PREPYTHON)
+	json_push_back(pendingData, json_new_a("name", "pending_defect"));
+	JSONNODE* label = json_new(JSON_NODE);
+	json_set_name(label, "labels");
+
+	json_push_back(label, json_new_a("stat_type", "Power On Hours"));
+
+	json_push_back(label, json_new_a("units", "hours"));
+
+	snprintf((char*)myStr.c_str(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16":%" PRIx8":%" PRIx8"", 0x15, 0x01, m_PlistDefect->paramCode, m_PlistDefect->paramControlByte, m_PlistDefect->paramLength);
+	json_push_back(label, json_new_a("metric_source", (char*)myStr.c_str()));
+	json_push_back(pendingData, label);
+
+	json_push_back(pendingData, json_new_f("value", static_cast<double>(m_PlistDefect->defectPOH)));
+
+	json_push_back(pendingData, json_new_a("name", "pending_defect"));
+
+	//JSONNODE* label = json_new(JSON_NODE);
+	json_set_name(label, "labels");
+
+	json_push_back(label, json_new_a("stat_type", "LBA"));
+
+	json_push_back(label, json_new_a("units", "LBA"));
+
+	snprintf((char*)myStr.c_str(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16":%" PRIx8":%" PRIx8"", 0x15, 0x01, m_PlistDefect->paramCode, m_PlistDefect->paramControlByte, m_PlistDefect->paramLength);
+	json_push_back(label, json_new_a("metric_source", (char*)myStr.c_str()));
+	json_push_back(pendingData, label);
+
+	json_push_back(pendingData, json_new_f("value", static_cast<double>(m_PlistDefect->defectLBA)));
+
+#else
 
 #if defined _DEBUG
 	printf("Pending Defect Log  \n");
@@ -148,6 +179,7 @@ void CScsiPendingDefectsLog::process_PList_Data(JSONNODE *pendingData)
 	set_json_64bit(pListInfo, "Pending Defect LBA", m_PlistDefect->defectLBA, true);
 
 	json_push_back(pendingData, pListInfo);
+#endif
 }
 //-----------------------------------------------------------------------------
 //
@@ -167,6 +199,21 @@ void CScsiPendingDefectsLog::process_PList_Count(JSONNODE *pendingCount)
 {
 	std::string myStr = "";
 	myStr.resize(BASIC);
+#if defined (PREPYTHON)
+	json_push_back(pendingCount, json_new_a("name", "pending_defect"));
+	JSONNODE* label = json_new(JSON_NODE);
+	json_set_name(label, "labels");
+
+	json_push_back(label, json_new_a("stat_type", "total"));
+
+	json_push_back(label, json_new_a("units", "count"));
+
+	snprintf((char*)myStr.c_str(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16":%" PRIx8":%" PRIx8"", 0x15, 0x01, m_PlistDefect->paramCode, m_PlistDefect->paramControlByte, m_PlistDefect->paramLength);
+	json_push_back(label, json_new_a("metric_source", (char*)myStr.c_str()));
+	json_push_back(pendingCount, label);
+	byte_Swap_32(&m_PListCountParam->totalPlistCount);
+	json_push_back(pendingCount, json_new_f("value", static_cast<double>(m_PListCountParam->totalPlistCount)));
+#else
 #if defined _DEBUG
 	printf("Pending Defect Count \n");
 #endif
@@ -184,6 +231,7 @@ void CScsiPendingDefectsLog::process_PList_Count(JSONNODE *pendingCount)
 	json_push_back(countInfo, json_new_i("Pending Defect Count", static_cast<uint32_t>(m_PListCountParam->totalPlistCount)));
 
 	json_push_back(pendingCount, countInfo);
+#endif
 }
 //-----------------------------------------------------------------------------
 //
@@ -229,6 +277,55 @@ eReturnValues CScsiPendingDefectsLog::get_Plist_Data(JSONNODE *masterData)
 			}
 		}
 		json_push_back(masterData, pageInfo);
+		retStatus = SUCCESS;
+	}
+	else
+	{
+		retStatus = MEMORY_FAILURE;
+	}
+	return retStatus;
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn get_Supported_Log_Data
+//
+//! \brief
+//!   Description: parser out the data for tLog
+//
+//  Entry:
+//! \param masterData - Json node that holds all the data 
+//
+//  Exit:
+//!   \return eReturnValues
+//
+//---------------------------------------------------------------------------
+eReturnValues CScsiPendingDefectsLog::get_PrePython_Plist_Data(JSONNODE* masterData)
+{
+	std::string myStr = "";
+	myStr.resize(BASIC);
+	eReturnValues retStatus = IN_PROGRESS;
+	if (pData != NULL)
+	{
+		m_PListCountParam = (sPendindDefectCount*)pData;
+		process_PList_Count(masterData);
+		if ((size_t)m_PageLength > sizeof(sPendindDefectCount))    // for when there is zero count defects
+		{
+			for (size_t offset = sizeof(sPendindDefectCount); offset < (size_t)m_PageLength; )
+			{
+				if (offset < (m_bufferLength - sizeof(sLogPageStruct)))
+				{
+					m_PlistDefect = (sDefect*)&pData[offset];
+					offset += sizeof(sDefect);
+					process_PList_Data(masterData);
+				}
+				else
+				{
+					json_push_back(masterData, masterData);
+					return BAD_PARAMETER;
+				}
+			}
+		}
+		json_push_back(masterData, masterData);
 		retStatus = SUCCESS;
 	}
 	else

@@ -129,17 +129,17 @@ void CScsiNonMediumErrorCountLog::process_Non_Medium_Error_Count_Data(JSONNODE *
 #if defined (PREPYTHON)
 		JSONNODE* label = json_new(JSON_NODE);
 		json_set_name(label, "labels");
-		snprintf((char*)myStr.c_str(), BASIC, "Non-Medium Error Count Log Parameters 0x%04" PRIx16"", m_CountErrors->paramCode);
+		snprintf((char*)myStr.c_str(), BASIC, "total error count");
 		json_push_back(label, json_new_a("stat_type", (char*)myStr.c_str()));
 
 
 		json_push_back(label, json_new_a("units", "count"));
 	
-		snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRIx8":0x%" PRIx16":0x%" PRIx8":%" PRId8"", NONMEDIUMERRORLOG, NONMEDIUMERRORSUBPAGE, m_CountErrors->paramCode, m_CountErrors->paramControlByte, m_CountErrors->paramLength);
-		json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
+		snprintf((char*)myStr.c_str(), BASIC, "scsi_log_pages:0x%" PRIx8",%" PRIx8":0x%" PRIx16":0x%" PRIx8":%" PRId8"", NONMEDIUMERRORLOG, NONMEDIUMERRORSUBPAGE, m_CountErrors->paramCode, m_CountErrors->paramControlByte, m_CountErrors->paramLength);
+		json_push_back(label, json_new_a("metric_source", (char*)myStr.c_str()));
 		json_push_back(countData, label);
-		snprintf((char*)myStr.c_str(), BASIC, "%" PRIu64"", m_Value);
-		json_push_back(countData, json_new_a("value", (char*)myStr.c_str()));
+
+		json_push_back(countData, json_new_f("value", static_cast<double> (m_Value)));
 
 #else
 
@@ -307,69 +307,68 @@ eReturnValues CScsiNonMediumErrorCountLog::get_Flat_Non_Medium_Error_Count_Data(
 					printf("param code 0x%" PRIx16" \n", m_CountErrors->paramCode);
 					printf("param controlbyte 0x%" PRIx8" \n", m_CountErrors->paramControlByte);
 				}
+				json_push_back(masterData, json_new_a("name", "nonmedium_error"));
 				switch (m_CountErrors->paramLength)
 				{
-				case 1:
-				{
-					if ((offset + m_CountErrors->paramLength) <= m_bufferLength)
+					case 1:
 					{
-						m_Value = pData[offset];
-						offset += m_CountErrors->paramLength;
+						if ((offset + m_CountErrors->paramLength) <= m_bufferLength)
+						{
+							m_Value = pData[offset];
+							offset += m_CountErrors->paramLength;
+						}
+						else
+						{
+							return BAD_PARAMETER;
+						}
+						break;
 					}
-					else
+					case 2:
+					{
+						if ((offset + m_CountErrors->paramLength) <= m_bufferLength)
+						{
+							m_Value = M_BytesTo2ByteValue(pData[offset], pData[offset + 1]);
+							offset += m_CountErrors->paramLength;
+						}
+						else
+						{
+							return BAD_PARAMETER;
+						}
+						break;
+					}
+					case 4:
+					{
+						if ((offset + m_CountErrors->paramLength) <= m_bufferLength)
+						{
+							m_Value = M_BytesTo4ByteValue(pData[offset], pData[offset + 1], pData[offset + 2], pData[offset + 3]);
+							offset += m_CountErrors->paramLength;
+						}
+						else
+						{
+							return BAD_PARAMETER;
+						}
+						break;
+					}
+					case 8:
+					{
+						if ((offset + m_CountErrors->paramLength) <= m_bufferLength)
+						{
+							m_Value = M_BytesTo8ByteValue(pData[offset], pData[offset + 1], pData[offset + 2], pData[offset + 3], pData[offset + 4], pData[offset + 5], pData[offset + 6], pData[offset + 7]);
+							offset += m_CountErrors->paramLength;
+						}
+						else
+						{
+							return BAD_PARAMETER;
+						}
+						break;
+					}
+					default:
 					{
 						return BAD_PARAMETER;
+						break;
 					}
-					break;
-				}
-				case 2:
-				{
-					if ((offset + m_CountErrors->paramLength) <= m_bufferLength)
-					{
-						m_Value = M_BytesTo2ByteValue(pData[offset], pData[offset + 1]);
-						offset += m_CountErrors->paramLength;
-					}
-					else
-					{
-						return BAD_PARAMETER;
-					}
-					break;
-				}
-				case 4:
-				{
-					if ((offset + m_CountErrors->paramLength) <= m_bufferLength)
-					{
-						m_Value = M_BytesTo4ByteValue(pData[offset], pData[offset + 1], pData[offset + 2], pData[offset + 3]);
-						offset += m_CountErrors->paramLength;
-					}
-					else
-					{
-						return BAD_PARAMETER;
-					}
-					break;
-				}
-				case 8:
-				{
-					if ((offset + m_CountErrors->paramLength) <= m_bufferLength)
-					{
-						m_Value = M_BytesTo8ByteValue(pData[offset], pData[offset + 1], pData[offset + 2], pData[offset + 3], pData[offset + 4], pData[offset + 5], pData[offset + 6], pData[offset + 7]);
-						offset += m_CountErrors->paramLength;
-					}
-					else
-					{
-						return BAD_PARAMETER;
-					}
-					break;
-				}
-				default:
-				{
-					return BAD_PARAMETER;
-					break;
-				}
 				}
 				process_Non_Medium_Error_Count_Data(masterData);
-
-				json_push_back(masterData, json_new_a("name", "non_medium_error"));
 			}
 			else
 			{

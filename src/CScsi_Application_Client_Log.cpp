@@ -117,6 +117,41 @@ void CScsiApplicationLog::process_Client_Data(JSONNODE *appData)
 {
 	std::string myStr = "";
 	myStr.resize(BASIC);
+#if defined (PREPYTHON)
+	json_push_back(appData, json_new_a("name", "parameter_unknown"));
+	JSONNODE* label = json_new(JSON_NODE);
+	json_set_name(label, "labels");
+
+
+	snprintf((char*)myStr.c_str(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16":%" PRIx8":%" PRIx8"", APPLICATION_CLIENT, 0, m_App->paramCode, m_App->paramControlByte, m_App->paramLength);
+	json_push_back(label, json_new_a("metric_source", (char*)myStr.c_str()));
+
+
+	char* innerMsg = (char*)calloc(128, sizeof(char));
+	char* innerStr = (char*)calloc(1200, sizeof(char));
+	memset(innerMsg, '0', 128);
+	memset(innerStr, '0', 1200);
+	uint32_t offset = 0;
+
+	snprintf(innerStr,13, "bytearray(b'");
+	for (uint32_t outer = 0; outer < APP_CLIENT_DATA_LEN - 1;outer++ )
+	{
+		snprintf(innerMsg, 3,"%02" PRIX8"", m_App->data[offset]);
+		strncat(innerStr, "\\x",2);
+		strncat(innerStr, innerMsg,sizeof(innerMsg));
+		offset++;
+	}
+	strncat(innerStr, "')", 2);
+	printf(" %s \n", innerStr);
+	json_push_back(label, json_new_a("raw_value", innerStr));
+	
+	safe_Free(innerMsg);  //free the string
+	safe_Free(innerStr);  // free the string
+
+	json_push_back(appData, label);
+	json_push_back(appData, json_new_f("value", -1));
+
+#else
 #if defined _DEBUG
 	printf("Application Client Description \n");
 #endif
@@ -167,6 +202,7 @@ void CScsiApplicationLog::process_Client_Data(JSONNODE *appData)
         safe_Free(innerStr);  // free the string
     }
 	json_push_back(appData, appInfo);
+#endif
 }
 //-----------------------------------------------------------------------------
 //
@@ -216,5 +252,55 @@ eReturnValues CScsiApplicationLog::get_Client_Data(JSONNODE *masterData)
 	{
 		retStatus = MEMORY_FAILURE;
 	}
+	return retStatus;
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn get_Client_Data
+//
+//! \brief
+//!   Description: parser out the data for the Application Client Log
+//
+//  Entry:
+//! \param masterData - Json node that holds all the data 
+//
+//  Exit:
+//!   \return eReturnValues
+//
+//---------------------------------------------------------------------------
+eReturnValues CScsiApplicationLog::get_PrePython_Client_Data(JSONNODE* masterData)
+{
+	eReturnValues retStatus = IN_PROGRESS;
+#if defined (PREPYTHON)
+	if (pData != NULL)
+	{
+		uint16_t l_NumberOfPartitions = 0;
+
+		for (size_t offset = 0; ((offset < m_PageLength) && (l_NumberOfPartitions <= MAX_PARTITION));)
+		{
+			if (offset + sizeof(sApplicationParams) < m_bufferLength && offset < UINT16_MAX)
+			{
+				l_NumberOfPartitions++;
+				m_App = new sApplicationParams(&pData[offset]);
+				offset += APP_CLIENT_DATA_LEN + 4;
+
+				process_Client_Data(masterData);
+				delete m_App;
+			}
+			else
+			{
+				json_push_back(masterData, masterData);
+				return BAD_PARAMETER;
+			}
+		}
+
+		json_push_back(masterData, masterData);
+		retStatus = SUCCESS;
+	}
+	else
+	{
+		retStatus = MEMORY_FAILURE;
+	}
+#endif
 	return retStatus;
 }
