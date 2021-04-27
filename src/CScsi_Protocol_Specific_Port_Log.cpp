@@ -60,6 +60,9 @@ CScsiProtocolPortLog::CScsiProtocolPortLog(uint8_t *buffer, size_t bufferSize)
 	, m_PSPStatus(IN_PROGRESS)
 	, m_PageLength(0)
 	, m_bufferLength(bufferSize)
+	, m_List(NULL)
+	, m_Descriptor(NULL)
+	, m_Event(NULL)
 {
 	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
