@@ -196,13 +196,66 @@ typedef struct _sWorkLoadStat
         uint64_t        numberOfWriteCmds1;                     //!< ATA - Number of Write commands from 0-3.125% of LBA space for last 3 SMART Summary Frames (added 4.4)
         uint64_t        totalWriteCmdsFromFrames4;              //!< SCSI - Number of Write commands from 50-100% of LBA space for last 3 SMART Summary Frames (added 4.4)
     };
-    uint64_t        numberOfWriteCmds2;                         //!< ATA - Number of Write commands from 3.125-25% of LBA space for last 3 SMART Summary Frames (added 4.4)
-    uint64_t        numberOfWriteCmds3;                         //!< ATA - Number of Write commands from 25-50% of LBA space for last 3 SMART Summary Frames (added 4.4)
-    uint64_t        numberOfWriteCmds4;                         //!< ATA - Number of Write commands from 50-100% of LBA space for last 3 SMART Summary Frames (added 4.4)
+    union 
+    {
+        uint64_t        numberOfWriteCmds2;                         //!< ATA - Number of Write commands from 3.125-25% of LBA space for last 3 SMART Summary Frames (added 4.4)
+        uint64_t        numReadTransferSmall;                      //!< SCSI - Number of Write Commands of transfer length <=16KB for last 3 SMART Summary Frames
+    };
+    union
+    {
+        uint64_t        numberOfWriteCmds3;                         //!< ATA - Number of Write commands from 25-50% of LBA space for last 3 SMART Summary Frames (added 4.4)
+        uint64_t        numReadTransferMid1;                      //!< SCSI - Number of Read Commands of transfer length (16KB – 512KB] for last 3 SMART Summary Frames
+    };
+    union
+    {
+        uint64_t        numberOfWriteCmds4;                         //!< ATA - Number of Write commands from 50-100% of LBA space for last 3 SMART Summary Frames (added 4.4)
+        uint64_t        numReadTransferMid2;                      //!< SCSI - Number of read Commands of transfer length (512KB – 2MB] for last 3 SMART Summary Frames
+    };
+    union {
+        uint64_t        numReadTransferLarge;                      //!< SCSI - Number of Read Commands of transfer length > 2MB for last 3 SMART Summary Frames
+        uint64_t        numReadTransferSmallATA;                      //!< ATA - Number of Write Commands of transfer length <=16KB for last 3 SMART Summary Frames
+    };
+    
+    union {
+        uint64_t        numWriteTransferSmall;                      //!< SCSI - Number of Write Commands of transfer length <=16KB for last 3 SMART Summary Frames
+        uint64_t        numReadTransferMid1ATA;                      //!< ATA - Number of Read Commands of transfer length (16KB – 512KB] for last 3 SMART Summary Frames    
+    };
+    union {
+        uint64_t        numWriteTransferMid1;                       //!< SCSI - Number of Write Commands of transfer length (16KB – 512KB] for last 3 SMART Summary Frames
+        uint64_t        numReadTransferMid2ATA;                      //!< ATA - Number of Read Commands of transfer length (512KB – 2MB] for last 3 SMART Summary Frames
+    };
+    union {
+        uint64_t        numWriteTransferMid2;                       //!< SCSI - Number of Write Commands of transfer length (512KB – 2MB] for last 3 SMART Summary Frames
+        uint64_t        numReadTransferLargeATA;                      //!< ATA - Number of Read Commands of transfer length > 2MB for last 3 SMART Summary Frames    };
+    };
+    union {
+        uint64_t        numWriteTransferLarge;                      //!< SCSI - Number of Write Commands of transfer length > 2MB for last 3 SMART Summary Frames
+        uint64_t        numWriteTransferSmallATA;                      //!< ATA - Number of Write Commands of transfer length <=16KB for last 3 SMART Summary Frames
+    };
+
+    uint64_t        numWriteTransferMid1ATA;                      //!< ATA - Number of Read Commands of transfer length (16KB – 512KB] for last 3 SMART Summary Frames
+    uint64_t        numWriteTransferMid2ATA;                      //!< ATA - Number of Read Commands of transfer length (512KB – 2MB] for last 3 SMART Summary Frames
+    uint64_t        numWriteTransferLargeATA;                     //!< ATA - Number of Read Commands of transfer length > 2MB for last 3 SMART Summary Frames 
+    uint64_t        cntQueueDepth1;                               //!< ATA - Count of Queue Depth =1 at 30s intervals for last 3 SMART Summary Frames
+    uint64_t        cntQueueDepth2;                               //!< ATA - Count of Queue Depth =2 at 30s intervals for last 3 SMART Summary Frames
+    uint64_t        cntQueueDepth3to4;                            //!< ATA - Count of Queue Depth =3-4 at 30s intervals for last 3 SMART Summary Frames
+    uint64_t        cntQueueDepth5to8;                            //!< ATA - Count of Queue Depth =5-8 at 30s intervals for last 3 SMART Summary Frames
+    uint64_t        cntQueueDepth9to16;                           //!< ATA - Count of Queue Depth =9-16 at 30s intervals for last 3 SMART Summary Frames
+    uint64_t        cntQueueDepth17to32;                          //!< ATA - Count of Queue Depth =17-32 at 30s intervals for last 3 SMART Summary Frames
+    uint64_t        cntQueueDepth33to64;                          //!< ATA - Count of Queue Depth =33-64 at 30s intervals for last 3 SMART Summary Frames
+    uint64_t        cntQueueDepthmorethan64;                      //!< ATA - Count of Queue Depth >64 at 30s intervals for last 3 SMART Summary Frames
+    uint64_t        numDithEvtAct1;                               //!< ATA - Number of dither events during current power cycle, Actuator 1
+    uint64_t        numRandWLDitherHoldOffAct1;                   //!< ATA - Number of times dither was held off during random workloads during current power cycle, Actuator 1
+    uint64_t        numSequentialWLDitherHoldOffAct1;             //!< ATA - Number of times dither was held off during sequential workloads during current power cycle, Actuator 1
+
+
     _sWorkLoadStat() : pageNumber(0), copyNumber(0), workloadPercentage(0), totalReadCommands(0), totalWriteCommands(0), totalRandomReads(0), totalRandomWrites(0), \
         totalNumberofOtherCMDS(0), logicalSecWritten(0), logicalSecRead(0), dither(0), ditherRandom(0), ditherSequential(0), numberOfReadCmds1(0), numberOfReadCmds2(0), \
         numberOfReadCmds3(0), numberOfReadCmds4(0), numberOfWriteCmds1(0), numberOfWriteCmds2(0), numberOfWriteCmds3(0), numberOfWriteCmds4(0) {};
 }sWorkLoadStat;
+
+
+
 
 #pragma pack(pop)
 

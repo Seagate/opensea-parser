@@ -68,6 +68,7 @@ namespace opensea_parser {
         bool swap_Bytes_sErrorStat(sScsiErrorFrame * es);
         bool swap_Bytes_sEnvironmentStat(sScsiEnvironmentStat *es);
         bool swap_Bytes_EnvironmentPage07(sScsiEnvStatPage07 *ep);
+        bool swap_Bytes_WorkloadPage08(sScsiWorkloadStatPage08 *ep);
         bool swap_Bytes_sScsiReliabilityStat(sScsiReliablility *ss);
         bool swap_Bytes_sLUNStruct(sLUNStruct *LUN);
         bool swap_Bytes_Flash_LED(sActuatorFLEDInfo *fled);
@@ -86,6 +87,7 @@ namespace opensea_parser {
         eReturnValues print_Error_Information_Version_4(JSONNODE *masterData, uint32_t page);
         eReturnValues print_Enviroment_Information(JSONNODE *masterData, uint32_t page);
         eReturnValues print_Enviroment_Statistics_Page_07(JSONNODE *masterData, uint32_t page);
+        eReturnValues print_Workload_Statistics_Page_08(JSONNODE *masterData, uint32_t page);
         eReturnValues print_Reli_Information(JSONNODE *masterData, uint32_t page);
         eReturnValues print_Head_Information(eLogPageTypes type, JSONNODE *masterData, uint32_t page);
         eReturnValues print_LUN_Actuator_Information(JSONNODE *masterData, uint32_t page, uint16_t actNum);
