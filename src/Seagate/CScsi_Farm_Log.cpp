@@ -95,7 +95,7 @@ CSCSI_Farm_Log::CSCSI_Farm_Log(uint8_t* bufferData, size_t bufferSize)
 #endif
     if (pBuf != NULL)
     {
-        if (init_buffer_Header_Data() == SUCCESS)							// init the data for getting the log
+        if (init_Header_Data() == SUCCESS)							// init the data for getting the log
         {
             m_status = parse_Farm_Log();
         }

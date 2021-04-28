@@ -78,7 +78,7 @@ namespace opensea_parser {
         void get_LUN_Info(sLUNStruct *pLUN, uint8_t *buffer);
 		
 		eReturnValues init_Header_Data();
-        eReturnValues init_buffer_Header_Data();
+        //eReturnValues init_buffer_Header_Data();
         eReturnValues print_Header(JSONNODE *masterData);
         eReturnValues print_Drive_Information(JSONNODE *masterData, uint32_t page);
         eReturnValues print_General_Drive_Information_Continued(JSONNODE *masterData, uint32_t page);
