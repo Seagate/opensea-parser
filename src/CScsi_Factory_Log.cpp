@@ -31,7 +31,7 @@ using namespace opensea_parser;
 //---------------------------------------------------------------------------
 CScsiFactoryLog::CScsiFactoryLog()
 	: pData()
-	, m_FactoryName("Cache Statistics Log")
+	, m_FactoryName("Factory Log Page")
 	, m_FactoryStatus(IN_PROGRESS)
 	, m_PageLength(0)
 	, m_bufferLength()
@@ -60,7 +60,7 @@ CScsiFactoryLog::CScsiFactoryLog()
 //---------------------------------------------------------------------------
 CScsiFactoryLog::CScsiFactoryLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength)
 	: pData(buffer)
-	, m_FactoryName("Cache Statistics Log")
+	, m_FactoryName("Factory Log Page")
 	, m_FactoryStatus(IN_PROGRESS)
 	, m_PageLength(pageLength)
 	, m_bufferLength(bufferSize)
@@ -179,7 +179,7 @@ eReturnValues CScsiFactoryLog::get_Factory_Data(JSONNODE *masterData)
 				{
 				case 1:
 				{
-					if ((offset + m_factory->paramLength) < m_bufferLength)
+					if ((offset + m_factory->paramLength) <= m_bufferLength)
 					{
 						m_Value = pData[offset];
 						offset += m_factory->paramLength;
@@ -193,7 +193,7 @@ eReturnValues CScsiFactoryLog::get_Factory_Data(JSONNODE *masterData)
 				}
 				case 2:
 				{
-					if ((offset + m_factory->paramLength) < m_bufferLength)
+					if ((offset + m_factory->paramLength) <= m_bufferLength)
 					{
 						m_Value = M_BytesTo2ByteValue(pData[offset], pData[offset + 1]);
 						offset += m_factory->paramLength;
@@ -207,7 +207,7 @@ eReturnValues CScsiFactoryLog::get_Factory_Data(JSONNODE *masterData)
 				}
 				case 4:
 				{
-					if ((offset + m_factory->paramLength) < m_bufferLength)
+					if ((offset + m_factory->paramLength) <= m_bufferLength)
 					{
 						m_Value = M_BytesTo4ByteValue(pData[offset], pData[offset + 1], pData[offset + 2], pData[offset + 3]);
 						offset += m_factory->paramLength;
@@ -221,7 +221,7 @@ eReturnValues CScsiFactoryLog::get_Factory_Data(JSONNODE *masterData)
 				}
 				case 8:
 				{
-					if ((offset + m_factory->paramLength) < m_bufferLength)
+					if ((offset + m_factory->paramLength) <= m_bufferLength)
 					{
 						m_Value = M_BytesTo8ByteValue(pData[offset], pData[offset + 1], pData[offset + 2], pData[offset + 3], pData[offset + 4], pData[offset + 5], pData[offset + 6], pData[offset + 7]);
 						offset += m_factory->paramLength;
