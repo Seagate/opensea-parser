@@ -69,7 +69,14 @@ namespace opensea_parser {
 		CScsiApplicationLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength);
 		virtual ~CScsiApplicationLog();
 		virtual eReturnValues get_Log_Status() { return m_ApplicationStatus; };
-		virtual eReturnValues parse_Application_Client_Log(JSONNODE *masterData) { return get_Client_Data(masterData); };
+		virtual eReturnValues parse_Application_Client_Log(JSONNODE *masterData) 
+		{
+#if defined (PREPYTHON)
+			return get_PrePython_Client_Data(masterData);
+#else
+			return get_Client_Data(masterData); 
+#endif
+		};
 
 	};
 #endif

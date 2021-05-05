@@ -120,7 +120,7 @@ void CScsiApplicationLog::process_Client_Data(JSONNODE *appData)
 #if defined (PREPYTHON)
 	json_push_back(appData, json_new_a("name", "parameter_unknown"));
 	JSONNODE* label = json_new(JSON_NODE);
-	json_set_name(label, "labels");
+	json_set_name(label, "label");
 
 
 	snprintf((char*)myStr.c_str(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16":%" PRIx8":%" PRIx8"", APPLICATION_CLIENT, 0, m_App->paramCode, m_App->paramControlByte, m_App->paramLength);
@@ -133,15 +133,22 @@ void CScsiApplicationLog::process_Client_Data(JSONNODE *appData)
 	memset(innerStr, '0', 1200);
 	uint32_t offset = 0;
 
-	snprintf(innerStr,13, "bytearray(b'");
+	snprintf(innerStr,13, "bytearray([");   //bytearray([%" PRIu8"
 	for (uint32_t outer = 0; outer < APP_CLIENT_DATA_LEN - 1;outer++ )
 	{
-		snprintf(innerMsg, 3,"%02" PRIX8"", m_App->data[offset]);
-		strncat(innerStr, "\\x",2);
+		if (outer + 1 == APP_CLIENT_DATA_LEN - 1)
+		{
+			snprintf(innerMsg, 8, "%" PRIu8"", m_App->data[offset]);
+		}
+		else
+		{
+			snprintf(innerMsg, 8, "%" PRIu8",", (uint8_t)m_App->data[offset]);
+		}
+		//strncat(innerStr, "\\x",2);
 		strncat(innerStr, innerMsg,sizeof(innerMsg));
 		offset++;
 	}
-	strncat(innerStr, "')", 2);
+	strncat(innerStr, "])", 2);
 	printf(" %s \n", innerStr);
 	json_push_back(label, json_new_a("raw_value", innerStr));
 	
@@ -289,12 +296,10 @@ eReturnValues CScsiApplicationLog::get_PrePython_Client_Data(JSONNODE* masterDat
 			}
 			else
 			{
-				json_push_back(masterData, masterData);
 				return BAD_PARAMETER;
 			}
 		}
 
-		json_push_back(masterData, masterData);
 		retStatus = SUCCESS;
 	}
 	else
