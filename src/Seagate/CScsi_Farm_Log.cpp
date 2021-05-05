@@ -216,11 +216,14 @@ eReturnValues CSCSI_Farm_Log::init_Header_Data()
 	}
 	else
 	{
+#if defined(PREPYTHON)
+        m_pHeader = (sScsiFarmHeader*)&pBuf[0];
+#else
 		m_logParam = (sScsiLogParameter *)&pBuf[0];
 		m_logSize = m_logParam->length;									    // set the class log size 
 		byte_Swap_16(&m_logSize);
-
 		m_pHeader = (sScsiFarmHeader *)&pBuf[4];
+#endif
 		swap_Bytes_sFarmHeader(m_pHeader);											// swap all the bytes for the header
 		m_totalPages = M_DoubleWord0(m_pHeader->farmHeader.pagesSupported);			// get the total pages
 		m_pageSize = M_DoubleWord0(m_pHeader->farmHeader.pageSize);					// get the page size
