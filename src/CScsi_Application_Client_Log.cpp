@@ -120,7 +120,7 @@ void CScsiApplicationLog::process_Client_Data(JSONNODE *appData)
 #if defined (PREPYTHON)
 	json_push_back(appData, json_new_a("name", "parameter_unknown"));
 	JSONNODE* label = json_new(JSON_NODE);
-	json_set_name(label, "label");
+	json_set_name(label, "labels");
 
 
 	snprintf((char*)myStr.c_str(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16":%" PRIx8":%" PRIx8"", APPLICATION_CLIENT, 0, m_App->paramCode, m_App->paramControlByte, m_App->paramLength);
