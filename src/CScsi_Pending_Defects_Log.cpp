@@ -129,7 +129,7 @@ void CScsiPendingDefectsLog::process_PList_Data(JSONNODE *pendingData)
 	std::string myStr = "";
 	myStr.resize(BASIC);
 #if defined (PREPYTHON)
-	json_push_back(pendingData, json_new_a("name", "pending_defect"));
+
 	JSONNODE* label = json_new(JSON_NODE);
 	json_set_name(label, "labels");
 
@@ -157,6 +157,7 @@ void CScsiPendingDefectsLog::process_PList_Data(JSONNODE *pendingData)
 	json_push_back(pendingData, label);
 
 	json_push_back(pendingData, json_new_f("value", static_cast<double>(m_PlistDefect->defectLBA)));
+	json_push_back(pendingData, json_new_a("name", "pending_defect"));
 
 #else
 
@@ -203,7 +204,7 @@ void CScsiPendingDefectsLog::process_PList_Count(JSONNODE *pendingCount)
 #if defined _DEBUG
 	printf("Pending Defect Count \n");
 #endif
-	json_push_back(pendingCount, json_new_a("name", "pending_defect"));
+	
 	JSONNODE* label = json_new(JSON_NODE);
 	json_set_name(label, "labels");
 
@@ -216,6 +217,7 @@ void CScsiPendingDefectsLog::process_PList_Count(JSONNODE *pendingCount)
 	json_push_back(pendingCount, label);
 	byte_Swap_32(&m_PListCountParam->totalPlistCount);
 	json_push_back(pendingCount, json_new_f("value", static_cast<double>(m_PListCountParam->totalPlistCount)));
+	json_push_back(pendingCount, json_new_a("name", "pending_defect"));
 #else
 #if defined _DEBUG
 	printf("Pending Defect Count \n");
