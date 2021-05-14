@@ -128,7 +128,7 @@ void CScsiNonMediumErrorCountLog::process_Non_Medium_Error_Count_Data(JSONNODE *
 		byte_Swap_16(&m_CountErrors->paramCode);
 #if defined (PREPYTHON)
 		JSONNODE* label = json_new(JSON_NODE);
-		json_set_name(label, "label");
+		json_set_name(label, "labels");
 		snprintf((char*)myStr.c_str(), BASIC, "total error count");
 		json_push_back(label, json_new_a("stat_type", (char*)myStr.c_str()));
 
