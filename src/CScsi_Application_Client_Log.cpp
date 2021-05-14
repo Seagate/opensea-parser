@@ -126,11 +126,18 @@ void CScsiApplicationLog::process_Client_Data(JSONNODE *appData)
 	snprintf((char*)myStr.c_str(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16":%" PRIx8":%" PRIx8"", APPLICATION_CLIENT, 0, m_App->paramCode, m_App->paramControlByte, m_App->paramLength);
 	json_push_back(label, json_new_a("metric_source", (char*)myStr.c_str()));
 
+	
+	char* innerMsg = (char*)calloc(129, sizeof(char));
+	if (innerMsg)
+	{
+		memset(innerMsg, 0, 128);
+	}
+	char* innerStr = (char*)calloc(1201, sizeof(char));
+	if (innerStr )
+	{
+		memset(innerStr, 0, 1200);
+	}
 
-	char* innerMsg = (char*)calloc(128, sizeof(char));
-	char* innerStr = (char*)calloc(1200, sizeof(char));
-	memset(innerMsg, '0', 128);
-	memset(innerStr, '0', 1200);
 	uint32_t offset = 0;
 
 	snprintf(innerStr,13, "bytearray([");   //bytearray([%" PRIu8"
@@ -144,12 +151,13 @@ void CScsiApplicationLog::process_Client_Data(JSONNODE *appData)
 		{
 			snprintf(innerMsg, 8, "%" PRIu8",", (uint8_t)m_App->data[offset]);
 		}
-		//strncat(innerStr, "\\x",2);
-		strncat(innerStr, innerMsg,sizeof(innerMsg));
+		if(innerMsg && innerStr)
+			strncat(innerStr, innerMsg,sizeof(innerMsg));
 		offset++;
 	}
-	strncat(innerStr, "])", 2);
-	printf(" %s \n", innerStr);
+	if (innerStr)
+		strncat(innerStr, "])", 2);
+	//printf(" %s \n", innerStr);
 	json_push_back(label, json_new_a("raw_value", innerStr));
 	
 	safe_Free(innerMsg);  //free the string
