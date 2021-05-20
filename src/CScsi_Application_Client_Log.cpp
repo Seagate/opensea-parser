@@ -152,16 +152,18 @@ void CScsiApplicationLog::process_Client_Data(JSONNODE *appData)
 			snprintf(innerMsg, 8, "%" PRIu8",", (uint8_t)m_App->data[offset]);
 		}
 		if(innerMsg && innerStr)
-			strncat(innerStr, innerMsg,sizeof(innerMsg));
+			strncat(innerStr, innerMsg, 128);
 		offset++;
 	}
 	if (innerStr)
-		strncat(innerStr, "])", 2);
+	{
+		strncat(innerStr, "])", 3);
 	//printf(" %s \n", innerStr);
-		strncat(innerStr, innerMsg,128);
+		if(innerMsg && innerStr)
+			strncat(innerStr, innerMsg,128);
 		offset++;
 	}
-	strncat(innerStr, "])", 3);
+	//strncat(innerStr, "])", 3);
 	json_push_back(label, json_new_a("raw_value", innerStr));
 	
 	safe_Free(innerMsg);  //free the string
