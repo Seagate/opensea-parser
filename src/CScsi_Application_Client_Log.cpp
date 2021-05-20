@@ -158,6 +158,10 @@ void CScsiApplicationLog::process_Client_Data(JSONNODE *appData)
 	if (innerStr)
 		strncat(innerStr, "])", 2);
 	//printf(" %s \n", innerStr);
+		strncat(innerStr, innerMsg,128);
+		offset++;
+	}
+	strncat(innerStr, "])", 3);
 	json_push_back(label, json_new_a("raw_value", innerStr));
 	
 	safe_Free(innerMsg);  //free the string

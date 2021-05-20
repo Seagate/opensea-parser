@@ -56,7 +56,7 @@ CLog::CLog(const std::string &fileName)
 	, m_bufferData()
     , m_logStatus(IN_PROGRESS)
 {
-    get_CLog(fileName);
+    get_CLog();
 }
 
 CLog::CLog(const uint8_t * pBuf, uint32_t logSize)
@@ -103,7 +103,7 @@ CLog::~CLog()
 //!   \return eReturnValues
 //
 //---------------------------------------------------------------------------
-void CLog::get_CLog(const std::string &fileName)
+void CLog::get_CLog()
 {
     m_logStatus = IN_PROGRESS;
     std::ifstream fb(m_fileName.c_str(), std::ios::in | std::ios::binary);

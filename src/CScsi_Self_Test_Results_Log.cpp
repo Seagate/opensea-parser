@@ -372,10 +372,12 @@ void CScsi_DST_Results::get_Self_Test_Results_String( std::string & meaning, uin
         case DST_FAILURE_HANDLING_DAMAGE:
         {
             meaning = "Completed having handling damage";
+			break;
         }
         case DST_FAILURE_SUSPECTED_HANDLING_DAMAGE:
         {
             meaning = "Completed having suspected handling damage";
+			break;
         }
 		case DST_IN_PROGRESS:
 		{
@@ -452,10 +454,12 @@ void CScsi_DST_Results::get_PrePython_Self_Test_Results_String(std::string& mean
 	case DST_FAILURE_HANDLING_DAMAGE:
 	{
 		meaning = "completed-handling damage";
+		break;
 	}
 	case DST_FAILURE_SUSPECTED_HANDLING_DAMAGE:
 	{
 		meaning = "completed-suspected handling damage";
+		break;
 	}
 	case DST_IN_PROGRESS:
 	{

@@ -1276,14 +1276,15 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     offset += (pEnvStat->pPageHeader.plen + sizeof(sScsiPageParameter));
                 }
                 break;
-                case  WORKLOAD_STATISTICS_PAMATER_08:
-                {
-                    sScsiWorkloadStatPage08 *pWorkloadStat;
-                    pWorkloadStat = (sScsiWorkloadStatPage08 *)&pBuf[offset];
-                    memcpy((sScsiWorkloadStatPage08 *)&pFarmFrame->workloadStatPage08, pWorkloadStat, pWorkloadStat->pPageHeader.plen + 4);
-                    swap_Bytes_WorkloadPage08(&pFarmFrame->workloadStatPage08);
-                    offset += (pWorkloadStat->pPageHeader.plen + sizeof(sScsiPageParameter));
-                }
+                    case  WORKLOAD_STATISTICS_PAMATER_08:
+                    {
+                        sScsiWorkloadStatPage08 *pWorkloadStat;
+                        pWorkloadStat = (sScsiWorkloadStatPage08 *)&pBuf[offset];
+                        memcpy((sScsiWorkloadStatPage08 *)&pFarmFrame->workloadStatPage08, pWorkloadStat, pWorkloadStat->pPageHeader.plen + 4);
+                        swap_Bytes_WorkloadPage08(&pFarmFrame->workloadStatPage08);
+                        offset += (pWorkloadStat->pPageHeader.plen + sizeof(sScsiPageParameter));
+                    }
+                    break;
                 case  RESERVED_FOR_FUTURE_STATISTICS_4:
                 case  RESERVED_FOR_FUTURE_STATISTICS_5:
                 case  RESERVED_FOR_FUTURE_STATISTICS_6:
@@ -1291,14 +1292,14 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                 case  RESERVED_FOR_FUTURE_STATISTICS_8:
                 case  RESERVED_FOR_FUTURE_STATISTICS_9:
                 case  RESERVED_FOR_FUTURE_STATISTICS_10:
-                {
-                    sHeadInformation *pHeadInfo = new sHeadInformation();
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->discSlipPerHead, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                    delete pHeadInfo;
-                }
-                break;
+                    {
+                        sHeadInformation *pHeadInfo = new sHeadInformation();
+                        get_Head_Info(pHeadInfo, &pBuf[offset]);
+                        memcpy(&pFarmFrame->discSlipPerHead, pHeadInfo, sizeof(*pHeadInfo));
+                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                        delete pHeadInfo;
+                    }
+                    break;
                 case DISC_SLIP_IN_MICRO_INCHES_BY_HEAD:     
                     {
                         sHeadInformation *pHeadInfo = new sHeadInformation();
@@ -1874,7 +1875,7 @@ eReturnValues CSCSI_Farm_Log::print_Header(JSONNODE *masterData)
 	uint32_t page = 0;
     std::string myStr = "";
     myStr.resize(BASIC);
-    JSONNODE *pageInfo = json_new(JSON_NODE);
+    
                                                           
 #if defined _DEBUG
     printf("\tLog Signature:                      0x%" PRIX64" \n", vFarmFrame[page].farmHeader.farmHeader.signature );                                  //!< Log Signature = 0x00004641524D4552
@@ -1926,6 +1927,7 @@ eReturnValues CSCSI_Farm_Log::print_Header(JSONNODE *masterData)
     json_push_back(masterData, json_new_a("name", "farm"));
 
 #else
+    JSONNODE* pageInfo = json_new(JSON_NODE);
     json_set_name(pageInfo, "FARM Log Header");
 
     snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIX64"", check_Status_Strip_Status(vFarmFrame[page].farmHeader.farmHeader.signature));
@@ -1967,7 +1969,7 @@ eReturnValues CSCSI_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint
 {
     std::string myStr = " ";
     myStr.resize(BASIC);
-    JSONNODE *pageInfo = json_new(JSON_NODE);
+    
 
 #if defined _DEBUG
     if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
@@ -2088,7 +2090,7 @@ eReturnValues CSCSI_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint
     json_push_back(masterData, json_new_a("name", "drive"));
 
 #else
-
+    JSONNODE* pageInfo = json_new(JSON_NODE);
     if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
     {
         snprintf((char*)myStr.c_str(), BASIC, "Drive Information From Farm Log copy FACTORY");
@@ -2425,7 +2427,7 @@ eReturnValues CSCSI_Farm_Log::print_Error_Information(JSONNODE *masterData, uint
 {
     std::string myStr = " ";
     myStr.resize(BASIC);
-    JSONNODE *pageInfo = json_new(JSON_NODE);
+    
 
 #if defined _DEBUG
     if (vFarmFrame[page].errorPage.errorStat.copyNumber == FACTORYCOPY)
@@ -2472,6 +2474,7 @@ eReturnValues CSCSI_Farm_Log::print_Error_Information(JSONNODE *masterData, uint
    
 
 #else
+    JSONNODE* pageInfo = json_new(JSON_NODE);
     if (vFarmFrame[page].errorPage.errorStat.copyNumber == FACTORYCOPY)
     {
         snprintf((char*)myStr.c_str(), BASIC, "Error Information From Farm Log copy FACTORY");
@@ -4109,7 +4112,7 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Information(JSONNODE *masterDat
 {
     std::string myStr = " ";
     myStr.resize(BASIC);
-    JSONNODE *pageInfo = json_new(JSON_NODE);
+    
 
     sLUNStruct *pLUN;
     pLUN = &vFarmFrame[page].vLUN50;
@@ -4207,6 +4210,7 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Information(JSONNODE *masterDat
 
 
 #else
+    JSONNODE* pageInfo = json_new(JSON_NODE);
     if (pLUN->copyNumber == FACTORYCOPY)
     {
         snprintf((char*)myStr.c_str(), BASIC, "LUN Actuator 0x%" PRIX16" Information From Farm Log copy FACTORY",M_Word0(pLUN->LUNID));
@@ -4271,7 +4275,7 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_FLED_Info(JSONNODE *masterData,
     std::string timeStr = " ";
     myStr.resize(BASIC);
     timeStr.resize(BASIC);
-    JSONNODE *pageInfo = json_new(JSON_NODE);
+    
 
     sActuatorFLEDInfo *pFLED;
     if (actNum == LUN_1_FLASH_LED)
@@ -4354,6 +4358,7 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_FLED_Info(JSONNODE *masterData,
 
 
 #else
+    JSONNODE* pageInfo = json_new(JSON_NODE);
     if (pFLED->copyNumber == FACTORYCOPY)
     {
         snprintf((char*)myStr.c_str(), BASIC, "Actuator Flash LED 0x%" PRIx16" Information From Farm Log copy FACTORY", M_Word0(pFLED->actID));
@@ -4421,7 +4426,7 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Reallocation(JSONNODE *masterDa
     std::string timeStr = " ";
     myStr.resize(BASIC);
     timeStr.resize(BASIC);
-    JSONNODE *pageInfo = json_new(JSON_NODE);
+    
 
     sActReallocationData *pReal;
     if (actNum == LUN_REALLOCATION_1)
@@ -4476,6 +4481,7 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Reallocation(JSONNODE *masterDa
         prePython_int(masterData,"stat", (char*)myStr.c_str(), "LUN Reallocation", "count", actNum, M_DoubleWordInt0(pReal->reallocatedCauses[i]));
     }
 #else
+    JSONNODE* pageInfo = json_new(JSON_NODE);
     if (pReal->copyNumber == FACTORYCOPY)
     {
         snprintf((char*)myStr.c_str(), BASIC, "LUN Actuator 0x%" PRIx16" Reallocation From Farm Log copy FACTORY", M_Word0(pReal->actID));
@@ -4906,8 +4912,7 @@ void CSCSI_Farm_Log::print_Page_Without_Drive_Info(JSONNODE *masterData, uint32_
 //!   \return 
 //
 //---------------------------------------------------------------------------
-void CSCSI_Farm_Log::prePython_Str(JSONNODE* masterData, const char* name, const char* statType, const char* header, \
-     const char* unit, int pageNum, const char* value)
+void CSCSI_Farm_Log::prePython_Str(JSONNODE* masterData, const char* name, const char* statType, const char* unit, int pageNum, const char* value)
 {
     std::string myStr;
     myStr.resize(BASIC);

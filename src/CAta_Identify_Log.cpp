@@ -368,7 +368,8 @@ eReturnValues CAta_Identify_log::parse_Device_Info()
     else
     {
         m_sDriveInfo.worldWideName.resize(WORLD_WIDE_NAME_LEN);
-        strncpy((char*)m_sDriveInfo.worldWideName.c_str(), "Not Supported", strlen("Not Supported"));
+        m_sDriveInfo.worldWideName = "Not Supported";
+        //strncpy((char*)m_sDriveInfo.worldWideName.c_str(), "Not Supported", strlen("Not Supported"));
     }
 
     //maxLBA
@@ -1100,7 +1101,7 @@ bool CAta_Identify_Log_00::is_Page_Supported(uint8_t pageNumber)
 //!   \return string the interface type
 //
 //---------------------------------------------------------------------------
-eReturnValues CAta_Identify_Log_00::get_Log_Page00(uint8_t *pData, JSONNODE *masterData)
+eReturnValues CAta_Identify_Log_00::get_Log_Page00(JSONNODE *masterData)
 {
 #define LOG_PAGE_00   0x0000
     uint16_t pageNumber = 0;
@@ -1341,7 +1342,6 @@ eReturnValues CAta_Identify_Log_02::get_Log_Page02(uint8_t *pData, JSONNODE *mas
     //myStr.resize(BASIC);
     sLogPage02 logPage02;
     pCapacity = &logPage02;
-    memset(pCapacity, 0, sizeof(sLogPage02));
     pCapacity = (sLogPage02 *)&pData[0];
     uint16_t pageNumber = (uint16_t)(M_Word1(pCapacity->header));
     uint16_t revision = (uint16_t)(M_Word0(pCapacity->header));
@@ -2661,7 +2661,6 @@ eReturnValues CAta_Identify_Log_03::get_Log_Page03(uint8_t *pData, JSONNODE *mas
     //myStr.resize(BASIC);
     sLogPage03 logPage03;
     m_pCap = &logPage03;
-    memset(m_pCap, 0, sizeof(logPage03));
     m_pCap = (sLogPage03 *)&pData[0];
     uint16_t pageNumber = (uint16_t)(M_Word1(m_pCap->header));
     uint16_t revision = (uint16_t)(M_Word0(m_pCap->header));
@@ -4877,7 +4876,7 @@ eReturnValues CAta_Identify_Log_30::parse_Identify_Log_30(JSONNODE *masterData)
     // Parse the log page 00.
     CAta_Identify_Log_00 *cLogPage00;
     cLogPage00 = new CAta_Identify_Log_00(&pData[0x000]);
-    cLogPage00->get_Log_Page00(&pData[0x000], masterData);
+    cLogPage00->get_Log_Page00( masterData);
 
     // Parse the Log page 01h
     if (cLogPage00->is_Page_Supported(1))

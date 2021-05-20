@@ -93,8 +93,7 @@ namespace opensea_parser {
         eReturnValues print_LUN_Actuator_Information(JSONNODE *masterData, uint32_t page, uint16_t actNum);
         eReturnValues print_LUN_Actuator_FLED_Info(JSONNODE *masterData, uint32_t page, uint16_t actNum);
         eReturnValues print_LUN_Actuator_Reallocation(JSONNODE *masterData, uint32_t page, uint16_t actNum);
-        void prePython_Str(JSONNODE* masterData, const char* name, const char* statType, const char* location, \
-             const char* unit, int pageNum, const char* value);
+        void prePython_Str(JSONNODE* masterData, const char* name, const char* statType, const char* unit, int pageNum, const char* value);
         void prePython_int(JSONNODE* masterData, const char* name, const char* statType, const char* header, \
             const char* unit, int pageNum, int64_t value);
         void prePython_Float(JSONNODE* masterData, const char* name, const char* statType, const char* header, \

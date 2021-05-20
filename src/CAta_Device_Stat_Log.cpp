@@ -719,8 +719,7 @@ uint32_t CAtaDeviceStatisticsLogs::CheckStatusAndValid_32(uint64_t *value)
 //---------------------------------------------------------------------------
 void CAtaDeviceStatisticsLogs::logPage00(uint64_t *value)
 {
-#if defined _DEBUG
-    uint64_t *cData = &value[0];
+
     uint8_t *pEntries = (uint8_t *)&value[0];
     uint8_t TotalEntries = 0;
     TotalEntries = pEntries[8];
@@ -728,7 +727,6 @@ void CAtaDeviceStatisticsLogs::logPage00(uint64_t *value)
     printf("*****List Of Supported Device(log Page 00h)*****");
     printf("\t%s %d \n\n", "Number of entries  : ", TotalEntries);
 
-#endif
 }
 //-----------------------------------------------------------------------------
 //
