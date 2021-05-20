@@ -115,6 +115,8 @@ CScsiApplicationLog::~CScsiApplicationLog()
 //---------------------------------------------------------------------------
 void CScsiApplicationLog::process_Client_Data(JSONNODE *appData)
 {
+#define MSGSIZE 128
+#define STRMSGSIZE 1201
 	std::string myStr = "";
 	myStr.resize(BASIC);
 #if defined (PREPYTHON)
@@ -127,15 +129,15 @@ void CScsiApplicationLog::process_Client_Data(JSONNODE *appData)
 	json_push_back(label, json_new_a("metric_source", (char*)myStr.c_str()));
 
 	
-	char* innerMsg = (char*)calloc(129, sizeof(char));
+	char* innerMsg = (char*)calloc(MSGSIZE, sizeof(char));
 	if (innerMsg)
 	{
-		memset(innerMsg, 0, 128);
+		memset(innerMsg, 0, MSGSIZE);
 	}
-	char* innerStr = (char*)calloc(1201, sizeof(char));
+	char* innerStr = (char*)calloc(STRMSGSIZE, sizeof(char));
 	if (innerStr )
 	{
-		memset(innerStr, 0, 1200);
+		memset(innerStr, 0, STRMSGSIZE);
 	}
 
 	uint32_t offset = 0;
@@ -152,7 +154,7 @@ void CScsiApplicationLog::process_Client_Data(JSONNODE *appData)
 			snprintf(innerMsg, 8, "%" PRIu8",", (uint8_t)m_App->data[offset]);
 		}
 		if(innerMsg && innerStr)
-			strncat(innerStr, innerMsg, 128);
+			strncat(innerStr, innerMsg, MSGSIZE);
 		offset++;
 	}
 	if (innerStr)
@@ -160,7 +162,7 @@ void CScsiApplicationLog::process_Client_Data(JSONNODE *appData)
 		strncat(innerStr, "])", 3);
 	//printf(" %s \n", innerStr);
 		if(innerMsg && innerStr)
-			strncat(innerStr, innerMsg,128);
+			strncat(innerStr, innerMsg, MSGSIZE);
 		offset++;
 	}
 	//strncat(innerStr, "])", 3);
@@ -194,7 +196,7 @@ void CScsiApplicationLog::process_Client_Data(JSONNODE *appData)
     if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
         uint32_t lineNumber = 0;
-        char *innerMsg = (char*)calloc(128, sizeof(char));
+        char *innerMsg = (char*)calloc(MSGSIZE, sizeof(char));
         char* innerStr = (char*)calloc(60, sizeof(char));
         uint32_t offset = 0;
 
