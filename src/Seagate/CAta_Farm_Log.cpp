@@ -1429,19 +1429,19 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         snprintf((char *)myHeader.c_str(), BASIC, "Fly height clearance delta inner by Head %" PRIu32"", loopCount);
-        snprintf((char*)myStr.c_str(), BASIC, "%0.03f", static_cast<float>(M_WordInt0(vFarmFrame[page].reliPage.flyHeightClearance[loopCount].inner)*.1));
+        snprintf((char*)myStr.c_str(), BASIC, "%0.03f", static_cast<float>(M_WordInt0(vFarmFrame[page].reliPage.flyHeightClearance[loopCount].inner)*.001));
         set_json_string_With_Status(headInfo, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].reliPage.flyHeightClearance[loopCount].inner, m_showStatusBits);  //!< [24][3] Applied fly height clearance delta per head in thousandths of one Angstrom.
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         snprintf((char*)myHeader.c_str(), BASIC, "Fly height clearance delta middle by Head %" PRIu32"", loopCount); // Head count
-        snprintf((char*)myStr.c_str(), BASIC, "%0.03f", static_cast<float>(M_WordInt0(vFarmFrame[page].reliPage.flyHeightClearance[loopCount].middle) * .1));
+        snprintf((char*)myStr.c_str(), BASIC, "%0.03f", static_cast<float>(M_WordInt0(vFarmFrame[page].reliPage.flyHeightClearance[loopCount].middle) * .001));
         set_json_string_With_Status(headInfo, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].reliPage.flyHeightClearance[loopCount].middle, m_showStatusBits); //!< [24][3] Applied fly height clearance delta per head in thousandths of one Angstrom.
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         snprintf((char*)myHeader.c_str(), BASIC, "Fly height clearance delta outer by Head %" PRIu32"", loopCount); // Head count
-        snprintf((char*)myStr.c_str(), BASIC, "%0.03f", static_cast<float>(M_WordInt0(vFarmFrame[page].reliPage.flyHeightClearance[loopCount].outer) * .1));
+        snprintf((char*)myStr.c_str(), BASIC, "%0.03f", static_cast<float>(M_WordInt0(vFarmFrame[page].reliPage.flyHeightClearance[loopCount].outer) * .001));
         set_json_string_With_Status(headInfo, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].reliPage.flyHeightClearance[loopCount].outer, m_showStatusBits);//!< [24][3] Applied fly height clearance delta per head in thousandths of one Angstrom.
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
@@ -1558,17 +1558,33 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         snprintf((char *)myHeader.c_str(), BASIC, "FAFH Bit Error Rate inner by Head %" PRIu32"", loopCount);
-        set_json_64_bit_With_Status(headInfo, (char*)myHeader.c_str(), vFarmFrame[page].reliPage.FAFHBitErrorRate[loopCount].inner, false, m_showStatusBits);                   //!< [24][3] FAFH Bit Error Rate, write then read BER on reserved tracks
+        uint64_t dsHead = check_Status_Strip_Status(vFarmFrame[page].reliPage.FAFHBitErrorRate[loopCount].inner);                   //!< [24][3] FAFH Bit Error Rate, write then read BER on reserved tracks
+        int16_t whole = M_WordInt2(dsHead);							// get 5:4 whole part of the float
+        double decimal = M_DoubleWordInt0(dsHead);  // get 3:0 for the Deciaml Part of the float
+
+        snprintf((char*)myStr.c_str(), BASIC, "%" PRIi16".%04.0f", whole, decimal);
+        set_json_string_With_Status(headInfo, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].reliPage.FAFHBitErrorRate[loopCount].inner, m_showStatusBits);
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         snprintf((char*)myHeader.c_str(), BASIC, "FAFH Bit Error Rate middle by Head %" PRIu32"", loopCount); // Head count
-        set_json_64_bit_With_Status(headInfo, (char*)myHeader.c_str(), vFarmFrame[page].reliPage.FAFHBitErrorRate[loopCount].middle, false, m_showStatusBits);                  //!< [24][3] FAFH Bit Error Rate, write then read BER on reserved tracks            
+        uint64_t dsHead = check_Status_Strip_Status(vFarmFrame[page].reliPage.FAFHBitErrorRate[loopCount].middle);                   //!< [24][3] FAFH Bit Error Rate, write then read BER on reserved tracks 
+        int16_t whole = M_WordInt2(dsHead);							// get 5:4 whole part of the float
+        double decimal = M_DoubleWordInt0(dsHead);  // get 3:0 for the Deciaml Part of the float
+
+        snprintf((char*)myStr.c_str(), BASIC, "%" PRIi16".%04.0f", whole, decimal);
+        set_json_string_With_Status(headInfo, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].reliPage.FAFHBitErrorRate[loopCount].middle, m_showStatusBits);
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         snprintf((char*)myHeader.c_str(), BASIC, "FAFH Bit Error Rate outer by Head %" PRIu32"", loopCount); // Head count
-        set_json_64_bit_With_Status(headInfo, (char*)myHeader.c_str(), vFarmFrame[page].reliPage.FAFHBitErrorRate[loopCount].outer, false, m_showStatusBits);                   //!< [24][3] FAFH Bit Error Rate, write then read BER on reserved tracks            
+
+        uint64_t dsHead = check_Status_Strip_Status(vFarmFrame[page].reliPage.FAFHBitErrorRate[loopCount].outer);                   //!< [24][3] FAFH Bit Error Rate, write then read BER on reserved tracks 
+        int16_t whole = M_WordInt2(dsHead);							// get 5:4 whole part of the float
+        double decimal = M_DoubleWordInt0(dsHead);  // get 3:0 for the Deciaml Part of the float
+           
+        snprintf((char*)myStr.c_str(), BASIC, "%" PRIi16".%04.0f", whole, decimal);
+        set_json_string_With_Status(headInfo, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].reliPage.FAFHBitErrorRate[loopCount].outer, m_showStatusBits);
     }
 
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
