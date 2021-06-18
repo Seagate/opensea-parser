@@ -141,7 +141,7 @@ CFarmCommon::~CFarmCommon()
 		switch (code)
 		{
 		case ASSERT_UNKNOWN:
-			meaning = "Unknow";
+			meaning = "Unknown";
 			break;
 		case MICROPROCESSOR_FAILED:
 			meaning = "Microprocessor Failed";
