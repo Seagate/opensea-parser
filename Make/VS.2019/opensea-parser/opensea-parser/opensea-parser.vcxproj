@@ -338,7 +338,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;SEAPARSER_EXPORTS;STATIC_OPENSEA_COMMON;WIN_API_TARGET_VERSION=81000000L;_ITERATOR_DEBUG_LEVEL = 0;PREPYTHON</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;_DEBUG;SEAPARSER_EXPORTS;STATIC_OPENSEA_COMMON;WIN_API_TARGET_VERSION=81000000L;PREPYTHON;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\..\include;..\..\..\..\..\libjson;..\..\..\..\..\opensea-common\include;..\..\..\..\..\opensea-parser\include;..\..\..\..\..\opensea-parser\include\Seagate</AdditionalIncludeDirectories>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -351,7 +351,7 @@
       <AdditionalDependencies>opensea-common.lib</AdditionalDependencies>
     </Lib>
     <Lib>
-      <AdditionalLibraryDirectories>..\..\..\..\..\opensea-common\Make\VS.2019\opensea-common\$(Platform)\$(Configuration);..\..\..\..\..\opensea-operations\Make\VS.2019\opensea-operations\$(Platform)\$(Configuration)\LIB</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\..\..\..\opensea-common\Make\VS.2019\opensea-common\$(Platform)\$(Configuration)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Static-Debug|x64'">
