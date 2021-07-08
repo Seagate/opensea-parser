@@ -305,6 +305,7 @@ eReturnValues CScsiApplicationLog::get_PrePython_Client_Data(JSONNODE* masterDat
 			{
 				l_NumberOfPartitions++;
 				m_App = new sApplicationParams(&pData[offset]);
+				byte_Swap_16(&m_App->paramCode);
 				offset += APP_CLIENT_DATA_LEN + 4;
 
 				process_Client_Data(masterData);
