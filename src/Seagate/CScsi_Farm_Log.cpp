@@ -1891,9 +1891,13 @@ eReturnValues CSCSI_Farm_Log::print_Header(JSONNODE *masterData)
     printf("\tReason for Frame Capture(debug):     %" PRId64"  \n", vFarmFrame[page].farmHeader.farmHeader.reasonForFrameCpature & 0x00FFFFFFFFFFFFF);	      //!< Reason for Frame Capture
 #endif
 #if defined (PREPYTHON)
-    
+    std::string myInfo = "";
+    myInfo.resize(BASIC);
+    json_push_back(masterData, json_new_a("name", "farm"));
     JSONNODE* label = json_new(JSON_NODE);
     json_set_name(label, "labels");
+    snprintf((char*)myInfo.c_str(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%x", FARMLOGPAGE, FARMSUBPAGE, FARM_HEADER_PARAMETER);
+    json_push_back(label, json_new_a("metric_source", (char*)myInfo.c_str()));
     json_push_back(label, json_new_a("location", "farm header"));   
 
     snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIX64"", check_Status_Strip_Status(vFarmFrame[page].farmHeader.farmHeader.signature));
@@ -1916,15 +1920,9 @@ eReturnValues CSCSI_Farm_Log::print_Header(JSONNODE *masterData)
     convert_String_To_Lower_Case((char*)myStr.c_str());
     //remove_Leading_And_Trailing_Whitespace((char*)myStr.c_str());
     json_push_back(label, json_new_a("smart_save_flag", (char*)myStr.c_str()));
-
     json_push_back(label, json_new_a("units", "reported"));
-    std::string myInfo = "";
-    myInfo.resize(BASIC);
-    snprintf((char*)myInfo.c_str(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%x", FARMLOGPAGE, FARMSUBPAGE, FARM_HEADER_PARAMETER);
-    json_push_back(label, json_new_a("metric_source", (char*)myInfo.c_str()));
     json_push_back(masterData, label);
     json_push_back(masterData, json_new_i("value",1));
-    json_push_back(masterData, json_new_a("name", "farm"));
 
 #else
     JSONNODE* pageInfo = json_new(JSON_NODE);
@@ -2011,11 +2009,13 @@ eReturnValues CSCSI_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint
 
 #endif
 #if defined (PREPYTHON)
-
+    json_push_back(masterData, json_new_a("name", "drive"));
     
     JSONNODE* label = json_new(JSON_NODE);
     json_set_name(label, "labels");
     //json_push_back(label, json_new_a("stat_type", "drive_information"));          // remove
+    snprintf((char*)myStr.c_str(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%x", FARMLOGPAGE, FARMSUBPAGE, GENERAL_DRIVE_INFORMATION_PARAMETER);
+    json_push_back(label, json_new_a("metric_source", (char*)myStr.c_str()));
 
     snprintf((char*)myStr.c_str(), BASIC, "%s", vFarmFrame[page].identStringInfo.serialNumber.c_str());
     json_push_back(label, json_new_a("serial_number", (char*)myStr.c_str()));
@@ -2081,13 +2081,10 @@ eReturnValues CSCSI_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint
         _common.create_Year_Assembled_String(myStr, week, true);
         json_push_back(label, json_new_a("week_of_assembled", (char*)myStr.c_str()));
     }
-
     json_push_back(label, json_new_a("units", "reported"));
-    snprintf((char*)myStr.c_str(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%x", FARMLOGPAGE, FARMSUBPAGE, GENERAL_DRIVE_INFORMATION_PARAMETER);
-    json_push_back(label, json_new_a("metric_source", (char*)myStr.c_str()));
     json_push_back(masterData, label);
     json_push_back(masterData, json_new_i("value", 1));
-    json_push_back(masterData, json_new_a("name", "drive"));
+   
 
 #else
     JSONNODE* pageInfo = json_new(JSON_NODE);
@@ -2663,9 +2660,11 @@ eReturnValues CSCSI_Farm_Log::print_Enviroment_Information(JSONNODE *masterData,
 #endif
 
 #if defined (PREPYTHON)
-    
+    json_push_back(masterData, json_new_a("name", "farm_log"));
     JSONNODE* label = json_new(JSON_NODE);
     json_set_name(label, "labels");
+    snprintf((char*)myStr.c_str(), BASIC, "scsi-log-page:0x%" PRIx8":,%" PRId8":0x%x", FARMLOGPAGE, FARMSUBPAGE, ENVIRONMENTAL_STATISTICS_PARAMETER);
+    json_push_back(label, json_new_a("metric_source", (char*)myStr.c_str()));
     json_push_back(label, json_new_a("stat_type", "environment information"));
     
     snprintf((char*)myStr.c_str(), BASIC, "%0.02f celsius", static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.maxTemp)) * 1.00));							//!< Specified Max Operating Temperature
@@ -2675,11 +2674,10 @@ eReturnValues CSCSI_Farm_Log::print_Enviroment_Information(JSONNODE *masterData,
     json_push_back(label, json_new_a("specified min operating temperature", (char*)myStr.c_str()));
 
     json_push_back(label, json_new_a("units", "count"));
-    snprintf((char*)myStr.c_str(), BASIC, "scsi-log-page:0x%" PRIx8":,%" PRId8":0x%x", FARMLOGPAGE, FARMSUBPAGE, ENVIRONMENTAL_STATISTICS_PARAMETER);
-    json_push_back(label, json_new_a("metric_source", (char*)myStr.c_str()));
+    
     json_push_back(masterData, label);
     json_push_back(masterData, json_new_i("value", 0));
-    json_push_back(masterData, json_new_a("name", "farm_log"));
+    
   
     prePython_Float(masterData, "environment_temperature", "current", "environment", "celsius", ENVIRONMENTAL_STATISTICS_PARAMETER, static_cast<double>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.curentTemp)) * .10));
     prePython_Float(masterData, "environment_temperature", "highest", "environment", "celsius", ENVIRONMENTAL_STATISTICS_PARAMETER, static_cast<double>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.highestTemp)) * .10));
@@ -4916,20 +4914,16 @@ void CSCSI_Farm_Log::prePython_Str(JSONNODE* masterData, const char* name, const
 {
     std::string myStr;
     myStr.resize(BASIC);
-    
+    json_push_back(masterData, json_new_a("name", name));
     JSONNODE* label = json_new(JSON_NODE);
     json_set_name(label, "labels");
-    json_push_back(label, json_new_a("stat_type", statType));
-    //json_push_back(label, json_new_a("location", location));
-    
-    json_push_back(label, json_new_a("units", unit));
-
     snprintf((char*)myStr.c_str(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRId8":0x%x", FARMLOGPAGE, FARMSUBPAGE, pageNum);
     json_push_back(label, json_new_a("metric_source", (char*)myStr.c_str()));
+    json_push_back(label, json_new_a("stat_type", statType));
+    //json_push_back(label, json_new_a("location", location));
+    json_push_back(label, json_new_a("units", unit));
     json_push_back(masterData, label);
     json_push_back(masterData, json_new_a("value", value));
-    json_push_back(masterData, json_new_a("name", name));
-  
 }
 
 //-----------------------------------------------------------------------------
@@ -4950,20 +4944,17 @@ void CSCSI_Farm_Log::prePython_int(JSONNODE* masterData, const char* name, const
 {
     std::string myStr = "";
     myStr.resize(BASIC);
-    
+    json_push_back(masterData, json_new_a("name", name));
     JSONNODE* label = json_new(JSON_NODE);
     json_set_name(label, "labels");
-    json_push_back(label, json_new_a("stat_type", statType));
-
-    json_push_back(label, json_new_a("location", header));
-
-    json_push_back(label, json_new_a("units", unit));
-
     snprintf((char*)myStr.c_str(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRId8":0x%x", FARMLOGPAGE, FARMSUBPAGE, pageNum);
     json_push_back(label, json_new_a("metric_source", (char*)myStr.c_str()));
+    json_push_back(label, json_new_a("stat_type", statType));
+    json_push_back(label, json_new_a("location", header));
+    json_push_back(label, json_new_a("units", unit));
     json_push_back(masterData, label);
     json_push_back(masterData, json_new_f("value", static_cast<double>(value)));    // float is limited to 53 bits of precision (2^53)
-    json_push_back(masterData, json_new_a("name", name));
+    
 }
 //-----------------------------------------------------------------------------
 //
@@ -4984,20 +4975,16 @@ void CSCSI_Farm_Log::prePython_Float(JSONNODE* masterData, const char* name, con
 {
     std::string myStr;
     myStr.resize(BASIC);
-    
+    json_push_back(masterData, json_new_a("name", name));
     JSONNODE* label = json_new(JSON_NODE);
     json_set_name(label, "labels");
-    json_push_back(label, json_new_a("stat_type", statType));
-
-    json_push_back(label, json_new_a("location", header));
-
-    json_push_back(label, json_new_a("units", unit));
-
     snprintf((char*)myStr.c_str(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRId8":0x%x", FARMLOGPAGE, FARMSUBPAGE, pageNum);
     json_push_back(label, json_new_a("metric_source", (char*)myStr.c_str()));
+    json_push_back(label, json_new_a("stat_type", statType));
+    json_push_back(label, json_new_a("location", header));
+    json_push_back(label, json_new_a("units", unit));
     json_push_back(masterData, label);
     json_push_back(masterData, json_new_f("value", value));       // float is limited to 53 bits of precision (2^53)
-    json_push_back(masterData, json_new_a("name", name));
 }
 //-----------------------------------------------------------------------------
 //
@@ -5018,22 +5005,19 @@ void CSCSI_Farm_Log::prePython_Head_Float(JSONNODE* masterData, const char* name
 {
     std::string myStr;
     myStr.resize(BASIC);
-    ;
+    json_push_back(masterData, json_new_a("name", name));
     JSONNODE* label = json_new(JSON_NODE);
     json_set_name(label, "labels");
+    snprintf((char*)myStr.c_str(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRId8":0x%x", FARMLOGPAGE, FARMSUBPAGE, pageNum);
+    json_push_back(label, json_new_a("metric_source", (char*)myStr.c_str()));
     if (statType != NULL)
     {
         json_push_back(label, json_new_a("stat_type", statType));
     }
     json_push_back(label, json_new_i("head number", headNumber));
-
     json_push_back(label, json_new_a("units", unit));
-
-    snprintf((char*)myStr.c_str(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRId8":0x%x", FARMLOGPAGE, FARMSUBPAGE, pageNum);
-    json_push_back(label, json_new_a("metric_source", (char*)myStr.c_str()));
     json_push_back(masterData, label);
     json_push_back(masterData, json_new_f("value", value));         // float is limited to 53 bits of precision (2^53)
-    json_push_back(masterData, json_new_a("name", name));
 }
 //-----------------------------------------------------------------------------
 //
@@ -5054,20 +5038,17 @@ void CSCSI_Farm_Log::prePython_Head_Int(JSONNODE* masterData, const char* name, 
 {
     std::string myStr;
     myStr.resize(BASIC);
-    
+    json_push_back(masterData, json_new_a("name", name));
     JSONNODE* label = json_new(JSON_NODE);
     json_set_name(label, "labels");
+    snprintf((char*)myStr.c_str(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRId8":0x%x", FARMLOGPAGE, FARMSUBPAGE, pageNum);
+    json_push_back(label, json_new_a("metric_source", (char*)myStr.c_str()));
     if (statType != NULL)
     {
         json_push_back(label, json_new_a("stat_type", statType));
     }
     json_push_back(label, json_new_i("head number", headNumber));
-
     json_push_back(label, json_new_a("units", unit));
-
-    snprintf((char*)myStr.c_str(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRId8":0x%x", FARMLOGPAGE, FARMSUBPAGE, pageNum);
-    json_push_back(label, json_new_a("metric_source", (char*)myStr.c_str()));
     json_push_back(masterData, label);
     json_push_back(masterData, json_new_f("value", static_cast<double>(value)));                   // float is limited to 53 bits of precision (2^53)
-    json_push_back(masterData, json_new_a("name", name));
 }
