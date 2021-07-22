@@ -120,7 +120,7 @@ void CScsiApplicationLog::process_Client_Data(JSONNODE *appData)
 	std::string myStr = "";
 	myStr.resize(BASIC);
 #if defined (PREPYTHON)
-	json_push_back(appData, json_new_a("name", "parameter_unknown"));
+	json_push_back(appData, json_new_a("name", "application client"));
 	JSONNODE* label = json_new(JSON_NODE);
 	json_set_name(label, "labels");
 
