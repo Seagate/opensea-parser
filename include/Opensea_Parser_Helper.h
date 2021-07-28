@@ -30,6 +30,7 @@
 #include "libjson.h"
 
 extern eVerbosityLevels g_verbosity;
+extern eDataFormat g_dataformat;
 extern time_t g_currentTime;
 extern char g_currentTimeString[64];
 extern char *g_currentTimeStringPtr;
@@ -61,6 +62,7 @@ namespace opensea_parser {
         OPENSEA_LOG_PRINT_PROM,
         OPENSEA_LOG_PRINT_PYTHON_DICTIONARY,
     }eOpensea_print_Types;
+
 	// SCSI Parameter Control Bytes
 	typedef enum _eOpenSea_SCSI_Log_Parameter_Types
 	{

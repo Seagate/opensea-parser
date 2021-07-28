@@ -13,6 +13,7 @@
 #include "Opensea_Parser_Helper.h"
 
 eVerbosityLevels g_verbosity = VERBOSITY_DEFAULT;
+eDataFormat g_dataformat = JSON_DATA;
 time_t           g_currentTime;
 char             g_currentTimeString[64];
 char             *g_currentTimeStringPtr = g_currentTimeString;
