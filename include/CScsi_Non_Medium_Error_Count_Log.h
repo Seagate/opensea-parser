@@ -59,11 +59,14 @@ namespace opensea_parser {
 		virtual eReturnValues get_Log_Status() { return m_NMECStatus; };
 		virtual eReturnValues parse_Non_Medium_Error_Count_Log(JSONNODE *masterData) 
 		{ 
-#if defined (PREPYTHON)
-			return get_Flat_Non_Medium_Error_Count_Data(masterData);
-#else
-			return get_Non_Medium_Error_Count_Data(masterData); 
-#endif
+			if (g_dataformat == PREPYTHON_DATA)
+			{
+				return get_Flat_Non_Medium_Error_Count_Data(masterData);
+			}
+			else
+			{
+				return get_Non_Medium_Error_Count_Data(masterData);
+			}
 		};
 
 	};

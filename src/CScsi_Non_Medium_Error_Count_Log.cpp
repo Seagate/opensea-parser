@@ -116,7 +116,7 @@ CScsiNonMediumErrorCountLog::~CScsiNonMediumErrorCountLog()
 //!   \return none
 //
 //---------------------------------------------------------------------------
-void CScsiNonMediumErrorCountLog::process_Non_Medium_Error_Count_Data(JSONNODE *countData)
+void CScsiNonMediumErrorCountLog::process_Non_Medium_Error_Count_Data(JSONNODE* countData)
 {
 	std::string myStr = "";
 	myStr.resize(BASIC);
@@ -125,44 +125,43 @@ void CScsiNonMediumErrorCountLog::process_Non_Medium_Error_Count_Data(JSONNODE *
 	printf("Non-Medium Error Count Log Parameters\n");
 #endif
 	byte_Swap_16(&m_CountErrors->paramCode);
-#if defined (PREPYTHON)
-	
-	JSONNODE* label = json_new(JSON_NODE);
-	json_set_name(label, "labels");
-	snprintf((char*)myStr.c_str(), BASIC, "scsi_log_pages:0x%" PRIx8",%" PRIx8":0x%" PRIx16":0x%" PRIx8":%" PRId8"", NON_MEDIUM_ERROR, NONMEDIUMERRORSUBPAGE, m_CountErrors->paramCode, m_CountErrors->paramControlByte, m_CountErrors->paramLength);
-	json_push_back(label, json_new_a("metric_source", (char*)myStr.c_str()));
-	snprintf((char*)myStr.c_str(), BASIC, "total error count");
-	json_push_back(label, json_new_a("stat_type", (char*)myStr.c_str()));
-	json_push_back(label, json_new_a("units", "count"));
-	json_push_back(countData, label);
-
-	json_push_back(countData, json_new_f("value", static_cast<double> (m_Value)));
-		
-#else
-
-	snprintf((char*)myStr.c_str(), BASIC, "Non-Medium Error Count Log Parameters 0x%04" PRIx16"", m_CountErrors->paramCode);
-	JSONNODE *cacheInfo = json_new(JSON_NODE);
-	json_set_name(cacheInfo, (char*)myStr.c_str());
-
-	snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_CountErrors->paramCode);
-	json_push_back(cacheInfo, json_new_a("Non-Medium Error Count Parameter Code", (char*)myStr.c_str()));
-
-	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_CountErrors->paramControlByte);
-	json_push_back(cacheInfo, json_new_a("Non-Medium Error Count Control Byte ", (char*)myStr.c_str()));
-	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_CountErrors->paramLength);
-	json_push_back(cacheInfo, json_new_a("Non-Medium Error CountLength ", (char*)myStr.c_str()));
-	if (m_CountErrors->paramLength == 8 || m_Value > UINT32_MAX)
+	if (g_dataformat == PREPYTHON_DATA)
 	{
-		set_json_64bit(cacheInfo, "Non-Medium Error Count", m_Value, false);
+		JSONNODE* label = json_new(JSON_NODE);
+		json_set_name(label, "labels");
+		snprintf((char*)myStr.c_str(), BASIC, "scsi_log_pages:0x%" PRIx8",%" PRIx8":0x%" PRIx16":0x%" PRIx8":%" PRId8"", NON_MEDIUM_ERROR, NONMEDIUMERRORSUBPAGE, m_CountErrors->paramCode, m_CountErrors->paramControlByte, m_CountErrors->paramLength);
+		json_push_back(label, json_new_a("metric_source", (char*)myStr.c_str()));
+		snprintf((char*)myStr.c_str(), BASIC, "total error count");
+		json_push_back(label, json_new_a("stat_type", (char*)myStr.c_str()));
+		json_push_back(label, json_new_a("units", "count"));
+		json_push_back(countData, label);
+
+		json_push_back(countData, json_new_f("value", static_cast<double> (m_Value)));
 	}
 	else
 	{
-		json_push_back(cacheInfo, json_new_i("Non-Medium Error Count", static_cast<uint32_t>(m_Value)));
-	}
+		snprintf((char*)myStr.c_str(), BASIC, "Non-Medium Error Count Log Parameters 0x%04" PRIx16"", m_CountErrors->paramCode);
+		JSONNODE* cacheInfo = json_new(JSON_NODE);
+		json_set_name(cacheInfo, (char*)myStr.c_str());
 
-	json_push_back(countData, cacheInfo);
-#endif
-	
+		snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_CountErrors->paramCode);
+		json_push_back(cacheInfo, json_new_a("Non-Medium Error Count Parameter Code", (char*)myStr.c_str()));
+
+		snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_CountErrors->paramControlByte);
+		json_push_back(cacheInfo, json_new_a("Non-Medium Error Count Control Byte ", (char*)myStr.c_str()));
+		snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_CountErrors->paramLength);
+		json_push_back(cacheInfo, json_new_a("Non-Medium Error CountLength ", (char*)myStr.c_str()));
+		if (m_CountErrors->paramLength == 8 || m_Value > UINT32_MAX)
+		{
+			set_json_64bit(cacheInfo, "Non-Medium Error Count", m_Value, false);
+		}
+		else
+		{
+			json_push_back(cacheInfo, json_new_i("Non-Medium Error Count", static_cast<uint32_t>(m_Value)));
+		}
+
+		json_push_back(countData, cacheInfo);
+	}
 }
 //-----------------------------------------------------------------------------
 //

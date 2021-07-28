@@ -66,11 +66,14 @@ namespace opensea_parser {
 		virtual eReturnValues get_Log_Status() { return m_PlistStatus; };
 		virtual eReturnValues parse_Supported_Log_Pages_Log(JSONNODE *masterData) 
 		{ 
-#if defined (PREPYTHON)
-			return get_PrePython_Plist_Data(masterData);
-#else
-			return get_Plist_Data(masterData); 
-#endif
+			if (g_dataformat == PREPYTHON_DATA)
+			{
+				return get_PrePython_Plist_Data(masterData);
+			}
+			else
+			{
+				return get_Plist_Data(masterData);
+			}
 		};
 
 	};

@@ -89,11 +89,14 @@ namespace opensea_parser {
 		virtual eReturnValues get_Log_Status() { return m_DSTStatus; };
 		virtual eReturnValues parse_Self_Test_Log(uint8_t* buffer, size_t bufferSize, JSONNODE* masterJson)
 		{
-#if defined (PREPYTHON)
-			return get_PrePython_Self_Test_Log(buffer, bufferSize, masterJson);
-#else
-			return get_Self_Test_Log(buffer, bufferSize, masterJson);
-#endif
+			if (g_dataformat == PREPYTHON_DATA)
+			{
+				return get_PrePython_Self_Test_Log(buffer, bufferSize, masterJson);
+			}
+			else
+			{
+				return get_Self_Test_Log(buffer, bufferSize, masterJson);
+			}
 		};
 	};
 #endif

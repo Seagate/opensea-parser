@@ -119,113 +119,116 @@ void CScsiApplicationLog::process_Client_Data(JSONNODE *appData)
 #define STRMSGSIZE 1201
 	std::string myStr = "";
 	myStr.resize(BASIC);
-#if defined (PREPYTHON)
-	json_push_back(appData, json_new_a("name", "application client"));
-	JSONNODE* label = json_new(JSON_NODE);
-	json_set_name(label, "labels");
-
-
-	snprintf((char*)myStr.c_str(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16":%" PRIx8":%" PRIx8"", APPLICATION_CLIENT, 0, m_App->paramCode, m_App->paramControlByte, m_App->paramLength);
-	json_push_back(label, json_new_a("metric_source", (char*)myStr.c_str()));
-
-	
-	char* innerMsg = (char*)calloc(MSGSIZE, sizeof(char));
-	if (innerMsg)
+	if (g_dataformat == PREPYTHON_DATA)
 	{
-		memset(innerMsg, 0, MSGSIZE);
-	}
-	char* innerStr = (char*)calloc(STRMSGSIZE, sizeof(char));
-	if (innerStr )
-	{
-		memset(innerStr, 0, STRMSGSIZE);
-	}
+		json_push_back(appData, json_new_a("name", "application client"));
+		JSONNODE* label = json_new(JSON_NODE);
+		json_set_name(label, "labels");
 
-	uint32_t offset = 0;
 
-	snprintf(innerStr,13, "bytearray([");   //bytearray([%" PRIu8"
-	for (uint32_t outer = 0; outer < APP_CLIENT_DATA_LEN - 1;outer++ )
-	{
-		if (outer + 1 == APP_CLIENT_DATA_LEN - 1)
+		snprintf((char*)myStr.c_str(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16":%" PRIx8":%" PRIx8"", APPLICATION_CLIENT, 0, m_App->paramCode, m_App->paramControlByte, m_App->paramLength);
+		json_push_back(label, json_new_a("metric_source", (char*)myStr.c_str()));
+
+
+		char* innerMsg = (char*)calloc(MSGSIZE, sizeof(char));
+		if (innerMsg)
 		{
-			snprintf(innerMsg, 8, "%" PRIu8"", m_App->data[offset]);
+			memset(innerMsg, 0, MSGSIZE);
 		}
-		else
+		char* innerStr = (char*)calloc(STRMSGSIZE, sizeof(char));
+		if (innerStr)
 		{
-			snprintf(innerMsg, 8, "%" PRIu8",", (uint8_t)m_App->data[offset]);
+			memset(innerStr, 0, STRMSGSIZE);
 		}
-		if(innerMsg && innerStr)
-			strncat(innerStr, innerMsg, MSGSIZE);
-		offset++;
+
+		uint32_t offset = 0;
+
+		snprintf(innerStr, 13, "bytearray([");   //bytearray([%" PRIu8"
+		for (uint32_t outer = 0; outer < APP_CLIENT_DATA_LEN - 1; outer++)
+		{
+			if (outer + 1 == APP_CLIENT_DATA_LEN - 1)
+			{
+				snprintf(innerMsg, 8, "%" PRIu8"", m_App->data[offset]);
+			}
+			else
+			{
+				snprintf(innerMsg, 8, "%" PRIu8",", (uint8_t)m_App->data[offset]);
+			}
+			if (innerMsg && innerStr)
+				strncat(innerStr, innerMsg, MSGSIZE);
+			offset++;
+		}
+		if (innerStr)
+		{
+			strncat(innerStr, "])", 3);
+			//printf(" %s \n", innerStr);
+			if (innerMsg && innerStr)
+				strncat(innerStr, innerMsg, MSGSIZE);
+			offset++;
+		}
+		//strncat(innerStr, "])", 3);
+		json_push_back(label, json_new_a("raw_value", innerStr));
+
+		safe_Free(innerMsg);  //free the string
+		safe_Free(innerStr);  // free the string
+
+		json_push_back(appData, label);
+		json_push_back(appData, json_new_f("value", -1));
+
 	}
-	if (innerStr)
+	else
 	{
-		strncat(innerStr, "])", 3);
-	//printf(" %s \n", innerStr);
-		if(innerMsg && innerStr)
-			strncat(innerStr, innerMsg, MSGSIZE);
-		offset++;
-	}
-	//strncat(innerStr, "])", 3);
-	json_push_back(label, json_new_a("raw_value", innerStr));
-	
-	safe_Free(innerMsg);  //free the string
-	safe_Free(innerStr);  // free the string
-
-	json_push_back(appData, label);
-	json_push_back(appData, json_new_f("value", -1));
-
-#else
 #if defined _DEBUG
-	printf("Application Client Description \n");
+		printf("Application Client Description \n");
 #endif
-	byte_Swap_16(&m_App->paramCode);
-	//get_Cache_Parameter_Code_Description(&myStr);
-	snprintf((char*)myStr.c_str(), BASIC, "Application Client Log 0x%04" PRIx16"", m_App->paramCode);
-	JSONNODE *appInfo = json_new(JSON_NODE);
-	json_set_name(appInfo, (char*)myStr.c_str());
-    
-    snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_App->paramCode);
-    json_push_back(appInfo, json_new_a("Application Client Parameter Code", (char*)myStr.c_str()));
+		byte_Swap_16(&m_App->paramCode);
+		//get_Cache_Parameter_Code_Description(&myStr);
+		snprintf((char*)myStr.c_str(), BASIC, "Application Client Log 0x%04" PRIx16"", m_App->paramCode);
+		JSONNODE* appInfo = json_new(JSON_NODE);
+		json_set_name(appInfo, (char*)myStr.c_str());
 
-    snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_App->paramControlByte);
-    json_push_back(appInfo, json_new_a("Application Client Control Byte ", (char*)myStr.c_str()));
-    snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_App->paramLength);
-    json_push_back(appInfo, json_new_a("Application Client Length ", (char*)myStr.c_str()));
-    
-    // format to show the buffer data.
-    if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
-    {
-        uint32_t lineNumber = 0;
-        char *innerMsg = (char*)calloc(MSGSIZE, sizeof(char));
-        char* innerStr = (char*)calloc(60, sizeof(char));
-        uint32_t offset = 0;
+		snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_App->paramCode);
+		json_push_back(appInfo, json_new_a("Application Client Parameter Code", (char*)myStr.c_str()));
+
+		snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_App->paramControlByte);
+		json_push_back(appInfo, json_new_a("Application Client Control Byte ", (char*)myStr.c_str()));
+		snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_App->paramLength);
+		json_push_back(appInfo, json_new_a("Application Client Length ", (char*)myStr.c_str()));
+
+		// format to show the buffer data.
+		if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+		{
+			uint32_t lineNumber = 0;
+			char* innerMsg = (char*)calloc(MSGSIZE, sizeof(char));
+			char* innerStr = (char*)calloc(60, sizeof(char));
+			uint32_t offset = 0;
 
 
-        for (uint32_t outer = 0; outer < APP_CLIENT_DATA_LEN - 1; )
-        {
-            snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIX32 "", lineNumber);
-            sprintf(innerMsg, "%02" PRIX8 "", m_App->data[offset]);
-            // inner loop for creating a single ling of the buffer data
-            for (uint32_t inner = 1; inner < 16 && offset < APP_CLIENT_DATA_LEN - 1; inner++)
-            {
-                sprintf(innerStr, "%02" PRIX8"", m_App->data[offset]);
-                if (inner % 4 == 0)
-                {
-                    strncat(innerMsg, " ", 1);
-                }
-                strncat(innerMsg, innerStr, 2);
-                offset++;
-            }
-            // push the line to the json node
-            json_push_back(appInfo, json_new_a((char*)myStr.c_str(), innerMsg));
-            outer = offset;
-            lineNumber = outer;
-        }
-        safe_Free(innerMsg);  //free the string
-        safe_Free(innerStr);  // free the string
-    }
-	json_push_back(appData, appInfo);
-#endif
+			for (uint32_t outer = 0; outer < APP_CLIENT_DATA_LEN - 1; )
+			{
+				snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIX32 "", lineNumber);
+				sprintf(innerMsg, "%02" PRIX8 "", m_App->data[offset]);
+				// inner loop for creating a single ling of the buffer data
+				for (uint32_t inner = 1; inner < 16 && offset < APP_CLIENT_DATA_LEN - 1; inner++)
+				{
+					sprintf(innerStr, "%02" PRIX8"", m_App->data[offset]);
+					if (inner % 4 == 0)
+					{
+						strncat(innerMsg, " ", 1);
+					}
+					strncat(innerMsg, innerStr, 2);
+					offset++;
+				}
+				// push the line to the json node
+				json_push_back(appInfo, json_new_a((char*)myStr.c_str(), innerMsg));
+				outer = offset;
+				lineNumber = outer;
+			}
+			safe_Free(innerMsg);  //free the string
+			safe_Free(innerStr);  // free the string
+		}
+		json_push_back(appData, appInfo);
+	}
 }
 //-----------------------------------------------------------------------------
 //
@@ -294,35 +297,36 @@ eReturnValues CScsiApplicationLog::get_Client_Data(JSONNODE *masterData)
 eReturnValues CScsiApplicationLog::get_PrePython_Client_Data(JSONNODE* masterData)
 {
 	eReturnValues retStatus = IN_PROGRESS;
-#if defined (PREPYTHON)
-	if (pData != NULL)
+	if (g_dataformat == PREPYTHON_DATA)
 	{
-		uint16_t l_NumberOfPartitions = 0;
-
-		for (size_t offset = 0; ((offset < m_PageLength) && (l_NumberOfPartitions <= MAX_PARTITION));)
+		if (pData != NULL)
 		{
-			if (offset + sizeof(sApplicationParams) < m_bufferLength && offset < UINT16_MAX)
-			{
-				l_NumberOfPartitions++;
-				m_App = new sApplicationParams(&pData[offset]);
-				byte_Swap_16(&m_App->paramCode);
-				offset += APP_CLIENT_DATA_LEN + 4;
+			uint16_t l_NumberOfPartitions = 0;
 
-				process_Client_Data(masterData);
-				delete m_App;
-			}
-			else
+			for (size_t offset = 0; ((offset < m_PageLength) && (l_NumberOfPartitions <= MAX_PARTITION));)
 			{
-				return BAD_PARAMETER;
+				if (offset + sizeof(sApplicationParams) < m_bufferLength && offset < UINT16_MAX)
+				{
+					l_NumberOfPartitions++;
+					m_App = new sApplicationParams(&pData[offset]);
+					byte_Swap_16(&m_App->paramCode);
+					offset += APP_CLIENT_DATA_LEN + 4;
+
+					process_Client_Data(masterData);
+					delete m_App;
+				}
+				else
+				{
+					return BAD_PARAMETER;
+				}
 			}
+
+			retStatus = SUCCESS;
 		}
-
-		retStatus = SUCCESS;
+		else
+		{
+			retStatus = MEMORY_FAILURE;
+		}
 	}
-	else
-	{
-		retStatus = MEMORY_FAILURE;
-	}
-#endif
 	return retStatus;
 }
