@@ -1433,7 +1433,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     {
                         sHeadInformation *pHeadInfo = new sHeadInformation();
                         get_Head_Info(pHeadInfo, &pBuf[offset]);
-                        memcpy(&pFarmFrame->currentH2SATPercentagedbyHead, pHeadInfo, sizeof(*pHeadInfo));
+                        memcpy(&pFarmFrame->currentH2SATPercentagebyHead, pHeadInfo, sizeof(*pHeadInfo));
                         offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
                         delete pHeadInfo;  
                     }
@@ -2303,7 +2303,7 @@ eReturnValues CSCSI_Farm_Log::print_WorkLoad(JSONNODE *masterData, uint32_t page
     {
         printf("\nWork Load From Farm Log copy %d: \n", page);
     }
-    printf("\tRated Workload Percentaged:                          %llu  \n", vFarmFrame[page].workLoadPage.workLoad.workloadPercentage & 0x00FFFFFFFFFFFFFFLL);         //!< rated Workload Percentage
+    printf("\tRated Workload Percentage:                          %llu  \n", vFarmFrame[page].workLoadPage.workLoad.workloadPercentage & 0x00FFFFFFFFFFFFFFLL);         //!< rated Workload Percentage
 	printf("\tTotal Number of Read Commands:                       %llu  \n", vFarmFrame[page].workLoadPage.workLoad.totalReadCommands & 0x00FFFFFFFFFFFFFFLL);          //!< Total Number of Read Commands
 	printf("\tTotal Number of Write Commands:                      %llu  \n", vFarmFrame[page].workLoadPage.workLoad.totalWriteCommands & 0x00FFFFFFFFFFFFFFLL);         //!< Total Number of Write Commands
 	printf("\tTotal Number of Random Read Cmds:                    %llu  \n", vFarmFrame[page].workLoadPage.workLoad.totalRandomReads & 0x00FFFFFFFFFFFFFFLL);           //!< Total Number of Random Read Commands
@@ -2374,7 +2374,7 @@ eReturnValues CSCSI_Farm_Log::print_WorkLoad(JSONNODE *masterData, uint32_t page
             snprintf((char*)myStr.c_str(), BASIC, "Workload From Farm Log copy %" PRId32"", page);
         }
         json_set_name(pageInfo, (char*)myStr.c_str());
-        set_json_64_bit_With_Status(pageInfo, "Rated Workload Percentaged", vFarmFrame[page].workLoadPage.workLoad.workloadPercentage, false, m_showStatusBits);				//!< rated Workload Percentage
+        set_json_64_bit_With_Status(pageInfo, "Rated Workload Percentage", vFarmFrame[page].workLoadPage.workLoad.workloadPercentage, false, m_showStatusBits);				//!< rated Workload Percentage
         set_json_64_bit_With_Status(pageInfo, "Total Number of Read Commands", vFarmFrame[page].workLoadPage.workLoad.totalReadCommands, false, m_showStatusBits);			//!< Total Number of Read Commands
         set_json_64_bit_With_Status(pageInfo, "Total Number of Write Commands", vFarmFrame[page].workLoadPage.workLoad.totalWriteCommands, false, m_showStatusBits);			//!< Total Number of Write Commands
         set_json_64_bit_With_Status(pageInfo, "Total Number of Random Read Cmds", vFarmFrame[page].workLoadPage.workLoad.totalRandomReads, false, m_showStatusBits);			//!< Total Number of Random Read Commands
@@ -3482,16 +3482,16 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
 #if defined _DEBUG
-                printf("\tCurrent H2SAT percentage of codewords at iteration level by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].currentH2SATPercentagedbyHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Current H2SAT percentage of codewords at iteration level
+                printf("\tCurrent H2SAT percentage of codewords at iteration level by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].currentH2SATPercentagebyHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Current H2SAT percentage of codewords at iteration level
 #endif
                 snprintf((char*)myHeader.c_str(), BASIC, "Current H2SAT percentage of codewords at iteration level by Head %" PRIu32"", loopCount); // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Int(headPage, "h2sat", "codeword at iteration level (current)", loopCount, "count", CURRENT_H2SAT_PERCENTAGE_OF_CODEWORDS_AT_ITERATION_LEVEL_BY_HEAD_AVERAGED_ACROSS_TEST_ZONES, M_DoubleWord0(vFarmFrame[page].currentH2SATPercentagedbyHead.headValue[loopCount]));
+                    prePython_Head_Int(headPage, "h2sat", "codeword at iteration level (current)", loopCount, "count", CURRENT_H2SAT_PERCENTAGE_OF_CODEWORDS_AT_ITERATION_LEVEL_BY_HEAD_AVERAGED_ACROSS_TEST_ZONES, M_DoubleWord0(vFarmFrame[page].currentH2SATPercentagebyHead.headValue[loopCount]));
                 }
                 else
                 {
-                    set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].currentH2SATPercentagedbyHead.headValue[loopCount], false, m_showStatusBits);  //!< Current H2SAT percentage of codewords at iteration level
+                    set_json_64_bit_With_Status(headPage, (char*)myHeader.c_str(), vFarmFrame[page].currentH2SATPercentagebyHead.headValue[loopCount], false, m_showStatusBits);  //!< Current H2SAT percentage of codewords at iteration level
                 }
             }
             break;

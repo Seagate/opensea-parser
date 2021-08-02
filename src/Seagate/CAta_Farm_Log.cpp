@@ -463,7 +463,7 @@ eReturnValues CATA_Farm_Log::print_Work_Load(JSONNODE *masterData, uint32_t page
     {
         printf("\nWork Load From Farm Log copy %d \n", page);
     }
-    printf("\tRated Workload Percentaged(debug):               %" PRIu64" \n", vFarmFrame[page].workLoadPage.workloadPercentage & 0x00FFFFFFFFFFFFFFLL);         //!< rated Workload Percentage
+    printf("\tRated Workload Percentage(debug):               %" PRIu64" \n", vFarmFrame[page].workLoadPage.workloadPercentage & 0x00FFFFFFFFFFFFFFLL);         //!< rated Workload Percentage
     printf("\tTotal Number of Other Commands(debug):           %" PRIu64" \n", vFarmFrame[page].workLoadPage.totalNumberofOtherCMDS & 0x00FFFFFFFFFFFFFFLL);     //!< Total Number Of Other Commands
     printf("\tTotal Number of Write Commands(debug):           %" PRIu64" \n", vFarmFrame[page].workLoadPage.totalWriteCommands & 0x00FFFFFFFFFFFFFFLL);         //!< Total Number of Write Commands
     printf("\tTotal Number of Read Commands(debug):            %" PRIu64" \n", vFarmFrame[page].workLoadPage.totalReadCommands & 0x00FFFFFFFFFFFFFFLL);          //!< Total Number of Read Commands
@@ -522,7 +522,7 @@ eReturnValues CATA_Farm_Log::print_Work_Load(JSONNODE *masterData, uint32_t page
     }
     json_set_name(pageInfo, (char*)myStr.c_str());
 
-    set_json_64_bit_With_Status(pageInfo, "Rated Workload Percentaged", vFarmFrame[page].workLoadPage.workloadPercentage, false, m_showStatusBits);             //!< rated Workload Percentage
+    set_json_64_bit_With_Status(pageInfo, "Rated Workload Percentage", vFarmFrame[page].workLoadPage.workloadPercentage, false, m_showStatusBits);             //!< rated Workload Percentage
     set_json_64_bit_With_Status(pageInfo, "Total Number of Read Commands", vFarmFrame[page].workLoadPage.totalReadCommands, false, m_showStatusBits);           //!< Total Number of Read Commands
     set_json_64_bit_With_Status(pageInfo, "Total Number of Write Commands", vFarmFrame[page].workLoadPage.totalWriteCommands, false, m_showStatusBits);         //!< Total Number of Write Commands
     set_json_64_bit_With_Status(pageInfo, "Total Number of Random Read Cmds", vFarmFrame[page].workLoadPage.totalRandomReads, false, m_showStatusBits);         //!< Total Number of Random Read Commands
