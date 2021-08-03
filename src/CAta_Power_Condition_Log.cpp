@@ -41,9 +41,13 @@ using namespace opensea_parser;
 CAtaPowerConditionsLog::CAtaPowerConditionsLog()
 : m_powerConditionLog(NULL)
 , m_powerFlags(NULL)
+, Buffer()
 , m_status(IN_PROGRESS)
+, m_myJSON()
 , m_idleAPowerConditions(NULL), m_idleBPowerConditions(NULL), m_idleCPowerConditions(NULL)
 , m_standbyYPowerConditions(NULL), m_standbyZPowerConditions(NULL)
+, m_conditionFlags(NULL)
+, conditionFlags()
 {
 
 }
@@ -63,9 +67,12 @@ CAtaPowerConditionsLog::CAtaPowerConditionsLog()
 CAtaPowerConditionsLog::CAtaPowerConditionsLog(std::string filename)
 : m_powerConditionLog(NULL)
 , m_powerFlags(NULL)
+, Buffer()
 , m_status(IN_PROGRESS)
+, m_myJSON()
 , m_idleAPowerConditions(NULL), m_idleBPowerConditions(NULL), m_idleCPowerConditions(NULL)
 , m_standbyYPowerConditions(NULL), m_standbyZPowerConditions(NULL)
+, m_conditionFlags(NULL)
 , conditionFlags()
 {
 
@@ -126,9 +133,12 @@ CAtaPowerConditionsLog::CAtaPowerConditionsLog(std::string filename)
 CAtaPowerConditionsLog::CAtaPowerConditionsLog(tDataPtr pData, JSONNODE *masterData)
 	: m_powerConditionLog(NULL)
 	, m_powerFlags(NULL)
+	, Buffer()
 	, m_status(IN_PROGRESS)
+	, m_myJSON(masterData)
 	, m_idleAPowerConditions(NULL), m_idleBPowerConditions(NULL), m_idleCPowerConditions(NULL)
 	, m_standbyYPowerConditions(NULL), m_standbyZPowerConditions(NULL)
+	, m_conditionFlags(NULL)
 	, conditionFlags()
 {
     m_powerConditionLog = new uint8_t[pData.DataLen];								// new a buffer to the point				
