@@ -42,7 +42,8 @@ CSCSI_Farm_Log::CSCSI_Farm_Log()
 	, m_pageParam()
     , m_pDriveInfo() 
 	, m_alreadySet(false)          
-	, m_showStatusBits(false)                      
+	, m_showStatusBits(false)
+    , m_fromScsiLogPages(false)
 {                                                  
 	m_status = IN_PROGRESS;
 
@@ -63,10 +64,10 @@ CSCSI_Farm_Log::CSCSI_Farm_Log()
 //
 //---------------------------------------------------------------------------
 
-CSCSI_Farm_Log::CSCSI_Farm_Log(uint8_t* bufferData, size_t bufferSize)
+CSCSI_Farm_Log::CSCSI_Farm_Log(uint8_t* bufferData, size_t bufferSize, bool fromLogPage)
     : m_totalPages()
-    , m_logSize(0)
-    , m_pageSize((uint32_t)bufferSize)
+    , m_logSize((uint16_t)bufferSize)
+    , m_pageSize(0)
     , m_heads(0)
     , m_MaxHeads(0)
     , m_copies(0)
@@ -80,6 +81,7 @@ CSCSI_Farm_Log::CSCSI_Farm_Log(uint8_t* bufferData, size_t bufferSize)
     , m_pDriveInfo()
     , m_alreadySet(false)
     , m_showStatusBits(false)
+    , m_fromScsiLogPages(fromLogPage)
 {
     m_status = IN_PROGRESS;
     if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
@@ -126,9 +128,9 @@ CSCSI_Farm_Log::CSCSI_Farm_Log(uint8_t* bufferData, size_t bufferSize)
 //
 //---------------------------------------------------------------------------
 
-CSCSI_Farm_Log::CSCSI_Farm_Log( uint8_t *bufferData, size_t bufferSize, bool showStatus)
+CSCSI_Farm_Log::CSCSI_Farm_Log( uint8_t *bufferData, size_t bufferSize, bool fromLogPage, bool showStatus)
 	: m_totalPages()                                       
-	, m_logSize(0)                                             
+	, m_logSize((uint16_t)bufferSize)
 	, m_pageSize(0)                                      
 	, m_heads(0)                                   
 	, m_MaxHeads(0)                                
@@ -143,6 +145,7 @@ CSCSI_Farm_Log::CSCSI_Farm_Log( uint8_t *bufferData, size_t bufferSize, bool sho
     , m_pDriveInfo() 
 	, m_alreadySet(false)          
 	, m_showStatusBits(showStatus)
+    , m_fromScsiLogPages(fromLogPage)
 {
     m_status = IN_PROGRESS;
     if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
@@ -216,7 +219,7 @@ eReturnValues CSCSI_Farm_Log::init_Header_Data()
 	}
 	else
 	{
-        if (g_dataformat == PREPYTHON_DATA)
+        if (m_fromScsiLogPages == true)
         {
             m_pHeader = (sScsiFarmHeader*)&pBuf[0];
         }
@@ -1129,6 +1132,11 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
     uint64_t offset = 0;                                                                    // the first page starts at offset 4                                   
     bool headerAlreadyFound = false;                                                        // set to false, for files that are missing data
     sScsiFarmFrame *pFarmFrame = new sScsiFarmFrame();								       	// create the pointer to the union
+
+    if (m_fromScsiLogPages == false)
+    {
+        offset = 4;
+    }
 
     if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
@@ -4871,7 +4879,7 @@ void CSCSI_Farm_Log::print_All_Pages(JSONNODE *masterData)
                 }
             }
         }
-        if (g_dataformat == PREPYTHON_DATA)
+        if (g_dataformat != PREPYTHON_DATA)
         {
             json_push_back(masterData, headPage);
         }
