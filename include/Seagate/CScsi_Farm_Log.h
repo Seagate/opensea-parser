@@ -53,6 +53,7 @@ namespace opensea_parser {
         sScsiDriveInfo              *m_pDriveInfo;                                    //!< Drive information pointer with header information
         bool                        m_alreadySet;                                     //!< set true one it's already set..  (APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_OUTER)
 		bool						m_showStatusBits;								  //!< show the status bits of each entry
+        bool                        m_fromScsiLogPages;                               //!< bool if passed from scsi log pages set as true. We will be off by 4 bytes
         CFarmCommon         _common;
 
 		void create_Serial_Number(std::string &serialNumber, const sScsiDriveInfo * const idInfo);
@@ -104,8 +105,8 @@ namespace opensea_parser {
             const char* unit, int pageNum, int64_t value);
     public:
         CSCSI_Farm_Log();
-        CSCSI_Farm_Log(uint8_t* bufferData, size_t bufferSize);
-        CSCSI_Farm_Log(uint8_t *bufferData, size_t bufferSize,bool showStatus);
+        CSCSI_Farm_Log(uint8_t* bufferData, size_t bufferSize, bool m_fromScsiLogPages);
+        CSCSI_Farm_Log(uint8_t *bufferData, size_t bufferSize, bool m_fromScsiLogPages, bool showStatus);
         virtual ~CSCSI_Farm_Log();
         eReturnValues parse_Farm_Log();
         void print_All_Pages(JSONNODE *masterData);
