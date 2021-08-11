@@ -37,6 +37,7 @@ CScsiPendingDefectsLog::CScsiPendingDefectsLog()
 	, m_bufferLength(0)
 	, m_PListCountParam()
 	, m_PlistDefect()
+	, m_count(0)
 {
 	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
@@ -66,6 +67,7 @@ CScsiPendingDefectsLog::CScsiPendingDefectsLog(uint8_t * buffer, size_t bufferSi
 	, m_bufferLength(bufferSize)
 	, m_PListCountParam()
 	, m_PlistDefect()
+	, m_count(0)
 {
 	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
@@ -135,22 +137,11 @@ void CScsiPendingDefectsLog::process_PList_Data(JSONNODE *pendingData)
 		json_set_name(label, "labels");
 		snprintf((char*)myStr.c_str(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16":%" PRIx8":%" PRIx8"", 0x15, 0x01, m_PlistDefect->paramCode, m_PlistDefect->paramControlByte, m_PlistDefect->paramLength);
 		json_push_back(label, json_new_a("metric_source", (char*)myStr.c_str()));
-		json_push_back(label, json_new_a("stat_type", "Power On Hours"));
-		json_push_back(label, json_new_a("units", "hours"));
+		json_push_back(label, json_new_f("power_on_hours", static_cast<double>(m_PlistDefect->defectPOH)));
+		json_push_back(label, json_new_f("lba", static_cast<double>(m_PlistDefect->defectLBA)));
+		json_push_back(label, json_new_a("units", "index"));
 		json_push_back(pendingData, label);
-		json_push_back(pendingData, json_new_f("value", static_cast<double>(m_PlistDefect->defectPOH)));
-
-
-
-		JSONNODE* jLBA = json_new(JSON_NODE);
-		json_push_back(pendingData, json_new_a("name", "pending_defect"));
-		json_set_name(jLBA, "labels");
-		snprintf((char*)myStr.c_str(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16":%" PRIx8":%" PRIx8"", 0x15, 0x01, m_PlistDefect->paramCode, m_PlistDefect->paramControlByte, m_PlistDefect->paramLength);
-		json_push_back(jLBA, json_new_a("metric_source", (char*)myStr.c_str()));
-		json_push_back(jLBA, json_new_a("stat_type", "LBA"));
-		json_push_back(jLBA, json_new_a("units", "LBA"));
-		json_push_back(pendingData, jLBA);
-		json_push_back(pendingData, json_new_f("value", static_cast<double>(m_PlistDefect->defectLBA)));
+		json_push_back(pendingData, json_new_i("value", m_count));
 
 	}
 	else
@@ -267,6 +258,7 @@ eReturnValues CScsiPendingDefectsLog::get_Plist_Data(JSONNODE *masterData)
 				{
 					m_PlistDefect = (sDefect *)&pData[offset];
 					offset += sizeof(sDefect);
+					m_count++;    // defect found add one to the count
 					process_PList_Data(pageInfo);
 				}
 				else
@@ -316,6 +308,7 @@ eReturnValues CScsiPendingDefectsLog::get_PrePython_Plist_Data(JSONNODE* masterD
 				{
 					m_PlistDefect = (sDefect*)&pData[offset];
 					offset += sizeof(sDefect);
+					m_count++;    // defect found add one to the count
 					process_PList_Data(masterData);
 				}
 				else

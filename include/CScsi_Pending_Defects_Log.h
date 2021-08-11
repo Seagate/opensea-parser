@@ -52,6 +52,7 @@ namespace opensea_parser {
 		size_t						m_bufferLength;			    //<! length of the buffer from reading in the log
 		sPendindDefectCount			*m_PListCountParam;			//<! Parameters to the Plist count
 		sDefect						*m_PlistDefect;				//<! structure to the Pending defect
+		uint32_t					m_count;					//<! the total count of pending defects found
 
 		void get_Supported_And_Subpage_Description(std::string *description);
 		void process_PList_Data(JSONNODE *pendingData);
