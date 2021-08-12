@@ -4315,8 +4315,8 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Information(JSONNODE *masterDat
         json_push_back(label, json_new_i("number of lbas corrected by parity sector", M_DoubleWordInt0(pLUN->lbasCorrectedByParity)));           //!< Number of LBAs Corrected by Parity Sector
 
 
-        snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx8":0x%" PRId8":0x%" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, actNum);
-        json_push_back(label, json_new_a("scsi_log_pages", (char*)myStr.c_str()));
+        snprintf((char*)myStr.c_str(), BASIC, "scsi-log-page:0x%" PRIx8":0x%" PRId8":0x%" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, actNum);
+        json_push_back(label, json_new_a("metric_source", (char*)myStr.c_str()));
         json_push_back(masterData, label);
         json_push_back(masterData, json_new_i("value", 1));
         json_push_back(masterData, json_new_a("name", "lun_actuator"));
