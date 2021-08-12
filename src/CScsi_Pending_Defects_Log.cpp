@@ -135,7 +135,7 @@ void CScsiPendingDefectsLog::process_PList_Data(JSONNODE *pendingData)
 		json_push_back(pendingData, json_new_a("name", "pending_defect"));
 		JSONNODE* label = json_new(JSON_NODE);
 		json_set_name(label, "labels");
-		snprintf((char*)myStr.c_str(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16":%" PRIx8":%" PRIx8"", 0x15, 0x01, m_PlistDefect->paramCode, m_PlistDefect->paramControlByte, m_PlistDefect->paramLength);
+		snprintf((char*)myStr.c_str(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16"", 0x15, 0x01, m_PlistDefect->paramCode);
 		json_push_back(label, json_new_a("metric_source", (char*)myStr.c_str()));
 		json_push_back(label, json_new_f("power_on_hours", static_cast<double>(m_PlistDefect->defectPOH)));
 		json_push_back(label, json_new_f("lba", static_cast<double>(m_PlistDefect->defectLBA)));
@@ -194,7 +194,7 @@ void CScsiPendingDefectsLog::process_PList_Count(JSONNODE *pendingCount)
 		json_push_back(pendingCount, json_new_a("name", "pending_defect"));
 		JSONNODE* label = json_new(JSON_NODE);
 		json_set_name(label, "labels");
-		snprintf((char*)myStr.c_str(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16":%" PRIx8":%" PRIx8"", 0x15, 0x01, m_PListCountParam->paramCode, m_PListCountParam->paramControlByte, m_PListCountParam->paramLength);
+		snprintf((char*)myStr.c_str(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16"", 0x15, 0x01, m_PListCountParam->paramCode);
 		json_push_back(label, json_new_a("metric_source", (char*)myStr.c_str()));
 		json_push_back(label, json_new_a("stat_type", "total"));
 		json_push_back(label, json_new_a("units", "count"));
