@@ -153,37 +153,37 @@ void CScsiLBAProvisionLog::get_LBA_Provision_Parameter_Description(std::string *
         {
         case 0x0001:
         {
-            snprintf((char*)lbaStr->c_str(), BASIC, "Available LBA Mapping Resource Count");
+            snprintf((char*)lbaStr->c_str(), BASIC, "available lba mapping resource count");
             break;
         }
         case 0x0002:
         {
-            snprintf((char*)lbaStr->c_str(), BASIC, "Used LBA Mapping Resource Count");
+            snprintf((char*)lbaStr->c_str(), BASIC, "used lba mapping resource count");
             break;
         }
         case 0x0003:
         {
-            snprintf((char*)lbaStr->c_str(), BASIC, "Available Provisioning Resource Percentage");
+            snprintf((char*)lbaStr->c_str(), BASIC, "available provisioning resource percentage");
             break;
         }
         case 0x0100:
         {
-            snprintf((char*)lbaStr->c_str(), BASIC, "De-duplicated LBA Resource Count");
+            snprintf((char*)lbaStr->c_str(), BASIC, "de-duplicated lba resource count");
             break;
         }
         case 0x0101:
         {
-            snprintf((char*)lbaStr->c_str(), BASIC, "Compressed LBA Resource Count");
+            snprintf((char*)lbaStr->c_str(), BASIC, "compressed LBA resource count");
             break;
         }
         case 0x0102:
         {
-            snprintf((char*)lbaStr->c_str(), BASIC, "Total Efficiency LBA Resource Count");
+            snprintf((char*)lbaStr->c_str(), BASIC, "total efficiency LBA resource count");
             break;
         }
         default:
         {
-            snprintf((char*)lbaStr->c_str(), BASIC, "Vendor Specific  %" PRId16"", m_Provision->paramCode);
+            snprintf((char*)lbaStr->c_str(), BASIC, "vendor specific  %" PRId16"", m_Provision->paramCode);
             break;
         }
         }

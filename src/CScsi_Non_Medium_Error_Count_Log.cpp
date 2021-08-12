@@ -129,7 +129,7 @@ void CScsiNonMediumErrorCountLog::process_Non_Medium_Error_Count_Data(JSONNODE* 
 	{
 		JSONNODE* label = json_new(JSON_NODE);
 		json_set_name(label, "labels");
-		snprintf((char*)myStr.c_str(), BASIC, "scsi_log_pages:0x%" PRIx8",%" PRIx8":0x%" PRIx16":0x%" PRIx8":%" PRId8"", NON_MEDIUM_ERROR, NONMEDIUMERRORSUBPAGE, m_CountErrors->paramCode, m_CountErrors->paramControlByte, m_CountErrors->paramLength);
+		snprintf((char*)myStr.c_str(), BASIC, "scsi_log_pages:0x%" PRIx8",%" PRIx8":0x%" PRIx16"", NON_MEDIUM_ERROR, NONMEDIUMERRORSUBPAGE, m_CountErrors->paramCode);
 		json_push_back(label, json_new_a("metric_source", (char*)myStr.c_str()));
 		snprintf((char*)myStr.c_str(), BASIC, "total error count");
 		json_push_back(label, json_new_a("stat_type", (char*)myStr.c_str()));
