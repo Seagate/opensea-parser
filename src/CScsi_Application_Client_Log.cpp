@@ -126,7 +126,7 @@ void CScsiApplicationLog::process_Client_Data(JSONNODE *appData)
 		json_set_name(label, "labels");
 
 
-		snprintf((char*)myStr.c_str(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16":%" PRIx8":%" PRIx8"", APPLICATION_CLIENT, 0, m_App->paramCode, m_App->paramControlByte, m_App->paramLength);
+		snprintf((char*)myStr.c_str(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16"", APPLICATION_CLIENT, 0, m_App->paramCode);
 		json_push_back(label, json_new_a("metric_source", (char*)myStr.c_str()));
 
 
