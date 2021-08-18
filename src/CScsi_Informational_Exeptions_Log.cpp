@@ -129,27 +129,76 @@ void CScsiInformationalExeptionsLog::process_Informational_Exceptions_Data(JSONN
 #if defined _DEBUG
 	printf("Informational Exceptions Log \n");
 #endif
-	snprintf((char*)myStr.c_str(), BASIC, "Informational Exception %" PRId16"", count);
-	JSONNODE *exeptionInfo = json_new(JSON_NODE);
-	json_set_name(exeptionInfo, (char*)myStr.c_str());
-	byte_Swap_16(&m_Exeptions->paramCode);
-	snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_Exeptions->paramCode);
-	json_push_back(exeptionInfo, json_new_a("Informational Exception Parameter Code", (char*)myStr.c_str()));
-	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Exeptions->paramControlByte);
-	json_push_back(exeptionInfo, json_new_a("Informational Exception Control Byte ", (char*)myStr.c_str()));
-	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Exeptions->paramLength);
-	json_push_back(exeptionInfo, json_new_a("Informational Exception Length ", (char*)myStr.c_str()));
 
-	json_push_back(exeptionInfo, json_new_i("Informational Exception Additional Sense Code", static_cast<uint32_t>(m_Exeptions->senseCode)));
-	json_push_back(exeptionInfo, json_new_i("Informational Exception Additional Sense Code Qualifier", static_cast<uint32_t>(m_Exeptions->senseCodeQualifier)));
-	json_push_back(exeptionInfo, json_new_i("Most Recent Temperature Reading", static_cast<uint32_t>(m_Exeptions->temp)));
-	json_push_back(exeptionInfo, json_new_i("Vendor Hda Temperature Trip Point", static_cast<uint32_t>(m_Exeptions->tempLimit)));
-	json_push_back(exeptionInfo, json_new_i("Maximum Temperature", static_cast<uint32_t>(m_Exeptions->maxTemp)));
-	json_push_back(exeptionInfo, json_new_i("Vendor specific First", static_cast<uint32_t>(m_Exeptions->vendor1)));
-	json_push_back(exeptionInfo, json_new_i("Vendor specific Second", static_cast<uint32_t>(m_Exeptions->vendor2)));
-	json_push_back(exeptionInfo, json_new_i("Vendor specific Third", static_cast<uint32_t>(m_Exeptions->vendor3)));
+	if (g_dataformat == PREPYTHON_DATA)
+	{
+		json_push_back(exeptionData, json_new_a("name", "environment_temperature"));
+		JSONNODE* label = json_new(JSON_NODE);
+		json_set_name(label, "labels");
+		snprintf((char*)myStr.c_str(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16"", INFORMATIONAL_EXCEPTIONS, 0, m_Exeptions->paramCode);
+		json_push_back(label, json_new_a("metric_source", (char*)myStr.c_str()));
+		snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Exeptions->senseCode);
+		json_push_back(label, json_new_a("scsi_asc", (char*)myStr.c_str()));
+		snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Exeptions->senseCodeQualifier);
+		json_push_back(label, json_new_a("scsi_ascq", (char*)myStr.c_str()));
+		json_push_back(label, json_new_a("stat_type", "most recent temperature"));
+		json_push_back(label, json_new_a("units", "celsius"));
+		json_push_back(exeptionData, label);
+		json_push_back(exeptionData, json_new_f("value", static_cast<double>(m_Exeptions->temp)));
 
-	json_push_back(exeptionData, exeptionInfo);
+		json_push_back(exeptionData, json_new_a("name", "environment_temperature"));
+		JSONNODE* label1 = json_new(JSON_NODE);
+		json_set_name(label1, "labels");
+		snprintf((char*)myStr.c_str(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16"", INFORMATIONAL_EXCEPTIONS, 0, m_Exeptions->paramCode);
+		json_push_back(label1, json_new_a("metric_source", (char*)myStr.c_str()));
+		snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Exeptions->senseCode);
+		json_push_back(label1, json_new_a("scsi_asc", (char*)myStr.c_str()));
+		snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Exeptions->senseCodeQualifier);
+		json_push_back(label1, json_new_a("scsi_ascq", (char*)myStr.c_str()));
+		json_push_back(label1, json_new_a("stat_type", "trip point temperature"));
+		json_push_back(label1, json_new_a("units", "celsius"));
+		json_push_back(exeptionData, label1);
+		json_push_back(exeptionData, json_new_f("value", static_cast<double>(m_Exeptions->tempLimit)));
+
+		json_push_back(exeptionData, json_new_a("name", "environment_temperature"));
+		JSONNODE* label2 = json_new(JSON_NODE);
+		json_set_name(label2, "labels");
+		snprintf((char*)myStr.c_str(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16"", INFORMATIONAL_EXCEPTIONS, 0, m_Exeptions->paramCode);
+		json_push_back(label2, json_new_a("metric_source", (char*)myStr.c_str()));
+		snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Exeptions->senseCode);
+		json_push_back(label2, json_new_a("scsi_asc", (char*)myStr.c_str()));
+		snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Exeptions->senseCodeQualifier);
+		json_push_back(label2, json_new_a("scsi_ascq", (char*)myStr.c_str()));
+		json_push_back(label2, json_new_a("stat_type", "maximum temperature"));
+		json_push_back(label2, json_new_a("units", "celsius"));
+		json_push_back(exeptionData, label2);
+		json_push_back(exeptionData, json_new_f("value", static_cast<double>(m_Exeptions->maxTemp)));
+
+	}
+	else
+	{
+		snprintf((char*)myStr.c_str(), BASIC, "Informational Exception %" PRId16"", count);
+		JSONNODE* exeptionInfo = json_new(JSON_NODE);
+		json_set_name(exeptionInfo, (char*)myStr.c_str());
+		byte_Swap_16(&m_Exeptions->paramCode);
+		snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_Exeptions->paramCode);
+		json_push_back(exeptionInfo, json_new_a("Informational Exception Parameter Code", (char*)myStr.c_str()));
+		snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Exeptions->paramControlByte);
+		json_push_back(exeptionInfo, json_new_a("Informational Exception Control Byte ", (char*)myStr.c_str()));
+		snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Exeptions->paramLength);
+		json_push_back(exeptionInfo, json_new_a("Informational Exception Length ", (char*)myStr.c_str()));
+
+		json_push_back(exeptionInfo, json_new_i("Informational Exception Additional Sense Code", static_cast<uint32_t>(m_Exeptions->senseCode)));
+		json_push_back(exeptionInfo, json_new_i("Informational Exception Additional Sense Code Qualifier", static_cast<uint32_t>(m_Exeptions->senseCodeQualifier)));
+		json_push_back(exeptionInfo, json_new_i("Most Recent Temperature Reading", static_cast<uint32_t>(m_Exeptions->temp)));
+		json_push_back(exeptionInfo, json_new_i("Vendor Hda Temperature Trip Point", static_cast<uint32_t>(m_Exeptions->tempLimit)));
+		json_push_back(exeptionInfo, json_new_i("Maximum Temperature", static_cast<uint32_t>(m_Exeptions->maxTemp)));
+		json_push_back(exeptionInfo, json_new_i("Vendor specific First", static_cast<uint32_t>(m_Exeptions->vendor1)));
+		json_push_back(exeptionInfo, json_new_i("Vendor specific Second", static_cast<uint32_t>(m_Exeptions->vendor2)));
+		json_push_back(exeptionInfo, json_new_i("Vendor specific Third", static_cast<uint32_t>(m_Exeptions->vendor3)));
+
+		json_push_back(exeptionData, exeptionInfo);
+	}
 }
 //-----------------------------------------------------------------------------
 //
@@ -170,8 +219,16 @@ eReturnValues CScsiInformationalExeptionsLog::get_Informational_Exceptions_Data(
 	eReturnValues retStatus = IN_PROGRESS;
 	if (pData != NULL)
 	{
-		JSONNODE *pageInfo = json_new(JSON_NODE);
-		json_set_name(pageInfo, "Informational Exceptions Log - 2fh length 0x0f");
+		JSONNODE* pageInfo;
+		if (g_dataformat == PREPYTHON_DATA)
+		{
+			pageInfo = masterData;
+		}
+		else
+		{
+			JSONNODE* pageInfo = json_new(JSON_NODE);
+			json_set_name(pageInfo, "Informational Exceptions Log - 2fh length 0x0f");
+		}
 		uint16_t number = 0;
 		for (size_t offset = 0; offset < m_PageLength; )
 		{
@@ -184,13 +241,18 @@ eReturnValues CScsiInformationalExeptionsLog::get_Informational_Exceptions_Data(
 			}
 			else
 			{
-				json_push_back(masterData, pageInfo);
+				if (g_dataformat != PREPYTHON_DATA)
+				{
+					json_push_back(masterData, pageInfo);
+				}
 				return BAD_PARAMETER;
 			}
 
 		}
-
-		json_push_back(masterData, pageInfo);
+		if (g_dataformat != PREPYTHON_DATA)
+		{
+			json_push_back(masterData, pageInfo);
+		}
 		retStatus = SUCCESS;
 	}
 	else
