@@ -228,6 +228,7 @@ eReturnValues CScsi_DST_Results::get_PrePython_Self_Test_Log(uint8_t* buffer, si
 //---------------------------------------------------------------------------
 void CScsi_DST_Results::print_Self_Test_Log(JSONNODE *dstNode, uint16_t run)
 {
+	uint8_t retVal = 0;
 	std::string myStr = "";
 	myStr.resize(BASIC);
 	if (g_dataformat == PREPYTHON_DATA)
@@ -235,6 +236,8 @@ void CScsi_DST_Results::print_Self_Test_Log(JSONNODE *dstNode, uint16_t run)
 		json_push_back(dstNode, json_new_a("name", "self_test"));
 		JSONNODE* label = json_new(JSON_NODE);
 		json_set_name(label, "labels");
+		snprintf((char*)myStr.c_str(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16"", SELF_TEST_RESULTS, 0, m_DST->paramCode);
+		json_push_back(label, json_new_a("metric_source", (char*)myStr.c_str()));
 		if (M_GETBITRANGE(m_DST->stCode, 7, 5) == DST_NOT_RUN)
 		{
 			json_push_back(label, json_new_a("stat_type", "self test not ran"));
@@ -243,21 +246,21 @@ void CScsi_DST_Results::print_Self_Test_Log(JSONNODE *dstNode, uint16_t run)
 		{
 			get_PrePython_Self_Test_Results_String(myStr, M_GETBITRANGE(m_DST->stCode, 3, 0));
 			json_push_back(label, json_new_a("stat_type", (char*)myStr.c_str()));
+			if (M_GETBITRANGE(m_DST->stCode, 3, 0) > 0)
+			{
+				retVal = 1;
+			}
 		}
 		snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16"", run);
-		json_push_back(label, json_new_a("self_test_entry", (char*)myStr.c_str()));
-		snprintf((char*)myStr.c_str(), BASIC, "%02" PRIx8"", (uint8_t)M_GETBITRANGE(m_DST->stCode, 7, 5));
+		json_push_back(label, json_new_a("self_test_index", (char*)myStr.c_str()));
+		snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", (uint8_t)M_GETBITRANGE(m_DST->stCode, 7, 5));
 		json_push_back(label, json_new_a("self_test_code", (char*)myStr.c_str()));
-		snprintf((char*)myStr.c_str(), BASIC, "%02" PRIx8"", (uint8_t)M_GETBITRANGE(m_DST->stCode, 3, 0));
-		json_push_back(label, json_new_a("self_test_results", (char*)myStr.c_str()));
 		snprintf((char*)myStr.c_str(), BASIC, "%" PRIu32"", m_DST->stNumber);
-		json_push_back(label, json_new_a("Self Test Number", (char*)myStr.c_str()));
-
+		json_push_back(label, json_new_a("self_test_number", (char*)myStr.c_str()));
 		snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16"", m_DST->accPOH);
 		json_push_back(label, json_new_a("power_on_hours", (char*)myStr.c_str()));
-		snprintf((char*)myStr.c_str(), BASIC, "%" PRIx64"", m_DST->address);
+		snprintf((char*)myStr.c_str(), BASIC, "%" PRIu64"", m_DST->address);
 		json_push_back(label, json_new_a("first_failure", (char*)myStr.c_str()));
-
 		snprintf((char*)myStr.c_str(), BASIC, "%" PRIu8"", m_DST->senseKey);
 		json_push_back(label, json_new_a("scsi_sense_key", (char*)myStr.c_str()));
 		snprintf((char*)myStr.c_str(), BASIC, "%" PRIu8"", m_DST->addSenseCode);
@@ -265,11 +268,11 @@ void CScsi_DST_Results::print_Self_Test_Log(JSONNODE *dstNode, uint16_t run)
 		snprintf((char*)myStr.c_str(), BASIC, "%" PRIu8"", m_DST->addSenseCodeQualifier);
 		json_push_back(label, json_new_a("scsi_ascq", (char*)myStr.c_str()));
 		json_push_back(label, json_new_a("units", "failure"));
-
-		snprintf((char*)myStr.c_str(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16":%" PRIx8":%" PRIx8"", SELF_TEST_RESULTS, 0, m_DST->paramCode, m_DST->paramControlByte, m_DST->paramLength);
-		json_push_back(label, json_new_a("metric_source", (char*)myStr.c_str()));
+		snprintf((char*)myStr.c_str(), BASIC, "%02" PRIx8"", (uint8_t)M_GETBITRANGE(m_DST->stCode, 3, 0));
+		json_push_back(label, json_new_i("self_test_results", (uint8_t)M_GETBITRANGE(m_DST->stCode, 3, 0)));
+		
 		json_push_back(dstNode, label);
-		json_push_back(dstNode, json_new_f("value", 0));
+		json_push_back(dstNode, json_new_i("value", retVal));
 	}
 	else
 	{
@@ -384,6 +387,88 @@ void CScsi_DST_Results::get_Self_Test_Results_String( std::string & meaning, uin
 		case DST_IN_PROGRESS:
 		{
 			meaning = "Self Test is in progress";
+			break;
+		}
+		default:
+		{
+			meaning = "Reserved.";
+			break;
+		}
+	}
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn get_Self_Test_Results_String()
+//
+//! \brief
+//!   Description: takes the data for each loop and produces the data for the json data.
+//
+//  Entry:
+//! \param meaning - string to add verbage to what happened from the testing 
+//! \param result - the result of the dst testing
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void CScsi_DST_Results::get_DST_PrePython_Results_String(std::string& meaning, uint8_t result)
+{
+	meaning.resize(BASIC);
+	switch (result)
+	{
+		case DST_COMPLETED_WITHOUT_ERROR:
+		{
+			meaning = "completed without error";
+			break;
+		}
+		case DST_BACKGROUND_ABORTED:
+		{
+			meaning = "background self-test aborted by application (SEND DIAGNOSTIC)";
+			break;
+		}
+		case DST_ABORTED:
+		{
+			meaning = "self-test aborted by application";
+			break;
+		}
+		case DST_UNKNOWN_ERROR:
+		{
+			meaning = "unknown error, unable to complete self-test";
+			break;
+		}
+		case DST_FAILURE_UNKNOWN_SEGMENT:
+		{
+			meaning = "completed with failure (unknown test segment)";
+			break;
+		}
+		case DST_FAILURE_FIRST_SEGMENT:
+		{
+			meaning = "first segment failed";
+			break;
+		}
+		case DST_FAILURE_SECOND_SEGMENT:
+		{
+			meaning = "second segment failed";
+			break;
+		}
+		case DST_FAILURE_CHECK_NUMBER_FOR_SEGMENT:
+		{
+			meaning = "another segment failed";
+			break;
+		}
+		case DST_FAILURE_HANDLING_DAMAGE:
+		{
+			meaning = "completed having handling damage";
+			break;
+		}
+		case DST_FAILURE_SUSPECTED_HANDLING_DAMAGE:
+		{
+			meaning = "completed having suspected handling damage";
+			break;
+		}
+		case DST_IN_PROGRESS:
+		{
+			meaning = "self-test in progress";
 			break;
 		}
 		default:
