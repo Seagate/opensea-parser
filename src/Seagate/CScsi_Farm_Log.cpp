@@ -3230,7 +3230,6 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
         case RELIABILITY_STATISTICS_PARAMETER:
             break;
         case DISC_SLIP_IN_MICRO_INCHES_BY_HEAD:
-            printf("found disc slip\n");
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
                 uint64_t dsHead = check_Status_Strip_Status(vFarmFrame[page].discSlipPerHead.headValue[loopCount]);
