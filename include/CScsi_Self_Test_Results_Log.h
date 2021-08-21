@@ -81,7 +81,6 @@ namespace opensea_parser {
 		void print_Self_Test_Log(JSONNODE *dstNode, uint16_t run);
 		void get_Self_Test_Results_String(std::string & meaning, uint8_t result);
 		void get_DST_PrePython_Results_String(std::string& meaning, uint8_t result);
-		void get_PrePython_Self_Test_Results_String(std::string& meaning, uint8_t result);
 		void byte_Swap_Self_Test();
 	public:
 		CScsi_DST_Results();

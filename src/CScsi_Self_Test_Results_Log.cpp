@@ -228,7 +228,6 @@ eReturnValues CScsi_DST_Results::get_PrePython_Self_Test_Log(uint8_t* buffer, si
 //---------------------------------------------------------------------------
 void CScsi_DST_Results::print_Self_Test_Log(JSONNODE *dstNode, uint16_t run)
 {
-	uint8_t retVal = 0;
 	std::string myStr = "";
 	myStr.resize(BASIC);
 	if (g_dataformat == PREPYTHON_DATA)
@@ -240,39 +239,73 @@ void CScsi_DST_Results::print_Self_Test_Log(JSONNODE *dstNode, uint16_t run)
 		json_push_back(label, json_new_a("metric_source", (char*)myStr.c_str()));
 		if (M_GETBITRANGE(m_DST->stCode, 7, 5) == DST_NOT_RUN)
 		{
-			json_push_back(label, json_new_a("stat_type", "self test not ran"));
+			json_push_back(label, json_new_a("stat_type", "self-test not run"));
 		}
 		else
 		{
-			get_PrePython_Self_Test_Results_String(myStr, M_GETBITRANGE(m_DST->stCode, 3, 0));
+			get_DST_PrePython_Results_String(myStr, M_GETBITRANGE(m_DST->stCode, 3, 0));
 			json_push_back(label, json_new_a("stat_type", (char*)myStr.c_str()));
-			if (M_GETBITRANGE(m_DST->stCode, 3, 0) > 0)
-			{
-				retVal = 1;
-			}
 		}
 		snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16"", run);
 		json_push_back(label, json_new_a("self_test_index", (char*)myStr.c_str()));
-		snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", (uint8_t)M_GETBITRANGE(m_DST->stCode, 7, 5));
-		json_push_back(label, json_new_a("self_test_code", (char*)myStr.c_str()));
+
+		if ((uint8_t)M_GETBITRANGE(m_DST->stCode, 7, 5) == 0x00)
+		{ 
+			json_push_back(label, json_new_a("self_test_code", "no test [0x0]"));
+		}
+		else if((uint8_t)M_GETBITRANGE(m_DST->stCode, 7, 5) == 0x01)
+		{
+			json_push_back(label, json_new_a("self_test_code", "Background (short) [0x1]"));
+		}
+		else if((uint8_t)M_GETBITRANGE(m_DST->stCode, 7, 5) == 0x02)
+		{
+			json_push_back(label, json_new_a("self_test_code", "Background (extended) [0x2]"));
+		}
+		else if((uint8_t)M_GETBITRANGE(m_DST->stCode, 7, 5) == 0x03)
+		{
+			json_push_back(label, json_new_a("self_test_code", "Reserved [0x3]"));
+		}
+		else if((uint8_t)M_GETBITRANGE(m_DST->stCode, 7, 5) == 0x04)
+		{
+			json_push_back(label, json_new_a("self_test_code", "Background (aborted)  [0x4]"));
+		}
+		else if((uint8_t)M_GETBITRANGE(m_DST->stCode, 7, 5) == 0x05)
+		{
+			json_push_back(label, json_new_a("self_test_code", "Foreground (short) [0x5]"));
+		}
+		else if((uint8_t)M_GETBITRANGE(m_DST->stCode, 7, 5) == 0x06)
+		{
+			json_push_back(label, json_new_a("self_test_code", "Foreground (extended) [0x6]"));
+		}
+		else if((uint8_t)M_GETBITRANGE(m_DST->stCode, 7, 5) == 0x07)
+		{
+			json_push_back(label, json_new_a("self_test_code", "Reserved [0x7]"));
+		}
+		else 
+		{
+			json_push_back(label, json_new_a("self_test_code", "Reserved [0x7]"));
+		}
+		
 		snprintf((char*)myStr.c_str(), BASIC, "%" PRIu32"", m_DST->stNumber);
 		json_push_back(label, json_new_a("self_test_number", (char*)myStr.c_str()));
 		snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16"", m_DST->accPOH);
 		json_push_back(label, json_new_a("power_on_hours", (char*)myStr.c_str()));
 		snprintf((char*)myStr.c_str(), BASIC, "%" PRIu64"", m_DST->address);
 		json_push_back(label, json_new_a("first_failure", (char*)myStr.c_str()));
-		snprintf((char*)myStr.c_str(), BASIC, "%" PRIu8"", m_DST->senseKey);
+		snprintf((char*)myStr.c_str(), BASIC, "%" PRIu8"", (uint8_t)M_GETBITRANGE(m_DST->senseKey, 3, 0));
 		json_push_back(label, json_new_a("scsi_sense_key", (char*)myStr.c_str()));
 		snprintf((char*)myStr.c_str(), BASIC, "%" PRIu8"", m_DST->addSenseCode);
 		json_push_back(label, json_new_a("scsi_asc", (char*)myStr.c_str()));
 		snprintf((char*)myStr.c_str(), BASIC, "%" PRIu8"", m_DST->addSenseCodeQualifier);
 		json_push_back(label, json_new_a("scsi_ascq", (char*)myStr.c_str()));
 		json_push_back(label, json_new_a("units", "failure"));
-		snprintf((char*)myStr.c_str(), BASIC, "%02" PRIx8"", (uint8_t)M_GETBITRANGE(m_DST->stCode, 3, 0));
-		json_push_back(label, json_new_i("self_test_results", (uint8_t)M_GETBITRANGE(m_DST->stCode, 3, 0)));
+
+
+		//snprintf((char*)myStr.c_str(), BASIC, "%02" PRIx8"", (uint8_t)M_GETBITRANGE(m_DST->stCode, 3, 0));
+		//json_push_back(label, json_new_i("self_test_results", (uint8_t)M_GETBITRANGE(m_DST->stCode, 3, 0)));
 		
 		json_push_back(dstNode, label);
-		json_push_back(dstNode, json_new_i("value", retVal));
+		json_push_back(dstNode, json_new_i("value", (uint8_t)M_GETBITRANGE(m_DST->stCode, 3, 0)));
 	}
 	else
 	{
@@ -478,88 +511,7 @@ void CScsi_DST_Results::get_DST_PrePython_Results_String(std::string& meaning, u
 		}
 	}
 }
-//-----------------------------------------------------------------------------
-//
-//! \fn get_PrePython_Self_Test_Results_String()
-//
-//! \brief
-//!   Description: takes the data for each loop and produces the data for the json data.
-//
-//  Entry:
-//! \param meaning - string to add verbage to what happened from the testing 
-//! \param result - the result of the dst testing
-//
-//  Exit:
-//!   \return void
-//
-//---------------------------------------------------------------------------
-void CScsi_DST_Results::get_PrePython_Self_Test_Results_String(std::string& meaning, uint8_t result)
-{
-	meaning.resize(BASIC);
-	switch (result)
-	{
-	case DST_COMPLETED_WITHOUT_ERROR:
-	{
-		meaning = "completed without error";
-		break;
-	}
-	case DST_BACKGROUND_ABORTED:
-	{
-		meaning = "aborted by the host";
-		break;
-	}
-	case DST_ABORTED:
-	{
-		meaning = "interepted by host with a hard reset or a soft reset";
-		break;
-	}
-	case DST_UNKNOWN_ERROR:
-	{
-		meaning = "unknown error and self test unable to complete";
-		break;
-	}
-	case DST_FAILURE_UNKNOWN_SEGMENT:
-	{
-		meaning = "completed-failed and the element is unknown";
-		break;
-	}
-	case DST_FAILURE_FIRST_SEGMENT:
-	{
-		meaning = "completed-electrical element failing";
-		break;
-	}
-	case DST_FAILURE_SECOND_SEGMENT:
-	{
-		meaning = "completed-servo element failure";
-		break;
-	}
-	case DST_FAILURE_CHECK_NUMBER_FOR_SEGMENT:
-	{
-		meaning = "completed-read element failure";
-		break;
-	}
-	case DST_FAILURE_HANDLING_DAMAGE:
-	{
-		meaning = "completed-handling damage";
-		break;
-	}
-	case DST_FAILURE_SUSPECTED_HANDLING_DAMAGE:
-	{
-		meaning = "completed-suspected handling damage";
-		break;
-	}
-	case DST_IN_PROGRESS:
-	{
-		meaning = "self test-in progress";
-		break;
-	}
-	default:
-	{
-		meaning = "Reserved.";
-		break;
-	}
-	}
-}
+
 //-----------------------------------------------------------------------------
 //
 //! \fn byte_Swap_Self_Test()
