@@ -85,7 +85,8 @@ namespace opensea_parser {
 		eReturnValues get_Data(JSONNODE *masterData);
 		void get_Device_Type_Field(std::string *description, uint8_t code);
 		void get_Reason_Field(std::string *reason, uint8_t code);
-		void get_Negotiated_Logical_Link_Rate(std::string *rate, uint8_t code);
+		void get_Negotiated_Logical_Link_Rate(std::string* reason, uint8_t code);
+
 		void process_Events_Data(JSONNODE *eventData);
 		void process_Descriptor_Information(JSONNODE *descData);
 		void process_List_Information(JSONNODE *listData);
