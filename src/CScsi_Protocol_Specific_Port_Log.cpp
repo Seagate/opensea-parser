@@ -258,6 +258,7 @@ void CScsiProtocolPortLog::get_Reason_Field(std::string *reason, uint8_t code)
 
 	}
 }
+
 //-----------------------------------------------------------------------------
 //
 //! \fn get_Negotiated_Logical_Link_Rate
@@ -290,6 +291,11 @@ void CScsiProtocolPortLog::get_Negotiated_Logical_Link_Rate(std::string *rate, u
 		case 0x0b:
 		{
 			snprintf((char*)rate->c_str(), BASIC, "6 - 12 GBs");
+			break;
+		}
+		case 0x0c:
+		{
+			snprintf((char*)rate->c_str(), BASIC, "22.5 GBs");
 			break;
 		}
 		default:
