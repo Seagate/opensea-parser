@@ -122,7 +122,7 @@ CScsiInformationalExeptionsLog::~CScsiInformationalExeptionsLog()
 //!   \return none
 //
 //---------------------------------------------------------------------------
-void CScsiInformationalExeptionsLog::process_Informational_Exceptions_Data(JSONNODE *exeptionData, uint16_t count)
+void CScsiInformationalExeptionsLog::process_Informational_Exceptions_Data(JSONNODE *exeptionData, uint16_t count, uint16_t offset)
 {
 	std::string myStr = "";
 	myStr.resize(BASIC);
@@ -135,7 +135,7 @@ void CScsiInformationalExeptionsLog::process_Informational_Exceptions_Data(JSONN
 		json_push_back(exeptionData, json_new_a("name", "environment_temperature"));
 		JSONNODE* label = json_new(JSON_NODE);
 		json_set_name(label, "labels");
-		snprintf((char*)myStr.c_str(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16"", INFORMATIONAL_EXCEPTIONS, 0, m_Exeptions->paramCode);
+		snprintf((char*)myStr.c_str(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16":%" PRIu16"", INFORMATIONAL_EXCEPTIONS, 0, m_Exeptions->paramCode, offset);
 		json_push_back(label, json_new_a("metric_source", (char*)myStr.c_str()));
 		snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Exeptions->senseCode);
 		json_push_back(label, json_new_a("scsi_asc", (char*)myStr.c_str()));
@@ -149,7 +149,7 @@ void CScsiInformationalExeptionsLog::process_Informational_Exceptions_Data(JSONN
 		json_push_back(exeptionData, json_new_a("name", "environment_temperature"));
 		JSONNODE* label1 = json_new(JSON_NODE);
 		json_set_name(label1, "labels");
-		snprintf((char*)myStr.c_str(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16"", INFORMATIONAL_EXCEPTIONS, 0, m_Exeptions->paramCode);
+		snprintf((char*)myStr.c_str(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16":%" PRIu16"", INFORMATIONAL_EXCEPTIONS, 0, m_Exeptions->paramCode, offset);
 		json_push_back(label1, json_new_a("metric_source", (char*)myStr.c_str()));
 		snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Exeptions->senseCode);
 		json_push_back(label1, json_new_a("scsi_asc", (char*)myStr.c_str()));
@@ -163,7 +163,7 @@ void CScsiInformationalExeptionsLog::process_Informational_Exceptions_Data(JSONN
 		json_push_back(exeptionData, json_new_a("name", "environment_temperature"));
 		JSONNODE* label2 = json_new(JSON_NODE);
 		json_set_name(label2, "labels");
-		snprintf((char*)myStr.c_str(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16"", INFORMATIONAL_EXCEPTIONS, 0, m_Exeptions->paramCode);
+		snprintf((char*)myStr.c_str(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16":%" PRIu16"", INFORMATIONAL_EXCEPTIONS, 0, m_Exeptions->paramCode, offset);
 		json_push_back(label2, json_new_a("metric_source", (char*)myStr.c_str()));
 		snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Exeptions->senseCode);
 		json_push_back(label2, json_new_a("scsi_asc", (char*)myStr.c_str()));
@@ -230,14 +230,14 @@ eReturnValues CScsiInformationalExeptionsLog::get_Informational_Exceptions_Data(
 			json_set_name(pageInfo, "Informational Exceptions Log - 2fh length 0x0f");
 		}
 		uint16_t number = 0;
-		for (size_t offset = 0; offset < m_PageLength; )
+		for (uint16_t offset = 0; offset < m_PageLength; )
 		{
 			if (offset < m_bufferLength && offset < UINT16_MAX)
 			{
 				number++;
 				m_Exeptions = (sExeptionsParams *)&pData[offset];
+				process_Informational_Exceptions_Data(pageInfo, number, offset);
 				offset += sizeof(sExeptionsParams);
-				process_Informational_Exceptions_Data(pageInfo, number);
 			}
 			else
 			{

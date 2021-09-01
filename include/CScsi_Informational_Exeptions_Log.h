@@ -52,7 +52,7 @@ namespace opensea_parser {
 		size_t						m_bufferLength;			    //<! length of the buffer from reading in the log
 		sExeptionsParams			*m_Exeptions;				//<! Information Exeptions structure 
 
-		void process_Informational_Exceptions_Data(JSONNODE *exeptionData, uint16_t count);
+		void process_Informational_Exceptions_Data(JSONNODE *exeptionData, uint16_t count, uint16_t offset);
 		eReturnValues get_Informational_Exceptions_Data(JSONNODE *masterData);
 	public:
 		CScsiInformationalExeptionsLog();
