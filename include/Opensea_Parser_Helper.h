@@ -42,6 +42,12 @@ namespace opensea_parser {
 #ifndef OPENSEA_PARSER
 #define OPENSEA_PARSER
 
+	// quick size for of the ints for case statements
+#define ONE_INT_SIZE 1
+#define TWO_INT_SIZE 2
+#define FOUR_INT_SIZE 4 
+#define EIGHT_INT_SIZE 8
+
 #define RELISTAT                24
 #define WORLD_WIDE_NAME_LEN     19
 #define DEVICE_INTERFACE_LEN    4

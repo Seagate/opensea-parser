@@ -126,7 +126,7 @@ eReturnValues CScsi_DST_Results::get_Self_Test_Log(uint8_t *buffer, size_t buffe
 		byte_Swap_Self_Test();
 		if (m_DST->paramCode == i && m_DST->paramLength == 0x10)
 		{	
-			print_Self_Test_Log(DstJson, i);
+			print_Self_Test_Log(DstJson, i,0);
 			if (i == 20)
 			{
 				retStatus = SUCCESS;
@@ -185,7 +185,7 @@ eReturnValues CScsi_DST_Results::get_PrePython_Self_Test_Log(uint8_t* buffer, si
 		byte_Swap_Self_Test();
 		if (m_DST->paramCode == i && m_DST->paramLength == 0x10)
 		{
-			print_Self_Test_Log(masterJson, i);
+			print_Self_Test_Log(masterJson, i,(i*sizeof(sSelfTest) - sizeof(sSelfTest)));
 			if (i == 20)
 			{
 				retStatus = SUCCESS;
@@ -226,16 +226,17 @@ eReturnValues CScsi_DST_Results::get_PrePython_Self_Test_Log(uint8_t* buffer, si
 //!   \return void
 //
 //---------------------------------------------------------------------------
-void CScsi_DST_Results::print_Self_Test_Log(JSONNODE *dstNode, uint16_t run)
+void CScsi_DST_Results::print_Self_Test_Log(JSONNODE *dstNode, uint16_t run, uint32_t offset)
 {
 	std::string myStr = "";
 	myStr.resize(BASIC);
 	if (g_dataformat == PREPYTHON_DATA)
 	{
-		json_push_back(dstNode, json_new_a("name", "self_test"));
+		JSONNODE* data = json_new(JSON_NODE);
+		json_push_back(data, json_new_a("name", "self_test"));
 		JSONNODE* label = json_new(JSON_NODE);
 		json_set_name(label, "labels");
-		snprintf((char*)myStr.c_str(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16"", SELF_TEST_RESULTS, 0, m_DST->paramCode);
+		snprintf((char*)myStr.c_str(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16":%" PRIu32"", SELF_TEST_RESULTS, 0, m_DST->paramCode, offset);
 		json_push_back(label, json_new_a("metric_source", (char*)myStr.c_str()));
 		if (M_GETBITRANGE(m_DST->stCode, 7, 5) == DST_NOT_RUN)
 		{
@@ -304,8 +305,9 @@ void CScsi_DST_Results::print_Self_Test_Log(JSONNODE *dstNode, uint16_t run)
 		//snprintf((char*)myStr.c_str(), BASIC, "%02" PRIx8"", (uint8_t)M_GETBITRANGE(m_DST->stCode, 3, 0));
 		//json_push_back(label, json_new_i("self_test_results", (uint8_t)M_GETBITRANGE(m_DST->stCode, 3, 0)));
 		
-		json_push_back(dstNode, label);
-		json_push_back(dstNode, json_new_i("value", (uint8_t)M_GETBITRANGE(m_DST->stCode, 3, 0)));
+		json_push_back(data, label);
+		json_push_back(data, json_new_i("value", (uint8_t)M_GETBITRANGE(m_DST->stCode, 3, 0)));
+		json_push_back(dstNode, data);
 	}
 	else
 	{
