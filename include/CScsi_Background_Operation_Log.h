@@ -45,7 +45,7 @@ namespace opensea_parser {
 		sOperationParams			*m_Operation;				//<! operation structure 
 
 		void get_Background_Operations_status(std::string *status);
-		void process_Background_Operations_Data(JSONNODE *operationData);
+		void process_Background_Operations_Data(JSONNODE *operationData,uint32_t offset);
 		eReturnValues get_Background_Operations_Data(JSONNODE *masterData);
 	public:
 		CScsiOperationLog();

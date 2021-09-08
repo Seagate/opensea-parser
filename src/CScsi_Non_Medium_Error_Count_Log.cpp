@@ -116,7 +116,7 @@ CScsiNonMediumErrorCountLog::~CScsiNonMediumErrorCountLog()
 //!   \return none
 //
 //---------------------------------------------------------------------------
-void CScsiNonMediumErrorCountLog::process_Non_Medium_Error_Count_Data(JSONNODE* countData)
+void CScsiNonMediumErrorCountLog::process_Non_Medium_Error_Count_Data(JSONNODE* countData, uint32_t offset)
 {
 	std::string myStr = "";
 	myStr.resize(BASIC);
@@ -129,7 +129,7 @@ void CScsiNonMediumErrorCountLog::process_Non_Medium_Error_Count_Data(JSONNODE* 
 	{
 		JSONNODE* label = json_new(JSON_NODE);
 		json_set_name(label, "labels");
-		snprintf((char*)myStr.c_str(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16":0x%" PRIx8":%" PRId8"", NON_MEDIUM_ERROR, NONMEDIUMERRORSUBPAGE, m_CountErrors->paramCode, m_CountErrors->paramControlByte, m_CountErrors->paramLength);
+		snprintf((char*)myStr.c_str(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16":%" PRIu32"", NON_MEDIUM_ERROR, NONMEDIUMERRORSUBPAGE, m_CountErrors->paramCode, offset);
 		json_push_back(label, json_new_a("metric_source", (char*)myStr.c_str()));
 		snprintf((char*)myStr.c_str(), BASIC, "total error count");
 		json_push_back(label, json_new_a("stat_type", (char*)myStr.c_str()));
@@ -255,7 +255,7 @@ eReturnValues CScsiNonMediumErrorCountLog::get_Non_Medium_Error_Count_Data(JSONN
 					break;
 				}
 				}
-				process_Non_Medium_Error_Count_Data(pageInfo);
+				process_Non_Medium_Error_Count_Data(pageInfo,offset);
 			}
 			else
 			{
@@ -291,8 +291,9 @@ eReturnValues CScsiNonMediumErrorCountLog::get_Flat_Non_Medium_Error_Count_Data(
 	eReturnValues retStatus = IN_PROGRESS;
 	if (pData != NULL)
 	{
-		for (size_t offset = 0; offset < m_PageLength; )
+		for (uint32_t offset = 0; offset < m_PageLength; )
 		{
+			JSONNODE* pageInfo = json_new(JSON_NODE);
 			if (offset < m_bufferLength && offset < UINT16_MAX)
 			{
 				m_CountErrors = (sNonMediumErrorCount*)&pData[offset];
@@ -303,7 +304,7 @@ eReturnValues CScsiNonMediumErrorCountLog::get_Flat_Non_Medium_Error_Count_Data(
 					printf("param code 0x%" PRIx16" \n", m_CountErrors->paramCode);
 					printf("param controlbyte 0x%" PRIx8" \n", m_CountErrors->paramControlByte);
 				}
-				json_push_back(masterData, json_new_a("name", "nonmedium_error"));
+				json_push_back(pageInfo, json_new_a("name", "nonmedium_error"));
 				switch (m_CountErrors->paramLength)
 				{
 					case 1:
@@ -365,7 +366,8 @@ eReturnValues CScsiNonMediumErrorCountLog::get_Flat_Non_Medium_Error_Count_Data(
 						break;
 					}
 				}
-				process_Non_Medium_Error_Count_Data(masterData);
+				process_Non_Medium_Error_Count_Data(pageInfo, (offset - m_CountErrors->paramLength - sizeof(sNonMediumErrorCount)));
+				json_push_back(masterData, pageInfo);
 			}
 			else
 			{

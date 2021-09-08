@@ -113,7 +113,7 @@ CScsiApplicationLog::~CScsiApplicationLog()
 //!   \return none
 //
 //---------------------------------------------------------------------------
-void CScsiApplicationLog::process_Client_Data(JSONNODE *appData)
+void CScsiApplicationLog::process_Client_Data(JSONNODE *appData, uint32_t offset)
 {
 #define MSGSIZE 128
 #define STRMSGSIZE 1201
@@ -126,7 +126,7 @@ void CScsiApplicationLog::process_Client_Data(JSONNODE *appData)
 		json_set_name(label, "labels");
 
 
-		snprintf((char*)myStr.c_str(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16"", APPLICATION_CLIENT, 0, m_App->paramCode);
+		snprintf((char*)myStr.c_str(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16":%" PRIu32"", APPLICATION_CLIENT, 0, m_App->paramCode,offset);
 		json_push_back(label, json_new_a("metric_source", (char*)myStr.c_str()));
 
 
@@ -253,7 +253,7 @@ eReturnValues CScsiApplicationLog::get_Client_Data(JSONNODE *masterData)
 		json_set_name(pageInfo, "Application Client Log - Fh");
         uint16_t l_NumberOfPartitions = 0;
 
-		for (size_t offset = 0; ((offset < m_PageLength) && (l_NumberOfPartitions <= MAX_PARTITION));)
+		for (uint32_t offset = 0; ((offset < m_PageLength) && (l_NumberOfPartitions <= MAX_PARTITION));)
 		{
 			if (offset+sizeof(sApplicationParams) < m_bufferLength && offset < UINT16_MAX)
 			{
@@ -261,7 +261,7 @@ eReturnValues CScsiApplicationLog::get_Client_Data(JSONNODE *masterData)
                 m_App = new sApplicationParams (&pData[offset]);
                 offset += APP_CLIENT_DATA_LEN + 4;
 				
-				process_Client_Data(pageInfo);
+				process_Client_Data(pageInfo,offset);
                 delete m_App;
 			}
 			else
@@ -303,22 +303,25 @@ eReturnValues CScsiApplicationLog::get_PrePython_Client_Data(JSONNODE* masterDat
 		{
 			uint16_t l_NumberOfPartitions = 0;
 
-			for (size_t offset = 0; ((offset < m_PageLength) && (l_NumberOfPartitions <= MAX_PARTITION));)
+			for (uint32_t offset = 0; ((offset < m_PageLength) && (l_NumberOfPartitions <= MAX_PARTITION));)
 			{
+				JSONNODE* pageInfo = json_new(JSON_NODE);
 				if (offset + sizeof(sApplicationParams) < m_bufferLength && offset < UINT16_MAX)
 				{
 					l_NumberOfPartitions++;
 					m_App = new sApplicationParams(&pData[offset]);
 					byte_Swap_16(&m_App->paramCode);
-					offset += APP_CLIENT_DATA_LEN + 4;
+					
 
-					process_Client_Data(masterData);
+					process_Client_Data(pageInfo,offset);
+					offset += APP_CLIENT_DATA_LEN + 4;
 					delete m_App;
 				}
 				else
 				{
 					return BAD_PARAMETER;
 				}
+				json_push_back(masterData, pageInfo);
 			}
 
 			retStatus = SUCCESS;

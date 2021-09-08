@@ -167,7 +167,7 @@ void CScsiOperationLog::get_Background_Operations_status(std::string *status)
 //!   \return none
 //
 //---------------------------------------------------------------------------
-void CScsiOperationLog::process_Background_Operations_Data(JSONNODE *operationData)
+void CScsiOperationLog::process_Background_Operations_Data(JSONNODE *operationData, uint32_t offset)
 {
 	std::string myStr = "";
 	myStr.resize(BASIC);
@@ -175,22 +175,43 @@ void CScsiOperationLog::process_Background_Operations_Data(JSONNODE *operationDa
 	printf("Cache Event Description \n");
 #endif
 	byte_Swap_16(&m_Operation->paramCode);
-	snprintf((char*)myStr.c_str(), BASIC, "Background Operation Description %" PRId16"", m_Operation->paramCode);
-	JSONNODE *operationInfo = json_new(JSON_NODE);
-	json_set_name(operationInfo, (char*)myStr.c_str());
+	if (g_dataformat == PREPYTHON_DATA)
+	{
+		JSONNODE* data = json_new(JSON_NODE);
 
-	snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_Operation->paramCode);
-	json_push_back(operationInfo, json_new_a("Background Operation Parameter Code", (char*)myStr.c_str()));
+		json_push_back(data, json_new_a("name", "background_operation_status"));
+		JSONNODE* label = json_new(JSON_NODE);
+		json_set_name(label, "labels");
+		snprintf((char*)myStr.c_str(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16":%" PRIu32"", 0x15, 0x02, m_Operation->paramCode, offset);
+		json_push_back(label, json_new_a("metric_source", (char*)myStr.c_str()));
+		get_Background_Operations_status(&myStr);
+		json_push_back(label, json_new_a("operation", (char*)myStr.c_str()));
+		json_push_back(label, json_new_a("units", "status"));
+		json_push_back(data, label);
+		json_push_back(data, json_new_i("value", m_Operation->bo_Status));
+		json_push_back(operationData, data);
 
-	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Operation->paramControlByte);
-	json_push_back(operationInfo, json_new_a("Background Operation Control Byte ", (char*)myStr.c_str()));
-	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Operation->paramLength);
-	json_push_back(operationInfo, json_new_a("Background Operation Length ", (char*)myStr.c_str()));
+	}
+	else
+	{
+		
+		snprintf((char*)myStr.c_str(), BASIC, "Background Operation Description %" PRId16"", m_Operation->paramCode);
+		JSONNODE* operationInfo = json_new(JSON_NODE);
+		json_set_name(operationInfo, (char*)myStr.c_str());
 
-	get_Background_Operations_status(&myStr);
-	json_push_back(operationInfo, json_new_i((char*)myStr.c_str(), static_cast<uint32_t>(m_Operation->bo_Status)));
+		snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_Operation->paramCode);
+		json_push_back(operationInfo, json_new_a("Background Operation Parameter Code", (char*)myStr.c_str()));
 
-	json_push_back(operationData, operationInfo);
+		snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Operation->paramControlByte);
+		json_push_back(operationInfo, json_new_a("Background Operation Control Byte ", (char*)myStr.c_str()));
+		snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Operation->paramLength);
+		json_push_back(operationInfo, json_new_a("Background Operation Length ", (char*)myStr.c_str()));
+
+		get_Background_Operations_status(&myStr);
+		json_push_back(operationInfo, json_new_i((char*)myStr.c_str(), static_cast<uint32_t>(m_Operation->bo_Status)));
+
+		json_push_back(operationData, operationInfo);
+	}
 }
 //-----------------------------------------------------------------------------
 //
@@ -214,13 +235,13 @@ eReturnValues CScsiOperationLog::get_Background_Operations_Data(JSONNODE *master
 		JSONNODE *pageInfo = json_new(JSON_NODE);
 		json_set_name(pageInfo, "Background Operation Log - 15h");
 
-		for (size_t offset = 0; offset < m_PageLength; )
+		for (uint32_t offset = 0; offset < m_PageLength; )
 		{
 			if (offset < m_bufferLength && offset < UINT16_MAX)
 			{
 				m_Operation = (sOperationParams *)&pData[offset];
+				process_Background_Operations_Data(pageInfo,offset);
 				offset += sizeof(sOperationParams);
-				process_Background_Operations_Data(pageInfo);
 			}
 			else
 			{

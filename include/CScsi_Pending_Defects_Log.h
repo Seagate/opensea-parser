@@ -55,7 +55,7 @@ namespace opensea_parser {
 		uint32_t					m_count;					//<! the total count of pending defects found
 
 		void get_Supported_And_Subpage_Description(std::string *description);
-		void process_PList_Data(JSONNODE *pendingData);
+		void process_PList_Data(JSONNODE *pendingData, uint32_t offset);
 		void process_PList_Count(JSONNODE *pendingCount);
 		eReturnValues get_Plist_Data(JSONNODE *masterData);
 		eReturnValues get_PrePython_Plist_Data(JSONNODE* masterData);

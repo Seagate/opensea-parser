@@ -126,22 +126,25 @@ CScsiPendingDefectsLog::~CScsiPendingDefectsLog()
 //!   \return none
 //
 //---------------------------------------------------------------------------
-void CScsiPendingDefectsLog::process_PList_Data(JSONNODE *pendingData)
+void CScsiPendingDefectsLog::process_PList_Data(JSONNODE *pendingData, uint32_t offset)
 {
 	std::string myStr = "";
 	myStr.resize(BASIC);
 	if (g_dataformat == PREPYTHON_DATA)
 	{
-		json_push_back(pendingData, json_new_a("name", "pending_defect"));
+		JSONNODE* data = json_new(JSON_NODE);
+
+		json_push_back(data, json_new_a("name", "pending_defect"));
 		JSONNODE* label = json_new(JSON_NODE);
 		json_set_name(label, "labels");
-		snprintf((char*)myStr.c_str(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16"", 0x15, 0x01, m_PlistDefect->paramCode);
+		snprintf((char*)myStr.c_str(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16":%" PRIu32"", 0x15, 0x01, m_PlistDefect->paramCode,offset);
 		json_push_back(label, json_new_a("metric_source", (char*)myStr.c_str()));
 		json_push_back(label, json_new_f("power_on_hours", static_cast<double>(m_PlistDefect->defectPOH)));
 		json_push_back(label, json_new_f("lba", static_cast<double>(m_PlistDefect->defectLBA)));
 		json_push_back(label, json_new_a("units", "index"));
-		json_push_back(pendingData, label);
-		json_push_back(pendingData, json_new_i("value", m_count));
+		json_push_back(data, label);
+		json_push_back(data, json_new_i("value", m_count));
+		json_push_back(pendingData, data);
 
 	}
 	else
@@ -194,7 +197,7 @@ void CScsiPendingDefectsLog::process_PList_Count(JSONNODE *pendingCount)
 		json_push_back(pendingCount, json_new_a("name", "pending_defect"));
 		JSONNODE* label = json_new(JSON_NODE);
 		json_set_name(label, "labels");
-		snprintf((char*)myStr.c_str(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16"", 0x15, 0x01, m_PListCountParam->paramCode);
+		snprintf((char*)myStr.c_str(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16":0", 0x15, 0x01, m_PListCountParam->paramCode);
 		json_push_back(label, json_new_a("metric_source", (char*)myStr.c_str()));
 		json_push_back(label, json_new_a("stat_type", "total"));
 		json_push_back(label, json_new_a("units", "count"));
@@ -252,14 +255,14 @@ eReturnValues CScsiPendingDefectsLog::get_Plist_Data(JSONNODE *masterData)
 		process_PList_Count(pageInfo);
 		if ((size_t)m_PageLength > sizeof(sPendindDefectCount))    // for when there is zero count defects
 		{
-			for (size_t offset = sizeof(sPendindDefectCount); offset < (size_t)m_PageLength; )
+			for (uint32_t offset = sizeof(sPendindDefectCount); offset < (size_t)m_PageLength; )
 			{
 				if (offset < (m_bufferLength - sizeof(sLogPageStruct)))
 				{
 					m_PlistDefect = (sDefect *)&pData[offset];
 					offset += sizeof(sDefect);
 					m_count++;    // defect found add one to the count
-					process_PList_Data(pageInfo);
+					process_PList_Data(pageInfo,offset);
 				}
 				else
 				{
@@ -302,14 +305,14 @@ eReturnValues CScsiPendingDefectsLog::get_PrePython_Plist_Data(JSONNODE* masterD
 		process_PList_Count(masterData);
 		if ((size_t)m_PageLength > sizeof(sPendindDefectCount))    // for when there is zero count defects
 		{
-			for (size_t offset = sizeof(sPendindDefectCount); offset < (size_t)m_PageLength; )
+			for (uint32_t offset = sizeof(sPendindDefectCount); offset < (size_t)m_PageLength; )
 			{
 				if (offset < (m_bufferLength - sizeof(sLogPageStruct)))
 				{
 					m_PlistDefect = (sDefect*)&pData[offset];
 					offset += sizeof(sDefect);
 					m_count++;    // defect found add one to the count
-					process_PList_Data(masterData);
+					process_PList_Data(masterData,offset);
 				}
 				else
 				{

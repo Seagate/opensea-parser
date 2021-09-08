@@ -132,7 +132,8 @@ void CScsiInformationalExeptionsLog::process_Informational_Exceptions_Data(JSONN
 
 	if (g_dataformat == PREPYTHON_DATA)
 	{
-		json_push_back(exeptionData, json_new_a("name", "environment_temperature"));
+		JSONNODE* data = json_new(JSON_NODE);
+		json_push_back(data, json_new_a("name", "environment_temperature"));
 		JSONNODE* label = json_new(JSON_NODE);
 		json_set_name(label, "labels");
 		snprintf((char*)myStr.c_str(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16":%" PRIu16"", INFORMATIONAL_EXCEPTIONS, 0, m_Exeptions->paramCode, offset);
@@ -143,10 +144,12 @@ void CScsiInformationalExeptionsLog::process_Informational_Exceptions_Data(JSONN
 		json_push_back(label, json_new_a("scsi_ascq", (char*)myStr.c_str()));
 		json_push_back(label, json_new_a("stat_type", "most recent temperature"));
 		json_push_back(label, json_new_a("units", "celsius"));
-		json_push_back(exeptionData, label);
-		json_push_back(exeptionData, json_new_f("value", static_cast<double>(m_Exeptions->temp)));
+		json_push_back(data, label);
+		json_push_back(data, json_new_f("value", static_cast<double>(m_Exeptions->temp)));
+		json_push_back(exeptionData, data);
 
-		json_push_back(exeptionData, json_new_a("name", "environment_temperature"));
+		JSONNODE* trip = json_new(JSON_NODE);
+		json_push_back(trip, json_new_a("name", "environment_temperature"));
 		JSONNODE* label1 = json_new(JSON_NODE);
 		json_set_name(label1, "labels");
 		snprintf((char*)myStr.c_str(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16":%" PRIu16"", INFORMATIONAL_EXCEPTIONS, 0, m_Exeptions->paramCode, offset);
@@ -157,10 +160,12 @@ void CScsiInformationalExeptionsLog::process_Informational_Exceptions_Data(JSONN
 		json_push_back(label1, json_new_a("scsi_ascq", (char*)myStr.c_str()));
 		json_push_back(label1, json_new_a("stat_type", "trip point temperature"));
 		json_push_back(label1, json_new_a("units", "celsius"));
-		json_push_back(exeptionData, label1);
-		json_push_back(exeptionData, json_new_f("value", static_cast<double>(m_Exeptions->tempLimit)));
+		json_push_back(trip, label1);
+		json_push_back(trip, json_new_f("value", static_cast<double>(m_Exeptions->tempLimit)));
+		json_push_back(exeptionData, trip);
 
-		json_push_back(exeptionData, json_new_a("name", "environment_temperature"));
+		JSONNODE* max = json_new(JSON_NODE);
+		json_push_back(max, json_new_a("name", "environment_temperature"));
 		JSONNODE* label2 = json_new(JSON_NODE);
 		json_set_name(label2, "labels");
 		snprintf((char*)myStr.c_str(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16":%" PRIu16"", INFORMATIONAL_EXCEPTIONS, 0, m_Exeptions->paramCode, offset);
@@ -171,8 +176,9 @@ void CScsiInformationalExeptionsLog::process_Informational_Exceptions_Data(JSONN
 		json_push_back(label2, json_new_a("scsi_ascq", (char*)myStr.c_str()));
 		json_push_back(label2, json_new_a("stat_type", "maximum temperature"));
 		json_push_back(label2, json_new_a("units", "celsius"));
-		json_push_back(exeptionData, label2);
-		json_push_back(exeptionData, json_new_f("value", static_cast<double>(m_Exeptions->maxTemp)));
+		json_push_back(max, label2);
+		json_push_back(max, json_new_f("value", static_cast<double>(m_Exeptions->maxTemp)));
+		json_push_back(exeptionData, max);
 
 	}
 	else
