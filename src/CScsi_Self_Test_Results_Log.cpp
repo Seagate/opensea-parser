@@ -268,7 +268,7 @@ void CScsi_DST_Results::print_Self_Test_Log(JSONNODE *dstNode, uint16_t run, uin
 		}
 		else if((uint8_t)M_GETBITRANGE(m_DST->stCode, 7, 5) == 0x04)
 		{
-			json_push_back(label, json_new_a("self_test_code", "Background (aborted)  [0x4]"));
+			json_push_back(label, json_new_a("self_test_code", "Background (aborted) [0x4]"));
 		}
 		else if((uint8_t)M_GETBITRANGE(m_DST->stCode, 7, 5) == 0x05)
 		{

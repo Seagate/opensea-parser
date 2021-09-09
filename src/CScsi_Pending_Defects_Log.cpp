@@ -139,8 +139,10 @@ void CScsiPendingDefectsLog::process_PList_Data(JSONNODE *pendingData, uint32_t 
 		json_set_name(label, "labels");
 		snprintf((char*)myStr.c_str(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16":%" PRIu32"", 0x15, 0x01, m_PlistDefect->paramCode,offset);
 		json_push_back(label, json_new_a("metric_source", (char*)myStr.c_str()));
-		json_push_back(label, json_new_f("power_on_hours", static_cast<double>(m_PlistDefect->defectPOH)));
-		json_push_back(label, json_new_f("lba", static_cast<double>(m_PlistDefect->defectLBA)));
+		snprintf((char*)myStr.c_str(), BASIC, "%" PRIu32"", m_PlistDefect->defectPOH);
+		json_push_back(label, json_new_a("power_on_hours", (char*)myStr.c_str()));
+		snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx64"", m_PlistDefect->defectLBA);
+		json_push_back(label, json_new_a("lba", (char*)myStr.c_str()));
 		json_push_back(label, json_new_a("units", "index"));
 		json_push_back(data, label);
 		json_push_back(data, json_new_i("value", m_count));
@@ -194,17 +196,18 @@ void CScsiPendingDefectsLog::process_PList_Count(JSONNODE *pendingCount)
 #if defined _DEBUG
 		printf("Pending Defect Count \n");
 #endif
-		json_push_back(pendingCount, json_new_a("name", "pending_defect"));
+		JSONNODE* data = json_new(JSON_NODE);
+		json_push_back(data, json_new_a("name", "pending_defect"));
 		JSONNODE* label = json_new(JSON_NODE);
 		json_set_name(label, "labels");
 		snprintf((char*)myStr.c_str(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16":0", 0x15, 0x01, m_PListCountParam->paramCode);
 		json_push_back(label, json_new_a("metric_source", (char*)myStr.c_str()));
 		json_push_back(label, json_new_a("stat_type", "total"));
 		json_push_back(label, json_new_a("units", "count"));
-		json_push_back(pendingCount, label);
+		json_push_back(data, label);
 		byte_Swap_32(&m_PListCountParam->totalPlistCount);
-		json_push_back(pendingCount, json_new_f("value", static_cast<double>(m_PListCountParam->totalPlistCount)));
-
+		json_push_back(data, json_new_f("value", static_cast<double>(m_PListCountParam->totalPlistCount)));
+		json_push_back(pendingCount, data);
 	}
 	else
 	{
