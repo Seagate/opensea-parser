@@ -121,7 +121,8 @@ void CScsiApplicationLog::process_Client_Data(JSONNODE *appData, uint32_t offset
 	myStr.resize(BASIC);
 	if (g_dataformat == PREPYTHON_DATA)
 	{
-		json_push_back(appData, json_new_a("name", "application client"));
+		JSONNODE* data = json_new(JSON_NODE);
+		json_push_back(data, json_new_a("name", "application_client"));
 		JSONNODE* label = json_new(JSON_NODE);
 		json_set_name(label, "labels");
 
@@ -129,51 +130,21 @@ void CScsiApplicationLog::process_Client_Data(JSONNODE *appData, uint32_t offset
 		snprintf((char*)myStr.c_str(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16":%" PRIu32"", APPLICATION_CLIENT, 0, m_App->paramCode,offset);
 		json_push_back(label, json_new_a("metric_source", (char*)myStr.c_str()));
 
+		uint32_t rawoffset = 0;
 
-		char* innerMsg = (char*)calloc(MSGSIZE, sizeof(char));
-		if (innerMsg)
+		JSONNODE* headError = json_new(JSON_ARRAY);
+		json_set_name(headError, "value_raw");
+		for (uint32_t i = 0; i < m_App->paramLength; i++)          // loop for the zones
 		{
-			memset(innerMsg, 0, MSGSIZE);
-		}
-		char* innerStr = (char*)calloc(STRMSGSIZE, sizeof(char));
-		if (innerStr)
-		{
-			memset(innerStr, 0, STRMSGSIZE);
-		}
 
-		uint32_t offset = 0;
-
-		snprintf(innerStr, 13, "bytearray([");   //bytearray([%" PRIu8"
-		for (uint32_t outer = 0; outer < APP_CLIENT_DATA_LEN - 1; outer++)
-		{
-			if (outer + 1 == APP_CLIENT_DATA_LEN - 1)
-			{
-				snprintf(innerMsg, 8, "%" PRIu8"", m_App->data[offset]);
-			}
-			else
-			{
-				snprintf(innerMsg, 8, "%" PRIu8",", (uint8_t)m_App->data[offset]);
-			}
-			if (innerMsg && innerStr)
-				strncat(innerStr, innerMsg, MSGSIZE);
-			offset++;
+			json_push_back(headError, json_new_i("value_raw", m_App->data[rawoffset]));
+			rawoffset++;
 		}
-		if (innerStr)
-		{
-			strncat(innerStr, "])", 3);
-			//printf(" %s \n", innerStr);
-			if (innerMsg && innerStr)
-				strncat(innerStr, innerMsg, MSGSIZE);
-			offset++;
-		}
-		//strncat(innerStr, "])", 3);
-		json_push_back(label, json_new_a("raw_value", innerStr));
+		json_push_back(label, headError);
 
-		safe_Free(innerMsg);  //free the string
-		safe_Free(innerStr);  // free the string
-
-		json_push_back(appData, label);
-		json_push_back(appData, json_new_f("value", -1));
+		json_push_back(data, label);
+		json_push_back(data, json_new_f("value", -1));
+		json_push_back(appData, data);
 
 	}
 	else
