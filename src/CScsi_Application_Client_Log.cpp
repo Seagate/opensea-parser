@@ -276,7 +276,7 @@ eReturnValues CScsiApplicationLog::get_PrePython_Client_Data(JSONNODE* masterDat
 
 			for (uint32_t offset = 0; ((offset < m_PageLength) && (l_NumberOfPartitions <= MAX_PARTITION));)
 			{
-				JSONNODE* pageInfo = json_new(JSON_NODE);
+				//JSONNODE* pageInfo = json_new(JSON_NODE);
 				if (offset + sizeof(sApplicationParams) < m_bufferLength && offset < UINT16_MAX)
 				{
 					l_NumberOfPartitions++;
@@ -284,7 +284,7 @@ eReturnValues CScsiApplicationLog::get_PrePython_Client_Data(JSONNODE* masterDat
 					byte_Swap_16(&m_App->paramCode);
 					
 
-					process_Client_Data(pageInfo,offset);
+					process_Client_Data(masterData,offset);
 					offset += APP_CLIENT_DATA_LEN + 4;
 					delete m_App;
 				}
@@ -292,7 +292,7 @@ eReturnValues CScsiApplicationLog::get_PrePython_Client_Data(JSONNODE* masterDat
 				{
 					return BAD_PARAMETER;
 				}
-				json_push_back(masterData, pageInfo);
+				//json_push_back(masterData, pageInfo);
 			}
 
 			retStatus = SUCCESS;
