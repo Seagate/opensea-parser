@@ -375,9 +375,10 @@ eReturnValues CATA_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint3
     set_json_string_With_Status(pageInfo, "Timestamp of First SMART Summary Frame (ms)", (char*)myStr.c_str(), vFarmFrame[page].driveInfo.timeStamp1, m_showStatusBits);
     snprintf((char*)myStr.c_str(), BASIC, "%llu", vFarmFrame[page].driveInfo.timeStamp2 & 0x00FFFFFFFFFFFFFFLL);
     set_json_string_With_Status(pageInfo, "TimeStamp of Last SMART Summary Frame (ms)", (char*)myStr.c_str(), vFarmFrame[page].driveInfo.timeStamp2, m_showStatusBits);      //!< Timestamp of latest SMART Summary Frame in Power-On Hours Milliseconds1
-    snprintf((char*)myStr.c_str(), BASIC, "%0.02f", static_cast<float>(M_Word0(vFarmFrame[page].driveInfo.timeToReady)) / 1000);                                
-    set_json_string_With_Status(pageInfo, "Time to ready of the last power cycle", (char*)myStr.c_str(), vFarmFrame[page].driveInfo.timeToReady, m_showStatusBits);         //!< time to ready of the last power cycle
-    set_json_64_bit_With_Status(pageInfo, "Time drive is held in staggered spin", vFarmFrame[page].driveInfo.timeHeld, false, m_showStatusBits);                //!< time drive is held in staggered spin during the last power on sequence
+    snprintf((char*)myStr.c_str(), BASIC, "%0.03f", static_cast<float>(M_Word0(vFarmFrame[page].driveInfo.timeToReady)) / 1000);                                
+    set_json_string_With_Status(pageInfo, "Time to ready of the last power cycle (sec)", (char*)myStr.c_str(), vFarmFrame[page].driveInfo.timeToReady, m_showStatusBits);         //!< time to ready of the last power cycle in milliseconds
+    snprintf((char*)myStr.c_str(), BASIC, "%0.03f", static_cast<float>(M_Word0(vFarmFrame[page].driveInfo.timeHeld)) / 1000);
+    set_json_64_bit_With_Status(pageInfo, "Time drive is held in staggered spin (sec)", vFarmFrame[page].driveInfo.timeHeld, false, m_showStatusBits);                //!< time drive is held in staggered spin during the last power on sequence in milliseconds
 
     myStr = "Drive Recording Type";
     std::string type = "CMR";
