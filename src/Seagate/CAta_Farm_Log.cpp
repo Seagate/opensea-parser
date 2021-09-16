@@ -1513,6 +1513,19 @@ void CATA_Farm_Log::print_Page_One_Node(JSONNODE * masterData)
     }
 }
 
+//-----------------------------------------------------------------------------
+//
+//! \fn parse_and_Analyze_Farm_Log()
+//
+//! \brief
+//!   Description:  Analyze FARM Log and run a drive helth profiler. 
+//
+//  Entry:
+//
+//  Exit:
+//!   \return eAnalyzeStatus
+//
+//---------------------------------------------------------------------------
 eAnalyzeStatus CATA_Farm_Log::parse_and_Analyze_Farm_Log()
 {
     eAnalyzeStatus anzStatus = UNDEFINED;
