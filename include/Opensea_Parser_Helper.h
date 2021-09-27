@@ -78,6 +78,8 @@ namespace opensea_parser {
 #define SAS_SUBPAGE_20				0x20
 #define SAS_SUBPAGE_FF				0xFF
 
+#define COMMAND_DURATION_LIMITS_LOG 0x19
+
     // output file types
 	typedef enum _eOpensea_print_Types
     {
