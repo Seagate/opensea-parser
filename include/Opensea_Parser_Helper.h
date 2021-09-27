@@ -48,6 +48,8 @@ namespace opensea_parser {
 #define FOUR_INT_SIZE 4 
 #define EIGHT_INT_SIZE 8
 
+#define LOGPAGESIZE 4
+
 #define RELISTAT                24
 #define WORLD_WIDE_NAME_LEN     19
 #define DEVICE_INTERFACE_LEN    4
@@ -57,6 +59,24 @@ namespace opensea_parser {
 #define SAS_FIRMWARE_REV_LEN    4
 #define BASIC                   80
 
+#define SAS_SUBPAGE_ZERO			0x00
+#define SAS_SUBPAGE_ONE				0x01
+#define SAS_SUBPAGE_TWO				0x02
+#define SAS_SUBPAGE_THREE			0x03
+#define SAS_SUBPAGE_FOUR			0x04
+#define SAS_SUBPAGE_FIVE			0x05
+#define SAS_SUBPAGE_SIX				0x06
+#define SAS_SUBPAGE_SEVEN			0x07
+#define SAS_SUBPAGE_EIGHT			0x08
+#define SAS_SUBPAGE_NINE			0x09
+#define SAS_SUBPAGE_A				0x0A
+#define SAS_SUBPAGE_B				0x0B
+#define SAS_SUBPAGE_C				0x0C
+#define SAS_SUBPAGE_D				0x0D
+#define SAS_SUBPAGE_E				0x0E
+#define SAS_SUBPAGE_F				0x0F
+#define SAS_SUBPAGE_20				0x20
+#define SAS_SUBPAGE_FF				0xFF
 
     // output file types
 	typedef enum _eOpensea_print_Types
@@ -145,6 +165,15 @@ namespace opensea_parser {
             }
         }
 	}sLogPageStruct;
+
+	typedef struct _sLogPageParamStruct
+	{
+		uint16_t		paramCode;							//<! The PARAMETER CODE field is described in 5.2.2.2.2, and shall be set as shown in table 352 for the Temperature log parameter.
+		uint8_t			paramControlByte;					//<! binary format list log parameter
+		uint8_t			paramLength;						//<! The PARAMETER LENGTH field is described in 5.2.2.2.2, and shall be set as shown in table 352 for the Temperature log parameter.
+		_sLogPageParamStruct() : paramCode(0), paramControlByte(0), paramLength(0) {};
+	}sLogParams;
+
 #pragma pack(pop)
 	typedef enum _eLogPageNames
 	{
@@ -163,6 +192,7 @@ namespace opensea_parser {
         ZONED_DEVICE_STATISTICS = 0x14,
 		BACKGROUND_SCAN = 0x15,
 		PROTOCOL_SPECIFIC_PORT = 0x18,
+		CACHE_MEMORY_STATISTICES = 0x19,
 		POWER_CONDITION_TRANSITIONS = 0x1A,
 		INFORMATIONAL_EXCEPTIONS = 0x2F,        
 		CACHE_STATISTICS = 0x37,
@@ -174,8 +204,8 @@ namespace opensea_parser {
 		READ_ERROR_COUNTER ,VERIFY_ERROR_COUNTER, NON_MEDIUM_ERROR ,
 		FORMAT_STATUS ,	LOGICAL_BLOCK_PROVISIONING ,ENVIRONMENTAL,
 		START_STOP_CYCLE_COUNTER ,	APPLICATION_CLIENT,	SELF_TEST_RESULTS,
-		SOLID_STATE_MEDIA ,	ZONED_DEVICE_STATISTICS , BACKGROUND_SCAN , PROTOCOL_SPECIFIC_PORT,
-		POWER_CONDITION_TRANSITIONS , INFORMATIONAL_EXCEPTIONS,
+		SOLID_STATE_MEDIA ,	ZONED_DEVICE_STATISTICS , BACKGROUND_SCAN , CACHE_MEMORY_STATISTICES,
+		PROTOCOL_SPECIFIC_PORT, POWER_CONDITION_TRANSITIONS , INFORMATIONAL_EXCEPTIONS,
         CACHE_STATISTICS, SEAGATE_SPECIFIC_LOG, FACTORY_LOG,};
 
 	//-----------------------------------------------------------------------------
@@ -420,6 +450,8 @@ namespace opensea_parser {
 	}
     void get_SMART_Save_Flages(JSONNODE *headerNode, uint8_t flag);
 	void get_SMART_Save_Flages_String(std::string &reason, uint8_t flag);
+	void prePython_int(JSONNODE* masterData, const char* name, const char* statType, const char* unit, uint64_t value, uint16_t logPage, uint8_t subPage, uint16_t paramCode, uint32_t offset);
+	void prePython_float(JSONNODE* masterData, const char* name, const char* statType, const char* unit, double value, uint16_t logPage, uint8_t subPage, uint16_t paramCode, uint32_t offset);
 #endif // !OPENSEA_PARSER
 }
 

@@ -307,3 +307,73 @@ void opensea_parser::get_SMART_Save_Flages_String(std::string& reason, uint8_t f
         break;
     }
 }
+//-----------------------------------------------------------------------------
+//
+//! \fn prePython_int()
+//
+//! \brief
+//!   Description:  format the data for the prepython data int type
+//
+//  Entry:
+//! \param 
+//
+//  Exit:
+//!   \return 
+//
+//---------------------------------------------------------------------------
+void opensea_parser::prePython_int(JSONNODE* masterData, const char* name, const char* statType, const char* unit, uint64_t value, uint16_t logPage, uint8_t subPage, uint16_t paramCode, uint32_t offset)
+{
+    std::string myStr = "";
+    myStr.resize(BASIC);
+    JSONNODE* data = json_new(JSON_NODE);
+    json_push_back(data, json_new_a("name", name));
+    JSONNODE* label = json_new(JSON_NODE);
+    json_set_name(label, "labels");
+    if (statType != NULL)
+    {
+        json_push_back(label, json_new_a("stat_type", statType));
+    }
+    json_push_back(label, json_new_a("units", unit));
+
+    snprintf((char*)myStr.c_str(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16":%" PRIu32"", logPage, subPage, paramCode, offset);
+    json_push_back(label, json_new_a("metric_source", (char*)myStr.c_str()));
+    json_push_back(data, label);
+    json_push_back(data, json_new_i("value", value));
+    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu64"", value);
+
+    json_push_back(masterData, data);
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn prePython_float()
+//
+//! \brief
+//!   Description:  format the data for the prepython data float type
+//
+//  Entry:
+//! \param 
+//
+//  Exit:
+//!   \return 
+//
+//---------------------------------------------------------------------------
+void opensea_parser::prePython_float(JSONNODE* masterData, const char* name, const char* statType, const char* unit, double value, uint16_t logPage,uint8_t subPage, uint16_t paramCode, uint32_t offset)
+{
+    std::string myStr = "";
+    myStr.resize(BASIC);
+    JSONNODE* data = json_new(JSON_NODE);
+    json_push_back(data, json_new_a("name", name));
+    JSONNODE* label = json_new(JSON_NODE);
+    json_set_name(label, "labels");
+    if (statType != NULL)
+    {
+        json_push_back(label, json_new_a("stat_type", statType));
+    }
+    json_push_back(label, json_new_a("units", unit));
+    snprintf((char*)myStr.c_str(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16":%" PRIu32"", logPage, subPage, paramCode, offset);
+    json_push_back(label, json_new_a("metric_source", (char*)myStr.c_str()));
+    json_push_back(data, label);
+    json_push_back(data, json_new_f("value", value));
+
+    json_push_back(masterData, data);
+}
