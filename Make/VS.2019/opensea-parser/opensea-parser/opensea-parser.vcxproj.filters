@@ -138,6 +138,9 @@
     <ClInclude Include="..\..\..\..\include\Seagate\Farm_Common.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\include\CScsi_Page_19h_Cache_Memory_Statistics_Log.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\src\CAta_Device_Stat_Log.cpp">
@@ -240,6 +243,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\src\Seagate\Farm_Common.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\CScsi_Page_19h_Cache_Memory_Statistics_Log.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
