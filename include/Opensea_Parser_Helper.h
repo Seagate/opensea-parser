@@ -49,6 +49,7 @@ namespace opensea_parser {
 #define EIGHT_INT_SIZE 8
 
 #define LOGPAGESIZE 4
+#define PARAMSIZE   4
 
 #define RELISTAT                24
 #define WORLD_WIDE_NAME_LEN     19
@@ -76,6 +77,7 @@ namespace opensea_parser {
 #define SAS_SUBPAGE_E				0x0E
 #define SAS_SUBPAGE_F				0x0F
 #define SAS_SUBPAGE_20				0x20
+#define SAS_SUBPAGE_21				0x20
 #define SAS_SUBPAGE_FF				0xFF
 
 #define COMMAND_DURATION_LIMITS_LOG 0x19
