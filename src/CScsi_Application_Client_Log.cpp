@@ -185,7 +185,7 @@ void CScsiApplicationLog::process_Client_Data(JSONNODE *appData, uint32_t offset
 					sprintf(innerStr, "%02" PRIX8"", m_App->data[offset]);
 					if (inner % 4 == 0)
 					{
-						strncat(innerMsg, " ", 1);
+						strncat(innerMsg, " ", 2);
 					}
 					strncat(innerMsg, innerStr, 2);
 					offset++;
