@@ -58,6 +58,8 @@ LIB_SRC_FILES = \
     $(SRC_DIR)CScsi_Informational_Exeptions_Log.cpp\
     $(SRC_DIR)CScsi_Logical_Block_Provisioning_Log.cpp\
     $(SRC_DIR)CScsi_Non_Medium_Error_Count_Log.cpp\
+    $(SRC_DIR)CScsi_Page_19h_Cache_Memory_Statistics_log.cpp\
+    $(SRC_DIR)CScsi_Page_19h_Command_Duration_limits_Log.cpp\
     $(SRC_DIR)CScsi_Pending_Defects_Log.cpp\
     $(SRC_DIR)CScsi_Power_Condition_Transitions_Log.cpp\
     $(SRC_DIR)CScsi_Protocol_Specific_Port_Log.cpp\
