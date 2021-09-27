@@ -1,5 +1,5 @@
 //
-// CScsi_Zoned_Device_Statistics_Log.cpp  Definition of Error Counter for READ WRITE VERIFY ERRORS
+// CScsi_Zoned_Device_Statistics_Log.cpp  
 // Do NOT modify or remove this copyright and license
 //
 // Copyright (c) 2014 - 2021 Seagate Technology LLC and/or its Affiliates
