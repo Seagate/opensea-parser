@@ -544,6 +544,8 @@
     <ClInclude Include="..\..\..\..\include\CScsi_Log.h" />
     <ClInclude Include="..\..\..\..\include\CScsi_Logical_Block_Provisioning_Log.h" />
     <ClInclude Include="..\..\..\..\include\CScsi_Non_Medium_Error_Count_Log.h" />
+    <ClInclude Include="..\..\..\..\include\CScsi_Page_19h_Cache_Memory_Statistics_Log.h" />
+    <ClInclude Include="..\..\..\..\include\CScsi_Page_19h_Command_Duration_Limits_Log.h" />
     <ClInclude Include="..\..\..\..\include\CScsi_Power_Condition_Transitions_Log.h" />
     <ClInclude Include="..\..\..\..\include\CScsi_Protocol_Specific_Port_Log.h" />
     <ClInclude Include="..\..\..\..\include\CScsi_Self_Test_Results_Log.h" />
@@ -586,6 +588,8 @@
     <ClCompile Include="..\..\..\..\src\CScsi_Log.cpp" />
     <ClCompile Include="..\..\..\..\src\CScsi_Logical_Block_Provisioning_Log.cpp" />
     <ClCompile Include="..\..\..\..\src\CScsi_Non_Medium_Error_Count_Log.cpp" />
+    <ClCompile Include="..\..\..\..\src\CScsi_Page_19h_Cache_Memory_Statistics_Log.cpp" />
+    <ClCompile Include="..\..\..\..\src\CScsi_Page_19h_Command_Duration_Limits_Log.cpp" />
     <ClCompile Include="..\..\..\..\src\CScsi_Power_Condition_Transitions_Log.cpp" />
     <ClCompile Include="..\..\..\..\src\CScsi_Protocol_Specific_Port_Log.cpp" />
     <ClCompile Include="..\..\..\..\src\CScsi_Self_Test_Results_Log.cpp" />
