@@ -167,9 +167,10 @@ typedef struct _sHeadInfo
 
 typedef struct _sflyHeight
 {
+    int64_t        outer;
     int64_t        inner;
     int64_t        middle;
-    int64_t        outer;
+    
     _sflyHeight() : inner(0), middle(0), outer(0) {};
 }sflyHeight;
 
