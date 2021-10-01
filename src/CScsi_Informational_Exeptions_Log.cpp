@@ -70,7 +70,7 @@ CScsiInformationalExeptionsLog::CScsiInformationalExeptionsLog(uint8_t * buffer,
 		printf("%s \n", m_infoName.c_str());
 	}
     pData = new uint8_t[bufferSize];								// new a buffer to the point				
-#ifndef _WIN32
+#ifndef _WIN64
     memcpy(pData, buffer, bufferSize);
 #else
     memcpy_s(pData, bufferSize, buffer, bufferSize);// copy the buffer data to the class member pBuf
