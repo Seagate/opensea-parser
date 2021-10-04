@@ -131,6 +131,8 @@ void CScsiPendingDefectsLog::process_PList_Data(JSONNODE *pendingData, uint32_t 
 	std::string myStr = "";
 	myStr.resize(BASIC);
 	byte_Swap_16(&m_PlistDefect->paramCode);
+	byte_Swap_32(&m_PlistDefect->defectPOH);
+	byte_Swap_64(&m_PlistDefect->defectLBA);
 	if (g_dataformat == PREPYTHON_DATA)
 	{
 		JSONNODE* data = json_new(JSON_NODE);
@@ -142,7 +144,7 @@ void CScsiPendingDefectsLog::process_PList_Data(JSONNODE *pendingData, uint32_t 
 		json_push_back(label, json_new_a("metric_source", (char*)myStr.c_str()));
 		snprintf((char*)myStr.c_str(), BASIC, "%" PRIu32"", m_PlistDefect->defectPOH);
 		json_push_back(label, json_new_a("power_on_hours", (char*)myStr.c_str()));
-		snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx64"", m_PlistDefect->defectLBA);
+		snprintf((char*)myStr.c_str(), BASIC, "0x%08" PRIx64"", m_PlistDefect->defectLBA);
 		json_push_back(label, json_new_a("lba", (char*)myStr.c_str()));
 		json_push_back(label, json_new_a("units", "index"));
 		json_push_back(data, label);
