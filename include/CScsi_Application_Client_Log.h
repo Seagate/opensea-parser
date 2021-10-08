@@ -40,10 +40,13 @@ namespace opensea_parser {
         }
         _sApplicationClientParameters(uint8_t* buffer)
         {
+#define byte2 2  
+#define byte3 3
+#define byte4 4
             paramCode = *(reinterpret_cast<uint16_t*>(buffer));
-            paramControlByte = buffer[2];
-            paramLength = buffer[3];
-            data = &buffer[4];
+            paramControlByte = buffer[byte2];
+            paramLength = buffer[byte3];
+            data = &buffer[byte4];
         }
 
 	} sApplicationParams;
