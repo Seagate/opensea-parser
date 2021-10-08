@@ -222,8 +222,8 @@ eReturnValues CScsiSolidStateDriveLog::get_Solid_State_Drive_Data(JSONNODE *mast
         {
             if (offset < m_bufferLength && offset < UINT16_MAX)
             {
-                m_SSDParam = (sSSDParams *)&pData[offset];
-                offset += sizeof(sSSDParams);
+                m_SSDParam = (sLogParams*)&pData[offset];
+                offset += sizeof(sLogParams);
                 switch (m_SSDParam->paramLength)
                 {
                 case 1:
