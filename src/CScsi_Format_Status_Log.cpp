@@ -294,9 +294,9 @@ eReturnValues CScsiFormatStatusLog::get_Format_Status_Data(JSONNODE *masterData)
 
     if (pData != NULL)
     {
-        snprintf((char*)headerStr.c_str(), BASIC, "Format Status Log 08h");
+        snprintf(&*headerStr.begin(), BASIC, "Format Status Log 08h");
         JSONNODE *pageInfo = json_new(JSON_NODE);
-        json_set_name(pageInfo, (char*)headerStr.c_str());
+        json_set_name(pageInfo, &*headerStr.begin());
 
         for (size_t offset = 0; offset < m_PageLength; )
         {

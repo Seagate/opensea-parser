@@ -336,7 +336,7 @@ eReturnValues CScsiCmdDurationLimitsLog::get_Limits_Data(JSONNODE *masterData)
     eReturnValues retStatus = IN_PROGRESS;
     if (pData != NULL)
     {
-        snprintf((char*)headerStr.c_str(), BASIC, "Command Duration Limits Log - 19h, 21h");
+        snprintf(&*headerStr.begin(), BASIC, "Command Duration Limits Log - 19h, 21h");
         JSONNODE* pageInfo;
         if (g_dataformat == PREPYTHON_DATA)
         {
@@ -345,7 +345,7 @@ eReturnValues CScsiCmdDurationLimitsLog::get_Limits_Data(JSONNODE *masterData)
         else
         {
             pageInfo = json_new(JSON_NODE);
-            json_set_name(pageInfo, (char*)headerStr.c_str());
+            json_set_name(pageInfo, &*headerStr.begin());
         }
         for (uint32_t offset = 0; offset < m_PageLength; )
         {

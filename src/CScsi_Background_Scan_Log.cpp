@@ -336,7 +336,7 @@ void CScsiScanLog::process_Defect_Data(JSONNODE *defectData)
 
 	get_Scan_Defect_Status_Description(&headerStr);
 	snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", (uint8_t)M_GETBITRANGE(m_defect->status,7, 4));
-	json_push_back(defectInfo, json_new_a((char*)headerStr.c_str(), &*myStr.begin()));
+	json_push_back(defectInfo, json_new_a(&*headerStr.begin(), &*myStr.begin()));
 	snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", (uint8_t)M_GETBITRANGE(m_defect->status,3, 0));
 	json_push_back(defectInfo, json_new_a("Sense Key", &*myStr.begin()));
 

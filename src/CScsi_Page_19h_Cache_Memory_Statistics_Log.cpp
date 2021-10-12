@@ -325,7 +325,7 @@ eReturnValues CScsiCacheMemStatLog::get_Cache_Memory_Statistics_Data(JSONNODE *m
     eReturnValues retStatus = IN_PROGRESS;
     if (pData != NULL)
     {
-        snprintf((char*)headerStr.c_str(), BASIC, "Cache Memory Statistics Log - 19h");
+        snprintf(&*headerStr.begin(), BASIC, "Cache Memory Statistics Log - 19h");
         JSONNODE* pageInfo;
         if (g_dataformat == PREPYTHON_DATA)
         {
@@ -334,7 +334,7 @@ eReturnValues CScsiCacheMemStatLog::get_Cache_Memory_Statistics_Data(JSONNODE *m
         else
         {
             pageInfo = json_new(JSON_NODE);
-            json_set_name(pageInfo, (char*)headerStr.c_str());
+            json_set_name(pageInfo, &*headerStr.begin());
         }
         for (uint32_t offset = 0; offset < m_PageLength; )
         {
