@@ -223,17 +223,17 @@ void CScsiZonedDeviceStatisticsLog::process_Zoned_Device_Statistics_Data(JSONNOD
         descriptionFound = get_ZDS_Parameter_Code_Description( &myHeader);
 
         JSONNODE *zdsInfo = json_new(JSON_NODE);
-        json_set_name(zdsInfo, (char*)myHeader.c_str());
+        json_set_name(zdsInfo, &*myHeader.begin());
 
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_ZDSParam->paramCode);
-        json_push_back(zdsInfo, json_new_a("Zoned Device Statistics Param Code", (char*)myStr.c_str()));
+        snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", m_ZDSParam->paramCode);
+        json_push_back(zdsInfo, json_new_a("Zoned Device Statistics Param Code", &*myStr.begin()));
 
         if (!descriptionFound)
         {
-            snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_ZDSParam->paramControlByte);
-            json_push_back(zdsInfo, json_new_a("Zoned Device Statistics Param Control Byte ", (char*)myStr.c_str()));
-            snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_ZDSParam->paramLength);
-            json_push_back(zdsInfo, json_new_a("Zoned Device Statistics Param Length ", (char*)myStr.c_str()));
+            snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_ZDSParam->paramControlByte);
+            json_push_back(zdsInfo, json_new_a("Zoned Device Statistics Param Control Byte ", &*myStr.begin()));
+            snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_ZDSParam->paramLength);
+            json_push_back(zdsInfo, json_new_a("Zoned Device Statistics Param Length ", &*myStr.begin()));
         }
 
         if (m_ZDSParam->paramLength == 8 || m_ZDSValue > UINT32_MAX)
@@ -248,8 +248,8 @@ void CScsiZonedDeviceStatisticsLog::process_Zoned_Device_Statistics_Data(JSONNOD
             }
             else
             {
-                snprintf((char*)myStr.c_str(), BASIC, "%" PRIu32"", static_cast<uint32_t>(m_ZDSValue));
-                json_push_back(zdsInfo, json_new_a("Zoned Device Statistics Param Value", (char*)myStr.c_str()));
+                snprintf(&*myStr.begin(), BASIC, "%" PRIu32"", static_cast<uint32_t>(m_ZDSValue));
+                json_push_back(zdsInfo, json_new_a("Zoned Device Statistics Param Value", &*myStr.begin()));
             }
         }
 

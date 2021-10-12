@@ -392,9 +392,9 @@ namespace opensea_parser {
     inline void set_Json_Bool(JSONNODE *nowNode, const std::string & myStr, bool workingValue)
     {
         if (workingValue)
-            json_push_back(nowNode, json_new_b((char*)myStr.c_str(), true));
+            json_push_back(nowNode, json_new_b(&*myStr.begin(), true));
         else
-            json_push_back(nowNode, json_new_b((char*)myStr.c_str(), false));
+            json_push_back(nowNode, json_new_b(&*myStr.begin(), false));
     }
 	//-----------------------------------------------------------------------------
 	//

@@ -217,7 +217,7 @@ void opensea_parser::CScsiCacheMemStatLog::process_Cache_Memory_Statistics_inter
     else
     {
         JSONNODE* cacheStatisticsInfo = json_new(JSON_NODE);
-        json_set_name(cacheStatisticsInfo, (char*)myStr.c_str());
+        json_set_name(cacheStatisticsInfo, &*myStr.begin());
 
         json_push_back(cacheStatisticsInfo, json_new_i("Time Interval Descriptor-Exponent", m_TimeIntervalDescriptorParam->intervalExponent));
         json_push_back(cacheStatisticsInfo, json_new_i("Time Interval Descriptor-Integer", m_TimeIntervalDescriptorParam->intervalExponent));
@@ -261,8 +261,8 @@ void CScsiCacheMemStatLog::process_Generic_Data(JSONNODE *genData, uint16_t para
     else
     {
 
-        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu64"", m_Value);
-        json_push_back(genData, json_new_a((char*)myHeader.c_str(), (char*)myStr.c_str()));
+        snprintf(&*myStr.begin(), BASIC, "%" PRIu64"", m_Value);
+        json_push_back(genData, json_new_a(&*myHeader.begin(), &*myStr.begin()));
     }
 }
 //-----------------------------------------------------------------------------

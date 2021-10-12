@@ -222,9 +222,9 @@ eReturnValues CExtComp::parse_Ext_Comp_Structure(uint32_t structNumber, uint32_t
     uint64_t LBA = 0;
     uint16_t deviceErrorCount = 0;
 
-	snprintf((char*)myStr.c_str(), BASIC, "Ext Comp SMART Log Sturcture %" PRId16"", structNumber);
+	snprintf(&*myStr.begin(), BASIC, "Ext Comp SMART Log Sturcture %" PRId16"", structNumber);
     JSONNODE *EComp = json_new(JSON_NODE);
-    json_set_name(EComp, (char*)myStr.c_str());
+    json_set_name(EComp, &*myStr.begin());
 
 	if (sector == 0)
 	{
@@ -238,14 +238,14 @@ eReturnValues CExtComp::parse_Ext_Comp_Structure(uint32_t structNumber, uint32_t
 	}
     for (uint16_t z = 1; z < 5; z++)
     {
-		snprintf((char*)myStr.c_str(), BASIC, "Opcode Content %" PRId16"", (z + (structNumber* 4)));
+		snprintf(&*myStr.begin(), BASIC, "Opcode Content %" PRId16"", (z + (structNumber* 4)));
 		JSONNODE *opcode = json_new(JSON_NODE);
-		json_set_name(opcode, (char*)myStr.c_str());
+		json_set_name(opcode, &*myStr.begin());
         for (int cmddata = 1; cmddata < 6; cmddata++)
         {
-			snprintf((char*)myStr.c_str(), BASIC, "Command Data Structure %" PRId16"", cmddata);
+			snprintf(&*myStr.begin(), BASIC, "Command Data Structure %" PRId16"", cmddata);
 			JSONNODE *cmdNode = json_new(JSON_NODE);
-			json_set_name(cmdNode, (char*)myStr.c_str());
+			json_set_name(cmdNode, &*myStr.begin());
             deviceControl = pData[wOffset];
             featureField = pData[wOffset + 1];
             countField = pData[wOffset + 3];
@@ -271,22 +271,22 @@ eReturnValues CExtComp::parse_Ext_Comp_Structure(uint32_t structNumber, uint32_t
                 commandField, \
                 timeStamp);
 #endif
-			snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", deviceControl);
-			json_push_back(cmdNode, json_new_a("Device Control", (char*)myStr.c_str()));
-			snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", featureField);
-			json_push_back(cmdNode, json_new_a("Feature Field", (char*)myStr.c_str()));
-			snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", countField);
-			json_push_back(cmdNode, json_new_a("Count Field", (char*)myStr.c_str()));
-			snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", lowLBA);
-			json_push_back(cmdNode, json_new_a("lowLBA", (char*)myStr.c_str()));
-			snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", midLBA);
-			json_push_back(cmdNode, json_new_a("CmidLBA", (char*)myStr.c_str()));
-			snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", hiLBA);
-			json_push_back(cmdNode, json_new_a("hiLBA", (char*)myStr.c_str()));
-			snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", deviceHead);
-			json_push_back(cmdNode, json_new_a("Device Head", (char*)myStr.c_str()));
-			snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", commandField);
-			json_push_back(cmdNode, json_new_a("Command Field", (char*)myStr.c_str()));
+			snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", deviceControl);
+			json_push_back(cmdNode, json_new_a("Device Control", &*myStr.begin()));
+			snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", featureField);
+			json_push_back(cmdNode, json_new_a("Feature Field", &*myStr.begin()));
+			snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", countField);
+			json_push_back(cmdNode, json_new_a("Count Field", &*myStr.begin()));
+			snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", lowLBA);
+			json_push_back(cmdNode, json_new_a("lowLBA", &*myStr.begin()));
+			snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", midLBA);
+			json_push_back(cmdNode, json_new_a("CmidLBA", &*myStr.begin()));
+			snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", hiLBA);
+			json_push_back(cmdNode, json_new_a("hiLBA", &*myStr.begin()));
+			snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", deviceHead);
+			json_push_back(cmdNode, json_new_a("Device Head", &*myStr.begin()));
+			snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", commandField);
+			json_push_back(cmdNode, json_new_a("Command Field", &*myStr.begin()));
 
 			json_push_back(cmdNode, json_new_i("Time Stamp", static_cast<int>(timeStamp)));
 
@@ -323,24 +323,24 @@ eReturnValues CExtComp::parse_Ext_Comp_Structure(uint32_t structNumber, uint32_t
             state, \
             lifeTime);
 #endif
-		snprintf((char*)myStr.c_str(), BASIC, "0x%x", errorField);
-		json_push_back(opcode, json_new_a("Error", (char*)myStr.c_str()));
+		snprintf(&*myStr.begin(), BASIC, "0x%x", errorField);
+		json_push_back(opcode, json_new_a("Error", &*myStr.begin()));
 
-		snprintf((char*)myStr.c_str(), BASIC, "0x%" PRIx16"", countField);
-		json_push_back(opcode, json_new_a("Count", (char*)myStr.c_str()));
+		snprintf(&*myStr.begin(), BASIC, "0x%" PRIx16"", countField);
+		json_push_back(opcode, json_new_a("Count", &*myStr.begin()));
 
 		opensea_parser::set_json_64bit(opcode, "LBA", LBA, false);
 
 		json_push_back(opcode, json_new_i("Device", static_cast<int>(deviceControl)));
 
-		snprintf((char*)myStr.c_str(), BASIC, "0x%x", status);
-		json_push_back(opcode, json_new_a("Status", (char*)myStr.c_str()));
+		snprintf(&*myStr.begin(), BASIC, "0x%x", status);
+		json_push_back(opcode, json_new_a("Status", &*myStr.begin()));
 
 		get_State_Meaning(&myStr, state);
-		json_push_back(opcode, json_new_a("Ext Comp Error Log State", (char*)myStr.c_str()));
+		json_push_back(opcode, json_new_a("Ext Comp Error Log State", &*myStr.begin()));
 
-		snprintf((char*)myStr.c_str(), BASIC, "%" PRId16"", lifeTime);
-		json_push_back(opcode, json_new_a("Ext Comp Error Log Life Timestamp", (char*)myStr.c_str()));
+		snprintf(&*myStr.begin(), BASIC, "%" PRId16"", lifeTime);
+		json_push_back(opcode, json_new_a("Ext Comp Error Log Life Timestamp", &*myStr.begin()));
 
 		json_push_back(EComp, opcode);
     }

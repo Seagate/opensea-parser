@@ -200,15 +200,15 @@ void CScsiPowerConditiontLog::process_List_Information(JSONNODE *powerData)
     if (m_PowerParam->paramValue != 0)
     {
         JSONNODE *powerInfo = json_new(JSON_NODE);
-        json_set_name(powerInfo, (char*)myStr.c_str());
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_PowerParam->paramCode);
-        json_push_back(powerInfo, json_new_a("Power Condition Type", (char*)myStr.c_str()));
+        json_set_name(powerInfo, &*myStr.begin());
+        snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", m_PowerParam->paramCode);
+        json_push_back(powerInfo, json_new_a("Power Condition Type", &*myStr.begin()));
         if (!typeFound)
         {
-            snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_PowerParam->paramControlByte);
-            json_push_back(powerInfo, json_new_a("Control Byte", (char*)myStr.c_str()));
-            snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_PowerParam->paramLength);
-            json_push_back(powerInfo, json_new_a("Length", (char*)myStr.c_str()));
+            snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_PowerParam->paramControlByte);
+            json_push_back(powerInfo, json_new_a("Control Byte", &*myStr.begin()));
+            snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_PowerParam->paramLength);
+            json_push_back(powerInfo, json_new_a("Length", &*myStr.begin()));
         }
         json_push_back(powerInfo, json_new_i("Power Value", m_PowerParam->paramValue));
         json_push_back(powerData, powerInfo);

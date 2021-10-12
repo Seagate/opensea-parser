@@ -129,10 +129,10 @@ void CScsiNonMediumErrorCountLog::process_Non_Medium_Error_Count_Data(JSONNODE* 
 	{
 		JSONNODE* label = json_new(JSON_NODE);
 		json_set_name(label, "labels");
-		snprintf((char*)myStr.c_str(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16":%" PRIu32"", NON_MEDIUM_ERROR, NONMEDIUMERRORSUBPAGE, m_CountErrors->paramCode, offset);
-		json_push_back(label, json_new_a("metric_source", (char*)myStr.c_str()));
-		snprintf((char*)myStr.c_str(), BASIC, "total error count");
-		json_push_back(label, json_new_a("stat_type", (char*)myStr.c_str()));
+		snprintf(&*myStr.begin(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16":%" PRIu32"", NON_MEDIUM_ERROR, NONMEDIUMERRORSUBPAGE, m_CountErrors->paramCode, offset);
+		json_push_back(label, json_new_a("metric_source", &*myStr.begin()));
+		snprintf(&*myStr.begin(), BASIC, "total error count");
+		json_push_back(label, json_new_a("stat_type", &*myStr.begin()));
 		json_push_back(label, json_new_a("units", "count"));
 		json_push_back(countData, label);
 
@@ -140,17 +140,17 @@ void CScsiNonMediumErrorCountLog::process_Non_Medium_Error_Count_Data(JSONNODE* 
 	}
 	else
 	{
-		snprintf((char*)myStr.c_str(), BASIC, "Non-Medium Error Count Log Parameters 0x%04" PRIx16"", m_CountErrors->paramCode);
+		snprintf(&*myStr.begin(), BASIC, "Non-Medium Error Count Log Parameters 0x%04" PRIx16"", m_CountErrors->paramCode);
 		JSONNODE* cacheInfo = json_new(JSON_NODE);
-		json_set_name(cacheInfo, (char*)myStr.c_str());
+		json_set_name(cacheInfo, &*myStr.begin());
 
-		snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_CountErrors->paramCode);
-		json_push_back(cacheInfo, json_new_a("Non-Medium Error Count Parameter Code", (char*)myStr.c_str()));
+		snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", m_CountErrors->paramCode);
+		json_push_back(cacheInfo, json_new_a("Non-Medium Error Count Parameter Code", &*myStr.begin()));
 
-		snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_CountErrors->paramControlByte);
-		json_push_back(cacheInfo, json_new_a("Non-Medium Error Count Control Byte ", (char*)myStr.c_str()));
-		snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_CountErrors->paramLength);
-		json_push_back(cacheInfo, json_new_a("Non-Medium Error CountLength ", (char*)myStr.c_str()));
+		snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_CountErrors->paramControlByte);
+		json_push_back(cacheInfo, json_new_a("Non-Medium Error Count Control Byte ", &*myStr.begin()));
+		snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_CountErrors->paramLength);
+		json_push_back(cacheInfo, json_new_a("Non-Medium Error CountLength ", &*myStr.begin()));
 		if (m_CountErrors->paramLength == 8 || m_Value > UINT32_MAX)
 		{
 			set_json_64bit(cacheInfo, "Non-Medium Error Count", m_Value, false);

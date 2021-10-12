@@ -127,8 +127,8 @@ void CScsiApplicationLog::process_Client_Data(JSONNODE *appData, uint32_t offset
 		json_set_name(label, "labels");
 
 
-		snprintf((char*)myStr.c_str(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16":%" PRIu32"", APPLICATION_CLIENT, 0, m_App->paramCode,offset);
-		json_push_back(label, json_new_a("metric_source", (char*)myStr.c_str()));
+		snprintf(&*myStr.begin(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16":%" PRIu32"", APPLICATION_CLIENT, 0, m_App->paramCode,offset);
+		json_push_back(label, json_new_a("metric_source", &*myStr.begin()));
 
 		uint32_t rawoffset = 0;
 
@@ -154,17 +154,17 @@ void CScsiApplicationLog::process_Client_Data(JSONNODE *appData, uint32_t offset
 #endif
 		byte_Swap_16(&m_App->paramCode);
 		//get_Cache_Parameter_Code_Description(&myStr);
-		snprintf((char*)myStr.c_str(), BASIC, "Application Client Log 0x%04" PRIx16"", m_App->paramCode);
+		snprintf(&*myStr.begin(), BASIC, "Application Client Log 0x%04" PRIx16"", m_App->paramCode);
 		JSONNODE* appInfo = json_new(JSON_NODE);
-		json_set_name(appInfo, (char*)myStr.c_str());
+		json_set_name(appInfo, &*myStr.begin());
 
-		snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_App->paramCode);
-		json_push_back(appInfo, json_new_a("Application Client Parameter Code", (char*)myStr.c_str()));
+		snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", m_App->paramCode);
+		json_push_back(appInfo, json_new_a("Application Client Parameter Code", &*myStr.begin()));
 
-		snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_App->paramControlByte);
-		json_push_back(appInfo, json_new_a("Application Client Control Byte ", (char*)myStr.c_str()));
-		snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_App->paramLength);
-		json_push_back(appInfo, json_new_a("Application Client Length ", (char*)myStr.c_str()));
+		snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_App->paramControlByte);
+		json_push_back(appInfo, json_new_a("Application Client Control Byte ", &*myStr.begin()));
+		snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_App->paramLength);
+		json_push_back(appInfo, json_new_a("Application Client Length ", &*myStr.begin()));
 
 		// format to show the buffer data.
 		if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
@@ -177,7 +177,7 @@ void CScsiApplicationLog::process_Client_Data(JSONNODE *appData, uint32_t offset
 
 			for (uint32_t outer = 0; outer < APP_CLIENT_DATA_LEN - 1; )
 			{
-				snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIX32 "", lineNumber);
+				snprintf(&*myStr.begin(), BASIC, "0x%02" PRIX32 "", lineNumber);
 				sprintf(innerMsg, "%02" PRIX8 "", m_App->data[offset]);
 				// inner loop for creating a single ling of the buffer data
 				for (uint32_t inner = 1; inner < 16 && offset < APP_CLIENT_DATA_LEN - 1; inner++)
@@ -191,7 +191,7 @@ void CScsiApplicationLog::process_Client_Data(JSONNODE *appData, uint32_t offset
 					offset++;
 				}
 				// push the line to the json node
-				json_push_back(appInfo, json_new_a((char*)myStr.c_str(), innerMsg));
+				json_push_back(appInfo, json_new_a(&*myStr.begin(), innerMsg));
 				outer = offset;
 				lineNumber = outer;
 			}

@@ -715,91 +715,91 @@ eReturnValues CAta_Identify_log::print_Identify_Information(JSONNODE *masterData
     json_push_back(identifyInfo, IEEEinfo);
 
     //maxLBA
-    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu32"", m_sDriveInfo.maxLBA28);
-    json_push_back(identifyInfo, json_new_a("MaxLBA (28bit)", (char*)myStr.c_str()));
-    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu64"", m_sDriveInfo.maxLBA48);
-    json_push_back(identifyInfo, json_new_a("MaxLBA (48bit)", (char*)myStr.c_str()));
+    snprintf(&*myStr.begin(), BASIC, "%" PRIu32"", m_sDriveInfo.maxLBA28);
+    json_push_back(identifyInfo, json_new_a("MaxLBA (28bit)", &*myStr.begin()));
+    snprintf(&*myStr.begin(), BASIC, "%" PRIu64"", m_sDriveInfo.maxLBA48);
+    json_push_back(identifyInfo, json_new_a("MaxLBA (48bit)", &*myStr.begin()));
     // sector sizes
     JSONNODE *sectorSize = json_new(JSON_NODE);
     json_set_name(sectorSize, "Sector Sizes");
     if (m_sDriveInfo.sSizes.sectorSizeReported)
     {
-        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu32"", m_sDriveInfo.sSizes.logicalSectorSize);
-        json_push_back(sectorSize, json_new_a("Logical", (char*)myStr.c_str()));
-        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu8"", m_sDriveInfo.sSizes.sectorSizeExponent);
-        json_push_back(sectorSize, json_new_a("Sector Size Exponent", (char*)myStr.c_str()));
-        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu32" ", m_sDriveInfo.sSizes.physicalSectorSize);
-        json_push_back(sectorSize, json_new_a("Physical", (char*)myStr.c_str()));
-        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16"", m_sDriveInfo.logicalSectorAlignment);
-        json_push_back(sectorSize, json_new_a("Logical Sector alignment", (char*)myStr.c_str()));
+        snprintf(&*myStr.begin(), BASIC, "%" PRIu32"", m_sDriveInfo.sSizes.logicalSectorSize);
+        json_push_back(sectorSize, json_new_a("Logical", &*myStr.begin()));
+        snprintf(&*myStr.begin(), BASIC, "%" PRIu8"", m_sDriveInfo.sSizes.sectorSizeExponent);
+        json_push_back(sectorSize, json_new_a("Sector Size Exponent", &*myStr.begin()));
+        snprintf(&*myStr.begin(), BASIC, "%" PRIu32" ", m_sDriveInfo.sSizes.physicalSectorSize);
+        json_push_back(sectorSize, json_new_a("Physical", &*myStr.begin()));
+        snprintf(&*myStr.begin(), BASIC, "%" PRIu16"", m_sDriveInfo.logicalSectorAlignment);
+        json_push_back(sectorSize, json_new_a("Logical Sector alignment", &*myStr.begin()));
     }
     else
     {
-        snprintf((char*)myStr.c_str(), BASIC, "512 byte assumed");
-        json_push_back(sectorSize, json_new_a("Sector Size", (char*)myStr.c_str()));
+        snprintf(&*myStr.begin(), BASIC, "512 byte assumed");
+        json_push_back(sectorSize, json_new_a("Sector Size", &*myStr.begin()));
     }
     json_push_back(identifyInfo, sectorSize);
 
 
     // capacity
-    snprintf((char*)myStr.c_str(), BASIC, "%0.02f %s ", m_sDriveInfo.sCapInfo.capUnit, (char*)m_sDriveInfo.sCapInfo.capacityUnit.c_str());
-    json_push_back(identifyInfo, json_new_a("Identify Log Device Capacity", (char*)myStr.c_str()));
+    snprintf(&*myStr.begin(), BASIC, "%0.02f %s ", m_sDriveInfo.sCapInfo.capUnit, (char*)m_sDriveInfo.sCapInfo.capacityUnit.c_str());
+    json_push_back(identifyInfo, json_new_a("Identify Log Device Capacity", &*myStr.begin()));
     // Spec 
     switch (m_sDriveInfo.ataSpecCounter)
     {
     case 15:
-        snprintf((char*)myStr.c_str(), BASIC, "ACS-8");
+        snprintf(&*myStr.begin(), BASIC, "ACS-8");
         break;
     case 14:
-        snprintf((char*)myStr.c_str(), BASIC, "ACS-7");
+        snprintf(&*myStr.begin(), BASIC, "ACS-7");
         break;
     case 13:
-        snprintf((char*)myStr.c_str(), BASIC, "ACS-6");
+        snprintf(&*myStr.begin(), BASIC, "ACS-6");
         break;
     case 12:
-        snprintf((char*)myStr.c_str(), BASIC, "ACS-5");
+        snprintf(&*myStr.begin(), BASIC, "ACS-5");
         break;
     case 11:
-        snprintf((char*)myStr.c_str(), BASIC, "ACS-4");
+        snprintf(&*myStr.begin(), BASIC, "ACS-4");
         break;
     case 10:
-        snprintf((char*)myStr.c_str(), BASIC, "ACS-3");
+        snprintf(&*myStr.begin(), BASIC, "ACS-3");
         break;
     case 9:
-        snprintf((char*)myStr.c_str(), BASIC, "ACS-2");
+        snprintf(&*myStr.begin(), BASIC, "ACS-2");
         break;
     case 8:
-        snprintf((char*)myStr.c_str(), BASIC, "ATA8 - ACS");
+        snprintf(&*myStr.begin(), BASIC, "ATA8 - ACS");
         break;
     case 7:
-        snprintf((char*)myStr.c_str(), BASIC, "ATA/ATAPI-7");
+        snprintf(&*myStr.begin(), BASIC, "ATA/ATAPI-7");
         break;
     case 6:
-        snprintf((char*)myStr.c_str(), BASIC, "ATA/ATAPI-6");
+        snprintf(&*myStr.begin(), BASIC, "ATA/ATAPI-6");
         break;
     case 5:
-        snprintf((char*)myStr.c_str(), BASIC, "ATA/ATAPI-5");
+        snprintf(&*myStr.begin(), BASIC, "ATA/ATAPI-5");
         break;
     case 4:
-        snprintf((char*)myStr.c_str(), BASIC, "ATA/ATAPI-4");
+        snprintf(&*myStr.begin(), BASIC, "ATA/ATAPI-4");
         break;
     case 3:
-        snprintf((char*)myStr.c_str(), BASIC, "ATA-3");
+        snprintf(&*myStr.begin(), BASIC, "ATA-3");
         break;
     case 2:
-        snprintf((char*)myStr.c_str(), BASIC, "ATA-2");
+        snprintf(&*myStr.begin(), BASIC, "ATA-2");
         break;
     case 1:
-        snprintf((char*)myStr.c_str(), BASIC, "ATA-1");
+        snprintf(&*myStr.begin(), BASIC, "ATA-1");
         break;
     default:
-        snprintf((char*)myStr.c_str(), BASIC, " Unknown / Not Reported ");
+        snprintf(&*myStr.begin(), BASIC, " Unknown / Not Reported ");
         break;
     }
-    json_push_back(identifyInfo, json_new_a("ATA Spec Supported", (char*)myStr.c_str()));
+    json_push_back(identifyInfo, json_new_a("ATA Spec Supported", &*myStr.begin()));
     //minor spec version number
-    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16"", m_sDriveInfo.minorSpecVersionNumber);
-    json_push_back(identifyInfo, json_new_a("ATA Spec Minor Version Number", (char*)myStr.c_str()));
+    snprintf(&*myStr.begin(), BASIC, "%" PRIu16"", m_sDriveInfo.minorSpecVersionNumber);
+    json_push_back(identifyInfo, json_new_a("ATA Spec Minor Version Number", &*myStr.begin()));
 
     //Transport
     if (m_sDriveInfo.sTrans.transportReported)
@@ -810,13 +810,13 @@ eReturnValues CAta_Identify_log::print_Identify_Information(JSONNODE *masterData
             switch (m_sDriveInfo.sTrans.transportCounter)
             {
             case 1:
-                snprintf((char*)myStr.c_str(), BASIC, "ATA/ATAPI-7");
+                snprintf(&*myStr.begin(), BASIC, "ATA/ATAPI-7");
                 break;
             case 0:
-                snprintf((char*)myStr.c_str(), BASIC, "ATA8-APT");
+                snprintf(&*myStr.begin(), BASIC, "ATA8-APT");
                 break;
             default:
-                snprintf((char*)myStr.c_str(), BASIC, "Reserved");
+                snprintf(&*myStr.begin(), BASIC, "Reserved");
                 break;
             }
             break;
@@ -824,77 +824,77 @@ eReturnValues CAta_Identify_log::print_Identify_Information(JSONNODE *masterData
             switch (m_sDriveInfo.sTrans.transportCounter)
             {
             case 8:
-                snprintf((char*)myStr.c_str(), BASIC, "SATA 3.3");
+                snprintf(&*myStr.begin(), BASIC, "SATA 3.3");
                 break;
             case 7:
-                snprintf((char*)myStr.c_str(), BASIC, "SATA 3.2");
+                snprintf(&*myStr.begin(), BASIC, "SATA 3.2");
                 break;
             case 6:
-                snprintf((char*)myStr.c_str(), BASIC, "SATA 3.1");
+                snprintf(&*myStr.begin(), BASIC, "SATA 3.1");
                 break;
             case 5:
-                snprintf((char*)myStr.c_str(), BASIC, "SATA 3.0");
+                snprintf(&*myStr.begin(), BASIC, "SATA 3.0");
                 break;
             case 4:
-                snprintf((char*)myStr.c_str(), BASIC, "SATA 2.6");
+                snprintf(&*myStr.begin(), BASIC, "SATA 2.6");
                 break;
             case 3:
-                snprintf((char*)myStr.c_str(), BASIC, "SATA 2.5");
+                snprintf(&*myStr.begin(), BASIC, "SATA 2.5");
                 break;
             case 2:
-                snprintf((char*)myStr.c_str(), BASIC, "SATA II - Extensions");
+                snprintf(&*myStr.begin(), BASIC, "SATA II - Extensions");
                 break;
             case 1:
-                snprintf((char*)myStr.c_str(), BASIC, "SATA 1.0a");
+                snprintf(&*myStr.begin(), BASIC, "SATA 1.0a");
                 break;
             case 0:
-                snprintf((char*)myStr.c_str(), BASIC, "ATA8-AST");
+                snprintf(&*myStr.begin(), BASIC, "ATA8-AST");
                 break;
             default:
-                snprintf((char*)myStr.c_str(), BASIC, "Reserved");
+                snprintf(&*myStr.begin(), BASIC, "Reserved");
             }
 
             break;
         default://unknown/undefined, just dump the bits
-            snprintf((char*)myStr.c_str(), BASIC, "Unknown Transport");
+            snprintf(&*myStr.begin(), BASIC, "Unknown Transport");
             break;
         }
     }
     else
     {
-        snprintf((char*)myStr.c_str(), BASIC, "Not Reported");
+        snprintf(&*myStr.begin(), BASIC, "Not Reported");
     }
-    json_push_back(identifyInfo, json_new_a("Transport Supported", (char*)myStr.c_str()));
+    json_push_back(identifyInfo, json_new_a("Transport Supported", &*myStr.begin()));
 
-    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16"", m_sDriveInfo.sTrans.transportMinorVersion);
-    json_push_back(identifyInfo, json_new_a("Transport Minor Version", (char*)myStr.c_str()));
+    snprintf(&*myStr.begin(), BASIC, "%" PRIu16"", m_sDriveInfo.sTrans.transportMinorVersion);
+    json_push_back(identifyInfo, json_new_a("Transport Minor Version", &*myStr.begin()));
 
     // Form Factor
     switch (m_sDriveInfo.formFactor)
     {
     case 0:
-        snprintf((char*)myStr.c_str(), BASIC, "Not Reported");
+        snprintf(&*myStr.begin(), BASIC, "Not Reported");
         break;
     case 1:
-        snprintf((char*)myStr.c_str(), BASIC, "5.25 inch");
+        snprintf(&*myStr.begin(), BASIC, "5.25 inch");
         break;
     case 2:
-        snprintf((char*)myStr.c_str(), BASIC, "3.5 inch");
+        snprintf(&*myStr.begin(), BASIC, "3.5 inch");
         break;
     case 3:
-        snprintf((char*)myStr.c_str(), BASIC, "2.5 inch");
+        snprintf(&*myStr.begin(), BASIC, "2.5 inch");
         break;
     case 4:
-        snprintf((char*)myStr.c_str(), BASIC, "1.8 inch");
+        snprintf(&*myStr.begin(), BASIC, "1.8 inch");
         break;
     case 5:
-        snprintf((char*)myStr.c_str(), BASIC, "Less than 1.8 inch");
+        snprintf(&*myStr.begin(), BASIC, "Less than 1.8 inch");
         break;
     default:
-        snprintf((char*)myStr.c_str(), BASIC, "Reserved");
+        snprintf(&*myStr.begin(), BASIC, "Reserved");
         break;
     }
-    json_push_back(identifyInfo, json_new_a("Form Factor", (char*)myStr.c_str()));
+    json_push_back(identifyInfo, json_new_a("Form Factor", &*myStr.begin()));
 
     // Drives Capablilities 
     JSONNODE *driveCap = json_new(JSON_NODE);
@@ -984,8 +984,8 @@ eReturnValues CAta_Identify_log::print_Identify_Information(JSONNODE *masterData
         JSONNODE *secruity = json_new(JSON_NODE);
         json_set_name(secruity, "Device Security");
 
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04x", m_sDriveInfo.SecurityID);
-        json_push_back(secruity, json_new_a("Security Status Bit:", (char*)myStr.c_str()));
+        snprintf(&*myStr.begin(), BASIC, "0x%04x", m_sDriveInfo.SecurityID);
+        json_push_back(secruity, json_new_a("Security Status Bit:", &*myStr.begin()));
 
         opensea_parser::set_Json_Bool(secruity, "Security Supported", m_sDriveInfo.sSecurityInfo.supported);
 
@@ -1121,17 +1121,17 @@ eReturnValues CAta_Identify_Log_00::get_Log_Page00(JSONNODE *masterData)
         printf("\tHeader =   0x%016" PRIx64"  \n", m_pLog0->header);
 #endif
 
-        snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", m_pLog0->header);
-        json_push_back(pageInfo, json_new_a("Page Header", (char*)myStr.c_str()));
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", pageNumber);
-        json_push_back(pageInfo, json_new_a("Page Number", (char*)myStr.c_str()));
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", revision);
-        json_push_back(pageInfo, json_new_a("Revision Number", (char*)myStr.c_str()));
+        snprintf(&*myStr.begin(), BASIC, "0x%016" PRIx64"", m_pLog0->header);
+        json_push_back(pageInfo, json_new_a("Page Header", &*myStr.begin()));
+        snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", pageNumber);
+        json_push_back(pageInfo, json_new_a("Page Number", &*myStr.begin()));
+        snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", revision);
+        json_push_back(pageInfo, json_new_a("Revision Number", &*myStr.begin()));
         // get the pages supported
         for (uint8_t pageNumber = 0; pageNumber <= MAX_NUMBER_OF_ENTRIES; pageNumber++)
         {
-            snprintf((char*)myStr.c_str(), BASIC, "Page Number 0x%02" PRIx8"", pageNumber);
-            opensea_parser::set_Json_Bool(pageInfo, (char*)myStr.c_str(), is_Page_Supported(pageNumber));
+            snprintf(&*myStr.begin(), BASIC, "Page Number 0x%02" PRIx8"", pageNumber);
+            opensea_parser::set_Json_Bool(pageInfo, &*myStr.begin(), is_Page_Supported(pageNumber));
         }
 
 
@@ -1213,8 +1213,8 @@ bool CAta_Identify_Log_02::get_Device_Capacity(JSONNODE *capData)
     printf("Device Capacity \n");
     printf("\tDevice Capacity =   0x%016" PRIx64"  \n", pCapacity->deviceCapacity);
 #endif
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", pCapacity->deviceCapacity);
-    json_push_back(capData, json_new_a("Device Capacity Header", (char*)myStr.c_str()));
+    snprintf(&*myStr.begin(), BASIC, "0x%016" PRIx64"", pCapacity->deviceCapacity);
+    json_push_back(capData, json_new_a("Device Capacity Header", &*myStr.begin()));
     if (check_For_Active_Status(&pCapacity->deviceCapacity))
     {
         uint64_t myUint48 = pCapacity->deviceCapacity &  MAX_48_BIT_LBA;
@@ -1228,41 +1228,41 @@ bool CAta_Identify_Log_02::get_Device_Capacity(JSONNODE *capData)
         switch (unitCounter)
         {
         case 0:
-            snprintf((char*)myStr.c_str(), BASIC, "%" PRIu64" B", myUint48);
+            snprintf(&*myStr.begin(), BASIC, "%" PRIu64" B", myUint48);
             break;
         case 1:
-            snprintf((char*)myStr.c_str(), BASIC, "%" PRIu64" KiB", myUint48);
+            snprintf(&*myStr.begin(), BASIC, "%" PRIu64" KiB", myUint48);
             break;
         case 2:
-            snprintf((char*)myStr.c_str(), BASIC, "%" PRIx64" MiB", myUint48);
+            snprintf(&*myStr.begin(), BASIC, "%" PRIx64" MiB", myUint48);
             break;
         case 3:
-            snprintf((char*)myStr.c_str(), BASIC, "%" PRIu64" GiB", myUint48);
+            snprintf(&*myStr.begin(), BASIC, "%" PRIu64" GiB", myUint48);
             break;
         case 4:
-            snprintf((char*)myStr.c_str(), BASIC, "%" PRIu64" TiB", myUint48);
+            snprintf(&*myStr.begin(), BASIC, "%" PRIu64" TiB", myUint48);
             break;
         case 5:
-            snprintf((char*)myStr.c_str(), BASIC, "%" PRIu64" PiB", myUint48);
+            snprintf(&*myStr.begin(), BASIC, "%" PRIu64" PiB", myUint48);
             break;
         case 6:
-            snprintf((char*)myStr.c_str(), BASIC, "%" PRIu64" EiB", myUint48);
+            snprintf(&*myStr.begin(), BASIC, "%" PRIu64" EiB", myUint48);
             break;
         case 7:
-            snprintf((char*)myStr.c_str(), BASIC, "%" PRIu64" ZiB", myUint48);
+            snprintf(&*myStr.begin(), BASIC, "%" PRIu64" ZiB", myUint48);
             break;
         case 8:
-            snprintf((char*)myStr.c_str(), BASIC, "%" PRIu64" YiB", myUint48);
+            snprintf(&*myStr.begin(), BASIC, "%" PRIu64" YiB", myUint48);
             break;
         default:
-            snprintf((char*)myStr.c_str(), BASIC, "unknown size");
+            snprintf(&*myStr.begin(), BASIC, "unknown size");
             break;
         }
 #if defined _DEBUG
         printf("\tDevice Capacity =   %" PRIu64"  \n", myUint48);
-        printf("\tCapacity =   %s \n", (char*)myStr.c_str());
+        printf("\tCapacity =   %s \n", &*myStr.begin());
 #endif
-        json_push_back(capData, json_new_a("Capacity", (char*)myStr.c_str()));
+        json_push_back(capData, json_new_a("Capacity", &*myStr.begin()));
 
     }
     else
@@ -1280,8 +1280,8 @@ bool CAta_Identify_Log_02::get_Sector_Size(JSONNODE *sectorData)
     printf("Physical / Logical sector size \n");
     printf("\tSector Size =   0x%016" PRIx64"  \n", pCapacity->sectorSize);
 #endif
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", pCapacity->sectorSize);
-    json_push_back(sectorData, json_new_a("Pysical and Logical Sector Size", (char*)myStr.c_str()));
+    snprintf(&*myStr.begin(), BASIC, "0x%016" PRIx64"", pCapacity->sectorSize);
+    json_push_back(sectorData, json_new_a("Pysical and Logical Sector Size", &*myStr.begin()));
     if (check_For_Active_Status(&pCapacity->deviceCapacity))
     {
         if (pCapacity->sectorSize & BIT62)
@@ -1314,8 +1314,8 @@ bool CAta_Identify_Log_02::get_Sector_Size(JSONNODE *sectorData)
             opensea_parser::set_Json_Bool(sectorData, "Long Physical Sector Alignment Error reporting is enabled", false);
         }
         uint16_t sectorOffset = M_Word0(pCapacity->sectorSize);
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", sectorOffset);
-        json_push_back(sectorData, json_new_a("Logical Sector Offset", (char*)myStr.c_str()));
+        snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", sectorOffset);
+        json_push_back(sectorData, json_new_a("Logical Sector Offset", &*myStr.begin()));
     }
 
     return true;
@@ -1353,12 +1353,12 @@ eReturnValues CAta_Identify_Log_02::get_Log_Page02(uint8_t *pData, JSONNODE *mas
         printf("Log Page 02h \n");
         printf("\tHeader =   0x%016" PRIx64"  \n", pCapacity->header);
 #endif
-        snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", pCapacity->header);
-        json_push_back(pageInfo, json_new_a("Page Header", (char*)myStr.c_str()));
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", pageNumber);
-        json_push_back(pageInfo, json_new_a("Page Number", (char*)myStr.c_str()));
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", revision);
-        json_push_back(pageInfo, json_new_a("Revision Number", (char*)myStr.c_str()));
+        snprintf(&*myStr.begin(), BASIC, "0x%016" PRIx64"", pCapacity->header);
+        json_push_back(pageInfo, json_new_a("Page Header", &*myStr.begin()));
+        snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", pageNumber);
+        json_push_back(pageInfo, json_new_a("Page Number", &*myStr.begin()));
+        snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", revision);
+        json_push_back(pageInfo, json_new_a("Revision Number", &*myStr.begin()));
 
         get_Device_Capacity(pageInfo);
         get_Sector_Size(pageInfo);
@@ -1669,8 +1669,8 @@ bool CAta_Identify_Log_03::get_Supported_Capabilities(JSONNODE *currentData)
     printf("Current Settings \n");
     printf("\tCurrent Settings =   0x%016" PRIx64"  \n", m_pCap->supportedCapabilities);
 #endif
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", m_pCap->supportedCapabilities);
-    json_push_back(currentData, json_new_a("Supported Capabilities", (char*)myStr.c_str()));
+    snprintf(&*myStr.begin(), BASIC, "0x%016" PRIx64"", m_pCap->supportedCapabilities);
+    json_push_back(currentData, json_new_a("Supported Capabilities", &*myStr.begin()));
     if (set_Supported_Capabilities(&m_pCap->supportedCapabilities))
     {
         JSONNODE *currentSettings = json_new(JSON_NODE);
@@ -1743,8 +1743,8 @@ bool CAta_Identify_Log_03::get_DownLoad_MicroCode(JSONNODE *DM)
     printf("Download Microcode \n");
     printf("\tDownload Microcode =   0x%016" PRIx64"  \n", m_pCap->download);
 #endif
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", m_pCap->download);
-    json_push_back(DM, json_new_a("Download Microcode ", (char*)myStr.c_str()));
+    snprintf(&*myStr.begin(), BASIC, "0x%016" PRIx64"", m_pCap->download);
+    json_push_back(DM, json_new_a("Download Microcode ", &*myStr.begin()));
     if (set_DownLoad_MicroCode(&m_pCap->download))
     {
         JSONNODE *download = json_new(JSON_NODE);
@@ -1752,10 +1752,10 @@ bool CAta_Identify_Log_03::get_DownLoad_MicroCode(JSONNODE *DM)
         opensea_parser::set_Json_Bool(download, "DM Offsets Deferred Supported", m_sDownloadMicrocode.dmDefferedSupported);
         opensea_parser::set_Json_Bool(download, "DM Immediate Supported", m_sDownloadMicrocode.dmImmedaiateSupported);
         opensea_parser::set_Json_Bool(download, "DM Offsets Immediate Supported", m_sDownloadMicrocode.dmOffsetsImmediateSupported);
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_sDownloadMicrocode.dmMaxTransferSize);
-        json_push_back(download, json_new_a("Dm Maximum Transfer Size", (char*)myStr.c_str()));
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_sDownloadMicrocode.dmMinTranserSize);
-        json_push_back(download, json_new_a("Dm Minimum Transfer Size", (char*)myStr.c_str()));
+        snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", m_sDownloadMicrocode.dmMaxTransferSize);
+        json_push_back(download, json_new_a("Dm Maximum Transfer Size", &*myStr.begin()));
+        snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", m_sDownloadMicrocode.dmMinTranserSize);
+        json_push_back(download, json_new_a("Dm Minimum Transfer Size", &*myStr.begin()));
 
         json_push_back(DM, download);
     }
@@ -1790,8 +1790,8 @@ bool CAta_Identify_Log_03::get_Media_Rotation_Rate(JSONNODE *MRR)
     printf("Media Rotation Rate \n");
     printf("\tMedia Rotation Rate =   0x%016" PRIx64"  \n", m_pCap->rotationRate);
 #endif
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", m_pCap->rotationRate);
-    json_push_back(MRR, json_new_a("Media Rotation Rate", (char*)myStr.c_str()));
+    snprintf(&*myStr.begin(), BASIC, "0x%016" PRIx64"", m_pCap->rotationRate);
+    json_push_back(MRR, json_new_a("Media Rotation Rate", &*myStr.begin()));
     if (check_For_Active_Status(&m_pCap->rotationRate))
     {
         uint16_t rate = (uint16_t)(M_Word0(m_pCap->rotationRate));
@@ -1810,8 +1810,8 @@ bool CAta_Identify_Log_03::get_Media_Rotation_Rate(JSONNODE *MRR)
         }
         else
         {
-            snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16"", rate);
-            json_push_back(MRR, json_new_a("Nominal Media Rotation Rate", (char*)myStr.c_str()));
+            snprintf(&*myStr.begin(), BASIC, "%" PRIu16"", rate);
+            json_push_back(MRR, json_new_a("Nominal Media Rotation Rate", &*myStr.begin()));
         }
     }
     else
@@ -1842,8 +1842,8 @@ bool CAta_Identify_Log_03::get_Form_Factor(JSONNODE *ff)
     printf("Form Factor \n");
     printf("\tForm Factor =   0x%016" PRIx64"  \n", m_pCap->formFactor);
 #endif
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", m_pCap->formFactor);
-    json_push_back(ff, json_new_a("Form Factor", (char*)myStr.c_str()));
+    snprintf(&*myStr.begin(), BASIC, "0x%016" PRIx64"", m_pCap->formFactor);
+    json_push_back(ff, json_new_a("Form Factor", &*myStr.begin()));
     if (check_For_Active_Status(&m_pCap->formFactor))
     {
 
@@ -1874,8 +1874,8 @@ bool CAta_Identify_Log_03::get_Form_Factor(JSONNODE *ff)
         }
         else
         {
-            snprintf((char*)myStr.c_str(), BASIC, "%" PRIu8"", form);
-            json_push_back(ff, json_new_a("Nominal Form Factor", (char*)myStr.c_str()));
+            snprintf(&*myStr.begin(), BASIC, "%" PRIu8"", form);
+            json_push_back(ff, json_new_a("Nominal Form Factor", &*myStr.begin()));
         }
     }
     else
@@ -1906,14 +1906,14 @@ bool CAta_Identify_Log_03::get_Write_Read_Verify_Mode3(JSONNODE *mode3)
     printf("Write Read Verify Mode 3 \n");
     printf("\tWrite Read Verify =   0x%016" PRIx64"  \n", m_pCap->mode3);
 #endif
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", m_pCap->mode3);
-    json_push_back(mode3, json_new_a("Write Read Verify Mode 3", (char*)myStr.c_str()));
+    snprintf(&*myStr.begin(), BASIC, "0x%016" PRIx64"", m_pCap->mode3);
+    json_push_back(mode3, json_new_a("Write Read Verify Mode 3", &*myStr.begin()));
     if (check_For_Active_Status(&m_pCap->mode3))
     {
         JSONNODE *wrv = json_new(JSON_NODE);
         json_set_name(wrv, "Write Read Verify sector count Mode 3");
-        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu32"", M_DoubleWord0(m_pCap->mode3));
-        json_push_back(wrv, json_new_a("WRV Mode 3 count", (char*)myStr.c_str()));
+        snprintf(&*myStr.begin(), BASIC, "%" PRIu32"", M_DoubleWord0(m_pCap->mode3));
+        json_push_back(wrv, json_new_a("WRV Mode 3 count", &*myStr.begin()));
 
         json_push_back(mode3, wrv);
     }
@@ -1945,14 +1945,14 @@ bool CAta_Identify_Log_03::get_Write_Read_Verify_Mode2(JSONNODE *mode2)
     printf("Write Read Verify Mode 2 \n");
     printf("\tWrite Read Verify =   0x%016" PRIx64"  \n", m_pCap->mode2);
 #endif
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", m_pCap->mode2);
-    json_push_back(mode2, json_new_a("Write Read Verify Mode 2", (char*)myStr.c_str()));
+    snprintf(&*myStr.begin(), BASIC, "0x%016" PRIx64"", m_pCap->mode2);
+    json_push_back(mode2, json_new_a("Write Read Verify Mode 2", &*myStr.begin()));
     if (check_For_Active_Status(&m_pCap->mode2))
     {
         JSONNODE *wrv = json_new(JSON_NODE);
         json_set_name(wrv, "Write Read Verify sector count Mode 2");
-        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu32"", M_DoubleWord0(m_pCap->mode2));
-        json_push_back(wrv, json_new_a("WRV Mode 2 count", (char*)myStr.c_str()));
+        snprintf(&*myStr.begin(), BASIC, "%" PRIu32"", M_DoubleWord0(m_pCap->mode2));
+        json_push_back(wrv, json_new_a("WRV Mode 2 count", &*myStr.begin()));
 
         json_push_back(mode2, wrv);
     }
@@ -1989,12 +1989,12 @@ bool CAta_Identify_Log_03::world_Wide_Name(JSONNODE *WWN)
     {
         uint64_t wwnReal = 0;
         wwnReal = (((uint64_t)m_pCap->wwn) << 48) + ((uint64_t)m_pCap->wwn1 << 32) + ((uint64_t)m_pCap->wwn2 << 16) + (uint64_t)m_pCap->wwn3;
-        snprintf((char*)myStr.c_str(), WORLD_WIDE_NAME_LEN, "%" PRIX64"", wwnReal);
+        snprintf(&*myStr.begin(), WORLD_WIDE_NAME_LEN, "%" PRIX64"", wwnReal);
         ltrim(myStr);
         rtrim(myStr);
         // world wide name
 
-        json_push_back(WWN, json_new_a("World Wide Name", (char*)myStr.c_str()));
+        json_push_back(WWN, json_new_a("World Wide Name", &*myStr.begin()));
     }
     else
     {
@@ -2024,8 +2024,8 @@ bool CAta_Identify_Log_03::get_Data_Set_Managment(JSONNODE *setManagement)
     printf("Data Set Management \n");
     printf("\tData Set Management =   0x%016" PRIx64"  \n", m_pCap->dataSet);
 #endif
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", m_pCap->dataSet);
-    json_push_back(setManagement, json_new_a("Data Set Management Value", (char*)myStr.c_str()));
+    snprintf(&*myStr.begin(), BASIC, "0x%016" PRIx64"", m_pCap->dataSet);
+    json_push_back(setManagement, json_new_a("Data Set Management Value", &*myStr.begin()));
     if (check_For_Active_Status(&m_pCap->dataSet))
     {
         if (m_pCap->dataSet & BIT0)
@@ -2066,24 +2066,24 @@ bool CAta_Identify_Log_03::get_Utilization_Unit_Time(JSONNODE *unitTime)
     printf("\tUtilization Per Unit Time =   0x%016" PRIx64"  \n", m_pCap->utilization);
     printf("\tUtilization Per Unit Time2 =   0x%016" PRIx64"  \n", m_pCap->utilTime2);
 #endif
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", m_pCap->utilTime2);
-    json_push_back(unitTime, json_new_a("Utilization Per Unit Time", (char*)myStr.c_str()));
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", m_pCap->utilTime2);
-    json_push_back(unitTime, json_new_a("Utilization Per Unit Time2", (char*)myStr.c_str()));
+    snprintf(&*myStr.begin(), BASIC, "0x%016" PRIx64"", m_pCap->utilTime2);
+    json_push_back(unitTime, json_new_a("Utilization Per Unit Time", &*myStr.begin()));
+    snprintf(&*myStr.begin(), BASIC, "0x%016" PRIx64"", m_pCap->utilTime2);
+    json_push_back(unitTime, json_new_a("Utilization Per Unit Time2", &*myStr.begin()));
     if (check_For_Active_Status(&m_pCap->utilization))
     {
         JSONNODE *data = json_new(JSON_NODE);
         json_set_name(data, "Utilization Per Unit Time");
-        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu8"", M_Byte2(m_pCap->utilization));
-        json_push_back(data, json_new_a("Utiliztion Type field", (char*)myStr.c_str()));
-        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu8"", M_Byte1(m_pCap->utilization));
-        json_push_back(data, json_new_a("Utiliztion Unites Field", (char*)myStr.c_str()));
-        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu8"", M_Byte0(m_pCap->utilization));
-        json_push_back(data, json_new_a("Utiliztion Interval Field", (char*)myStr.c_str()));
-        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu32"", M_DoubleWord1(m_pCap->utilTime2));
-        json_push_back(data, json_new_a("Utiliztion B Field", (char*)myStr.c_str()));
-        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu32"", M_DoubleWord0(m_pCap->utilTime2));
-        json_push_back(data, json_new_a("Utiliztion A Field", (char*)myStr.c_str()));
+        snprintf(&*myStr.begin(), BASIC, "%" PRIu8"", M_Byte2(m_pCap->utilization));
+        json_push_back(data, json_new_a("Utiliztion Type field", &*myStr.begin()));
+        snprintf(&*myStr.begin(), BASIC, "%" PRIu8"", M_Byte1(m_pCap->utilization));
+        json_push_back(data, json_new_a("Utiliztion Unites Field", &*myStr.begin()));
+        snprintf(&*myStr.begin(), BASIC, "%" PRIu8"", M_Byte0(m_pCap->utilization));
+        json_push_back(data, json_new_a("Utiliztion Interval Field", &*myStr.begin()));
+        snprintf(&*myStr.begin(), BASIC, "%" PRIu32"", M_DoubleWord1(m_pCap->utilTime2));
+        json_push_back(data, json_new_a("Utiliztion B Field", &*myStr.begin()));
+        snprintf(&*myStr.begin(), BASIC, "%" PRIu32"", M_DoubleWord0(m_pCap->utilTime2));
+        json_push_back(data, json_new_a("Utiliztion A Field", &*myStr.begin()));
 
         json_push_back(unitTime, data);
     }
@@ -2116,8 +2116,8 @@ bool CAta_Identify_Log_03::get_Utilization_Usage_Rate_Support(JSONNODE *rate)
     printf("\tUtilization Usage Rate Support =   0x%016" PRIx64"  \n", m_pCap->utilRate);
 #endif
 
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", m_pCap->utilRate);
-    json_push_back(rate, json_new_a("Utilization Usage Rate Support", (char*)myStr.c_str()));
+    snprintf(&*myStr.begin(), BASIC, "0x%016" PRIx64"", m_pCap->utilRate);
+    json_push_back(rate, json_new_a("Utilization Usage Rate Support", &*myStr.begin()));
 
     if (check_For_Active_Status(&m_pCap->utilRate))
     {
@@ -2186,8 +2186,8 @@ bool CAta_Identify_Log_03::get_Zoned_Capabilities(JSONNODE *zoned)
     printf("\tZoned Capabilities =   0x%016" PRIx64"  \n", m_pCap->zoned);
 #endif
 
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", m_pCap->zoned);
-    json_push_back(zoned, json_new_a("Zoned Capabilities", (char*)myStr.c_str()));
+    snprintf(&*myStr.begin(), BASIC, "0x%016" PRIx64"", m_pCap->zoned);
+    json_push_back(zoned, json_new_a("Zoned Capabilities", &*myStr.begin()));
 
     if (check_For_Active_Status(&m_pCap->zoned))
     {
@@ -2241,8 +2241,8 @@ bool CAta_Identify_Log_03::get_Supported_ZAC_Capabilities(JSONNODE *zac)
     printf("\tSupported ZAC Capabilities=   0x%016" PRIx64"  \n", m_pCap->ZAC);
 #endif
 
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", m_pCap->ZAC);
-    json_push_back(zac, json_new_a("Supported ZAC Capabilities", (char*)myStr.c_str()));
+    snprintf(&*myStr.begin(), BASIC, "0x%016" PRIx64"", m_pCap->ZAC);
+    json_push_back(zac, json_new_a("Supported ZAC Capabilities", &*myStr.begin()));
 
     if (check_For_Active_Status(&m_pCap->ZAC))
     {
@@ -2318,8 +2318,8 @@ bool CAta_Identify_Log_03::get_Background_Operations_Capabilities(JSONNODE *bgOp
     printf("Advanced Background Operations Capabilities \n");
     printf("\tAdvanced Background Operations Capabilities =   0x%016" PRIx64"  \n", m_pCap->backgroundOpsCapabilities);
 #endif
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", m_pCap->backgroundOpsCapabilities);
-    json_push_back(bgOperation, json_new_a("Advanced Background Operations Capabilities", (char*)myStr.c_str()));
+    snprintf(&*myStr.begin(), BASIC, "0x%016" PRIx64"", m_pCap->backgroundOpsCapabilities);
+    json_push_back(bgOperation, json_new_a("Advanced Background Operations Capabilities", &*myStr.begin()));
     if (check_For_Active_Status(&m_pCap->backgroundOpsCapabilities))
     {
         JSONNODE *data = json_new(JSON_NODE);
@@ -2340,10 +2340,10 @@ bool CAta_Identify_Log_03::get_Background_Operations_Capabilities(JSONNODE *bgOp
         {
             opensea_parser::set_Json_Bool(data, "ABO IR Mode Supported", false);
         }
-        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu32"", ((uint32_t)M_Word2(m_pCap->backgroundOpsCapabilities) << 16) + (uint32_t)M_Word1(m_pCap->backgroundOpsCapabilities));
-        json_push_back(data, json_new_a("ABO Minimum Fraction field", (char*)myStr.c_str()));
-        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16"", M_Word0(m_pCap->backgroundOpsCapabilities));
-        json_push_back(data, json_new_a("ABO Minimum Supported Timelimit field", (char*)myStr.c_str()));
+        snprintf(&*myStr.begin(), BASIC, "%" PRIu32"", ((uint32_t)M_Word2(m_pCap->backgroundOpsCapabilities) << 16) + (uint32_t)M_Word1(m_pCap->backgroundOpsCapabilities));
+        json_push_back(data, json_new_a("ABO Minimum Fraction field", &*myStr.begin()));
+        snprintf(&*myStr.begin(), BASIC, "%" PRIu16"", M_Word0(m_pCap->backgroundOpsCapabilities));
+        json_push_back(data, json_new_a("ABO Minimum Supported Timelimit field", &*myStr.begin()));
         json_push_back(bgOperation, data);
     }
     else
@@ -2374,17 +2374,17 @@ bool CAta_Identify_Log_03::get_Background_Operations_Recommendations(JSONNODE *r
     printf("Advanced Background Operations Recommendations \n");
     printf("\tAdvanced Background Operations Recommendations =   0x%016" PRIx64"  \n", m_pCap->backgroundOpsRecommendations);
 #endif
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", m_pCap->backgroundOpsRecommendations);
-    json_push_back(recommendations, json_new_a("Advanced Background Operations Recommendations", (char*)myStr.c_str()));
+    snprintf(&*myStr.begin(), BASIC, "0x%016" PRIx64"", m_pCap->backgroundOpsRecommendations);
+    json_push_back(recommendations, json_new_a("Advanced Background Operations Recommendations", &*myStr.begin()));
     if (check_For_Active_Status(&m_pCap->backgroundOpsRecommendations))
     {
         JSONNODE *data = json_new(JSON_NODE);
         json_set_name(data, "Advanced Background Operations Recommendations");
 
-        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16"", M_Word1(m_pCap->backgroundOpsRecommendations));
-        json_push_back(data, json_new_a("Device Maintenance Polling Time field", (char*)myStr.c_str()));
-        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16"", M_Word0(m_pCap->backgroundOpsRecommendations));
-        json_push_back(data, json_new_a("ABO Recommended Abo Start Interval field", (char*)myStr.c_str()));
+        snprintf(&*myStr.begin(), BASIC, "%" PRIu16"", M_Word1(m_pCap->backgroundOpsRecommendations));
+        json_push_back(data, json_new_a("Device Maintenance Polling Time field", &*myStr.begin()));
+        snprintf(&*myStr.begin(), BASIC, "%" PRIu16"", M_Word0(m_pCap->backgroundOpsRecommendations));
+        json_push_back(data, json_new_a("ABO Recommended Abo Start Interval field", &*myStr.begin()));
         json_push_back(recommendations, data);
     }
     else
@@ -2415,15 +2415,15 @@ bool CAta_Identify_Log_03::get_Queue_Depth(JSONNODE *qd)
     printf("Queue Depth \n");
     printf("\tQueue Depth =   0x%016" PRIx64"  \n", m_pCap->queueDepth);
 #endif
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", m_pCap->queueDepth);
-    json_push_back(qd, json_new_a("Queue Depth", (char*)myStr.c_str()));
+    snprintf(&*myStr.begin(), BASIC, "0x%016" PRIx64"", m_pCap->queueDepth);
+    json_push_back(qd, json_new_a("Queue Depth", &*myStr.begin()));
     if (check_For_Active_Status(&m_pCap->queueDepth))
     {
         JSONNODE *data = json_new(JSON_NODE);
         json_set_name(data, "Queue Depth");
 
-        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu8"", M_Byte0(m_pCap->queueDepth));
-        json_push_back(data, json_new_a("Queue Depth", (char*)myStr.c_str()));
+        snprintf(&*myStr.begin(), BASIC, "%" PRIu8"", M_Byte0(m_pCap->queueDepth));
+        json_push_back(data, json_new_a("Queue Depth", &*myStr.begin()));
 
         json_push_back(qd, data);
     }
@@ -2524,8 +2524,8 @@ bool CAta_Identify_Log_03::get_SCT_Capabilities(JSONNODE *sct)
     printf("Supported SCT Capabilities \n");
     printf("\tSupported SCT Capabilities =   0x%016" PRIx64"  \n", m_pCap->sctCapabilities);
 #endif
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", m_pCap->sctCapabilities);
-    json_push_back(sct, json_new_a("Supported SCT Capabilities", (char*)myStr.c_str()));
+    snprintf(&*myStr.begin(), BASIC, "0x%016" PRIx64"", m_pCap->sctCapabilities);
+    json_push_back(sct, json_new_a("Supported SCT Capabilities", &*myStr.begin()));
     if (set_Supported_Capabilities(&m_pCap->sctCapabilities))
     {
         JSONNODE *data = json_new(JSON_NODE);
@@ -2571,8 +2571,8 @@ bool CAta_Identify_Log_03::get_Depop_Capabilities(JSONNODE *depop)
     printf("Depopulation Capabilities \n");
     printf("\tDepopulation Capabilities =   0x%016" PRIx64"  \n", m_pCap->depopCapabilities);
 #endif
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", m_pCap->depopCapabilities);
-    json_push_back(depop, json_new_a("Depopulation Capabilities", (char*)myStr.c_str()));
+    snprintf(&*myStr.begin(), BASIC, "0x%016" PRIx64"", m_pCap->depopCapabilities);
+    json_push_back(depop, json_new_a("Depopulation Capabilities", &*myStr.begin()));
     if (check_For_Active_Status(&m_pCap->depopCapabilities))
     {
         JSONNODE *data = json_new(JSON_NODE);
@@ -2623,14 +2623,14 @@ bool CAta_Identify_Log_03::get_Depopulation_Execution_Time(JSONNODE *depop)
     printf("Depopulation Execution Times \n");
     printf("\tDepopulation Execution Time =   0x%016" PRIx64"  \n", m_pCap->depopExTime);
 #endif
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", m_pCap->depopExTime);
-    json_push_back(depop, json_new_a("Depopulation Execution Time", (char*)myStr.c_str()));
+    snprintf(&*myStr.begin(), BASIC, "0x%016" PRIx64"", m_pCap->depopExTime);
+    json_push_back(depop, json_new_a("Depopulation Execution Time", &*myStr.begin()));
     if (check_For_Active_Status(&m_pCap->depopExTime))
     {
         JSONNODE *data = json_new(JSON_NODE);
         json_set_name(data, "Depopulation Execution Time");
-        snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", (uint64_t)(m_pCap->depopExTime & 0x00FFFFFFFFFFFFFFULL));
-        json_push_back(depop, json_new_a("Depopulation Time", (char*)myStr.c_str()));
+        snprintf(&*myStr.begin(), BASIC, "0x%016" PRIx64"", (uint64_t)(m_pCap->depopExTime & 0x00FFFFFFFFFFFFFFULL));
+        json_push_back(depop, json_new_a("Depopulation Time", &*myStr.begin()));
         json_push_back(depop, data);
     }
     else
@@ -2673,13 +2673,13 @@ eReturnValues CAta_Identify_Log_03::get_Log_Page03(uint8_t *pData, JSONNODE *mas
         printf("\tHeader =   0x%016" PRIx64"  \n", m_pCap->header);
 #endif
 
-        snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", m_pCap->header);
-        json_push_back(pageInfo, json_new_a("Page Header", (char*)myStr.c_str()));
+        snprintf(&*myStr.begin(), BASIC, "0x%016" PRIx64"", m_pCap->header);
+        json_push_back(pageInfo, json_new_a("Page Header", &*myStr.begin()));
 
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", pageNumber);
-        json_push_back(pageInfo, json_new_a("Page Number", (char*)myStr.c_str()));
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", revision);
-        json_push_back(pageInfo, json_new_a("Revision Number", (char*)myStr.c_str()));
+        snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", pageNumber);
+        json_push_back(pageInfo, json_new_a("Page Number", &*myStr.begin()));
+        snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", revision);
+        json_push_back(pageInfo, json_new_a("Revision Number", &*myStr.begin()));
         get_Supported_Capabilities(pageInfo);
         get_DownLoad_MicroCode(pageInfo);
         get_Media_Rotation_Rate(pageInfo);
@@ -2859,8 +2859,8 @@ bool CAta_Identify_Log_04::get_Current_Settings(JSONNODE *currentData)
     printf("\tCurrent Settings =   0x%016" PRId64"  \n", pLog->currentSettings);
 #endif
 
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", pLog->currentSettings);
-    json_push_back(currentData, json_new_a("Current Settings", (char*)myStr.c_str()));
+    snprintf(&*myStr.begin(), BASIC, "0x%016" PRIx64"", pLog->currentSettings);
+    json_push_back(currentData, json_new_a("Current Settings", &*myStr.begin()));
     if (set_Current_Settings(&pLog->currentSettings))
     {
         JSONNODE *currentSettings = json_new(JSON_NODE);
@@ -2936,37 +2936,37 @@ bool CAta_Identify_Log_04::get_Feature_Settings(JSONNODE *featureData)
     printf("Feature Settings \n");
     printf("\tFeature Settings =   0x%016" PRIx64"  \n", pLog->featureSettings);
 #endif
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", pLog->featureSettings);
-    json_push_back(featureData, json_new_a("Feature Settings", (char*)myStr.c_str()));
+    snprintf(&*myStr.begin(), BASIC, "0x%016" PRIx64"", pLog->featureSettings);
+    json_push_back(featureData, json_new_a("Feature Settings", &*myStr.begin()));
 
     if (set_Feature_Settings(&pLog->featureSettings))
     {
         JSONNODE *featSettings = json_new(JSON_NODE);
         json_set_name(featSettings, "Feature Settings breakdown");
 
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_FS.wrvMode);
-        json_push_back(featSettings, json_new_a("Write Read Verify", (char*)myStr.c_str()));
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_FS.apmLevel);
-        json_push_back(featSettings, json_new_a("APM Level", (char*)myStr.c_str()));
+        snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", m_FS.wrvMode);
+        json_push_back(featSettings, json_new_a("Write Read Verify", &*myStr.begin()));
+        snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", m_FS.apmLevel);
+        json_push_back(featSettings, json_new_a("APM Level", &*myStr.begin()));
         if (m_FS.powerScource & BIT1)
         {
-            snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_FS.powerScource);
-            json_push_back(featSettings, json_new_a("Power Source Battery", (char*)myStr.c_str()));
+            snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", m_FS.powerScource);
+            json_push_back(featSettings, json_new_a("Power Source Battery", &*myStr.begin()));
         }
         else if (m_FS.powerScource & BIT2)
         {
-            snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_FS.powerScource);
-            json_push_back(featSettings, json_new_a("Power Source NOT Battery", (char*)myStr.c_str()));
+            snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", m_FS.powerScource);
+            json_push_back(featSettings, json_new_a("Power Source NOT Battery", &*myStr.begin()));
         }
         else if (m_FS.powerScource & BIT1 && m_FS.powerScource & BIT2)
         {
-            snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_FS.powerScource);
-            json_push_back(featSettings, json_new_a("Power Source Reserved", (char*)myStr.c_str()));
+            snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", m_FS.powerScource);
+            json_push_back(featSettings, json_new_a("Power Source Reserved", &*myStr.begin()));
         }
         else
         {
-            snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_FS.powerScource);
-            json_push_back(featSettings, json_new_a("Power Source Unknown", (char*)myStr.c_str()));
+            snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", m_FS.powerScource);
+            json_push_back(featSettings, json_new_a("Power Source Unknown", &*myStr.begin()));
         }
 
         json_push_back(featureData, featSettings);
@@ -2999,12 +2999,12 @@ bool CAta_Identify_Log_04::get_DMS_Times(JSONNODE *dmaData)
     printf("DMA Host Interface Sector Times \n");
     printf("\tDMA Host Interface Sector Times =   0x%016" PRIx64"  \n", pLog->DMAHostInterfaceSectorTimes);
 #endif
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", pLog->DMAHostInterfaceSectorTimes);
-    json_push_back(dmaData, json_new_a("DMA Host Interface Sector Times", (char*)myStr.c_str()));
+    snprintf(&*myStr.begin(), BASIC, "0x%016" PRIx64"", pLog->DMAHostInterfaceSectorTimes);
+    json_push_back(dmaData, json_new_a("DMA Host Interface Sector Times", &*myStr.begin()));
     if (set_Feature_Settings(&pLog->DMAHostInterfaceSectorTimes))
     {
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", (uint16_t)(M_Word0(pLog->DMAHostInterfaceSectorTimes)));
-        json_push_back(dmaData, json_new_a("DMA Sector Time ", (char*)myStr.c_str()));
+        snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", (uint16_t)(M_Word0(pLog->DMAHostInterfaceSectorTimes)));
+        json_push_back(dmaData, json_new_a("DMA Sector Time ", &*myStr.begin()));
     }
     else
     {
@@ -3034,12 +3034,12 @@ bool CAta_Identify_Log_04::get_PIO_Times(JSONNODE *pioData)
     printf("PIO Host Interface Sector Times \n");
     printf("\tPIO Host Interface Sector Times =   0x%016" PRIx64"  \n", pLog->PioHostInterfaceSectorTImes);
 #endif
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", pLog->PioHostInterfaceSectorTImes);
-    json_push_back(pioData, json_new_a("PIO Host Interface Sector Times", (char*)myStr.c_str()));
+    snprintf(&*myStr.begin(), BASIC, "0x%016" PRIx64"", pLog->PioHostInterfaceSectorTImes);
+    json_push_back(pioData, json_new_a("PIO Host Interface Sector Times", &*myStr.begin()));
     if (set_Feature_Settings(&pLog->PioHostInterfaceSectorTImes))
     {
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", (uint16_t)(M_Word0(pLog->PioHostInterfaceSectorTImes)));
-        json_push_back(pioData, json_new_a("PIO Sector Time ", (char*)myStr.c_str()));
+        snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", (uint16_t)(M_Word0(pLog->PioHostInterfaceSectorTImes)));
+        json_push_back(pioData, json_new_a("PIO Sector Time ", &*myStr.begin()));
     }
     else
     {
@@ -3069,12 +3069,12 @@ bool CAta_Identify_Log_04::get_Streaming_Min_Request_Times(JSONNODE *streamMinDa
     printf("Streaming Minimum request Times \n");
     printf("\tStreaming Minimum request Times =   0x%016" PRIx64"  \n", pLog->streamingMinRequestSize);
 #endif
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", pLog->streamingMinRequestSize);
-    json_push_back(streamMinData, json_new_a("Streaming Minimum request Times", (char*)myStr.c_str()));
+    snprintf(&*myStr.begin(), BASIC, "0x%016" PRIx64"", pLog->streamingMinRequestSize);
+    json_push_back(streamMinData, json_new_a("Streaming Minimum request Times", &*myStr.begin()));
     if (set_Feature_Settings(&pLog->streamingMinRequestSize))
     {
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", (uint16_t)(M_Word0(pLog->streamingMinRequestSize)));
-        json_push_back(streamMinData, json_new_a("Steaming Min Request Size", (char*)myStr.c_str()));
+        snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", (uint16_t)(M_Word0(pLog->streamingMinRequestSize)));
+        json_push_back(streamMinData, json_new_a("Steaming Min Request Size", &*myStr.begin()));
     }
     else
     {
@@ -3104,12 +3104,12 @@ bool CAta_Identify_Log_04::get_Streaming_Access_Latency(JSONNODE *accessData)
     printf("Streaming Access Latency \n");
     printf("\tStreaming Access Latency =   0x%016" PRIx64"  \n", pLog->streamingAccessLatency);
 #endif
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", pLog->streamingAccessLatency);
-    json_push_back(accessData, json_new_a("Streaming Access Latency", (char*)myStr.c_str()));
+    snprintf(&*myStr.begin(), BASIC, "0x%016" PRIx64"", pLog->streamingAccessLatency);
+    json_push_back(accessData, json_new_a("Streaming Access Latency", &*myStr.begin()));
     if (set_Feature_Settings(&pLog->streamingAccessLatency))
     {
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", (uint16_t)(M_Word0(pLog->streamingAccessLatency)));
-        json_push_back(accessData, json_new_a("Steaming Access Latency data", (char*)myStr.c_str()));
+        snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", (uint16_t)(M_Word0(pLog->streamingAccessLatency)));
+        json_push_back(accessData, json_new_a("Steaming Access Latency data", &*myStr.begin()));
     }
     else
     {
@@ -3140,13 +3140,13 @@ bool CAta_Identify_Log_04::get_Streaming_Performance_Granularity(JSONNODE *perfo
     printf("\tStreaming Performance Granularity =   0x%016" PRIx64"  \n", pLog->streamingPerformanceGranularity);
 #endif
 
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", pLog->streamingPerformanceGranularity);
-    json_push_back(performanceData, json_new_a("Streaming Performance Granularity", (char*)myStr.c_str()));
+    snprintf(&*myStr.begin(), BASIC, "0x%016" PRIx64"", pLog->streamingPerformanceGranularity);
+    json_push_back(performanceData, json_new_a("Streaming Performance Granularity", &*myStr.begin()));
 
     if (set_Feature_Settings(&pLog->streamingPerformanceGranularity))
     {
-        snprintf((char*)myStr.c_str(), BASIC, "0x%08" PRIx32"", (uint32_t)(M_DoubleWord0(pLog->streamingPerformanceGranularity)));
-        json_push_back(performanceData, json_new_a("Steaming Granularity", (char*)myStr.c_str()));
+        snprintf(&*myStr.begin(), BASIC, "0x%08" PRIx32"", (uint32_t)(M_DoubleWord0(pLog->streamingPerformanceGranularity)));
+        json_push_back(performanceData, json_new_a("Steaming Granularity", &*myStr.begin()));
     }
     else
     {
@@ -3177,12 +3177,12 @@ bool CAta_Identify_Log_04::get_Free_Fall_Control(JSONNODE *freeFallData)
     printf("Free Fall control sensitivity  \n");
     printf("\tFree Fall control sensitivity  =   0x%016" PRIx64"  \n", pLog->freeFallControlSensitivity);
 #endif
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", pLog->freeFallControlSensitivity);
-    json_push_back(freeFallData, json_new_a("Free Fall control sensitivity ", (char*)myStr.c_str()));
+    snprintf(&*myStr.begin(), BASIC, "0x%016" PRIx64"", pLog->freeFallControlSensitivity);
+    json_push_back(freeFallData, json_new_a("Free Fall control sensitivity ", &*myStr.begin()));
     if (set_Feature_Settings(&pLog->freeFallControlSensitivity))
     {
-        snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", (uint32_t)(M_Byte0(pLog->freeFallControlSensitivity)));
-        json_push_back(freeFallData, json_new_a("Free Fall control sensitivity settings", (char*)myStr.c_str()));
+        snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", (uint32_t)(M_Byte0(pLog->freeFallControlSensitivity)));
+        json_push_back(freeFallData, json_new_a("Free Fall control sensitivity settings", &*myStr.begin()));
     }
     else
     {
@@ -3212,16 +3212,16 @@ bool CAta_Identify_Log_04::get_Device_Maintenance_Schedule(JSONNODE *maintenaceD
     printf("Device Maintenance Schedule \n");
     printf("\tDevice Maintenance Schedule =   0x%016" PRIx64"  \n", pLog->deviceMaintenaceSchedule);
 #endif
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", pLog->deviceMaintenaceSchedule);
-    json_push_back(maintenaceData, json_new_a("Device Maintenace Schedule", (char*)myStr.c_str()));
+    snprintf(&*myStr.begin(), BASIC, "0x%016" PRIx64"", pLog->deviceMaintenaceSchedule);
+    json_push_back(maintenaceData, json_new_a("Device Maintenace Schedule", &*myStr.begin()));
     if (set_Feature_Settings(&pLog->deviceMaintenaceSchedule))
     {
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", (uint16_t)(M_Word0(pLog->deviceMaintenaceSchedule)));
-        json_push_back(maintenaceData, json_new_a("Minimum Inactive Time", (char*)myStr.c_str()));
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", (uint16_t)(M_Word1(pLog->deviceMaintenaceSchedule)));
-        json_push_back(maintenaceData, json_new_a("Time to Preformance Degradation", (char*)myStr.c_str()));
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", (uint16_t)(M_Word2(pLog->deviceMaintenaceSchedule)));
-        json_push_back(maintenaceData, json_new_a("Time Scheduled for Device Maintenance", (char*)myStr.c_str()));
+        snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", (uint16_t)(M_Word0(pLog->deviceMaintenaceSchedule)));
+        json_push_back(maintenaceData, json_new_a("Minimum Inactive Time", &*myStr.begin()));
+        snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", (uint16_t)(M_Word1(pLog->deviceMaintenaceSchedule)));
+        json_push_back(maintenaceData, json_new_a("Time to Preformance Degradation", &*myStr.begin()));
+        snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", (uint16_t)(M_Word2(pLog->deviceMaintenaceSchedule)));
+        json_push_back(maintenaceData, json_new_a("Time Scheduled for Device Maintenance", &*myStr.begin()));
 
         JSONNODE *deviceMaintenace = json_new(JSON_NODE);
         json_set_name(deviceMaintenace, "Device Maintenace Meaning");
@@ -3274,7 +3274,7 @@ bool CAta_Identify_Log_04::get_Device_Maintenance_Schedule(JSONNODE *maintenaceD
         {
             myStr = "unknown";
         }
-        json_push_back(deviceMaintenace, json_new_a("MC Level", (char*)myStr.c_str()));
+        json_push_back(deviceMaintenace, json_new_a("MC Level", &*myStr.begin()));
 
         json_push_back(maintenaceData, deviceMaintenace);
     }
@@ -3318,12 +3318,12 @@ eReturnValues CAta_Identify_Log_04::get_Log_Page04(uint8_t *pData, JSONNODE *mas
         printf("Log Page 04h \n");
         printf("\tHeader =   0x%016" PRIx64"  \n", pLog->header);
 #endif
-        snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", pLog->header);
-        json_push_back(pageInfo, json_new_a("Page Header", (char*)myStr.c_str()));
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", pageNumber);
-        json_push_back(pageInfo, json_new_a("Page Number", (char*)myStr.c_str()));
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", revision);
-        json_push_back(pageInfo, json_new_a("Revision Number", (char*)myStr.c_str()));
+        snprintf(&*myStr.begin(), BASIC, "0x%016" PRIx64"", pLog->header);
+        json_push_back(pageInfo, json_new_a("Page Header", &*myStr.begin()));
+        snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", pageNumber);
+        json_push_back(pageInfo, json_new_a("Page Number", &*myStr.begin()));
+        snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", revision);
+        json_push_back(pageInfo, json_new_a("Revision Number", &*myStr.begin()));
 
         get_Current_Settings(pageInfo);
         get_Feature_Settings(pageInfo);
@@ -3614,12 +3614,12 @@ eReturnValues CAta_Identify_Log_05::get_Log_Page05(uint8_t *pData, JSONNODE *mas
         printf("Log Page 05h \n");
         printf("\tHeader =   0x%016" PRIx64"  \n", m_pLog->header);
 #endif
-        snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", m_pLog->header);
-        json_push_back(pageInfo, json_new_a("Page Header", (char*)myStr.c_str()));
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", pageNumber);
-        json_push_back(pageInfo, json_new_a("Page Number", (char*)myStr.c_str()));
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", revision);
-        json_push_back(pageInfo, json_new_a("Revision Number", (char*)myStr.c_str()));
+        snprintf(&*myStr.begin(), BASIC, "0x%016" PRIx64"", m_pLog->header);
+        json_push_back(pageInfo, json_new_a("Page Header", &*myStr.begin()));
+        snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", pageNumber);
+        json_push_back(pageInfo, json_new_a("Page Number", &*myStr.begin()));
+        snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", revision);
+        json_push_back(pageInfo, json_new_a("Revision Number", &*myStr.begin()));
 
         get_printables(pageInfo);
 
@@ -3760,8 +3760,8 @@ bool CAta_Identify_Log_06::get_Security_Settings(JSONNODE *si)
     printf("Security Settings \n");
     printf("\tSecurity Settings =   0x%016" PRIx64"  \n", m_pLog->securitySetting);
 #endif
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", m_pLog->securitySetting);
-    json_push_back(si, json_new_a("Security Settings", (char*)myStr.c_str()));
+    snprintf(&*myStr.begin(), BASIC, "0x%016" PRIx64"", m_pLog->securitySetting);
+    json_push_back(si, json_new_a("Security Settings", &*myStr.begin()));
 
     if (set_Security_Settings(&m_pLog->securitySetting))
     {
@@ -3808,13 +3808,13 @@ bool CAta_Identify_Log_06::get_Master_Password_Identifier(JSONNODE *mpIdent)
     printf("Master Password Identifier \n");
     printf("\tMaster Password Identifier =   0x%016" PRIx64"  \n", m_pLog->masterPassword);
 #endif
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", m_pLog->masterPassword);
-    json_push_back(mpIdent, json_new_a("Master Password Identifier", (char*)myStr.c_str()));
+    snprintf(&*myStr.begin(), BASIC, "0x%016" PRIx64"", m_pLog->masterPassword);
+    json_push_back(mpIdent, json_new_a("Master Password Identifier", &*myStr.begin()));
     if (check_For_Active_Status(&m_pLog->masterPassword))
     {
         uint16_t master = (uint16_t)(M_Word0(m_pLog->masterPassword));
-        snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx16"", master);
-        json_push_back(mpIdent, json_new_a("Master Password Identifier field", (char*)myStr.c_str()));
+        snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx16"", master);
+        json_push_back(mpIdent, json_new_a("Master Password Identifier field", &*myStr.begin()));
         if (master & BIT0)
         {
             opensea_parser::set_Json_Bool(mpIdent, "Master Password Capability is Maximum", true);
@@ -3848,8 +3848,8 @@ bool CAta_Identify_Log_06::get_Time_for_Enhanced_Erase(JSONNODE *enhanced)
     printf("Time for Enhanced Erase \n");
     printf("\tTime for Enhanced Erase =   0x%016" PRIx64"  \n", m_pLog->timeEnhancedErase);
 #endif
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", m_pLog->timeEnhancedErase);
-    json_push_back(enhanced, json_new_a("Time for Enhanced Erase", (char*)myStr.c_str()));
+    snprintf(&*myStr.begin(), BASIC, "0x%016" PRIx64"", m_pLog->timeEnhancedErase);
+    json_push_back(enhanced, json_new_a("Time for Enhanced Erase", &*myStr.begin()));
     if (check_For_Active_Status(&m_pLog->timeEnhancedErase))
     {
         if (m_pLog->timeEnhancedErase & BIT15)
@@ -3860,8 +3860,8 @@ bool CAta_Identify_Log_06::get_Time_for_Enhanced_Erase(JSONNODE *enhanced)
         {
             opensea_parser::set_Json_Bool(enhanced, "Enhanced Security Erased Time format bit", false);
         }
-        snprintf((char*)myStr.c_str(), BASIC, "%" PRId16"", ((uint16_t)(M_Word0(m_pLog->timeEnhancedErase)) & 0x0FFF) * 2);
-        json_push_back(enhanced, json_new_a("Time for Enhanced Erase in Minutes", (char*)myStr.c_str()));
+        snprintf(&*myStr.begin(), BASIC, "%" PRId16"", ((uint16_t)(M_Word0(m_pLog->timeEnhancedErase)) & 0x0FFF) * 2);
+        json_push_back(enhanced, json_new_a("Time for Enhanced Erase in Minutes", &*myStr.begin()));
     }
     return true;
 }
@@ -3887,8 +3887,8 @@ bool CAta_Identify_Log_06::get_Time_for_Normal_Erase(JSONNODE *normal)
     printf("Time for Normal Erase \n");
     printf("\tTime for Normal Erase =   0x%016" PRIx64"  \n", m_pLog->timeNormalErase);
 #endif
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", m_pLog->timeNormalErase);
-    json_push_back(normal, json_new_a("Time for Normal Erase", (char*)myStr.c_str()));
+    snprintf(&*myStr.begin(), BASIC, "0x%016" PRIx64"", m_pLog->timeNormalErase);
+    json_push_back(normal, json_new_a("Time for Normal Erase", &*myStr.begin()));
     if (check_For_Active_Status(&m_pLog->timeNormalErase))
     {
         if (m_pLog->timeNormalErase & BIT15)
@@ -3899,8 +3899,8 @@ bool CAta_Identify_Log_06::get_Time_for_Normal_Erase(JSONNODE *normal)
         {
             opensea_parser::set_Json_Bool(normal, "Normal Security Time format bit", false);
         }
-        snprintf((char*)myStr.c_str(), BASIC, "%" PRId16"", ((uint16_t)(M_Word0(m_pLog->timeNormalErase)) & 0x0FFF) * 2);
-        json_push_back(normal, json_new_a("Time for Normal Erase in Minutes", (char*)myStr.c_str()));
+        snprintf(&*myStr.begin(), BASIC, "%" PRId16"", ((uint16_t)(M_Word0(m_pLog->timeNormalErase)) & 0x0FFF) * 2);
+        json_push_back(normal, json_new_a("Time for Normal Erase in Minutes", &*myStr.begin()));
     }
     return true;
 }
@@ -3926,8 +3926,8 @@ bool CAta_Identify_Log_06::get_Trusted_Computing_Feature_Set(JSONNODE *tdc)
     printf("Trusted Computing Feature Set \n");
     printf("\tTrusted Computing Feature Set =   0x%016" PRIx64"  \n", m_pLog->tcfeatures);
 #endif
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", m_pLog->tcfeatures);
-    json_push_back(tdc, json_new_a("Trusted Computing Feature Set", (char*)myStr.c_str()));
+    snprintf(&*myStr.begin(), BASIC, "0x%016" PRIx64"", m_pLog->tcfeatures);
+    json_push_back(tdc, json_new_a("Trusted Computing Feature Set", &*myStr.begin()));
     if (check_For_Active_Status(&m_pLog->tcfeatures))
     {
         if (m_pLog->tcfeatures & BIT0)
@@ -4017,8 +4017,8 @@ bool CAta_Identify_Log_06::get_Security_Capabilities(JSONNODE *sCap)
     printf("Trusted Computing Feature Set \n");
     printf("\tTrusted Computing Feature Set =   0x%016" PRIx64"  \n", m_pLog->tcfeatures);
 #endif
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", m_pLog->tcfeatures);
-    json_push_back(sCap, json_new_a("Trusted Computing Feature Se", (char*)myStr.c_str()));
+    snprintf(&*myStr.begin(), BASIC, "0x%016" PRIx64"", m_pLog->tcfeatures);
+    json_push_back(sCap, json_new_a("Trusted Computing Feature Se", &*myStr.begin()));
     if (set_Security_Capabilities())
     {
         JSONNODE *securityBits = json_new(JSON_NODE);
@@ -4069,13 +4069,13 @@ eReturnValues CAta_Identify_Log_06::get_Log_Page06(uint8_t *pData, JSONNODE *mas
         printf("Log Page 06h \n");
         printf("\tHeader =   0x%016" PRIx64"  \n", m_pLog->header);
 #endif
-        snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", m_pLog->header);
-        json_push_back(pageInfo, json_new_a("Page Header", (char*)myStr.c_str()));
+        snprintf(&*myStr.begin(), BASIC, "0x%016" PRIx64"", m_pLog->header);
+        json_push_back(pageInfo, json_new_a("Page Header", &*myStr.begin()));
 
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", pageNumber);
-        json_push_back(pageInfo, json_new_a("Page Number", (char*)myStr.c_str()));
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", revision);
-        json_push_back(pageInfo, json_new_a("Revision Number", (char*)myStr.c_str()));
+        snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", pageNumber);
+        json_push_back(pageInfo, json_new_a("Page Number", &*myStr.begin()));
+        snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", revision);
+        json_push_back(pageInfo, json_new_a("Revision Number", &*myStr.begin()));
         get_Master_Password_Identifier(pageInfo);
         get_Security_Settings(pageInfo);
         get_Time_for_Enhanced_Erase(pageInfo);
@@ -4175,12 +4175,12 @@ eReturnValues CAta_Identify_Log_07::get_Log_Page07(uint8_t *pData, JSONNODE *mas
         printf("Log Page 07h \n");
         printf("\tHeader =   0x%016" PRIx64"  \n", m_pLog->header);
 #endif
-        snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", m_pLog->header);
-        json_push_back(pageInfo, json_new_a("Page Header", (char*)myStr.c_str()));
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", pageNumber);
-        json_push_back(pageInfo, json_new_a("Page Number", (char*)myStr.c_str()));
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", revision);
-        json_push_back(pageInfo, json_new_a("Revision Number", (char*)myStr.c_str()));
+        snprintf(&*myStr.begin(), BASIC, "0x%016" PRIx64"", m_pLog->header);
+        json_push_back(pageInfo, json_new_a("Page Header", &*myStr.begin()));
+        snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", pageNumber);
+        json_push_back(pageInfo, json_new_a("Page Number", &*myStr.begin()));
+        snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", revision);
+        json_push_back(pageInfo, json_new_a("Revision Number", &*myStr.begin()));
 
 
         json_push_back(masterData, pageInfo);
@@ -4401,8 +4401,8 @@ bool CAta_Identify_Log_08::get_Sata_Capabilities(JSONNODE *cap)
     printf("\tSATA Capabilities =   0x%016" PRIx64"  \n", m_pLog->sataCapabilities);
 #endif
 
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", m_pLog->sataCapabilities);
-    json_push_back(cap, json_new_a("SATA Capabilities QWord", (char*)myStr.c_str()));
+    snprintf(&*myStr.begin(), BASIC, "0x%016" PRIx64"", m_pLog->sataCapabilities);
+    json_push_back(cap, json_new_a("SATA Capabilities QWord", &*myStr.begin()));
 
     if (set_Sata_Capabilities())
     {
@@ -4554,8 +4554,8 @@ bool CAta_Identify_Log_08::get_Current_Sata(JSONNODE *current)
     printf("Current SATA Settings\n");
     printf("\tCurrent SATA Settingss =   0x%016" PRIx64"  \n", m_pLog->currentSata);
 #endif
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", m_pLog->currentSata);
-    json_push_back(current, json_new_a("Current SATA Settings QWord", (char*)myStr.c_str()));
+    snprintf(&*myStr.begin(), BASIC, "0x%016" PRIx64"", m_pLog->currentSata);
+    json_push_back(current, json_new_a("Current SATA Settings QWord", &*myStr.begin()));
     if (set_Current_Sata())
     {
         JSONNODE *currentSettings = json_new(JSON_NODE);
@@ -4652,11 +4652,11 @@ void CAta_Identify_Log_08::get_Device_Sleep_Timing_Variables(JSONNODE *sleep)
     if (m_pLog->deviceSleepTiming &BIT63)
     {
         opensea_parser::set_Json_Bool(sleep, "DEVSLP Timing Variables Supported", true);
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRId16"", (uint16_t)M_GETBITRANGE(m_pLog->deviceSleepTiming, 15, 8));
-        json_push_back(sleep, json_new_a("DEVSLEEP Exit Timeout Field (DETO)", (char*)myStr.c_str()));
+        snprintf(&*myStr.begin(), BASIC, "0x%04" PRId16"", (uint16_t)M_GETBITRANGE(m_pLog->deviceSleepTiming, 15, 8));
+        json_push_back(sleep, json_new_a("DEVSLEEP Exit Timeout Field (DETO)", &*myStr.begin()));
 
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRId16"", (uint16_t)M_GETBITRANGE(m_pLog->deviceSleepTiming, 4, 0));
-        json_push_back(sleep, json_new_a("Minimum DEVSLP Assertion Time Field (MDAT)", (char*)myStr.c_str()));
+        snprintf(&*myStr.begin(), BASIC, "0x%04" PRId16"", (uint16_t)M_GETBITRANGE(m_pLog->deviceSleepTiming, 4, 0));
+        json_push_back(sleep, json_new_a("Minimum DEVSLP Assertion Time Field (MDAT)", &*myStr.begin()));
 
     }
     else
@@ -4700,13 +4700,13 @@ eReturnValues CAta_Identify_Log_08::get_Log_Page08(uint8_t *pData, JSONNODE *mas
         printf("Log Page 08h \n");
         printf("\tHeader =   0x%016" PRIx64"  \n", m_pLog->header);
 #endif
-        snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", m_pLog->header);
-        json_push_back(pageInfo, json_new_a("Page Header", (char*)myStr.c_str()));
+        snprintf(&*myStr.begin(), BASIC, "0x%016" PRIx64"", m_pLog->header);
+        json_push_back(pageInfo, json_new_a("Page Header", &*myStr.begin()));
 
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", pageNumber);
-        json_push_back(pageInfo, json_new_a("Page Number", (char*)myStr.c_str()));
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", revision);
-        json_push_back(pageInfo, json_new_a("Revision Number", (char*)myStr.c_str()));
+        snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", pageNumber);
+        json_push_back(pageInfo, json_new_a("Page Number", &*myStr.begin()));
+        snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", revision);
+        json_push_back(pageInfo, json_new_a("Revision Number", &*myStr.begin()));
 
         get_Sata_Capabilities(pageInfo);
         get_Current_Sata(pageInfo);

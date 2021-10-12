@@ -287,16 +287,16 @@ void CScsiErrorCounterLog::process_Error_Data(JSONNODE *errorData)
     {
         set_Master_String(&myStr, myHeader);
         JSONNODE *errorInfo = json_new(JSON_NODE);
-        json_set_name(errorInfo, (char*)myStr.c_str());
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_Error->paramCode);
-        json_push_back(errorInfo, json_new_a("Error Counter Code", (char*)myStr.c_str()));
+        json_set_name(errorInfo, &*myStr.begin());
+        snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", m_Error->paramCode);
+        json_push_back(errorInfo, json_new_a("Error Counter Code", &*myStr.begin()));
         if (!descriptionFound)
         {
             
-            snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Error->paramControlByte);
-            json_push_back(errorInfo, json_new_a("Error Counter Control Byte ", (char*)myStr.c_str()));
-            snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Error->paramLength);
-            json_push_back(errorInfo, json_new_a("Error Counter Length ", (char*)myStr.c_str()));
+            snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_Error->paramControlByte);
+            json_push_back(errorInfo, json_new_a("Error Counter Control Byte ", &*myStr.begin()));
+            snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_Error->paramLength);
+            json_push_back(errorInfo, json_new_a("Error Counter Length ", &*myStr.begin()));
         }
         if (m_Error->paramLength == 8 || m_ErrorValue > UINT32_MAX)
         {
@@ -346,7 +346,7 @@ eReturnValues CScsiErrorCounterLog::get_Error_Counter_Data(JSONNODE *masterData)
 		set_Master_String(&headerStr, "Error Counter Log");
         append_Error_Log_Page_Number(&myStr, headerStr);
 		JSONNODE *pageInfo = json_new(JSON_NODE);
-		json_set_name(pageInfo, (char*)myStr.c_str());
+		json_set_name(pageInfo, &*myStr.begin());
 
 		for (size_t offset = 0; offset < m_PageLength; )
 		{

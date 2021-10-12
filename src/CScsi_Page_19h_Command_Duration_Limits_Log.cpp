@@ -180,13 +180,13 @@ void CScsiCmdDurationLimitsLog::process_Generic_Data(JSONNODE* genericData, uint
     get_Parameter_Code_Description(m_commandLog->paramCode, &myHeader);
     if (g_dataformat == PREPYTHON_DATA)
     {
-        prePython_int(genericData, (char*)myHeader.c_str(), "generic", "count", m_Value, COMMAND_DURATION_LIMITS_LOG, SAS_SUBPAGE_ZERO, paramCode, offset);
+        prePython_int(genericData, &*myHeader.begin(), "generic", "count", m_Value, COMMAND_DURATION_LIMITS_LOG, SAS_SUBPAGE_ZERO, paramCode, offset);
 
     }
     else
     {
-        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu64"", m_Value);
-        json_push_back(genericData, json_new_a((char*)myHeader.c_str(), (char*)myStr.c_str()));
+        snprintf(&*myStr.begin(), BASIC, "%" PRIu64"", m_Value);
+        json_push_back(genericData, json_new_a(&*myHeader.begin(), &*myStr.begin()));
     }
 }
 //-----------------------------------------------------------------------------
@@ -223,8 +223,8 @@ void CScsiCmdDurationLimitsLog::process_Achievable_Data(JSONNODE * achievableDat
     else
     {
         myHeader = "Achievable Latency Target";
-        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu64"", m_Value);
-        json_push_back(achievableData, json_new_a((char*)myHeader.c_str(), (char*)myStr.c_str()));
+        snprintf(&*myStr.begin(), BASIC, "%" PRIu64"", m_Value);
+        json_push_back(achievableData, json_new_a(&*myHeader.begin(), &*myStr.begin()));
     }
 }
 //-----------------------------------------------------------------------------
@@ -263,20 +263,20 @@ void CScsiCmdDurationLimitsLog::process_Duration_Limits_Data(JSONNODE* limitData
 
     if (g_dataformat == PREPYTHON_DATA)
     {
-        prePython_int(limitData, (char*)myStr.c_str(), "total inactive target miss", "commands", m_limitsLog->inactiveMiss, COMMAND_DURATION_LIMITS_LOG, SAS_SUBPAGE_ZERO, m_limitsLog->paramCode, offset);
-        prePython_int(limitData, (char*)myStr.c_str(), "total active target miss", "commands", m_limitsLog->activeMiss, COMMAND_DURATION_LIMITS_LOG, SAS_SUBPAGE_ZERO, m_limitsLog->paramCode, offset);
-        prePython_int(limitData, (char*)myStr.c_str(), "total latency miss", "commands", m_limitsLog->latencyMiss, COMMAND_DURATION_LIMITS_LOG, SAS_SUBPAGE_ZERO, m_limitsLog->paramCode, offset);
-        prePython_int(limitData, (char*)myStr.c_str(), "total noncoformin miss", "commands", m_limitsLog->nonconformingMiss, COMMAND_DURATION_LIMITS_LOG, SAS_SUBPAGE_ZERO, m_limitsLog->paramCode, offset);
-        prePython_int(limitData, (char*)myStr.c_str(), "total predictive latency miss", "commands", m_limitsLog->predictiveLatencyMiss, COMMAND_DURATION_LIMITS_LOG, SAS_SUBPAGE_ZERO, m_limitsLog->paramCode, offset);
-        prePython_int(limitData, (char*)myStr.c_str(), "total attributable to errors", "commands", m_limitsLog->latencyMissesDoToError, COMMAND_DURATION_LIMITS_LOG, SAS_SUBPAGE_ZERO, m_limitsLog->paramCode, offset);
-        prePython_int(limitData, (char*)myStr.c_str(), "total attributable to deferred errors", "commands", m_limitsLog->latencyMissesDeferredErrors, COMMAND_DURATION_LIMITS_LOG, SAS_SUBPAGE_ZERO, m_limitsLog->paramCode, offset);
-        prePython_int(limitData, (char*)myStr.c_str(), "total attributable to background operations", "commands", m_limitsLog->missedDoToBackgroundOperations, COMMAND_DURATION_LIMITS_LOG, SAS_SUBPAGE_ZERO, m_limitsLog->paramCode, offset);
+        prePython_int(limitData, &*myStr.begin(), "total inactive target miss", "commands", m_limitsLog->inactiveMiss, COMMAND_DURATION_LIMITS_LOG, SAS_SUBPAGE_ZERO, m_limitsLog->paramCode, offset);
+        prePython_int(limitData, &*myStr.begin(), "total active target miss", "commands", m_limitsLog->activeMiss, COMMAND_DURATION_LIMITS_LOG, SAS_SUBPAGE_ZERO, m_limitsLog->paramCode, offset);
+        prePython_int(limitData, &*myStr.begin(), "total latency miss", "commands", m_limitsLog->latencyMiss, COMMAND_DURATION_LIMITS_LOG, SAS_SUBPAGE_ZERO, m_limitsLog->paramCode, offset);
+        prePython_int(limitData, &*myStr.begin(), "total noncoformin miss", "commands", m_limitsLog->nonconformingMiss, COMMAND_DURATION_LIMITS_LOG, SAS_SUBPAGE_ZERO, m_limitsLog->paramCode, offset);
+        prePython_int(limitData, &*myStr.begin(), "total predictive latency miss", "commands", m_limitsLog->predictiveLatencyMiss, COMMAND_DURATION_LIMITS_LOG, SAS_SUBPAGE_ZERO, m_limitsLog->paramCode, offset);
+        prePython_int(limitData, &*myStr.begin(), "total attributable to errors", "commands", m_limitsLog->latencyMissesDoToError, COMMAND_DURATION_LIMITS_LOG, SAS_SUBPAGE_ZERO, m_limitsLog->paramCode, offset);
+        prePython_int(limitData, &*myStr.begin(), "total attributable to deferred errors", "commands", m_limitsLog->latencyMissesDeferredErrors, COMMAND_DURATION_LIMITS_LOG, SAS_SUBPAGE_ZERO, m_limitsLog->paramCode, offset);
+        prePython_int(limitData, &*myStr.begin(), "total attributable to background operations", "commands", m_limitsLog->missedDoToBackgroundOperations, COMMAND_DURATION_LIMITS_LOG, SAS_SUBPAGE_ZERO, m_limitsLog->paramCode, offset);
 
     }
     else
     {
         JSONNODE* limitInfo = json_new(JSON_NODE);
-        json_set_name(limitInfo, (char*)myStr.c_str());
+        json_set_name(limitInfo, &*myStr.begin());
 
         set_json_64bit(limitInfo, "Number of Inactive Target Miss Commands", m_limitsLog->inactiveMiss, false);
         set_json_64bit(limitInfo, "Number of Write FUA commands", m_limitsLog->activeMiss, false);

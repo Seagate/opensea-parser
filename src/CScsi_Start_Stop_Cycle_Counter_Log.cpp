@@ -238,15 +238,15 @@ eReturnValues CScsiStartStop::week_Year_Print(JSONNODE *data,uint16_t param, uin
 	
     if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", param);
-        json_push_back(dateInfo, json_new_a("Parameter Code", (char*)myStr.c_str()));
-        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu8"", paramlength);
-        json_push_back(dateInfo, json_new_a("Parameter Length", (char*)myStr.c_str()));
-        snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", paramConByte);
-        json_push_back(dateInfo, json_new_a("Control Byte", (char*)myStr.c_str()));
+        snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", param);
+        json_push_back(dateInfo, json_new_a("Parameter Code", &*myStr.begin()));
+        snprintf(&*myStr.begin(), BASIC, "%" PRIu8"", paramlength);
+        json_push_back(dateInfo, json_new_a("Parameter Length", &*myStr.begin()));
+        snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", paramConByte);
+        json_push_back(dateInfo, json_new_a("Control Byte", &*myStr.begin()));
     }
 	myStr.resize(YEARSIZE);
-	memset((char*)myStr.c_str(), 0, YEARSIZE);
+	memset(&*myStr.begin(), 0, YEARSIZE);
     if (year != 0x20202020)
     {
         strncpy((char *)myStr.c_str(), (char*)&year, YEARSIZE);
@@ -255,7 +255,7 @@ eReturnValues CScsiStartStop::week_Year_Print(JSONNODE *data,uint16_t param, uin
     {
         myStr = "0000";
     }
-	json_push_back(dateInfo, json_new_a((char *)strYear.c_str(), (char*)myStr.c_str()));
+	json_push_back(dateInfo, json_new_a((char *)strYear.c_str(), &*myStr.begin()));
 	myStr.resize(WEEKSIZE);
     if (week != 0x2020)
     {
@@ -265,7 +265,7 @@ eReturnValues CScsiStartStop::week_Year_Print(JSONNODE *data,uint16_t param, uin
     {
         myStr = "00";
     }
-	json_push_back(dateInfo, json_new_a((char *)strWeek.c_str(), (char*)myStr.c_str()));
+	json_push_back(dateInfo, json_new_a((char *)strWeek.c_str(), &*myStr.begin()));
 
 	json_push_back(data, dateInfo);
 	return SUCCESS;
@@ -294,12 +294,12 @@ eReturnValues CScsiStartStop::get_Count(JSONNODE *countData, uint16_t param, uin
 
     if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", param);
-        json_push_back(countInfo, json_new_a("Parameter Code", (char*)myStr.c_str()));
-        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu8"", paramlength);
-        json_push_back(countInfo, json_new_a("Parameter Length", (char*)myStr.c_str()));
-        snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", paramConByte);
-        json_push_back(countInfo, json_new_a("Control Byte", (char*)myStr.c_str()));
+        snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", param);
+        json_push_back(countInfo, json_new_a("Parameter Code", &*myStr.begin()));
+        snprintf(&*myStr.begin(), BASIC, "%" PRIu8"", paramlength);
+        json_push_back(countInfo, json_new_a("Parameter Length", &*myStr.begin()));
+        snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", paramConByte);
+        json_push_back(countInfo, json_new_a("Control Byte", &*myStr.begin()));
     }
 	byte_Swap_32(&count);
 	json_push_back(countInfo, json_new_i((char *)strCount.c_str(),  count )); 

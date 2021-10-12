@@ -236,8 +236,8 @@ void CScsi_DST_Results::print_Self_Test_Log(JSONNODE *dstNode, uint16_t run, uin
 		json_push_back(data, json_new_a("name", "self_test"));
 		JSONNODE* label = json_new(JSON_NODE);
 		json_set_name(label, "labels");
-		snprintf((char*)myStr.c_str(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16":%" PRIu32"", SELF_TEST_RESULTS, 0, m_DST->paramCode, offset);
-		json_push_back(label, json_new_a("metric_source", (char*)myStr.c_str()));
+		snprintf(&*myStr.begin(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16":%" PRIu32"", SELF_TEST_RESULTS, 0, m_DST->paramCode, offset);
+		json_push_back(label, json_new_a("metric_source", &*myStr.begin()));
 		if (M_GETBITRANGE(m_DST->stCode, 7, 5) == DST_NOT_RUN)
 		{
 			json_push_back(label, json_new_a("stat_type", "self-test not run"));
@@ -245,10 +245,10 @@ void CScsi_DST_Results::print_Self_Test_Log(JSONNODE *dstNode, uint16_t run, uin
 		else
 		{
 			get_DST_PrePython_Results_String(myStr, M_GETBITRANGE(m_DST->stCode, 3, 0));
-			json_push_back(label, json_new_a("stat_type", (char*)myStr.c_str()));
+			json_push_back(label, json_new_a("stat_type", &*myStr.begin()));
 		}
-		snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16"", run);
-		json_push_back(label, json_new_a("self_test_index", (char*)myStr.c_str()));
+		snprintf(&*myStr.begin(), BASIC, "%" PRIu16"", run);
+		json_push_back(label, json_new_a("self_test_index", &*myStr.begin()));
 
 		if ((uint8_t)M_GETBITRANGE(m_DST->stCode, 7, 5) == 0x00)
 		{ 
@@ -287,22 +287,22 @@ void CScsi_DST_Results::print_Self_Test_Log(JSONNODE *dstNode, uint16_t run, uin
 			json_push_back(label, json_new_a("self_test_code", "Reserved [0x7]"));
 		}
 		
-		snprintf((char*)myStr.c_str(), BASIC, "%" PRIu32"", m_DST->stNumber);
-		json_push_back(label, json_new_a("self_test_number", (char*)myStr.c_str()));
-		snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16"", m_DST->accPOH);
-		json_push_back(label, json_new_a("power_on_hours", (char*)myStr.c_str()));
-		snprintf((char*)myStr.c_str(), BASIC, "%" PRIu64"", m_DST->address);
-		json_push_back(label, json_new_a("first_failure", (char*)myStr.c_str()));
-		snprintf((char*)myStr.c_str(), BASIC, "%" PRIu8"", (uint8_t)M_GETBITRANGE(m_DST->senseKey, 3, 0));
-		json_push_back(label, json_new_a("scsi_sense_key", (char*)myStr.c_str()));
-		snprintf((char*)myStr.c_str(), BASIC, "%" PRIu8"", m_DST->addSenseCode);
-		json_push_back(label, json_new_a("scsi_asc", (char*)myStr.c_str()));
-		snprintf((char*)myStr.c_str(), BASIC, "%" PRIu8"", m_DST->addSenseCodeQualifier);
-		json_push_back(label, json_new_a("scsi_ascq", (char*)myStr.c_str()));
+		snprintf(&*myStr.begin(), BASIC, "%" PRIu32"", m_DST->stNumber);
+		json_push_back(label, json_new_a("self_test_number", &*myStr.begin()));
+		snprintf(&*myStr.begin(), BASIC, "%" PRIu16"", m_DST->accPOH);
+		json_push_back(label, json_new_a("power_on_hours", &*myStr.begin()));
+		snprintf(&*myStr.begin(), BASIC, "%" PRIu64"", m_DST->address);
+		json_push_back(label, json_new_a("first_failure", &*myStr.begin()));
+		snprintf(&*myStr.begin(), BASIC, "%" PRIu8"", (uint8_t)M_GETBITRANGE(m_DST->senseKey, 3, 0));
+		json_push_back(label, json_new_a("scsi_sense_key", &*myStr.begin()));
+		snprintf(&*myStr.begin(), BASIC, "%" PRIu8"", m_DST->addSenseCode);
+		json_push_back(label, json_new_a("scsi_asc", &*myStr.begin()));
+		snprintf(&*myStr.begin(), BASIC, "%" PRIu8"", m_DST->addSenseCodeQualifier);
+		json_push_back(label, json_new_a("scsi_ascq", &*myStr.begin()));
 		json_push_back(label, json_new_a("units", "failure"));
 
 
-		//snprintf((char*)myStr.c_str(), BASIC, "%02" PRIx8"", (uint8_t)M_GETBITRANGE(m_DST->stCode, 3, 0));
+		//snprintf(&*myStr.begin(), BASIC, "%02" PRIx8"", (uint8_t)M_GETBITRANGE(m_DST->stCode, 3, 0));
 		//json_push_back(label, json_new_i("self_test_results", (uint8_t)M_GETBITRANGE(m_DST->stCode, 3, 0)));
 		
 		json_push_back(data, label);
@@ -312,19 +312,19 @@ void CScsi_DST_Results::print_Self_Test_Log(JSONNODE *dstNode, uint16_t run, uin
 	else
 	{
 		JSONNODE* runInfo = json_new(JSON_NODE);
-		snprintf((char*)myStr.c_str(), BASIC, "Entry %3d ", run);   // changed the run# to Entry per Paul
-		json_set_name(runInfo, (char*)myStr.c_str());
-		snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_DST->paramCode);
-		json_push_back(runInfo, json_new_a("Parameter Code", (char*)myStr.c_str()));
-		snprintf((char*)myStr.c_str(), BASIC, "%" PRIx8"", m_DST->paramLength);
-		json_push_back(runInfo, json_new_a("Parameter Length", (char*)myStr.c_str()));
-		snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_DST->paramControlByte);
-		json_push_back(runInfo, json_new_a("Control Byte", (char*)myStr.c_str()));
+		snprintf(&*myStr.begin(), BASIC, "Entry %3d ", run);   // changed the run# to Entry per Paul
+		json_set_name(runInfo, &*myStr.begin());
+		snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", m_DST->paramCode);
+		json_push_back(runInfo, json_new_a("Parameter Code", &*myStr.begin()));
+		snprintf(&*myStr.begin(), BASIC, "%" PRIx8"", m_DST->paramLength);
+		json_push_back(runInfo, json_new_a("Parameter Length", &*myStr.begin()));
+		snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_DST->paramControlByte);
+		json_push_back(runInfo, json_new_a("Control Byte", &*myStr.begin()));
 
-		snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", (uint8_t)M_GETBITRANGE(m_DST->stCode, 7, 5));
-		json_push_back(runInfo, json_new_a("Self Test Code", (char*)myStr.c_str()));
-		snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", (uint8_t)M_GETBITRANGE(m_DST->stCode, 3, 0));
-		json_push_back(runInfo, json_new_a("Self Test Results", (char*)myStr.c_str()));
+		snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", (uint8_t)M_GETBITRANGE(m_DST->stCode, 7, 5));
+		json_push_back(runInfo, json_new_a("Self Test Code", &*myStr.begin()));
+		snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", (uint8_t)M_GETBITRANGE(m_DST->stCode, 3, 0));
+		json_push_back(runInfo, json_new_a("Self Test Results", &*myStr.begin()));
 		if (M_GETBITRANGE(m_DST->stCode, 7, 5) == DST_NOT_RUN)
 		{
 			json_push_back(runInfo, json_new_a("Self Test Results Meaning", "Self Test Not Ran"));
@@ -332,19 +332,19 @@ void CScsi_DST_Results::print_Self_Test_Log(JSONNODE *dstNode, uint16_t run, uin
 		else
 		{
 			get_Self_Test_Results_String(myStr, M_GETBITRANGE(m_DST->stCode, 3, 0));
-			json_push_back(runInfo, json_new_a("Self Test Results Meaning", (char*)myStr.c_str()));
+			json_push_back(runInfo, json_new_a("Self Test Results Meaning", &*myStr.begin()));
 		}
 		json_push_back(runInfo, json_new_i("Self Test Number", static_cast<uint32_t>(m_DST->stNumber)));
-		snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16"", m_DST->accPOH);
-		json_push_back(runInfo, json_new_a("Accumulated Power On Hours", (char*)myStr.c_str()));
+		snprintf(&*myStr.begin(), BASIC, "%" PRIu16"", m_DST->accPOH);
+		json_push_back(runInfo, json_new_a("Accumulated Power On Hours", &*myStr.begin()));
 		set_json_64bit(runInfo, "Address of First Failure", m_DST->address, true);
 
-		snprintf((char*)myStr.c_str(), BASIC, "%" PRIu8"", m_DST->senseKey);
-		json_push_back(runInfo, json_new_a("Sense Key", (char*)myStr.c_str()));
-		snprintf((char*)myStr.c_str(), BASIC, "%" PRIu8"", m_DST->addSenseCode);
-		json_push_back(runInfo, json_new_a("Additional Sense Code", (char*)myStr.c_str()));
-		snprintf((char*)myStr.c_str(), BASIC, "%" PRIu8"", m_DST->addSenseCodeQualifier);
-		json_push_back(runInfo, json_new_a("Additional Sense Code Qualifier", (char*)myStr.c_str()));
+		snprintf(&*myStr.begin(), BASIC, "%" PRIu8"", m_DST->senseKey);
+		json_push_back(runInfo, json_new_a("Sense Key", &*myStr.begin()));
+		snprintf(&*myStr.begin(), BASIC, "%" PRIu8"", m_DST->addSenseCode);
+		json_push_back(runInfo, json_new_a("Additional Sense Code", &*myStr.begin()));
+		snprintf(&*myStr.begin(), BASIC, "%" PRIu8"", m_DST->addSenseCodeQualifier);
+		json_push_back(runInfo, json_new_a("Additional Sense Code Qualifier", &*myStr.begin()));
 
 		json_push_back(dstNode, runInfo);
 	}

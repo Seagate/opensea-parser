@@ -335,11 +335,11 @@ void opensea_parser::prePython_int(JSONNODE* masterData, const char* name, const
     }
     json_push_back(label, json_new_a("units", unit));
 
-    snprintf((char*)myStr.c_str(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16":%" PRIu32"", logPage, subPage, paramCode, offset);
-    json_push_back(label, json_new_a("metric_source", (char*)myStr.c_str()));
+    snprintf(&*myStr.begin(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16":%" PRIu32"", logPage, subPage, paramCode, offset);
+    json_push_back(label, json_new_a("metric_source", &*myStr.begin()));
     json_push_back(data, label);
     json_push_back(data, json_new_i("value", value));
-    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu64"", value);
+    snprintf(&*myStr.begin(), BASIC, "%" PRIu64"", value);
 
     json_push_back(masterData, data);
 }
@@ -370,8 +370,8 @@ void opensea_parser::prePython_float(JSONNODE* masterData, const char* name, con
         json_push_back(label, json_new_a("stat_type", statType));
     }
     json_push_back(label, json_new_a("units", unit));
-    snprintf((char*)myStr.c_str(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16":%" PRIu32"", logPage, subPage, paramCode, offset);
-    json_push_back(label, json_new_a("metric_source", (char*)myStr.c_str()));
+    snprintf(&*myStr.begin(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16":%" PRIu32"", logPage, subPage, paramCode, offset);
+    json_push_back(label, json_new_a("metric_source", &*myStr.begin()));
     json_push_back(data, label);
     json_push_back(data, json_new_f("value", value));
 

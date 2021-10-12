@@ -284,14 +284,14 @@ void CScsiSupportedLog::process_Supported_Data(JSONNODE *SupportData)
 
     if (m_ShowSubPage)
     {
-        snprintf((char*)myHeader.c_str(), BASIC, "Page 0x%02" PRIx8" SubPage 0x%02" PRIx8"", m_Page, m_SubPage);
+        snprintf(&*myHeader.begin(), BASIC, "Page 0x%02" PRIx8" SubPage 0x%02" PRIx8"", m_Page, m_SubPage);
     }
     else
     {
-        snprintf((char*)myHeader.c_str(), BASIC, "Page 0x%02" PRIx8"", m_Page);
+        snprintf(&*myHeader.begin(), BASIC, "Page 0x%02" PRIx8"", m_Page);
     }
     get_Supported_And_Subpage_Description(&myStr);
-	json_push_back(SupportData, json_new_a((char*)myHeader.c_str(), (char*)myStr.c_str()));
+	json_push_back(SupportData, json_new_a(&*myHeader.begin(), &*myStr.begin()));
 }
 //-----------------------------------------------------------------------------
 //
@@ -316,7 +316,7 @@ eReturnValues CScsiSupportedLog::get_Supported_Log_Data(JSONNODE *masterData)
 	{
 		myStr = "Supported Logs";
 		JSONNODE *pageInfo = json_new(JSON_NODE);
-		json_set_name(pageInfo, (char*)myStr.c_str());
+		json_set_name(pageInfo, &*myStr.begin());
 
 		for (size_t offset = 0; offset < (size_t) m_PageLength; )
 		{

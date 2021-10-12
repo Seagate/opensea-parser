@@ -183,21 +183,21 @@ void CScsiCacheLog::process_Cache_Event_Data(JSONNODE *cacheData)
     {
         byte_Swap_16(&m_cache->paramCode);
         discriptionIsFound = get_Cache_Parameter_Code_Description(&myStr);
-        //snprintf((char*)myStr.c_str(), BASIC, "Cache Statistics Description %" PRId16"", m_cache->paramCode);
+        //snprintf(&*myStr.begin(), BASIC, "Cache Statistics Description %" PRId16"", m_cache->paramCode);
         JSONNODE *cacheInfo = json_new(JSON_NODE);
-        json_set_name(cacheInfo, (char*)myStr.c_str());
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_cache->paramCode);
-        json_push_back(cacheInfo, json_new_a("Cache Statistics Parameter Code", (char*)myStr.c_str()));
+        json_set_name(cacheInfo, &*myStr.begin());
+        snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", m_cache->paramCode);
+        json_push_back(cacheInfo, json_new_a("Cache Statistics Parameter Code", &*myStr.begin()));
         if (!discriptionIsFound)
         {
             
 
-            //json_push_back(cacheInfo, json_new_a("Cache Statistics Description", (char*)myStr.c_str()));
-            snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_cache->paramControlByte);
-            json_push_back(cacheInfo, json_new_a("Cache Statistics Control Byte ", (char*)myStr.c_str()));
-            snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_cache->paramLength);
+            //json_push_back(cacheInfo, json_new_a("Cache Statistics Description", &*myStr.begin()));
+            snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_cache->paramControlByte);
+            json_push_back(cacheInfo, json_new_a("Cache Statistics Control Byte ", &*myStr.begin()));
+            snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_cache->paramLength);
 
-            json_push_back(cacheInfo, json_new_a("Cache Statistics Length ", (char*)myStr.c_str()));
+            json_push_back(cacheInfo, json_new_a("Cache Statistics Length ", &*myStr.begin()));
         }
         set_json_64bit(cacheInfo, "Cache Statistics Value", m_Value, false);
 

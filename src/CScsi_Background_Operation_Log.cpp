@@ -182,10 +182,10 @@ void CScsiOperationLog::process_Background_Operations_Data(JSONNODE *operationDa
 		json_push_back(data, json_new_a("name", "background_operation_status"));
 		JSONNODE* label = json_new(JSON_NODE);
 		json_set_name(label, "labels");
-		snprintf((char*)myStr.c_str(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16":%" PRIu32"", 0x15, 0x02, m_Operation->paramCode, offset);
-		json_push_back(label, json_new_a("metric_source", (char*)myStr.c_str()));
+		snprintf(&*myStr.begin(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16":%" PRIu32"", 0x15, 0x02, m_Operation->paramCode, offset);
+		json_push_back(label, json_new_a("metric_source", &*myStr.begin()));
 		get_Background_Operations_status(&myStr);
-		json_push_back(label, json_new_a("operation", (char*)myStr.c_str()));
+		json_push_back(label, json_new_a("operation", &*myStr.begin()));
 		json_push_back(label, json_new_a("units", "status"));
 		json_push_back(data, label);
 		json_push_back(data, json_new_i("value", m_Operation->bo_Status));
@@ -195,20 +195,20 @@ void CScsiOperationLog::process_Background_Operations_Data(JSONNODE *operationDa
 	else
 	{
 		
-		snprintf((char*)myStr.c_str(), BASIC, "Background Operation Description %" PRId16"", m_Operation->paramCode);
+		snprintf(&*myStr.begin(), BASIC, "Background Operation Description %" PRId16"", m_Operation->paramCode);
 		JSONNODE* operationInfo = json_new(JSON_NODE);
-		json_set_name(operationInfo, (char*)myStr.c_str());
+		json_set_name(operationInfo, &*myStr.begin());
 
-		snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_Operation->paramCode);
-		json_push_back(operationInfo, json_new_a("Background Operation Parameter Code", (char*)myStr.c_str()));
+		snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", m_Operation->paramCode);
+		json_push_back(operationInfo, json_new_a("Background Operation Parameter Code", &*myStr.begin()));
 
-		snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Operation->paramControlByte);
-		json_push_back(operationInfo, json_new_a("Background Operation Control Byte ", (char*)myStr.c_str()));
-		snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Operation->paramLength);
-		json_push_back(operationInfo, json_new_a("Background Operation Length ", (char*)myStr.c_str()));
+		snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_Operation->paramControlByte);
+		json_push_back(operationInfo, json_new_a("Background Operation Control Byte ", &*myStr.begin()));
+		snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_Operation->paramLength);
+		json_push_back(operationInfo, json_new_a("Background Operation Length ", &*myStr.begin()));
 
 		get_Background_Operations_status(&myStr);
-		json_push_back(operationInfo, json_new_i((char*)myStr.c_str(), static_cast<uint32_t>(m_Operation->bo_Status)));
+		json_push_back(operationInfo, json_new_i(&*myStr.begin(), static_cast<uint32_t>(m_Operation->bo_Status)));
 
 		json_push_back(operationData, operationInfo);
 	}

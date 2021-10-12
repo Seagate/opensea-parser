@@ -213,19 +213,19 @@ void CScsiLBAProvisionLog::process_LBA_Provision_Data(JSONNODE *lbaData)
     byte_Swap_16(&m_Provision->paramCode);
     get_LBA_Provision_Parameter_Description(&myStr);
     JSONNODE *lbaInfo = json_new(JSON_NODE);
-    json_set_name(lbaInfo, (char*)myStr.c_str());
+    json_set_name(lbaInfo, &*myStr.begin());
 
-    snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_Provision->paramCode);
-    json_push_back(lbaInfo, json_new_a("Logical Block Provisioning Parameter Code", (char*)myStr.c_str()));
+    snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", m_Provision->paramCode);
+    json_push_back(lbaInfo, json_new_a("Logical Block Provisioning Parameter Code", &*myStr.begin()));
 
-    snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Provision->paramControlByte);
-    json_push_back(lbaInfo, json_new_a("Logical Block Provisioning Control Byte ", (char*)myStr.c_str()));
-    snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Provision->paramLength);
-    json_push_back(lbaInfo, json_new_a("Logical Block Provisioning Length ", (char*)myStr.c_str()));
+    snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_Provision->paramControlByte);
+    json_push_back(lbaInfo, json_new_a("Logical Block Provisioning Control Byte ", &*myStr.begin()));
+    snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_Provision->paramLength);
+    json_push_back(lbaInfo, json_new_a("Logical Block Provisioning Length ", &*myStr.begin()));
     if (m_Provision->paramCode == 0x0003)
     {
         get_Resource_Percentage(&myStr);
-        json_push_back(lbaInfo, json_new_a("Percentage of Resources Available", (char*)myStr.c_str()));
+        json_push_back(lbaInfo, json_new_a("Percentage of Resources Available", &*myStr.begin()));
     }
     else
     {

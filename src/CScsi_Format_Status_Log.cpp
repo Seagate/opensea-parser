@@ -177,14 +177,14 @@ void CScsiFormatStatusLog::process_Format_Status_Data(JSONNODE *formatData)
 
     get_Format_Parameter_Code_Description(&myHeader);
     JSONNODE *formatInfo = json_new(JSON_NODE);
-    json_set_name(formatInfo, (char*)myHeader.c_str());
+    json_set_name(formatInfo, &*myHeader.begin());
 
-    snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_Format->paramCode);
-    json_push_back(formatInfo, json_new_a("Parameter Code", (char*)myStr.c_str()));
-    snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Format->paramControlByte);
-    json_push_back(formatInfo, json_new_a("Control Byte ", (char*)myStr.c_str()));
-    snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Format->paramLength);
-    json_push_back(formatInfo, json_new_a("Length ", (char*)myStr.c_str()));
+    snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", m_Format->paramCode);
+    json_push_back(formatInfo, json_new_a("Parameter Code", &*myStr.begin()));
+    snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_Format->paramControlByte);
+    json_push_back(formatInfo, json_new_a("Control Byte ", &*myStr.begin()));
+    snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_Format->paramLength);
+    json_push_back(formatInfo, json_new_a("Length ", &*myStr.begin()));
     if (m_Format->paramLength == 8 || m_Value > UINT32_MAX)
     {
         set_json_64bit(formatInfo, "Value", m_Value, true);
@@ -230,14 +230,14 @@ void CScsiFormatStatusLog::process_Format_Status_Data_Variable_Length(JSONNODE *
 #endif
     get_Format_Parameter_Code_Description(&myHeader);
     JSONNODE *formatInfo = json_new(JSON_NODE);
-    json_set_name(formatInfo, (char*)myHeader.c_str());
+    json_set_name(formatInfo, &*myHeader.begin());
 
-    snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_Format->paramCode);
-    json_push_back(formatInfo, json_new_a("Format Status Parameter Code", (char*)myStr.c_str()));
-    snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Format->paramControlByte);
-    json_push_back(formatInfo, json_new_a("Format Status Control Byte ", (char*)myStr.c_str()));
-    snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Format->paramLength);
-    json_push_back(formatInfo, json_new_a("Format Status Length ", (char*)myStr.c_str()));
+    snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", m_Format->paramCode);
+    json_push_back(formatInfo, json_new_a("Format Status Parameter Code", &*myStr.begin()));
+    snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_Format->paramControlByte);
+    json_push_back(formatInfo, json_new_a("Format Status Control Byte ", &*myStr.begin()));
+    snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_Format->paramLength);
+    json_push_back(formatInfo, json_new_a("Format Status Length ", &*myStr.begin()));
 
     uint8_t lineNumber = 0;
     char *innerMsg = (char*)calloc(128, sizeof(char));
@@ -248,7 +248,7 @@ void CScsiFormatStatusLog::process_Format_Status_Data_Variable_Length(JSONNODE *
     {
         for (uint8_t outer = 0; outer < m_Format->paramLength - 1; )
         {
-            snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIX32 "", lineNumber);
+            snprintf(&*myStr.begin(), BASIC, "0x%02" PRIX32 "", lineNumber);
             sprintf(innerMsg, "%02" PRIX8 "", m_FormatDataOutParamValue[offset++]);
             // inner loop for creating a single ling of the buffer data
             for (uint8_t inner = 1; inner < 16 && offset < m_Format->paramLength - 1; inner++)
@@ -262,7 +262,7 @@ void CScsiFormatStatusLog::process_Format_Status_Data_Variable_Length(JSONNODE *
                 offset++;
             }
             // push the line to the json node
-            json_push_back(formatInfo, json_new_a((char*)myStr.c_str(), innerMsg));
+            json_push_back(formatInfo, json_new_a(&*myStr.begin(), innerMsg));
             outer = offset;
             lineNumber = outer;
         }
