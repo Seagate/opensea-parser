@@ -249,7 +249,7 @@ eReturnValues CScsiStartStop::week_Year_Print(JSONNODE *data,uint16_t param, uin
 	memset(&*myStr.begin(), 0, YEARSIZE);
     if (year != 0x20202020)
     {
-        strncpy((char *)myStr.c_str(), (char*)&year, YEARSIZE);
+        strncpy(&*myStr.begin(), (char*)&year, YEARSIZE);
     }
     else
     {
@@ -259,7 +259,7 @@ eReturnValues CScsiStartStop::week_Year_Print(JSONNODE *data,uint16_t param, uin
 	myStr.resize(WEEKSIZE);
     if (week != 0x2020)
     {
-        strncpy((char *)myStr.c_str(), (char*)&week, WEEKSIZE);
+        strncpy(&*myStr.begin(), (char*)&week, WEEKSIZE);
     }
     else
     {
