@@ -240,7 +240,7 @@ eReturnValues CScsiNonMediumErrorCountLog::get_Non_Medium_Error_Count_Data(JSONN
 					break;
 				}
 				}
-				process_Non_Medium_Error_Count_Data(pageInfo,offset);
+				process_Non_Medium_Error_Count_Data(pageInfo);
 			}
 			else
 			{
