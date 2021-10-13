@@ -115,7 +115,7 @@ CScsiNonMediumErrorCountLog::~CScsiNonMediumErrorCountLog()
 //!   \return none
 //
 //---------------------------------------------------------------------------
-void CScsiNonMediumErrorCountLog::process_Non_Medium_Error_Count_Data(JSONNODE* countData, uint32_t offset)
+void CScsiNonMediumErrorCountLog::process_Non_Medium_Error_Count_Data(JSONNODE* countData)
 {
 	std::string myStr = "";
 	myStr.resize(BASIC);

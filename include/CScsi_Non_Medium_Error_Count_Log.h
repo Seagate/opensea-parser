@@ -39,7 +39,7 @@ namespace opensea_parser {
 		sLogParams*					m_CountErrors;				//<! params for the error count log
 
 
-		void process_Non_Medium_Error_Count_Data(JSONNODE *countData, uint32_t offset);
+		void process_Non_Medium_Error_Count_Data(JSONNODE *countData);
 		eReturnValues get_Non_Medium_Error_Count_Data(JSONNODE *masterData);
 
 	public:
