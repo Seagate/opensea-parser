@@ -245,14 +245,14 @@ eReturnValues CAta_SMART_Log_Dir::print_SMART_Log_Dir(JSONNODE *masterData)
     {
         sLogDetailStructure logDetail = *logItr;
         snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", logDetail.logAddress);
-        snprintf((char*)printStr.c_str(), BASIC, "%" PRIu16"", logDetail.numberOfPages);
+        snprintf(&*printStr.begin(), BASIC, "%" PRIu16"", logDetail.numberOfPages);
 
         if (is_Host_Specific_Log(logDetail.logAddress) && hostInfo != NULL)
-            json_push_back(hostInfo, json_new_a(&*myStr.begin(), (char*)printStr.c_str()));
+            json_push_back(hostInfo, json_new_a(&*myStr.begin(), &*printStr.begin()));
         else if (is_Vendor_Specific_Log(logDetail.logAddress) && vendorInfo != NULL)
-            json_push_back(vendorInfo, json_new_a(&*myStr.begin(), (char*)printStr.c_str()));
+            json_push_back(vendorInfo, json_new_a(&*myStr.begin(), &*printStr.begin()));
         else
-            json_push_back(dirInfo, json_new_a(&*myStr.begin(), (char*)printStr.c_str()));
+            json_push_back(dirInfo, json_new_a(&*myStr.begin(), &*printStr.begin()));
     }
 
     if (hostInfo != NULL)

@@ -312,8 +312,8 @@ void CScsiErrorCounterLog::process_Error_Data(JSONNODE *errorData)
             else
             {
                 std::string printStr;
-                snprintf((char*)printStr.c_str(), BASIC, "%" PRIu32"",  static_cast<uint32_t>(m_ErrorValue));
-                json_push_back(errorInfo, json_new_a((char *)myStr.c_str(), (char*)printStr.c_str()));
+                snprintf(&*printStr.begin(), BASIC, "%" PRIu32"",  static_cast<uint32_t>(m_ErrorValue));
+                json_push_back(errorInfo, json_new_a(&*myStr.begin(), &*printStr.begin()));
             }
         }
 

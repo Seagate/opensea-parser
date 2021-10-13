@@ -198,8 +198,8 @@ void CScsiFormatStatusLog::process_Format_Status_Data(JSONNODE *formatData)
         else
         {
             std::string printStr;
-            snprintf((char*)printStr.c_str(), BASIC, "0x%08" PRIx64"", m_Value);
-            json_push_back(formatInfo, json_new_a("Value", (char*)printStr.c_str()));
+            snprintf(&*printStr.begin(), BASIC, "0x%08" PRIx64"", m_Value);
+            json_push_back(formatInfo, json_new_a("Value", &*printStr.begin()));
         }
     }
     json_push_back(formatData, formatInfo);

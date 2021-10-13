@@ -44,9 +44,9 @@ namespace opensea_parser {
 #define byte3 3
 #define byte4 4
             paramCode = *(reinterpret_cast<uint16_t*>(buffer));
-            paramControlByte = buffer[byte2];
-            paramLength = buffer[byte3];
-            data = &buffer[byte4];
+            paramControlByte = (uint8_t)buffer[byte2];
+            paramLength = (uint8_t)buffer[byte3];
+            data = (uint8_t*)&buffer[byte4];
         }
 
 	} sApplicationParams;

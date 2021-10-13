@@ -179,7 +179,7 @@ eReturnValues CScsiNonMediumErrorCountLog::get_Non_Medium_Error_Count_Data(JSONN
 				{
 				case 1:
 				{
-					if ((offset + (uint16_t)m_CountErrors->paramLength) < m_bufferLength)
+					if ((offset + m_CountErrors->paramLength) < (uint32_t)m_bufferLength)
 					{
 						m_Value = pData[offset];
 						offset += m_CountErrors->paramLength;
@@ -193,7 +193,7 @@ eReturnValues CScsiNonMediumErrorCountLog::get_Non_Medium_Error_Count_Data(JSONN
 				}
 				case 2:
 				{
-					if ((offset + (uint16_t)m_CountErrors->paramLength) < m_bufferLength)
+					if ((offset + m_CountErrors->paramLength) < (uint32_t)m_bufferLength)
 					{
 						m_Value = M_BytesTo2ByteValue(pData[offset], pData[offset + 1]);
 						offset += m_CountErrors->paramLength;
@@ -207,7 +207,7 @@ eReturnValues CScsiNonMediumErrorCountLog::get_Non_Medium_Error_Count_Data(JSONN
 				}
 				case 4:
 				{
-					if ((offset + (uint16_t)m_CountErrors->paramLength) < m_bufferLength)
+					if ((offset + m_CountErrors->paramLength) < (uint32_t)m_bufferLength)
 					{
 						m_Value = M_BytesTo4ByteValue(pData[offset], pData[offset + 1], pData[offset + 2], pData[offset + 3]);
 						offset += m_CountErrors->paramLength;
@@ -221,7 +221,7 @@ eReturnValues CScsiNonMediumErrorCountLog::get_Non_Medium_Error_Count_Data(JSONN
 				}
 				case 8:
 				{
-					if ((offset + (uint16_t)m_CountErrors->paramLength) < m_bufferLength)
+					if ((offset + m_CountErrors->paramLength) < (uint32_t)m_bufferLength)
 					{
 						m_Value = M_BytesTo8ByteValue(pData[offset], pData[offset + 1], pData[offset + 2], pData[offset + 3], pData[offset + 4], pData[offset + 5], pData[offset + 6], pData[offset + 7]);
 						offset += m_CountErrors->paramLength;
