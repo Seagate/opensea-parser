@@ -314,19 +314,19 @@ namespace opensea_parser {
         {
             //json does not support 64 bit numbers. Therefore we will print it as a string
             snprintf(printStr, BASIC, "0x%016" PRIx64"", value);
-            json_push_back(nowNode, json_new_a((char *)myStr.c_str(), printStr));
+            json_push_back(nowNode, json_new_a(&*myStr.begin(), printStr));
         }
         else
         {
             if (M_IGETBITRANGE(value, 63, 31) == 0)
             {
-                json_push_back(nowNode, json_new_i((char *)myStr.c_str(), static_cast<int32_t>(M_DoubleWord0(value))));
+                json_push_back(nowNode, json_new_i(&*myStr.begin(), static_cast<int32_t>(M_DoubleWord0(value))));
             }
             else
             {
                 // if the vale is greater then a unsigned 32 bit number print it as a string
                 snprintf(printStr, BASIC, "%" PRIu64"", value);
-                json_push_back(nowNode, json_new_a((char *)myStr.c_str(), printStr));
+                json_push_back(nowNode, json_new_a(&*myStr.begin(), printStr));
             }
         }
         safe_Free(printStr);
@@ -356,19 +356,19 @@ namespace opensea_parser {
         {
             //json does not support 64 bit numbers. Therefore we will print it as a string
             snprintf(printStr, BASIC, "0x%016" PRIx64"", value);
-            json_push_back(nowNode, json_new_a((char *)myStr.c_str(), printStr));
+            json_push_back(nowNode, json_new_a(&*myStr.begin(), printStr));
         }
         else
         {
             if (M_IGETBITRANGE(value,63,32) == 0)
             {
-                json_push_back(nowNode, json_new_i((char *)myStr.c_str(), static_cast<int32_t>(M_DoubleWord0(value))));
+                json_push_back(nowNode, json_new_i(&*myStr.begin(), static_cast<int32_t>(M_DoubleWord0(value))));
             }
             else
             {
                 // if the vale is greater then a unsigned 32 bit number print it as a string
                 snprintf(printStr, BASIC, "%" PRIu64"", value);
-                json_push_back(nowNode, json_new_a((char *)myStr.c_str(), printStr));
+                json_push_back(nowNode, json_new_a(&*myStr.begin(), printStr));
             }
         }
         safe_Free(printStr);
