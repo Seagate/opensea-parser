@@ -55,12 +55,12 @@ namespace opensea_parser {
 		{
 			if (hexPrint) 
 			{
-				snprintf((char*)printStr.c_str(), BASIC, "0x%08" PRIx32"", static_cast<int32_t>(M_DoubleWord0(value)));
-				json_push_back(nowNode, json_new_a((char *)myStr.c_str(), (char*)printStr.c_str()));
+				snprintf(&*printStr.begin(), BASIC, "0x%08" PRIx32"", static_cast<int32_t>(M_DoubleWord0(value)));
+				json_push_back(nowNode, json_new_a(&*myStr.begin(), &*printStr.begin()));
 			}
 			else
 			{
-				json_push_back(nowNode, json_new_i((char *)myStr.c_str(), static_cast<int32_t>(M_DoubleWord0(value))));
+				json_push_back(nowNode, json_new_i(&*myStr.begin(), static_cast<int32_t>(M_DoubleWord0(value))));
 			}
 			return;
 		}
@@ -69,7 +69,7 @@ namespace opensea_parser {
 		if (showStatusBits)
 		{
             JSONNODE *bigBit = json_new(JSON_NODE);
-            json_set_name(bigBit, (char *)myStr.c_str());
+            json_set_name(bigBit, &*myStr.begin());
 			if ((value & BIT63) == BIT63)
 			{
 				set_Json_Bool(bigBit, "Field Supported", true);
@@ -119,7 +119,7 @@ namespace opensea_parser {
 		if (showStatusBits)
 		{
 			JSONNODE *bigBit = json_new(JSON_NODE);
-			json_set_name(bigBit, (char *)myStr.c_str());
+			json_set_name(bigBit, &*myStr.begin());
 			if ((value & BIT63) == BIT63)
 			{
 				set_Json_Bool(bigBit, "Field Supported", true);
@@ -137,13 +137,13 @@ namespace opensea_parser {
 				set_Json_Bool(bigBit, "Field Valid", false);
 			}
 			value = check_Status_Strip_Status(value);
-			json_push_back(bigBit, json_new_i((char *)myStr.c_str(), static_cast<int32_t>(M_DoubleWord0(value))));
+			json_push_back(bigBit, json_new_i(&*myStr.begin(), static_cast<int32_t>(M_DoubleWord0(value))));
 			json_push_back(nowNode, bigBit);
 		}
 		else
 		{
 			value = check_Status_Strip_Status(value);
-			json_push_back(nowNode, json_new_i((char *)myStr.c_str(), static_cast<int32_t>(M_DoubleWord0(value))));
+			json_push_back(nowNode, json_new_i(&*myStr.begin(), static_cast<int32_t>(M_DoubleWord0(value))));
 		}
 	}
 	//-----------------------------------------------------------------------------
@@ -172,7 +172,7 @@ namespace opensea_parser {
 		if (showStatusBits)
 		{
 			JSONNODE *bigBit = json_new(JSON_NODE);
-			json_set_name(bigBit, (char *)myStr.c_str());
+			json_set_name(bigBit, &*myStr.begin());
 			if ((value & BIT63) == BIT63)
 			{
 				set_Json_Bool(bigBit, "Field Supported", true);
@@ -189,12 +189,12 @@ namespace opensea_parser {
 			{
 				set_Json_Bool(bigBit, "Field Valid", false);
 			}
-			json_push_back(bigBit, json_new_a((char *)myStr.c_str(), (char *)strValue.c_str()));
+			json_push_back(bigBit, json_new_a(&*myStr.begin(), (char *)strValue.c_str()));
 			json_push_back(nowNode, bigBit);
 		}
 		else
 		{
-			json_push_back(nowNode, json_new_a((char *)myStr.c_str(), (char *)strValue.c_str()));
+			json_push_back(nowNode, json_new_a(&*myStr.begin(), (char *)strValue.c_str()));
 		}
 	}
    
