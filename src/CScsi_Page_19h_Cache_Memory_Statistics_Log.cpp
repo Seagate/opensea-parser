@@ -35,6 +35,7 @@ CScsiCacheMemStatLog::CScsiCacheMemStatLog()
     , m_LogStatus(IN_PROGRESS)
     , m_PageLength(0)
     , m_bufferLength(0)
+    , m_CacheMemLog()
     , m_TimeIntervalDescriptorParam(NULL)
     , m_Value(0)
 {
@@ -64,6 +65,7 @@ CScsiCacheMemStatLog::CScsiCacheMemStatLog(uint8_t * buffer, size_t bufferSize, 
     , m_LogStatus(IN_PROGRESS)
     , m_PageLength(pageLength)
     , m_bufferLength(bufferSize)
+    , m_CacheMemLog()
     , m_TimeIntervalDescriptorParam(NULL)
     , m_Value(0)
 {
