@@ -189,12 +189,12 @@ namespace opensea_parser {
 			{
 				set_Json_Bool(bigBit, "Field Valid", false);
 			}
-			json_push_back(bigBit, json_new_a(&*myStr.begin(), (char *)strValue.c_str()));
+			json_push_back(bigBit, json_new_a(&*myStr.begin(), (char *)&*strValue.begin()));
 			json_push_back(nowNode, bigBit);
 		}
 		else
 		{
-			json_push_back(nowNode, json_new_a(&*myStr.begin(), (char *)strValue.c_str()));
+			json_push_back(nowNode, json_new_a(&*myStr.begin(), (char *)&*strValue.begin()));
 		}
 	}
    

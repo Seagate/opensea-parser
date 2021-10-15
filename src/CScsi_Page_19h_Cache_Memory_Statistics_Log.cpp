@@ -121,61 +121,61 @@ void CScsiCacheMemStatLog::get_Parameter_Code_Description(uint16_t paramCode, st
     case 0x0001:
         if (g_dataformat == PREPYTHON_DATA)
         {
-            snprintf((char*)cacheStatistics->c_str(), BASIC, "read_hits");
+            snprintf((char*)&cacheStatistics->begin(), BASIC, "read_hits");
         }
         else
         {
-            snprintf((char*)cacheStatistics->c_str(), BASIC, "Read Cache Memory Hits");
+            snprintf((char*)&cacheStatistics->begin(), BASIC, "Read Cache Memory Hits");
         }
         break;
     case 0x0002:
         if (g_dataformat == PREPYTHON_DATA)
         {
-            snprintf((char*)cacheStatistics->c_str(), BASIC, "read_to_cache_memory");
+            snprintf((char*)&cacheStatistics->begin(), BASIC, "read_to_cache_memory");
         }
         else
         {
-            snprintf((char*)cacheStatistics->c_str(), BASIC, "Reads To Cache Memory");
+            snprintf((char*)&cacheStatistics->begin(), BASIC, "Reads To Cache Memory");
         }
         break;
     case 0x0003:
         if (g_dataformat == PREPYTHON_DATA)
         {
-            snprintf((char*)cacheStatistics->c_str(), BASIC, "write_hits");
+            snprintf((char*)&cacheStatistics->begin(), BASIC, "write_hits");
         }
         else
         {
-            snprintf((char*)cacheStatistics->c_str(), BASIC, "Writes Cache Memory Hits");
+            snprintf((char*)&cacheStatistics->begin(), BASIC, "Writes Cache Memory Hits");
         }
         break;
     case 0x0004:
         if (g_dataformat == PREPYTHON_DATA)
         {
-            snprintf((char*)cacheStatistics->c_str(), BASIC, "writes_from_cache_memory");
+            snprintf((char*)&cacheStatistics->begin(), BASIC, "writes_from_cache_memory");
         }
         else
         {
-            snprintf((char*)cacheStatistics->c_str(), BASIC, "Writes From Cache Memory");
+            snprintf((char*)&cacheStatistics->begin(), BASIC, "Writes From Cache Memory");
         }
         break;
     case 0x0005:
         if (g_dataformat == PREPYTHON_DATA)
         {
-            snprintf((char*)cacheStatistics->c_str(), BASIC, "time_from_last_hard_reset");
+            snprintf((char*)&cacheStatistics->begin(), BASIC, "time_from_last_hard_reset");
         }
         else
         {
-            snprintf((char*)cacheStatistics->c_str(), BASIC, "Time From Last Hard Reset");
+            snprintf((char*)&cacheStatistics->begin(), BASIC, "Time From Last Hard Reset");
         }
         break;
     default:
         if (g_dataformat == PREPYTHON_DATA)
         {
-            snprintf((char*)cacheStatistics->c_str(), BASIC, "vendor_specific_0x%04" PRIx16"", paramCode);
+            snprintf((char*)&cacheStatistics->begin(), BASIC, "vendor_specific_0x%04" PRIx16"", paramCode);
         }
         else
         {
-            snprintf((char*)cacheStatistics->c_str(), BASIC, "vendor specific 0x%04" PRIx16"", paramCode);
+            snprintf((char*)&cacheStatistics->begin(), BASIC, "vendor specific 0x%04" PRIx16"", paramCode);
         }
         break;
     }

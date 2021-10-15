@@ -203,8 +203,8 @@ CAta_Identify_log::~CAta_Identify_log()
 void CAta_Identify_log::create_Serial_Number(uint16_t offset)
 {
     m_sDriveInfo.serialNumber.resize(ATA_SERIAL_NUMBER_LEN);
-    strncpy((char*)m_sDriveInfo.serialNumber.c_str(), (char*)&pData[512 + offset], ATA_SERIAL_NUMBER_LEN);
-    byte_Swap_String((char*)m_sDriveInfo.serialNumber.c_str());
+    strncpy((char*)&*m_sDriveInfo.serialNumber.begin(), (char*)&pData[512 + offset], ATA_SERIAL_NUMBER_LEN);
+    byte_Swap_String((char*)&*m_sDriveInfo.serialNumber.begin());
     ltrim(m_sDriveInfo.serialNumber);
     m_sDriveInfo.serialNumber.resize(ATA_SERIAL_NUMBER_LEN);
 }
@@ -225,8 +225,8 @@ void CAta_Identify_log::create_Serial_Number(uint16_t offset)
 void CAta_Identify_log::create_Firmware_String(uint16_t offset)
 {
     m_sDriveInfo.firmware.resize(ATA_FIRMWARE_REV_LEN);
-    strncpy((char*)m_sDriveInfo.firmware.c_str(), (char*)&pData[512 + offset], ATA_FIRMWARE_REV_LEN);
-    byte_Swap_String((char*)m_sDriveInfo.firmware.c_str());
+    strncpy((char*)&*m_sDriveInfo.firmware.begin(), (char*)&pData[512 + offset], ATA_FIRMWARE_REV_LEN);
+    byte_Swap_String((char*)&*m_sDriveInfo.firmware.begin());
     rtrim(m_sDriveInfo.firmware);
     m_sDriveInfo.firmware.resize(ATA_FIRMWARE_REV_LEN);
 }
@@ -246,8 +246,8 @@ void CAta_Identify_log::create_Firmware_String(uint16_t offset)
 void CAta_Identify_log::create_Model_Number(uint16_t offset)
 {
     m_sDriveInfo.modelNumber.resize(ATA_MODEL_NUMBER_LEN);
-    strncpy((char*)m_sDriveInfo.modelNumber.c_str(), (char*)&pData[512 + offset], ATA_MODEL_NUMBER_LEN);
-    byte_Swap_String((char*)m_sDriveInfo.modelNumber.c_str());
+    strncpy((char*)&*m_sDriveInfo.modelNumber.begin(), (char*)&pData[512 + offset], ATA_MODEL_NUMBER_LEN);
+    byte_Swap_String((char*)&*m_sDriveInfo.modelNumber.begin());
     rtrim(m_sDriveInfo.modelNumber);
     m_sDriveInfo.modelNumber.resize(ATA_MODEL_NUMBER_LEN);
 }
@@ -275,8 +275,8 @@ void CAta_Identify_log::create_WWN_Info()
     snprintf((char*)m_sDriveInfo.worldWideName.c_str(), WORLD_WIDE_NAME_LEN, "%" PRIX64"", wwn);
     uint64_t ieeeOUI = (uint64_t)((wwn & 0x0FFFFFF000000000ULL) >> 36);
     uint64_t uniqueID = (uint64_t)(wwn & 0x0000000FFFFFFFFFULL);
-    snprintf((char*)m_sDriveInfo.ieeeOUI.c_str(), WORLD_WIDE_NAME_LEN, "0x%06" PRIX64"", ieeeOUI);
-    snprintf((char*)(m_sDriveInfo.uniqueID.c_str()), WORLD_WIDE_NAME_LEN, "0x%09" PRIX64"", uniqueID);
+    snprintf((char*)&*m_sDriveInfo.ieeeOUI.begin(), WORLD_WIDE_NAME_LEN, "0x%06" PRIX64"", ieeeOUI);
+    snprintf((char*)&*(m_sDriveInfo.uniqueID.begin()), WORLD_WIDE_NAME_LEN, "0x%09" PRIX64"", uniqueID);
     m_sDriveInfo.worldWideName.resize(WORLD_WIDE_NAME_LEN);
     m_sDriveInfo.ieeeOUI.resize(WORLD_WIDE_NAME_LEN);
     m_sDriveInfo.uniqueID.resize(WORLD_WIDE_NAME_LEN);
@@ -700,18 +700,18 @@ eReturnValues CAta_Identify_log::print_Identify_Information(JSONNODE *masterData
     json_set_name(identifyInfo, "Identify Device Information");
 
     //print the strings
-    json_push_back(identifyInfo, json_new_a("Model Number", (char*)m_sDriveInfo.modelNumber.c_str()));
+    json_push_back(identifyInfo, json_new_a("Model Number", (char*)&*m_sDriveInfo.modelNumber.begin()));
 
-    json_push_back(identifyInfo, json_new_a("Serial Number", (char*)m_sDriveInfo.serialNumber.c_str()));
+    json_push_back(identifyInfo, json_new_a("Serial Number", (char*)&*m_sDriveInfo.serialNumber.begin()));
 
-    json_push_back(identifyInfo, json_new_a("Firmware Revision", (char*)m_sDriveInfo.firmware.c_str()));
+    json_push_back(identifyInfo, json_new_a("Firmware Revision", (char*)&*m_sDriveInfo.firmware.begin()));
     // world wide name
 
-    json_push_back(identifyInfo, json_new_a("World Wide Name", (char*)m_sDriveInfo.worldWideName.c_str()));
+    json_push_back(identifyInfo, json_new_a("World Wide Name", (char*)&*m_sDriveInfo.worldWideName.begin()));
     JSONNODE *IEEEinfo = json_new(JSON_NODE);
     json_set_name(IEEEinfo, "IEEE Registered");
-    json_push_back(IEEEinfo, json_new_a("IEEE Company ID", (char*)m_sDriveInfo.ieeeOUI.c_str()));
-    json_push_back(IEEEinfo, json_new_a("Vendor Specific ID", (char*)m_sDriveInfo.uniqueID.c_str()));
+    json_push_back(IEEEinfo, json_new_a("IEEE Company ID", (char*)&*m_sDriveInfo.ieeeOUI.begin()));
+    json_push_back(IEEEinfo, json_new_a("Vendor Specific ID", (char*)&*m_sDriveInfo.uniqueID.begin()));
     json_push_back(identifyInfo, IEEEinfo);
 
     //maxLBA
@@ -3412,8 +3412,8 @@ bool CAta_Identify_Log_05::create_Serial_Number()
     if (m_pLog->serialNumber != NULL)
     {
         m_pPrintable->serialStr.resize(LOG5_SERIAL_NUMBER);
-        strncpy((char*)m_pPrintable->serialStr.c_str(), (char*)&m_pLog->serialNumber, LOG5_SERIAL_NUMBER);
-        byte_Swap_String((char*)m_pPrintable->serialStr.c_str());
+        strncpy((char*)&*m_pPrintable->serialStr.begin(), (char*)&m_pLog->serialNumber, LOG5_SERIAL_NUMBER);
+        byte_Swap_String((char*)&*m_pPrintable->serialStr.begin());
         m_pPrintable->serialStr.resize(LOG5_SERIAL_NUMBER);
         ltrim(m_pPrintable->serialStr);
     }
@@ -3442,8 +3442,8 @@ bool CAta_Identify_Log_05::create_Firmware_Rev()
     if (m_pLog->firmwareRev != NULL)
     {
         m_pPrintable->firmwareStr.resize(LOG5_FIRMWARE_REV);
-        strncpy((char*)m_pPrintable->firmwareStr.c_str(), (char*)&m_pLog->firmwareRev, LOG5_FIRMWARE_REV);
-        byte_Swap_String((char*)m_pPrintable->firmwareStr.c_str());
+        strncpy((char*)&*m_pPrintable->firmwareStr.begin(), (char*)&m_pLog->firmwareRev, LOG5_FIRMWARE_REV);
+        byte_Swap_String((char*)&*m_pPrintable->firmwareStr.begin());
         m_pPrintable->firmwareStr.resize(LOG5_FIRMWARE_REV);
         ltrim(m_pPrintable->firmwareStr);
         rtrim(m_pPrintable->firmwareStr);
@@ -3473,8 +3473,8 @@ bool CAta_Identify_Log_05::create_Model_Number()
     if (m_pLog->modelNumber != NULL)
     {
         m_pPrintable->modelNumberStr.resize(LOG5_MODEL_NUMBER);
-        strncpy((char*)m_pPrintable->modelNumberStr.c_str(), (char*)&m_pLog->modelNumber, LOG5_MODEL_NUMBER);
-        byte_Swap_String((char*)m_pPrintable->modelNumberStr.c_str());
+        strncpy((char*)&*m_pPrintable->modelNumberStr.begin(), (char*)&m_pLog->modelNumber, LOG5_MODEL_NUMBER);
+        byte_Swap_String((char*)&*m_pPrintable->modelNumberStr.begin());
         m_pPrintable->modelNumberStr.resize(LOG5_MODEL_NUMBER);
         ltrim(m_pPrintable->modelNumberStr);
         rtrim(m_pPrintable->modelNumberStr);
@@ -3503,8 +3503,8 @@ bool CAta_Identify_Log_05::create_Product_string()
     if (m_pLog->productInformation != NULL)
     {
         m_pPrintable->productStr.resize(LOG5_PRODUCT_INFO);
-        strncpy((char*)m_pPrintable->productStr.c_str(), (char*)&m_pLog->productInformation, LOG5_PRODUCT_INFO);
-        byte_Swap_String((char*)m_pPrintable->productStr.c_str());
+        strncpy((char*)&*m_pPrintable->productStr.begin(), (char*)&m_pLog->productInformation, LOG5_PRODUCT_INFO);
+        byte_Swap_String((char*)&*m_pPrintable->productStr.begin());
         m_pPrintable->productStr.resize(LOG5_PRODUCT_INFO);
         ltrim(m_pPrintable->productStr);
         rtrim(m_pPrintable->productStr);
@@ -3559,19 +3559,19 @@ bool CAta_Identify_Log_05::get_printables(JSONNODE *pageInfo)
 
         if (m_pPrintable->serialStr != "")
         {
-            json_push_back(deviceInfo, json_new_a("Serial Number", (char*)m_pPrintable->serialStr.c_str()));
+            json_push_back(deviceInfo, json_new_a("Serial Number", (char*)&*m_pPrintable->serialStr.begin()));
         }
         if (m_pPrintable->firmwareStr != "")
         {
-            json_push_back(deviceInfo, json_new_a("Firmware Revision", (char*)m_pPrintable->firmwareStr.c_str()));
+            json_push_back(deviceInfo, json_new_a("Firmware Revision", (char*)&*m_pPrintable->firmwareStr.begin()));
         }
         if (m_pPrintable->modelNumberStr != "")
         {
-            json_push_back(deviceInfo, json_new_a("Model Number", (char*)m_pPrintable->modelNumberStr.c_str()));
+            json_push_back(deviceInfo, json_new_a("Model Number", (char*)&*m_pPrintable->modelNumberStr.begin()));
         }
         if (m_pPrintable->productStr != "")
         {
-            json_push_back(deviceInfo, json_new_a("Product Identifier", (char*)m_pPrintable->productStr.c_str()));
+            json_push_back(deviceInfo, json_new_a("Product Identifier", (char*)&*m_pPrintable->productStr.begin()));
         }
 
         json_push_back(pageInfo, deviceInfo);

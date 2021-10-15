@@ -28,6 +28,8 @@
 #include <time.h>
 #include "common.h"
 #include "libjson.h"
+#include <limits.h>
+
 
 extern eVerbosityLevels g_verbosity;
 extern eDataFormat g_dataformat;
