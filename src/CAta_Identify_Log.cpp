@@ -77,7 +77,9 @@ inline bool check_For_Active_Status(uint64_t *value)
 // *****************************************************************************
 CAta_Identify_log::CAta_Identify_log()
     : m_name("ATA Identify Log")
+    , pData(NULL)
     , m_status(IN_PROGRESS)
+    , m_sDriveInfo()
 {
     //m_sDriveInfo = {};
 }
@@ -99,9 +101,10 @@ CAta_Identify_log::CAta_Identify_log()
 //---------------------------------------------------------------------------
 CAta_Identify_log::CAta_Identify_log(uint8_t *buffer)
     : m_name("ATA Identify Log")
+    , pData(buffer)
     , m_status(IN_PROGRESS)
+    , m_sDriveInfo()
 {
-    pData = buffer;
     if (pData != NULL)
     {
         parse_Device_Info();
@@ -129,7 +132,9 @@ CAta_Identify_log::CAta_Identify_log(uint8_t *buffer)
 //---------------------------------------------------------------------------
 CAta_Identify_log::CAta_Identify_log(const std::string & fileName)
     : m_name("ATA Identify Log")
+    , pData(NULL)
     , m_status(IN_PROGRESS)
+    , m_sDriveInfo()
 {
     CLog *cCLog;
     cCLog = new CLog(fileName);
@@ -272,7 +277,7 @@ void CAta_Identify_log::create_WWN_Info()
     m_sDriveInfo.ieeeOUI.resize(WORLD_WIDE_NAME_LEN);
     m_sDriveInfo.uniqueID.resize(WORLD_WIDE_NAME_LEN);
     uint64_t wwn = M_WordsTo8ByteValue(identWordPtr[108], identWordPtr[109], identWordPtr[110], identWordPtr[111]);
-    snprintf((char*)m_sDriveInfo.worldWideName.c_str(), WORLD_WIDE_NAME_LEN, "%" PRIX64"", wwn);
+    snprintf(&*m_sDriveInfo.worldWideName.begin(), WORLD_WIDE_NAME_LEN, "%" PRIX64"", wwn);
     uint64_t ieeeOUI = (uint64_t)((wwn & 0x0FFFFFF000000000ULL) >> 36);
     uint64_t uniqueID = (uint64_t)(wwn & 0x0000000FFFFFFFFFULL);
     snprintf((char*)&*m_sDriveInfo.ieeeOUI.begin(), WORLD_WIDE_NAME_LEN, "0x%06" PRIX64"", ieeeOUI);
@@ -742,7 +747,7 @@ eReturnValues CAta_Identify_log::print_Identify_Information(JSONNODE *masterData
 
 
     // capacity
-    snprintf(&*myStr.begin(), BASIC, "%0.02f %s ", m_sDriveInfo.sCapInfo.capUnit, (char*)m_sDriveInfo.sCapInfo.capacityUnit.c_str());
+    snprintf(&*myStr.begin(), BASIC, "%0.02f %s ", m_sDriveInfo.sCapInfo.capUnit, &*m_sDriveInfo.sCapInfo.capacityUnit.begin());
     json_push_back(identifyInfo, json_new_a("Identify Log Device Capacity", &*myStr.begin()));
     // Spec 
     switch (m_sDriveInfo.ataSpecCounter)
