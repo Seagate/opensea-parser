@@ -54,27 +54,18 @@ namespace opensea_parser {
 		sDefect						*m_PlistDefect;				//<! structure to the Pending defect
 		uint32_t					m_count;					//<! the total count of pending defects found
 
-		void get_Supported_And_Subpage_Description(std::string *description);
 		void process_PList_Data(JSONNODE *pendingData, uint32_t offset);
 		void process_PList_Count(JSONNODE *pendingCount);
 		eReturnValues get_Plist_Data(JSONNODE *masterData);
-		eReturnValues get_PrePython_Plist_Data(JSONNODE* masterData);
 
 	public:
 		CScsiPendingDefectsLog();
 		CScsiPendingDefectsLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength);
 		virtual ~CScsiPendingDefectsLog();
 		virtual eReturnValues get_Log_Status() { return m_PlistStatus; };
-		virtual eReturnValues parse_Supported_Log_Pages_Log(JSONNODE *masterData) 
+		virtual eReturnValues parse_Plist_Log(JSONNODE *masterData) 
 		{ 
-			if (g_dataformat == PREPYTHON_DATA)
-			{
-				return get_PrePython_Plist_Data(masterData);
-			}
-			else
-			{
-				return get_Plist_Data(masterData);
-			}
+			return get_Plist_Data(masterData);
 		};
 
 	};

@@ -57,9 +57,9 @@ namespace opensea_parser {
         uint64_t                                m_Value;
 
         void get_Parameter_Code_Description(uint16_t paramCode, std::string *generalStr);
-        void process_Generic_Data(JSONNODE* genericData, uint16_t paramCode, uint32_t offset);
-        void process_Achievable_Data(JSONNODE * achievableData, uint16_t paramCode, uint32_t offset);
-        void process_Duration_Limits_Data(JSONNODE* limitData, uint32_t offset);
+        void process_Generic_Data(JSONNODE* genericData, uint16_t paramCode);
+        void process_Achievable_Data(JSONNODE * achievableData, uint16_t paramCode);
+        void process_Duration_Limits_Data(JSONNODE* limitData);
         void populate_Generic_Param_Value(uint8_t paramLength, uint32_t offset);
         eReturnValues get_Limits_Data(JSONNODE *masterData);
 

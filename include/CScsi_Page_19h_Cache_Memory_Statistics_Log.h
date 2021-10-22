@@ -1,4 +1,4 @@
-// CScsi_Page_19h_Cache_Memory_Statistics_Log.h  Definition of SCSI 0x19,00 cache memory statistics
+// CScsi_Page_19h_Cache_Memory_Statistics_Log.h  Definition of SCSI 0x19,20 cache memory statistics
 //
 // Do NOT modify or remove this copyright and license
 //
@@ -51,8 +51,8 @@ namespace opensea_parser {
         uint64_t                                m_Value;
 
         void get_Parameter_Code_Description(uint16_t paramCode, std::string *performanceStatistics);
-        void process_Cache_Memory_Statistics_interval_Data(JSONNODE *cacheData, uint32_t offset);
-        void process_Generic_Data(JSONNODE *genData, uint16_t paramCode, uint32_t offset);
+        void process_Cache_Memory_Statistics_interval_Data(JSONNODE *cacheData);
+        void process_Generic_Data(JSONNODE *genData, uint16_t paramCode);
         void populate_Generic_Param_Value(uint8_t paramLength, uint32_t offset);
         eReturnValues get_Cache_Memory_Statistics_Data(JSONNODE *masterData);
 

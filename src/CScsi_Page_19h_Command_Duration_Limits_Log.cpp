@@ -118,37 +118,16 @@ void CScsiCmdDurationLimitsLog::get_Parameter_Code_Description(uint16_t paramCod
 {
     if (paramCode >= 0x0011 && paramCode <= 0x0017)
     {
-        if (g_dataformat == PREPYTHON_DATA)
-        {
-            snprintf((char*)generalStr->c_str(), BASIC, "cmd_druation_limit_T2B");
-        }
-        else
-        {
-            snprintf((char*)generalStr->c_str(), BASIC, "Command Duration Limit T2A");
-        }
+
+        snprintf((char*)generalStr->c_str(), BASIC, "Command Duration Limit T2A");
     }
     else if (paramCode >= 0x0011 && paramCode <= 0x0017)
     {
-        if (g_dataformat == PREPYTHON_DATA)
-        {
-            snprintf((char*)generalStr->c_str(), BASIC, "cmd_druation_limit_T2B");
-        }
-        else
-        {
-            snprintf((char*)generalStr->c_str(), BASIC, "Command Duration Limit T2B");
-        }
+        snprintf((char*)generalStr->c_str(), BASIC, "Command Duration Limit T2B");
     }
     else
     {
-        if (g_dataformat == PREPYTHON_DATA)
-        {
-            snprintf((char*)generalStr->c_str(), BASIC, "vendor_specific_0x%04" PRIx16"", paramCode);
-        }
-        else
-        {
-            snprintf((char*)generalStr->c_str(), BASIC, "vendor specific 0x%04" PRIx16"", paramCode);
-        }
-
+        snprintf((char*)generalStr->c_str(), BASIC, "vendor specific 0x%04" PRIx16"", paramCode);
     }
 }
 //-----------------------------------------------------------------------------
@@ -161,12 +140,11 @@ void CScsiCmdDurationLimitsLog::get_Parameter_Code_Description(uint16_t paramCod
 //  Entry:
 //! \param fuaData - the Json node olding all the FUA data 
 //! \param paramCode - passed in param code
-//! \param offset - offset where the data came from
 //
 //  Exit:
 //
 //---------------------------------------------------------------------------
-void CScsiCmdDurationLimitsLog::process_Generic_Data(JSONNODE* genericData, uint16_t paramCode, uint32_t offset)
+void CScsiCmdDurationLimitsLog::process_Generic_Data(JSONNODE* genericData, uint16_t paramCode)
 {
     std::string myStr = "";
     myStr.resize(BASIC);
@@ -178,16 +156,8 @@ void CScsiCmdDurationLimitsLog::process_Generic_Data(JSONNODE* genericData, uint
 #endif
     byte_Swap_16(&m_commandLog->paramCode);
     get_Parameter_Code_Description(m_commandLog->paramCode, &myHeader);
-    if (g_dataformat == PREPYTHON_DATA)
-    {
-        prePython_int(genericData, &*myHeader.begin(), "generic", "count", m_Value, COMMAND_DURATION_LIMITS_LOG, SAS_SUBPAGE_ZERO, paramCode, offset);
-
-    }
-    else
-    {
-        snprintf(&*myStr.begin(), BASIC, "%" PRIu64"", m_Value);
-        json_push_back(genericData, json_new_a(&*myHeader.begin(), &*myStr.begin()));
-    }
+    snprintf(&*myStr.begin(), BASIC, "%" PRIu64"", m_Value);
+    json_push_back(genericData, json_new_a(&*myHeader.begin(), &*myStr.begin()));
 }
 //-----------------------------------------------------------------------------
 //
@@ -199,12 +169,11 @@ void CScsiCmdDurationLimitsLog::process_Generic_Data(JSONNODE* genericData, uint
 //  Entry:
 //! \param fuaData - the Json node olding all the FUA data 
 //! \param paramCode - passed in param code
-//! \param offset - offset where the data came from
 //
 //  Exit:
 //
 //---------------------------------------------------------------------------
-void CScsiCmdDurationLimitsLog::process_Achievable_Data(JSONNODE * achievableData, uint16_t paramCode, uint32_t offset)
+void CScsiCmdDurationLimitsLog::process_Achievable_Data(JSONNODE * achievableData, uint16_t paramCode)
 {
     std::string myStr = "";
     myStr.resize(BASIC);
@@ -215,17 +184,11 @@ void CScsiCmdDurationLimitsLog::process_Achievable_Data(JSONNODE * achievableDat
     printf("Achievable Latency Target Log Description\n");
 #endif
     byte_Swap_16(&m_commandLog->paramCode);
-    if (g_dataformat == PREPYTHON_DATA)
-    {
-        prePython_int(achievableData, "achievable_latency", "total read commands", "count", m_Value, COMMAND_DURATION_LIMITS_LOG, SAS_SUBPAGE_ZERO, paramCode, offset);
 
-    }
-    else
-    {
-        myHeader = "Achievable Latency Target";
-        snprintf(&*myStr.begin(), BASIC, "%" PRIu64"", m_Value);
-        json_push_back(achievableData, json_new_a(&*myHeader.begin(), &*myStr.begin()));
-    }
+    myHeader = "Achievable Latency Target";
+    snprintf(&*myStr.begin(), BASIC, "%" PRIu64"", m_Value);
+    json_push_back(achievableData, json_new_a(&*myHeader.begin(), &*myStr.begin()));
+
 }
 //-----------------------------------------------------------------------------
 //
@@ -236,12 +199,11 @@ void CScsiCmdDurationLimitsLog::process_Achievable_Data(JSONNODE * achievableDat
 //
 //  Entry:
 //! \param fuaData - the Json node olding all the FUA data 
-//! \param offset - offset where the data came from
 //
 //  Exit:
 //
 //---------------------------------------------------------------------------
-void CScsiCmdDurationLimitsLog::process_Duration_Limits_Data(JSONNODE* limitData, uint32_t offset)
+void CScsiCmdDurationLimitsLog::process_Duration_Limits_Data(JSONNODE* limitData)
 {
     std::string myStr = "";
     myStr.resize(BASIC);
@@ -261,34 +223,20 @@ void CScsiCmdDurationLimitsLog::process_Duration_Limits_Data(JSONNODE* limitData
     byte_Swap_32(&m_limitsLog->nonconformingMiss);
     byte_Swap_32(&m_limitsLog->predictiveLatencyMiss);
 
-    if (g_dataformat == PREPYTHON_DATA)
-    {
-        prePython_int(limitData, &*myStr.begin(), "total inactive target miss", "commands", m_limitsLog->inactiveMiss, COMMAND_DURATION_LIMITS_LOG, SAS_SUBPAGE_ZERO, m_limitsLog->paramCode, offset);
-        prePython_int(limitData, &*myStr.begin(), "total active target miss", "commands", m_limitsLog->activeMiss, COMMAND_DURATION_LIMITS_LOG, SAS_SUBPAGE_ZERO, m_limitsLog->paramCode, offset);
-        prePython_int(limitData, &*myStr.begin(), "total latency miss", "commands", m_limitsLog->latencyMiss, COMMAND_DURATION_LIMITS_LOG, SAS_SUBPAGE_ZERO, m_limitsLog->paramCode, offset);
-        prePython_int(limitData, &*myStr.begin(), "total noncoformin miss", "commands", m_limitsLog->nonconformingMiss, COMMAND_DURATION_LIMITS_LOG, SAS_SUBPAGE_ZERO, m_limitsLog->paramCode, offset);
-        prePython_int(limitData, &*myStr.begin(), "total predictive latency miss", "commands", m_limitsLog->predictiveLatencyMiss, COMMAND_DURATION_LIMITS_LOG, SAS_SUBPAGE_ZERO, m_limitsLog->paramCode, offset);
-        prePython_int(limitData, &*myStr.begin(), "total attributable to errors", "commands", m_limitsLog->latencyMissesDoToError, COMMAND_DURATION_LIMITS_LOG, SAS_SUBPAGE_ZERO, m_limitsLog->paramCode, offset);
-        prePython_int(limitData, &*myStr.begin(), "total attributable to deferred errors", "commands", m_limitsLog->latencyMissesDeferredErrors, COMMAND_DURATION_LIMITS_LOG, SAS_SUBPAGE_ZERO, m_limitsLog->paramCode, offset);
-        prePython_int(limitData, &*myStr.begin(), "total attributable to background operations", "commands", m_limitsLog->missedDoToBackgroundOperations, COMMAND_DURATION_LIMITS_LOG, SAS_SUBPAGE_ZERO, m_limitsLog->paramCode, offset);
+    JSONNODE* limitInfo = json_new(JSON_NODE);
+    json_set_name(limitInfo, &*myStr.begin());
 
-    }
-    else
-    {
-        JSONNODE* limitInfo = json_new(JSON_NODE);
-        json_set_name(limitInfo, &*myStr.begin());
+    set_json_64bit(limitInfo, "Number of Inactive Target Miss Commands", m_limitsLog->inactiveMiss, false);
+    set_json_64bit(limitInfo, "Number of Write FUA commands", m_limitsLog->activeMiss, false);
+    set_json_64bit(limitInfo, "Number of read FUA_NV commands", m_limitsLog->latencyMiss, false);
+    set_json_64bit(limitInfo, "Number of write FUA_NV commands", m_limitsLog->nonconformingMiss, false);
+    set_json_64bit(limitInfo, "Read FUA Commands Processing Itervals", m_limitsLog->predictiveLatencyMiss, false);
+    set_json_64bit(limitInfo, "Write FUA Commands Processing Itervals", m_limitsLog->latencyMissesDoToError, false);
+    set_json_64bit(limitInfo, "Read FUA_NV Commands Processing Itervals", m_limitsLog->latencyMissesDeferredErrors, false);
+    set_json_64bit(limitInfo, "Read FUA_NV Commands Processing Itervals", m_limitsLog->missedDoToBackgroundOperations, false);
 
-        set_json_64bit(limitInfo, "Number of Inactive Target Miss Commands", m_limitsLog->inactiveMiss, false);
-        set_json_64bit(limitInfo, "Number of Write FUA commands", m_limitsLog->activeMiss, false);
-        set_json_64bit(limitInfo, "Number of read FUA_NV commands", m_limitsLog->latencyMiss, false);
-        set_json_64bit(limitInfo, "Number of write FUA_NV commands", m_limitsLog->nonconformingMiss, false);
-        set_json_64bit(limitInfo, "Read FUA Commands Processing Itervals", m_limitsLog->predictiveLatencyMiss, false);
-        set_json_64bit(limitInfo, "Write FUA Commands Processing Itervals", m_limitsLog->latencyMissesDoToError, false);
-        set_json_64bit(limitInfo, "Read FUA_NV Commands Processing Itervals", m_limitsLog->latencyMissesDeferredErrors, false);
-        set_json_64bit(limitInfo, "Read FUA_NV Commands Processing Itervals", m_limitsLog->missedDoToBackgroundOperations, false);
+    json_push_back(limitData, limitInfo);
 
-        json_push_back(limitData, limitInfo);
-    }
 }
 
 void CScsiCmdDurationLimitsLog::populate_Generic_Param_Value(uint8_t paramLength, uint32_t offset)
@@ -337,16 +285,10 @@ eReturnValues CScsiCmdDurationLimitsLog::get_Limits_Data(JSONNODE *masterData)
     if (pData != NULL)
     {
         snprintf(&*headerStr.begin(), BASIC, "Command Duration Limits Log - 19h, 21h");
-        JSONNODE* pageInfo;
-        if (g_dataformat == PREPYTHON_DATA)
-        {
-            pageInfo = masterData;
-        }
-        else
-        {
-            pageInfo = json_new(JSON_NODE);
-            json_set_name(pageInfo, &*headerStr.begin());
-        }
+        JSONNODE* pageInfo = json_new(JSON_NODE);
+
+        json_set_name(pageInfo, &*headerStr.begin());
+
         for (uint32_t offset = 0; offset < m_PageLength; )
         {
             if (offset < m_bufferLength && offset < UINT16_MAX)
@@ -356,28 +298,28 @@ eReturnValues CScsiCmdDurationLimitsLog::get_Limits_Data(JSONNODE *masterData)
                 if (paramCode == 0x0001)
                 {
                     m_commandLog = (sLogParams*)&pData[offset];
-                    process_Achievable_Data(pageInfo, paramCode, offset);
+                    process_Achievable_Data(pageInfo, paramCode);
                     offset += m_commandLog->paramLength + LOGPAGESIZE;
                 }
                 else if (paramCode >= 0x0011 && paramCode <= 0x0017)
                 {
 
                     m_limitsLog = (sCommandDurationLimits*)&pData[offset];
-                    process_Duration_Limits_Data(pageInfo, offset);
+                    process_Duration_Limits_Data(pageInfo);
                     offset += m_limitsLog->paramLength + LOGPAGESIZE;
                 }
                 else if (paramCode >= 0x0021 && paramCode <= 0x0027)
                 {
 
                     m_limitsLog = (sCommandDurationLimits*)&pData[offset];
-                    process_Duration_Limits_Data(pageInfo, offset);
+                    process_Duration_Limits_Data(pageInfo);
                     offset += m_limitsLog->paramLength + LOGPAGESIZE;
                 }
                 else
                 {
                     m_commandLog = (sLogParams*)&pData[offset];
                     populate_Generic_Param_Value(m_commandLog->paramLength,offset + LOGPAGESIZE);
-                    process_Generic_Data(pageInfo, paramCode,offset);
+                    process_Generic_Data(pageInfo, paramCode);
                     offset += (m_commandLog->paramLength + LOGPAGESIZE);
                 }
             }

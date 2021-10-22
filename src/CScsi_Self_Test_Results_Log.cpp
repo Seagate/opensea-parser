@@ -240,7 +240,7 @@ void CScsi_DST_Results::print_Self_Test_Log(JSONNODE *dstNode, uint16_t run, uin
 		json_push_back(label, json_new_a("metric_source", &*myStr.begin()));
 		if (M_GETBITRANGE(m_DST->stCode, 7, 5) == DST_NOT_RUN)
 		{
-			json_push_back(label, json_new_a("stat_type", "self-test not run"));
+			json_push_back(label, json_new_a("stat_type", "no test run"));
 		}
 		else
 		{
@@ -301,10 +301,6 @@ void CScsi_DST_Results::print_Self_Test_Log(JSONNODE *dstNode, uint16_t run, uin
 		json_push_back(label, json_new_a("scsi_ascq", &*myStr.begin()));
 		json_push_back(label, json_new_a("units", "failure"));
 
-
-		//snprintf(&*myStr.begin(), BASIC, "%02" PRIx8"", (uint8_t)M_GETBITRANGE(m_DST->stCode, 3, 0));
-		//json_push_back(label, json_new_i("self_test_results", (uint8_t)M_GETBITRANGE(m_DST->stCode, 3, 0)));
-		
 		json_push_back(data, label);
 		json_push_back(data, json_new_i("value", (uint8_t)M_GETBITRANGE(m_DST->stCode, 3, 0)));
 		json_push_back(dstNode, data);

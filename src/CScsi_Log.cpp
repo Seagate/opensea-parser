@@ -375,7 +375,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 					retStatus = cPlist->get_Log_Status();
 					if (retStatus == IN_PROGRESS)
 					{
-						retStatus = cPlist->parse_Supported_Log_Pages_Log(masterData);
+						retStatus = cPlist->parse_Plist_Log(masterData);
 					}
 					delete(cPlist);
 				}

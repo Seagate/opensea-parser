@@ -66,7 +66,6 @@ namespace opensea_parser {
 
 		void process_Client_Data(JSONNODE *appData, uint32_t offset);
 		eReturnValues get_Client_Data(JSONNODE *masterData);
-		eReturnValues get_PrePython_Client_Data(JSONNODE* masterData);
 	public:
 		CScsiApplicationLog();
 		CScsiApplicationLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength);
@@ -74,14 +73,7 @@ namespace opensea_parser {
 		virtual eReturnValues get_Log_Status() { return m_ApplicationStatus; };
 		virtual eReturnValues parse_Application_Client_Log(JSONNODE *masterData) 
 		{
-			if (g_dataformat == PREPYTHON_DATA)
-			{
-				return get_PrePython_Client_Data(masterData);
-			}
-			else
-			{
-				return get_Client_Data(masterData);
-			}
+			return get_Client_Data(masterData);
 		};
 
 	};

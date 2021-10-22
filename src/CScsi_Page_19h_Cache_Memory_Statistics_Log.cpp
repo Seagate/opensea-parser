@@ -121,66 +121,23 @@ void CScsiCacheMemStatLog::get_Parameter_Code_Description(uint16_t paramCode, st
     switch (paramCode)
     {
     case 0x0001:
-        if (g_dataformat == PREPYTHON_DATA)
-        {
-            *cacheStatistics = "read_hits";
-        }
-        else
-        {
             *cacheStatistics = "Read Cache Memory Hits";
-        }
         break;
     case 0x0002:
-        if (g_dataformat == PREPYTHON_DATA)
-        {
-            *cacheStatistics = "read_to_cache_memory";
-        }
-        else
-        {
             *cacheStatistics = "Reads To Cache Memory";
-        }
         break;
     case 0x0003:
-        if (g_dataformat == PREPYTHON_DATA)
-        {
-            *cacheStatistics = "write_hits";
-        }
-        else
-        {
             *cacheStatistics = "Writes Cache Memory Hits";
-        }
         break;
     case 0x0004:
-        if (g_dataformat == PREPYTHON_DATA)
-        {
-            *cacheStatistics =  "writes_from_cache_memory";
-        }
-        else
-        {
             *cacheStatistics = "Writes From Cache Memory";
-        }
         break;
     case 0x0005:
-        if (g_dataformat == PREPYTHON_DATA)
-        {
-            *cacheStatistics = "time_from_last_hard_reset";
-        }
-        else
-        {
             *cacheStatistics = "Time From Last Hard Reset";
-        }
         break;
     default:
-        if (g_dataformat == PREPYTHON_DATA)
-        {
-            snprintf(&*tempStr.begin(), BASIC, "vendor_specific_0x%04" PRIx16"", paramCode);
-            *cacheStatistics = tempStr;
-        }
-        else
-        {
             snprintf(&*tempStr.begin(), BASIC, "vendor specific 0x%04" PRIx16"", paramCode);
             *cacheStatistics = tempStr;
-        }
         break;
     }
 }
@@ -198,7 +155,7 @@ void CScsiCacheMemStatLog::get_Parameter_Code_Description(uint16_t paramCode, st
 //!   \return void
 //
 //---------------------------------------------------------------------------
-void opensea_parser::CScsiCacheMemStatLog::process_Cache_Memory_Statistics_interval_Data(JSONNODE * cacheData, uint32_t offset)
+void opensea_parser::CScsiCacheMemStatLog::process_Cache_Memory_Statistics_interval_Data(JSONNODE * cacheData)
 {
     std::string myStr = "";
     myStr.resize(BASIC);
@@ -213,23 +170,13 @@ void opensea_parser::CScsiCacheMemStatLog::process_Cache_Memory_Statistics_inter
     byte_Swap_Int32(&m_TimeIntervalDescriptorParam->intervalExponent);
     byte_Swap_32(&m_TimeIntervalDescriptorParam->intervalInteger);
 
-    if (g_dataformat == PREPYTHON_DATA)
-    {
-        double raise = raise_to_power(10, -(double)m_TimeIntervalDescriptorParam->intervalExponent);
-        double check = (m_TimeIntervalDescriptorParam->intervalInteger * raise) * 1000;
-        prePython_float(cacheData, "interval", NULL, "milliseconds", check, CACHE_MEMORY_STATISTICES, SAS_SUBPAGE_20, m_TimeIntervalDescriptorParam->paramCode, offset);
+    JSONNODE* cacheStatisticsInfo = json_new(JSON_NODE);
+    json_set_name(cacheStatisticsInfo, &*myStr.begin());
 
-    }
-    else
-    {
-        JSONNODE* cacheStatisticsInfo = json_new(JSON_NODE);
-        json_set_name(cacheStatisticsInfo, &*myStr.begin());
+    json_push_back(cacheStatisticsInfo, json_new_i("Time Interval Descriptor-Exponent", m_TimeIntervalDescriptorParam->intervalExponent));
+    json_push_back(cacheStatisticsInfo, json_new_i("Time Interval Descriptor-Integer", m_TimeIntervalDescriptorParam->intervalExponent));
 
-        json_push_back(cacheStatisticsInfo, json_new_i("Time Interval Descriptor-Exponent", m_TimeIntervalDescriptorParam->intervalExponent));
-        json_push_back(cacheStatisticsInfo, json_new_i("Time Interval Descriptor-Integer", m_TimeIntervalDescriptorParam->intervalExponent));
-
-        json_push_back(cacheData, cacheStatisticsInfo);
-    }
+    json_push_back(cacheData, cacheStatisticsInfo);
 }
 
 //-----------------------------------------------------------------------------
@@ -247,7 +194,7 @@ void opensea_parser::CScsiCacheMemStatLog::process_Cache_Memory_Statistics_inter
 //!   \return void
 //
 //---------------------------------------------------------------------------
-void CScsiCacheMemStatLog::process_Generic_Data(JSONNODE *genData, uint16_t paramCode, uint32_t offset)
+void CScsiCacheMemStatLog::process_Generic_Data(JSONNODE *genData, uint16_t paramCode)
 {
     std::string myStr = "";
     myStr.resize(BASIC);
@@ -259,17 +206,9 @@ void CScsiCacheMemStatLog::process_Generic_Data(JSONNODE *genData, uint16_t para
 #endif
     byte_Swap_16(&m_CacheMemLog->paramCode);
     get_Parameter_Code_Description(m_CacheMemLog->paramCode, &myHeader);
-    if (g_dataformat == PREPYTHON_DATA)
-    {
-        prePython_int(genData, "performance_statistics", "generic data", "count", m_Value, CACHE_MEMORY_STATISTICES, SAS_SUBPAGE_20, paramCode, offset);
 
-    }
-    else
-    {
-
-        snprintf(&*myStr.begin(), BASIC, "%" PRIu64"", m_Value);
-        json_push_back(genData, json_new_a(&*myHeader.begin(), &*myStr.begin()));
-    }
+    snprintf(&*myStr.begin(), BASIC, "%" PRIu64"", m_Value);
+    json_push_back(genData, json_new_a(&*myHeader.begin(), &*myStr.begin()));
 }
 //-----------------------------------------------------------------------------
 //
@@ -332,16 +271,10 @@ eReturnValues CScsiCacheMemStatLog::get_Cache_Memory_Statistics_Data(JSONNODE *m
     if (pData != NULL)
     {
         snprintf(&*headerStr.begin(), BASIC, "Cache Memory Statistics Log - 19h");
-        JSONNODE* pageInfo;
-        if (g_dataformat == PREPYTHON_DATA)
-        {
-            pageInfo = masterData;
-        }
-        else
-        {
-            pageInfo = json_new(JSON_NODE);
-            json_set_name(pageInfo, &*headerStr.begin());
-        }
+        JSONNODE* pageInfo = json_new(JSON_NODE);
+
+        json_set_name(pageInfo, &*headerStr.begin());
+
         for (uint32_t offset = 0; offset < m_PageLength; )
         {
             if (offset < m_bufferLength && offset < UINT16_MAX)
@@ -351,30 +284,24 @@ eReturnValues CScsiCacheMemStatLog::get_Cache_Memory_Statistics_Data(JSONNODE *m
                 if (paramCode == 0x0005)
                 {
                     m_TimeIntervalDescriptorParam = (sTimeIntervalDescriptors*)&pData[offset];
-                    process_Cache_Memory_Statistics_interval_Data(pageInfo, offset);
+                    process_Cache_Memory_Statistics_interval_Data(pageInfo);
                     offset += m_TimeIntervalDescriptorParam->paramLength + LOGPAGESIZE;
                 }
                 else
                 {
                     m_CacheMemLog = (sLogParams*)&pData[offset];
                     populate_Generic_Param_Value(m_CacheMemLog->paramLength,offset + LOGPAGESIZE);
-                    process_Generic_Data(pageInfo, paramCode, offset);
+                    process_Generic_Data(pageInfo, paramCode);
                     offset += (m_CacheMemLog->paramLength + LOGPAGESIZE);
                 }
             }
             else
             {
-                if (g_dataformat != PREPYTHON_DATA)
-                {
-                    json_push_back(masterData, pageInfo);
-                }
+                json_push_back(masterData, pageInfo);
                 return BAD_PARAMETER;
             }
         }
-        if (g_dataformat != PREPYTHON_DATA)
-        {
-            json_push_back(masterData, pageInfo);
-        }
+        json_push_back(masterData, pageInfo);
         retStatus = SUCCESS;
     }
     else
