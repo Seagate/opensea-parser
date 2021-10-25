@@ -225,13 +225,13 @@ eReturnValues CATA_Farm_Log::print_Header(JSONNODE *masterData)
 
 #if defined _DEBUG
     printf("\n\n \tFARM Log Header \n");
-    printf("\tLog Signature           (debug):               0x%" PRIX64" \n", header->signature & 0x00FFFFFFFFFFFFFFLL);                       //!< Log Signature = 0x00004641524D4552
-    printf("\tMajor Revision          (debug):                 %" PRIu64"  \n", header->majorRev & 0x00FFFFFFFFFFFFFFLL);                       //!< Log Major rev
-    printf("\tMinor Revision          (debug):                 %" PRIu64"  \n", header->minorRev & 0x00FFFFFFFFFFFFFFLL);                       //!< minor rev 
-    printf("\tPages Supported         (debug):                 %" PRIu64"  \n", header->pagesSupported & 0x00FFFFFFFFFFFFFFLL);                 //!< number of pages supported
-    printf("\tLog Size                (debug):                 %" PRIu64"  \n", header->logSize & 0x00FFFFFFFFFFFFFFLL);                            //!< log size in bytes
-    printf("\tPage Size               (debug):                 %" PRIu64"  \n", header->pageSize & 0x00FFFFFFFFFFFFFFLL);                       //!< page size in bytes
-    printf("\tHeads Supported         (debug):                 %" PRIu64"  \n", header->headsSupported & 0x00FFFFFFFFFFFFFFLL);                 //!< Maximum Drive Heads Supported
+    printf("\tLog Signature           (debug):               0x%" PRIX64" \n", header->signature & 0x00FFFFFFFFFFFFFF);                       //!< Log Signature = 0x00004641524D4552
+    printf("\tMajor Revision          (debug):                 %" PRIu64"  \n", header->majorRev & 0x00FFFFFFFFFFFFFF);                       //!< Log Major rev
+    printf("\tMinor Revision          (debug):                 %" PRIu64"  \n", header->minorRev & 0x00FFFFFFFFFFFFFF);                       //!< minor rev 
+    printf("\tPages Supported         (debug):                 %" PRIu64"  \n", header->pagesSupported & 0x00FFFFFFFFFFFFFF);                 //!< number of pages supported
+    printf("\tLog Size                (debug):                 %" PRIu64"  \n", header->logSize & 0x00FFFFFFFFFFFFFF);                            //!< log size in bytes
+    printf("\tPage Size               (debug):                 %" PRIu64"  \n", header->pageSize & 0x00FFFFFFFFFFFFFF);                       //!< page size in bytes
+    printf("\tHeads Supported         (debug):                 %" PRIu64"  \n", header->headsSupported & 0x00FFFFFFFFFFFFFF);                 //!< Maximum Drive Heads Supported
     printf("\tNumber of Copies        (debug):                 %" PRIu64"  \n", header->copies & 0x00FFFFFFFFFFFFF);                                //!< Number of Historical Copies
     printf("\tReason for Frame Capture(debug):                 %" PRIu64"  \n", header->reasonForFrameCpature & 0x00FFFFFFFFFFFFF);              //!< Reason for Frame Capture
 
@@ -1068,8 +1068,8 @@ eReturnValues CATA_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint32
     JSONNODE *pageInfo = json_new(JSON_NODE);
 
 #if defined _DEBUG
-    int16_t whole = 0;
-    double remander = 0;
+    //int16_t whole = 0;
+    //double remander = 0;
     if (vFarmFrame[page].reliPage.copyNumber == FACTORYCOPY)
     {
         printf("\nReliability Information From Farm Log copy FACTORY");

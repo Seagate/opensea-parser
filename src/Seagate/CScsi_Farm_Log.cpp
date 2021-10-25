@@ -1890,15 +1890,15 @@ eReturnValues CSCSI_Farm_Log::print_Header(JSONNODE *masterData)
                                                           
 #if defined _DEBUG
     printf("\tLog Signature:                      0x%" PRIX64" \n", vFarmFrame[page].farmHeader.farmHeader.signature );                                  //!< Log Signature = 0x00004641524D4552
-    printf("\tMajor Revision:                      %" PRIu64"  \n", vFarmFrame[page].farmHeader.farmHeader.majorRev & 0x00FFFFFFFFFFFFFFLL);                                    //!< Log Major rev
-    printf("\tMinor Revision:                      %" PRIu64"  \n", vFarmFrame[page].farmHeader.farmHeader.minorRev & 0x00FFFFFFFFFFFFFFLL);                                    //!< minor rev 
-    printf("\tPages Supported:                     %" PRIu64"  \n", vFarmFrame[page].farmHeader.farmHeader.pagesSupported & 0x00FFFFFFFFFFFFFFLL);                             //!< number of pages supported
-    printf("\tLog Size:                            %" PRIu64"  \n", vFarmFrame[page].farmHeader.farmHeader.logSize & 0x00FFFFFFFFFFFFFFLL);                                    //!< log size in bytes
+    printf("\tMajor Revision:                      %" PRIu64"  \n", vFarmFrame[page].farmHeader.farmHeader.majorRev & 0x00FFFFFFFFFFFFFF);                                    //!< Log Major rev
+    printf("\tMinor Revision:                      %" PRIu64"  \n", vFarmFrame[page].farmHeader.farmHeader.minorRev & 0x00FFFFFFFFFFFFFF);                                    //!< minor rev 
+    printf("\tPages Supported:                     %" PRIu64"  \n", vFarmFrame[page].farmHeader.farmHeader.pagesSupported & 0x00FFFFFFFFFFFFFF);                             //!< number of pages supported
+    printf("\tLog Size:                            %" PRIu64"  \n", vFarmFrame[page].farmHeader.farmHeader.logSize & 0x00FFFFFFFFFFFFFF);                                    //!< log size in bytes
     if (m_MajorRev < MAJORVERSION4)
     {
-        printf("\tPage Size:                           %" PRIu64"  \n", vFarmFrame[page].farmHeader.farmHeader.pageSize & 0x00FFFFFFFFFFFFFFLL);                                   //!< page size in bytes
+        printf("\tPage Size:                           %" PRIu64"  \n", vFarmFrame[page].farmHeader.farmHeader.pageSize & 0x00FFFFFFFFFFFFFF);                                   //!< page size in bytes
     }
-    printf("\tHeads Supported:                     %" PRIu64"  \n", vFarmFrame[page].farmHeader.farmHeader.headsSupported & 0x00FFFFFFFFFFFFFFLL);                             //!< Maximum Drive Heads Supported
+    printf("\tHeads Supported:                     %" PRIu64"  \n", vFarmFrame[page].farmHeader.farmHeader.headsSupported & 0x00FFFFFFFFFFFFFF);                             //!< Maximum Drive Heads Supported
     printf("\tReason for Frame Capture(debug):     %" PRId64"  \n", vFarmFrame[page].farmHeader.farmHeader.reasonForFrameCpature & 0x00FFFFFFFFFFFFF);	      //!< Reason for Frame Capture
 #endif
     if (g_dataformat == PREPYTHON_DATA)
@@ -1995,33 +1995,33 @@ eReturnValues CSCSI_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint
         printf("\nDrive Information From Farm Log copy %d:\n", page);
     }
     printf("\tDevice Interface:                         %s         \n", vFarmFrame[page].identStringInfo.deviceInterface.c_str());
-    printf("\tDevice Capcaity in sectors:               %" PRId64" \n", vFarmFrame[page].driveInfo.deviceCapacity & 0x00FFFFFFFFFFFFFFLL);
-    printf("\tPhysical Sector size:                     %" PRIX64" \n", vFarmFrame[page].driveInfo.psecSize & 0x00FFFFFFFFFFFFFFLL);									//!< Physical Sector Size in Bytes
-    printf("\tLogical Sector Size:                      %" PRIX64" \n", vFarmFrame[page].driveInfo.lsecSize & 0x00FFFFFFFFFFFFFFLL);									//!< Logical Sector Size in Bytes
-    printf("\tDevice Buffer Size:                       %" PRIX64" \n", vFarmFrame[page].driveInfo.deviceBufferSize & 0x00FFFFFFFFFFFFFFLL);							//!< Device Buffer Size in Bytes
-    printf("\tNumber of heads:                          %" PRId64" \n", vFarmFrame[page].driveInfo.heads & 0x00FFFFFFFFFFFFFFLL);										//!< Number of Heads
-    printf("\tDevice form factor:                       %" PRIX64" \n", vFarmFrame[page].driveInfo.factor & 0x00FFFFFFFFFFFFFFLL);										//!< Device Form Factor (ID Word 168)
+    printf("\tDevice Capcaity in sectors:               %" PRId64" \n", vFarmFrame[page].driveInfo.deviceCapacity & 0x00FFFFFFFFFFFFFF);
+    printf("\tPhysical Sector size:                     %" PRIX64" \n", vFarmFrame[page].driveInfo.psecSize & 0x00FFFFFFFFFFFFFF);									//!< Physical Sector Size in Bytes
+    printf("\tLogical Sector Size:                      %" PRIX64" \n", vFarmFrame[page].driveInfo.lsecSize & 0x00FFFFFFFFFFFFFF);									//!< Logical Sector Size in Bytes
+    printf("\tDevice Buffer Size:                       %" PRIX64" \n", vFarmFrame[page].driveInfo.deviceBufferSize & 0x00FFFFFFFFFFFFFF);							//!< Device Buffer Size in Bytes
+    printf("\tNumber of heads:                          %" PRId64" \n", vFarmFrame[page].driveInfo.heads & 0x00FFFFFFFFFFFFFF);										//!< Number of Heads
+    printf("\tDevice form factor:                       %" PRIX64" \n", vFarmFrame[page].driveInfo.factor & 0x00FFFFFFFFFFFFFF);										//!< Device Form Factor (ID Word 168)
     printf("\tserial number:                            %s         \n", vFarmFrame[page].identStringInfo.serialNumber.c_str());
     printf("\tworkd wide name:                          %s         \n", vFarmFrame[page].identStringInfo.worldWideName.c_str());
     printf("\tfirmware Rev:                             %s         \n", vFarmFrame[page].identStringInfo.firmwareRev.c_str());											//!< Firmware Revision [0:3]
-    printf("\tRotation Rate:                            %" PRIu64" \n", vFarmFrame[page].driveInfo.rotationRate & 0x00FFFFFFFFFFFFFFLL);								//!< Rotational Rate of Device 
-    printf("\treserved:                                 %" PRIu64" \n", vFarmFrame[page].driveInfo.reserved & 0x00FFFFFFFFFFFFFFLL);									//!< reserved
-    printf("\treserved:                                 %" PRIu64" \n", vFarmFrame[page].driveInfo.reserved1 & 0x00FFFFFFFFFFFFFFLL);									//!< reserved
-    printf("\treserved:                                 %" PRIu64" \n", vFarmFrame[page].driveInfo.reserved2 & 0x00FFFFFFFFFFFFFFLL);									//!< reserved
-    printf("\tPower on Hours:                           %" PRIu64" \n", vFarmFrame[page].driveInfo.poh & 0x00FFFFFFFFFFFFFFLL);											//!< Power-on Hour
-    printf("\treserved:                                 %" PRIu64" \n", vFarmFrame[page].driveInfo.reserved3 & 0x00FFFFFFFFFFFFFFLL);									//!< reserved
-    printf("\treserved:                                 %" PRIu64" \n", vFarmFrame[page].driveInfo.reserved4 & 0x00FFFFFFFFFFFFFFLL);									//!< reserved
+    printf("\tRotation Rate:                            %" PRIu64" \n", vFarmFrame[page].driveInfo.rotationRate & 0x00FFFFFFFFFFFFFF);								//!< Rotational Rate of Device 
+    printf("\treserved:                                 %" PRIu64" \n", vFarmFrame[page].driveInfo.reserved & 0x00FFFFFFFFFFFFFF);									//!< reserved
+    printf("\treserved:                                 %" PRIu64" \n", vFarmFrame[page].driveInfo.reserved1 & 0x00FFFFFFFFFFFFFF);									//!< reserved
+    printf("\treserved:                                 %" PRIu64" \n", vFarmFrame[page].driveInfo.reserved2 & 0x00FFFFFFFFFFFFFF);									//!< reserved
+    printf("\tPower on Hours:                           %" PRIu64" \n", vFarmFrame[page].driveInfo.poh & 0x00FFFFFFFFFFFFFF);											//!< Power-on Hour
+    printf("\treserved:                                 %" PRIu64" \n", vFarmFrame[page].driveInfo.reserved3 & 0x00FFFFFFFFFFFFFF);									//!< reserved
+    printf("\treserved:                                 %" PRIu64" \n", vFarmFrame[page].driveInfo.reserved4 & 0x00FFFFFFFFFFFFFF);									//!< reserved
     if (m_MajorRev < MAJORVERSION4)
     {
-        printf("\tHead Load Events:                         %" PRIu64" \n", vFarmFrame[page].driveInfo.headLoadEvents & 0x00FFFFFFFFFFFFFFLL);								//!< Head Load Events
+        printf("\tHead Load Events:                         %" PRIu64" \n", vFarmFrame[page].driveInfo.headLoadEvents & 0x00FFFFFFFFFFFFFF);								//!< Head Load Events
     }
-    printf("\tPower Cycle count:                        %" PRIu64" \n", vFarmFrame[page].driveInfo.powerCycleCount & 0x00FFFFFFFFFFFFFFLL);								//!< Power Cycle Count
-    printf("\tHardware Reset count:                     %" PRIu64" \n", vFarmFrame[page].driveInfo.resetCount & 0x00FFFFFFFFFFFFFFLL);									//!< Hardware Reset Count
-    printf("\treserved:                                 %" PRIu64" \n", vFarmFrame[page].driveInfo.reserved5 & 0x00FFFFFFFFFFFFFFLL);									//!< treserved
-    printf("\tNVC Status @ power on:                    %" PRIu64" \n", vFarmFrame[page].driveInfo.NVC_StatusATPowerOn & 0x00FFFFFFFFFFFFFFLL);							//!< NVC Status on Power-on
-    printf("\tTime Available to save:                   %" PRIu64" \n", vFarmFrame[page].driveInfo.timeAvailable & 0x00FFFFFFFFFFFFFFLL);								//!< Time Available to Save User Data to Media Over Last Power Cycle (in 100us)
-    printf("\tTime of latest frame:                     %" PRIu64" \n", vFarmFrame[page].driveInfo.firstTimeStamp & 0x00FFFFFFFFFFFFFFLL);								//!< Timestamp of first SMART Summary Frame in Power-On Hours microseconds (spec is wrong)
-    printf("\tTime of latest frame (milliseconds):      %" PRIu64" \n", vFarmFrame[page].driveInfo.lastTimeStamp & 0x00FFFFFFFFFFFFFFLL);								//!< Timestamp of latest SMART Summary Frame in Power-On Hours Milliseconds1
+    printf("\tPower Cycle count:                        %" PRIu64" \n", vFarmFrame[page].driveInfo.powerCycleCount & 0x00FFFFFFFFFFFFFF);								//!< Power Cycle Count
+    printf("\tHardware Reset count:                     %" PRIu64" \n", vFarmFrame[page].driveInfo.resetCount & 0x00FFFFFFFFFFFFFF);									//!< Hardware Reset Count
+    printf("\treserved:                                 %" PRIu64" \n", vFarmFrame[page].driveInfo.reserved5 & 0x00FFFFFFFFFFFFFF);									//!< treserved
+    printf("\tNVC Status @ power on:                    %" PRIu64" \n", vFarmFrame[page].driveInfo.NVC_StatusATPowerOn & 0x00FFFFFFFFFFFFFF);							//!< NVC Status on Power-on
+    printf("\tTime Available to save:                   %" PRIu64" \n", vFarmFrame[page].driveInfo.timeAvailable & 0x00FFFFFFFFFFFFFF);								//!< Time Available to Save User Data to Media Over Last Power Cycle (in 100us)
+    printf("\tTime of latest frame:                     %" PRIu64" \n", vFarmFrame[page].driveInfo.firstTimeStamp & 0x00FFFFFFFFFFFFFF);								//!< Timestamp of first SMART Summary Frame in Power-On Hours microseconds (spec is wrong)
+    printf("\tTime of latest frame (milliseconds):      %" PRIu64" \n", vFarmFrame[page].driveInfo.lastTimeStamp & 0x00FFFFFFFFFFFFFF);								//!< Timestamp of latest SMART Summary Frame in Power-On Hours Milliseconds1
 
 #endif
     if (g_dataformat == PREPYTHON_DATA)
@@ -2459,25 +2459,25 @@ eReturnValues CSCSI_Farm_Log::print_Error_Information(JSONNODE *masterData, uint
     {
         printf("\nError Information Log From Farm Log copy %d: \n", page);
     }
-    printf("\tUnrecoverable Read Errors:                %llu \n", vFarmFrame[page].errorPage.errorStat.totalReadECC & 0x00FFFFFFFFFFFFFFLL);				//!< Number of Unrecoverable Read Errors
-    printf("\tUnrecoverable Write Errors:               %llu \n", vFarmFrame[page].errorPage.errorStat.totalWriteECC & 0x00FFFFFFFFFFFFFFLL);				//!< Number of Unrecoverable Write Errors
-    printf("\tNumber of Reallocated Sectors:            %llu \n", vFarmFrame[page].errorPage.errorStat.totalReallocations & 0x00FFFFFFFFFFFFFFLL);			//!< Number of Reallocated Sectors
-    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorStat.reserved & 0x00FFFFFFFFFFFFFFLL);					//!< Reserved
-    printf("\tNumber of Mechanical Start Failures:      %llu \n", vFarmFrame[page].errorPage.errorStat.totalMechanicalFails & 0x00FFFFFFFFFFFFFFLL);		//!< Number of Mechanical Start Failures
-    printf("\tNumber of Reallocated Candidate Sectors:  %llu \n", vFarmFrame[page].errorPage.errorStat.totalReallocatedCanidates & 0x00FFFFFFFFFFFFFFLL);	//!< Number of Reallocated Candidate Sectors
-    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorStat.reserved1 & 0x00FFFFFFFFFFFFFFLL);					//!< Reserved
-    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorStat.reserved2 & 0x00FFFFFFFFFFFFFFLL);					//!< Reserved
-    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorStat.reserved3 & 0x00FFFFFFFFFFFFFFLL);					//!< Reserved
-    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorStat.reserved4 & 0x00FFFFFFFFFFFFFFLL);					//!< Reserved
-    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorStat.reserved5 & 0x00FFFFFFFFFFFFFFLL);					//!< Reserved
-    printf("\tNumber of IOEDC Errors (Raw):             %llu \n", vFarmFrame[page].errorPage.errorStat.attrIOEDCErrors & 0x00FFFFFFFFFFFFFFLL);				//!< Number of IOEDC Errors 
-    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorStat.reserved6 & 0x00FFFFFFFFFFFFFFLL);					//!< Reserved
-    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorStat.reserved7 & 0x00FFFFFFFFFFFFFFLL);					//!< Reserved
-    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorStat.reserved8 & 0x00FFFFFFFFFFFFFFLL);					//!< Reserved
-    printf("\tTotal Flash LED (Assert) Events:          %llu \n", vFarmFrame[page].errorPage.errorStat.totalFlashLED & 0x00FFFFFFFFFFFFFFLL);				//!< Total Flash LED (Assert) Events
-    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorStat.reserved9 & 0x00FFFFFFFFFFFFFFLL);					//!< Reserved
-    printf("\tFRU code if smart trip:                   %llu \n", vFarmFrame[page].errorPage.errorStat.FRUCode & 0x00FFFFFFFFFFFFFFLL);
-    printf("\tSuper Parity on the Fly Recovery          %llu \n", vFarmFrame[page].errorPage.errorStat.parity & 0x00FFFFFFFFFFFFFFLL);
+    printf("\tUnrecoverable Read Errors:                %llu \n", vFarmFrame[page].errorPage.errorStat.totalReadECC & 0x00FFFFFFFFFFFFFF);				//!< Number of Unrecoverable Read Errors
+    printf("\tUnrecoverable Write Errors:               %llu \n", vFarmFrame[page].errorPage.errorStat.totalWriteECC & 0x00FFFFFFFFFFFFFF);				//!< Number of Unrecoverable Write Errors
+    printf("\tNumber of Reallocated Sectors:            %llu \n", vFarmFrame[page].errorPage.errorStat.totalReallocations & 0x00FFFFFFFFFFFFFF);			//!< Number of Reallocated Sectors
+    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorStat.reserved & 0x00FFFFFFFFFFFFFF);					//!< Reserved
+    printf("\tNumber of Mechanical Start Failures:      %llu \n", vFarmFrame[page].errorPage.errorStat.totalMechanicalFails & 0x00FFFFFFFFFFFFFF);		//!< Number of Mechanical Start Failures
+    printf("\tNumber of Reallocated Candidate Sectors:  %llu \n", vFarmFrame[page].errorPage.errorStat.totalReallocatedCanidates & 0x00FFFFFFFFFFFFFF);	//!< Number of Reallocated Candidate Sectors
+    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorStat.reserved1 & 0x00FFFFFFFFFFFFFF);					//!< Reserved
+    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorStat.reserved2 & 0x00FFFFFFFFFFFFFF);					//!< Reserved
+    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorStat.reserved3 & 0x00FFFFFFFFFFFFFF);					//!< Reserved
+    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorStat.reserved4 & 0x00FFFFFFFFFFFFFF);					//!< Reserved
+    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorStat.reserved5 & 0x00FFFFFFFFFFFFFF);					//!< Reserved
+    printf("\tNumber of IOEDC Errors (Raw):             %llu \n", vFarmFrame[page].errorPage.errorStat.attrIOEDCErrors & 0x00FFFFFFFFFFFFFF);				//!< Number of IOEDC Errors 
+    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorStat.reserved6 & 0x00FFFFFFFFFFFFFF);					//!< Reserved
+    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorStat.reserved7 & 0x00FFFFFFFFFFFFFF);					//!< Reserved
+    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorStat.reserved8 & 0x00FFFFFFFFFFFFFF);					//!< Reserved
+    printf("\tTotal Flash LED (Assert) Events:          %llu \n", vFarmFrame[page].errorPage.errorStat.totalFlashLED & 0x00FFFFFFFFFFFFFF);				//!< Total Flash LED (Assert) Events
+    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorStat.reserved9 & 0x00FFFFFFFFFFFFFF);					//!< Reserved
+    printf("\tFRU code if smart trip:                   %llu \n", vFarmFrame[page].errorPage.errorStat.FRUCode & 0x00FFFFFFFFFFFFFF);
+    printf("\tSuper Parity on the Fly Recovery          %llu \n", vFarmFrame[page].errorPage.errorStat.parity & 0x00FFFFFFFFFFFFFF);
 #endif
     if (g_dataformat == PREPYTHON_DATA)
     {
@@ -2552,32 +2552,32 @@ eReturnValues CSCSI_Farm_Log::print_Error_Information_Version_4(JSONNODE *master
     {
         printf("\nError Information Log From Farm Log copy %d: \n", page);
     }
-    printf("\tUnrecoverable Read Errors:                %llu \n", vFarmFrame[page].errorPage.errorV4.totalReadECC & 0x00FFFFFFFFFFFFFFLL);				//!< Number of Unrecoverable Read Errors
-    printf("\tUnrecoverable Write Errors:               %llu \n", vFarmFrame[page].errorPage.errorV4.totalWriteECC & 0x00FFFFFFFFFFFFFFLL);				//!< Number of Unrecoverable Write Errors
-    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorV4.reserved & 0x00FFFFFFFFFFFFFFLL);			
-    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorV4.reserved & 0x00FFFFFFFFFFFFFFLL);					//!< Reserved
-    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorV4.totalMechanicalFails & 0x00FFFFFFFFFFFFFFLL);		//!< Number of Mechanical Start Failures
-    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorV4.reserved & 0x00FFFFFFFFFFFFFFLL);	
-    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorV4.reserved1 & 0x00FFFFFFFFFFFFFFLL);					//!< Reserved
-    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorV4.reserved2 & 0x00FFFFFFFFFFFFFFLL);					//!< Reserved
-    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorV4.reserved3 & 0x00FFFFFFFFFFFFFFLL);					//!< Reserved
-    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorV4.reserved4 & 0x00FFFFFFFFFFFFFFLL);					//!< Reserved
-    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorV4.reserved5 & 0x00FFFFFFFFFFFFFFLL);					//!< Reserved
-    printf("\tNumber of IOEDC Errors (Raw):             %llu \n", vFarmFrame[page].errorPage.errorV4.attrIOEDCErrors & 0x00FFFFFFFFFFFFFFLL);				//!< Number of IOEDC Errors 
-    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorV4.reserved6 & 0x00FFFFFFFFFFFFFFLL);					//!< Reserved
-    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorV4.reserved7 & 0x00FFFFFFFFFFFFFFLL);					//!< Reserved
-    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorV4.reserved8 & 0x00FFFFFFFFFFFFFFLL);					//!< Reserved
-    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorV4.reserved & 0x00FFFFFFFFFFFFFFLL);				
-    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorV4.reserved9 & 0x00FFFFFFFFFFFFFFLL);					//!< Reserved
-    printf("\tFRU code if smart trip from most recent SMART Frame:%llu \n", vFarmFrame[page].errorPage.errorV4.FRUCode & 0x00FFFFFFFFFFFFFFLL);
-    printf("\tInvalid DWord Count Port A                %llu \n", vFarmFrame[page].errorPage.errorV4.portAInvalidDwordCount & 0x00FFFFFFFFFFFFFFLL);
-    printf("\tInvalid DWord Count Port B                %llu \n", vFarmFrame[page].errorPage.errorV4.portBInvalidDwordCount & 0x00FFFFFFFFFFFFFFLL);
-    printf("\tDisparity Error Count Port A              %llu \n", vFarmFrame[page].errorPage.errorV4.portADisparityErrorCount & 0x00FFFFFFFFFFFFFFLL);
-    printf("\tDisparity Error Count Port B              %llu \n", vFarmFrame[page].errorPage.errorV4.portBDisparityErrorCount & 0x00FFFFFFFFFFFFFFLL);
-    printf("\tLoss Of DWord Sync Port A                 %llu \n", vFarmFrame[page].errorPage.errorV4.portALossDwordSync & 0x00FFFFFFFFFFFFFFLL);
-    printf("\tLoss Of DWord Sync Port B                 %llu \n", vFarmFrame[page].errorPage.errorV4.portBLossDwordSync & 0x00FFFFFFFFFFFFFFLL);
-    printf("\tPhy Reset Problem Port A                  %llu \n", vFarmFrame[page].errorPage.errorV4.portAPhyResetProblem & 0x00FFFFFFFFFFFFFFLL);
-    printf("\tPhy Reset Problem Port B                  %llu \n", vFarmFrame[page].errorPage.errorV4.portBPhyResetProblem & 0x00FFFFFFFFFFFFFFLL);
+    printf("\tUnrecoverable Read Errors:                %llu \n", vFarmFrame[page].errorPage.errorV4.totalReadECC & 0x00FFFFFFFFFFFFFF);				//!< Number of Unrecoverable Read Errors
+    printf("\tUnrecoverable Write Errors:               %llu \n", vFarmFrame[page].errorPage.errorV4.totalWriteECC & 0x00FFFFFFFFFFFFFF);				//!< Number of Unrecoverable Write Errors
+    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorV4.reserved & 0x00FFFFFFFFFFFFFF);			
+    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorV4.reserved & 0x00FFFFFFFFFFFFFF);					//!< Reserved
+    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorV4.totalMechanicalFails & 0x00FFFFFFFFFFFFFF);		//!< Number of Mechanical Start Failures
+    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorV4.reserved & 0x00FFFFFFFFFFFFFF);	
+    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorV4.reserved1 & 0x00FFFFFFFFFFFFFF);					//!< Reserved
+    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorV4.reserved2 & 0x00FFFFFFFFFFFFFF);					//!< Reserved
+    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorV4.reserved3 & 0x00FFFFFFFFFFFFFF);					//!< Reserved
+    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorV4.reserved4 & 0x00FFFFFFFFFFFFFF);					//!< Reserved
+    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorV4.reserved5 & 0x00FFFFFFFFFFFFFF);					//!< Reserved
+    printf("\tNumber of IOEDC Errors (Raw):             %llu \n", vFarmFrame[page].errorPage.errorV4.attrIOEDCErrors & 0x00FFFFFFFFFFFFFF);				//!< Number of IOEDC Errors 
+    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorV4.reserved6 & 0x00FFFFFFFFFFFFFF);					//!< Reserved
+    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorV4.reserved7 & 0x00FFFFFFFFFFFFFF);					//!< Reserved
+    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorV4.reserved8 & 0x00FFFFFFFFFFFFFF);					//!< Reserved
+    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorV4.reserved & 0x00FFFFFFFFFFFFFF);				
+    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorV4.reserved9 & 0x00FFFFFFFFFFFFFF);					//!< Reserved
+    printf("\tFRU code if smart trip from most recent SMART Frame:%llu \n", vFarmFrame[page].errorPage.errorV4.FRUCode & 0x00FFFFFFFFFFFFFF);
+    printf("\tInvalid DWord Count Port A                %llu \n", vFarmFrame[page].errorPage.errorV4.portAInvalidDwordCount & 0x00FFFFFFFFFFFFFF);
+    printf("\tInvalid DWord Count Port B                %llu \n", vFarmFrame[page].errorPage.errorV4.portBInvalidDwordCount & 0x00FFFFFFFFFFFFFF);
+    printf("\tDisparity Error Count Port A              %llu \n", vFarmFrame[page].errorPage.errorV4.portADisparityErrorCount & 0x00FFFFFFFFFFFFFF);
+    printf("\tDisparity Error Count Port B              %llu \n", vFarmFrame[page].errorPage.errorV4.portBDisparityErrorCount & 0x00FFFFFFFFFFFFFF);
+    printf("\tLoss Of DWord Sync Port A                 %llu \n", vFarmFrame[page].errorPage.errorV4.portALossDwordSync & 0x00FFFFFFFFFFFFFF);
+    printf("\tLoss Of DWord Sync Port B                 %llu \n", vFarmFrame[page].errorPage.errorV4.portBLossDwordSync & 0x00FFFFFFFFFFFFFF);
+    printf("\tPhy Reset Problem Port A                  %llu \n", vFarmFrame[page].errorPage.errorV4.portAPhyResetProblem & 0x00FFFFFFFFFFFFFF);
+    printf("\tPhy Reset Problem Port B                  %llu \n", vFarmFrame[page].errorPage.errorV4.portBPhyResetProblem & 0x00FFFFFFFFFFFFFF);
 #endif
     if (g_dataformat == PREPYTHON_DATA)
     {
@@ -2661,27 +2661,27 @@ eReturnValues CSCSI_Farm_Log::print_Enviroment_Information(JSONNODE *masterData,
     printf("\tCurrent Temperature:                      %0.02f     \n", static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.curentTemp)*.10));			        //!< Current Temperature in Celsius
     printf("\tHighest Temperature:                      %0.02f     \n", static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.highestTemp)*.10));			        //!< Highest Temperature in Celsius
     printf("\tLowest Temperature:                       %0.02f     \n", static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.lowestTemp)*.10));			        //!< Lowest Temperature
-    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved & 0x00FFFFFFFFFFFFFFLL);				//!< Reserved
-    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved1 & 0x00FFFFFFFFFFFFFFLL);				//!< Reserved
-    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved2 & 0x00FFFFFFFFFFFFFFLL);				//!< Reserved
-    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved3 & 0x00FFFFFFFFFFFFFFLL);				//!< Reserved
-    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved4 & 0x00FFFFFFFFFFFFFFLL);				//!< Reserved
-    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved5 & 0x00FFFFFFFFFFFFFFLL);				//!< Reserved
-    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved6 & 0x00FFFFFFFFFFFFFFLL);				//!< Reserved
-    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved7 & 0x00FFFFFFFFFFFFFFLL);				//!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved & 0x00FFFFFFFFFFFFFF);				//!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved1 & 0x00FFFFFFFFFFFFFF);				//!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved2 & 0x00FFFFFFFFFFFFFF);				//!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved3 & 0x00FFFFFFFFFFFFFF);				//!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved4 & 0x00FFFFFFFFFFFFFF);				//!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved5 & 0x00FFFFFFFFFFFFFF);				//!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved6 & 0x00FFFFFFFFFFFFFF);				//!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved7 & 0x00FFFFFFFFFFFFFF);				//!< Reserved
     printf("\tSpecified Max Operating Temperature:      %0.02f     \n", static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.maxTemp) * 1.00));				    //!< Specified Max Operating Temperature
     printf("\tSpecified Min Operating Temperature:      %0.02f     \n", static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.minTemp) * 1.00));				    //!< Specified Min Operating Temperature
-    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved8 & 0x00FFFFFFFFFFFFFFLL);				//!< Reserved
-    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved9 & 0x00FFFFFFFFFFFFFFLL);	            //!< Reserved
-    printf("\tCurrent Relative Humidity:                %" PRId32".%" PRId32"   \n", M_DoubleWord1(vFarmFrame[page].environmentPage.humidity & 0x00FFFFFFFFFFFFFFLL), M_DoubleWord0(vFarmFrame[page].environmentPage.humidity & 0x00FFFFFFFFFFFFFFLL));		//!< Current Relative Humidity (in units of .1%)
-    printf("\tHumidity Mixed Ratio:                     %0.02f     \n", static_cast<float>((vFarmFrame[page].environmentPage.humidityRatio & 0x00FFFFFFFFFFFFFFLL) / 8.0)); //!< Humidity Mixed Ratio multiplied by 8 (divide by 8 to get actual value)
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved8 & 0x00FFFFFFFFFFFFFF);				//!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved9 & 0x00FFFFFFFFFFFFFF);	            //!< Reserved
+    printf("\tCurrent Relative Humidity:                %" PRId32".%" PRId32"   \n", M_DoubleWord1(vFarmFrame[page].environmentPage.humidity & 0x00FFFFFFFFFFFFFF), M_DoubleWord0(vFarmFrame[page].environmentPage.humidity & 0x00FFFFFFFFFFFFFFLL));		//!< Current Relative Humidity (in units of .1%)
+    printf("\tHumidity Mixed Ratio:                     %0.02f     \n", static_cast<float>((vFarmFrame[page].environmentPage.humidityRatio & 0x00FFFFFFFFFFFFFF) / 8.0)); //!< Humidity Mixed Ratio multiplied by 8 (divide by 8 to get actual value)
     printf("\tCurrent Motor Power:                      %" PRIu16" \n", (M_Word0(vFarmFrame[page].environmentPage.currentMotorPower)));	
-    printf("\t12v Power Average(mw):                    %" PRIu64" \n", vFarmFrame[page].environmentPage.average12v & 0x00FFFFFFFFFFFFFFLL);				
-    printf("\12v Power Min(mw):                         %" PRIu64" \n", vFarmFrame[page].environmentPage.min12v & 0x00FFFFFFFFFFFFFFLL);				
-    printf("\12v Power Max(mw):                         %" PRIu64" \n", vFarmFrame[page].environmentPage.max12v & 0x00FFFFFFFFFFFFFFLL);				
-    printf("\5v Power Average(mw):                      %" PRIu64" \n", vFarmFrame[page].environmentPage.average5v & 0x00FFFFFFFFFFFFFFLL);				
-    printf("\5v Power Min(mw):                          %" PRIu64" \n", vFarmFrame[page].environmentPage.min5v & 0x00FFFFFFFFFFFFFFLL);				
-    printf("\5v Power Max(mw):                          %" PRIu64" \n", vFarmFrame[page].environmentPage.max5v & 0x00FFFFFFFFFFFFFFLL);	
+    printf("\t12v Power Average(mw):                    %" PRIu64" \n", vFarmFrame[page].environmentPage.average12v & 0x00FFFFFFFFFFFFFF);				
+    printf("\12v Power Min(mw):                         %" PRIu64" \n", vFarmFrame[page].environmentPage.min12v & 0x00FFFFFFFFFFFFFF);				
+    printf("\12v Power Max(mw):                         %" PRIu64" \n", vFarmFrame[page].environmentPage.max12v & 0x00FFFFFFFFFFFFFF);				
+    printf("\5v Power Average(mw):                      %" PRIu64" \n", vFarmFrame[page].environmentPage.average5v & 0x00FFFFFFFFFFFFFF);				
+    printf("\5v Power Min(mw):                          %" PRIu64" \n", vFarmFrame[page].environmentPage.min5v & 0x00FFFFFFFFFFFFFF);				
+    printf("\5v Power Max(mw):                          %" PRIu64" \n", vFarmFrame[page].environmentPage.max5v & 0x00FFFFFFFFFFFFFF);	
 #endif
 
     if (g_dataformat == PREPYTHON_DATA)
@@ -2824,12 +2824,12 @@ eReturnValues CSCSI_Farm_Log::print_Enviroment_Statistics_Page_07(JSONNODE *mast
     {
         printf("\nEnvironment Information Continued From Farm Log copy %d: \n", page);
     }
-    printf("\tCurrent 12 volts:                         %" PRIu64" \n", vFarmFrame[page].envStatPage07.average12v & 0x00FFFFFFFFFFFFFFLL);
-    printf("\tMinimum 12 volts:                         %" PRIu64" \n", vFarmFrame[page].envStatPage07.min12v & 0x00FFFFFFFFFFFFFFLL);
-    printf("\tMaximum 12 volts:                         %" PRIu64" \n", vFarmFrame[page].envStatPage07.max12v & 0x00FFFFFFFFFFFFFFLL);
-    printf("\tCurrent 5 volts:                          %" PRIu64" \n", vFarmFrame[page].envStatPage07.average5v & 0x00FFFFFFFFFFFFFFLL);
-    printf("\tMinimum 5 volts:                          %" PRIu64" \n", vFarmFrame[page].envStatPage07.min5v & 0x00FFFFFFFFFFFFFFLL);
-    printf("\tMaximum 5 volts:                          %" PRIu64" \n", vFarmFrame[page].envStatPage07.max5v & 0x00FFFFFFFFFFFFFFLL);
+    printf("\tCurrent 12 volts:                         %" PRIu64" \n", vFarmFrame[page].envStatPage07.average12v & 0x00FFFFFFFFFFFFFF);
+    printf("\tMinimum 12 volts:                         %" PRIu64" \n", vFarmFrame[page].envStatPage07.min12v & 0x00FFFFFFFFFFFFFF);
+    printf("\tMaximum 12 volts:                         %" PRIu64" \n", vFarmFrame[page].envStatPage07.max12v & 0x00FFFFFFFFFFFFFF);
+    printf("\tCurrent 5 volts:                          %" PRIu64" \n", vFarmFrame[page].envStatPage07.average5v & 0x00FFFFFFFFFFFFFF);
+    printf("\tMinimum 5 volts:                          %" PRIu64" \n", vFarmFrame[page].envStatPage07.min5v & 0x00FFFFFFFFFFFFFF);
+    printf("\tMaximum 5 volts:                          %" PRIu64" \n", vFarmFrame[page].envStatPage07.max5v & 0x00FFFFFFFFFFFFFF);
 #endif
     if (g_dataformat == PREPYTHON_DATA)
     {
@@ -2939,14 +2939,14 @@ eReturnValues CSCSI_Farm_Log::print_Workload_Statistics_Page_08(JSONNODE *master
         {
             printf("\nWorkload Information Continued From Farm Log copy %d: \n", page);
         }
-        printf("\tCount of Queue Depth =1 at 30s intervals for last 3 SMART Summary Frames:    %" PRIu64" \n", vFarmFrame[page].workloadStatPage08.countQueDepth1 & 0x00FFFFFFFFFFFFFFLL);
-        printf("\tCount of Queue Depth =2 at 30s intervals for last 3 SMART Summary Frames:    %" PRIu64" \n", vFarmFrame[page].workloadStatPage08.countQueDepth2 & 0x00FFFFFFFFFFFFFFLL);
-        printf("\tCount of Queue Depth 2-4 at 30s intervals for last 3 SMART Summary Frames:   %" PRIu64" \n", vFarmFrame[page].workloadStatPage08.countQueDepth3_4 & 0x00FFFFFFFFFFFFFFLL);
-        printf("\tCount of Queue Depth 5-8 at 30s intervals for last 3 SMART Summary Frames:   %" PRIu64" \n", vFarmFrame[page].workloadStatPage08.countQueDepth5_8 & 0x00FFFFFFFFFFFFFFLL);
-        printf("\tCount of Queue Depth 9-16 at 30s intervals for last 3 SMART Summary Frames:  %" PRIu64" \n", vFarmFrame[page].workloadStatPage08.countQueDepth9_16 & 0x00FFFFFFFFFFFFFFLL);
-        printf("\tCount of Queue Depth 17-32 at 30s intervals for last 3 SMART Summary Frames: %" PRIu64" \n", vFarmFrame[page].workloadStatPage08.countQueDepth17_32 & 0x00FFFFFFFFFFFFFFLL);
-        printf("\tCount of Queue Depth 33-64 at 30s intervals for last 3 SMART Summary Frames: %" PRIu64" \n", vFarmFrame[page].workloadStatPage08.countQueDepth33_64 & 0x00FFFFFFFFFFFFFFLL);
-        printf("\tCount of Queue Depth gt 64  at 30s intervals for last 3 SMART Summary Frames:%" PRIu64" \n", vFarmFrame[page].workloadStatPage08.countQueDepth_gt_64 & 0x00FFFFFFFFFFFFFFLL);
+        printf("\tCount of Queue Depth =1 at 30s intervals for last 3 SMART Summary Frames:    %" PRIu64" \n", vFarmFrame[page].workloadStatPage08.countQueDepth1 & 0x00FFFFFFFFFFFFFF);
+        printf("\tCount of Queue Depth =2 at 30s intervals for last 3 SMART Summary Frames:    %" PRIu64" \n", vFarmFrame[page].workloadStatPage08.countQueDepth2 & 0x00FFFFFFFFFFFFFF);
+        printf("\tCount of Queue Depth 2-4 at 30s intervals for last 3 SMART Summary Frames:   %" PRIu64" \n", vFarmFrame[page].workloadStatPage08.countQueDepth3_4 & 0x00FFFFFFFFFFFFFF);
+        printf("\tCount of Queue Depth 5-8 at 30s intervals for last 3 SMART Summary Frames:   %" PRIu64" \n", vFarmFrame[page].workloadStatPage08.countQueDepth5_8 & 0x00FFFFFFFFFFFFFF);
+        printf("\tCount of Queue Depth 9-16 at 30s intervals for last 3 SMART Summary Frames:  %" PRIu64" \n", vFarmFrame[page].workloadStatPage08.countQueDepth9_16 & 0x00FFFFFFFFFFFFFF);
+        printf("\tCount of Queue Depth 17-32 at 30s intervals for last 3 SMART Summary Frames: %" PRIu64" \n", vFarmFrame[page].workloadStatPage08.countQueDepth17_32 & 0x00FFFFFFFFFFFFFF);
+        printf("\tCount of Queue Depth 33-64 at 30s intervals for last 3 SMART Summary Frames: %" PRIu64" \n", vFarmFrame[page].workloadStatPage08.countQueDepth33_64 & 0x00FFFFFFFFFFFFFF);
+        printf("\tCount of Queue Depth gt 64  at 30s intervals for last 3 SMART Summary Frames:%" PRIu64" \n", vFarmFrame[page].workloadStatPage08.countQueDepth_gt_64 & 0x00FFFFFFFFFFFFFF);
     
 
     #endif
@@ -3029,33 +3029,33 @@ eReturnValues CSCSI_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint3
         {
             printf("\nReliability Information From Farm Log copy: %d\n", page);
         }
-        printf("\tTimeStamp of last IDD test:               %" PRIu64" \n", vFarmFrame[page].reliPage.reli.lastIDDTest & 0x00FFFFFFFFFFFFFFLL);                     //!< Timestamp of last IDD test
-        printf("\tSub-command of last IDD test:             %" PRIu64" \n", vFarmFrame[page].reliPage.reli.cmdLastIDDTest & 0x00FFFFFFFFFFFFFFLL);                  //!< Sub-command of last IDD test
-        printf("\tNumber of Reclamations Sectors:           %" PRIu64" \n", vFarmFrame[page].reliPage.reli.gListReclamed & 0x00FFFFFFFFFFFFFFLL);                   //!< Number of G-List Reclamations 
-        printf("\tServo Status:                             %" PRIu64" \n", vFarmFrame[page].reliPage.reli.servoStatus & 0x00FFFFFFFFFFFFFFLL);                     //!< Servo Status (follows standard DST error code definitions)
-        printf("\tNumber of Slipped Secotrs Before IDD Scan:%" PRIu64" \n", vFarmFrame[page].reliPage.reli.altsBeforeIDD & 0x00FFFFFFFFFFFFFFLL);                   //!< Number of Alt List Entries Before IDD Scan
-        printf("\tNumber of Slipped Secotrs After IDD Scan: %" PRIu64" \n", vFarmFrame[page].reliPage.reli.altsAfterIDD & 0x00FFFFFFFFFFFFFFLL);                    //!< Number of Alt List Entries After IDD Scan
-        printf("\tResident G-List Entries Before IDD Scan:  %" PRIu64" \n", vFarmFrame[page].reliPage.reli.gListBeforIDD & 0x00FFFFFFFFFFFFFFLL);                   //!< Number of Resident G-List Entries Before IDD Scan
-        printf("\tResident G-List Entries After IDD Scan:   %" PRIu64" \n", vFarmFrame[page].reliPage.reli.gListAfterIDD & 0x00FFFFFFFFFFFFFFLL);                   //!< Number of Resident G-List Entries After IDD Scan
-        printf("\tScrubs List Entries Before IDD Scan:      %" PRIu64" \n", vFarmFrame[page].reliPage.reli.scrubsBeforeIDD & 0x00FFFFFFFFFFFFFFLL);                 //!< Number of Scrub List Entries Before IDD Scan
-        printf("\tScrubs List Entries After IDD Scan:       %" PRIu64" \n", vFarmFrame[page].reliPage.reli.scrubsAfterIDD & 0x00FFFFFFFFFFFFFFLL);                  //!< Number of Scrub List Entries After IDD Scan
-        printf("\tNumber of DOS Scans Performed:            %" PRIu64" \n", vFarmFrame[page].reliPage.reli.numberDOSScans & 0x00FFFFFFFFFFFFFFLL);                  //!< Number of DOS Scans Performed
-        printf("\tNumber of LBAs Corrected by ISP:          %" PRIu64" \n", vFarmFrame[page].reliPage.reli.numberLBACorrect & 0x00FFFFFFFFFFFFFFLL);                //!< Number of LBAs Corrected by ISP
-        printf("\tNumber of Valid Parity Sectors:           %" PRIu64" \n", vFarmFrame[page].reliPage.reli.numberValidParitySec & 0x00FFFFFFFFFFFFFFLL);            //!< Number of Valid Parity Sectors
-        printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli.reserved & 0x00FFFFFFFFFFFFFFLL);							//!< Reserved
-        printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli.reserved1 & 0x00FFFFFFFFFFFFFFLL);						//!< Reserved
-        printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli.reserved2 & 0x00FFFFFFFFFFFFFFLL);						//!< Reserved
-        printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli.reserved3 & 0x00FFFFFFFFFFFFFFLL);						//!< Reserved
-        printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli.reserved4 & 0x00FFFFFFFFFFFFFFLL);						//!< Reserved
-        printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli.reserved5 & 0x00FFFFFFFFFFFFFFLL);						//!< Reserved
-        printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli.reserved6 & 0x00FFFFFFFFFFFFFFLL);						//!< Reserved
-        printf("\tNumber of RAW Operations:                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli.numberRAWops & 0x00FFFFFFFFFFFFFFLL);						//!< Reserved
-        printf("\tMicro Actuator Lock-out accumulated:      %" PRIu64" \n", vFarmFrame[page].reliPage.reli.microActuatorLockOut & 0x00FFFFFFFFFFFFFFLL);				//!< Micro Actuator Lock-out, head mask accumulated over last 3 Summary Frames
-        printf("\t# of Disc Slip Recalibrations Performed : %" PRIu64" \n", vFarmFrame[page].reliPage.reli.diskSlipRecalPerformed & 0x00FFFFFFFFFFFFFFLL);			//!< Number of disc slip recalibrations performed
-        printf("\tHelium Pressure Threshold Trip:           %" PRIu64" \n", vFarmFrame[page].reliPage.reli.heliumPressuretThreshold & 0x00FFFFFFFFFFFFFFLL);			//!< helium Pressure Threshold Trip
-        printf("\tRV Absolute Mean:                         %" PRIu64" \n", vFarmFrame[page].reliPage.reli.rvAbsoluteMean & 0x00FFFFFFFFFFFFFFLL);					//!< RV Absulute Mean
-        printf("\tMax RV absolute Mean:                     %" PRIu64" \n", vFarmFrame[page].reliPage.reli.maxRVAbsoluteMean & 0x00FFFFFFFFFFFFFFLL);				//!< Max RV absulute Mean
-        printf("\tIdle Time value from the most recent SMART Summary Frame:     %" PRIu64" \n", vFarmFrame[page].reliPage.reli.idleTime & 0x00FFFFFFFFFFFFFFLL);		//!< idle Time value from the most recent SMART Summary Frame
+        printf("\tTimeStamp of last IDD test:               %" PRIu64" \n", vFarmFrame[page].reliPage.reli.lastIDDTest & 0x00FFFFFFFFFFFFFF);                     //!< Timestamp of last IDD test
+        printf("\tSub-command of last IDD test:             %" PRIu64" \n", vFarmFrame[page].reliPage.reli.cmdLastIDDTest & 0x00FFFFFFFFFFFFFF);                  //!< Sub-command of last IDD test
+        printf("\tNumber of Reclamations Sectors:           %" PRIu64" \n", vFarmFrame[page].reliPage.reli.gListReclamed & 0x00FFFFFFFFFFFFFF);                   //!< Number of G-List Reclamations 
+        printf("\tServo Status:                             %" PRIu64" \n", vFarmFrame[page].reliPage.reli.servoStatus & 0x00FFFFFFFFFFFFFF);                     //!< Servo Status (follows standard DST error code definitions)
+        printf("\tNumber of Slipped Secotrs Before IDD Scan:%" PRIu64" \n", vFarmFrame[page].reliPage.reli.altsBeforeIDD & 0x00FFFFFFFFFFFFFF);                   //!< Number of Alt List Entries Before IDD Scan
+        printf("\tNumber of Slipped Secotrs After IDD Scan: %" PRIu64" \n", vFarmFrame[page].reliPage.reli.altsAfterIDD & 0x00FFFFFFFFFFFFFF);                    //!< Number of Alt List Entries After IDD Scan
+        printf("\tResident G-List Entries Before IDD Scan:  %" PRIu64" \n", vFarmFrame[page].reliPage.reli.gListBeforIDD & 0x00FFFFFFFFFFFFFF);                   //!< Number of Resident G-List Entries Before IDD Scan
+        printf("\tResident G-List Entries After IDD Scan:   %" PRIu64" \n", vFarmFrame[page].reliPage.reli.gListAfterIDD & 0x00FFFFFFFFFFFFFF);                   //!< Number of Resident G-List Entries After IDD Scan
+        printf("\tScrubs List Entries Before IDD Scan:      %" PRIu64" \n", vFarmFrame[page].reliPage.reli.scrubsBeforeIDD & 0x00FFFFFFFFFFFFFF);                 //!< Number of Scrub List Entries Before IDD Scan
+        printf("\tScrubs List Entries After IDD Scan:       %" PRIu64" \n", vFarmFrame[page].reliPage.reli.scrubsAfterIDD & 0x00FFFFFFFFFFFFFF);                  //!< Number of Scrub List Entries After IDD Scan
+        printf("\tNumber of DOS Scans Performed:            %" PRIu64" \n", vFarmFrame[page].reliPage.reli.numberDOSScans & 0x00FFFFFFFFFFFFFF);                  //!< Number of DOS Scans Performed
+        printf("\tNumber of LBAs Corrected by ISP:          %" PRIu64" \n", vFarmFrame[page].reliPage.reli.numberLBACorrect & 0x00FFFFFFFFFFFFFF);                //!< Number of LBAs Corrected by ISP
+        printf("\tNumber of Valid Parity Sectors:           %" PRIu64" \n", vFarmFrame[page].reliPage.reli.numberValidParitySec & 0x00FFFFFFFFFFFFFF);            //!< Number of Valid Parity Sectors
+        printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli.reserved & 0x00FFFFFFFFFFFFFF);							//!< Reserved
+        printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli.reserved1 & 0x00FFFFFFFFFFFFFF);						//!< Reserved
+        printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli.reserved2 & 0x00FFFFFFFFFFFFFF);						//!< Reserved
+        printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli.reserved3 & 0x00FFFFFFFFFFFFFF);						//!< Reserved
+        printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli.reserved4 & 0x00FFFFFFFFFFFFFF);						//!< Reserved
+        printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli.reserved5 & 0x00FFFFFFFFFFFFFF);						//!< Reserved
+        printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli.reserved6 & 0x00FFFFFFFFFFFFFF);						//!< Reserved
+        printf("\tNumber of RAW Operations:                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli.numberRAWops & 0x00FFFFFFFFFFFFFF);						//!< Reserved
+        printf("\tMicro Actuator Lock-out accumulated:      %" PRIu64" \n", vFarmFrame[page].reliPage.reli.microActuatorLockOut & 0x00FFFFFFFFFFFFFF);				//!< Micro Actuator Lock-out, head mask accumulated over last 3 Summary Frames
+        printf("\t# of Disc Slip Recalibrations Performed : %" PRIu64" \n", vFarmFrame[page].reliPage.reli.diskSlipRecalPerformed & 0x00FFFFFFFFFFFFFF);			//!< Number of disc slip recalibrations performed
+        printf("\tHelium Pressure Threshold Trip:           %" PRIu64" \n", vFarmFrame[page].reliPage.reli.heliumPressuretThreshold & 0x00FFFFFFFFFFFFFF);			//!< helium Pressure Threshold Trip
+        printf("\tRV Absolute Mean:                         %" PRIu64" \n", vFarmFrame[page].reliPage.reli.rvAbsoluteMean & 0x00FFFFFFFFFFFFFF);					//!< RV Absulute Mean
+        printf("\tMax RV absolute Mean:                     %" PRIu64" \n", vFarmFrame[page].reliPage.reli.maxRVAbsoluteMean & 0x00FFFFFFFFFFFFFF);				//!< Max RV absulute Mean
+        printf("\tIdle Time value from the most recent SMART Summary Frame:     %" PRIu64" \n", vFarmFrame[page].reliPage.reli.idleTime & 0x00FFFFFFFFFFFFFF);		//!< idle Time value from the most recent SMART Summary Frame
     }
 #endif
     if (g_dataformat == PREPYTHON_DATA)
@@ -3143,33 +3143,33 @@ eReturnValues CSCSI_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint3
             {
                 printf("\nReliability Information From Farm Log copy: %d\n", page);
             }
-            printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.reserved & 0x00FFFFFFFFFFFFFFLL);						//!< Reserved
-            printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.reserved1 & 0x00FFFFFFFFFFFFFFLL);						//!< Reserved
-            printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.reserved2 & 0x00FFFFFFFFFFFFFFLL);						//!< Reserved
-            printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.reserved3 & 0x00FFFFFFFFFFFFFFLL);						//!< Reserved
-            printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.reserved4 & 0x00FFFFFFFFFFFFFFLL);						//!< Reserved
-            printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.reserved5 & 0x00FFFFFFFFFFFFFFLL);						//!< Reserved
-            printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.reserved6 & 0x00FFFFFFFFFFFFFFLL);                       //!< Reserved
-            printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.reserved7 & 0x00FFFFFFFFFFFFFFLL);							//!< Reserved
-            printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.reserved8 & 0x00FFFFFFFFFFFFFFLL);						//!< Reserved
-            printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.reserved9 & 0x00FFFFFFFFFFFFFFLL);						//!< Reserved
-            printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.reserved10 & 0x00FFFFFFFFFFFFFFLL);						//!< Reserved
-            printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.reserved11 & 0x00FFFFFFFFFFFFFFLL);						//!< Reserved
-            printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.reserved12 & 0x00FFFFFFFFFFFFFFLL);						//!< Reserved
-            printf("\tNumber of RAW Operations:                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.numberRAWops & 0x00FFFFFFFFFFFFFFLL);
-            printf("\tCumulative Lifetime ECC due to ERC:       %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.cumECCDueToERC & 0x00FFFFFFFFFFFFFFLL);
-            printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.reserved13 & 0x00FFFFFFFFFFFFFFLL);						//!< Reserved
-            printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.reserved14 & 0x00FFFFFFFFFFFFFFLL);						//!< Reserved
-            printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.reserved15 & 0x00FFFFFFFFFFFFFFLL);						//!< Reserved
-            printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.reserved16 & 0x00FFFFFFFFFFFFFFLL);						//!< Reserved
-            printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.reserved17 & 0x00FFFFFFFFFFFFFFLL);
-            printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.reserved18 & 0x00FFFFFFFFFFFFFFLL);
-            printf("\tMicro Actuator Lock-out accumulated:      %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.microActuatorLockOut & 0x00FFFFFFFFFFFFFFLL);				//!< Micro Actuator Lock-out, head mask accumulated over last 3 Summary Frames
-            printf("\t# of Disc Slip Recalibrations Performed : %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.diskSlipRecalPerformed & 0x00FFFFFFFFFFFFFFLL);			//!< Number of disc slip recalibrations performed
-            printf("\tHelium Pressure Threshold Trip:           %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.heliumPressuretThreshold & 0x00FFFFFFFFFFFFFFLL);			//!< helium Pressure Threshold Trip
-            printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.reserved19 & 0x00FFFFFFFFFFFFFFLL);					//!< RV Absulute Mean
-            printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.reserved20 & 0x00FFFFFFFFFFFFFFLL);				//!< Max RV absulute Mean
-            printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.reserved21 & 0x00FFFFFFFFFFFFFFLL);		//!< idle Time value from the most recent SMART Summary Frame
+            printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.reserved & 0x00FFFFFFFFFFFFFF);						//!< Reserved
+            printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.reserved1 & 0x00FFFFFFFFFFFFFF);						//!< Reserved
+            printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.reserved2 & 0x00FFFFFFFFFFFFFF);						//!< Reserved
+            printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.reserved3 & 0x00FFFFFFFFFFFFFF);						//!< Reserved
+            printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.reserved4 & 0x00FFFFFFFFFFFFFF);						//!< Reserved
+            printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.reserved5 & 0x00FFFFFFFFFFFFFF);						//!< Reserved
+            printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.reserved6 & 0x00FFFFFFFFFFFFFF);                       //!< Reserved
+            printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.reserved7 & 0x00FFFFFFFFFFFFFF);							//!< Reserved
+            printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.reserved8 & 0x00FFFFFFFFFFFFFF);						//!< Reserved
+            printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.reserved9 & 0x00FFFFFFFFFFFFFF);						//!< Reserved
+            printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.reserved10 & 0x00FFFFFFFFFFFFFF);						//!< Reserved
+            printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.reserved11 & 0x00FFFFFFFFFFFFFF);						//!< Reserved
+            printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.reserved12 & 0x00FFFFFFFFFFFFFF);						//!< Reserved
+            printf("\tNumber of RAW Operations:                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.numberRAWops & 0x00FFFFFFFFFFFFFF);
+            printf("\tCumulative Lifetime ECC due to ERC:       %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.cumECCDueToERC & 0x00FFFFFFFFFFFFFF);
+            printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.reserved13 & 0x00FFFFFFFFFFFFFF);						//!< Reserved
+            printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.reserved14 & 0x00FFFFFFFFFFFFFF);						//!< Reserved
+            printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.reserved15 & 0x00FFFFFFFFFFFFFF);						//!< Reserved
+            printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.reserved16 & 0x00FFFFFFFFFFFFFF);						//!< Reserved
+            printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.reserved17 & 0x00FFFFFFFFFFFFFF);
+            printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.reserved18 & 0x00FFFFFFFFFFFFFF);
+            printf("\tMicro Actuator Lock-out accumulated:      %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.microActuatorLockOut & 0x00FFFFFFFFFFFFFF);				//!< Micro Actuator Lock-out, head mask accumulated over last 3 Summary Frames
+            printf("\t# of Disc Slip Recalibrations Performed : %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.diskSlipRecalPerformed & 0x00FFFFFFFFFFFFFF);			//!< Number of disc slip recalibrations performed
+            printf("\tHelium Pressure Threshold Trip:           %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.heliumPressuretThreshold & 0x00FFFFFFFFFFFFFF);			//!< helium Pressure Threshold Trip
+            printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.reserved19 & 0x00FFFFFFFFFFFFFF);					//!< RV Absulute Mean
+            printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.reserved20 & 0x00FFFFFFFFFFFFFF);				//!< Max RV absulute Mean
+            printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.reserved21 & 0x00FFFFFFFFFFFFFF);		//!< idle Time value from the most recent SMART Summary Frame
 
 #endif
             if (vFarmFrame[page].reliPage.reli.copyNumber == FACTORYCOPY)
@@ -3291,7 +3291,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
 #if defined _DEBUG
-                printf("\tDOS Write Refresh Count by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].dosWriteRefreshCountByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< DOS Write Refresh Count
+                printf("\tDOS Write Refresh Count by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].dosWriteRefreshCountByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFF);  //!< DOS Write Refresh Count
 #endif
                 snprintf(&*myHeader.begin(), BASIC, "DOS Write Refresh Count for Head %" PRIu32"", loopCount); // Head count
                 if (g_dataformat == PREPYTHON_DATA)
@@ -3308,7 +3308,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
 #if defined _DEBUG
-                printf("\tDVGA Skip Write 0 by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].dvgaSkipWriteDetectByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< DVGA Skip Write
+                printf("\tDVGA Skip Write 0 by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].dvgaSkipWriteDetectByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFF);  //!< DVGA Skip Write
 #endif
                 snprintf(&*myHeader.begin(), BASIC, "DVGA Skip Write Detect for Head %" PRIu32"", loopCount); // Head count
                 if (g_dataformat == PREPYTHON_DATA)
@@ -3325,7 +3325,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
 #if defined _DEBUG
-                printf("\tRVGA Skip Write 0 by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].rvgaSkipWriteDetectByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< RVGA Skip Write
+                printf("\tRVGA Skip Write 0 by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].rvgaSkipWriteDetectByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFF);  //!< RVGA Skip Write
 #endif
                 snprintf(&*myHeader.begin(), BASIC, "RVGA Skip Write Detect for Head %" PRIu32"", loopCount); // Head count
                 if (g_dataformat == PREPYTHON_DATA)
@@ -3342,7 +3342,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
 #if defined _DEBUG
-                printf("\tFVGA Skip Write 0 by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fvgaSkipWriteDetectByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< FVGA Skip Write 
+                printf("\tFVGA Skip Write 0 by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fvgaSkipWriteDetectByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFF);  //!< FVGA Skip Write 
 #endif
                 snprintf(&*myHeader.begin(), BASIC, "FVGA Skip Write Detect for Head %" PRIu32"", loopCount); // Head count
                 if (g_dataformat == PREPYTHON_DATA)
@@ -3359,7 +3359,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
 #if defined _DEBUG
-                printf("\tSkip Write Detect Threshold Exceeded Count by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].skipWriteDectedThresholdExceededByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Skip Write Detect Threshold Exceeded Count
+                printf("\tSkip Write Detect Threshold Exceeded Count by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].skipWriteDectedThresholdExceededByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFF);  //!< Skip Write Detect Threshold Exceeded Count
 #endif
                 snprintf(&*myHeader.begin(), BASIC, "Skip Write Detect Threshold Exceeded for Head %" PRIu32"", loopCount); // Head count
                 if (g_dataformat == PREPYTHON_DATA)
@@ -3376,7 +3376,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
 #if defined _DEBUG
-                printf("\tACFF Sine 1X for Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].acffSine1xValueByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< ACFF Sine 1X, value from most recent SMART Summary Frame
+                printf("\tACFF Sine 1X for Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].acffSine1xValueByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFF);  //!< ACFF Sine 1X, value from most recent SMART Summary Frame
 #endif
                 snprintf(&*myHeader.begin(), BASIC, "ACFF Sine 1X for Head %" PRIu32"", loopCount); // Head count
                 snprintf(&*myStr.begin(), BASIC, "%" PRIi8"", static_cast<int8_t>(check_for_signed_int(M_Byte0(check_Status_Strip_Status(vFarmFrame[page].acffSine1xValueByHead.headValue[loopCount])), 8)) * 16);
@@ -3394,7 +3394,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
 #if defined _DEBUG
-                printf("\tACFF Cosine 1X for Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].acffCosine1xValueByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< ACFF Cosine 1X, value from most recent SMART Summary Frame
+                printf("\tACFF Cosine 1X for Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].acffCosine1xValueByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFF);  //!< ACFF Cosine 1X, value from most recent SMART Summary Frame
 #endif
                 snprintf(&*myHeader.begin(), BASIC, "ACFF Cosine 1X for Head %" PRIu32"", loopCount); // Head count
                 snprintf(&*myStr.begin(), BASIC, "%" PRIi8"", (static_cast<int8_t>(check_for_signed_int(M_Byte0(check_Status_Strip_Status(vFarmFrame[page].acffCosine1xValueByHead.headValue[loopCount])), 8)) * 16));
@@ -3412,7 +3412,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
 #if defined _DEBUG
-                printf("\tPZT Calibration for Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].pztCalibrationValueByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< PZT Calibration, value from most recent SMART Summary Frame
+                printf("\tPZT Calibration for Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].pztCalibrationValueByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFF);  //!< PZT Calibration, value from most recent SMART Summary Frame
 #endif
                 snprintf(&*myHeader.begin(), BASIC, "PZT Calibration for Head %" PRIu32"", loopCount); // Head count
                 if (g_dataformat == PREPYTHON_DATA)
@@ -3429,7 +3429,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
 #if defined _DEBUG
-                printf("\tMR Head Resistance for Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].mrHeadResistanceByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< MR Head Resistance from most recent SMART Summary Frame
+                printf("\tMR Head Resistance for Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].mrHeadResistanceByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFF);  //!< MR Head Resistance from most recent SMART Summary Frame
 #endif
                 snprintf(&*myHeader.begin(), BASIC, "MR Head Resistance for Head %" PRIu32"", loopCount); // Head count
                 if (g_dataformat == PREPYTHON_DATA)
@@ -3446,7 +3446,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
 #if defined _DEBUG
-                printf("\tNumber of TMD for Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].numberOfTMDByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Number of TMD over last 3 SMART Summary Frame
+                printf("\tNumber of TMD for Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].numberOfTMDByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFF);  //!< Number of TMD over last 3 SMART Summary Frame
 #endif
                 snprintf(&*myHeader.begin(), BASIC, "Number of TMD for Head %" PRIu32"", loopCount); // Head count
                 if (g_dataformat == PREPYTHON_DATA)
@@ -3463,7 +3463,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
 #if defined _DEBUG
-                printf("\tVelocity Observer by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].velocityObserverByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Velocity Observer over last 3 SMART Summary Frame
+                printf("\tVelocity Observer by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].velocityObserverByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFF);  //!< Velocity Observer over last 3 SMART Summary Frame
 #endif
                 snprintf(&*myHeader.begin(), BASIC, "Velocity Observer by Head %" PRIu32"", loopCount); // Head count
                 if (g_dataformat == PREPYTHON_DATA)
@@ -3480,7 +3480,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
 #if defined _DEBUG
-                printf("\tNumber of Velocity Observer by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].numberOfVelocityObservedByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Number of Velocity Observer over last 3 SMART Summary Frame
+                printf("\tNumber of Velocity Observer by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].numberOfVelocityObservedByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFF);  //!< Number of Velocity Observer over last 3 SMART Summary Frame
 #endif
                 snprintf(&*myHeader.begin(), BASIC, "Number of Velocity Observer by Head %" PRIu32"", loopCount); // Head count
                 if (g_dataformat == PREPYTHON_DATA)
@@ -3497,7 +3497,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
 #if defined _DEBUG
-                printf("\tCurrent H2SAT percentage of codewords at iteration level by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].currentH2SATPercentagebyHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Current H2SAT percentage of codewords at iteration level
+                printf("\tCurrent H2SAT percentage of codewords at iteration level by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].currentH2SATPercentagebyHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFF);  //!< Current H2SAT percentage of codewords at iteration level
 #endif
                 snprintf(&*myHeader.begin(), BASIC, "Current H2SAT percentage of codewords at iteration level by Head %" PRIu32"", loopCount); // Head count
                 if (g_dataformat == PREPYTHON_DATA)
@@ -3514,7 +3514,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
 #if defined _DEBUG
-                printf("\tCurrent H2SAT amplitude by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].currentH2STAmplituedByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Current H2SAT amplitude, averaged across Test Zone
+                printf("\tCurrent H2SAT amplitude by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].currentH2STAmplituedByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFF);  //!< Current H2SAT amplitude, averaged across Test Zone
 #endif
                 snprintf(&*myHeader.begin(), BASIC, "Current H2SAT amplitude by Head %" PRIu32"", loopCount); // Head count
                 if (g_dataformat == PREPYTHON_DATA)
@@ -3531,7 +3531,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
 #if defined _DEBUG
-                printf("\tCurrent H2SAT asymmetry by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].currentH2STAsymmetryByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Current H2SAT asymmetry, averaged across Test Zone
+                printf("\tCurrent H2SAT asymmetry by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].currentH2STAsymmetryByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFF);  //!< Current H2SAT asymmetry, averaged across Test Zone
 #endif
                 snprintf(&*myHeader.begin(), BASIC, "Current H2SAT asymmetry by Head %" PRIu32"", loopCount); // Head count
                 if (g_dataformat == PREPYTHON_DATA)
@@ -3548,7 +3548,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
 #if defined _DEBUG
-                printf("\tNumber of Reallocated Sectors by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].ResidentGlistEntries.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);
+                printf("\tNumber of Reallocated Sectors by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].ResidentGlistEntries.headValue[loopCount] & 0x00FFFFFFFFFFFFFF);
 #endif
                 snprintf(&*myHeader.begin(), BASIC, "Number of Reallocated Sectors by Head %" PRIu32"", loopCount); // Head count
                 if (g_dataformat == PREPYTHON_DATA)
@@ -3565,7 +3565,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
 #if defined _DEBUG
-                printf("\tNumber of Reallocation Candidate Sectors by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].ResidentPlistEntries.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);
+                printf("\tNumber of Reallocation Candidate Sectors by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].ResidentPlistEntries.headValue[loopCount] & 0x00FFFFFFFFFFFFFF);
 #endif
                 snprintf(&*myHeader.begin(), BASIC, "Number of Reallocation Candidate Sectors by Head %" PRIu32"", loopCount); // Head count
                 if (g_dataformat == PREPYTHON_DATA)
@@ -3582,7 +3582,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
 #if defined _DEBUG
-                printf("\tDOS Ought to scan count by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].DOSOoughtToScan.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);
+                printf("\tDOS Ought to scan count by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].DOSOoughtToScan.headValue[loopCount] & 0x00FFFFFFFFFFFFFF);
 #endif
                 snprintf(&*myHeader.begin(), BASIC, "DOS Ought to scan count by Head %" PRIu32"", loopCount); // Head count
                 if (g_dataformat == PREPYTHON_DATA)
@@ -3599,7 +3599,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
 #if defined _DEBUG
-                printf("\tDOS needs to scans count by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].DOSNeedToScan.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);
+                printf("\tDOS needs to scans count by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].DOSNeedToScan.headValue[loopCount] & 0x00FFFFFFFFFFFFFF);
 #endif
                 snprintf(&*myHeader.begin(), BASIC, "DOS needs to scans count by Head %" PRIu32"", loopCount); // Head count
                 if (g_dataformat == PREPYTHON_DATA)
@@ -3616,7 +3616,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
 #if defined _DEBUG
-                printf("\tDOS write Fault scans by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].DOSWriteFaultScan.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);
+                printf("\tDOS write Fault scans by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].DOSWriteFaultScan.headValue[loopCount] & 0x00FFFFFFFFFFFFFF);
 #endif
                 snprintf(&*myHeader.begin(), BASIC, "DOS write Fault scans by Head %" PRIu32"", loopCount); // Head count
                 if (g_dataformat == PREPYTHON_DATA)
@@ -3633,7 +3633,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
 #if defined _DEBUG
-                printf("\tWrite Power On (hrs) value by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].writePowerOnHours.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);
+                printf("\tWrite Power On (hrs) value by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].writePowerOnHours.headValue[loopCount] & 0x00FFFFFFFFFFFFFF);
 #endif
                 snprintf(&*myHeader.begin(), BASIC, "Write Power On (hrs) by Head %" PRIu32"", loopCount); // Head count
                 //set_json_64_bit_With_Status(headPage, &*myHeader.begin(), vFarmFrame[page].writePowerOnHours.headValue[loopCount], false, m_showStatusBits);
@@ -3652,7 +3652,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
 #if defined _DEBUG
-                printf("\tDOS Write Count Threshold by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].dosWriteCount.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);
+                printf("\tDOS Write Count Threshold by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].dosWriteCount.headValue[loopCount] & 0x00FFFFFFFFFFFFFF);
 #endif
                 if (g_dataformat == PREPYTHON_DATA)
                 {
@@ -3669,7 +3669,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
 #if defined _DEBUG
-                printf("\tCumlative Lifetime Unrecoverable Read Repeat per head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].cumECCReadRepeat.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);
+                printf("\tCumlative Lifetime Unrecoverable Read Repeat per head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].cumECCReadRepeat.headValue[loopCount] & 0x00FFFFFFFFFFFFFF);
 #endif
                 snprintf(&*myHeader.begin(), BASIC, "Cumlative Lifetime Unrecoverable Read Repeat %" PRIu32"", loopCount); // Head count
                 if (g_dataformat == PREPYTHON_DATA)
@@ -3686,7 +3686,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
 #if defined _DEBUG
-                printf("\tCumlative Lifetime Unrecoverable Read Unique per head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].cumECCReadUnique.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);
+                printf("\tCumlative Lifetime Unrecoverable Read Unique per head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].cumECCReadUnique.headValue[loopCount] & 0x00FFFFFFFFFFFFFF);
 #endif
                 snprintf(&*myHeader.begin(), BASIC, "Cumlative Lifetime Unrecoverable Read Unique %" PRIu32"", loopCount); // Head count
                 if (g_dataformat == PREPYTHON_DATA)
@@ -3703,7 +3703,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
 #if defined _DEBUG
-                printf("\tCurrent H2SAT trimmed mean bits in error by Head %" PRIu32":  by Test Zone 0:      %" PRIu64" \n", loopCount, vFarmFrame[page].currentH2STTrimmedbyHeadZone0.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Current H2SAT trimmed mean bits in error by Head, by Test Zone 0
+                printf("\tCurrent H2SAT trimmed mean bits in error by Head %" PRIu32":  by Test Zone 0:      %" PRIu64" \n", loopCount, vFarmFrame[page].currentH2STTrimmedbyHeadZone0.headValue[loopCount] & 0x00FFFFFFFFFFFFFF);  //!< Current H2SAT trimmed mean bits in error by Head, by Test Zone 0
 #endif
                 snprintf(&*myHeader.begin(), BASIC, "Current H2SAT trimmed mean bits in error Zone 0 by Head %" PRIu32"", loopCount); // Head count
                 if (g_dataformat == PREPYTHON_DATA)
@@ -3721,7 +3721,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
 #if defined _DEBUG
-                printf("\tCurrent H2SAT trimmed mean bits in error by Head %" PRIu32": by Test Zone 1:      %" PRIu64" \n", loopCount, vFarmFrame[page].currentH2STTrimmedbyHeadZone1.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Current H2SAT trimmed mean bits in error by Head, by Test Zone 1
+                printf("\tCurrent H2SAT trimmed mean bits in error by Head %" PRIu32": by Test Zone 1:      %" PRIu64" \n", loopCount, vFarmFrame[page].currentH2STTrimmedbyHeadZone1.headValue[loopCount] & 0x00FFFFFFFFFFFFFF);  //!< Current H2SAT trimmed mean bits in error by Head, by Test Zone 1
 #endif
                 snprintf(&*myHeader.begin(), BASIC, "Current H2SAT trimmed mean bits in error Zone 1 by Head %" PRIu32"", loopCount); // Head count
                 if (g_dataformat == PREPYTHON_DATA)
@@ -3739,7 +3739,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
 #if defined _DEBUG
-                printf("\tCurrent H2SAT trimmed mean bits in error by Head %" PRIu32" , by Test Zone 2:      %" PRIu64" \n", loopCount, vFarmFrame[page].currentH2STTrimmedbyHeadZone2.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Current H2SAT trimmed mean bits in error by Head, by Test Zone 2
+                printf("\tCurrent H2SAT trimmed mean bits in error by Head %" PRIu32" , by Test Zone 2:      %" PRIu64" \n", loopCount, vFarmFrame[page].currentH2STTrimmedbyHeadZone2.headValue[loopCount] & 0x00FFFFFFFFFFFFFF);  //!< Current H2SAT trimmed mean bits in error by Head, by Test Zone 2
 #endif
                 snprintf(&*myHeader.begin(), BASIC, "Current H2SAT trimmed mean bits in error Zone 2 by Head %" PRIu32"", loopCount); // Head count
                 if (g_dataformat == PREPYTHON_DATA)
@@ -3757,7 +3757,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
 #if defined _DEBUG
-                printf("\tCurrent H2SAT iterations to converge by Head %" PRIu32" , by Test Zone 0:      %" PRIu64" \n", loopCount, vFarmFrame[page].currentH2STIterationsByHeadZone0.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Current H2SAT iterations to cnverge by Head, by Test Zone 0
+                printf("\tCurrent H2SAT iterations to converge by Head %" PRIu32" , by Test Zone 0:      %" PRIu64" \n", loopCount, vFarmFrame[page].currentH2STIterationsByHeadZone0.headValue[loopCount] & 0x00FFFFFFFFFFFFFF);  //!< Current H2SAT iterations to cnverge by Head, by Test Zone 0
 #endif
                 snprintf(&*myHeader.begin(), BASIC, "Current H2SAT iterations to converge Test Zone 0 by Head %" PRIu32"", loopCount); // Head count
                 if (g_dataformat == PREPYTHON_DATA)
@@ -3775,7 +3775,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
 #if defined _DEBUG
-                printf("\tCurrent H2SAT iterations to converge by Head %" PRIu32" , by Test Zone 1:      %" PRIu64" \n", loopCount, vFarmFrame[page].currentH2STIterationsByHeadZone1.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Current H2SAT iterations to cnverge by Head, by Test Zone 1
+                printf("\tCurrent H2SAT iterations to converge by Head %" PRIu32" , by Test Zone 1:      %" PRIu64" \n", loopCount, vFarmFrame[page].currentH2STIterationsByHeadZone1.headValue[loopCount] & 0x00FFFFFFFFFFFFFF);  //!< Current H2SAT iterations to cnverge by Head, by Test Zone 1
 #endif
                 snprintf(&*myHeader.begin(), BASIC, "Current H2SAT iterations to converge Test Zone 1 by Head %" PRIu32"", loopCount); // Head count
                 if (g_dataformat == PREPYTHON_DATA)
@@ -3793,7 +3793,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
 #if defined _DEBUG
-                printf("\tCurrent H2SAT iterations to converge by Head %" PRIu32" , by Test Zone 2:      %" PRIu64" \n", loopCount, vFarmFrame[page].currentH2STIterationsByHeadZone2.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Current H2SAT iterations to cnverge by Head, by Test Zone 2
+                printf("\tCurrent H2SAT iterations to converge by Head %" PRIu32" , by Test Zone 2:      %" PRIu64" \n", loopCount, vFarmFrame[page].currentH2STIterationsByHeadZone2.headValue[loopCount] & 0x00FFFFFFFFFFFFFF);  //!< Current H2SAT iterations to cnverge by Head, by Test Zone 2
 #endif
                 snprintf(&*myHeader.begin(), BASIC, "Current H2SAT iterations to converge Test Zone 2 by Head %" PRIu32"", loopCount); // Head count
                 if (g_dataformat == PREPYTHON_DATA)
@@ -3811,7 +3811,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
 #if defined _DEBUG
-                printf("\tFly height clearance delta outer by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].appliedFlyHeightByHeadOuter.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Applied fly height clearance delta per head in thousandths of one Angstrom: Outer by Head
+                printf("\tFly height clearance delta outer by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].appliedFlyHeightByHeadOuter.headValue[loopCount] & 0x00FFFFFFFFFFFFFF);  //!< Applied fly height clearance delta per head in thousandths of one Angstrom: Outer by Head
 #endif
                 snprintf(&*myHeader.begin(), BASIC, "Fly height clearance delta outer by Head %" PRIu32"", loopCount); // Head count
                 if (g_dataformat == PREPYTHON_DATA)
@@ -3829,7 +3829,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
 #if defined _DEBUG
-                printf("\tFly height clearance delta inner by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].appliedFlyHeightByHeadInner.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Applied fly height clearance delta per head in thousandths of one Angstrom: Inner by Head
+                printf("\tFly height clearance delta inner by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].appliedFlyHeightByHeadInner.headValue[loopCount] & 0x00FFFFFFFFFFFFFF);  //!< Applied fly height clearance delta per head in thousandths of one Angstrom: Inner by Head
 #endif
                 snprintf(&*myHeader.begin(), BASIC, "Fly height clearance delta inner by Head %" PRIu32"", loopCount); // Head count
                 if (g_dataformat == PREPYTHON_DATA)
@@ -3847,7 +3847,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
 #if defined _DEBUG
-                printf("\tFly height clearance delta middle by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].appliedFlyHeightByHeadMiddle.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Applied fly height clearance delta per head in thousandths of one Angstrom: middle by Head
+                printf("\tFly height clearance delta middle by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].appliedFlyHeightByHeadMiddle.headValue[loopCount] & 0x00FFFFFFFFFFFFFF);  //!< Applied fly height clearance delta per head in thousandths of one Angstrom: middle by Head
 #endif
                 snprintf(&*myHeader.begin(), BASIC, "Fly height clearance delta middle by Head %" PRIu32"", loopCount);     // Head count
                 if (g_dataformat == PREPYTHON_DATA)
@@ -3881,7 +3881,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
 #if defined _DEBUG
-                printf("\tSecond MR Head Resistance by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].secondMRHeadResistanceByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< Second MR Head Resistance
+                printf("\tSecond MR Head Resistance by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].secondMRHeadResistanceByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFF);  //!< Second MR Head Resistance
 #endif
                 snprintf(&*myHeader.begin(), BASIC, "Second MR Head Resistance by Head %" PRIu32"", loopCount);     // Head count
                 if (g_dataformat == PREPYTHON_DATA)
@@ -3901,7 +3901,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
 #if defined _DEBUG
-                printf("\tFAFH Measurement Status by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fafhMeasurementStatus.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  //!< FAFH Measurement Status
+                printf("\tFAFH Measurement Status by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fafhMeasurementStatus.headValue[loopCount] & 0x00FFFFFFFFFFFFFF);  //!< FAFH Measurement Status
 #endif
                 snprintf(&*myHeader.begin(), BASIC, "FAFH Measurement Status by Head %" PRIu32"", loopCount);     // Head count
                 if (g_dataformat == PREPYTHON_DATA)
@@ -3948,7 +3948,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 int16_t whole = M_WordInt2(dsHead);							// get 5:4 whole part of the float
                 double decimal = static_cast<double>(M_DoubleWordInt0(dsHead)) ;  // get 3:0 for the Deciaml Part of the float
 #if defined _DEBUG
-                printf("\tFAFH Bit Error Rate 0 by Head %" PRIu32":     raw 0x%" PRIx64"  calculated %" PRIi16".%03.0f (debug)\n", loopCount, vFarmFrame[page].fafh_bit_error_rate_0.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL, whole,decimal);
+                printf("\tFAFH Bit Error Rate 0 by Head %" PRIu32":     raw 0x%" PRIx64"  calculated %" PRIi16".%03.0f (debug)\n", loopCount, vFarmFrame[page].fafh_bit_error_rate_0.headValue[loopCount] & 0x00FFFFFFFFFFFFFF, whole,decimal);
 #endif
                 snprintf(&*myHeader.begin(), BASIC, "FAFH Bit Error Rate 0 by Head %" PRIu32"", loopCount);     // Head count
                 if (g_dataformat == PREPYTHON_DATA)
@@ -3972,7 +3972,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 int16_t whole = M_WordInt2(dsHead);							// get 5:4 whole part of the float
                 double decimal = static_cast<double>(M_DoubleWordInt0(dsHead));  // get 3:0 for the Deciaml Part of the float
 #if defined _DEBUG
-                printf("\tFAFH Bit Error Rate 1 by Head %" PRIu32":     raw 0x%" PRIx64"  calculated %" PRIi16".%03.0f (debug)\n", loopCount, vFarmFrame[page].fafh_bit_error_rate_1.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL, whole, decimal);
+                printf("\tFAFH Bit Error Rate 1 by Head %" PRIu32":     raw 0x%" PRIx64"  calculated %" PRIi16".%03.0f (debug)\n", loopCount, vFarmFrame[page].fafh_bit_error_rate_1.headValue[loopCount] & 0x00FFFFFFFFFFFFFF, whole, decimal);
 #endif
                 snprintf(&*myHeader.begin(), BASIC, "FAFH Bit Error Rate 1 by Head %" PRIu32"", loopCount);     // Head count
                 if (g_dataformat == PREPYTHON_DATA)
@@ -3996,7 +3996,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 int16_t whole = M_WordInt2(dsHead);							// get 5:4 whole part of the float
                 double decimal = static_cast<double>(M_DoubleWordInt0(dsHead));  // get 3:0 for the Deciaml Part of the float
 #if defined _DEBUG
-                printf("\tFAFH Bit Error Rate 2 by Head %" PRIu32":     raw 0x%" PRIx64"  calculated %" PRIi16".%03.0f (debug)\n", loopCount, vFarmFrame[page].fafh_bit_error_rate_2.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL, whole, decimal);
+                printf("\tFAFH Bit Error Rate 2 by Head %" PRIu32":     raw 0x%" PRIx64"  calculated %" PRIi16".%03.0f (debug)\n", loopCount, vFarmFrame[page].fafh_bit_error_rate_2.headValue[loopCount] & 0x00FFFFFFFFFFFFFF, whole, decimal);
 #endif
                 snprintf(&*myHeader.begin(), BASIC, "FAFH Bit Error Rate 2 by Head %" PRIu32"", loopCount);     // Head count
                 if (g_dataformat == PREPYTHON_DATA)
@@ -4017,7 +4017,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
 #if defined _DEBUG
-                printf("\tFAFH Low Frequency 0 by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fafhLowFrequency_0.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  
+                printf("\tFAFH Low Frequency 0 by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fafhLowFrequency_0.headValue[loopCount] & 0x00FFFFFFFFFFFFFF);  
 #endif
                 snprintf(&*myHeader.begin(), BASIC, "FAFH Low Frequency 0 by Head %" PRIu32"", loopCount);     // Head count
                 if (g_dataformat == PREPYTHON_DATA)
@@ -4037,7 +4037,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
 #if defined _DEBUG
-                printf("\tFAFH Low Frequency 1 by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fafhLowFrequency_1.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  
+                printf("\tFAFH Low Frequency 1 by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fafhLowFrequency_1.headValue[loopCount] & 0x00FFFFFFFFFFFFFF);  
 #endif
                 snprintf(&*myHeader.begin(), BASIC, "FAFH Low Frequency 1 by Head %" PRIu32"", loopCount);     // Head count
                 if (g_dataformat == PREPYTHON_DATA)
@@ -4057,7 +4057,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
 #if defined _DEBUG
-                printf("\tFAFH Low Frequency 2 by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fafhLowFrequency_2.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  
+                printf("\tFAFH Low Frequency 2 by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fafhLowFrequency_2.headValue[loopCount] & 0x00FFFFFFFFFFFFFF);  
 #endif
                 snprintf(&*myHeader.begin(), BASIC, "FAFH Low Frequency 2 by Head %" PRIu32"", loopCount);     // Head count
                 if (g_dataformat == PREPYTHON_DATA)
@@ -4077,7 +4077,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
 #if defined _DEBUG
-                printf("\tFAFH High Frequency 0 by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fafhHighFrequency_0.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  
+                printf("\tFAFH High Frequency 0 by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fafhHighFrequency_0.headValue[loopCount] & 0x00FFFFFFFFFFFFFF);  
 #endif
                 snprintf(&*myHeader.begin(), BASIC, "FAFH High Frequency 0 by Head %" PRIu32"", loopCount);     // Head count
                 if (g_dataformat == PREPYTHON_DATA)
@@ -4097,7 +4097,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
 #if defined _DEBUG
-                printf("\tFAFH High Frequency 1 by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fafhHighFrequency_1.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  
+                printf("\tFAFH High Frequency 1 by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fafhHighFrequency_1.headValue[loopCount] & 0x00FFFFFFFFFFFFFF);  
 #endif
                 snprintf(&*myHeader.begin(), BASIC, "FAFH High Frequency 1 by Head %" PRIu32"", loopCount);     // Head count
                 if (g_dataformat == PREPYTHON_DATA)
@@ -4117,7 +4117,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
 #if defined _DEBUG
-                printf("\tFAFH High Frequency 2 by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fafhHighFrequency_2.headValue[loopCount] & 0x00FFFFFFFFFFFFFFLL);  
+                printf("\tFAFH High Frequency 2 by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fafhHighFrequency_2.headValue[loopCount] & 0x00FFFFFFFFFFFFFF);  
 #endif
                 snprintf(&*myHeader.begin(), BASIC, "FAFH High Frequency 2 by Head %" PRIu32"", loopCount);     // Head count
                 if (g_dataformat == PREPYTHON_DATA)
@@ -4254,36 +4254,36 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Information(JSONNODE *masterDat
     {
         printf("\nLUN Actuator 0x%" PRIx16" Information From Farm Log copy: %" PRIu32"\n", M_Word0(pLUN->LUNID), page);
     }
-    printf("\tPage Number:                                0x%" PRIx64" \n", pLUN->pageNumber & 0x00FFFFFFFFFFFFFFLL);                   //!< Page Number 
-    printf("\tCopy Number:                                  %" PRIu64" \n", pLUN->copyNumber & 0x00FFFFFFFFFFFFFFLL);                   //!< Copy Number 
-    printf("\tLUN ID:                                       %" PRIu64" \n", pLUN->LUNID & 0x00FFFFFFFFFFFFFFLL);                        //!< LUN ID  
-    printf("\tHead Load Events:                             %" PRIu64" \n", pLUN->headLoadEvents & 0x00FFFFFFFFFFFFFFLL);               //!< Head Load Events 
+    printf("\tPage Number:                                0x%" PRIx64" \n", pLUN->pageNumber & 0x00FFFFFFFFFFFFFF);                   //!< Page Number 
+    printf("\tCopy Number:                                  %" PRIu64" \n", pLUN->copyNumber & 0x00FFFFFFFFFFFFFF);                   //!< Copy Number 
+    printf("\tLUN ID:                                       %" PRIu64" \n", pLUN->LUNID & 0x00FFFFFFFFFFFFFF);                        //!< LUN ID  
+    printf("\tHead Load Events:                             %" PRIu64" \n", pLUN->headLoadEvents & 0x00FFFFFFFFFFFFFF);               //!< Head Load Events 
     if (pLUN->reallocatedSectors != 0)
     {
-        printf("\tNumber of Reallocated Sectors:                %" PRIu64" \n", pLUN->reallocatedSectors & 0x00FFFFFFFFFFFFFFLL);           //!< Number of Reallocated Sectors 
+        printf("\tNumber of Reallocated Sectors:                %" PRIu64" \n", pLUN->reallocatedSectors & 0x00FFFFFFFFFFFFFF);           //!< Number of Reallocated Sectors 
     }
     if (pLUN->reallocatedCandidates != 0)
     {
-        printf("\tNumber of Reallocated Candidate Sectors:      %" PRIu64" \n", pLUN->reallocatedCandidates & 0x00FFFFFFFFFFFFFFLL);        //!< Number of Reallocated Candidate Sectors 
+        printf("\tNumber of Reallocated Candidate Sectors:      %" PRIu64" \n", pLUN->reallocatedCandidates & 0x00FFFFFFFFFFFFFF);        //!< Number of Reallocated Candidate Sectors 
     }
-    printf("\tNumber of Reallocated Candidate Sectors:      %" PRIu64" \n", pLUN->reallocatedCandidates & 0x00FFFFFFFFFFFFFFLL);        //!< Number of Reallocated Candidate Sectors 
-    printf("\tTimeStamp of last IDD test:                   %" PRIu64" \n", pLUN->timeStampOfIDD & 0x00FFFFFFFFFFFFFFLL);               //!< Timestamp of last IDD test 
-    printf("\tSub-Command of Last IDD Test:                 %" PRIu64" \n", pLUN->subCmdOfIDD & 0x00FFFFFFFFFFFFFFLL);                  //!< Sub-command of last IDD test 
-    printf("\tNumber of Reallocated Sector Reclamations:    %" PRIu64" \n", pLUN->reclamedGlist & 0x00FFFFFFFFFFFFFFLL);				//!< Number of G-list reclamations 
-    printf("\tServo Status:                                 %" PRIu64" \n", pLUN->servoStatus & 0x00FFFFFFFFFFFFFFLL);					//!< Servo Status 
-    printf("\tNumber of Slipped Sectors Before IDD Scan:    %" PRIu64" \n", pLUN->slippedSectorsBeforeIDD & 0x00FFFFFFFFFFFFFFLL);      //!< Number of Slipped Sectors Before IDD Scan 
-    printf("\tNumber of Slipped Sectors After IDD Scan:     %" PRIu64" \n", pLUN->slippedSectorsAfterIDD & 0x00FFFFFFFFFFFFFFLL);       //!< Number of Slipped Sectors After IDD Scan 
-    printf("\tResident Reallocated Sectors Before IDD Scan: %" PRIu64" \n", pLUN->residentReallocatedBeforeIDD & 0x00FFFFFFFFFFFFFFLL); //!< Number of Resident Reallocated Sectors Before IDD Scan 
-    printf("\tResident Reallocated Sectors After IDD Scan:  %" PRIu64" \n", pLUN->residentReallocatedAfterIDD & 0x00FFFFFFFFFFFFFFLL);  //!< Number of Resident Reallocated Sectors After IDD Scan  
-    printf("\tSuccessfully Scrubbed Sectors Before IDD Scan:%" PRIu64" \n", pLUN->successScrubbedBeforeIDD & 0x00FFFFFFFFFFFFFFLL);     //!< Number of Successfully Scrubbed Sectors Before IDD Scan 
-    printf("\tSuccessfully Scrubbed Sectors After IDD Scan: %" PRIu64" \n", pLUN->successScrubbedAfterIDD & 0x00FFFFFFFFFFFFFFLL);      //!< Number of Successfully Scrubbed Sectors After IDD Scan 
-    printf("\tNumber of DOS Scans Performed:                %" PRIu64" \n", pLUN->dosScansPerformed & 0x00FFFFFFFFFFFFFFLL);            //!< Number of DOS Scans Performed
-    printf("\tNumber of LBAs Corrected by ISP:              %" PRIu64" \n", pLUN->correctedLBAbyISP & 0x00FFFFFFFFFFFFFFLL);            //!< Number of LBAs Corrected by ISP
-    printf("\tNumber of Valid Parity Sectors:               %" PRIu64" \n", pLUN->paritySectors & 0x00FFFFFFFFFFFFFFLL);                //!< Number of Valid Parity Sectors
-    printf("\tRV Absulute Mean:                             %" PRIu64" \n", pLUN->RVabsolue & 0x00FFFFFFFFFFFFFFLL);					//!< RV Absulute Mean
-    printf("\tMax RV absulute Mean:                         %" PRIu64" \n", pLUN->maxRVabsolue & 0x00FFFFFFFFFFFFFFLL);				    //!< Max RV absulute Mean
-    printf("\tIdle Time:                                    %" PRIu64" \n", pLUN->idleTime & 0x00FFFFFFFFFFFFFFLL);		                //!< idle Time value from the most recent SMART Summary Frame
-    printf("\tNumber of LBAs Corrected by Parity Sector:    %" PRIu64" \n", pLUN->lbasCorrectedByParity & 0x00FFFFFFFFFFFFFFLL); //!< Number of LBAs Corrected by Parity Sector
+    printf("\tNumber of Reallocated Candidate Sectors:      %" PRIu64" \n", pLUN->reallocatedCandidates & 0x00FFFFFFFFFFFFFF);        //!< Number of Reallocated Candidate Sectors 
+    printf("\tTimeStamp of last IDD test:                   %" PRIu64" \n", pLUN->timeStampOfIDD & 0x00FFFFFFFFFFFFFF);               //!< Timestamp of last IDD test 
+    printf("\tSub-Command of Last IDD Test:                 %" PRIu64" \n", pLUN->subCmdOfIDD & 0x00FFFFFFFFFFFFFF);                  //!< Sub-command of last IDD test 
+    printf("\tNumber of Reallocated Sector Reclamations:    %" PRIu64" \n", pLUN->reclamedGlist & 0x00FFFFFFFFFFFFFF);				//!< Number of G-list reclamations 
+    printf("\tServo Status:                                 %" PRIu64" \n", pLUN->servoStatus & 0x00FFFFFFFFFFFFFF);					//!< Servo Status 
+    printf("\tNumber of Slipped Sectors Before IDD Scan:    %" PRIu64" \n", pLUN->slippedSectorsBeforeIDD & 0x00FFFFFFFFFFFFFF);      //!< Number of Slipped Sectors Before IDD Scan 
+    printf("\tNumber of Slipped Sectors After IDD Scan:     %" PRIu64" \n", pLUN->slippedSectorsAfterIDD & 0x00FFFFFFFFFFFFFF);       //!< Number of Slipped Sectors After IDD Scan 
+    printf("\tResident Reallocated Sectors Before IDD Scan: %" PRIu64" \n", pLUN->residentReallocatedBeforeIDD & 0x00FFFFFFFFFFFFFF); //!< Number of Resident Reallocated Sectors Before IDD Scan 
+    printf("\tResident Reallocated Sectors After IDD Scan:  %" PRIu64" \n", pLUN->residentReallocatedAfterIDD & 0x00FFFFFFFFFFFFFF);  //!< Number of Resident Reallocated Sectors After IDD Scan  
+    printf("\tSuccessfully Scrubbed Sectors Before IDD Scan:%" PRIu64" \n", pLUN->successScrubbedBeforeIDD & 0x00FFFFFFFFFFFFFF);     //!< Number of Successfully Scrubbed Sectors Before IDD Scan 
+    printf("\tSuccessfully Scrubbed Sectors After IDD Scan: %" PRIu64" \n", pLUN->successScrubbedAfterIDD & 0x00FFFFFFFFFFFFFF);      //!< Number of Successfully Scrubbed Sectors After IDD Scan 
+    printf("\tNumber of DOS Scans Performed:                %" PRIu64" \n", pLUN->dosScansPerformed & 0x00FFFFFFFFFFFFFF);            //!< Number of DOS Scans Performed
+    printf("\tNumber of LBAs Corrected by ISP:              %" PRIu64" \n", pLUN->correctedLBAbyISP & 0x00FFFFFFFFFFFFFF);            //!< Number of LBAs Corrected by ISP
+    printf("\tNumber of Valid Parity Sectors:               %" PRIu64" \n", pLUN->paritySectors & 0x00FFFFFFFFFFFFFF);                //!< Number of Valid Parity Sectors
+    printf("\tRV Absulute Mean:                             %" PRIu64" \n", pLUN->RVabsolue & 0x00FFFFFFFFFFFFFF);					//!< RV Absulute Mean
+    printf("\tMax RV absulute Mean:                         %" PRIu64" \n", pLUN->maxRVabsolue & 0x00FFFFFFFFFFFFFF);				    //!< Max RV absulute Mean
+    printf("\tIdle Time:                                    %" PRIu64" \n", pLUN->idleTime & 0x00FFFFFFFFFFFFFF);		                //!< idle Time value from the most recent SMART Summary Frame
+    printf("\tNumber of LBAs Corrected by Parity Sector:    %" PRIu64" \n", pLUN->lbasCorrectedByParity & 0x00FFFFFFFFFFFFFF); //!< Number of LBAs Corrected by Parity Sector
 #endif
     if (g_dataformat == PREPYTHON_DATA)
     {
@@ -4417,17 +4417,17 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_FLED_Info(JSONNODE *masterData,
     {
         printf("\nActuator 0x%" PRIx16" FLED Info From Farm Log copy %" PRIu32"\n", M_Word0(pFLED->actID), page);
     }
-    printf("\tPage Number:                                  0x%" PRIx64" \n", pFLED->pageNumber & 0x00FFFFFFFFFFFFFFLL);                   //!< Page Number 
-    printf("\tCopy Number:                                  %" PRIu64" \n", pFLED->copyNumber & 0x00FFFFFFFFFFFFFFLL);                   //!< Copy Number 
-    printf("\tActuator ID:                                  %" PRIu64" \n", pFLED->actID & 0x00FFFFFFFFFFFFFFLL);                        //!< Actuator ID  
-    printf("\tTotal Flash LED Events:                       %" PRIu64" \n", pFLED->totalFLEDEvents & 0x00FFFFFFFFFFFFFFLL);              //!< Total Flash LED Events
-    printf("\tIndex of Last Flash LED:                      %" PRIu64" \n", pFLED->index & 0x00FFFFFFFFFFFFFFLL);                        //!< Index of last entry in FLED Info array below, in case the array wraps
+    printf("\tPage Number:                                  0x%" PRIx64" \n", pFLED->pageNumber & 0x00FFFFFFFFFFFFFF);                   //!< Page Number 
+    printf("\tCopy Number:                                  %" PRIu64" \n", pFLED->copyNumber & 0x00FFFFFFFFFFFFFF);                   //!< Copy Number 
+    printf("\tActuator ID:                                  %" PRIu64" \n", pFLED->actID & 0x00FFFFFFFFFFFFFF);                        //!< Actuator ID  
+    printf("\tTotal Flash LED Events:                       %" PRIu64" \n", pFLED->totalFLEDEvents & 0x00FFFFFFFFFFFFFF);              //!< Total Flash LED Events
+    printf("\tIndex of Last Flash LED:                      %" PRIu64" \n", pFLED->index & 0x00FFFFFFFFFFFFFF);                        //!< Index of last entry in FLED Info array below, in case the array wraps
     for (i = 0; i < FLASH_EVENTS; i++)
     {
 
-        printf("\tInformation of Event %" PRIu16":             0x%" PRIx64" \n", i,pFLED->flashLEDArray[i] & 0x00FFFFFFFFFFFFFFLL);           //!< Info on the last 8 Flash LED (assert) Events, wrapping array
-        printf("\tTimeStamp of Event%" PRIu16":                  %" PRIu64" \n", i,pFLED->timestampForLED[i] & 0x00FFFFFFFFFFFFFFLL);         //!< Universal Timestamp (us) of last 8 Flash LED (assert) Events, wrapping array
-        printf("\tPower Cycle Event %" PRIu16":                  %" PRIu64" \n", i,pFLED->powerCycleOfLED[i] & 0x00FFFFFFFFFFFFFFLL);         //!< SPower Cycle of the last 8 Flash LED (assert) Events, wrapping array
+        printf("\tInformation of Event %" PRIu16":             0x%" PRIx64" \n", i,pFLED->flashLEDArray[i] & 0x00FFFFFFFFFFFFFF);           //!< Info on the last 8 Flash LED (assert) Events, wrapping array
+        printf("\tTimeStamp of Event%" PRIu16":                  %" PRIu64" \n", i,pFLED->timestampForLED[i] & 0x00FFFFFFFFFFFFFF);         //!< Universal Timestamp (us) of last 8 Flash LED (assert) Events, wrapping array
+        printf("\tPower Cycle Event %" PRIu16":                  %" PRIu64" \n", i,pFLED->powerCycleOfLED[i] & 0x00FFFFFFFFFFFFFF);         //!< SPower Cycle of the last 8 Flash LED (assert) Events, wrapping array
     }
 
 
@@ -4568,16 +4568,16 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Reallocation(JSONNODE* masterDa
     {
         printf("\nLUN Actuator 0x%" PRIx16" Reallocation From Farm Log copy %" PRIu32"\n", M_Word0(pReal->actID), page);
     }
-    printf("\tPage Number:                                  0x%" PRIx64" \n", pReal->pageNumber & 0x00FFFFFFFFFFFFFFLL);                   //!< Page Number 
-    printf("\tCopy Number:                                  %" PRIu64" \n", pReal->copyNumber & 0x00FFFFFFFFFFFFFFLL);                   //!< Copy Number 
-    printf("\tActuator ID:                                  %" PRIu64" \n", pReal->actID & 0x00FFFFFFFFFFFFFFLL);                        //!< Actuator ID  
-    printf("\tNumber of Reallocated Sectors:                %" PRIu64" \n", pReal->numberReallocatedSectors & 0x00FFFFFFFFFFFFFFLL);              //!< Total Flash LED Events
-    printf("\tNumber of Reallocated Candidate Sectors:      %" PRIu64" \n", pReal->numberReallocatedCandidates & 0x00FFFFFFFFFFFFFFLL);
+    printf("\tPage Number:                                  0x%" PRIx64" \n", pReal->pageNumber & 0x00FFFFFFFFFFFFFF);                   //!< Page Number 
+    printf("\tCopy Number:                                  %" PRIu64" \n", pReal->copyNumber & 0x00FFFFFFFFFFFFFF);                   //!< Copy Number 
+    printf("\tActuator ID:                                  %" PRIu64" \n", pReal->actID & 0x00FFFFFFFFFFFFFF);                        //!< Actuator ID  
+    printf("\tNumber of Reallocated Sectors:                %" PRIu64" \n", pReal->numberReallocatedSectors & 0x00FFFFFFFFFFFFFF);              //!< Total Flash LED Events
+    printf("\tNumber of Reallocated Candidate Sectors:      %" PRIu64" \n", pReal->numberReallocatedCandidates & 0x00FFFFFFFFFFFFFF);
     for (i = 0; i < REALLOCATIONEVENTS; i++)
     {
 
         _common.get_Reallocation_Cause_Meanings(myStr, i);
-        printf("\t%-33s:            %" PRIu64" \n", &*myStr.begin(), pReal->reallocatedCauses[i] & 0x00FFFFFFFFFFFFFFLL);
+        printf("\t%-33s:            %" PRIu64" \n", &*myStr.begin(), pReal->reallocatedCauses[i] & 0x00FFFFFFFFFFFFFF);
     }
 #endif
     if (g_dataformat == PREPYTHON_DATA)
