@@ -741,8 +741,8 @@ eReturnValues CATA_Farm_Log::print_Error_Information(JSONNODE *masterData, uint3
             snprintf(&*myStr.begin(), BASIC, "Read Write Retry %" PRIu16"", loopCount);
             json_set_name(rwrInfo, &*myStr.begin());
 
-            set_json_64_bit_With_Status(rwrInfo, "Log Entry", M_Byte5(check_Status_Strip_Status(vFarmFrame[page].errorPage.readWriteRetry[loopCount])), false, m_showStatusBits);
             set_json_64_bit_With_Status(rwrInfo, "Error Type", M_Byte6(check_Status_Strip_Status(vFarmFrame[page].errorPage.readWriteRetry[loopCount])), false, m_showStatusBits);
+            set_json_64_bit_With_Status(rwrInfo, "Log Entry", M_Byte5(check_Status_Strip_Status(vFarmFrame[page].errorPage.readWriteRetry[loopCount])), false, m_showStatusBits);
             set_json_64_bit_With_Status(rwrInfo, "Zone Group", M_Word1(check_Status_Strip_Status(vFarmFrame[page].errorPage.readWriteRetry[loopCount])), false, m_showStatusBits);
             set_json_64_bit_With_Status(rwrInfo, "Head", M_Nibble3(check_Status_Strip_Status(vFarmFrame[page].errorPage.readWriteRetry[loopCount])), false, m_showStatusBits);
             set_json_64_bit_With_Status(rwrInfo, "Count", M_Byte0(check_Status_Strip_Status(vFarmFrame[page].errorPage.readWriteRetry[loopCount])), false, m_showStatusBits);
@@ -758,8 +758,8 @@ eReturnValues CATA_Farm_Log::print_Error_Information(JSONNODE *masterData, uint3
             snprintf(&*myStr.begin(), BASIC, "Read Write Retry %" PRIu16"", loopCount);
             json_set_name(rwrInfo, &*myStr.begin());
 
-            set_json_64_bit_With_Status(rwrInfo, "Log Entry", M_Word2(check_Status_Strip_Status(vFarmFrame[page].errorPage.readWriteRetry[loopCount])), false, m_showStatusBits);
             set_json_64_bit_With_Status(rwrInfo, "Error Type", M_Byte6(check_Status_Strip_Status(vFarmFrame[page].errorPage.readWriteRetry[loopCount])), false, m_showStatusBits);
+            set_json_64_bit_With_Status(rwrInfo, "Log Entry", M_Word2(check_Status_Strip_Status(vFarmFrame[page].errorPage.readWriteRetry[loopCount])), false, m_showStatusBits);
             set_json_64_bit_With_Status(rwrInfo, "Zone Group", M_Word1(check_Status_Strip_Status(vFarmFrame[page].errorPage.readWriteRetry[loopCount])), false, m_showStatusBits);
             set_json_64_bit_With_Status(rwrInfo, "Head", M_Byte1(check_Status_Strip_Status(vFarmFrame[page].errorPage.readWriteRetry[loopCount])), false, m_showStatusBits);
             set_json_64_bit_With_Status(rwrInfo, "Count", M_Byte0(check_Status_Strip_Status(vFarmFrame[page].errorPage.readWriteRetry[loopCount])), false, m_showStatusBits);
@@ -1301,12 +1301,12 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
-        printf("\tFly height inner clearance delta by Head  %d:   raw 0x%" PRIx64" inner, calculated %0.02f (debug)\n", loopCount, vFarmFrame[page].reliPage.flyHeightClearance[loopCount].inner, \
-            (float)static_cast<int16_t>(M_WordInt0((check_Status_Strip_Status(vFarmFrame[page].reliPage.flyHeightClearance[loopCount].inner))) * .001));                //!< [24][3] Applied fly height clearance delta per head in thousandths of one Angstrom.
-        printf("\tFly height middle clearance delta by Head  %d:   raw 0x%" PRIx64" middle, calculated %0.02f (debug)\n", loopCount, vFarmFrame[page].reliPage.flyHeightClearance[loopCount].middle, \
-            (float)static_cast<int16_t>(M_WordInt0(check_Status_Strip_Status((vFarmFrame[page].reliPage.flyHeightClearance[loopCount].middle))) * .001));               //!< [24][3] Applied fly height clearance delta per head in thousandths of one Angstrom.
         printf("\tFly height outer clearance delta by Head  %d:   raw 0x%" PRIx64" outer, calculated %0.02f (debug)\n", loopCount, vFarmFrame[page].reliPage.flyHeightClearance[loopCount].outer, \
-            (float)static_cast<int16_t>(M_WordInt0((check_Status_Strip_Status(vFarmFrame[page].reliPage.flyHeightClearance[loopCount].outer))) * .001));                //!< [24][3] Applied fly height clearance delta per head in thousandths of one Angstrom.
+            static_cast<float>(M_WordInt0((check_Status_Strip_Status(vFarmFrame[page].reliPage.flyHeightClearance[loopCount].outer))) * .001));                //!< [24][3] Applied fly height clearance delta per head in thousandths of one Angstrom.
+        printf("\tFly height inner clearance delta by Head  %d:   raw 0x%" PRIx64" inner, calculated %0.02f (debug)\n", loopCount, vFarmFrame[page].reliPage.flyHeightClearance[loopCount].inner, \
+            static_cast<float>(M_WordInt0((check_Status_Strip_Status(vFarmFrame[page].reliPage.flyHeightClearance[loopCount].inner))) * .001));                //!< [24][3] Applied fly height clearance delta per head in thousandths of one Angstrom.
+        printf("\tFly height middle clearance delta by Head  %d:   raw 0x%" PRIx64" middle, calculated %0.02f (debug)\n", loopCount, vFarmFrame[page].reliPage.flyHeightClearance[loopCount].middle, \
+            static_cast<float>(M_WordInt0(check_Status_Strip_Status((vFarmFrame[page].reliPage.flyHeightClearance[loopCount].middle))) * .001));               //!< [24][3] Applied fly height clearance delta per head in thousandths of one Angstrom.
     }
     printf("\tNumber of disc slip recalibrations performed:  %" PRId64" (debug)\n", vFarmFrame[page].reliPage.diskSlipRecalPerformed & 0x00FFFFFFFFFFFFFF);                  //!< Number of disc slip recalibrations performed
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
@@ -1409,8 +1409,8 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
-        snprintf(&*myHeader.begin(), BASIC, "MR Head Resistance from Head %" PRIu32"", loopCount);
-        set_json_64_bit_With_Status(headInfo, &*myHeader.begin(), vFarmFrame[page].reliPage.MRHeadResistance[loopCount], false, m_showStatusBits);                     //!< [24] MR Head Resistance from most recent SMART Summary Frame by Head9,10
+        snprintf((char *)myHeader.c_str(), BASIC, "MR Head Resistance for Head %" PRIu32"", loopCount);
+        set_json_64_bit_With_Status(headInfo, (char*)myHeader.c_str(), vFarmFrame[page].reliPage.MRHeadResistance[loopCount], false, m_showStatusBits);                     //!< [24] MR Head Resistance from most recent SMART Summary Frame by Head9,10
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
@@ -1429,9 +1429,13 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
-        snprintf(&*myHeader.begin(), BASIC, "Fly height clearance delta inner by Head %" PRIu32"", loopCount);
-        snprintf(&*myStr.begin(), BASIC, "%0.03f", static_cast<float>(M_WordInt0(vFarmFrame[page].reliPage.flyHeightClearance[loopCount].inner)*.001));
-        set_json_string_With_Status(headInfo, &*myHeader.begin(), &*myStr.begin(), vFarmFrame[page].reliPage.flyHeightClearance[loopCount].inner, m_showStatusBits);  //!< [24][3] Applied fly height clearance delta per head in thousandths of one Angstrom.
+        snprintf((char *)myHeader.c_str(), BASIC, "Number of TMD for Head %" PRIu32"", loopCount);
+        set_json_64_bit_With_Status(headInfo, (char*)myHeader.c_str(), vFarmFrame[page].reliPage.numberOfTMD[loopCount], false, m_showStatusBits);                          //!< [24] Number of TMD over last 3 SMART Summary Frames by Head9,10
+    }
+    for (loopCount = 0; loopCount < m_heads; ++loopCount)
+    {
+        snprintf((char *)myHeader.c_str(), BASIC, "Velocity Observer by Head %" PRIu32"", loopCount);
+        set_json_64_bit_With_Status(headInfo, (char*)myHeader.c_str(), vFarmFrame[page].reliPage.velocityObserver[loopCount], false, m_showStatusBits);                     //!< [24] Velocity Observer over last 3 SMART Summary Frames by Head9,10
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
@@ -1441,27 +1445,15 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
-        snprintf(&*myHeader.begin(), BASIC, "Fly height clearance delta outer by Head %" PRIu32"", loopCount); // Head count
-        snprintf(&*myStr.begin(), BASIC, "%0.03f", static_cast<float>(M_WordInt0(vFarmFrame[page].reliPage.flyHeightClearance[loopCount].outer) * .001));
-        set_json_string_With_Status(headInfo, &*myHeader.begin(), &*myStr.begin(), vFarmFrame[page].reliPage.flyHeightClearance[loopCount].outer, m_showStatusBits);//!< [24][3] Applied fly height clearance delta per head in thousandths of one Angstrom.
+        snprintf((char*)myHeader.c_str(), BASIC, "Fly height clearance delta outer by Head %" PRIu32"", loopCount); // Head count
+        snprintf((char*)myStr.c_str(), BASIC, "%0.03f", static_cast<float>(M_WordInt0(vFarmFrame[page].reliPage.flyHeightClearance[loopCount].outer) * .001));
+        set_json_string_With_Status(headInfo, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].reliPage.flyHeightClearance[loopCount].outer, m_showStatusBits);//!< [24][3] Applied fly height clearance delta per head in thousandths of one Angstrom.
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
-        snprintf(&*myHeader.begin(), BASIC, "Current H2SAT trimmed mean bits in error Zone 0 by Head %" PRIu32"", loopCount);
-        snprintf(&*myStr.begin(), BASIC, "%0.01f", static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].reliPage.currentH2SAT[loopCount].inner)) *.1));
-        set_json_string_With_Status(headInfo, &*myHeader.begin(), &*myStr.begin(), vFarmFrame[page].reliPage.currentH2SAT[loopCount].inner, m_showStatusBits);    //!< [24] Current H2SAT trimmed mean bits in error by Head, by Test Zone 9,
-    }
-    for (loopCount = 0; loopCount < m_heads; ++loopCount)
-    {
-        snprintf(&*myHeader.begin(), BASIC, "Current H2SAT trimmed mean bits in error Zone 1 by Head %" PRIu32"", loopCount); // Head count
-        snprintf(&*myStr.begin(), BASIC, "%0.01f", static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].reliPage.currentH2SAT[loopCount].middle)) *.1));
-        set_json_string_With_Status(headInfo, &*myHeader.begin(), &*myStr.begin(), vFarmFrame[page].reliPage.currentH2SAT[loopCount].middle, m_showStatusBits);   //!< [24] Current H2SAT trimmed mean bits in error by Head, by Test Zone 9,
-    }
-    for (loopCount = 0; loopCount < m_heads; ++loopCount)
-    {
-        snprintf(&*myHeader.begin(), BASIC, "Current H2SAT trimmed mean bits in error Zone 2 by Head %" PRIu32"", loopCount); // Head count
-        snprintf(&*myStr.begin(), BASIC, "%0.01f", static_cast<float> (M_Word0(check_Status_Strip_Status(vFarmFrame[page].reliPage.currentH2SAT[loopCount].outer)) *.1));
-        set_json_string_With_Status(headInfo, &*myHeader.begin(), &*myStr.begin(), vFarmFrame[page].reliPage.currentH2SAT[loopCount].outer, m_showStatusBits);   //!< [24] Current H2SAT trimmed mean bits in error by Head, by Test Zone 9,
+        snprintf((char *)myHeader.c_str(), BASIC, "Fly height clearance delta inner by Head %" PRIu32"", loopCount);
+        snprintf((char*)myStr.c_str(), BASIC, "%0.03f", static_cast<float>(M_WordInt0(vFarmFrame[page].reliPage.flyHeightClearance[loopCount].inner)*.001));
+        set_json_string_With_Status(headInfo, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].reliPage.flyHeightClearance[loopCount].inner, m_showStatusBits);  //!< [24][3] Applied fly height clearance delta per head in thousandths of one Angstrom.
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
@@ -1471,15 +1463,39 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
-        snprintf(&*myHeader.begin(), BASIC, "Current H2SAT iterations to converge Test Zone 1 by Head %" PRIu32"", loopCount); // Head count
-        snprintf(&*myStr.begin(), BASIC, "%0.01f", static_cast<float> (M_Word0(check_Status_Strip_Status(vFarmFrame[page].reliPage.currentH2SATIterations[loopCount].middle)))*.1);
-        set_json_string_With_Status(headInfo, &*myHeader.begin(), &*myStr.begin(), vFarmFrame[page].reliPage.currentH2SATIterations[loopCount].middle, m_showStatusBits);     //!< [24] Qword[24][3] Current H2SAT iterations to converge by Head, by Test Zone 9, 11
+        snprintf((char *)myHeader.c_str(), BASIC, "Current H2SAT trimmed mean bits in error Zone 0 by Head %" PRIu32"", loopCount);
+        snprintf((char*)myStr.c_str(), BASIC, "%0.01f", static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].reliPage.currentH2SAT[loopCount].zone0)) *.1));
+        set_json_string_With_Status(headInfo, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].reliPage.currentH2SAT[loopCount].zone0, m_showStatusBits);    //!< [24] Current H2SAT trimmed mean bits in error by Head, by Test Zone 9,
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
-        snprintf(&*myHeader.begin(), BASIC, "Current H2SAT iterations to converge Test Zone 2 by Head %" PRIu32"", loopCount); // Head count
-        snprintf(&*myStr.begin(), BASIC, "%0.01f", static_cast<float> (M_Word0(check_Status_Strip_Status(vFarmFrame[page].reliPage.currentH2SATIterations[loopCount].outer))) *.1);
-        set_json_string_With_Status(headInfo, &*myHeader.begin(), &*myStr.begin(), vFarmFrame[page].reliPage.currentH2SATIterations[loopCount].outer, m_showStatusBits);          //!< [24] Qword[24][3] Current H2SAT iterations to converge by Head, by Test Zone 9, 11
+        snprintf((char*)myHeader.c_str(), BASIC, "Current H2SAT trimmed mean bits in error Zone 1 by Head %" PRIu32"", loopCount); // Head count
+        snprintf((char*)myStr.c_str(), BASIC, "%0.01f", static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].reliPage.currentH2SAT[loopCount].zone1)) *.1));
+        set_json_string_With_Status(headInfo, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].reliPage.currentH2SAT[loopCount].zone1, m_showStatusBits);   //!< [24] Current H2SAT trimmed mean bits in error by Head, by Test Zone 9,
+    }
+    for (loopCount = 0; loopCount < m_heads; ++loopCount)
+    {
+        snprintf((char*)myHeader.c_str(), BASIC, "Current H2SAT trimmed mean bits in error Zone 2 by Head %" PRIu32"", loopCount); // Head count
+        snprintf((char*)myStr.c_str(), BASIC, "%0.01f", static_cast<float> (M_Word0(check_Status_Strip_Status(vFarmFrame[page].reliPage.currentH2SAT[loopCount].zone2)) *.1));
+        set_json_string_With_Status(headInfo, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].reliPage.currentH2SAT[loopCount].zone2, m_showStatusBits);   //!< [24] Current H2SAT trimmed mean bits in error by Head, by Test Zone 9,
+    }
+    for (loopCount = 0; loopCount < m_heads; ++loopCount)
+    {
+        snprintf((char *)myHeader.c_str(), BASIC, "Current H2SAT iterations to converge Test Zone 0 by Head %" PRIu32"", loopCount);
+        snprintf((char*)myStr.c_str(), BASIC, "%0.01f", static_cast<float> (M_Word0(check_Status_Strip_Status(vFarmFrame[page].reliPage.currentH2SATIterations[loopCount].zone0))) *.1);
+        set_json_string_With_Status(headInfo, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].reliPage.currentH2SATIterations[loopCount].zone0, m_showStatusBits);        //!< [24] Qword[24][3] Current H2SAT iterations to converge by Head, by Test Zone 9, 11
+    }
+    for (loopCount = 0; loopCount < m_heads; ++loopCount)
+    {
+        snprintf((char*)myHeader.c_str(), BASIC, "Current H2SAT iterations to converge Test Zone 1 by Head %" PRIu32"", loopCount); // Head count
+        snprintf((char*)myStr.c_str(), BASIC, "%0.01f", static_cast<float> (M_Word0(check_Status_Strip_Status(vFarmFrame[page].reliPage.currentH2SATIterations[loopCount].zone1)))*.1);
+        set_json_string_With_Status(headInfo, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].reliPage.currentH2SATIterations[loopCount].zone1, m_showStatusBits);     //!< [24] Qword[24][3] Current H2SAT iterations to converge by Head, by Test Zone 9, 11
+    }
+    for (loopCount = 0; loopCount < m_heads; ++loopCount)
+    {
+        snprintf((char*)myHeader.c_str(), BASIC, "Current H2SAT iterations to converge Test Zone 2 by Head %" PRIu32"", loopCount); // Head count
+        snprintf((char*)myStr.c_str(), BASIC, "%0.01f", static_cast<float> (M_Word0(check_Status_Strip_Status(vFarmFrame[page].reliPage.currentH2SATIterations[loopCount].zone2))) *.1);
+        set_json_string_With_Status(headInfo, (char*)myHeader.c_str(), (char*)myStr.c_str(), vFarmFrame[page].reliPage.currentH2SATIterations[loopCount].zone2, m_showStatusBits);          //!< [24] Qword[24][3] Current H2SAT iterations to converge by Head, by Test Zone 9, 11
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
@@ -1560,7 +1576,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
     {
         snprintf(&*myHeader.begin(), BASIC, "FAFH Bit Error Rate inner by Head %" PRIu32"", loopCount);
         uint64_t dsHead = check_Status_Strip_Status(vFarmFrame[page].reliPage.FAFHBitErrorRate[loopCount].inner);                   //!< [24][3] FAFH Bit Error Rate, write then read BER on reserved tracks
-        int16_t whole = M_WordInt2(dsHead);							// get 5:4 whole part of the float
+        int16_t whole = M_WordInt2(dsHead);                         // get 5:4 whole part of the float
         double decimal = M_DoubleWordInt0(dsHead);  // get 3:0 for the Deciaml Part of the float
 
         snprintf(&*myStr.begin(), BASIC, "%" PRIi16".%04.0f", whole, decimal);
@@ -1570,7 +1586,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
     {
         snprintf(&*myHeader.begin(), BASIC, "FAFH Bit Error Rate middle by Head %" PRIu32"", loopCount); // Head count
         uint64_t dsHead = check_Status_Strip_Status(vFarmFrame[page].reliPage.FAFHBitErrorRate[loopCount].middle);                   //!< [24][3] FAFH Bit Error Rate, write then read BER on reserved tracks 
-        int16_t whole = M_WordInt2(dsHead);							// get 5:4 whole part of the float
+        int16_t whole = M_WordInt2(dsHead);                         // get 5:4 whole part of the float
         double decimal = M_DoubleWordInt0(dsHead);  // get 3:0 for the Deciaml Part of the float
 
         snprintf(&*myStr.begin(), BASIC, "%" PRIi16".%04.0f", whole, decimal);
@@ -1581,7 +1597,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
         snprintf(&*myHeader.begin(), BASIC, "FAFH Bit Error Rate outer by Head %" PRIu32"", loopCount); // Head count
 
         uint64_t dsHead = check_Status_Strip_Status(vFarmFrame[page].reliPage.FAFHBitErrorRate[loopCount].outer);                   //!< [24][3] FAFH Bit Error Rate, write then read BER on reserved tracks 
-        int16_t whole = M_WordInt2(dsHead);							// get 5:4 whole part of the float
+        int16_t whole = M_WordInt2(dsHead);                         // get 5:4 whole part of the float
         double decimal = M_DoubleWordInt0(dsHead);  // get 3:0 for the Deciaml Part of the float
            
         snprintf(&*myStr.begin(), BASIC, "%" PRIi16".%04.0f", whole, decimal);
