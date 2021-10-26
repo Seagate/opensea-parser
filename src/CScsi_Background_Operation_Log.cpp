@@ -128,27 +128,27 @@ void CScsiOperationLog::get_Background_Operations_status(std::string *status)
 	{
 		case 0x00:
 		{
-			snprintf((char*)status->c_str(), BASIC, "No indication");
+			*status = "No indication";
 			break;
 		}
 		case 0x01:
 		{
-			snprintf((char*)status->c_str(), BASIC, "No advanced background operation being performed");
+			*status = "No advanced background operation being performed";
 			break;
 		}
 		case 0x02:
 		{
-			snprintf((char*)status->c_str(), BASIC, "Host initiated advanced background operation being performed");
+			*status = "Host initiated advanced background operation being performed";
 			break;
 		}
 		case 0x03:
 		{
-			snprintf((char*)status->c_str(), BASIC, "Device initiated advanced background operation being performed");
+			*status = "Device initiated advanced background operation being performed";
 			break;
 		}
 		default:
 		{
-			snprintf((char*)status->c_str(), BASIC, "reserved");
+			*status = "reserved";
 			break;
 		}
 	}

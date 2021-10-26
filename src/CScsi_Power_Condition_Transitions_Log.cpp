@@ -129,43 +129,43 @@ bool CScsiPowerConditiontLog::get_Power_Mode_Type(std::string *power, uint16_t c
 	{
 		case ACTIVE:
 		{
-			snprintf((char*)power->c_str(), BASIC, "Accumulated transitions to active");
+			snprintf(&*power->begin(), BASIC, "Accumulated transitions to active");
             typeFound = true;
 			break;
 		}
 		case IDLE_A:
 		{
-			snprintf((char*)power->c_str(), BASIC, "Accumulated transitions to idle_a");
+			snprintf(&*power->begin(), BASIC, "Accumulated transitions to idle_a");
             typeFound = true;
 			break;
 		}
 		case IDLE_B:
 		{
-			snprintf((char*)power->c_str(), BASIC, "Accumulated transitions to idle_b");
+			snprintf(&*power->begin(), BASIC, "Accumulated transitions to idle_b");
             typeFound = true;
 			break;
 		}
 		case IDLE_C:
 		{
-			snprintf((char*)power->c_str(), BASIC, "Accumulated transitions to idle_c");
+			snprintf(&*power->begin(), BASIC, "Accumulated transitions to idle_c");
             typeFound = true;
 			break;
 		}
 		case STANDZ:
 		{
-			snprintf((char*)power->c_str(), BASIC, "Accumulated transitions to standby_z");
+			snprintf(&*power->begin(), BASIC, "Accumulated transitions to standby_z");
             typeFound = true;
 			break;
 		}
 		case STANDY:
 		{
-			snprintf((char*)power->c_str(), BASIC, "Accumulated transitions to standby_y");
+			snprintf(&*power->begin(), BASIC, "Accumulated transitions to standby_y");
             typeFound = true;
 			break;
 		}
 		default:
 		{
-			snprintf((char*)power->c_str(), BASIC, "Vendor Specific Power Mode Transition Type");
+			snprintf(&*power->begin(), BASIC, "Vendor Specific Power Mode Transition Type");
 			break;
 		}
 	}

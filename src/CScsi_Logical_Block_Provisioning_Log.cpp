@@ -118,11 +118,11 @@ void CScsiLBAProvisionLog::get_Resource_Percentage(std::string *percentStr)
     uint16_t percent = static_cast<uint32_t>(m_Provision->resourceCount);
     if (percent < 100)
     {
-        snprintf((char*)percentStr->c_str(), BASIC, "%" PRId16" Percent", percent);
+        snprintf(&*percentStr->begin(), BASIC, "%" PRId16" Percent", percent);
     }
     else
     {
-        snprintf((char*)percentStr->c_str(), BASIC, "Invalid Percentage");
+        snprintf(&*percentStr->begin(), BASIC, "Invalid Percentage");
     }
 }
 //-----------------------------------------------------------------------------
@@ -145,7 +145,7 @@ void CScsiLBAProvisionLog::get_LBA_Provision_Parameter_Description(std::string *
         || (m_Provision->paramCode >= 0x0004 && m_Provision->paramCode <= 0x00FF)
         || (m_Provision->paramCode >= 0x0103 && m_Provision->paramCode <= 0xFFEF))
     {
-        snprintf((char*)lbaStr->c_str(), BASIC, "Reserved");
+        snprintf(&*lbaStr->begin(), BASIC, "Reserved");
     }
     else
     {
@@ -153,37 +153,37 @@ void CScsiLBAProvisionLog::get_LBA_Provision_Parameter_Description(std::string *
         {
         case 0x0001:
         {
-            snprintf((char*)lbaStr->c_str(), BASIC, "available lba mapping resource count");
+            snprintf(&*lbaStr->begin(), BASIC, "available lba mapping resource count");
             break;
         }
         case 0x0002:
         {
-            snprintf((char*)lbaStr->c_str(), BASIC, "used lba mapping resource count");
+            snprintf(&*lbaStr->begin(), BASIC, "used lba mapping resource count");
             break;
         }
         case 0x0003:
         {
-            snprintf((char*)lbaStr->c_str(), BASIC, "available provisioning resource percentage");
+            snprintf(&*lbaStr->begin(), BASIC, "available provisioning resource percentage");
             break;
         }
         case 0x0100:
         {
-            snprintf((char*)lbaStr->c_str(), BASIC, "de-duplicated lba resource count");
+            snprintf(&*lbaStr->begin(), BASIC, "de-duplicated lba resource count");
             break;
         }
         case 0x0101:
         {
-            snprintf((char*)lbaStr->c_str(), BASIC, "compressed LBA resource count");
+            snprintf(&*lbaStr->begin(), BASIC, "compressed LBA resource count");
             break;
         }
         case 0x0102:
         {
-            snprintf((char*)lbaStr->c_str(), BASIC, "total efficiency LBA resource count");
+            snprintf(&*lbaStr->begin(), BASIC, "total efficiency LBA resource count");
             break;
         }
         default:
         {
-            snprintf((char*)lbaStr->c_str(), BASIC, "vendor specific  %" PRId16"", m_Provision->paramCode);
+            snprintf(&*lbaStr->begin(), BASIC, "vendor specific  %" PRId16"", m_Provision->paramCode);
             break;
         }
         }

@@ -129,11 +129,11 @@ void CScsiSupportedLog::get_Supported_And_Subpage_Description(std::string *descr
             {
                 if (m_ShowSubPage && m_SubPage == 0xFF)
                 {
-                    snprintf((char*)description->c_str(), BASIC, "Supported Log Pages and Subpages");
+                    snprintf(&*description->begin(), BASIC, "Supported Log Pages and Subpages");
                 }
                 else
                 {
-                    snprintf((char*)description->c_str(), BASIC, "Supported Log Pages");
+                    snprintf(&*description->begin(), BASIC, "Supported Log Pages");
                 }
                 m_ShowSupportedPagesOnce = false;
             }
@@ -141,119 +141,119 @@ void CScsiSupportedLog::get_Supported_And_Subpage_Description(std::string *descr
 		}
 		case WRITE_ERROR_COUNTER:
 		{
-			snprintf((char*)description->c_str(), BASIC, "Write Error Counter");
+			snprintf(&*description->begin(), BASIC, "Write Error Counter");
 			break;
 		}
 		case READ_ERROR_COUNTER:
 		{
-			snprintf((char*)description->c_str(), BASIC, "Read Error Counter");
+			snprintf(&*description->begin(), BASIC, "Read Error Counter");
 			break;
 		}
 		case VERIFY_ERROR_COUNTER:
 		{
-			snprintf((char*)description->c_str(), BASIC, "Verify Error Counter");
+			snprintf(&*description->begin(), BASIC, "Verify Error Counter");
 			break;
 		}
 		case NON_MEDIUM_ERROR:
 		{
-			snprintf((char*)description->c_str(), BASIC, "Non-Medium Error");
+			snprintf(&*description->begin(), BASIC, "Non-Medium Error");
 			break;
 		}
 		case FORMAT_STATUS:
 		{
-			snprintf((char*)description->c_str(), BASIC, "Format Status");
+			snprintf(&*description->begin(), BASIC, "Format Status");
 			break;
 		}
 		case LOGICAL_BLOCK_PROVISIONING:
 		{
-			snprintf((char*)description->c_str(), BASIC, "Logical Block Provisioning");
+			snprintf(&*description->begin(), BASIC, "Logical Block Provisioning");
 			break;
 		}
 		case ENVIRONMENTAL:
 		{
 			if (m_ShowSubPage && m_SubPage == 0x00)
 			{
-				snprintf((char*)description->c_str(), BASIC, "Temperature");
+				snprintf(&*description->begin(), BASIC, "Temperature");
 			}
 			else if (m_ShowSubPage && m_SubPage == 0x01)
 			{
-				snprintf((char*)description->c_str(), BASIC, "Environmental Reporting");
+				snprintf(&*description->begin(), BASIC, "Environmental Reporting");
 			}
 			else if (m_ShowSubPage && m_SubPage == 0x02)
 			{
-				snprintf((char*)description->c_str(), BASIC, "Environmental Limits");
+				snprintf(&*description->begin(), BASIC, "Environmental Limits");
 			}
 			else
 			{
-				snprintf((char*)description->c_str(), BASIC, "Environmental");
+				snprintf(&*description->begin(), BASIC, "Environmental");
 			}
 			break;
 		}
 		case START_STOP_CYCLE_COUNTER:
 		{
-			snprintf((char*)description->c_str(), BASIC, "Start-Stop Cycle Counter");
+			snprintf(&*description->begin(), BASIC, "Start-Stop Cycle Counter");
 			break;
 		}
 		case APPLICATION_CLIENT:
 		{
-			snprintf((char*)description->c_str(), BASIC, "Application Client");
+			snprintf(&*description->begin(), BASIC, "Application Client");
 			break;
 		}
 		case SELF_TEST_RESULTS:
 		{
-			snprintf((char*)description->c_str(), BASIC, "Self-Test Results");
+			snprintf(&*description->begin(), BASIC, "Self-Test Results");
 			break;
 		}
 		case SOLID_STATE_MEDIA:
 		{
-			snprintf((char*)description->c_str(), BASIC, "Solid State Media");
+			snprintf(&*description->begin(), BASIC, "Solid State Media");
 			break;
 		}
         case ZONED_DEVICE_STATISTICS:
         {
-            snprintf((char*)description->c_str(), BASIC, "Zoned Device Statistics");
+            snprintf(&*description->begin(), BASIC, "Zoned Device Statistics");
             break;
         }
 		case BACKGROUND_SCAN:
 		{
 			if (m_ShowSubPage && m_SubPage == 0x02)
 			{
-				snprintf((char*)description->c_str(), BASIC, "Background Operation");
+				snprintf(&*description->begin(), BASIC, "Background Operation");
 			}
 			else
 			{
-				snprintf((char*)description->c_str(), BASIC, "Background Scan");
+				snprintf(&*description->begin(), BASIC, "Background Scan");
 			}
 			break;
 		}
 		case PROTOCOL_SPECIFIC_PORT:
 		{
-			snprintf((char*)description->c_str(), BASIC, "SAS Protocol Log Page");
+			snprintf(&*description->begin(), BASIC, "SAS Protocol Log Page");
 			break;
 		}
 		case POWER_CONDITION_TRANSITIONS:
 		{
-			snprintf((char*)description->c_str(), BASIC, "Protocol Specific Port");
+			snprintf(&*description->begin(), BASIC, "Protocol Specific Port");
 			break;
 		}
 		case INFORMATIONAL_EXCEPTIONS:
 		{
-			snprintf((char*)description->c_str(), BASIC, "Informational Exceptions");
+			snprintf(&*description->begin(), BASIC, "Informational Exceptions");
 			break;
 		}
 		case CACHE_STATISTICS:
 		{
-			snprintf((char*)description->c_str(), BASIC, "Cache Statistics");
+			snprintf(&*description->begin(), BASIC, "Cache Statistics");
 			break;
 		}
 		case FACTORY_LOG:
 		{
-			snprintf((char*)description->c_str(), BASIC, "Factory Log");
+			snprintf(&*description->begin(), BASIC, "Factory Log");
 			break;
 		}
 		default:
 		{
-			snprintf((char*)description->c_str(), BASIC, "Unknown 0x%02" PRIx8"", m_Page);
+			snprintf(&*description->begin(), BASIC, "Unknown 0x%02" PRIx8"", m_Page);
 			break;
 		}
 	}

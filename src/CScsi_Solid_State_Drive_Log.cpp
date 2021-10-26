@@ -119,13 +119,13 @@ bool CScsiSolidStateDriveLog::get_SSD_Parameter_Code_Description(std::string *ss
     {
     case 0x0001:
     {
-        snprintf((char*)ssdString->c_str(), BASIC, "Percentage Used Indicator");
+        snprintf(&*ssdString->begin(), BASIC, "Percentage Used Indicator");
         descriptionFound = true;
         break;
     }
     default:
     {
-        snprintf((char*)ssdString->c_str(), BASIC, "Vendor Specific 0x%04" PRIx16"", m_SSDParam->paramCode);
+        snprintf(&*ssdString->begin(), BASIC, "Vendor Specific 0x%04" PRIx16"", m_SSDParam->paramCode);
         break;
     }
     }

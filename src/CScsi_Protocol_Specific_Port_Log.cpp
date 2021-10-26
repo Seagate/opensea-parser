@@ -165,22 +165,22 @@ void CScsiProtocolPortLog::get_Device_Type_Field(std::string *description, uint8
 	{
 		case 0x01:
 		{
-			snprintf((char*)description->c_str(), BASIC, "1 = End device");
+			snprintf(&*description->begin(), BASIC, "1 = End device");
 			break;
 		}
 		case 0x02:
 		{
-			snprintf((char*)description->c_str(), BASIC, "2 = Expander device");
+			snprintf(&*description->begin(), BASIC, "2 = Expander device");
 			break;
 		}
 		case 0x03:
 		{
-			snprintf((char*)description->c_str(), BASIC, "3 = Expander device compliant with a previous version of the SAS standard");
+			snprintf(&*description->begin(), BASIC, "3 = Expander device compliant with a previous version of the SAS standard");
 			break;
 		}
 		default:
 		{
-			snprintf((char*)description->c_str(), BASIC, "Reserved");
+			snprintf(&*description->begin(), BASIC, "Reserved");
 			break;
 		}
 
@@ -207,52 +207,52 @@ void CScsiProtocolPortLog::get_Reason_Field(std::string *reason, uint8_t code)
 	{
 		case 0x01:
 		{
-			snprintf((char*)reason->c_str(), BASIC, "Unknown reason");
+			snprintf(&*reason->begin(), BASIC, "Unknown reason");
 			break;
 		}
 		case 0x02:
 		{
-			snprintf((char*)reason->c_str(), BASIC, "Power on");
+			snprintf(&*reason->begin(), BASIC, "Power on");
 			break;
 		}
 		case 0x03:
 		{
-			snprintf((char*)reason->c_str(), BASIC, "Hard reset"); 
+			snprintf(&*reason->begin(), BASIC, "Hard reset"); 
 			break;
 		}
 		case 0x04:
 		{
-			snprintf((char*)reason->c_str(), BASIC, "SMP PHY CONTROL function LINK RESET phy operation"); 
+			snprintf(&*reason->begin(), BASIC, "SMP PHY CONTROL function LINK RESET phy operation"); 
 				break;
 		}
 		case 0x05:
 		{
-			snprintf((char*)reason->c_str(), BASIC, "After the multiplexing sequence complete"); 
+			snprintf(&*reason->begin(), BASIC, "After the multiplexing sequence complete"); 
 				break;
 		}
 		case 0x06:
 		{
-			snprintf((char*)reason->c_str(), BASIC, "I_T nexus loss timer"); 
+			snprintf(&*reason->begin(), BASIC, "I_T nexus loss timer"); 
 				break;
 		}
 		case 0x07:
 		{
-			snprintf((char*)reason->c_str(), BASIC, "Break Timeout Timer expired");
+			snprintf(&*reason->begin(), BASIC, "Break Timeout Timer expired");
 				break;
 		}
 		case 0x08:
 		{
-			snprintf((char*)reason->c_str(), BASIC, "Phy test function stopped"); 
+			snprintf(&*reason->begin(), BASIC, "Phy test function stopped"); 
 				break;
 		}
 		case 0x09:
 		{
-			snprintf((char*)reason->c_str(), BASIC, "Expander device reduced functionality"); 
+			snprintf(&*reason->begin(), BASIC, "Expander device reduced functionality"); 
 				break;
 		}
 		default:
 		{
-			snprintf((char*)reason->c_str(), BASIC, "Reserved");
+			snprintf(&*reason->begin(), BASIC, "Reserved");
 			break;
 		}
 
@@ -280,27 +280,27 @@ void CScsiProtocolPortLog::get_Negotiated_Logical_Link_Rate(std::string *rate, u
 	{
 		case 0x09:
 		{
-			snprintf((char*)rate->c_str(), BASIC, "1.5 GBs");
+			snprintf(&*rate->begin(), BASIC, "1.5 GBs");
 			break;
 		}
 		case 0x0a:
 		{
-			snprintf((char*)rate->c_str(), BASIC, "3.5  to 6 GBs");
+			snprintf(&*rate->begin(), BASIC, "3.5  to 6 GBs");
 			break;
 		}
 		case 0x0b:
 		{
-			snprintf((char*)rate->c_str(), BASIC, "6 - 12 GBs");
+			snprintf(&*rate->begin(), BASIC, "6 - 12 GBs");
 			break;
 		}
 		case 0x0c:
 		{
-			snprintf((char*)rate->c_str(), BASIC, "22.5 GBs");
+			snprintf(&*rate->begin(), BASIC, "22.5 GBs");
 			break;
 		}
 		default:
 		{
-			snprintf((char*)rate->c_str(), BASIC, "Same as the NEGOTIATED LOGICAL LINK RATE field");
+			snprintf(&*rate->begin(), BASIC, "Same as the NEGOTIATED LOGICAL LINK RATE field");
 			break;
 		}
 	}

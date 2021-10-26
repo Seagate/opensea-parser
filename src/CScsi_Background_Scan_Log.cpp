@@ -132,52 +132,52 @@ void CScsiScanLog::get_Scan_Status_Description(std::string *scan)
 	{
 		case 0x00:
 		{
-			snprintf((char*)scan->c_str(), BASIC, "No background scans active");
+			*scan = "No background scans active";
 			break;
 		}
 		case 0x01:
 		{
-			snprintf((char*)scan->c_str(), BASIC, "Background medium scan is active");
+			*scan = "Background medium scan is active";
 			break;
 		}
 		case 0x02:
 		{
-			snprintf((char*)scan->c_str(), BASIC, "Background prescan is active");
+			*scan = "Background prescan is active";
 			break;
 		}
 		case 0x03:
 		{
-			snprintf((char*)scan->c_str(), BASIC, "Background medium scan halted due to fatal error");
+			*scan = "Background medium scan halted due to fatal error";
 			break;
 		}
 		case 0x04:
 		{
-			snprintf((char*)scan->c_str(), BASIC, "Background medium scan halted due to a vendor specific pattern of errors");
+			*scan = "Background medium scan halted due to a vendor specific pattern of errors";
 			break;
 		}
 		case 0x05:
 		{
-			snprintf((char*)scan->c_str(), BASIC, "Background medium scan halted due to medium formatted without Plist");
+			*scan = "Background medium scan halted due to medium formatted without Plist";
 			break;
 		}
 		case 0x06:
 		{
-			snprintf((char*)scan->c_str(), BASIC, "Background medium scan halted - vendor specific cause");
+			*scan = "Background medium scan halted - vendor specific cause";
 			break;
 		}
 		case 0x07:
 		{
-			snprintf((char*)scan->c_str(), BASIC, "Background medium scan halted due to temperature out of allowed range");
+			*scan = "Background medium scan halted due to temperature out of allowed range";
 			break;
 		}
 		case 0x08:
 		{
-			snprintf((char*)scan->c_str(), BASIC, "Background medium scan halted, waiting for Interval timer expiration");
+			*scan = "Background medium scan halted, waiting for Interval timer expiration";
 			break;
 		}
 		default:
 		{
-			snprintf((char*)scan->c_str(), BASIC, "Reserved");
+			*scan = "Reserved";
 			break;
 		}
 	}
@@ -248,47 +248,47 @@ void CScsiScanLog::get_Scan_Defect_Status_Description(std::string *defect)
 	{
 		case 0x01:
 		{
-			snprintf((char*)defect->c_str(), BASIC, "The LBA has not yet been reassigned");
+			*defect = "The LBA has not yet been reassigned";
 			break;
 		}
 		case 0x02:
 		{
-			snprintf((char*)defect->c_str(), BASIC, "Performed Automatic Read Reassignment for the LBA");
+			*defect = "Performed Automatic Read Reassignment for the LBA";
 			break;
 		}
 		case 0x03:
 		{
-			snprintf((char*)defect->c_str(), BASIC, "Reserved");
+			*defect = "Reserved";
 			break;
 		}
 		case 0x04:
 		{
-			snprintf((char*)defect->c_str(), BASIC, "Attempt to Perform Automatic Read Reassignment Failed");
+			*defect = "Attempt to Perform Automatic Read Reassignment Failed";
 			break;
 		}
 		case 0x05:
 		{
-			snprintf((char*)defect->c_str(), BASIC, "Error Corrected, Rewriting the LBA without Performing Reassign Operation");
+			*defect = "Error Corrected, Rewriting the LBA without Performing Reassign Operation";
 			break;
 		}
 		case 0x06:
 		{
-			snprintf((char*)defect->c_str(), BASIC, "Application Client caused automatic write reassignment for the LBA");
+			*defect = "Application Client caused automatic write reassignment for the LBA";
 			break;
 		}
 		case 0x07:
 		{
-			snprintf((char*)defect->c_str(), BASIC, "Application Client,  Reassign by Command - Invalid Data");
+			*defect = "Application Client,  Reassign by Command - Invalid Data";
 			break;
 		}
 		case 0x08:
 		{
-			snprintf((char*)defect->c_str(), BASIC, "Application Client, Reassign Command Failed");
+			*defect = "Application Client, Reassign Command Failed";
 			break;
 		}
 		default:
 		{
-			snprintf((char*)defect->c_str(), BASIC, "Reserved");
+			*defect = "Reserved";
 			break;
 		}
 	}

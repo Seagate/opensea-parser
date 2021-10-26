@@ -120,73 +120,73 @@ bool CScsiZonedDeviceStatisticsLog::get_ZDS_Parameter_Code_Description(std::stri
     {
     case 0x0000:
     {
-        snprintf((char*)zdsString->c_str(), BASIC, "Maximum Open Zones");
+        snprintf(&*zdsString->begin(), BASIC, "Maximum Open Zones");
         descriptionFound = true;
         break;
     }
     case 0x0001:
     {
-        snprintf((char*)zdsString->c_str(), BASIC, "Maximum Explicitly Open Zones");
+        snprintf(&*zdsString->begin(), BASIC, "Maximum Explicitly Open Zones");
         descriptionFound = true;
         break;
     }
     case 0x0002:
     {
-        snprintf((char*)zdsString->c_str(), BASIC, "Maximum Implicitly Open Zones");
+        snprintf(&*zdsString->begin(), BASIC, "Maximum Implicitly Open Zones");
         descriptionFound = true;
         break;
     }
     case 0x0003:
     {
-        snprintf((char*)zdsString->c_str(), BASIC, "Minimum Empty Zones");
+        snprintf(&*zdsString->begin(), BASIC, "Minimum Empty Zones");
         descriptionFound = true;
         break;
     }
     case 0x0004:
     {
-        snprintf((char*)zdsString->c_str(), BASIC, "Maximum Non-sequential Zones");
+        snprintf(&*zdsString->begin(), BASIC, "Maximum Non-sequential Zones");
         descriptionFound = true;
         break;
     }
     case 0x0005:
     {
-        snprintf((char*)zdsString->c_str(), BASIC, "Zones Emptied");
+        snprintf(&*zdsString->begin(), BASIC, "Zones Emptied");
         descriptionFound = true;
         break;
     }
     case 0x0006:
     {
-        snprintf((char*)zdsString->c_str(), BASIC, "Suboptimal Write Commands");
+        snprintf(&*zdsString->begin(), BASIC, "Suboptimal Write Commands");
         descriptionFound = true;
         break;
     }
     case 0x0007:
     {
-        snprintf((char*)zdsString->c_str(), BASIC, "Commands Exceeding Optimal Limit");
+        snprintf(&*zdsString->begin(), BASIC, "Commands Exceeding Optimal Limit");
         descriptionFound = true;
         break;
     }
     case 0x0008:
     {
-        snprintf((char*)zdsString->c_str(), BASIC, "Failed Explicit Opens");
+        snprintf(&*zdsString->begin(), BASIC, "Failed Explicit Opens");
         descriptionFound = true;
         break;
     }
     case 0x0009:
     {
-        snprintf((char*)zdsString->c_str(), BASIC, "Read Rule Violations");
+        snprintf(&*zdsString->begin(), BASIC, "Read Rule Violations");
         descriptionFound = true;
         break;
     }
     case 0x000A:
     {
-        snprintf((char*)zdsString->c_str(), BASIC, "Write Rule Violations");
+        snprintf(&*zdsString->begin(), BASIC, "Write Rule Violations");
         descriptionFound = true;
         break;
     }
     default:
     {
-        snprintf((char*)zdsString->c_str(), BASIC, "Vendor Specific 0x%04" PRIx16"", m_ZDSParam->paramCode);
+        snprintf(&*zdsString->begin(), BASIC, "Vendor Specific 0x%04" PRIx16"", m_ZDSParam->paramCode);
         break;
     }
     }

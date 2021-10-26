@@ -120,32 +120,32 @@ void CScsiFormatStatusLog::get_Format_Parameter_Code_Description(std::string *va
     {
     case 0x0000:
     {
-        snprintf((char*)valueData->c_str(), BASIC, "Format Data Out count");
+        snprintf(&*valueData->begin(), BASIC, "Format Data Out count");
         break;
     }
     case 0x0001:
     {
-        snprintf((char*)valueData->c_str(), BASIC, "Grown Defects During Certification count");
+        snprintf(&*valueData->begin(), BASIC, "Grown Defects During Certification count");
         break;
     }
     case 0x0002:
     {
-        snprintf((char*)valueData->c_str(), BASIC, "Total Blocks Reassigned During Format count");
+        snprintf(&*valueData->begin(), BASIC, "Total Blocks Reassigned During Format count");
         break;
     }
     case 0x0003:
     {
-        snprintf((char*)valueData->c_str(), BASIC, "Total New Blocks Reassigned count");
+        snprintf(&*valueData->begin(), BASIC, "Total New Blocks Reassigned count");
         break;
     }
     case 0x0004:
     {
-        snprintf((char*)valueData->c_str(), BASIC, "Power On Minutes Since Format count");
+        snprintf(&*valueData->begin(), BASIC, "Power On Minutes Since Format count");
         break;
     }
     default:
     {
-        snprintf((char*)valueData->c_str(), BASIC, "Vendor Specific 0x%04" PRIx16"", m_Format->paramCode);
+        snprintf(&*valueData->begin(), BASIC, "Vendor Specific 0x%04" PRIx16"", m_Format->paramCode);
         break;
     }
     }

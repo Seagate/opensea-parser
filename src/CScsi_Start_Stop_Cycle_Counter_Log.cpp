@@ -255,7 +255,7 @@ eReturnValues CScsiStartStop::week_Year_Print(JSONNODE *data,uint16_t param, uin
     {
         myStr = "0000";
     }
-	json_push_back(dateInfo, json_new_a((char *)strYear.c_str(), &*myStr.begin()));
+	json_push_back(dateInfo, json_new_a(&*strYear.begin(), &*myStr.begin()));
 	myStr.resize(WEEKSIZE);
     if (week != 0x2020)
     {
@@ -265,7 +265,7 @@ eReturnValues CScsiStartStop::week_Year_Print(JSONNODE *data,uint16_t param, uin
     {
         myStr = "00";
     }
-	json_push_back(dateInfo, json_new_a((char *)strWeek.c_str(), &*myStr.begin()));
+	json_push_back(dateInfo, json_new_a(&*strWeek.begin(), &*myStr.begin()));
 
 	json_push_back(data, dateInfo);
 	return SUCCESS;
@@ -290,7 +290,7 @@ eReturnValues CScsiStartStop::get_Count(JSONNODE *countData, uint16_t param, uin
 	myStr.resize(BASIC);
 
 	JSONNODE *countInfo = json_new(JSON_NODE);
-	json_set_name(countInfo, (char *)strHeader.c_str());
+	json_set_name(countInfo, &*strHeader.begin());
 
     if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
@@ -302,7 +302,7 @@ eReturnValues CScsiStartStop::get_Count(JSONNODE *countData, uint16_t param, uin
         json_push_back(countInfo, json_new_a("Control Byte", &*myStr.begin()));
     }
 	byte_Swap_32(&count);
-	json_push_back(countInfo, json_new_i((char *)strCount.c_str(),  count )); 
+	json_push_back(countInfo, json_new_i(&*strCount.begin(),  count )); 
 
 	json_push_back(countData, countInfo);
 	return SUCCESS;

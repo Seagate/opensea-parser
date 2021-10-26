@@ -374,7 +374,6 @@ eReturnValues CAta_Identify_log::parse_Device_Info()
     {
         m_sDriveInfo.worldWideName.resize(WORLD_WIDE_NAME_LEN);
         m_sDriveInfo.worldWideName = "Not Supported";
-        //strncpy((char*)m_sDriveInfo.worldWideName.c_str(), "Not Supported", strlen("Not Supported"));
     }
 
     //maxLBA
@@ -424,7 +423,7 @@ eReturnValues CAta_Identify_log::parse_Device_Info()
 
     m_sDriveInfo.sCapInfo.capUnit = (double)(m_sDriveInfo.maxLBA48 * m_sDriveInfo.sSizes.logicalSectorSize);
     m_sDriveInfo.sCapInfo.capacityUnit.resize(3);
-    char * capUnit = (char*)&m_sDriveInfo.sCapInfo.capacityUnit.c_str()[0];
+    char* capUnit = &*m_sDriveInfo.sCapInfo.capacityUnit.begin();                 //(char*)&m_sDriveInfo.sCapInfo.capacityUnit.c_str()[0];
     capacity_Unit_Convert((double *)&m_sDriveInfo.sCapInfo.capUnit, &capUnit);
 
 

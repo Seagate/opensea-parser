@@ -516,8 +516,8 @@ void CSCSI_Farm_Log::create_Serial_Number(std::string &serialNumber, const sScsi
         byte_Swap_64(&sn);
     }
 	serialNumber.resize(SERIAL_NUMBER_LEN );
-	memset((char*)serialNumber.c_str(),0, SERIAL_NUMBER_LEN );
-	strncpy((char *)serialNumber.c_str(), (char*)&sn, SERIAL_NUMBER_LEN);
+	memset(&*serialNumber.begin(),0, SERIAL_NUMBER_LEN );
+	strncpy(&*serialNumber.begin(), (char*)&sn, SERIAL_NUMBER_LEN);
 }
 //-----------------------------------------------------------------------------
 //
@@ -539,8 +539,8 @@ void CSCSI_Farm_Log::create_World_Wide_Name(std::string &worldWideName, const sS
 	uint64_t wwn = 0;
 	wwn = (idInfo->worldWideName & 0x00FFFFFFFFFFFFFFLL) | ((idInfo->worldWideName2 & 0x00FFFFFFFFFFFFFFLL) << 32);
 	worldWideName.resize(WORLD_WIDE_NAME_LEN);
-	memset((char *)worldWideName.c_str(), 0, WORLD_WIDE_NAME_LEN);
-	snprintf((char *)worldWideName.c_str(), WORLD_WIDE_NAME_LEN, "0x%" PRIX64"", wwn);
+	memset(&*worldWideName.begin(), 0, WORLD_WIDE_NAME_LEN);
+	snprintf(&*worldWideName.begin(), WORLD_WIDE_NAME_LEN, "0x%" PRIX64"", wwn);
 }
 //-----------------------------------------------------------------------------
 //
@@ -565,8 +565,8 @@ void CSCSI_Farm_Log::create_Firmware_String(std::string &firmwareRev, const sScs
     firm = (firm2 | (firm1 << 32));
     byte_Swap_64(&firm);
 	firmwareRev.resize(8);
-	memset((char *)firmwareRev.c_str(), 0, 8);
-	strncpy((char *)firmwareRev.c_str(), (char*)&firm, 8);
+	memset(&*firmwareRev.begin(), 0, 8);
+	strncpy(&*firmwareRev.begin(), (char*)&firm, 8);
 }
 //-----------------------------------------------------------------------------
 //
@@ -588,8 +588,8 @@ void CSCSI_Farm_Log::create_Device_Interface_String(std::string &dInterface, con
 	uint64_t dFace = 0;
 	dFace = (idInfo->deviceInterface & 0x00FFFFFFFFFFFFFFLL);
 	dInterface.resize(DEVICE_INTERFACE_LEN);
-	memset((char *)dInterface.c_str(), 0, DEVICE_INTERFACE_LEN);
-	strncpy((char *)dInterface.c_str(), (char*)&dFace, DEVICE_INTERFACE_LEN);
+	memset(&*dInterface.begin(), 0, DEVICE_INTERFACE_LEN);
+	strncpy(&*dInterface.begin(), (char*)&dFace, DEVICE_INTERFACE_LEN);
 
 }
 //-----------------------------------------------------------------------------
@@ -622,15 +622,15 @@ void CSCSI_Farm_Log::create_Model_Number_String(std::string &model, sGeneralDriv
     tempStr.resize(MODEL_NUMBER_LEN);
     model.resize(MODEL_NUMBER_LEN);
     // memset them to 0
-    memset((char *)model.c_str(), 0, MODEL_NUMBER_LEN);
-    memset((char *)tempStr.c_str(), 0, MODEL_NUMBER_LEN);
+    memset(&*model.begin(), 0, MODEL_NUMBER_LEN);
+    memset(&*tempStr.begin(), 0, MODEL_NUMBER_LEN);
     // loop to copy the info into the modeleNumber string
     for (uint8_t n = 0; n < MAXSIZE; n++)
     {
-        strncpy((char *)tempStr.c_str(), (char*)&modelParts[n], MAXSIZE);
-        strncat((char *)model.c_str(), (char*)tempStr.c_str(), sizeof(tempStr));
+        strncpy(&*tempStr.begin(), (char*)&modelParts[n], MAXSIZE);
+        strncat(&*model.begin(), &*tempStr.begin(), sizeof(tempStr));
     }
-    remove_Trailing_Whitespace((char *)model.c_str());
+    remove_Trailing_Whitespace(&*model.begin());
 
 }
 //-----------------------------------------------------------------------------
@@ -1910,8 +1910,8 @@ eReturnValues CSCSI_Farm_Log::print_Header(JSONNODE *masterData)
         json_push_back(data, json_new_a("name", "farm"));
         JSONNODE* label = json_new(JSON_NODE);
         json_set_name(label, "labels");
-        snprintf((char*)myInfo.c_str(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%x", FARMLOGPAGE, FARMSUBPAGE, FARM_HEADER_PARAMETER);
-        json_push_back(label, json_new_a("metric_source", (char*)myInfo.c_str()));
+        snprintf(&*myInfo.begin(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%x", FARMLOGPAGE, FARMSUBPAGE, FARM_HEADER_PARAMETER);
+        json_push_back(label, json_new_a("metric_source", &*myInfo.begin()));
         json_push_back(label, json_new_a("location", "farm header"));
 
         snprintf(&*myStr.begin(), BASIC, "0x%" PRIX64"", check_Status_Strip_Status(vFarmFrame[page].farmHeader.farmHeader.signature));
@@ -1994,16 +1994,16 @@ eReturnValues CSCSI_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint
     {
         printf("\nDrive Information From Farm Log copy %d:\n", page);
     }
-    printf("\tDevice Interface:                         %s         \n", vFarmFrame[page].identStringInfo.deviceInterface.c_str());
+    printf("\tDevice Interface:                         %s         \n", &*vFarmFrame[page].identStringInfo.deviceInterface.begin());
     printf("\tDevice Capcaity in sectors:               %" PRId64" \n", vFarmFrame[page].driveInfo.deviceCapacity & 0x00FFFFFFFFFFFFFF);
     printf("\tPhysical Sector size:                     %" PRIX64" \n", vFarmFrame[page].driveInfo.psecSize & 0x00FFFFFFFFFFFFFF);									//!< Physical Sector Size in Bytes
     printf("\tLogical Sector Size:                      %" PRIX64" \n", vFarmFrame[page].driveInfo.lsecSize & 0x00FFFFFFFFFFFFFF);									//!< Logical Sector Size in Bytes
     printf("\tDevice Buffer Size:                       %" PRIX64" \n", vFarmFrame[page].driveInfo.deviceBufferSize & 0x00FFFFFFFFFFFFFF);							//!< Device Buffer Size in Bytes
     printf("\tNumber of heads:                          %" PRId64" \n", vFarmFrame[page].driveInfo.heads & 0x00FFFFFFFFFFFFFF);										//!< Number of Heads
     printf("\tDevice form factor:                       %" PRIX64" \n", vFarmFrame[page].driveInfo.factor & 0x00FFFFFFFFFFFFFF);										//!< Device Form Factor (ID Word 168)
-    printf("\tserial number:                            %s         \n", vFarmFrame[page].identStringInfo.serialNumber.c_str());
-    printf("\tworkd wide name:                          %s         \n", vFarmFrame[page].identStringInfo.worldWideName.c_str());
-    printf("\tfirmware Rev:                             %s         \n", vFarmFrame[page].identStringInfo.firmwareRev.c_str());											//!< Firmware Revision [0:3]
+    printf("\tserial number:                            %s         \n", &*vFarmFrame[page].identStringInfo.serialNumber.begin());
+    printf("\tworkd wide name:                          %s         \n", &*vFarmFrame[page].identStringInfo.worldWideName.begin());
+    printf("\tfirmware Rev:                             %s         \n", &*vFarmFrame[page].identStringInfo.firmwareRev.begin());											//!< Firmware Revision [0:3]
     printf("\tRotation Rate:                            %" PRIu64" \n", vFarmFrame[page].driveInfo.rotationRate & 0x00FFFFFFFFFFFFFF);								//!< Rotational Rate of Device 
     printf("\treserved:                                 %" PRIu64" \n", vFarmFrame[page].driveInfo.reserved & 0x00FFFFFFFFFFFFFF);									//!< reserved
     printf("\treserved:                                 %" PRIu64" \n", vFarmFrame[page].driveInfo.reserved1 & 0x00FFFFFFFFFFFFFF);									//!< reserved
@@ -2036,21 +2036,21 @@ eReturnValues CSCSI_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint
         snprintf(&*myStr.begin(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%x", FARMLOGPAGE, FARMSUBPAGE, GENERAL_DRIVE_INFORMATION_PARAMETER);
         json_push_back(label, json_new_a("metric_source", &*myStr.begin()));
 
-        snprintf(&*myStr.begin(), BASIC, "%s", vFarmFrame[page].identStringInfo.serialNumber.c_str());
+        snprintf(&*myStr.begin(), BASIC, "%s", &*vFarmFrame[page].identStringInfo.serialNumber.begin());
         json_push_back(label, json_new_a("serial_number", &*myStr.begin()));
-        snprintf(&*myStr.begin(), BASIC, "%s", vFarmFrame[page].identStringInfo.worldWideName.c_str());
+        snprintf(&*myStr.begin(), BASIC, "%s", &*vFarmFrame[page].identStringInfo.worldWideName.begin());
         json_push_back(label, json_new_a("world_wide_name", &*myStr.begin()));
-        snprintf(&*myStr.begin(), BASIC, "%s", vFarmFrame[page].identStringInfo.firmwareRev.c_str());																//!< Firmware Revision [0:3]
+        snprintf(&*myStr.begin(), BASIC, "%s", &*vFarmFrame[page].identStringInfo.firmwareRev.begin());																//!< Firmware Revision [0:3]
         json_push_back(label, json_new_a("firmware_rev", &*myStr.begin()));
 
         if (vFarmFrame[page].identStringInfo.modelNumber != "")
         {
-            snprintf(&*myStr.begin(), BASIC, "%s", vFarmFrame[page].identStringInfo.modelNumber.c_str());
+            snprintf(&*myStr.begin(), BASIC, "%s", &*vFarmFrame[page].identStringInfo.modelNumber.begin());
             json_push_back(label, json_new_a("model_number", &*myStr.begin()));
         }
 
 
-        snprintf(&*myStr.begin(), BASIC, "%s", vFarmFrame[page].identStringInfo.deviceInterface.c_str());
+        snprintf(&*myStr.begin(), BASIC, "%s", &*vFarmFrame[page].identStringInfo.deviceInterface.begin());
         json_push_back(label, json_new_a("device_interface", &*myStr.begin()));
         snprintf(&*myStr.begin(), BASIC, "%llu sectors", vFarmFrame[page].driveInfo.deviceCapacity & 0x00FFFFFFFFFFFFFFLL);
         json_push_back(label, json_new_a("device_capacity", &*myStr.begin()));
@@ -2118,21 +2118,21 @@ eReturnValues CSCSI_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint
         }
         json_set_name(pageInfo, &*myStr.begin());
 
-        snprintf(&*myStr.begin(), BASIC, "%s", vFarmFrame[page].identStringInfo.serialNumber.c_str());
+        snprintf(&*myStr.begin(), BASIC, "%s", &*vFarmFrame[page].identStringInfo.serialNumber.begin());
         json_push_back(pageInfo, json_new_a("Serial Number", &*myStr.begin()));
-        snprintf(&*myStr.begin(), BASIC, "%s", vFarmFrame[page].identStringInfo.worldWideName.c_str());
+        snprintf(&*myStr.begin(), BASIC, "%s", &*vFarmFrame[page].identStringInfo.worldWideName.begin());
         json_push_back(pageInfo, json_new_a("World Wide Name", &*myStr.begin()));
-        snprintf(&*myStr.begin(), BASIC, "%s", vFarmFrame[page].identStringInfo.firmwareRev.c_str());																//!< Firmware Revision [0:3]
+        snprintf(&*myStr.begin(), BASIC, "%s", &*vFarmFrame[page].identStringInfo.firmwareRev.begin());																//!< Firmware Revision [0:3]
         json_push_back(pageInfo, json_new_a("Firmware Rev", &*myStr.begin()));
 
         if (vFarmFrame[page].identStringInfo.modelNumber == "")
         {
             vFarmFrame[page].identStringInfo.modelNumber = "ST12345678";
         }
-        snprintf(&*myStr.begin(), BASIC, "%s", vFarmFrame[page].identStringInfo.modelNumber.c_str());
+        snprintf(&*myStr.begin(), BASIC, "%s", &*vFarmFrame[page].identStringInfo.modelNumber.begin());
         json_push_back(pageInfo, json_new_a("Model Number", &*myStr.begin()));
 
-        snprintf(&*myStr.begin(), BASIC, "%s", vFarmFrame[page].identStringInfo.deviceInterface.c_str());
+        snprintf(&*myStr.begin(), BASIC, "%s", &*vFarmFrame[page].identStringInfo.deviceInterface.begin());
         json_push_back(pageInfo, json_new_a("Device Interface", &*myStr.begin()));
         snprintf(&*myStr.begin(), BASIC, "%llu", vFarmFrame[page].driveInfo.deviceCapacity & 0x00FFFFFFFFFFFFFFLL);
         set_json_string_With_Status(pageInfo, "Device Capacity in Sectors", &*myStr.begin(), vFarmFrame[page].driveInfo.deviceCapacity, m_showStatusBits);
@@ -2215,7 +2215,7 @@ eReturnValues CSCSI_Farm_Log::print_General_Drive_Information_Continued(JSONNODE
         {
             type = "smr";
         }
-        json_push_back(label, json_new_a("drive_recording_type", (char*)type.c_str()));
+        json_push_back(label, json_new_a("drive_recording_type", &*type.begin()));
 
         myStr = "has_drive_been_depopped";
         if (check_Status_Strip_Status(vFarmFrame[page].gDPage06.Depop) != 0)
@@ -4460,14 +4460,14 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_FLED_Info(JSONNODE *masterData,
             snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", M_Word2(check_Status_Strip_Status(pFLED->flashLEDArray[i])));
             json_push_back(label, json_new_a("Flash LED Code", &*myStr.begin()));
             _common.get_Assert_Code_Meaning(timeStr, M_Word2(check_Status_Strip_Status(pFLED->flashLEDArray[i])));
-            json_push_back(label, json_new_a("Flash LED Code Meaning", (char*)timeStr.c_str()));
+            json_push_back(label, json_new_a("Flash LED Code Meaning", &*timeStr.begin()));
             snprintf(&*myStr.begin(), BASIC, "0x%08" PRIx32"", M_DoubleWord0(check_Status_Strip_Status(pFLED->flashLEDArray[i])));
             json_push_back(label, json_new_a("Flash LED Address", &*myStr.begin()));
 
 
             snprintf(&*myStr.begin(), BASIC, "TimeStamp of Event(hours) %" PRIu16"", i);
-            snprintf((char*)timeStr.c_str(), BASIC, "%0.03f", static_cast<double>(M_DoubleWord0(check_Status_Strip_Status(pFLED->timestampForLED[i])) / 3600000) * .001);
-            json_push_back(label, json_new_a(&*myStr.begin(), (char*)timeStr.c_str()));            //!< Universal Timestamp (us) of last 8 Flash LED (assert) Events, wrapping array
+            snprintf(&*timeStr.begin(), BASIC, "%0.03f", static_cast<double>(M_DoubleWord0(check_Status_Strip_Status(pFLED->timestampForLED[i])) / 3600000) * .001);
+            json_push_back(label, json_new_a(&*myStr.begin(), &*timeStr.begin()));            //!< Universal Timestamp (us) of last 8 Flash LED (assert) Events, wrapping array
             snprintf(&*myStr.begin(), BASIC, "Power Cycle Event %" PRIu16"", i);
             json_push_back(label, json_new_i(&*myStr.begin(), M_DoubleWordInt0(pFLED->powerCycleOfLED[i])));	         //!< Power Cycle of the last 8 Flash LED (assert) Events, wrapping array
         }
@@ -4506,14 +4506,14 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_FLED_Info(JSONNODE *masterData,
             snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", M_Word2(check_Status_Strip_Status(pFLED->flashLEDArray[i])));
             json_push_back(eventInfo, json_new_a("Flash LED Code", &*myStr.begin()));
             _common.get_Assert_Code_Meaning(timeStr, M_Word2(check_Status_Strip_Status(pFLED->flashLEDArray[i])));
-            json_push_back(eventInfo, json_new_a("Flash LED Code Meaning", (char*)timeStr.c_str()));
+            json_push_back(eventInfo, json_new_a("Flash LED Code Meaning", &*timeStr.begin()));
             snprintf(&*myStr.begin(), BASIC, "0x%08" PRIx32"", M_DoubleWord0(check_Status_Strip_Status(pFLED->flashLEDArray[i])));
             json_push_back(eventInfo, json_new_a("Flash LED Address", &*myStr.begin()));
 
 
             snprintf(&*myStr.begin(), BASIC, "TimeStamp of Event(hours) %" PRIu16"", i);
-            snprintf((char*)timeStr.c_str(), BASIC, "%0.03f", static_cast<double>(M_DoubleWord0(check_Status_Strip_Status(pFLED->timestampForLED[i])) / 3600000) * .001);
-            set_json_string_With_Status(eventInfo, &*myStr.begin(), (char*)timeStr.c_str(), pFLED->timestampForLED[i], m_showStatusBits);//!< Universal Timestamp (us) of last 8 Flash LED (assert) Events, wrapping array
+            snprintf(&*timeStr.begin(), BASIC, "%0.03f", static_cast<double>(M_DoubleWord0(check_Status_Strip_Status(pFLED->timestampForLED[i])) / 3600000) * .001);
+            set_json_string_With_Status(eventInfo, &*myStr.begin(), &*timeStr.begin(), pFLED->timestampForLED[i], m_showStatusBits);//!< Universal Timestamp (us) of last 8 Flash LED (assert) Events, wrapping array
             snprintf(&*myStr.begin(), BASIC, "Power Cycle Event %" PRIu16"", i);
             set_json_64_bit_With_Status(eventInfo, &*myStr.begin(), pFLED->powerCycleOfLED[i], false, m_showStatusBits);	         //!< Power Cycle of the last 8 Flash LED (assert) Events, wrapping array
 

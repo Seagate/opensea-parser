@@ -121,37 +121,37 @@ bool CScsiCacheLog::get_Cache_Parameter_Code_Description(std::string *cache)
 	{
 	case 0x0000:
 	{
-		snprintf((char*)cache->c_str(), BASIC, "Number of logical blocks that have been Sent");
+		*cache = "Number of logical blocks that have been Sent";
         descriptionFound = true;
 		break;
 	}
 	case 0x0001:
 	{
-		snprintf((char*)cache->c_str(), BASIC, "Number of logical blocks that have been Received");
+		*cache = "Number of logical blocks that have been Received";
         descriptionFound = true;
 		break;
 	}
 	case 0x0002:
 	{
-		snprintf((char*)cache->c_str(), BASIC, "Number of logical blocks READ from the Cache Memory");
+		*cache = "Number of logical blocks READ from the Cache Memory";
         descriptionFound = true;
 		break;
 	}
 	case 0x0003:
 	{
-		snprintf((char*)cache->c_str(), BASIC, "# of R and W Commands lengths equal or less than the current segment size");
+		*cache = "# of R and W Commands lengths equal or less than the current segment size";
         descriptionFound = true;
 		break;
 	}
 	case 0x0004:
 	{
-		snprintf((char*)cache->c_str(), BASIC, "# of READ and WRITE Commands lengths greater than the current segment size");
+		*cache = "# of READ and WRITE Commands lengths greater than the current segment size";
         descriptionFound = true;
 		break;
 	}
 	default:
 	{
-		snprintf((char*)cache->c_str(), BASIC, "Vendor specific 0x%04" PRIx16"", m_cache->paramCode);
+		*cache = "Vendor specific 0x%04" PRIx16"", m_cache->paramCode;
 		break;
 	}
 	}

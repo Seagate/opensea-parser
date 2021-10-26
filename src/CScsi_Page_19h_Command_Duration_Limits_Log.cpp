@@ -119,15 +119,15 @@ void CScsiCmdDurationLimitsLog::get_Parameter_Code_Description(uint16_t paramCod
     if (paramCode >= 0x0011 && paramCode <= 0x0017)
     {
 
-        snprintf((char*)generalStr->c_str(), BASIC, "Command Duration Limit T2A");
+        snprintf(&*generalStr->begin(), BASIC, "Command Duration Limit T2A");
     }
     else if (paramCode >= 0x0011 && paramCode <= 0x0017)
     {
-        snprintf((char*)generalStr->c_str(), BASIC, "Command Duration Limit T2B");
+        snprintf(&*generalStr->begin(), BASIC, "Command Duration Limit T2B");
     }
     else
     {
-        snprintf((char*)generalStr->c_str(), BASIC, "vendor specific 0x%04" PRIx16"", paramCode);
+        snprintf(&*generalStr->begin(), BASIC, "vendor specific 0x%04" PRIx16"", paramCode);
     }
 }
 //-----------------------------------------------------------------------------
