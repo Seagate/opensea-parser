@@ -2317,32 +2317,32 @@ eReturnValues CSCSI_Farm_Log::print_WorkLoad(JSONNODE *masterData, uint32_t page
     {
         printf("\nWork Load From Farm Log copy %d: \n", page);
     }
-    printf("\tRated Workload Percentage:                          %llu  \n", vFarmFrame[page].workLoadPage.workLoad.workloadPercentage & 0x00FFFFFFFFFFFFFFLL);         //!< rated Workload Percentage
-	printf("\tTotal Number of Read Commands:                       %llu  \n", vFarmFrame[page].workLoadPage.workLoad.totalReadCommands & 0x00FFFFFFFFFFFFFFLL);          //!< Total Number of Read Commands
-	printf("\tTotal Number of Write Commands:                      %llu  \n", vFarmFrame[page].workLoadPage.workLoad.totalWriteCommands & 0x00FFFFFFFFFFFFFFLL);         //!< Total Number of Write Commands
-	printf("\tTotal Number of Random Read Cmds:                    %llu  \n", vFarmFrame[page].workLoadPage.workLoad.totalRandomReads & 0x00FFFFFFFFFFFFFFLL);           //!< Total Number of Random Read Commands
-	printf("\tTotal Number of Random Write Cmds:                   %llu  \n", vFarmFrame[page].workLoadPage.workLoad.totalRandomWrites & 0x00FFFFFFFFFFFFFFLL);          //!< Total Number of Random Write Commands
-    printf("\tTotal Number of Other Commands:                      %llu  \n", vFarmFrame[page].workLoadPage.workLoad.totalNumberofOtherCMDS & 0x00FFFFFFFFFFFFFFLL);     //!< Total Number Of Other Commands
-    printf("\tLogical Sectors Written:                             %llu  \n", vFarmFrame[page].workLoadPage.workLoad.logicalSecWritten & 0x00FFFFFFFFFFFFFFLL);          //!< Logical Sectors Written
-    printf("\tLogical Sectors Read:                                %llu  \n", vFarmFrame[page].workLoadPage.workLoad.logicalSecRead & 0x00FFFFFFFFFFFFFFLL);             //!< Logical Sectors Read
-    printf("\tNumber of Read commands from 0-3.125%% of LBA space   %llu  \n", vFarmFrame[page].workLoadPage.workLoad.totalReadCmdsFromFrames1 & 0x00FFFFFFFFFFFFFFLL);		//!< Number of Read commands from 0-3.125% of LBA space for last 3 SMART Summary Frames
-    printf("\tNumber of Read commands from 3.125-25%% of LBA space  %llu  \n", vFarmFrame[page].workLoadPage.workLoad.totalReadCmdsFromFrames2 & 0x00FFFFFFFFFFFFFFLL);		//!< Number of Read commands from 3.125-25% of LBA space for last 3 SMART Summary Frames
-    printf("\tNumber of Read commands from 25-50%% of LBA space     %llu  \n", vFarmFrame[page].workLoadPage.workLoad.totalReadCmdsFromFrames3 & 0x00FFFFFFFFFFFFFFLL);		//!< Number of Read commands from 25-50% of LBA space for last 3 SMART Summary Frames
-    printf("\tNumber of Read commands from 50-100%% of LBA space    %llu  \n", vFarmFrame[page].workLoadPage.workLoad.totalReadCmdsFromFrames4 & 0x00FFFFFFFFFFFFFFLL);		//!< Number of Read commands from 50-100% of LBA space for last 3 SMART Summary Frames 
-    printf("\tNumber of Write commands from 0-3.125%% of LBA space  %llu  \n", vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames1 & 0x00FFFFFFFFFFFFFFLL);	    //!< Number of Write commands from 0-3.125% of LBA space for last 3 SMART Summary Frames
-    printf("\tNumber of Write commands from 3.125-25%% of LBA space %llu  \n", vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames2 & 0x00FFFFFFFFFFFFFFLL);	    //!< Number of Write commands from 3.125-25% of LBA space for last 3 SMART Summary Frames
-    printf("\tNumber of Write commands from 25-50%% of LBA space    %llu  \n", vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames3 & 0x00FFFFFFFFFFFFFFLL);		//!< Number of Write commands from 25-50% of LBA space for last 3 SMART Summary Frames
-    printf("\tNumber of Write commands from 50-100%% of LBA space   %llu  \n", vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames4 & 0x00FFFFFFFFFFFFFFLL);		//!< Number of Write commands from 50-100% of LBA space for last 3 SMART Summary Frames
+    printf("\tRated Workload Percentage:                          %" PRIu64"  \n", vFarmFrame[page].workLoadPage.workLoad.workloadPercentage & 0x00FFFFFFFFFFFFFF);         //!< rated Workload Percentage
+	printf("\tTotal Number of Read Commands:                       %" PRIu64"  \n", vFarmFrame[page].workLoadPage.workLoad.totalReadCommands & 0x00FFFFFFFFFFFFFF);          //!< Total Number of Read Commands
+	printf("\tTotal Number of Write Commands:                      %" PRIu64"  \n", vFarmFrame[page].workLoadPage.workLoad.totalWriteCommands & 0x00FFFFFFFFFFFFFF);         //!< Total Number of Write Commands
+	printf("\tTotal Number of Random Read Cmds:                    %" PRIu64"  \n", vFarmFrame[page].workLoadPage.workLoad.totalRandomReads & 0x00FFFFFFFFFFFFFF);           //!< Total Number of Random Read Commands
+	printf("\tTotal Number of Random Write Cmds:                   %" PRIu64"  \n", vFarmFrame[page].workLoadPage.workLoad.totalRandomWrites & 0x00FFFFFFFFFFFFFF);          //!< Total Number of Random Write Commands
+    printf("\tTotal Number of Other Commands:                      %" PRIu64"  \n", vFarmFrame[page].workLoadPage.workLoad.totalNumberofOtherCMDS & 0x00FFFFFFFFFFFFFF);     //!< Total Number Of Other Commands
+    printf("\tLogical Sectors Written:                             %" PRIu64"  \n", vFarmFrame[page].workLoadPage.workLoad.logicalSecWritten & 0x00FFFFFFFFFFFFFF);          //!< Logical Sectors Written
+    printf("\tLogical Sectors Read:                                %" PRIu64"  \n", vFarmFrame[page].workLoadPage.workLoad.logicalSecRead & 0x00FFFFFFFFFFFFFF);             //!< Logical Sectors Read
+    printf("\tNumber of Read commands from 0-3.125%% of LBA space   %" PRIu64"  \n", vFarmFrame[page].workLoadPage.workLoad.totalReadCmdsFromFrames1 & 0x00FFFFFFFFFFFFFF);		//!< Number of Read commands from 0-3.125% of LBA space for last 3 SMART Summary Frames
+    printf("\tNumber of Read commands from 3.125-25%% of LBA space  %" PRIu64"  \n", vFarmFrame[page].workLoadPage.workLoad.totalReadCmdsFromFrames2 & 0x00FFFFFFFFFFFFFF);		//!< Number of Read commands from 3.125-25% of LBA space for last 3 SMART Summary Frames
+    printf("\tNumber of Read commands from 25-50%% of LBA space     %" PRIu64"  \n", vFarmFrame[page].workLoadPage.workLoad.totalReadCmdsFromFrames3 & 0x00FFFFFFFFFFFFFF);		//!< Number of Read commands from 25-50% of LBA space for last 3 SMART Summary Frames
+    printf("\tNumber of Read commands from 50-100%% of LBA space    %" PRIu64"  \n", vFarmFrame[page].workLoadPage.workLoad.totalReadCmdsFromFrames4 & 0x00FFFFFFFFFFFFFF);		//!< Number of Read commands from 50-100% of LBA space for last 3 SMART Summary Frames 
+    printf("\tNumber of Write commands from 0-3.125%% of LBA space  %" PRIu64"  \n", vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames1 & 0x00FFFFFFFFFFFFFF);	    //!< Number of Write commands from 0-3.125% of LBA space for last 3 SMART Summary Frames
+    printf("\tNumber of Write commands from 3.125-25%% of LBA space %" PRIu64"  \n", vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames2 & 0x00FFFFFFFFFFFFFF);	    //!< Number of Write commands from 3.125-25% of LBA space for last 3 SMART Summary Frames
+    printf("\tNumber of Write commands from 25-50%% of LBA space    %" PRIu64"  \n", vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames3 & 0x00FFFFFFFFFFFFFF);		//!< Number of Write commands from 25-50% of LBA space for last 3 SMART Summary Frames
+    printf("\tNumber of Write commands from 50-100%% of LBA space   %" PRIu64"  \n", vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames4 & 0x00FFFFFFFFFFFFFF);		//!< Number of Write commands from 50-100% of LBA space for last 3 SMART Summary Frames
     //4.21
     if (m_MajorRev >= 4 && m_MinorRev > 20) {
-        printf("\tNumber of Read Commands of transfer length <=16KB for last 3 SMART Summary Frames   %llu  \n", vFarmFrame[page].workLoadPage.workLoad.numReadTransferSmall & 0x00FFFFFFFFFFFFFFLL);		//!< Number of Read commands from 0-3.125% of LBA space for last 3 SMART Summary Frames
-        printf("\tNumber of Read Commands of transfer length (16KB – 512KB] for last 3 SMART Summary Frames  %llu  \n", vFarmFrame[page].workLoadPage.workLoad.numReadTransferMid1 & 0x00FFFFFFFFFFFFFFLL);		//!< Number of Read commands from 3.125-25% of LBA space for last 3 SMART Summary Frames
-        printf("\tNumber of Read Commands of transfer length (512KB – 2MB] for last 3 SMART Summary Frames     %llu  \n", vFarmFrame[page].workLoadPage.workLoad.numReadTransferMid2 & 0x00FFFFFFFFFFFFFFLL);		//!< Number of Read commands from 25-50% of LBA space for last 3 SMART Summary Frames
-        printf("\tNumber of Read Commands of transfer length > 2MB for last 3 SMART Summary Frames    %llu  \n", vFarmFrame[page].workLoadPage.workLoad.numReadTransferLarge & 0x00FFFFFFFFFFFFFFLL);		//!< Number of Read commands from 50-100% of LBA space for last 3 SMART Summary Frames 
-        printf("\tNumber of Write Commands of transfer length <=16KB for last 3 SMART Summary Frames  %llu  \n", vFarmFrame[page].workLoadPage.workLoad.numWriteTransferSmall & 0x00FFFFFFFFFFFFFFLL);	    //!< Number of Write commands from 0-3.125% of LBA space for last 3 SMART Summary Frames
-        printf("\tNumber of Write Commands of transfer length (16KB – 512KB] for last 3 SMART Summary Frames %llu  \n", vFarmFrame[page].workLoadPage.workLoad.numWriteTransferMid1 & 0x00FFFFFFFFFFFFFFLL);	    //!< Number of Write commands from 3.125-25% of LBA space for last 3 SMART Summary Frames
-        printf("\tNumber of Write Commands of transfer length (512KB – 2MB] for last 3 SMART Summary Frames    %llu  \n", vFarmFrame[page].workLoadPage.workLoad.numWriteTransferMid2 & 0x00FFFFFFFFFFFFFFLL);		//!< Number of Write commands from 25-50% of LBA space for last 3 SMART Summary Frames
-        printf("\tNumber of Write Commands of transfer length > 2MB for last 3 SMART Summary Frames   %llu  \n", vFarmFrame[page].workLoadPage.workLoad.numWriteTransferLarge & 0x00FFFFFFFFFFFFFFLL);		//!< Number of Write commands from 50-100% of LBA space for last 3 SMART Summary Frames
+        printf("\tNumber of Read Commands of transfer length <=16KB for last 3 SMART Summary Frames   %" PRIu64"  \n", vFarmFrame[page].workLoadPage.workLoad.numReadTransferSmall & 0x00FFFFFFFFFFFFFF);		//!< Number of Read commands from 0-3.125% of LBA space for last 3 SMART Summary Frames
+        printf("\tNumber of Read Commands of transfer length (16KB – 512KB] for last 3 SMART Summary Frames  %" PRIu64"  \n", vFarmFrame[page].workLoadPage.workLoad.numReadTransferMid1 & 0x00FFFFFFFFFFFFFF);		//!< Number of Read commands from 3.125-25% of LBA space for last 3 SMART Summary Frames
+        printf("\tNumber of Read Commands of transfer length (512KB – 2MB] for last 3 SMART Summary Frames     %" PRIu64"  \n", vFarmFrame[page].workLoadPage.workLoad.numReadTransferMid2 & 0x00FFFFFFFFFFFFFF);		//!< Number of Read commands from 25-50% of LBA space for last 3 SMART Summary Frames
+        printf("\tNumber of Read Commands of transfer length > 2MB for last 3 SMART Summary Frames    %" PRIu64"  \n", vFarmFrame[page].workLoadPage.workLoad.numReadTransferLarge & 0x00FFFFFFFFFFFFFF);		//!< Number of Read commands from 50-100% of LBA space for last 3 SMART Summary Frames 
+        printf("\tNumber of Write Commands of transfer length <=16KB for last 3 SMART Summary Frames  %" PRIu64"  \n", vFarmFrame[page].workLoadPage.workLoad.numWriteTransferSmall & 0x00FFFFFFFFFFFFFF);	    //!< Number of Write commands from 0-3.125% of LBA space for last 3 SMART Summary Frames
+        printf("\tNumber of Write Commands of transfer length (16KB – 512KB] for last 3 SMART Summary Frames %" PRIu64"  \n", vFarmFrame[page].workLoadPage.workLoad.numWriteTransferMid1 & 0x00FFFFFFFFFFFFFF);	    //!< Number of Write commands from 3.125-25% of LBA space for last 3 SMART Summary Frames
+        printf("\tNumber of Write Commands of transfer length (512KB – 2MB] for last 3 SMART Summary Frames    %" PRIu64"  \n", vFarmFrame[page].workLoadPage.workLoad.numWriteTransferMid2 & 0x00FFFFFFFFFFFFFF);		//!< Number of Write commands from 25-50% of LBA space for last 3 SMART Summary Frames
+        printf("\tNumber of Write Commands of transfer length > 2MB for last 3 SMART Summary Frames   %" PRIu64"  \n", vFarmFrame[page].workLoadPage.workLoad.numWriteTransferLarge & 0x00FFFFFFFFFFFFFF);		//!< Number of Write commands from 50-100% of LBA space for last 3 SMART Summary Frames
     
     }
     
@@ -2394,9 +2394,9 @@ eReturnValues CSCSI_Farm_Log::print_WorkLoad(JSONNODE *masterData, uint32_t page
         set_json_64_bit_With_Status(pageInfo, "Total Number of Random Read Cmds", vFarmFrame[page].workLoadPage.workLoad.totalRandomReads, false, m_showStatusBits);			//!< Total Number of Random Read Commands
         set_json_64_bit_With_Status(pageInfo, "Total Number of Random Write Cmds", vFarmFrame[page].workLoadPage.workLoad.totalRandomWrites, false, m_showStatusBits);		//!< Total Number of Random Write Commands
         set_json_64_bit_With_Status(pageInfo, "Total Number of Other Commands", vFarmFrame[page].workLoadPage.workLoad.totalNumberofOtherCMDS, false, m_showStatusBits);		//!< Total Number Of Other Commands
-        snprintf(&*myStr.begin(), BASIC, "%llu", vFarmFrame[page].workLoadPage.workLoad.logicalSecWritten & 0x00FFFFFFFFFFFFFFLL);
+        snprintf(&*myStr.begin(), BASIC, "%" PRIu64"", vFarmFrame[page].workLoadPage.workLoad.logicalSecWritten & 0x00FFFFFFFFFFFFFF);
         set_json_string_With_Status(pageInfo, "Logical Sectors Written", &*myStr.begin(), vFarmFrame[page].workLoadPage.workLoad.logicalSecWritten, m_showStatusBits);					//!< Logical Sectors Written
-        snprintf(&*myStr.begin(), BASIC, "%llu", vFarmFrame[page].workLoadPage.workLoad.logicalSecRead & 0x00FFFFFFFFFFFFFFLL);
+        snprintf(&*myStr.begin(), BASIC, "%" PRIu64"", vFarmFrame[page].workLoadPage.workLoad.logicalSecRead & 0x00FFFFFFFFFFFFFF);
         set_json_string_With_Status(pageInfo, "Logical Sectors Read", &*myStr.begin(), vFarmFrame[page].workLoadPage.workLoad.logicalSecRead, m_showStatusBits);						//!< Logical Sectors Read
         // found a log where the length of the workload log does not match the spec. Need to check for the 0x50 length
         if (vFarmFrame[page].workLoadPage.PageHeader.plen > 0x50)
@@ -2459,25 +2459,25 @@ eReturnValues CSCSI_Farm_Log::print_Error_Information(JSONNODE *masterData, uint
     {
         printf("\nError Information Log From Farm Log copy %d: \n", page);
     }
-    printf("\tUnrecoverable Read Errors:                %llu \n", vFarmFrame[page].errorPage.errorStat.totalReadECC & 0x00FFFFFFFFFFFFFF);				//!< Number of Unrecoverable Read Errors
-    printf("\tUnrecoverable Write Errors:               %llu \n", vFarmFrame[page].errorPage.errorStat.totalWriteECC & 0x00FFFFFFFFFFFFFF);				//!< Number of Unrecoverable Write Errors
-    printf("\tNumber of Reallocated Sectors:            %llu \n", vFarmFrame[page].errorPage.errorStat.totalReallocations & 0x00FFFFFFFFFFFFFF);			//!< Number of Reallocated Sectors
-    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorStat.reserved & 0x00FFFFFFFFFFFFFF);					//!< Reserved
-    printf("\tNumber of Mechanical Start Failures:      %llu \n", vFarmFrame[page].errorPage.errorStat.totalMechanicalFails & 0x00FFFFFFFFFFFFFF);		//!< Number of Mechanical Start Failures
-    printf("\tNumber of Reallocated Candidate Sectors:  %llu \n", vFarmFrame[page].errorPage.errorStat.totalReallocatedCanidates & 0x00FFFFFFFFFFFFFF);	//!< Number of Reallocated Candidate Sectors
-    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorStat.reserved1 & 0x00FFFFFFFFFFFFFF);					//!< Reserved
-    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorStat.reserved2 & 0x00FFFFFFFFFFFFFF);					//!< Reserved
-    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorStat.reserved3 & 0x00FFFFFFFFFFFFFF);					//!< Reserved
-    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorStat.reserved4 & 0x00FFFFFFFFFFFFFF);					//!< Reserved
-    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorStat.reserved5 & 0x00FFFFFFFFFFFFFF);					//!< Reserved
-    printf("\tNumber of IOEDC Errors (Raw):             %llu \n", vFarmFrame[page].errorPage.errorStat.attrIOEDCErrors & 0x00FFFFFFFFFFFFFF);				//!< Number of IOEDC Errors 
-    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorStat.reserved6 & 0x00FFFFFFFFFFFFFF);					//!< Reserved
-    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorStat.reserved7 & 0x00FFFFFFFFFFFFFF);					//!< Reserved
-    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorStat.reserved8 & 0x00FFFFFFFFFFFFFF);					//!< Reserved
-    printf("\tTotal Flash LED (Assert) Events:          %llu \n", vFarmFrame[page].errorPage.errorStat.totalFlashLED & 0x00FFFFFFFFFFFFFF);				//!< Total Flash LED (Assert) Events
-    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorStat.reserved9 & 0x00FFFFFFFFFFFFFF);					//!< Reserved
-    printf("\tFRU code if smart trip:                   %llu \n", vFarmFrame[page].errorPage.errorStat.FRUCode & 0x00FFFFFFFFFFFFFF);
-    printf("\tSuper Parity on the Fly Recovery          %llu \n", vFarmFrame[page].errorPage.errorStat.parity & 0x00FFFFFFFFFFFFFF);
+    printf("\tUnrecoverable Read Errors:                %" PRIu64" \n", vFarmFrame[page].errorPage.errorStat.totalReadECC & 0x00FFFFFFFFFFFFFF);				//!< Number of Unrecoverable Read Errors
+    printf("\tUnrecoverable Write Errors:               %" PRIu64" \n", vFarmFrame[page].errorPage.errorStat.totalWriteECC & 0x00FFFFFFFFFFFFFF);				//!< Number of Unrecoverable Write Errors
+    printf("\tNumber of Reallocated Sectors:            %" PRIu64" \n", vFarmFrame[page].errorPage.errorStat.totalReallocations & 0x00FFFFFFFFFFFFFF);			//!< Number of Reallocated Sectors
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorStat.reserved & 0x00FFFFFFFFFFFFFF);					//!< Reserved
+    printf("\tNumber of Mechanical Start Failures:      %" PRIu64" \n", vFarmFrame[page].errorPage.errorStat.totalMechanicalFails & 0x00FFFFFFFFFFFFFF);		//!< Number of Mechanical Start Failures
+    printf("\tNumber of Reallocated Candidate Sectors:  %" PRIu64" \n", vFarmFrame[page].errorPage.errorStat.totalReallocatedCanidates & 0x00FFFFFFFFFFFFFF);	//!< Number of Reallocated Candidate Sectors
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorStat.reserved1 & 0x00FFFFFFFFFFFFFF);					//!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorStat.reserved2 & 0x00FFFFFFFFFFFFFF);					//!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorStat.reserved3 & 0x00FFFFFFFFFFFFFF);					//!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorStat.reserved4 & 0x00FFFFFFFFFFFFFF);					//!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorStat.reserved5 & 0x00FFFFFFFFFFFFFF);					//!< Reserved
+    printf("\tNumber of IOEDC Errors (Raw):             %" PRIu64" \n", vFarmFrame[page].errorPage.errorStat.attrIOEDCErrors & 0x00FFFFFFFFFFFFFF);				//!< Number of IOEDC Errors 
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorStat.reserved6 & 0x00FFFFFFFFFFFFFF);					//!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorStat.reserved7 & 0x00FFFFFFFFFFFFFF);					//!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorStat.reserved8 & 0x00FFFFFFFFFFFFFF);					//!< Reserved
+    printf("\tTotal Flash LED (Assert) Events:          %" PRIu64" \n", vFarmFrame[page].errorPage.errorStat.totalFlashLED & 0x00FFFFFFFFFFFFFF);				//!< Total Flash LED (Assert) Events
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorStat.reserved9 & 0x00FFFFFFFFFFFFFF);					//!< Reserved
+    printf("\tFRU code if smart trip:                   %" PRIu64" \n", vFarmFrame[page].errorPage.errorStat.FRUCode & 0x00FFFFFFFFFFFFFF);
+    printf("\tSuper Parity on the Fly Recovery          %" PRIu64" \n", vFarmFrame[page].errorPage.errorStat.parity & 0x00FFFFFFFFFFFFFF);
 #endif
     if (g_dataformat == PREPYTHON_DATA)
     {
@@ -2552,32 +2552,32 @@ eReturnValues CSCSI_Farm_Log::print_Error_Information_Version_4(JSONNODE *master
     {
         printf("\nError Information Log From Farm Log copy %d: \n", page);
     }
-    printf("\tUnrecoverable Read Errors:                %llu \n", vFarmFrame[page].errorPage.errorV4.totalReadECC & 0x00FFFFFFFFFFFFFF);				//!< Number of Unrecoverable Read Errors
-    printf("\tUnrecoverable Write Errors:               %llu \n", vFarmFrame[page].errorPage.errorV4.totalWriteECC & 0x00FFFFFFFFFFFFFF);				//!< Number of Unrecoverable Write Errors
-    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorV4.reserved & 0x00FFFFFFFFFFFFFF);			
-    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorV4.reserved & 0x00FFFFFFFFFFFFFF);					//!< Reserved
-    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorV4.totalMechanicalFails & 0x00FFFFFFFFFFFFFF);		//!< Number of Mechanical Start Failures
-    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorV4.reserved & 0x00FFFFFFFFFFFFFF);	
-    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorV4.reserved1 & 0x00FFFFFFFFFFFFFF);					//!< Reserved
-    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorV4.reserved2 & 0x00FFFFFFFFFFFFFF);					//!< Reserved
-    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorV4.reserved3 & 0x00FFFFFFFFFFFFFF);					//!< Reserved
-    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorV4.reserved4 & 0x00FFFFFFFFFFFFFF);					//!< Reserved
-    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorV4.reserved5 & 0x00FFFFFFFFFFFFFF);					//!< Reserved
-    printf("\tNumber of IOEDC Errors (Raw):             %llu \n", vFarmFrame[page].errorPage.errorV4.attrIOEDCErrors & 0x00FFFFFFFFFFFFFF);				//!< Number of IOEDC Errors 
-    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorV4.reserved6 & 0x00FFFFFFFFFFFFFF);					//!< Reserved
-    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorV4.reserved7 & 0x00FFFFFFFFFFFFFF);					//!< Reserved
-    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorV4.reserved8 & 0x00FFFFFFFFFFFFFF);					//!< Reserved
-    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorV4.reserved & 0x00FFFFFFFFFFFFFF);				
-    printf("\tReserved:                                 %llu \n", vFarmFrame[page].errorPage.errorV4.reserved9 & 0x00FFFFFFFFFFFFFF);					//!< Reserved
-    printf("\tFRU code if smart trip from most recent SMART Frame:%llu \n", vFarmFrame[page].errorPage.errorV4.FRUCode & 0x00FFFFFFFFFFFFFF);
-    printf("\tInvalid DWord Count Port A                %llu \n", vFarmFrame[page].errorPage.errorV4.portAInvalidDwordCount & 0x00FFFFFFFFFFFFFF);
-    printf("\tInvalid DWord Count Port B                %llu \n", vFarmFrame[page].errorPage.errorV4.portBInvalidDwordCount & 0x00FFFFFFFFFFFFFF);
-    printf("\tDisparity Error Count Port A              %llu \n", vFarmFrame[page].errorPage.errorV4.portADisparityErrorCount & 0x00FFFFFFFFFFFFFF);
-    printf("\tDisparity Error Count Port B              %llu \n", vFarmFrame[page].errorPage.errorV4.portBDisparityErrorCount & 0x00FFFFFFFFFFFFFF);
-    printf("\tLoss Of DWord Sync Port A                 %llu \n", vFarmFrame[page].errorPage.errorV4.portALossDwordSync & 0x00FFFFFFFFFFFFFF);
-    printf("\tLoss Of DWord Sync Port B                 %llu \n", vFarmFrame[page].errorPage.errorV4.portBLossDwordSync & 0x00FFFFFFFFFFFFFF);
-    printf("\tPhy Reset Problem Port A                  %llu \n", vFarmFrame[page].errorPage.errorV4.portAPhyResetProblem & 0x00FFFFFFFFFFFFFF);
-    printf("\tPhy Reset Problem Port B                  %llu \n", vFarmFrame[page].errorPage.errorV4.portBPhyResetProblem & 0x00FFFFFFFFFFFFFF);
+    printf("\tUnrecoverable Read Errors:                %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.totalReadECC & 0x00FFFFFFFFFFFFFF);				//!< Number of Unrecoverable Read Errors
+    printf("\tUnrecoverable Write Errors:               %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.totalWriteECC & 0x00FFFFFFFFFFFFFF);				//!< Number of Unrecoverable Write Errors
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.reserved & 0x00FFFFFFFFFFFFFF);
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.reserved & 0x00FFFFFFFFFFFFFF);					//!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.totalMechanicalFails & 0x00FFFFFFFFFFFFFF);		//!< Number of Mechanical Start Failures
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.reserved & 0x00FFFFFFFFFFFFFF);
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.reserved1 & 0x00FFFFFFFFFFFFFF);					//!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.reserved2 & 0x00FFFFFFFFFFFFFF);					//!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.reserved3 & 0x00FFFFFFFFFFFFFF);					//!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.reserved4 & 0x00FFFFFFFFFFFFFF);					//!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.reserved5 & 0x00FFFFFFFFFFFFFF);					//!< Reserved
+    printf("\tNumber of IOEDC Errors (Raw):             %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.attrIOEDCErrors & 0x00FFFFFFFFFFFFFF);				//!< Number of IOEDC Errors 
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.reserved6 & 0x00FFFFFFFFFFFFFF);					//!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.reserved7 & 0x00FFFFFFFFFFFFFF);					//!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.reserved8 & 0x00FFFFFFFFFFFFFF);					//!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.reserved & 0x00FFFFFFFFFFFFFF);
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.reserved9 & 0x00FFFFFFFFFFFFFF);					//!< Reserved
+    printf("\tFRU code if smart trip from most recent SMART Frame:%" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.FRUCode & 0x00FFFFFFFFFFFFFF);
+    printf("\tInvalid DWord Count Port A                %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.portAInvalidDwordCount & 0x00FFFFFFFFFFFFFF);
+    printf("\tInvalid DWord Count Port B                %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.portBInvalidDwordCount & 0x00FFFFFFFFFFFFFF);
+    printf("\tDisparity Error Count Port A              %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.portADisparityErrorCount & 0x00FFFFFFFFFFFFFF);
+    printf("\tDisparity Error Count Port B              %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.portBDisparityErrorCount & 0x00FFFFFFFFFFFFFF);
+    printf("\tLoss Of DWord Sync Port A                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.portALossDwordSync & 0x00FFFFFFFFFFFFFF);
+    printf("\tLoss Of DWord Sync Port B                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.portBLossDwordSync & 0x00FFFFFFFFFFFFFF);
+    printf("\tPhy Reset Problem Port A                  %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.portAPhyResetProblem & 0x00FFFFFFFFFFFFFF);
+    printf("\tPhy Reset Problem Port B                  %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.portBPhyResetProblem & 0x00FFFFFFFFFFFFFF);
 #endif
     if (g_dataformat == PREPYTHON_DATA)
     {
