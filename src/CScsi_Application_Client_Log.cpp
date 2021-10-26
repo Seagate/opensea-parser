@@ -113,7 +113,7 @@ CScsiApplicationLog::~CScsiApplicationLog()
 //!   \return none
 //
 //---------------------------------------------------------------------------
-void CScsiApplicationLog::process_Client_Data(JSONNODE *appData, uint32_t offset)
+void CScsiApplicationLog::process_Client_Data(JSONNODE *appData)
 {
 #define MSGSIZE 128
 #define STRMSGSIZE 1201
@@ -202,7 +202,7 @@ eReturnValues CScsiApplicationLog::get_Client_Data(JSONNODE *masterData)
                 m_App = new sApplicationParams (&pData[offset]);
                 offset += APP_CLIENT_DATA_LEN + 4;
 				
-				process_Client_Data(pageInfo,offset);
+				process_Client_Data(pageInfo);
                 delete m_App;
 			}
 			else

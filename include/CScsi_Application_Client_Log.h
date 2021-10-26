@@ -64,7 +64,7 @@ namespace opensea_parser {
 		sApplicationParams			*m_App;						//<! Application client structure 
 
 
-		void process_Client_Data(JSONNODE *appData, uint32_t offset);
+		void process_Client_Data(JSONNODE *appData);
 		eReturnValues get_Client_Data(JSONNODE *masterData);
 	public:
 		CScsiApplicationLog();
