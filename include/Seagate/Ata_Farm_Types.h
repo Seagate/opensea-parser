@@ -37,12 +37,12 @@ typedef struct _sDriveInfo
     uint64_t        rotationRate;                               //!< Rotational Rate of Device (ID Word 217)
     uint64_t        firmware;                                   //!< firmware 
     uint64_t        firmwareRev;                                //!< firmware Rev
-    uint64_t        security;									//!< ATA Security State (ID Word 128)
-    uint64_t        featuresSupported;							//!< ATA Features Supported (ID Word 78)
-    uint64_t        featuresEnabled;							//!< ATA Features Enabled (ID Word 79)
+    uint64_t        security;                                   //!< ATA Security State (ID Word 128)
+    uint64_t        featuresSupported;                          //!< ATA Features Supported (ID Word 78)
+    uint64_t        featuresEnabled;                            //!< ATA Features Enabled (ID Word 79)
     uint64_t        poh;                                        //!< Power-on Hours
-    uint64_t        spoh;										//!< Spindle Power-on Hours
-    uint64_t        headFlightHours;							//!< Head Flight Hours
+    uint64_t        spoh;                                       //!< Spindle Power-on Hours
+    uint64_t        headFlightHours;                            //!< Head Flight Hours
     uint64_t        headLoadEvents;                             //!< Head Load Events
     uint64_t        powerCycleCount;                            //!< Power Cycle Count
     uint64_t        resetCount;                                 //!< Hardware Reset Count
@@ -51,8 +51,8 @@ typedef struct _sDriveInfo
     uint64_t        timeAvailable;                              //!< Time Available to Save User Data to Media Over Last Power Cycle (in 100us)
     uint64_t        timeStamp1;                                 //!< Timestamp of most recent SMART Summary Frame in Power-On Hours Milliseconds
     uint64_t        timeStamp2;                                 //!< Timestamp of last SMART Summary Frame in Power-On Hours Milliseconds
-    uint64_t        timeToReady;								//!< time to ready of the last power cycle
-    uint64_t        timeHeld;									//!< time drive is held in staggered spin during the last power on sequence
+    uint64_t        timeToReady;                                //!< time to ready of the last power cycle
+    uint64_t        timeHeld;                                   //!< time drive is held in staggered spin during the last power on sequence
     uint64_t        modelNumber[10];                            //!< lower 32 Model Number (started support in 2.14 )
     uint64_t        driveRecordingType;                         //!< 0 for SMR and 1 for CMR (started support in 2.15 )
     uint64_t        depopped;                                   //!< has the drive been depopped  1= depopped and 0 = not depopped(started support in 2.15 )
@@ -174,6 +174,15 @@ typedef struct _sflyHeight
     _sflyHeight() : inner(0), middle(0), outer(0) {};
 }sflyHeight;
 
+typedef struct _H2SAT
+{
+    int64_t        zone0;
+    int64_t        zone1;
+    int64_t        zone2;
+
+    _H2SAT() : zone0(0), zone1(0), zone2(0) {};
+}H2SAT;
+
 typedef struct _sAtaReliabilityStat
 {
     uint64_t        pageNumber;                                  //!< Page Number = 5
@@ -214,8 +223,8 @@ typedef struct _sAtaReliabilityStat
     int64_t         numberOfTMD[MAX_HEAD_COUNT];                 //!< [24] Number of TMD over last 3 SMART Summary Frames by Head
     int64_t         velocityObserver[MAX_HEAD_COUNT];            //!< [24] Velocity Observer over last 3 SMART Summary Frames by Head
     int64_t         numberOfVelocityObserver[MAX_HEAD_COUNT];    //!< [24] Number of Velocity Observer over last 3 SMART Summary Frames by Head
-    sflyHeight      currentH2SAT[MAX_HEAD_COUNT];                //!< [24] Current H2SAT trimmed mean bits in error by Head, by Test Zone 
-    sflyHeight      currentH2SATIterations[MAX_HEAD_COUNT];      //!< [24] Qword[24][3] Current H2SAT iterations to converge by Head, by Test Zone 
+    H2SAT           currentH2SAT[MAX_HEAD_COUNT];                //!< [24] Current H2SAT trimmed mean bits in error by Head, by Test Zone 
+    H2SAT           currentH2SATIterations[MAX_HEAD_COUNT];      //!< [24] Qword[24][3] Current H2SAT iterations to converge by Head, by Test Zone 
     int64_t         currentH2SATPercentage[MAX_HEAD_COUNT];      //!< [24] Qword[24] Current H2SAT percentage of codewords at iteration level by Head, averaged
     int64_t         currentH2SATamplitude[MAX_HEAD_COUNT];       //!< [24] Qword[24] Current H2SAT amplitude by Head, averaged across Test Zones 
     int64_t         currentH2SATasymmetry[MAX_HEAD_COUNT];       //!< [24] Qword[24] Current H2SAT asymmetry by Head, averaged across Test Zones
