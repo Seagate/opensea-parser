@@ -194,7 +194,7 @@ void opensea_parser::CScsiCacheMemStatLog::process_Cache_Memory_Statistics_inter
 //!   \return void
 //
 //---------------------------------------------------------------------------
-void CScsiCacheMemStatLog::process_Generic_Data(JSONNODE *genData, uint16_t paramCode)
+void CScsiCacheMemStatLog::process_Generic_Data(JSONNODE *genData)
 {
     std::string myStr = "";
     myStr.resize(BASIC);
@@ -291,7 +291,7 @@ eReturnValues CScsiCacheMemStatLog::get_Cache_Memory_Statistics_Data(JSONNODE *m
                 {
                     m_CacheMemLog = (sLogParams*)&pData[offset];
                     populate_Generic_Param_Value(m_CacheMemLog->paramLength,offset + LOGPAGESIZE);
-                    process_Generic_Data(pageInfo, paramCode);
+                    process_Generic_Data(pageInfo);
                     offset += (m_CacheMemLog->paramLength + LOGPAGESIZE);
                 }
             }

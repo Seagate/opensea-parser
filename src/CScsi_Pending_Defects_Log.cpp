@@ -126,7 +126,7 @@ CScsiPendingDefectsLog::~CScsiPendingDefectsLog()
 //!   \return none
 //
 //---------------------------------------------------------------------------
-void CScsiPendingDefectsLog::process_PList_Data(JSONNODE *pendingData, uint32_t offset)
+void CScsiPendingDefectsLog::process_PList_Data(JSONNODE *pendingData)
 {
 	std::string myStr = "";
 	myStr.resize(BASIC);
@@ -229,7 +229,7 @@ eReturnValues CScsiPendingDefectsLog::get_Plist_Data(JSONNODE *masterData)
 					m_PlistDefect = (sDefect *)&pData[offset];
 					offset += sizeof(sDefect);
 					m_count++;    // defect found add one to the count
-					process_PList_Data(pageInfo,offset);
+					process_PList_Data(pageInfo);
 				}
 				else
 				{

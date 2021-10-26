@@ -173,7 +173,7 @@ void CScsiCmdDurationLimitsLog::process_Generic_Data(JSONNODE* genericData, uint
 //  Exit:
 //
 //---------------------------------------------------------------------------
-void CScsiCmdDurationLimitsLog::process_Achievable_Data(JSONNODE * achievableData, uint16_t paramCode)
+void CScsiCmdDurationLimitsLog::process_Achievable_Data(JSONNODE * achievableData)
 {
     std::string myStr = "";
     myStr.resize(BASIC);
@@ -298,7 +298,7 @@ eReturnValues CScsiCmdDurationLimitsLog::get_Limits_Data(JSONNODE *masterData)
                 if (paramCode == 0x0001)
                 {
                     m_commandLog = (sLogParams*)&pData[offset];
-                    process_Achievable_Data(pageInfo, paramCode);
+                    process_Achievable_Data(pageInfo);
                     offset += m_commandLog->paramLength + LOGPAGESIZE;
                 }
                 else if (paramCode >= 0x0011 && paramCode <= 0x0017)

@@ -52,7 +52,7 @@ namespace opensea_parser {
 
         void get_Parameter_Code_Description(uint16_t paramCode, std::string *performanceStatistics);
         void process_Cache_Memory_Statistics_interval_Data(JSONNODE *cacheData);
-        void process_Generic_Data(JSONNODE *genData, uint16_t paramCode);
+        void process_Generic_Data(JSONNODE *genData);
         void populate_Generic_Param_Value(uint8_t paramLength, uint32_t offset);
         eReturnValues get_Cache_Memory_Statistics_Data(JSONNODE *masterData);
 
