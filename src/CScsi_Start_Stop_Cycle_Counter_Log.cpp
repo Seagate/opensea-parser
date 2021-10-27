@@ -234,7 +234,7 @@ eReturnValues CScsiStartStop::week_Year_Print(JSONNODE *data,uint16_t param, uin
 	myStr.resize(BASIC);
 
 	JSONNODE *dateInfo = json_new(JSON_NODE);
-	json_set_name(dateInfo, (char *)strHeader.c_str());
+	json_set_name(dateInfo, &*strHeader.begin());
 	
     if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
