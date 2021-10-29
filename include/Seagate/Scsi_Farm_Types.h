@@ -561,7 +561,7 @@ typedef struct _sScsiFarmFrame
 	sHeadInformation        numberOfTMDByHead;
 	sHeadInformation        velocityObserverByHead;
 	sHeadInformation        numberOfVelocityObservedByHead;
-	sHeadInformation        currentH2SATPercentagebyHead;
+	sHeadInformation        currentH2SATPercentagedbyHead;
 	sHeadInformation        currentH2STAmplituedByHead;
 	sHeadInformation        currentH2STAsymmetryByHead;
 	sHeadInformation        ResidentGlistEntries;
