@@ -143,9 +143,9 @@ CAtaPowerConditionsLog::CAtaPowerConditionsLog(tDataPtr pData, JSONNODE *masterD
 {
     m_powerConditionLog = new uint8_t[pData.DataLen];								// new a buffer to the point				
 #ifndef _WIN64
-    memcpy(m_powerConditionLog, (uint8_t*)pData.pData, pData.DataLen);
+    memcpy(m_powerConditionLog, static_cast<uint8_t*>(pData.pData), pData.DataLen);
 #else
-    memcpy_s(m_powerConditionLog, pData.DataLen, (uint8_t*)pData.pData, pData.DataLen);// copy the buffer data to the class member pBuf
+    memcpy_s(m_powerConditionLog, pData.DataLen, static_cast<uint8_t*>(pData.pData), pData.DataLen);// copy the buffer data to the class member pBuf
 #endif
 
     if (m_powerConditionLog != NULL)
@@ -382,29 +382,27 @@ eReturnValues CAtaPowerConditionsLog::printPowerLogDescriptor(JSONNODE *masterDa
 
 #endif
 
-        //snprintf(&*myStr.begin(), BASIC, "Reserved");
-        //json_push_back(masterData, json_new_a("Reserved :", &*myStr.begin()));
-        snprintf(&*myStr.begin(), BASIC, "0x%x", logDescriptor->bitFlags);
-        json_push_back(masterData, json_new_a("Power Condition Flags", &*myStr.begin()));
-        printPowerConditionFlag(masterData);
-        //snprintf(&*myStr.begin(), BASIC, "Reserved");
-        //json_push_back(masterData, json_new_a("Reserved :", &*myStr.begin()));
-        json_push_back(masterData, json_new_i("Default Timer Setting Field", logDescriptor->defaultTimerSetting));
-        json_push_back(masterData, json_new_i("Saved Timer Setting Field", logDescriptor->savedTimerSetting));
-        json_push_back(masterData, json_new_i("Current Timer Setting Field", logDescriptor->currentTimerSetting));
-        json_push_back(masterData, json_new_i("Norminal Recovery Timer to PM0  Active Filed", logDescriptor->normalRecoveryTime));
-        json_push_back(masterData, json_new_i("Minimum Timer Setting Field", logDescriptor->minimumTimerSetting));
-        json_push_back(masterData, json_new_i("Maximum Timer Setting Field", logDescriptor->maximumTimerSetting));
-        snprintf(&*myStr.begin(), BASIC, "Reserved");
-        json_push_back(masterData, json_new_a("Reserved :", &*myStr.begin()));
-    }
-    else
-    {
-        printf("\tNo Data Found \n");
-        return NOT_SUPPORTED;
-    }
-
-    return SUCCESS;
+		//json_push_back(masterData, json_new_a("Reserved :", "Reserved"));
+        std::ostringstream temp;
+        temp << std::hex << logDescriptor->bitFlags;
+		json_push_back(masterData, json_new_a("Power Condition Flags", temp.str().c_str()));
+		printPowerConditionFlag(masterData);
+		//json_push_back(masterData, json_new_a("Reserved :", "Reserved"));
+		json_push_back(masterData, json_new_i("Default Timer Setting Field", logDescriptor->defaultTimerSetting));
+		json_push_back(masterData, json_new_i("Saved Timer Setting Field", logDescriptor->savedTimerSetting));
+		json_push_back(masterData, json_new_i("Current Timer Setting Field", logDescriptor->currentTimerSetting));
+		json_push_back(masterData, json_new_i("Norminal Recovery Timer to PM0  Active Filed", logDescriptor->normalRecoveryTime));
+		json_push_back(masterData, json_new_i("Minimum Timer Setting Field", logDescriptor->minimumTimerSetting));
+		json_push_back(masterData, json_new_i("Maximum Timer Setting Field", logDescriptor->maximumTimerSetting));
+		json_push_back(masterData, json_new_a("Reserved :", "Reserved"));
+	}
+	else
+	{
+		printf("\tNo Data Found \n");
+		return NOT_SUPPORTED;
+	}
+	
+	return SUCCESS;
 }
 
 //-----------------------------------------------------------------------------

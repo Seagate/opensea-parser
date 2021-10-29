@@ -193,38 +193,36 @@ eReturnValues CAta_Ext_DST_Log::parse_Ext_Self_Test_Log(JSONNODE *masterData)
     //uint64_t LBA = 0;
 
     json_set_name(DstJson, "DST Log");
-    uint16_t index = ((uint16_t)pData[3] << 8) | ((uint16_t)pData[2] << 0);
-    json_push_back(DstJson, json_new_i("Self Test Index", static_cast<uint32_t>(index)));
+    uint16_t index = M_BytesTo2ByteValue(pData[3], pData[2]);
+	json_push_back(DstJson, json_new_i("Self Test Index", static_cast<uint32_t>(index)));
     DSTIndex += 4;
     for (int i = 1; i <= 19; i++)
     {
-        uint8_t StatusByte = pData[DSTIndex + 1];
-        uint16_t timeStamp = ((uint16_t)pData[DSTIndex + 3] << 8) | ((uint16_t)pData[DSTIndex + 2] << 0);
-        uint16_t compTime = ((uint16_t)pData[DSTIndex + 13] << 8) | ((uint16_t)pData[DSTIndex + 12] << 0);
-        int8_t checkPointByte = pData[DSTIndex + 4];
-        /*uint64_t LBA = ((uint64_t)pData[DSTIndex + 10] << 40) |
-            ((uint64_t)pData[DSTIndex + 9] << 32) |
-            ((uint64_t)pData[DSTIndex + 8] << 24) |
-            ((uint64_t)pData[DSTIndex + 7] << 16) |
-            ((uint64_t)pData[DSTIndex + 6] << 8) |
-            ((uint64_t)pData[DSTIndex + 5] << 0);*/
-        uint64_t LBA = M_BytesTo8ByteValue(0, 0, pData[DSTIndex + 10], pData[DSTIndex + 9], pData[DSTIndex + 8],
-            pData[DSTIndex + 7], pData[DSTIndex + 6], pData[DSTIndex + 5]);
-
+        StatusByte = pData[DSTIndex + 1];
+        timeStamp = M_BytesTo2ByteValue(pData[DSTIndex + 3], pData[DSTIndex + 2]);
+        compTime = M_BytesTo2ByteValue(pData[DSTIndex + 13], pData[DSTIndex + 12]);
+        checkPointByte = pData[DSTIndex + 4];
+        LBA = M_BytesTo8ByteValue(0,0, pData[DSTIndex + 10], pData[DSTIndex + 9], pData[DSTIndex + 8], pData[DSTIndex + 7], pData[DSTIndex + 6], pData[DSTIndex + 5]);
         JSONNODE *runInfo = json_new(JSON_NODE);
-        snprintf(&*myStr.begin(), BASIC, "Run %3d ", i);
-        json_set_name(runInfo, &*myStr.begin());
-        snprintf(&*myStr.begin(), BASIC, "%u", timeStamp);
-        json_push_back(runInfo, json_new_a("Timestamp", &*myStr.begin()));
-        snprintf(&*myStr.begin(), BASIC, "0x%02x", int(StatusByte));
-        json_push_back(runInfo, json_new_a("Status Byte", &*myStr.begin()));
-        Get_Status_Meaning(myStr, StatusByte);
-        json_push_back(runInfo, json_new_a("Status Meaning", &*myStr.begin()));
 
-        snprintf(&*myStr.begin(), BASIC, "0x%02x", checkPointByte);
-        json_push_back(runInfo, json_new_a("CheckPoint Byte", &*myStr.begin()));
-        snprintf(&*myStr.begin(), BASIC, "%u", compTime);
-        json_push_back(runInfo, json_new_a("Completion Time", &*myStr.begin()));
+        std::ostringstream temp;
+        temp << "Run " << std::dec << std::setw(3) << i;
+        json_set_name(runInfo, temp.str().c_str());
+        temp.clear();
+        temp << std::dec << timeStamp;
+        json_push_back(runInfo, json_new_a("Timestamp", temp.str().c_str()));
+        temp.clear();
+        temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << StatusByte;
+        json_push_back(runInfo, json_new_a("Status Byte", temp.str().c_str()));
+        Get_Status_Meaning(myStr,StatusByte);
+        json_push_back(runInfo, json_new_a("Status Meaning", myStr.c_str()));
+
+        temp.clear();
+        temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << checkPointByte;
+        json_push_back(runInfo, json_new_a("CheckPoint Byte", temp.str().c_str()));
+        temp.clear();
+        temp << std::dec << compTime;
+        json_push_back(runInfo, json_new_a("Completion Time", temp.str().c_str()));
         set_json_64bit(runInfo, "LBA", LBA, false);
 
         DSTIndex += 26;

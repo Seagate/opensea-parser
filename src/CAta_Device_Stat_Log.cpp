@@ -13,6 +13,9 @@
 
 #include "CAta_Device_Stat_Log.h"
 
+#include <sstream>
+#include <iomanip>
+
 using namespace opensea_parser;
 using namespace std;
 
@@ -186,14 +189,14 @@ eReturnValues CSAtaDevicStatisticsTempLogs::parse_SCT_Temp_Log()
 		json_push_back(JsonData, sctTemp);
 		return static_cast<eReturnValues>(INVALID_LENGTH);
 	}
-    SamplePeriod = ((uint16_t)pData[3] << 8) | ((uint16_t)pData[2] << 0);
-    Interval = ((uint16_t)pData[5] << 8) | ((uint16_t)pData[4] << 0);
+    SamplePeriod = M_BytesTo2ByteValue(pData[3], pData[2]);
+    Interval = M_BytesTo2ByteValue(pData[5], pData[4]);
     MaxOpLimit = pData[6];
     OverLimit = pData[7];
     MinOpLimit = pData[8];
     UnderLimit = pData[9];
-    CBSize = ((uint16_t)pData[31] << 8) | ((uint16_t)pData[30] << 0);
-    CBIndex = ((uint16_t)pData[33] << 8) | ((uint16_t)pData[32] << 0);
+    CBSize = M_BytesTo2ByteValue(pData[31], pData[30]);
+    CBIndex = M_BytesTo2ByteValue(pData[33], pData[32]);
     Temperature = pData[(34 + CBIndex)];
 
    
@@ -209,33 +212,35 @@ eReturnValues CSAtaDevicStatisticsTempLogs::parse_SCT_Temp_Log()
     printf("\t%s%" PRId16" \n", "Temp Log CB Index (current entry):           ", CBIndex);
     printf("\t%s%" PRId8" \n", "Temp Log Temperature of CB Index (Celsius):   ", Temperature);
 #endif
-    snprintf(&*myStr.begin(), BASIC, "%" PRId16"", SamplePeriod);
-    json_push_back(sctTemp, json_new_a("Temp Log Sample Period (in minutes)", &*myStr.begin()));
+    std::ostringstream temp;
 
-    snprintf(&*myStr.begin(), BASIC, "%" PRId16"", Interval);
-    json_push_back(sctTemp, json_new_a("Temp Log Interval (in minutes)", &*myStr.begin()));
-
-    snprintf(&*myStr.begin(), BASIC, "%d", MaxOpLimit);
-    json_push_back(sctTemp, json_new_a("Temp Log Max Op Limit", &*myStr.begin()));
-
-    snprintf(&*myStr.begin(), BASIC, "%d", OverLimit);
-    json_push_back(sctTemp, json_new_a("Temp Log Over Limit", &*myStr.begin()));
-
-    snprintf(&*myStr.begin(), BASIC, "%d", MinOpLimit);
-    json_push_back(sctTemp, json_new_a("Temp Log Min Op Limit", &*myStr.begin()));
-
-    snprintf(&*myStr.begin(), BASIC, "%d", UnderLimit);
-    json_push_back(sctTemp, json_new_a("Temp Log Under Limit", &*myStr.begin()));
-
-    snprintf(&*myStr.begin(), BASIC, "%" PRId16"", CBSize);
-    json_push_back(sctTemp, json_new_a("Temp Log CB Size (in entries)", &*myStr.begin()));
-
-    snprintf(&*myStr.begin(), BASIC, "%" PRId16"", CBIndex);
-    json_push_back(sctTemp, json_new_a("Temp Log CB Index (current entry)", &*myStr.begin()));
-
-    snprintf(&*myStr.begin(), BASIC, "%d", Temperature);
-    json_push_back(sctTemp, json_new_a("Temp Log Temperature of CB Index (Celsius)", &*myStr.begin()));
-
+    temp << std::dec << SamplePeriod;
+    json_push_back(sctTemp, json_new_a("Temp Log Sample Period (in minutes)", temp.str().c_str()));
+    temp.clear();
+    temp << std::dec << Interval;
+    json_push_back(sctTemp, json_new_a("Temp Log Interval (in minutes)", temp.str().c_str()));
+    temp.clear();
+    temp << std::dec << MaxOpLimit;
+    json_push_back(sctTemp, json_new_a("Temp Log Max Op Limit", temp.str().c_str()));
+    temp.clear();
+    temp << std::dec << OverLimit;
+    json_push_back(sctTemp, json_new_a("Temp Log Over Limit", temp.str().c_str()));
+    temp.clear();
+    temp << std::dec << MinOpLimit;
+    json_push_back(sctTemp, json_new_a("Temp Log Min Op Limit", temp.str().c_str()));
+    temp.clear();
+    temp << std::dec << UnderLimit;
+    json_push_back(sctTemp, json_new_a("Temp Log Under Limit", temp.str().c_str()));
+    temp.clear();
+    temp << std::dec << CBSize;
+    json_push_back(sctTemp, json_new_a("Temp Log CB Size (in entries)", temp.str().c_str()));
+    temp.clear();
+    temp << std::dec << CBIndex;
+    json_push_back(sctTemp, json_new_a("Temp Log CB Index (current entry)", temp.str().c_str()));
+    temp.clear();
+    temp << std::dec << Temperature;
+    json_push_back(sctTemp, json_new_a("Temp Log Temperature of CB Index (Celsius)", temp.str().c_str()));
+    temp.clear();
     json_push_back(JsonData, sctTemp);
     return SUCCESS;
 }
@@ -899,7 +904,7 @@ void CAtaDeviceStatisticsLogs::logPage03(uint64_t *value, JSONNODE *masterData)
 void CAtaDeviceStatisticsLogs::logPage04(uint64_t *value, JSONNODE *masterData)
 {
     //General Errors Statistics(log page 04) contains general error infomation about the device.
-	sDeviceLog04 *dslog04 = (sDeviceLog04*)&value[0];
+	sDeviceLog04 *dslog04 = reinterpret_cast<sDeviceLog04*>(&value[0]);
 
     JSONNODE *sctError = json_new(JSON_NODE);
     json_set_name(sctError, "General Errors Statistics(log Page 04h)");
@@ -907,9 +912,9 @@ void CAtaDeviceStatisticsLogs::logPage04(uint64_t *value, JSONNODE *masterData)
     
     printf("\t%s \n", "*****General Errors Statistics(log Page 04h)*****");
 #endif
-	json_push_back(sctError, json_new_i("Number of Reported Uncorrectable Errors", (uint32_t)check_Status_Strip_Status(dslog04->numberReportedECC)));
-	json_push_back(sctError, json_new_i("Number of Resets btw Cmd Completion", (uint32_t)check_Status_Strip_Status(dslog04->resets)));
-	json_push_back(sctError, json_new_i("Physical Element Status Changed", (uint32_t)check_Status_Strip_Status(dslog04->statusChanged)));
+	json_push_back(sctError, json_new_i("Number of Reported Uncorrectable Errors", static_cast<uint32_t>(check_Status_Strip_Status(dslog04->numberReportedECC))));
+	json_push_back(sctError, json_new_i("Number of Resets btw Cmd Completion", static_cast<uint32_t>(check_Status_Strip_Status(dslog04->resets))));
+	json_push_back(sctError, json_new_i("Physical Element Status Changed", static_cast<uint32_t>(check_Status_Strip_Status(dslog04->statusChanged))));
 
     json_push_back(masterData, sctError);
 

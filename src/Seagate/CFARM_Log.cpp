@@ -248,7 +248,7 @@ eReturnValues CFARMLog::parse_Device_Farm_Log(JSONNODE *masterJson)
     if (m_isScsi)
     {
         CSCSI_Farm_Log *pCFarm;
-        pCFarm = new CSCSI_Farm_Log((uint8_t *)bufferData, m_LogSize,false, m_shwoStatus);
+        pCFarm = new CSCSI_Farm_Log(bufferData, m_LogSize, m_shwoStatus);
         if (pCFarm->get_Log_Status() == SUCCESS)
         {
             pCFarm->print_All_Pages(masterJson);
@@ -263,7 +263,7 @@ eReturnValues CFARMLog::parse_Device_Farm_Log(JSONNODE *masterJson)
     else
     {
         CATA_Farm_Log *pCFarm;
-        pCFarm = new CATA_Farm_Log((uint8_t *)bufferData, m_LogSize, m_shwoStatus);
+        pCFarm = new CATA_Farm_Log(bufferData, m_LogSize, m_shwoStatus);
         if (pCFarm->get_Log_Status() == IN_PROGRESS)
         {
 			try

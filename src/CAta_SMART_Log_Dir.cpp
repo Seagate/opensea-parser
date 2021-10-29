@@ -244,15 +244,16 @@ eReturnValues CAta_SMART_Log_Dir::print_SMART_Log_Dir(JSONNODE *masterData)
     for (; logItr != m_logDetailList.end(); ++logItr)
     {
         sLogDetailStructure logDetail = *logItr;
-        snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", logDetail.logAddress);
-        snprintf(&*printStr.begin(), BASIC, "%" PRIu16"", logDetail.numberOfPages);
+        std::ostringstream temp, temp2;
+        temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << logDetail.logAddress;
+        temp2 << std::dec << logDetail.numberOfPages;
 
         if (is_Host_Specific_Log(logDetail.logAddress) && hostInfo != NULL)
-            json_push_back(hostInfo, json_new_a(&*myStr.begin(), &*printStr.begin()));
+            json_push_back(hostInfo, json_new_a(temp.str().c_str(), temp2.str().c_str()));
         else if (is_Vendor_Specific_Log(logDetail.logAddress) && vendorInfo != NULL)
-            json_push_back(vendorInfo, json_new_a(&*myStr.begin(), &*printStr.begin()));
+            json_push_back(vendorInfo, json_new_a(temp.str().c_str(), temp2.str().c_str()));
         else
-            json_push_back(dirInfo, json_new_a(&*myStr.begin(), &*printStr.begin()));
+            json_push_back(dirInfo, json_new_a(temp.str().c_str(), temp2.str().c_str()));
     }
 
     if (hostInfo != NULL)

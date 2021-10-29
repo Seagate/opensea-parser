@@ -190,7 +190,7 @@ bool CAta_NCQ_Command_Error_Log::get_Bit_Name_Info(JSONNODE *NCQInfo)
 //---------------------------------------------------------------------------
 bool CAta_NCQ_Command_Error_Log::create_LBA()
 {
-    m_LBA = ((uint64_t)ncqError->lba6 << 40) | ((uint64_t)ncqError->lba5 << 32) | ((uint64_t)ncqError->lba4 << 24) | ((uint64_t)ncqError->lba3 << 16) | ((uint64_t)ncqError->lba2 << 8) | ((uint64_t)ncqError->lba1);
+    m_LBA = M_BytesTo8ByteValue(0, 0, ncqError->lba6, ncqError->lba5, ncqError->lba4, ncqError->lba3, ncqError->lba2, ncqError->lba1);
     return true;
 }
 //-----------------------------------------------------------------------------

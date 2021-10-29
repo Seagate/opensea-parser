@@ -30,6 +30,8 @@
 #include "libjson.h"
 #include <limits.h>
 
+#include <sstream>
+#include <iomanip>
 
 extern eVerbosityLevels g_verbosity;
 extern eDataFormat g_dataformat;
@@ -311,28 +313,26 @@ namespace opensea_parser {
     inline void set_json_64bit_With_Check_Status(JSONNODE *nowNode, const std::string & myStr, uint64_t value, bool hexPrint)
     {
 		value = check_Status_Strip_Status(value);
-        char *printStr = (char*)calloc((BASIC), sizeof(char));
-
+        std::ostringstream temp;
         if (hexPrint)
         {
             //json does not support 64 bit numbers. Therefore we will print it as a string
-            snprintf(printStr, BASIC, "0x%016" PRIx64"", value);
-            json_push_back(nowNode, json_new_a(&*myStr.begin(), printStr));
+            temp << "0x" << std::hex << std::setfill('0') << std::setw(16) << value;
+            json_push_back(nowNode, json_new_a(myStr.c_str(), temp.str().c_str()));
         }
         else
         {
             if (M_IGETBITRANGE(value, 63, 31) == 0)
             {
-                json_push_back(nowNode, json_new_i(&*myStr.begin(), value));
+                json_push_back(nowNode, json_new_i(myStr.c_str(), value));
             }
             else
             {
                 // if the vale is greater then a unsigned 32 bit number print it as a string
-                snprintf(printStr, BASIC, "%" PRIu64"", value);
-                json_push_back(nowNode, json_new_a(&*myStr.begin(), printStr));
+                temp << std::dec << value;
+                json_push_back(nowNode, json_new_a(myStr.c_str(), temp.str().c_str()));
             }
         }
-        safe_Free(printStr);
 	}
     //-----------------------------------------------------------------------------
     //
@@ -353,28 +353,26 @@ namespace opensea_parser {
     //-----------------------------------------------------------------------------
     inline void set_json_64bit(JSONNODE *nowNode, const std::string & myStr, uint64_t value, bool hexPrint)
     {
-        char *printStr = (char*)calloc((BASIC), sizeof(char));
-
+        std::ostringstream temp;
         if (hexPrint)
         {
             //json does not support 64 bit numbers. Therefore we will print it as a string
-            snprintf(printStr, BASIC, "0x%016" PRIx64"", value);
-            json_push_back(nowNode, json_new_a(&*myStr.begin(), printStr));
+            temp << "0x" << std::hex << std::setfill('0') << std::setw(16) << value;
+            json_push_back(nowNode, json_new_a(myStr.c_str(), temp.str().c_str()));
         }
         else
         {
             if (M_IGETBITRANGE(value,63,32) == 0)
             {
-				json_push_back(nowNode, json_new_i(&*myStr.begin(), value));
+                json_push_back(nowNode, json_new_i(myStr.c_str(), value));
             }
             else
             {
                 // if the vale is greater then a unsigned 32 bit number print it as a string
-                snprintf(printStr, BASIC, "%" PRIu64"", value);
-                json_push_back(nowNode, json_new_a(&*myStr.begin(), printStr));
+                temp << std::dec << value;
+                json_push_back(nowNode, json_new_a(myStr.c_str(), temp.str().c_str()));
             }
         }
-        safe_Free(printStr);
     }
 	//-----------------------------------------------------------------------------
 	//
@@ -395,9 +393,9 @@ namespace opensea_parser {
     inline void set_Json_Bool(JSONNODE *nowNode, const std::string & myStr, bool workingValue)
     {
         if (workingValue)
-            json_push_back(nowNode, json_new_b(&*myStr.begin(), true));
+            json_push_back(nowNode, json_new_b(myStr.c_str(), true));
         else
-            json_push_back(nowNode, json_new_b(&*myStr.begin(), false));
+            json_push_back(nowNode, json_new_b(myStr.c_str(), false));
     }
 	//-----------------------------------------------------------------------------
 	//
@@ -460,6 +458,25 @@ namespace opensea_parser {
 	void prePython_unknown_params(JSONNODE* masterData, uint64_t value, uint16_t logPage, uint8_t subPage, uint16_t paramCode, uint32_t offset);
 	void prePython_int(JSONNODE* masterData, const char* name, const char* statType, const char* unit, uint64_t value, uint16_t logPage, uint8_t subPage, uint16_t paramCode, uint32_t offset);
 	void prePython_float(JSONNODE* masterData, const char* name, const char* statType, const char* unit, double value, uint16_t logPage, uint8_t subPage, uint16_t paramCode, uint32_t offset);
+
+    inline void byte_swap_std_string(std::string &stringToSwap)
+    {
+        std::string tempString;
+        for (size_t strOffset = 0; (strOffset + 1) < stringToSwap.size(); strOffset += 2)
+        {
+            tempString[strOffset] = stringToSwap[strOffset + 1];
+            tempString[strOffset + 1] = stringToSwap[strOffset];
+        }
+        stringToSwap.clear();//clear out the old byte swapped string
+        stringToSwap = tempString;//assign it to the correctly swapped string
+    }
+
+    inline void remove_trailing_whitespace_std_string(std::string &stringToTrim)
+    {
+        //search for the last of ASCII characters...so use find_last_of the printable characters that are NOT spaces should do the trick...-TJE
+        stringToTrim.erase(stringToTrim.find_last_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-=~!@#$%^&*()_+[]{};':\"\\|,./<>?`") + 1, stringToTrim.back());
+    }
+
 #endif // !OPENSEA_PARSER
 }
 

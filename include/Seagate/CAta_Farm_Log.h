@@ -23,6 +23,7 @@
 #include "Farm_Helper.h"
 #include "Farm_Common.h"
 #include "Ata_Farm_Types.h"
+#include <sstream>
 
 namespace opensea_parser {
 
@@ -76,10 +77,10 @@ namespace opensea_parser {
 			{
 				uint64_t sn = 0;
 				sn = (idInfo->serialNumber & 0x00FFFFFFFFFFFFFFLL) | ((idInfo->serialNumber2 & 0x00FFFFFFFFFFFFFFLL) << 32);
-				serialNumber.resize(SERIAL_NUMBER_LEN);
-				memset(&*serialNumber.begin(), 0, SERIAL_NUMBER_LEN);
-				strncpy(&*serialNumber.begin(), (char*)&sn, SERIAL_NUMBER_LEN);
-				byte_Swap_String(&*serialNumber.begin());
+                serialNumber.clear();
+                serialNumber.assign(reinterpret_cast<const char*>(&sn), SERIAL_NUMBER_LEN);//This is very ugly and I don't like it -TJE
+                //add these characters to the SN string...this is byteswapped, hence this weird order of doing things. -TJE
+                byte_swap_std_string(serialNumber);
 			}
 			//-----------------------------------------------------------------------------
 			//
@@ -104,9 +105,9 @@ namespace opensea_parser {
 				word_Swap_64(&wwn1);
 				word_Swap_64(&wwn2);
 				wwn = (wwn2) | ((wwn1) >> 32);
-				worldWideName.resize(WORLD_WIDE_NAME_LEN);
-				memset(&*worldWideName.begin(), 0, WORLD_WIDE_NAME_LEN);
-				snprintf(&*worldWideName.begin(), WORLD_WIDE_NAME_LEN, "0x%" PRIX64"", wwn);
+                std::ostringstream tempStream;
+                tempStream << "0x" << std::hex << wwn;
+                worldWideName.assign(tempStream.str());
 			}
 			//-----------------------------------------------------------------------------
 			//
@@ -127,10 +128,10 @@ namespace opensea_parser {
 			{
 				uint64_t firm = 0;
 				firm = (idInfo->firmware & 0x00FFFFFFFFFFFFFFLL);
-				firmwareRev.resize(FIRMWARE_REV_LEN);
-				memset(&*firmwareRev.begin(), 0, FIRMWARE_REV_LEN);
-				strncpy(&*firmwareRev.begin(), (char*)&firm, FIRMWARE_REV_LEN);
-				byte_Swap_String(&*firmwareRev.begin());
+                firmwareRev.clear();
+                firmwareRev.assign(reinterpret_cast<const char*>(&firm), FIRMWARE_REV_LEN);//This is very ugly and I don't like it -TJE
+                //add these characters to the SN string...this is byteswapped, hence this weird order of doing things. -TJE
+                byte_swap_std_string(firmwareRev);
 			}
             //-----------------------------------------------------------------------------
             //
@@ -150,31 +151,17 @@ namespace opensea_parser {
             inline void create_Model_Number_String(std::string &modelNumber, const sDriveInfo * const idInfo)
             {
                 #define MAXSIZE  10
-				#define STRMAXSIZE (MAXSIZE * 4)	
                 uint64_t model[MAXSIZE] = { 0,0,0,0,0,0,0,0,0,0 };
                 // loop for string the 0xc0 off
+                std::string temp;
                 for (uint8_t i = 0; i < MAXSIZE; i++)
                 {
                     model[i] = idInfo->modelNumber[i] & 0x00FFFFFFFFFFFFFFLL;
+                    temp.assign(reinterpret_cast<const char *>(&model[i]), 10);
+                    byte_swap_std_string(temp);
+                    modelNumber.append(temp);
                 }
-                // temp string for coping the hex to text, have to resize for c98 issues
-                std::string tempStr = "";
-                tempStr.resize(STRMAXSIZE);
-                modelNumber.resize(STRMAXSIZE);
-                // memset them to 0
-                memset(&*modelNumber.begin(), 0, STRMAXSIZE);
-                memset(&*tempStr.begin(), 0, STRMAXSIZE);
-                // loop to copy the info into the modeleNumber string
-                for (uint8_t n = 0; n < MAXSIZE; n++)
-                {
-                    model[n] = idInfo->modelNumber[n] & 0x00FFFFFFFFFFFFFFLL;
-                    strncpy(&*tempStr.begin(), (char*)&model[n], 10);
-                    byte_Swap_String(&*tempStr.begin());
-                    strncat(&*modelNumber.begin(), &*tempStr.begin(), tempStr.size());
-					if ((modelNumber.size() + 4) > STRMAXSIZE)
-						break;
-                }
-                remove_Trailing_Whitespace(&*modelNumber.begin());
+                remove_trailing_whitespace_std_string(modelNumber);
             }
 			//-----------------------------------------------------------------------------
 			//
@@ -197,9 +184,7 @@ namespace opensea_parser {
 				dFace = (idInfo->deviceInterface & 0x00FFFFFFFFFFFFFFLL);
 				byte_Swap_64(&dFace);
 				dFace = (dFace >> 32);
-				dInterface.resize(DEVICE_INTERFACE_LEN);
-				memset(&*dInterface.begin(), 0, DEVICE_INTERFACE_LEN);
-				strncpy(&*dInterface.begin(), (char*)&dFace, DEVICE_INTERFACE_LEN);
+                dInterface.assign(reinterpret_cast<const char*>(&dFace), DEVICE_INTERFACE_LEN);//This is very ugly and I don't like it -TJE
 			}
 
         public:

@@ -382,7 +382,7 @@ CFarmCommon::~CFarmCommon()
 		}
 		else
 		{
-			strncpy(&*dateStr.begin(), (char*)&date, DATE_YEAR_DATE_SIZE);
+            dateStr.assign(reinterpret_cast<const char*>(&date), sizeof(uint16_t));
 		}
    }
 
