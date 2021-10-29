@@ -1429,16 +1429,6 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
-        snprintf(&*myHeader.begin(), BASIC, "Number of TMD for Head %" PRIu32"", loopCount);
-        set_json_64_bit_With_Status(headInfo, &*myHeader.begin(), vFarmFrame[page].reliPage.numberOfTMD[loopCount], false, m_showStatusBits);                          //!< [24] Number of TMD over last 3 SMART Summary Frames by Head9,10
-    }
-    for (loopCount = 0; loopCount < m_heads; ++loopCount)
-    {
-        snprintf(&*myHeader.begin(), BASIC, "Velocity Observer by Head %" PRIu32"", loopCount);
-        set_json_64_bit_With_Status(headInfo, &*myHeader.begin(), vFarmFrame[page].reliPage.velocityObserver[loopCount], false, m_showStatusBits);                     //!< [24] Velocity Observer over last 3 SMART Summary Frames by Head9,10
-    }
-    for (loopCount = 0; loopCount < m_heads; ++loopCount)
-    {
         snprintf(&*myHeader.begin(), BASIC, "Fly height clearance delta middle by Head %" PRIu32"", loopCount); // Head count
         snprintf(&*myStr.begin(), BASIC, "%0.03f", static_cast<float>(M_WordInt0(vFarmFrame[page].reliPage.flyHeightClearance[loopCount].middle) * .001));
         set_json_string_With_Status(headInfo, &*myHeader.begin(), &*myStr.begin(), vFarmFrame[page].reliPage.flyHeightClearance[loopCount].middle, m_showStatusBits); //!< [24][3] Applied fly height clearance delta per head in thousandths of one Angstrom.
