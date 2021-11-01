@@ -171,7 +171,7 @@ typedef struct _sflyHeight
     int64_t        inner;
     int64_t        middle;
     
-    _sflyHeight() : inner(0), middle(0), outer(0) {};
+    _sflyHeight() :outer(0), inner(0), middle(0), {};
 }sflyHeight;
 
 typedef struct _H2SAT
