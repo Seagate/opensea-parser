@@ -1182,7 +1182,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                         if (headerAlreadyFound == false)                                    // check to see if we have already found the header
                         {
                             m_pHeader = (sScsiFarmHeader *)&pBuf[offset];                    // get the Farm Header information
-                            memcpy((sScsiFarmHeader *)&pFarmFrame->farmHeader, m_pHeader, m_pageParam->plen + 4);
+                            memcpy((sScsiFarmHeader *)&pFarmFrame->farmHeader, m_pHeader, m_pageParam->plen + PARAMSIZE);
                             byte_Swap_64(&pFarmFrame->farmHeader.farmHeader.reasonForFrameCpature);  // need to swap the header information
                             offset += (m_pageParam->plen + sizeof(sScsiPageParameter));
                             headerAlreadyFound = true;                                      // set the header to true so we will not look at the data a second time
@@ -1213,7 +1213,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                       
                         sScsiWorkLoadStat *pworkLoad = NULL; 										// get the work load information
                         pworkLoad = (sScsiWorkLoadStat *)&pBuf[offset ];
-                        memcpy((sScsiWorkLoadStat *)&pFarmFrame->workLoadPage, pworkLoad, pworkLoad->PageHeader.plen + 4);
+                        memcpy((sScsiWorkLoadStat *)&pFarmFrame->workLoadPage, pworkLoad, pworkLoad->PageHeader.plen + PARAMSIZE);
                         swap_Bytes_sWorkLoadStat(&pFarmFrame->workLoadPage);
                         offset += (pworkLoad->PageHeader.plen + sizeof(sScsiPageParameter));
                     }
@@ -1244,7 +1244,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                 {
                     sScsiEnvironmentStat *pEnvironment;                            // get the envirmonent information 
                     pEnvironment = (sScsiEnvironmentStat *)&pBuf[offset];
-                    memcpy((sScsiEnvironmentStat *)&pFarmFrame->environmentPage, pEnvironment, pEnvironment->pPageHeader.plen +4);
+                    memcpy((sScsiEnvironmentStat *)&pFarmFrame->environmentPage, pEnvironment, pEnvironment->pPageHeader.plen + PARAMSIZE);
                     swap_Bytes_sEnvironmentStat(&pFarmFrame->environmentPage);
                     offset += (pEnvironment->pPageHeader.plen + sizeof(sScsiPageParameter));
                 }
@@ -1256,7 +1256,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     {
                         sScsiReliabilityStat *pReli;                                              // get the Reliabliity stat
                         pReli = (sScsiReliabilityStat *)&pBuf[offset];
-                        memcpy((sScsiReliabilityStat *)&pFarmFrame->reliPage.reli, pReli, pReli->pPageHeader.plen + 4);
+                        memcpy((sScsiReliabilityStat *)&pFarmFrame->reliPage.reli, pReli, pReli->pPageHeader.plen + PARAMSIZE);
                         swap_Bytes_sScsiReliabilityStat(&pFarmFrame->reliPage);
                         offset += (pReli->pPageHeader.plen + sizeof(sScsiPageParameter));
                     }
@@ -1264,7 +1264,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     {
                         sScsiReliStatVersion4 *pReli;                                              // get the Reliabliity stat
                         pReli = (sScsiReliStatVersion4 *)&pBuf[offset];
-                        memcpy((sScsiReliStatVersion4 *)&pFarmFrame->reliPage.reli4, pReli, pReli->pPageHeader.plen + 4);
+                        memcpy((sScsiReliStatVersion4 *)&pFarmFrame->reliPage.reli4, pReli, pReli->pPageHeader.plen + PARAMSIZE);
                         swap_Bytes_sScsiReliabilityStat(&pFarmFrame->reliPage);
                         offset += (pReli->pPageHeader.plen + sizeof(sScsiPageParameter));
                     }
@@ -1274,7 +1274,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                 {
                     sGeneralDriveInfoPage06 *pDriveInfo;                                              
                     pDriveInfo = (sGeneralDriveInfoPage06 *)&pBuf[offset];
-                    memcpy((sGeneralDriveInfoPage06 *)&pFarmFrame->gDPage06, pDriveInfo, pDriveInfo->pPageHeader.plen + 4);
+                    memcpy((sGeneralDriveInfoPage06 *)&pFarmFrame->gDPage06, pDriveInfo, pDriveInfo->pPageHeader.plen + PARAMSIZE);
                     swap_Bytes_sDrive_Info_Page_06(&pFarmFrame->gDPage06);
                     create_Model_Number_String(pFarmFrame->identStringInfo.modelNumber, pDriveInfo);
                     offset += (pDriveInfo->pPageHeader.plen + sizeof(sScsiPageParameter));
@@ -1284,7 +1284,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                 {
                     sScsiEnvStatPage07 *pEnvStat;
                     pEnvStat = (sScsiEnvStatPage07 *)&pBuf[offset];
-                    memcpy((sScsiEnvStatPage07 *)&pFarmFrame->envStatPage07, pEnvStat, pEnvStat->pPageHeader.plen + 4);
+                    memcpy((sScsiEnvStatPage07 *)&pFarmFrame->envStatPage07, pEnvStat, pEnvStat->pPageHeader.plen + PARAMSIZE);
                     swap_Bytes_EnvironmentPage07(&pFarmFrame->envStatPage07);
                     offset += (pEnvStat->pPageHeader.plen + sizeof(sScsiPageParameter));
                 }
@@ -1293,7 +1293,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     {
                         sScsiWorkloadStatPage08 *pWorkloadStat;
                         pWorkloadStat = (sScsiWorkloadStatPage08 *)&pBuf[offset];
-                        memcpy((sScsiWorkloadStatPage08 *)&pFarmFrame->workloadStatPage08, pWorkloadStat, pWorkloadStat->pPageHeader.plen + 4);
+                        memcpy((sScsiWorkloadStatPage08 *)&pFarmFrame->workloadStatPage08, pWorkloadStat, pWorkloadStat->pPageHeader.plen + PARAMSIZE);
                         swap_Bytes_WorkloadPage08(&pFarmFrame->workloadStatPage08);
                         offset += (pWorkloadStat->pPageHeader.plen + sizeof(sScsiPageParameter));
                     }

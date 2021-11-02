@@ -431,7 +431,7 @@ eReturnValues CScsiScanLog::get_Scan_Data(JSONNODE *masterData)
 		process_Scan_Status_Data(pageInfo);
         if ((m_ScanParam->paramLength + 4) < m_PageLength)
         {
-            for (size_t offset = ((size_t)m_ScanParam->paramLength + 4); offset < (((size_t)m_PageLength) - sizeof(sScanFindingsParams)); )
+            for (size_t offset = ((size_t)m_ScanParam->paramLength + PARAMSIZE); offset < (((size_t)m_PageLength) - sizeof(sScanFindingsParams)); )
             {
                 if (offset < m_bufferLength && offset < UINT16_MAX)
                 {
@@ -442,13 +442,13 @@ eReturnValues CScsiScanLog::get_Scan_Data(JSONNODE *masterData)
                         m_defect = (sScanFindingsParams *)&pData[offset];
                         process_Defect_Data(pageInfo);
                         //offset += sizeof(sScanFindingsParams);
-                        offset += m_defect->paramLength + 4;
+                        offset += m_defect->paramLength + PARAMSIZE;
                     }
                     else //if (paramCode >= 0x8000) //TODO: Nayana to check with Tim how to skip ssd part here
                     {
                         m_ParamHeader = (sBackgroundScanParamHeader*)&pData[offset];
                         process_other_param_data(pageInfo, offset);
-                        offset += m_ParamHeader->paramLength + 4;
+                        offset += m_ParamHeader->paramLength + PARAMSIZE;
                     }
                 }
                 else
