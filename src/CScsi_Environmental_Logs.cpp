@@ -33,6 +33,8 @@ CScsiEnvironmentLog::CScsiEnvironmentLog()
 	: CScsiTemperatureLog()
 	, m_EvnName("Environmnetal Log")
 	, m_EnvStatus(IN_PROGRESS)
+	, m_PageLength(0)
+	, m_SubPage(0)
 {
 	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
@@ -58,6 +60,7 @@ CScsiEnvironmentLog::CScsiEnvironmentLog(uint8_t *bufferData, size_t bufferSize,
 	:CScsiTemperatureLog(&bufferData[4], bufferSize)
 	, m_EvnName("Environmnetal Log")
 	, m_EnvStatus(IN_PROGRESS)
+	, m_PageLength(0)
 	, m_SubPage(subPage)
 {
 	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
