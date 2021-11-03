@@ -325,17 +325,11 @@ eReturnValues CScsiCmdDurationLimitsLog::get_Limits_Data(JSONNODE *masterData)
             }
             else
             {
-                if (g_dataformat != PREPYTHON_DATA)
-                {
-                    json_push_back(masterData, pageInfo);
-                }
+                json_push_back(masterData, pageInfo);
                 return BAD_PARAMETER;
             }
         }
-        if (g_dataformat != PREPYTHON_DATA)
-        {
-            json_push_back(masterData, pageInfo);
-        }
+        json_push_back(masterData, pageInfo);
         retStatus = SUCCESS;
     }
     else
