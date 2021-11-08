@@ -77,7 +77,6 @@ namespace opensea_parser {
         sSelfTest					*m_DST;						//<! single dst results
 
 		eReturnValues get_Self_Test_Log(uint8_t * buffer, size_t bufferSize, JSONNODE *masterJson);
-		eReturnValues get_PrePython_Self_Test_Log(uint8_t* buffer, size_t bufferSize, JSONNODE* masterJson);
 		void print_Self_Test_Log(JSONNODE *dstNode, uint16_t run,uint32_t offset);
 		void get_Self_Test_Results_String(std::string & meaning, uint8_t result);
 		void byte_Swap_Self_Test();

@@ -159,60 +159,6 @@ eReturnValues CScsi_DST_Results::get_Self_Test_Log(uint8_t *buffer, size_t buffe
 }
 //-----------------------------------------------------------------------------
 //
-//! \fn get_PrePython_Self_Test_Log()
-//
-//! \brief
-//!   Description: parse the ext self test dst log 
-//
-//  Entry:
-//! \param buffer -   pointer to the buffer data
-//! \param masterData - json node for all the data
-//
-//  Exit:
-//!   \return eReturnValues success
-//
-//---------------------------------------------------------------------------
-eReturnValues CScsi_DST_Results::get_PrePython_Self_Test_Log(uint8_t* buffer, size_t bufferSize, JSONNODE* masterJson)
-{
-	eReturnValues retStatus = IN_PROGRESS;
-	std::string myStr = "";
-	myStr.resize(BASIC);
-
-	m_DST = (sSelfTest*)buffer;
-	
-	for (int i = 1; i <= 20; i++)
-	{
-		byte_Swap_Self_Test();
-		if (m_DST->paramCode == i && m_DST->paramLength == 0x10)
-		{
-			print_Self_Test_Log(masterJson, i,(i*sizeof(sSelfTest) - sizeof(sSelfTest)));
-			if (i == 20)
-			{
-				retStatus = SUCCESS;
-			}
-			else
-			{
-				if ((((size_t)i + 1) * sizeof(sSelfTest)) <= bufferSize)
-				{
-					m_DST++;
-					retStatus = IN_PROGRESS;
-				}
-				else
-				{
-					return BAD_PARAMETER;
-				}
-			}
-		}
-		else
-		{
-			retStatus = BAD_PARAMETER;
-			break;
-		}
-	}
-	return retStatus;
-}
-//-----------------------------------------------------------------------------
-//
 //! \fn print_Self_Test_Log()
 //
 //! \brief
