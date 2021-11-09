@@ -334,7 +334,7 @@ void opensea_parser::prePython_unknown_params(JSONNODE* masterData, uint64_t val
         std::string myStr = "";
         myStr.resize(BASIC);
         JSONNODE* data = json_new(JSON_NODE);
-        json_push_back(data, json_new_a("name", "unknown"));
+        json_push_back(data, json_new_a("name", "unknown_parameter"));
         JSONNODE* label = json_new(JSON_NODE);
         json_set_name(label, "labels");
         json_push_back(label, json_new_a("units", "unknown"));
@@ -342,9 +342,20 @@ void opensea_parser::prePython_unknown_params(JSONNODE* masterData, uint64_t val
         snprintf(&*myStr.begin(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16":%" PRIu32"", logPage, subPage, paramCode, offset);
         json_push_back(label, json_new_a("metric_source", &*myStr.begin()));
         json_push_back(data, label);
-        json_push_back(data, json_new_i("value", value));
-        snprintf(&*myStr.begin(), BASIC, "%" PRIu64"", value);
 
+        JSONNODE* valueRaw = json_new(JSON_ARRAY);
+        json_set_name(valueRaw, "value_raw");
+        uint8_t vraw = 0;
+        for (size_t i = 0; i < sizeof(uint64_t); i++)          // loop for the zones
+        {
+            
+            vraw = ((uint8_t)(((value >> (i * 8)) & 0x00000000000000FFULL) >> (i * 8)));
+            json_push_back(valueRaw, json_new_i("value_raw", vraw));
+        }
+        json_push_back(label, valueRaw);
+        
+        
+        json_push_back(data, json_new_i("value", -1));
         json_push_back(masterData, data);
     }
 
