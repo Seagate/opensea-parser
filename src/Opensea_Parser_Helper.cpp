@@ -309,6 +309,51 @@ void opensea_parser::get_SMART_Save_Flages_String(std::string& reason, uint8_t f
 }
 //-----------------------------------------------------------------------------
 //
+//! \fn prePython_uknown_params()
+//
+//! \brief
+//!   Description:  process prepython unknow or vendor spcific information
+//
+//  Entry:
+//! \param  value - the 64 bit value  
+//! \param  logPage - the log page number of the data
+//! \param  subPage - the sub page number of the data
+//! \param  paramCode for the data 
+//! \param  offset - offset with in the buffer where the data is coming from
+//! \param  parseUnknowns - do we need to show the data or just skip it all
+//
+//  Exit:
+//!   \return 
+//
+//---------------------------------------------------------------------------
+void prePython_uknown_params(JSONNODE* masterData, uint64_t value, uint16_t logPage, uint8_t subPage, uint16_t paramCode, uint32_t offset, bool parseUnknowns)
+{
+    if (parseUnknowns)
+    {
+        std::string myStr = "";
+        myStr.resize(BASIC);
+        JSONNODE* data = json_new(JSON_NODE);
+        json_push_back(data, json_new_a("name", "uknown"));
+        JSONNODE* label = json_new(JSON_NODE);
+        json_set_name(label, "labels");
+        //if (statType != NULL)
+        //{
+        //    json_push_back(label, json_new_a("stat_type", statType));
+        //}
+        json_push_back(label, json_new_a("units", "unit"));
+
+        snprintf(&*myStr.begin(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16":%" PRIu32"", logPage, subPage, paramCode, offset);
+        json_push_back(label, json_new_a("metric_source", &*myStr.begin()));
+        json_push_back(data, label);
+        json_push_back(data, json_new_i("value", value));
+        snprintf(&*myStr.begin(), BASIC, "%" PRIu64"", value);
+
+        json_push_back(masterData, data);
+    }
+
+}
+//-----------------------------------------------------------------------------
+//
 //! \fn prePython_int()
 //
 //! \brief
