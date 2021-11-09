@@ -12,11 +12,12 @@
 // \file Opensea_Parser_Helper.cpp   Definition of SeaParser specific functions, structures
 #include "Opensea_Parser_Helper.h"
 
-eVerbosityLevels g_verbosity = VERBOSITY_DEFAULT;
-eDataFormat g_dataformat = JSON_DATA;
-time_t           g_currentTime;
-char             g_currentTimeString[64];
-char             *g_currentTimeStringPtr = g_currentTimeString;
+eVerbosityLevels    g_verbosity = VERBOSITY_DEFAULT;
+eDataFormat         g_dataformat = JSON_DATA;
+bool                g_parseUnknown = true;
+time_t              g_currentTime;
+char                g_currentTimeString[64];
+char                *g_currentTimeStringPtr = g_currentTimeString;
 
 
 //-----------------------------------------------------------------------------
@@ -326,21 +327,17 @@ void opensea_parser::get_SMART_Save_Flages_String(std::string& reason, uint8_t f
 //!   \return 
 //
 //---------------------------------------------------------------------------
-void prePython_uknown_params(JSONNODE* masterData, uint64_t value, uint16_t logPage, uint8_t subPage, uint16_t paramCode, uint32_t offset, bool parseUnknowns)
+void opensea_parser::prePython_unknown_params(JSONNODE* masterData, uint64_t value, uint16_t logPage, uint8_t subPage, uint16_t paramCode, uint32_t offset)
 {
-    if (parseUnknowns)
+    if (g_parseUnknown)
     {
         std::string myStr = "";
         myStr.resize(BASIC);
         JSONNODE* data = json_new(JSON_NODE);
-        json_push_back(data, json_new_a("name", "uknown"));
+        json_push_back(data, json_new_a("name", "unknown"));
         JSONNODE* label = json_new(JSON_NODE);
         json_set_name(label, "labels");
-        //if (statType != NULL)
-        //{
-        //    json_push_back(label, json_new_a("stat_type", statType));
-        //}
-        json_push_back(label, json_new_a("units", "unit"));
+        json_push_back(label, json_new_a("units", "unknown"));
 
         snprintf(&*myStr.begin(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16":%" PRIu32"", logPage, subPage, paramCode, offset);
         json_push_back(label, json_new_a("metric_source", &*myStr.begin()));
