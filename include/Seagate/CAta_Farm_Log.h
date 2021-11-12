@@ -77,9 +77,9 @@ namespace opensea_parser {
 				uint64_t sn = 0;
 				sn = (idInfo->serialNumber & 0x00FFFFFFFFFFFFFFLL) | ((idInfo->serialNumber2 & 0x00FFFFFFFFFFFFFFLL) << 32);
 				serialNumber.resize(SERIAL_NUMBER_LEN);
-				memset((char*)serialNumber.c_str(), 0, SERIAL_NUMBER_LEN);
-				strncpy((char *)serialNumber.c_str(), (char*)&sn, SERIAL_NUMBER_LEN);
-				byte_Swap_String((char *)serialNumber.c_str());
+				memset(&*serialNumber.begin(), 0, SERIAL_NUMBER_LEN);
+				strncpy(&*serialNumber.begin(), (char*)&sn, SERIAL_NUMBER_LEN);
+				byte_Swap_String(&*serialNumber.begin());
 			}
 			//-----------------------------------------------------------------------------
 			//
@@ -105,8 +105,8 @@ namespace opensea_parser {
 				word_Swap_64(&wwn2);
 				wwn = (wwn2) | ((wwn1) >> 32);
 				worldWideName.resize(WORLD_WIDE_NAME_LEN);
-				memset((char *)worldWideName.c_str(), 0, WORLD_WIDE_NAME_LEN);
-				snprintf((char *)worldWideName.c_str(), WORLD_WIDE_NAME_LEN, "0x%" PRIX64"", wwn);
+				memset(&*worldWideName.begin(), 0, WORLD_WIDE_NAME_LEN);
+				snprintf(&*worldWideName.begin(), WORLD_WIDE_NAME_LEN, "0x%" PRIX64"", wwn);
 			}
 			//-----------------------------------------------------------------------------
 			//
@@ -128,9 +128,9 @@ namespace opensea_parser {
 				uint64_t firm = 0;
 				firm = (idInfo->firmware & 0x00FFFFFFFFFFFFFFLL);
 				firmwareRev.resize(FIRMWARE_REV_LEN);
-				memset((char *)firmwareRev.c_str(), 0, FIRMWARE_REV_LEN);
-				strncpy((char *)firmwareRev.c_str(), (char*)&firm, FIRMWARE_REV_LEN);
-				byte_Swap_String((char *)firmwareRev.c_str());
+				memset(&*firmwareRev.begin(), 0, FIRMWARE_REV_LEN);
+				strncpy(&*firmwareRev.begin(), (char*)&firm, FIRMWARE_REV_LEN);
+				byte_Swap_String(&*firmwareRev.begin());
 			}
             //-----------------------------------------------------------------------------
             //
@@ -158,20 +158,20 @@ namespace opensea_parser {
                 }
                 // temp string for coping the hex to text, have to resize for c98 issues
                 std::string tempStr = "";
-                tempStr.resize(BASIC);
-                modelNumber.resize(BASIC);
+                tempStr.resize(MAXSIZE);
+                modelNumber.resize(MAXSIZE);
                 // memset them to 0
-                memset((char *)modelNumber.c_str(), 0, BASIC);
-                memset((char *)tempStr.c_str(), 0, BASIC);
+                memset(&*modelNumber.begin(), 0, MAXSIZE);
+                memset(&*tempStr.begin(), 0, MAXSIZE);
                 // loop to copy the info into the modeleNumber string
                 for (uint8_t n = 0; n < MAXSIZE; n++)
                 {
                     model[n] = idInfo->modelNumber[n] & 0x00FFFFFFFFFFFFFFLL;
-                    strncpy((char *)tempStr.c_str(), (char*)&model[n], 10);
-                    byte_Swap_String((char *)tempStr.c_str());
-                    strncat((char *)modelNumber.c_str(), (char*)tempStr.c_str(), sizeof(tempStr));
+                    strncpy(&*tempStr.begin(), (char*)&model[n], 10);
+                    byte_Swap_String(&*tempStr.begin());
+                    strncat(&*modelNumber.begin(), &*tempStr.begin(), sizeof(tempStr));
                 }
-                remove_Trailing_Whitespace((char *)modelNumber.c_str());
+                remove_Trailing_Whitespace(&*modelNumber.begin());
             }
 			//-----------------------------------------------------------------------------
 			//
@@ -195,8 +195,8 @@ namespace opensea_parser {
 				byte_Swap_64(&dFace);
 				dFace = (dFace >> 32);
 				dInterface.resize(DEVICE_INTERFACE_LEN);
-				memset((char *)dInterface.c_str(), 0, DEVICE_INTERFACE_LEN);
-				strncpy((char *)dInterface.c_str(), (char*)&dFace, DEVICE_INTERFACE_LEN);
+				memset(&*dInterface.begin(), 0, DEVICE_INTERFACE_LEN);
+				strncpy(&*dInterface.begin(), (char*)&dFace, DEVICE_INTERFACE_LEN);
 			}
 
         public:

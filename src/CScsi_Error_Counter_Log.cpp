@@ -131,21 +131,21 @@ void CScsiErrorCounterLog::append_Error_Log_Page_Number(std::string *typeStr, st
     {
     case 0x02:
     {
-        snprintf((char*)typeStr->c_str(), BASIC, "%s - %s", (char*)main.c_str(), "02h");// WRITE
+        snprintf(&*typeStr->begin(), BASIC, "%s - %s", &*main.begin(), "02h");// WRITE
         break;
     }
     case 0x03:
     {
-        snprintf((char*)typeStr->c_str(), BASIC, "%s - %s", (char*)main.c_str(), "03h"); // READ
+        snprintf(&*typeStr->begin(), BASIC, "%s - %s", &*main.begin(), "03h"); // READ
         break;
     }
     case 0x05:
     {
-        snprintf((char*)typeStr->c_str(), BASIC, "%s - %s", (char*)main.c_str(), "05h"); // VERIFY
+        snprintf(&*typeStr->begin(), BASIC, "%s - %s", &*main.begin(), "05h"); // VERIFY
         break;
     }
     default:
-        snprintf((char*)typeStr->c_str(), BASIC, "%s - %s", (char*)main.c_str(), "03h");  ///READ
+        snprintf(&*typeStr->begin(), BASIC, "%s - %s", &*main.begin(), "03h");  ///READ
         break;
     }
 }
@@ -170,21 +170,21 @@ void CScsiErrorCounterLog::set_Master_String(std::string *typeStr, std::string m
 	{
 		case 0x02:
 		{
-			snprintf((char*)typeStr->c_str(), BASIC, "%s %s", "WRITE", (char*)main.c_str());
+			snprintf(&*typeStr->begin(), BASIC, "%s %s", "WRITE", &*main.begin());
 			break;
 		}
 		case 0x03:
 		{
-			snprintf((char*)typeStr->c_str(), BASIC, "%s %s", "READ", (char*)main.c_str());
+			snprintf(&*typeStr->begin(), BASIC, "%s %s", "READ", &*main.begin());
 			break;
 		}
 		case 0x05:
 		{
-			snprintf((char*)typeStr->c_str(), BASIC, "%s %s", "VERIFY", (char*)main.c_str());
+			snprintf(&*typeStr->begin(), BASIC, "%s %s", "VERIFY", &*main.begin());
 			break;
 		}
 		default:
-			snprintf((char*)typeStr->c_str(), BASIC, "%s %s", "READ", (char*)main.c_str());
+			snprintf(&*typeStr->begin(), BASIC, "%s %s", "READ", &*main.begin());
 			break;
 	}
 }
@@ -209,49 +209,49 @@ bool CScsiErrorCounterLog::get_Error_Parameter_Code_Description(std::string *err
 	{
 		case 0x0000:
 		{
-			snprintf((char*)error->c_str(), BASIC, "Corrected Without Substantial Delay");
+			snprintf(&*error->begin(), BASIC, "Corrected Without Substantial Delay");
             descriptionFound = true;
 			break;
 		}
 		case 0x0001:
 		{
-			snprintf((char*)error->c_str(), BASIC, "Corrected With Possible Delay");
+			snprintf(&*error->begin(), BASIC, "Corrected With Possible Delay");
             descriptionFound = true;
 			break;
 		}
 		case 0x0002:
 		{
-			snprintf((char*)error->c_str(), BASIC, "Number of Errors that are Corrected by Applying Retries");
+			snprintf(&*error->begin(), BASIC, "Number of Errors that are Corrected by Applying Retries");
             descriptionFound = true;
 			break;
 		}
 		case 0x0003:
 		{
-			snprintf((char*)error->c_str(), BASIC, "Total Number of Errors Corrected");
+			snprintf(&*error->begin(), BASIC, "Total Number of Errors Corrected");
             descriptionFound = true;
 			break;
 		}
 		case 0x0004:
 		{
-			snprintf((char*)error->c_str(), BASIC, "Total Times Correction Algorithm Processed");
+			snprintf(&*error->begin(), BASIC, "Total Times Correction Algorithm Processed");
             descriptionFound = true;
 			break;
 		}
 		case 0x0005:
 		{
-			snprintf((char*)error->c_str(), BASIC, "Total Bytes Processed");
+			snprintf(&*error->begin(), BASIC, "Total Bytes Processed");
             descriptionFound = true;
 			break;
 		}
 		case 0x0006:
 		{
-			snprintf((char*)error->c_str(), BASIC, "Total Uncorrected Errors");
+			snprintf(&*error->begin(), BASIC, "Total Uncorrected Errors");
             descriptionFound = true;
 			break;
 		}
 		default:
 		{
-			snprintf((char*)error->c_str(), BASIC, "Vendor Specific 0x%04" PRIx16"", m_Error->paramCode);
+			snprintf(&*error->begin(), BASIC, "Vendor Specific 0x%04" PRIx16"", m_Error->paramCode);
 			break;
 		}
 	}
@@ -287,16 +287,16 @@ void CScsiErrorCounterLog::process_Error_Data(JSONNODE *errorData)
     {
         set_Master_String(&myStr, myHeader);
         JSONNODE *errorInfo = json_new(JSON_NODE);
-        json_set_name(errorInfo, (char*)myStr.c_str());
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_Error->paramCode);
-        json_push_back(errorInfo, json_new_a("Error Counter Code", (char*)myStr.c_str()));
+        json_set_name(errorInfo, &*myStr.begin());
+        snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", m_Error->paramCode);
+        json_push_back(errorInfo, json_new_a("Error Counter Code", &*myStr.begin()));
         if (!descriptionFound)
         {
             
-            snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Error->paramControlByte);
-            json_push_back(errorInfo, json_new_a("Error Counter Control Byte ", (char*)myStr.c_str()));
-            snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Error->paramLength);
-            json_push_back(errorInfo, json_new_a("Error Counter Length ", (char*)myStr.c_str()));
+            snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_Error->paramControlByte);
+            json_push_back(errorInfo, json_new_a("Error Counter Control Byte ", &*myStr.begin()));
+            snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_Error->paramLength);
+            json_push_back(errorInfo, json_new_a("Error Counter Length ", &*myStr.begin()));
         }
         if (m_Error->paramLength == 8 || m_ErrorValue > UINT32_MAX)
         {
@@ -312,8 +312,8 @@ void CScsiErrorCounterLog::process_Error_Data(JSONNODE *errorData)
             else
             {
                 std::string printStr;
-                snprintf((char*)printStr.c_str(), BASIC, "%" PRIu32"",  static_cast<uint32_t>(m_ErrorValue));
-                json_push_back(errorInfo, json_new_a((char *)myStr.c_str(), (char*)printStr.c_str()));
+                snprintf(&*printStr.begin(), BASIC, "%" PRIu32"",  static_cast<uint32_t>(m_ErrorValue));
+                json_push_back(errorInfo, json_new_a(&*myStr.begin(), &*printStr.begin()));
             }
         }
 
@@ -346,7 +346,7 @@ eReturnValues CScsiErrorCounterLog::get_Error_Counter_Data(JSONNODE *masterData)
 		set_Master_String(&headerStr, "Error Counter Log");
         append_Error_Log_Page_Number(&myStr, headerStr);
 		JSONNODE *pageInfo = json_new(JSON_NODE);
-		json_set_name(pageInfo, (char*)myStr.c_str());
+		json_set_name(pageInfo, &*myStr.begin());
 
 		for (size_t offset = 0; offset < m_PageLength; )
 		{

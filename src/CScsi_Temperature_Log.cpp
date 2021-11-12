@@ -120,16 +120,16 @@ void CScsiTemperatureLog::get_Temp(JSONNODE *tempData)
 	printf("Temperature Log Page \n");
 	printf("\tParameter Code =   0x%04" PRIx16"  \n", m_Page->paramCode);
 #endif
-	snprintf((char*)myStr.c_str(), BASIC, "Parameter Code 0x%04" PRIx16"", m_Page->paramCode);
+	snprintf(&*myStr.begin(), BASIC, "Parameter Code 0x%04" PRIx16"", m_Page->paramCode);
 	JSONNODE *paramInfo = json_new(JSON_NODE);
-	json_set_name(paramInfo, (char*)myStr.c_str());
+	json_set_name(paramInfo, &*myStr.begin());
 
-	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Page->paramLength);
-	json_push_back(paramInfo, json_new_a("Parameter Length", (char*)myStr.c_str()));
-	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Page->paramControlByte);
-	json_push_back(paramInfo, json_new_a("Control Byte", (char*)myStr.c_str()));
-	snprintf((char*)myStr.c_str(), BASIC, "%" PRIu8"", m_Page->temp);
-	json_push_back(paramInfo, json_new_a("Temperature", (char*)myStr.c_str()));
+	snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_Page->paramLength);
+	json_push_back(paramInfo, json_new_a("Parameter Length", &*myStr.begin()));
+	snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_Page->paramControlByte);
+	json_push_back(paramInfo, json_new_a("Control Byte", &*myStr.begin()));
+	snprintf(&*myStr.begin(), BASIC, "%" PRIu8"", m_Page->temp);
+	json_push_back(paramInfo, json_new_a("Temperature", &*myStr.begin()));
 
 	json_push_back(tempData, paramInfo);
 }

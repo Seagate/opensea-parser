@@ -121,37 +121,37 @@ bool CScsiCacheLog::get_Cache_Parameter_Code_Description(std::string *cache)
 	{
 	case 0x0000:
 	{
-		snprintf((char*)cache->c_str(), BASIC, "Number of logical blocks that have been Sent");
+		*cache = "Number of logical blocks that have been Sent";
         descriptionFound = true;
 		break;
 	}
 	case 0x0001:
 	{
-		snprintf((char*)cache->c_str(), BASIC, "Number of logical blocks that have been Received");
+		*cache = "Number of logical blocks that have been Received";
         descriptionFound = true;
 		break;
 	}
 	case 0x0002:
 	{
-		snprintf((char*)cache->c_str(), BASIC, "Number of logical blocks READ from the Cache Memory");
+		*cache = "Number of logical blocks READ from the Cache Memory";
         descriptionFound = true;
 		break;
 	}
 	case 0x0003:
 	{
-		snprintf((char*)cache->c_str(), BASIC, "Number of READ and WRITE Commands lengths equal or less than the current segment size");
+		*cache = "# of R and W Commands lengths equal or less than the current segment size";
         descriptionFound = true;
 		break;
 	}
 	case 0x0004:
 	{
-		snprintf((char*)cache->c_str(), BASIC, "Number of READ and WRITE Commands lengths greater than the current segment size");
+		*cache = "# of READ and WRITE Commands lengths greater than the current segment size";
         descriptionFound = true;
 		break;
 	}
 	default:
 	{
-		snprintf((char*)cache->c_str(), BASIC, "Vendor specific 0x%04" PRIx16"", m_cache->paramCode);
+		*cache = "Vendor specific 0x%04" PRIx16"", m_cache->paramCode;
 		break;
 	}
 	}
@@ -183,21 +183,21 @@ void CScsiCacheLog::process_Cache_Event_Data(JSONNODE *cacheData)
     {
         byte_Swap_16(&m_cache->paramCode);
         discriptionIsFound = get_Cache_Parameter_Code_Description(&myStr);
-        //snprintf((char*)myStr.c_str(), BASIC, "Cache Statistics Description %" PRId16"", m_cache->paramCode);
+        //snprintf(&*myStr.begin(), BASIC, "Cache Statistics Description %" PRId16"", m_cache->paramCode);
         JSONNODE *cacheInfo = json_new(JSON_NODE);
-        json_set_name(cacheInfo, (char*)myStr.c_str());
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_cache->paramCode);
-        json_push_back(cacheInfo, json_new_a("Cache Statistics Parameter Code", (char*)myStr.c_str()));
+        json_set_name(cacheInfo, &*myStr.begin());
+        snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", m_cache->paramCode);
+        json_push_back(cacheInfo, json_new_a("Cache Statistics Parameter Code", &*myStr.begin()));
         if (!discriptionIsFound)
         {
             
 
-            //json_push_back(cacheInfo, json_new_a("Cache Statistics Description", (char*)myStr.c_str()));
-            snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_cache->paramControlByte);
-            json_push_back(cacheInfo, json_new_a("Cache Statistics Control Byte ", (char*)myStr.c_str()));
-            snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_cache->paramLength);
+            //json_push_back(cacheInfo, json_new_a("Cache Statistics Description", &*myStr.begin()));
+            snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_cache->paramControlByte);
+            json_push_back(cacheInfo, json_new_a("Cache Statistics Control Byte ", &*myStr.begin()));
+            snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_cache->paramLength);
 
-            json_push_back(cacheInfo, json_new_a("Cache Statistics Length ", (char*)myStr.c_str()));
+            json_push_back(cacheInfo, json_new_a("Cache Statistics Length ", &*myStr.begin()));
         }
         set_json_64bit(cacheInfo, "Cache Statistics Value", m_Value, false);
 

@@ -382,7 +382,7 @@ CFarmCommon::~CFarmCommon()
 		}
 		else
 		{
-			strncpy((char *)dateStr.c_str(), (char*)&date, DATE_YEAR_DATE_SIZE);
+			strncpy(&*dateStr.begin(), (char*)&date, DATE_YEAR_DATE_SIZE);
 		}
    }
 

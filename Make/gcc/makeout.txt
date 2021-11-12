@@ -1,0 +1,127 @@
+============================================================
+opensea-parser Makefile version: 0.0.14 OS: Linux
+============================================================
+rm -f ../../src/*.o
+rm -f ../../src/Seagate/*.o
+rm -f lib/libopensea-parser.a lib/libopensea-parser.so.0.0.14 *.o ../../src/*.o ../../src/Seagate/*.o
+rm -rf lib
+============================================================
+       CLEANED
+============================================================
+mkdir -p lib
+g++ -Wall -Wextra -c -fPIC -std=c++98 -I.  -I../../include -I../../include/Seagate -I../../../opensea-common/include -I../../../libjson ../../src/Opensea_Parser_Helper.cpp -o ../../src/Opensea_Parser_Helper.o
+g++ -Wall -Wextra -c -fPIC -std=c++98 -I.  -I../../include -I../../include/Seagate -I../../../opensea-common/include -I../../../libjson ../../src/CLog.cpp -o ../../src/CLog.o
+../../src/CLog.cpp: In member function ‘void opensea_parser::CLog::get_CLog(const string&)’:
+../../src/CLog.cpp:106:41: warning: unused parameter ‘fileName’ [-Wunused-parameter]
+ void CLog::get_CLog(const std::string & fileName)
+                     ~~~~~~~~~~~~~~~~~~~~^~~~~~~~
+g++ -Wall -Wextra -c -fPIC -std=c++98 -I.  -I../../include -I../../include/Seagate -I../../../opensea-common/include -I../../../libjson ../../src/CAta_Ext_DST_Log.cpp -o ../../src/CAta_Ext_DST_Log.o
+g++ -Wall -Wextra -c -fPIC -std=c++98 -I.  -I../../include -I../../include/Seagate -I../../../opensea-common/include -I../../../libjson ../../src/CAta_Device_Stat_Log.cpp -o ../../src/CAta_Device_Stat_Log.o
+../../src/CAta_Device_Stat_Log.cpp: In member function ‘void opensea_parser::CAtaDeviceStatisticsLogs::logPage00(uint64_t*)’:
+../../src/CAta_Device_Stat_Log.cpp:720:52: warning: unused parameter ‘value’ [-Wunused-parameter]
+ void CAtaDeviceStatisticsLogs::logPage00(uint64_t *value)
+                                          ~~~~~~~~~~^~~~~
+g++ -Wall -Wextra -c -fPIC -std=c++98 -I.  -I../../include -I../../include/Seagate -I../../../opensea-common/include -I../../../libjson ../../src/CAta_Ext_Comprehensive_Log.cpp -o ../../src/CAta_Ext_Comprehensive_Log.o
+../../src/CAta_Ext_Comprehensive_Log.cpp: In member function ‘eReturnValues opensea_parser::CExtComp::parse_Ext_Comp_Structure(uint32_t, uint32_t, void*)’:
+../../src/CAta_Ext_Comprehensive_Log.cpp:213:14: warning: variable ‘reserved’ set but not used [-Wunused-but-set-variable]
+     uint8_t  reserved = 0;
+              ^~~~~~~~
+g++ -Wall -Wextra -c -fPIC -std=c++98 -I.  -I../../include -I../../include/Seagate -I../../../opensea-common/include -I../../../libjson ../../src/CAta_Identify_Log.cpp -o ../../src/CAta_Identify_Log.o
+../../src/CAta_Identify_Log.cpp: In member function ‘eReturnValues opensea_parser::CAta_Identify_Log_00::get_Log_Page00(uint8_t*, void*)’:
+../../src/CAta_Identify_Log.cpp:1103:61: warning: unused parameter ‘pData’ [-Wunused-parameter]
+ eReturnValues CAta_Identify_Log_00::get_Log_Page00(uint8_t *pData, JSONNODE *masterData)
+                                                    ~~~~~~~~~^~~~~
+../../src/CAta_Identify_Log.cpp: In member function ‘eReturnValues opensea_parser::CAta_Identify_Log_02::get_Log_Page02(uint8_t*, void*)’:
+../../src/CAta_Identify_Log.cpp:1344:44: warning: ‘void* memset(void*, int, size_t)’ clearing an object of non-trivial type ‘opensea_parser::sLogPage02’ {aka ‘struct opensea_parser::_sLogPage02’}; use assignment or value-initialization instead [-Wclass-memaccess]
+     memset(pCapacity, 0, sizeof(sLogPage02));
+                                            ^
+In file included from ../../include/CAta_Identify_Log.h:21,
+                 from ../../src/CAta_Identify_Log.cpp:11:
+../../include/Identify_Log_Types.h:179:17: note: ‘opensea_parser::sLogPage02’ {aka ‘struct opensea_parser::_sLogPage02’} declared here
+  typedef struct _sLogPage02
+                 ^~~~~~~~~~~
+../../src/CAta_Identify_Log.cpp: In member function ‘eReturnValues opensea_parser::CAta_Identify_Log_03::get_Log_Page03(uint8_t*, void*)’:
+../../src/CAta_Identify_Log.cpp:2664:40: warning: ‘void* memset(void*, int, size_t)’ clearing an object of non-trivial type ‘opensea_parser::sLogPage03’ {aka ‘struct opensea_parser::_sLogPage03’}; use assignment or value-initialization instead [-Wclass-memaccess]
+     memset(m_pCap, 0, sizeof(logPage03));
+                                        ^
+In file included from ../../include/CAta_Identify_Log.h:21,
+                 from ../../src/CAta_Identify_Log.cpp:11:
+../../include/Identify_Log_Types.h:189:17: note: ‘opensea_parser::sLogPage03’ {aka ‘struct opensea_parser::_sLogPage03’} declared here
+  typedef struct _sLogPage03
+                 ^~~~~~~~~~~
+../../src/CAta_Identify_Log.cpp: In member function ‘eReturnValues opensea_parser::CAta_Identify_log::parse_Device_Info()’:
+../../src/CAta_Identify_Log.cpp:371:16: warning: ‘char* strncpy(char*, const char*, size_t)’ output truncated before terminating nul copying 13 bytes from a string of the same length [-Wstringop-truncation]
+         strncpy((char*)m_sDriveInfo.worldWideName.c_str(), "Not Supported", strlen("Not Supported"));
+         ~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+g++ -Wall -Wextra -c -fPIC -std=c++98 -I.  -I../../include -I../../include/Seagate -I../../../opensea-common/include -I../../../libjson ../../src/CAta_Power_Condition_Log.cpp -o ../../src/CAta_Power_Condition_Log.o
+g++ -Wall -Wextra -c -fPIC -std=c++98 -I.  -I../../include -I../../include/Seagate -I../../../opensea-common/include -I../../../libjson ../../src/CAta_NCQ_Command_Error_Log.cpp -o ../../src/CAta_NCQ_Command_Error_Log.o
+g++ -Wall -Wextra -c -fPIC -std=c++98 -I.  -I../../include -I../../include/Seagate -I../../../opensea-common/include -I../../../libjson ../../src/CAta_SMART_Log_Dir.cpp -o ../../src/CAta_SMART_Log_Dir.o
+g++ -Wall -Wextra -c -fPIC -std=c++98 -I.  -I../../include -I../../include/Seagate -I../../../opensea-common/include -I../../../libjson ../../src/CScsi_Log.cpp -o ../../src/CScsi_Log.o
+g++ -Wall -Wextra -c -fPIC -std=c++98 -I.  -I../../include -I../../include/Seagate -I../../../opensea-common/include -I../../../libjson ../../src/CScsi_Application_Client_Log.cpp -o ../../src/CScsi_Application_Client_Log.o
+../../src/CScsi_Application_Client_Log.cpp: In member function ‘void opensea_parser::CScsiApplicationLog::process_Client_Data(void*)’:
+../../src/CScsi_Application_Client_Log.cpp:156:28: warning: ‘char* strncat(char*, const char*, size_t)’ specified bound 1 equals source length [-Wstringop-overflow=]
+                     strncat(innerMsg, " ", 1);
+                     ~~~~~~~^~~~~~~~~~~~~~~~~~
+g++ -Wall -Wextra -c -fPIC -std=c++98 -I.  -I../../include -I../../include/Seagate -I../../../opensea-common/include -I../../../libjson ../../src/CScsi_Background_Operation_Log.cpp -o ../../src/CScsi_Background_Operation_Log.o
+g++ -Wall -Wextra -c -fPIC -std=c++98 -I.  -I../../include -I../../include/Seagate -I../../../opensea-common/include -I../../../libjson ../../src/CScsi_Background_Scan_Log.cpp -o ../../src/CScsi_Background_Scan_Log.o
+g++ -Wall -Wextra -c -fPIC -std=c++98 -I.  -I../../include -I../../include/Seagate -I../../../opensea-common/include -I../../../libjson ../../src/CScsi_Cache_Statistics_Log.cpp -o ../../src/CScsi_Cache_Statistics_Log.o
+g++ -Wall -Wextra -c -fPIC -std=c++98 -I.  -I../../include -I../../include/Seagate -I../../../opensea-common/include -I../../../libjson ../../src/CScsi_Environmental_Logs.cpp -o ../../src/CScsi_Environmental_Logs.o
+g++ -Wall -Wextra -c -fPIC -std=c++98 -I.  -I../../include -I../../include/Seagate -I../../../opensea-common/include -I../../../libjson ../../src/CScsi_Temperature_Log.cpp -o ../../src/CScsi_Temperature_Log.o
+g++ -Wall -Wextra -c -fPIC -std=c++98 -I.  -I../../include -I../../include/Seagate -I../../../opensea-common/include -I../../../libjson ../../src/CScsi_Error_Counter_Log.cpp -o ../../src/CScsi_Error_Counter_Log.o
+g++ -Wall -Wextra -c -fPIC -std=c++98 -I.  -I../../include -I../../include/Seagate -I../../../opensea-common/include -I../../../libjson ../../src/CScsi_Factory_Log.cpp -o ../../src/CScsi_Factory_Log.o
+g++ -Wall -Wextra -c -fPIC -std=c++98 -I.  -I../../include -I../../include/Seagate -I../../../opensea-common/include -I../../../libjson ../../src/CScsi_Format_Status_Log.cpp -o ../../src/CScsi_Format_Status_Log.o
+../../src/CScsi_Format_Status_Log.cpp: In member function ‘void opensea_parser::CScsiFormatStatusLog::process_Format_Status_Data_Variable_Length(void*)’:
+../../src/CScsi_Format_Status_Log.cpp:257:24: warning: ‘char* strncat(char*, const char*, size_t)’ specified bound 1 equals source length [-Wstringop-overflow=]
+                 strncat(innerMsg, " ", 1);
+                 ~~~~~~~^~~~~~~~~~~~~~~~~~
+g++ -Wall -Wextra -c -fPIC -std=c++98 -I.  -I../../include -I../../include/Seagate -I../../../opensea-common/include -I../../../libjson ../../src/CScsi_Informational_Exeptions_Log.cpp -o ../../src/CScsi_Informational_Exeptions_Log.o
+g++ -Wall -Wextra -c -fPIC -std=c++98 -I.  -I../../include -I../../include/Seagate -I../../../opensea-common/include -I../../../libjson ../../src/CScsi_Logical_Block_Provisioning_Log.cpp -o ../../src/CScsi_Logical_Block_Provisioning_Log.o
+g++ -Wall -Wextra -c -fPIC -std=c++98 -I.  -I../../include -I../../include/Seagate -I../../../opensea-common/include -I../../../libjson ../../src/CScsi_Non_Medium_Error_Count_Log.cpp -o ../../src/CScsi_Non_Medium_Error_Count_Log.o
+g++ -Wall -Wextra -c -fPIC -std=c++98 -I.  -I../../include -I../../include/Seagate -I../../../opensea-common/include -I../../../libjson ../../src/CScsi_Pending_Defects_Log.cpp -o ../../src/CScsi_Pending_Defects_Log.o
+g++ -Wall -Wextra -c -fPIC -std=c++98 -I.  -I../../include -I../../include/Seagate -I../../../opensea-common/include -I../../../libjson ../../src/CScsi_Power_Condition_Transitions_Log.cpp -o ../../src/CScsi_Power_Condition_Transitions_Log.o
+g++ -Wall -Wextra -c -fPIC -std=c++98 -I.  -I../../include -I../../include/Seagate -I../../../opensea-common/include -I../../../libjson ../../src/CScsi_Protocol_Specific_Port_Log.cpp -o ../../src/CScsi_Protocol_Specific_Port_Log.o
+g++ -Wall -Wextra -c -fPIC -std=c++98 -I.  -I../../include -I../../include/Seagate -I../../../opensea-common/include -I../../../libjson ../../src/CScsi_Self_Test_Results_Log.cpp -o ../../src/CScsi_Self_Test_Results_Log.o
+../../src/CScsi_Self_Test_Results_Log.cpp: In member function ‘void opensea_parser::CScsi_DST_Results::get_Self_Test_Results_String(std::__cxx11::string&, uint8_t)’:
+../../src/CScsi_Self_Test_Results_Log.cpp:278:23: warning: this statement may fall through [-Wimplicit-fallthrough=]
+             meaning = "Completed having handling damage";
+                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../../src/CScsi_Self_Test_Results_Log.cpp:280:9: note: here
+         case DST_FAILURE_SUSPECTED_HANDLING_DAMAGE:
+         ^~~~
+../../src/CScsi_Self_Test_Results_Log.cpp:282:23: warning: this statement may fall through [-Wimplicit-fallthrough=]
+             meaning = "Completed having suspected handling damage";
+                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../../src/CScsi_Self_Test_Results_Log.cpp:284:3: note: here
+   case DST_IN_PROGRESS:
+   ^~~~
+g++ -Wall -Wextra -c -fPIC -std=c++98 -I.  -I../../include -I../../include/Seagate -I../../../opensea-common/include -I../../../libjson ../../src/CScsi_Solid_State_Drive_Log.cpp -o ../../src/CScsi_Solid_State_Drive_Log.o
+g++ -Wall -Wextra -c -fPIC -std=c++98 -I.  -I../../include -I../../include/Seagate -I../../../opensea-common/include -I../../../libjson ../../src/CScsi_Start_Stop_Cycle_Counter_Log.cpp -o ../../src/CScsi_Start_Stop_Cycle_Counter_Log.o
+g++ -Wall -Wextra -c -fPIC -std=c++98 -I.  -I../../include -I../../include/Seagate -I../../../opensea-common/include -I../../../libjson ../../src/CScsi_Supported_LogPages_Log.cpp -o ../../src/CScsi_Supported_LogPages_Log.o
+g++ -Wall -Wextra -c -fPIC -std=c++98 -I.  -I../../include -I../../include/Seagate -I../../../opensea-common/include -I../../../libjson ../../src/CScsi_Zoned_Device_Statistics_Log.cpp -o ../../src/CScsi_Zoned_Device_Statistics_Log.o
+../../src/CScsi_Zoned_Device_Statistics_Log.cpp: In member function ‘bool opensea_parser::CScsiZonedDeviceStatisticsLog::get_ZDS_Parameter_Code_Description(uint16_t, std::__cxx11::string*)’:
+../../src/CScsi_Zoned_Device_Statistics_Log.cpp:116:81: warning: unused parameter ‘paramCode’ [-Wunused-parameter]
+ bool CScsiZonedDeviceStatisticsLog::get_ZDS_Parameter_Code_Description(uint16_t paramCode, std::string *zdsString)
+                                                                        ~~~~~~~~~^~~~~~~~~
+g++ -Wall -Wextra -c -fPIC -std=c++98 -I.  -I../../include -I../../include/Seagate -I../../../opensea-common/include -I../../../libjson ../../src//Seagate/Farm_Common.cpp -o ../../src//Seagate/Farm_Common.o
+g++ -Wall -Wextra -c -fPIC -std=c++98 -I.  -I../../include -I../../include/Seagate -I../../../opensea-common/include -I../../../libjson ../../src//Seagate/CFARM_Log.cpp -o ../../src//Seagate/CFARM_Log.o
+g++ -Wall -Wextra -c -fPIC -std=c++98 -I.  -I../../include -I../../include/Seagate -I../../../opensea-common/include -I../../../libjson ../../src//Seagate/CAta_Farm_Log.cpp -o ../../src//Seagate/CAta_Farm_Log.o
+g++ -Wall -Wextra -c -fPIC -std=c++98 -I.  -I../../include -I../../include/Seagate -I../../../opensea-common/include -I../../../libjson ../../src//Seagate/CScsi_Farm_Log.cpp -o ../../src//Seagate/CScsi_Farm_Log.o
+../../src//Seagate/CScsi_Farm_Log.cpp: In member function ‘eReturnValues opensea_parser::CSCSI_Farm_Log::print_LUN_Actuator_Information(void*, uint32_t, uint32_t, uint16_t)’:
+../../src//Seagate/CScsi_Farm_Log.cpp:3258:108: warning: unused parameter ‘index’ [-Wunused-parameter]
+ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Information(JSONNODE *masterData, uint32_t page, uint32_t index, uint16_t actNum)
+                                                                                                   ~~~~~~~~~^~~~~
+../../src//Seagate/CScsi_Farm_Log.cpp: In member function ‘eReturnValues opensea_parser::CSCSI_Farm_Log::print_LUN_Actuator_FLED_Info(void*, uint32_t, uint32_t, uint16_t)’:
+../../src//Seagate/CScsi_Farm_Log.cpp:3361:106: warning: unused parameter ‘index’ [-Wunused-parameter]
+ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_FLED_Info(JSONNODE *masterData, uint32_t page, uint32_t index, uint16_t actNum)
+                                                                                                 ~~~~~~~~~^~~~~
+../../src//Seagate/CScsi_Farm_Log.cpp: In member function ‘eReturnValues opensea_parser::CSCSI_Farm_Log::print_LUN_Actuator_Reallocation(void*, uint32_t, uint32_t, uint16_t)’:
+../../src//Seagate/CScsi_Farm_Log.cpp:3465:109: warning: unused parameter ‘index’ [-Wunused-parameter]
+ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Reallocation(JSONNODE *masterData, uint32_t page, uint32_t index,uint16_t actNum)
+                                                                                                    ~~~~~~~~~^~~~~
+rm -f lib/libopensea-parser.a
+ar cq lib/libopensea-parser.a ../../src/Opensea_Parser_Helper.o ../../src/CLog.o ../../src/CAta_Ext_DST_Log.o ../../src/CAta_Device_Stat_Log.o ../../src/CAta_Ext_Comprehensive_Log.o ../../src/CAta_Identify_Log.o ../../src/CAta_Power_Condition_Log.o ../../src/CAta_NCQ_Command_Error_Log.o ../../src/CAta_SMART_Log_Dir.o ../../src/CScsi_Log.o ../../src/CScsi_Application_Client_Log.o ../../src/CScsi_Background_Operation_Log.o ../../src/CScsi_Background_Scan_Log.o ../../src/CScsi_Cache_Statistics_Log.o ../../src/CScsi_Environmental_Logs.o ../../src/CScsi_Temperature_Log.o ../../src/CScsi_Error_Counter_Log.o ../../src/CScsi_Factory_Log.o ../../src/CScsi_Format_Status_Log.o ../../src/CScsi_Informational_Exeptions_Log.o ../../src/CScsi_Logical_Block_Provisioning_Log.o ../../src/CScsi_Non_Medium_Error_Count_Log.o ../../src/CScsi_Pending_Defects_Log.o ../../src/CScsi_Power_Condition_Transitions_Log.o ../../src/CScsi_Protocol_Specific_Port_Log.o ../../src/CScsi_Self_Test_Results_Log.o ../../src/CScsi_Solid_State_Drive_Log.o ../../src/CScsi_Start_Stop_Cycle_Counter_Log.o ../../src/CScsi_Supported_LogPages_Log.o ../../src/CScsi_Zoned_Device_Statistics_Log.o ../../src//Seagate/Farm_Common.o ../../src//Seagate/CFARM_Log.o ../../src//Seagate/CAta_Farm_Log.o ../../src//Seagate/CScsi_Farm_Log.o
+g++ -shared -Wall ../../src/Opensea_Parser_Helper.o ../../src/CLog.o ../../src/CAta_Ext_DST_Log.o ../../src/CAta_Device_Stat_Log.o ../../src/CAta_Ext_Comprehensive_Log.o ../../src/CAta_Identify_Log.o ../../src/CAta_Power_Condition_Log.o ../../src/CAta_NCQ_Command_Error_Log.o ../../src/CAta_SMART_Log_Dir.o ../../src/CScsi_Log.o ../../src/CScsi_Application_Client_Log.o ../../src/CScsi_Background_Operation_Log.o ../../src/CScsi_Background_Scan_Log.o ../../src/CScsi_Cache_Statistics_Log.o ../../src/CScsi_Environmental_Logs.o ../../src/CScsi_Temperature_Log.o ../../src/CScsi_Error_Counter_Log.o ../../src/CScsi_Factory_Log.o ../../src/CScsi_Format_Status_Log.o ../../src/CScsi_Informational_Exeptions_Log.o ../../src/CScsi_Logical_Block_Provisioning_Log.o ../../src/CScsi_Non_Medium_Error_Count_Log.o ../../src/CScsi_Pending_Defects_Log.o ../../src/CScsi_Power_Condition_Transitions_Log.o ../../src/CScsi_Protocol_Specific_Port_Log.o ../../src/CScsi_Self_Test_Results_Log.o ../../src/CScsi_Solid_State_Drive_Log.o ../../src/CScsi_Start_Stop_Cycle_Counter_Log.o ../../src/CScsi_Supported_LogPages_Log.o ../../src/CScsi_Zoned_Device_Statistics_Log.o ../../src//Seagate/Farm_Common.o ../../src//Seagate/CFARM_Log.o ../../src//Seagate/CAta_Farm_Log.o ../../src//Seagate/CScsi_Farm_Log.o -o libopensea-parser.so.0.0.14
+cd lib && ln -s libopensea-parser.so* libopensea-parser.so
+============================================================
+Build of opensea-parser has completed 
+============================================================

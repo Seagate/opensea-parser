@@ -40,10 +40,13 @@ namespace opensea_parser {
         }
         _sApplicationClientParameters(uint8_t* buffer)
         {
+#define byte2 2  
+#define byte3 3
+#define byte4 4
             paramCode = *(reinterpret_cast<uint16_t*>(buffer));
-            paramControlByte = buffer[2];
-            paramLength = buffer[3];
-            data = &buffer[4];
+            paramControlByte = (uint8_t)buffer[byte2];
+            paramLength = (uint8_t)buffer[byte3];
+            data = (uint8_t*)&buffer[byte4];
         }
 
 	} sApplicationParams;
@@ -68,7 +71,10 @@ namespace opensea_parser {
 		CScsiApplicationLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength);
 		virtual ~CScsiApplicationLog();
 		virtual eReturnValues get_Log_Status() { return m_ApplicationStatus; };
-		virtual eReturnValues parse_Application_Client_Log(JSONNODE *masterData) { return get_Client_Data(masterData); };
+		virtual eReturnValues parse_Application_Client_Log(JSONNODE *masterData) 
+		{
+			return get_Client_Data(masterData);
+		};
 
 	};
 #endif

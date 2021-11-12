@@ -21,15 +21,9 @@
 namespace opensea_parser {
 #ifndef SCSIMEDIUMLOG
 #define SCSIMEDIUMLOG
-#pragma pack(push, 1)
-	typedef struct _sNonMediumErrorCountParameters
-	{
-		uint16_t		paramCode;							//<! The PARAMETER CODE field is defined
-		uint8_t			paramControlByte;					//<! binary format list log parameter
-		uint8_t			paramLength;						//<! The PARAMETER LENGTH field 
-		_sNonMediumErrorCountParameters() : paramCode(0), paramControlByte(0), paramLength(0) {};
-	} sNonMediumErrorCount;
-#pragma pack(pop)
+
+#define NONMEDIUMERRORLOG 0x6
+#define NONMEDIUMERRORSUBPAGE 0x00
 
 	class CScsiNonMediumErrorCountLog
 	{
@@ -42,17 +36,21 @@ namespace opensea_parser {
 		uint16_t					m_PageLength;				//<! length of the page
 		size_t						m_bufferLength;			    //<! length of the buffer from reading in the log
 		uint64_t					m_Value;					//<! the total count of errors
-		sNonMediumErrorCount		*m_CountErrors;				//<! params for the error count log
+		sLogParams*					m_CountErrors;				//<! params for the error count log
 
 
 		void process_Non_Medium_Error_Count_Data(JSONNODE *countData);
 		eReturnValues get_Non_Medium_Error_Count_Data(JSONNODE *masterData);
+
 	public:
 		CScsiNonMediumErrorCountLog();
 		CScsiNonMediumErrorCountLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength);
 		virtual ~CScsiNonMediumErrorCountLog();
 		virtual eReturnValues get_Log_Status() { return m_NMECStatus; };
-		virtual eReturnValues parse_Non_Medium_Error_Count_Log(JSONNODE *masterData) { return get_Non_Medium_Error_Count_Data(masterData); };
+		virtual eReturnValues parse_Non_Medium_Error_Count_Log(JSONNODE *masterData) 
+		{ 
+			return get_Non_Medium_Error_Count_Data(masterData);
+		};
 
 	};
 #endif

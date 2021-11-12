@@ -97,7 +97,7 @@ CScsi_DST_Results::~CScsi_DST_Results()
 }
 //-----------------------------------------------------------------------------
 //
-//! \fn parse_Self_Test_Log()
+//! \fn get_Self_Test_Log()
 //
 //! \brief
 //!   Description: parse the ext self test dst log 
@@ -110,7 +110,7 @@ CScsi_DST_Results::~CScsi_DST_Results()
 //!   \return eReturnValues success
 //
 //---------------------------------------------------------------------------
-eReturnValues CScsi_DST_Results::parse_Self_Test_Log(uint8_t *buffer, size_t bufferSize, JSONNODE *masterJson)
+eReturnValues CScsi_DST_Results::get_Self_Test_Log(uint8_t *buffer, size_t bufferSize, JSONNODE *masterJson)
 {
 	eReturnValues retStatus = IN_PROGRESS;
 	std::string myStr = "";
@@ -126,7 +126,7 @@ eReturnValues CScsi_DST_Results::parse_Self_Test_Log(uint8_t *buffer, size_t buf
 		byte_Swap_Self_Test();
 		if (m_DST->paramCode == i && m_DST->paramLength == 0x10)
 		{	
-			print_Self_Test_Log(DstJson, i);
+			print_Self_Test_Log(DstJson, i,0);
 			if (i == 20)
 			{
 				retStatus = SUCCESS;
@@ -172,24 +172,25 @@ eReturnValues CScsi_DST_Results::parse_Self_Test_Log(uint8_t *buffer, size_t buf
 //!   \return void
 //
 //---------------------------------------------------------------------------
-void CScsi_DST_Results::print_Self_Test_Log(JSONNODE *dstNode, uint16_t run)
+void CScsi_DST_Results::print_Self_Test_Log(JSONNODE *dstNode, uint16_t run, uint32_t offset)
 {
 	std::string myStr = "";
 	myStr.resize(BASIC);
-	JSONNODE *runInfo = json_new(JSON_NODE);
-	snprintf((char*)myStr.c_str(), BASIC, "Entry %3d ", run);   // changed the run# to Entry per Paul
-	json_set_name(runInfo, (char*)myStr.c_str());
-	snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_DST->paramCode);
-	json_push_back(runInfo, json_new_a("Parameter Code", (char*)myStr.c_str()));
-	snprintf((char*)myStr.c_str(), BASIC, "%" PRIx8"", m_DST->paramLength);
-	json_push_back(runInfo, json_new_a("Parameter Length", (char*)myStr.c_str()));
-	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_DST->paramControlByte);
-	json_push_back(runInfo, json_new_a("Control Byte", (char*)myStr.c_str()));
 
-	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"",(uint8_t) M_GETBITRANGE(m_DST->stCode, 7, 5));
-	json_push_back(runInfo, json_new_a("Self Test Code", (char*)myStr.c_str()));
-	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", (uint8_t)M_GETBITRANGE( m_DST->stCode,3,0));
-	json_push_back(runInfo, json_new_a("Self Test Results", (char*)myStr.c_str()));
+	JSONNODE* runInfo = json_new(JSON_NODE);
+	snprintf(&*myStr.begin(), BASIC, "Entry %3d ", run);   // changed the run# to Entry per Paul
+	json_set_name(runInfo, &*myStr.begin());
+	snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", m_DST->paramCode);
+	json_push_back(runInfo, json_new_a("Parameter Code", &*myStr.begin()));
+	snprintf(&*myStr.begin(), BASIC, "%" PRIx8"", m_DST->paramLength);
+	json_push_back(runInfo, json_new_a("Parameter Length", &*myStr.begin()));
+	snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_DST->paramControlByte);
+	json_push_back(runInfo, json_new_a("Control Byte", &*myStr.begin()));
+
+	snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", (uint8_t)M_GETBITRANGE(m_DST->stCode, 7, 5));
+	json_push_back(runInfo, json_new_a("Self Test Code", &*myStr.begin()));
+	snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", (uint8_t)M_GETBITRANGE(m_DST->stCode, 3, 0));
+	json_push_back(runInfo, json_new_a("Self Test Results", &*myStr.begin()));
 	if (M_GETBITRANGE(m_DST->stCode, 7, 5) == DST_NOT_RUN)
 	{
 		json_push_back(runInfo, json_new_a("Self Test Results Meaning", "Self Test Not Ran"));
@@ -197,21 +198,22 @@ void CScsi_DST_Results::print_Self_Test_Log(JSONNODE *dstNode, uint16_t run)
 	else
 	{
 		get_Self_Test_Results_String(myStr, M_GETBITRANGE(m_DST->stCode, 3, 0));
-		json_push_back(runInfo, json_new_a("Self Test Results Meaning", (char*)myStr.c_str()));
+		json_push_back(runInfo, json_new_a("Self Test Results Meaning", &*myStr.begin()));
 	}
 	json_push_back(runInfo, json_new_i("Self Test Number", static_cast<uint32_t>(m_DST->stNumber)));
-	snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16"", m_DST->accPOH);
-	json_push_back(runInfo, json_new_a("Accumulated Power On Hours", (char*)myStr.c_str()));
+	snprintf(&*myStr.begin(), BASIC, "%" PRIu16"", m_DST->accPOH);
+	json_push_back(runInfo, json_new_a("Accumulated Power On Hours", &*myStr.begin()));
 	set_json_64bit(runInfo, "Address of First Failure", m_DST->address, true);
 
-	snprintf((char*)myStr.c_str(), BASIC, "%" PRIu8"", m_DST->senseKey);
-	json_push_back(runInfo, json_new_a("Sense Key", (char*)myStr.c_str()));
-	snprintf((char*)myStr.c_str(), BASIC, "%" PRIu8"", m_DST->addSenseCode);
-	json_push_back(runInfo, json_new_a("Additional Sense Code", (char*)myStr.c_str()));
-	snprintf((char*)myStr.c_str(), BASIC, "%" PRIu8"", m_DST->addSenseCodeQualifier);
-	json_push_back(runInfo, json_new_a("Additional Sense Code Qualifier", (char*)myStr.c_str()));
+	snprintf(&*myStr.begin(), BASIC, "%" PRIu8"", m_DST->senseKey);
+	json_push_back(runInfo, json_new_a("Sense Key", &*myStr.begin()));
+	snprintf(&*myStr.begin(), BASIC, "%" PRIu8"", m_DST->addSenseCode);
+	json_push_back(runInfo, json_new_a("Additional Sense Code", &*myStr.begin()));
+	snprintf(&*myStr.begin(), BASIC, "%" PRIu8"", m_DST->addSenseCodeQualifier);
+	json_push_back(runInfo, json_new_a("Additional Sense Code Qualifier", &*myStr.begin()));
 
 	json_push_back(dstNode, runInfo);
+
 }
 //-----------------------------------------------------------------------------
 //
@@ -245,7 +247,7 @@ void CScsi_DST_Results::get_Self_Test_Results_String( std::string & meaning, uin
 		}
 		case DST_ABORTED:
 		{
-			meaning = "Was interepted by the host with a hard reset of a soft reset";
+			meaning = "Was interepted by the host with a hard reset or a soft reset";
 			break;
 		}
 		case DST_UNKNOWN_ERROR:
@@ -255,7 +257,7 @@ void CScsi_DST_Results::get_Self_Test_Results_String( std::string & meaning, uin
 		}
 		case DST_FAILURE_UNKNOWN_SEGMENT:
 		{
-			meaning = "Completed and has faild and the element is unknown";
+			meaning = "Completed and has failed and the element is unknown";
 			break;
 		}
 		case DST_FAILURE_FIRST_SEGMENT:
@@ -276,10 +278,12 @@ void CScsi_DST_Results::get_Self_Test_Results_String( std::string & meaning, uin
         case DST_FAILURE_HANDLING_DAMAGE:
         {
             meaning = "Completed having handling damage";
+			break;
         }
         case DST_FAILURE_SUSPECTED_HANDLING_DAMAGE:
         {
             meaning = "Completed having suspected handling damage";
+			break;
         }
 		case DST_IN_PROGRESS:
 		{

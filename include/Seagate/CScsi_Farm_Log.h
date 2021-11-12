@@ -28,6 +28,9 @@ namespace opensea_parser {
 #ifndef SCSIFARM
 #define SCSIFARM
 
+#define FARMLOGPAGE 0x3D
+#define FARMSUBPAGE 0x03
+#define FARMSUBPAGEFACTORY 0x04
     class CSCSI_Farm_Log 
     {
     protected:
@@ -50,6 +53,7 @@ namespace opensea_parser {
         sScsiDriveInfo              *m_pDriveInfo;                                    //!< Drive information pointer with header information
         bool                        m_alreadySet;                                     //!< set true one it's already set..  (APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_OUTER)
 		bool						m_showStatusBits;								  //!< show the status bits of each entry
+        bool                        m_fromScsiLogPages;                               //!< bool if passed from scsi log pages set as true. We will be off by 4 bytes
         CFarmCommon         _common;
 
 		void create_Serial_Number(std::string &serialNumber, const sScsiDriveInfo * const idInfo);
@@ -71,10 +75,11 @@ namespace opensea_parser {
         bool swap_Bytes_Flash_LED(sActuatorFLEDInfo *fled);
         bool swap_Bytes_Reallocation_Data(sActReallocationData *real);
         bool get_Head_Info(sHeadInformation *phead, uint8_t *buffer);
-        void set_Head_Header(std::string &headerName, eLogPageTypes index);
+        bool set_Head_Header(std::string &headerName, eLogPageTypes index);
         void get_LUN_Info(sLUNStruct *pLUN, uint8_t *buffer);
 		
 		eReturnValues init_Header_Data();
+        //eReturnValues init_buffer_Header_Data();
         eReturnValues print_Header(JSONNODE *masterData);
         eReturnValues print_Drive_Information(JSONNODE *masterData, uint32_t page);
         eReturnValues print_General_Drive_Information_Continued(JSONNODE *masterData, uint32_t page);
@@ -86,12 +91,22 @@ namespace opensea_parser {
         eReturnValues print_Workload_Statistics_Page_08(JSONNODE *masterData, uint32_t page);
         eReturnValues print_Reli_Information(JSONNODE *masterData, uint32_t page);
         eReturnValues print_Head_Information(eLogPageTypes type, JSONNODE *masterData, uint32_t page);
-        eReturnValues print_LUN_Actuator_Information(JSONNODE *masterData, uint32_t page, uint32_t index, uint16_t actNum);
-        eReturnValues print_LUN_Actuator_FLED_Info(JSONNODE *masterData, uint32_t page, uint32_t index, uint16_t actNum);
-        eReturnValues print_LUN_Actuator_Reallocation(JSONNODE *masterData, uint32_t page, uint32_t index, uint16_t actNum);
+        eReturnValues print_LUN_Actuator_Information(JSONNODE *masterData, uint32_t page, uint16_t actNum);
+        eReturnValues print_LUN_Actuator_FLED_Info(JSONNODE *masterData, uint32_t page, uint16_t actNum);
+        eReturnValues print_LUN_Actuator_Reallocation(JSONNODE *masterData, uint32_t page, uint16_t actNum);
+        void farm_PrePython_Str(JSONNODE* masterData, const char* name, const char* statType, const char* unit, int pageNum, const char* value);
+        void farm_PrePython_Int(JSONNODE* masterData, const char* name, const char* statType, const char* header, \
+            const char* unit, int pageNum, int64_t value);
+        void farm_PrePython_Float(JSONNODE* masterData, const char* name, const char* statType, const char* header, \
+            const char* unit, int pageNum, double value);
+        void prePython_Head_Float(JSONNODE* masterData, const char* name, const char* statType, uint32_t headNumber, \
+            const char* unit, int pageNum, double value);
+        void prePython_Head_Int(JSONNODE* masterData, const char* name, const char* statType, uint32_t headNumber, \
+            const char* unit, int pageNum, int64_t value);
     public:
         CSCSI_Farm_Log();
-        CSCSI_Farm_Log(uint8_t *bufferData, size_t bufferSize,bool showStatus);
+        CSCSI_Farm_Log(uint8_t* bufferData, size_t bufferSize, bool m_fromScsiLogPages);
+        CSCSI_Farm_Log(uint8_t *bufferData, size_t bufferSize, bool m_fromScsiLogPages, bool showStatus);
         virtual ~CSCSI_Farm_Log();
         eReturnValues parse_Farm_Log();
         void print_All_Pages(JSONNODE *masterData);

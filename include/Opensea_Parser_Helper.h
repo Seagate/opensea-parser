@@ -28,8 +28,12 @@
 #include <time.h>
 #include "common.h"
 #include "libjson.h"
+#include <limits.h>
+
 
 extern eVerbosityLevels g_verbosity;
+extern eDataFormat g_dataformat;
+extern bool	g_parseUnknown;
 extern time_t g_currentTime;
 extern char g_currentTimeString[64];
 extern char *g_currentTimeStringPtr;
@@ -41,6 +45,15 @@ namespace opensea_parser {
 #ifndef OPENSEA_PARSER
 #define OPENSEA_PARSER
 
+	// quick size for of the ints for case statements
+#define ONE_INT_SIZE 1
+#define TWO_INT_SIZE 2
+#define FOUR_INT_SIZE 4 
+#define EIGHT_INT_SIZE 8
+
+#define LOGPAGESIZE 4
+#define PARAMSIZE   4
+
 #define RELISTAT                24
 #define WORLD_WIDE_NAME_LEN     19
 #define DEVICE_INTERFACE_LEN    4
@@ -50,6 +63,27 @@ namespace opensea_parser {
 #define SAS_FIRMWARE_REV_LEN    4
 #define BASIC                   80
 
+#define SAS_SUBPAGE_ZERO			0x00
+#define SAS_SUBPAGE_ONE				0x01
+#define SAS_SUBPAGE_TWO				0x02
+#define SAS_SUBPAGE_THREE			0x03
+#define SAS_SUBPAGE_FOUR			0x04
+#define SAS_SUBPAGE_FIVE			0x05
+#define SAS_SUBPAGE_SIX				0x06
+#define SAS_SUBPAGE_SEVEN			0x07
+#define SAS_SUBPAGE_EIGHT			0x08
+#define SAS_SUBPAGE_NINE			0x09
+#define SAS_SUBPAGE_A				0x0A
+#define SAS_SUBPAGE_B				0x0B
+#define SAS_SUBPAGE_C				0x0C
+#define SAS_SUBPAGE_D				0x0D
+#define SAS_SUBPAGE_E				0x0E
+#define SAS_SUBPAGE_F				0x0F
+#define SAS_SUBPAGE_20				0x20
+#define SAS_SUBPAGE_21				0x21
+#define SAS_SUBPAGE_FF				0xFF
+
+#define COMMAND_DURATION_LIMITS_LOG 0x19
 
     // output file types
 	typedef enum _eOpensea_print_Types
@@ -61,6 +95,7 @@ namespace opensea_parser {
         OPENSEA_LOG_PRINT_PROM,
         OPENSEA_LOG_PRINT_PYTHON_DICTIONARY,
     }eOpensea_print_Types;
+
 	// SCSI Parameter Control Bytes
 	typedef enum _eOpenSea_SCSI_Log_Parameter_Types
 	{
@@ -137,6 +172,15 @@ namespace opensea_parser {
             }
         }
 	}sLogPageStruct;
+
+	typedef struct _sLogPageParamStruct
+	{
+		uint16_t		paramCode;							//<! The PARAMETER CODE field is described in 5.2.2.2.2, and shall be set as shown in table 352 for the Temperature log parameter.
+		uint8_t			paramControlByte;					//<! binary format list log parameter
+		uint8_t			paramLength;						//<! The PARAMETER LENGTH field is described in 5.2.2.2.2, and shall be set as shown in table 352 for the Temperature log parameter.
+		_sLogPageParamStruct() : paramCode(0), paramControlByte(0), paramLength(0) {};
+	}sLogParams;
+
 #pragma pack(pop)
 	typedef enum _eLogPageNames
 	{
@@ -155,6 +199,7 @@ namespace opensea_parser {
         ZONED_DEVICE_STATISTICS = 0x14,
 		BACKGROUND_SCAN = 0x15,
 		PROTOCOL_SPECIFIC_PORT = 0x18,
+		CACHE_MEMORY_STATISTICES = 0x19,
 		POWER_CONDITION_TRANSITIONS = 0x1A,
 		INFORMATIONAL_EXCEPTIONS = 0x2F,        
 		CACHE_STATISTICS = 0x37,
@@ -166,8 +211,8 @@ namespace opensea_parser {
 		READ_ERROR_COUNTER ,VERIFY_ERROR_COUNTER, NON_MEDIUM_ERROR ,
 		FORMAT_STATUS ,	LOGICAL_BLOCK_PROVISIONING ,ENVIRONMENTAL,
 		START_STOP_CYCLE_COUNTER ,	APPLICATION_CLIENT,	SELF_TEST_RESULTS,
-		SOLID_STATE_MEDIA ,	ZONED_DEVICE_STATISTICS , BACKGROUND_SCAN , PROTOCOL_SPECIFIC_PORT,
-		POWER_CONDITION_TRANSITIONS , INFORMATIONAL_EXCEPTIONS,
+		SOLID_STATE_MEDIA ,	ZONED_DEVICE_STATISTICS , BACKGROUND_SCAN , CACHE_MEMORY_STATISTICES,
+		PROTOCOL_SPECIFIC_PORT, POWER_CONDITION_TRANSITIONS , INFORMATIONAL_EXCEPTIONS,
         CACHE_STATISTICS, SEAGATE_SPECIFIC_LOG, FACTORY_LOG,};
 
 	//-----------------------------------------------------------------------------
@@ -272,19 +317,19 @@ namespace opensea_parser {
         {
             //json does not support 64 bit numbers. Therefore we will print it as a string
             snprintf(printStr, BASIC, "0x%016" PRIx64"", value);
-            json_push_back(nowNode, json_new_a((char *)myStr.c_str(), printStr));
+            json_push_back(nowNode, json_new_a(&*myStr.begin(), printStr));
         }
         else
         {
             if (M_IGETBITRANGE(value, 63, 31) == 0)
             {
-                json_push_back(nowNode, json_new_i((char *)myStr.c_str(), static_cast<int32_t>(M_DoubleWord0(value))));
+                json_push_back(nowNode, json_new_i(&*myStr.begin(), static_cast<int32_t>(M_DoubleWord0(value))));
             }
             else
             {
                 // if the vale is greater then a unsigned 32 bit number print it as a string
                 snprintf(printStr, BASIC, "%" PRIu64"", value);
-                json_push_back(nowNode, json_new_a((char *)myStr.c_str(), printStr));
+                json_push_back(nowNode, json_new_a(&*myStr.begin(), printStr));
             }
         }
         safe_Free(printStr);
@@ -314,19 +359,19 @@ namespace opensea_parser {
         {
             //json does not support 64 bit numbers. Therefore we will print it as a string
             snprintf(printStr, BASIC, "0x%016" PRIx64"", value);
-            json_push_back(nowNode, json_new_a((char *)myStr.c_str(), printStr));
+            json_push_back(nowNode, json_new_a(&*myStr.begin(), printStr));
         }
         else
         {
             if (M_IGETBITRANGE(value,63,32) == 0)
             {
-                json_push_back(nowNode, json_new_i((char *)myStr.c_str(), static_cast<int32_t>(M_DoubleWord0(value))));
+                json_push_back(nowNode, json_new_i(&*myStr.begin(), static_cast<int32_t>(M_DoubleWord0(value))));
             }
             else
             {
                 // if the vale is greater then a unsigned 32 bit number print it as a string
                 snprintf(printStr, BASIC, "%" PRIu64"", value);
-                json_push_back(nowNode, json_new_a((char *)myStr.c_str(), printStr));
+                json_push_back(nowNode, json_new_a(&*myStr.begin(), printStr));
             }
         }
         safe_Free(printStr);
@@ -350,9 +395,9 @@ namespace opensea_parser {
     inline void set_Json_Bool(JSONNODE *nowNode, const std::string & myStr, bool workingValue)
     {
         if (workingValue)
-            json_push_back(nowNode, json_new_b((char*)myStr.c_str(), true));
+            json_push_back(nowNode, json_new_b(&*myStr.begin(), true));
         else
-            json_push_back(nowNode, json_new_b((char*)myStr.c_str(), false));
+            json_push_back(nowNode, json_new_b(&*myStr.begin(), false));
     }
 	//-----------------------------------------------------------------------------
 	//
@@ -411,6 +456,10 @@ namespace opensea_parser {
 		return false;
 	}
     void get_SMART_Save_Flages(JSONNODE *headerNode, uint8_t flag);
+	void get_SMART_Save_Flages_String(std::string &reason, uint8_t flag);
+	void prePython_unknown_params(JSONNODE* masterData, uint64_t value, uint16_t logPage, uint8_t subPage, uint16_t paramCode, uint32_t offset);
+	void prePython_int(JSONNODE* masterData, const char* name, const char* statType, const char* unit, uint64_t value, uint16_t logPage, uint8_t subPage, uint16_t paramCode, uint32_t offset);
+	void prePython_float(JSONNODE* masterData, const char* name, const char* statType, const char* unit, double value, uint16_t logPage, uint8_t subPage, uint16_t paramCode, uint32_t offset);
 #endif // !OPENSEA_PARSER
 }
 

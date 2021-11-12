@@ -41,9 +41,13 @@ using namespace opensea_parser;
 CAtaPowerConditionsLog::CAtaPowerConditionsLog()
 : m_powerConditionLog(NULL)
 , m_powerFlags(NULL)
+, Buffer()
 , m_status(IN_PROGRESS)
+, m_myJSON()
 , m_idleAPowerConditions(NULL), m_idleBPowerConditions(NULL), m_idleCPowerConditions(NULL)
 , m_standbyYPowerConditions(NULL), m_standbyZPowerConditions(NULL)
+, m_conditionFlags(NULL)
+, conditionFlags()
 {
 
 }
@@ -63,9 +67,12 @@ CAtaPowerConditionsLog::CAtaPowerConditionsLog()
 CAtaPowerConditionsLog::CAtaPowerConditionsLog(std::string filename)
 : m_powerConditionLog(NULL)
 , m_powerFlags(NULL)
+, Buffer()
 , m_status(IN_PROGRESS)
+, m_myJSON()
 , m_idleAPowerConditions(NULL), m_idleBPowerConditions(NULL), m_idleCPowerConditions(NULL)
 , m_standbyYPowerConditions(NULL), m_standbyZPowerConditions(NULL)
+, m_conditionFlags(NULL)
 , conditionFlags()
 {
 
@@ -126,9 +133,12 @@ CAtaPowerConditionsLog::CAtaPowerConditionsLog(std::string filename)
 CAtaPowerConditionsLog::CAtaPowerConditionsLog(tDataPtr pData, JSONNODE *masterData)
 	: m_powerConditionLog(NULL)
 	, m_powerFlags(NULL)
+	, Buffer()
 	, m_status(IN_PROGRESS)
+	, m_myJSON(masterData)
 	, m_idleAPowerConditions(NULL), m_idleBPowerConditions(NULL), m_idleCPowerConditions(NULL)
 	, m_standbyYPowerConditions(NULL), m_standbyZPowerConditions(NULL)
+	, m_conditionFlags(NULL)
 	, conditionFlags()
 {
     m_powerConditionLog = new uint8_t[pData.DataLen];								// new a buffer to the point				
@@ -372,21 +382,21 @@ eReturnValues CAtaPowerConditionsLog::printPowerLogDescriptor(JSONNODE *masterDa
 
 #endif
 
-		//snprintf((char*)myStr.c_str(), BASIC, "Reserved");
-		//json_push_back(masterData, json_new_a("Reserved :", (char*)myStr.c_str()));
-		snprintf((char*)myStr.c_str(), BASIC, "0x%x", logDescriptor->bitFlags);
-		json_push_back(masterData, json_new_a("Power Condition Flags", (char*)myStr.c_str()));
+		//snprintf(&*myStr.begin(), BASIC, "Reserved");
+		//json_push_back(masterData, json_new_a("Reserved :", &*myStr.begin()));
+		snprintf(&*myStr.begin(), BASIC, "0x%x", logDescriptor->bitFlags);
+		json_push_back(masterData, json_new_a("Power Condition Flags", &*myStr.begin()));
 		printPowerConditionFlag(masterData);
-		//snprintf((char*)myStr.c_str(), BASIC, "Reserved");
-		//json_push_back(masterData, json_new_a("Reserved :", (char*)myStr.c_str()));
+		//snprintf(&*myStr.begin(), BASIC, "Reserved");
+		//json_push_back(masterData, json_new_a("Reserved :", &*myStr.begin()));
 		json_push_back(masterData, json_new_i("Default Timer Setting Field", logDescriptor->defaultTimerSetting));
 		json_push_back(masterData, json_new_i("Saved Timer Setting Field", logDescriptor->savedTimerSetting));
 		json_push_back(masterData, json_new_i("Current Timer Setting Field", logDescriptor->currentTimerSetting));
 		json_push_back(masterData, json_new_i("Norminal Recovery Timer to PM0  Active Filed", logDescriptor->normalRecoveryTime));
 		json_push_back(masterData, json_new_i("Minimum Timer Setting Field", logDescriptor->minimumTimerSetting));
 		json_push_back(masterData, json_new_i("Maximum Timer Setting Field", logDescriptor->maximumTimerSetting));
-		snprintf((char*)myStr.c_str(), BASIC, "Reserved");
-		json_push_back(masterData, json_new_a("Reserved :", (char*)myStr.c_str()));
+		snprintf(&*myStr.begin(), BASIC, "Reserved");
+		json_push_back(masterData, json_new_a("Reserved :", &*myStr.begin()));
 	}
 	else
 	{

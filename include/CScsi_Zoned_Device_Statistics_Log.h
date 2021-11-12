@@ -43,7 +43,7 @@ namespace opensea_parser {
         uint64_t					m_ZDSValue;				//<! Parameter ZDS Value
         sZDSParams				    *m_ZDSParam;			//<! ZDS param structure 
 
-        bool get_ZDS_Parameter_Code_Description(uint16_t paramCode, std::string *zdsString);
+        bool get_ZDS_Parameter_Code_Description( std::string *zdsString);
         void process_Zoned_Device_Statistics_Data(JSONNODE *zdsData);
         eReturnValues get_Zoned_Device_Statistics_Data(JSONNODE *masterData);
     public:

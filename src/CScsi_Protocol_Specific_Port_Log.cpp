@@ -60,6 +60,9 @@ CScsiProtocolPortLog::CScsiProtocolPortLog(uint8_t *buffer, size_t bufferSize)
 	, m_PSPStatus(IN_PROGRESS)
 	, m_PageLength(0)
 	, m_bufferLength(bufferSize)
+	, m_List(NULL)
+	, m_Descriptor(NULL)
+	, m_Event(NULL)
 {
 	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
@@ -125,19 +128,19 @@ void CScsiProtocolPortLog::process_Events_Data(JSONNODE *eventData)
 #if defined _DEBUG
 	printf("Phy Event Description \n");
 #endif
-	snprintf((char*)myStr.c_str(), BASIC, "Phy Event Description %" PRId8"",m_Event->eventSource);
+	snprintf(&*myStr.begin(), BASIC, "Phy Event Description %" PRId8"",m_Event->eventSource);
 	JSONNODE *eventInfo = json_new(JSON_NODE);
-	json_set_name(eventInfo, (char*)myStr.c_str());
+	json_set_name(eventInfo, &*myStr.begin());
 
-	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Event->eventSource);
-	json_push_back(eventInfo, json_new_a("Phy Event Source", (char*)myStr.c_str()));
+	snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_Event->eventSource);
+	json_push_back(eventInfo, json_new_a("Phy Event Source", &*myStr.begin()));
 
     byte_Swap_32(&m_Event->event);              // need to byte swap on SAS 
     byte_Swap_32(&m_Event->threshold);          // need to byte swap on SAS 
-	snprintf((char*)myStr.c_str(), BASIC, "0x%08" PRIx32"", m_Event->event);
-	json_push_back(eventInfo, json_new_a("Phy Event", (char*)myStr.c_str()));
-	snprintf((char*)myStr.c_str(), BASIC, "0x%08" PRIx32"", m_Event->threshold);
-	json_push_back(eventInfo, json_new_a("Peak Value Detector Threshold", (char*)myStr.c_str()));
+	snprintf(&*myStr.begin(), BASIC, "0x%08" PRIx32"", m_Event->event);
+	json_push_back(eventInfo, json_new_a("Phy Event", &*myStr.begin()));
+	snprintf(&*myStr.begin(), BASIC, "0x%08" PRIx32"", m_Event->threshold);
+	json_push_back(eventInfo, json_new_a("Peak Value Detector Threshold", &*myStr.begin()));
 
 	json_push_back(eventData, eventInfo);
 }
@@ -162,22 +165,22 @@ void CScsiProtocolPortLog::get_Device_Type_Field(std::string *description, uint8
 	{
 		case 0x01:
 		{
-			snprintf((char*)description->c_str(), BASIC, "1 = End device");
+			snprintf(&*description->begin(), BASIC, "1 = End device");
 			break;
 		}
 		case 0x02:
 		{
-			snprintf((char*)description->c_str(), BASIC, "2 = Expander device");
+			snprintf(&*description->begin(), BASIC, "2 = Expander device");
 			break;
 		}
 		case 0x03:
 		{
-			snprintf((char*)description->c_str(), BASIC, "3 = Expander device compliant with a previous version of the SAS standard");
+			snprintf(&*description->begin(), BASIC, "3 = Expander device compliant with a previous version of the SAS standard");
 			break;
 		}
 		default:
 		{
-			snprintf((char*)description->c_str(), BASIC, "Reserved");
+			snprintf(&*description->begin(), BASIC, "Reserved");
 			break;
 		}
 
@@ -204,57 +207,58 @@ void CScsiProtocolPortLog::get_Reason_Field(std::string *reason, uint8_t code)
 	{
 		case 0x01:
 		{
-			snprintf((char*)reason->c_str(), BASIC, "Unknown reason");
+			snprintf(&*reason->begin(), BASIC, "Unknown reason");
 			break;
 		}
 		case 0x02:
 		{
-			snprintf((char*)reason->c_str(), BASIC, "Power on");
+			snprintf(&*reason->begin(), BASIC, "Power on");
 			break;
 		}
 		case 0x03:
 		{
-			snprintf((char*)reason->c_str(), BASIC, "Hard reset"); 
+			snprintf(&*reason->begin(), BASIC, "Hard reset"); 
 			break;
 		}
 		case 0x04:
 		{
-			snprintf((char*)reason->c_str(), BASIC, "SMP PHY CONTROL function LINK RESET phy operation"); 
+			snprintf(&*reason->begin(), BASIC, "SMP PHY CONTROL function LINK RESET phy operation"); 
 				break;
 		}
 		case 0x05:
 		{
-			snprintf((char*)reason->c_str(), BASIC, "After the multiplexing sequence complete"); 
+			snprintf(&*reason->begin(), BASIC, "After the multiplexing sequence complete"); 
 				break;
 		}
 		case 0x06:
 		{
-			snprintf((char*)reason->c_str(), BASIC, "I_T nexus loss timer"); 
+			snprintf(&*reason->begin(), BASIC, "I_T nexus loss timer"); 
 				break;
 		}
 		case 0x07:
 		{
-			snprintf((char*)reason->c_str(), BASIC, "Break Timeout Timer expired");
+			snprintf(&*reason->begin(), BASIC, "Break Timeout Timer expired");
 				break;
 		}
 		case 0x08:
 		{
-			snprintf((char*)reason->c_str(), BASIC, "Phy test function stopped"); 
+			snprintf(&*reason->begin(), BASIC, "Phy test function stopped"); 
 				break;
 		}
 		case 0x09:
 		{
-			snprintf((char*)reason->c_str(), BASIC, "Expander device reduced functionality"); 
+			snprintf(&*reason->begin(), BASIC, "Expander device reduced functionality"); 
 				break;
 		}
 		default:
 		{
-			snprintf((char*)reason->c_str(), BASIC, "Reserved");
+			snprintf(&*reason->begin(), BASIC, "Reserved");
 			break;
 		}
 
 	}
 }
+
 //-----------------------------------------------------------------------------
 //
 //! \fn get_Negotiated_Logical_Link_Rate
@@ -276,22 +280,27 @@ void CScsiProtocolPortLog::get_Negotiated_Logical_Link_Rate(std::string *rate, u
 	{
 		case 0x09:
 		{
-			snprintf((char*)rate->c_str(), BASIC, "1.5 GBs");
+			snprintf(&*rate->begin(), BASIC, "1.5 GBs");
 			break;
 		}
 		case 0x0a:
 		{
-			snprintf((char*)rate->c_str(), BASIC, "3.5  to 6 GBs");
+			snprintf(&*rate->begin(), BASIC, "3.5  to 6 GBs");
 			break;
 		}
 		case 0x0b:
 		{
-			snprintf((char*)rate->c_str(), BASIC, "6 - 12 GBs");
+			snprintf(&*rate->begin(), BASIC, "6 - 12 GBs");
+			break;
+		}
+		case 0x0c:
+		{
+			snprintf(&*rate->begin(), BASIC, "22.5 GBs");
 			break;
 		}
 		default:
 		{
-			snprintf((char*)rate->c_str(), BASIC, "Same as the NEGOTIATED LOGICAL LINK RATE field");
+			snprintf(&*rate->begin(), BASIC, "Same as the NEGOTIATED LOGICAL LINK RATE field");
 			break;
 		}
 	}
@@ -318,54 +327,54 @@ void CScsiProtocolPortLog::process_Descriptor_Information(JSONNODE *descData)
 	printf("Descriptor Information \n");
 #endif
 
-	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Descriptor->phyIdent);
-	json_push_back(descData, json_new_a("PHY Identifier", (char*)myStr.c_str()));
-	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Descriptor->phyLength);
-	json_push_back(descData, json_new_a("SAS Phy Descriptor Length", (char*)myStr.c_str()));
+	snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_Descriptor->phyIdent);
+	json_push_back(descData, json_new_a("PHY Identifier", &*myStr.begin()));
+	snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_Descriptor->phyLength);
+	json_push_back(descData, json_new_a("SAS Phy Descriptor Length", &*myStr.begin()));
 
-	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Descriptor->attached);
-	json_push_back(descData, json_new_a("Attached Device Type and Reason", (char*)myStr.c_str()));
+	snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_Descriptor->attached);
+	json_push_back(descData, json_new_a("Attached Device Type and Reason", &*myStr.begin()));
 	get_Device_Type_Field(&myStr,M_GETBITRANGE(m_Descriptor->attached, 6, 4));
-	json_push_back(descData, json_new_a("Attached Device Type Meaning", (char*)myStr.c_str()));
+	json_push_back(descData, json_new_a("Attached Device Type Meaning", &*myStr.begin()));
 	get_Reason_Field(&myStr, M_GETBITRANGE(m_Descriptor->attached, 3, 0));
-	json_push_back(descData, json_new_a("Attached Reason Meaning", (char*)myStr.c_str()));
+	json_push_back(descData, json_new_a("Attached Reason Meaning", &*myStr.begin()));
 
-	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Descriptor->reason);
-	json_push_back(descData, json_new_a("Attached Rate", (char*)myStr.c_str()));
+	snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_Descriptor->reason);
+	json_push_back(descData, json_new_a("Attached Rate", &*myStr.begin()));
 	get_Negotiated_Logical_Link_Rate(&myStr, M_GETBITRANGE(m_Descriptor->reason, 3, 0));
-	json_push_back(descData, json_new_a("Attached Rate Meaning", (char*)myStr.c_str()));
-	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Descriptor->initiatorPort);
-	json_push_back(descData, json_new_a("Attached Initiator Port", (char*)myStr.c_str()));
-	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Descriptor->targetPort);
-	json_push_back(descData, json_new_a("Attached Target Port", (char*)myStr.c_str()));
+	json_push_back(descData, json_new_a("Attached Rate Meaning", &*myStr.begin()));
+	snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_Descriptor->initiatorPort);
+	json_push_back(descData, json_new_a("Attached Initiator Port", &*myStr.begin()));
+	snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_Descriptor->targetPort);
+	json_push_back(descData, json_new_a("Attached Target Port", &*myStr.begin()));
 
 	byte_Swap_64(&m_Descriptor->address);						// need to byte swap on SAS 64 bit
 	byte_Swap_64(&m_Descriptor->attachedAddress);				// need to byte swap on SAS 64 bit
-    snprintf((char*)myStr.c_str(), BASIC, "0x%014" PRIx64"", m_Descriptor->address);
-    json_push_back(descData, json_new_a("World Wide Name", (char*)myStr.c_str()));
-    snprintf((char*)myStr.c_str(), BASIC, "0x%014" PRIx64"", m_Descriptor->attachedAddress);
-    json_push_back(descData, json_new_a("Attached Address", (char*)myStr.c_str()));
+    snprintf(&*myStr.begin(), BASIC, "0x%014" PRIx64"", m_Descriptor->address);
+    json_push_back(descData, json_new_a("World Wide Name", &*myStr.begin()));
+    snprintf(&*myStr.begin(), BASIC, "0x%014" PRIx64"", m_Descriptor->attachedAddress);
+    json_push_back(descData, json_new_a("Attached Address", &*myStr.begin()));
 
-	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Descriptor->attachedPhyIdent);
-	json_push_back(descData, json_new_a("Attached Phy Identifier", (char*)myStr.c_str()));
+	snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_Descriptor->attachedPhyIdent);
+	json_push_back(descData, json_new_a("Attached Phy Identifier", &*myStr.begin()));
 
 	byte_Swap_32(&m_Descriptor->invalidDwordCount);				// need to byte swap on SAS 
 	byte_Swap_32(&m_Descriptor->disparityErrorCount);			// need to byte swap on SAS 
 	byte_Swap_32(&m_Descriptor->synchronization);				// need to byte swap on SAS 
 	byte_Swap_32(&m_Descriptor->phyResetProblem);				// need to byte swap on SAS 
-	snprintf((char*)myStr.c_str(), BASIC, "0x%08" PRIx32"", m_Descriptor->invalidDwordCount);
-	json_push_back(descData, json_new_a("Invalid Dword Count", (char*)myStr.c_str()));
-	snprintf((char*)myStr.c_str(), BASIC, "0x%08" PRIx32"", m_Descriptor->disparityErrorCount);
-	json_push_back(descData, json_new_a("Running Dispariity Error Count", (char*)myStr.c_str()));
-	snprintf((char*)myStr.c_str(), BASIC, "0x%08" PRIx32"", m_Descriptor->synchronization);
-	json_push_back(descData, json_new_a("Loss Of DWORD Synchronization", (char*)myStr.c_str()));
-	snprintf((char*)myStr.c_str(), BASIC, "0x%08" PRIx32"", m_Descriptor->phyResetProblem);
-	json_push_back(descData, json_new_a("Phy Reset Problem", (char*)myStr.c_str()));
+	snprintf(&*myStr.begin(), BASIC, "0x%08" PRIx32"", m_Descriptor->invalidDwordCount);
+	json_push_back(descData, json_new_a("Invalid Dword Count", &*myStr.begin()));
+	snprintf(&*myStr.begin(), BASIC, "0x%08" PRIx32"", m_Descriptor->disparityErrorCount);
+	json_push_back(descData, json_new_a("Running Dispariity Error Count", &*myStr.begin()));
+	snprintf(&*myStr.begin(), BASIC, "0x%08" PRIx32"", m_Descriptor->synchronization);
+	json_push_back(descData, json_new_a("Loss Of DWORD Synchronization", &*myStr.begin()));
+	snprintf(&*myStr.begin(), BASIC, "0x%08" PRIx32"", m_Descriptor->phyResetProblem);
+	json_push_back(descData, json_new_a("Phy Reset Problem", &*myStr.begin()));
 
-	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Descriptor->phyEventLength);
-	json_push_back(descData, json_new_a("Phy Event Descriptor Length", (char*)myStr.c_str()));
-	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Descriptor->numberOfEvents);
-	json_push_back(descData, json_new_a("Number of Pyh Events", (char*)myStr.c_str()));
+	snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_Descriptor->phyEventLength);
+	json_push_back(descData, json_new_a("Phy Event Descriptor Length", &*myStr.begin()));
+	snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_Descriptor->numberOfEvents);
+	json_push_back(descData, json_new_a("Number of Pyh Events", &*myStr.begin()));
 
 }
 //-----------------------------------------------------------------------------
@@ -390,16 +399,16 @@ void CScsiProtocolPortLog::process_List_Information(JSONNODE *listData)
 	printf("List Information \n");
 #endif
 	
-	snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_List->paramCode);
-	json_push_back(listData, json_new_a("Relative Target Port Identifier", (char*)myStr.c_str()));
-	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_List->paramControlByte);
-	json_push_back(listData, json_new_a("Relative Target Port Control Byte", (char*)myStr.c_str()));
-	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_List->paramLength);
-	json_push_back(listData, json_new_a("Relative Target Port Length", (char*)myStr.c_str()));
-	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_List->ident);
-	json_push_back(listData, json_new_a("Port Identifier", (char*)myStr.c_str()));
-	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_List->genCode);
-	json_push_back(listData, json_new_a("Generation Code", (char*)myStr.c_str()));
+	snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", m_List->paramCode);
+	json_push_back(listData, json_new_a("Relative Target Port Identifier", &*myStr.begin()));
+	snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_List->paramControlByte);
+	json_push_back(listData, json_new_a("Relative Target Port Control Byte", &*myStr.begin()));
+	snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_List->paramLength);
+	json_push_back(listData, json_new_a("Relative Target Port Length", &*myStr.begin()));
+	snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_List->ident);
+	json_push_back(listData, json_new_a("Port Identifier", &*myStr.begin()));
+	snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_List->genCode);
+	json_push_back(listData, json_new_a("Generation Code", &*myStr.begin()));
 	json_push_back(listData, json_new_i("Number of Phys", m_List->numberOfPhys));
 }
 //-----------------------------------------------------------------------------
@@ -432,9 +441,9 @@ eReturnValues CScsiProtocolPortLog::get_Data(JSONNODE *masterData)
 			m_List = (sRelativeTargetPort *)&pData[offset];
 			// process the List header information
 			byte_Swap_16(&m_List->paramCode);
-			snprintf((char*)myStr.c_str(), BASIC, "Relative Target Port Information %" PRId16"", m_List->paramCode);
+			snprintf(&*myStr.begin(), BASIC, "Relative Target Port Information %" PRId16"", m_List->paramCode);
 			JSONNODE *listInfo = json_new(JSON_NODE);
-			json_set_name(listInfo, (char*)myStr.c_str());
+			json_set_name(listInfo, &*myStr.begin());
 			process_List_Information(listInfo);
 			offset += sizeof(sRelativeTargetPort);
 			m_Descriptor = (sSASPHYLogDescriptorList *)&pData[offset];
@@ -443,9 +452,9 @@ eReturnValues CScsiProtocolPortLog::get_Data(JSONNODE *masterData)
 			{
 				offset += sizeof(sSASPHYLogDescriptorList);
 				// process the descriptor information
-				snprintf((char*)myStr.c_str(), BASIC, "Descriptor Information %" PRId8"", m_Descriptor->phyIdent);
+				snprintf(&*myStr.begin(), BASIC, "Descriptor Information %" PRId8"", m_Descriptor->phyIdent);
 				JSONNODE *descInfo = json_new(JSON_NODE);
-				json_set_name(descInfo, (char*)myStr.c_str());
+				json_set_name(descInfo, &*myStr.begin());
 				process_Descriptor_Information(descInfo);
 
 				for (uint32_t events = 1; events <= m_Descriptor->numberOfEvents; events++)

@@ -269,6 +269,11 @@ typedef struct _sScsiErrorStat
     uint64_t            reserved10;									//!< Reserved
 	uint64_t            FRUCode;									//!< FRU code if smart trip from most recent SMART Frame (SAS only) 
     uint64_t            parity;                                     //!< Super Parity on the Fly Recovery
+    /*
+    _sScsiErrorStat() :pageNumber(0), copyNumber(0), totalReadECC(0), totalWriteECC(0), totalReallocations(0), reserved(0), totalMechanicalFails(0), totalReallocatedCanidates(0),
+        reserved1(0), reserved2(0), reserved3(0), reserved4(0), reserved5(0), attrIOEDCErrors(0), reserved6(0), reserved7(0), reserved8(0), totalFlashLED(0),
+        reserved9(0), reserved10(0), FRUCode(0), parity(0) {};
+        */
 }sScsiErrorStat;
 
 typedef struct _sScsiErrorStatVersion4
@@ -302,7 +307,14 @@ typedef struct _sScsiErrorStatVersion4
     uint64_t            portALossDwordSync;                         //!< Loss of DWord Sync (Port A)
     uint64_t            portBLossDwordSync;                         //!< Loss of DWord Sync (Port B)
     uint64_t            portAPhyResetProblem;                       //!< Phy Reset Problem (Port A)
-    uint64_t            portBPhyResetProblem;                       //!< Phy Reset Problem (Port B)
+    uint64_t            portBPhyResetProblem;                       //!< Phy Reset Problem (Port B()
+
+    _sScsiErrorStatVersion4() : pageNumber(0), copyNumber(0), totalReadECC(0), totalWriteECC(0), reserved(0), reserved1(0),
+        totalMechanicalFails(0), reserved2(0), reserved3(0), reserved4(0), reserved5(0), reserved6(0),
+        reserved7(0), attrIOEDCErrors(0), reserved8(0), reserved9(0), reserved10(0), reserved11(0),
+        reserved12(0), reserved13(0), FRUCode(0), portAInvalidDwordCount(0), portBInvalidDwordCount(0),
+        portADisparityErrorCount(0), portBDisparityErrorCount(0), portALossDwordSync(0),
+        portBLossDwordSync(0), portAPhyResetProblem(0), portBPhyResetProblem(0) {};
 }sScsiErrorVersion4;
 
 typedef struct _sScsiErrorFrame

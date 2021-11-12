@@ -209,32 +209,32 @@ eReturnValues CSAtaDevicStatisticsTempLogs::parse_SCT_Temp_Log()
     printf("\t%s%" PRId16" \n", "Temp Log CB Index (current entry):           ", CBIndex);
     printf("\t%s%" PRId8" \n", "Temp Log Temperature of CB Index (Celsius):   ", Temperature);
 #endif
-    snprintf((char*)myStr.c_str(), BASIC, "%" PRId16"", SamplePeriod);
-    json_push_back(sctTemp, json_new_a("Temp Log Sample Period (in minutes)", (char*)myStr.c_str()));
+    snprintf(&*myStr.begin(), BASIC, "%" PRId16"", SamplePeriod);
+    json_push_back(sctTemp, json_new_a("Temp Log Sample Period (in minutes)", &*myStr.begin()));
 
-    snprintf((char*)myStr.c_str(), BASIC, "%" PRId16"", Interval);
-    json_push_back(sctTemp, json_new_a("Temp Log Interval (in minutes)", (char*)myStr.c_str()));
+    snprintf(&*myStr.begin(), BASIC, "%" PRId16"", Interval);
+    json_push_back(sctTemp, json_new_a("Temp Log Interval (in minutes)", &*myStr.begin()));
 
-    snprintf((char*)myStr.c_str(), BASIC, "%d", MaxOpLimit);
-    json_push_back(sctTemp, json_new_a("Temp Log Max Op Limit", (char*)myStr.c_str()));
+    snprintf(&*myStr.begin(), BASIC, "%d", MaxOpLimit);
+    json_push_back(sctTemp, json_new_a("Temp Log Max Op Limit", &*myStr.begin()));
 
-    snprintf((char*)myStr.c_str(), BASIC, "%d", OverLimit);
-    json_push_back(sctTemp, json_new_a("Temp Log Over Limit", (char*)myStr.c_str()));
+    snprintf(&*myStr.begin(), BASIC, "%d", OverLimit);
+    json_push_back(sctTemp, json_new_a("Temp Log Over Limit", &*myStr.begin()));
 
-    snprintf((char*)myStr.c_str(), BASIC, "%d", MinOpLimit);
-    json_push_back(sctTemp, json_new_a("Temp Log Min Op Limit", (char*)myStr.c_str()));
+    snprintf(&*myStr.begin(), BASIC, "%d", MinOpLimit);
+    json_push_back(sctTemp, json_new_a("Temp Log Min Op Limit", &*myStr.begin()));
 
-    snprintf((char*)myStr.c_str(), BASIC, "%d", UnderLimit);
-    json_push_back(sctTemp, json_new_a("Temp Log Under Limit", (char*)myStr.c_str()));
+    snprintf(&*myStr.begin(), BASIC, "%d", UnderLimit);
+    json_push_back(sctTemp, json_new_a("Temp Log Under Limit", &*myStr.begin()));
 
-    snprintf((char*)myStr.c_str(), BASIC, "%" PRId16"", CBSize);
-    json_push_back(sctTemp, json_new_a("Temp Log CB Size (in entries)", (char*)myStr.c_str()));
+    snprintf(&*myStr.begin(), BASIC, "%" PRId16"", CBSize);
+    json_push_back(sctTemp, json_new_a("Temp Log CB Size (in entries)", &*myStr.begin()));
 
-    snprintf((char*)myStr.c_str(), BASIC, "%" PRId16"", CBIndex);
-    json_push_back(sctTemp, json_new_a("Temp Log CB Index (current entry)", (char*)myStr.c_str()));
+    snprintf(&*myStr.begin(), BASIC, "%" PRId16"", CBIndex);
+    json_push_back(sctTemp, json_new_a("Temp Log CB Index (current entry)", &*myStr.begin()));
 
-    snprintf((char*)myStr.c_str(), BASIC, "%d", Temperature);
-    json_push_back(sctTemp, json_new_a("Temp Log Temperature of CB Index (Celsius)", (char*)myStr.c_str()));
+    snprintf(&*myStr.begin(), BASIC, "%d", Temperature);
+    json_push_back(sctTemp, json_new_a("Temp Log Temperature of CB Index (Celsius)", &*myStr.begin()));
 
     json_push_back(JsonData, sctTemp);
     return SUCCESS;
@@ -719,8 +719,7 @@ uint32_t CAtaDeviceStatisticsLogs::CheckStatusAndValid_32(uint64_t *value)
 //---------------------------------------------------------------------------
 void CAtaDeviceStatisticsLogs::logPage00(uint64_t *value)
 {
-#if defined _DEBUG
-    uint64_t *cData = &value[0];
+
     uint8_t *pEntries = (uint8_t *)&value[0];
     uint8_t TotalEntries = 0;
     TotalEntries = pEntries[8];
@@ -728,7 +727,6 @@ void CAtaDeviceStatisticsLogs::logPage00(uint64_t *value)
     printf("*****List Of Supported Device(log Page 00h)*****");
     printf("\t%s %d \n\n", "Number of entries  : ", TotalEntries);
 
-#endif
 }
 //-----------------------------------------------------------------------------
 //

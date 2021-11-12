@@ -59,7 +59,7 @@ namespace opensea_parser {
         CAta_Identify_Log_00(uint8_t *Buffer);
         ~CAta_Identify_Log_00();
         bool is_Page_Supported(uint8_t pageNumber);
-        eReturnValues get_Log_Page00(uint8_t *pData, JSONNODE *masterData);
+        eReturnValues get_Log_Page00(JSONNODE *masterData);
         
     };
 
