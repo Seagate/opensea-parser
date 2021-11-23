@@ -121,19 +121,19 @@ void CScsiCacheMemStatLog::get_Parameter_Code_Description(uint16_t paramCode, st
     switch (paramCode)
     {
     case 0x0001:
-            *cacheStatistics = "Read Cache Memory Hits";
+            *cacheStatistics = "read cache memory hits";
         break;
     case 0x0002:
-            *cacheStatistics = "Reads To Cache Memory";
+            *cacheStatistics = "reads to cache memory";
         break;
     case 0x0003:
-            *cacheStatistics = "Writes Cache Memory Hits";
+            *cacheStatistics = "writes cache memory hits";
         break;
     case 0x0004:
-            *cacheStatistics = "Writes From Cache Memory";
+            *cacheStatistics = "writes from cache memory";
         break;
     case 0x0005:
-            *cacheStatistics = "Time From Last Hard Reset";
+            *cacheStatistics = "time from last hard reset";
         break;
     default:
             snprintf(&*tempStr.begin(), BASIC, "vendor specific 0x%04" PRIx16"", paramCode);
