@@ -337,7 +337,7 @@ void opensea_parser::prePython_unknown_params(JSONNODE* masterData, uint64_t val
         json_push_back(data, json_new_a("name", "unknown_parameter"));
         JSONNODE* label = json_new(JSON_NODE);
         json_set_name(label, "labels");
-        json_push_back(label, json_new_a("units", "unknown"));
+        //json_push_back(label, json_new_a("units", "unknown"));
 
         snprintf(&*myStr.begin(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16":%" PRIu32"", logPage, subPage, paramCode, offset);
         json_push_back(label, json_new_a("metric_source", &*myStr.begin()));
