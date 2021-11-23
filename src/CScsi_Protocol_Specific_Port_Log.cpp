@@ -258,7 +258,317 @@ void CScsiProtocolPortLog::get_Reason_Field(std::string *reason, uint8_t code)
 
 	}
 }
-
+//-----------------------------------------------------------------------------
+//
+//! \fn process_Event_Description
+//
+//! \brief
+//!   Description: parser out the data for phy event source 
+//
+//  Entry:
+//! \param source - string to give the event a name
+//! \param event - code holds event description
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void CScsiProtocolPortLog::process_Event_Description(std::string* source, uint8_t event)
+{
+	switch (event)
+	{
+	case 0x00:
+	{
+		*source = "no event";
+		break;
+	}
+	case 0x01:
+	{
+		*source = "invalid dwords";
+		break;
+	}
+	case 0x02:
+	{
+		*source = "running disparity errors";
+		break;
+	}
+	case 0x03:
+	{
+		*source = "loss of dword sync";
+		break;
+	}
+	case 0x04:
+	{
+		*source = "phy reset problems";
+		break;
+	}
+	case 0x05:
+	{
+		*source = "elasticity buffer overflows";
+		break;
+	}
+	case 0x06:
+	{
+		*source = "received errors";
+		break;
+	}
+	case 0x07:
+		*source = "invalid SPL packets";
+		break;
+	case 0x08:
+		*source = "loss of SPL packet sync";
+		break;
+	case 0x09:
+	case 0x0a:
+	case 0x0b:
+	case 0x0c:
+	case 0x0d:
+	case 0x0e:
+	case 0x0f:
+	case 0x10:
+	case 0x11:
+	case 0x12:
+	case 0x13:
+	case 0x14:
+	case 0x15:
+	case 0x16:
+	case 0x17:
+	case 0x18:
+	case 0x19:
+	case 0x1a:
+	case 0x1b:
+	case 0x1c:
+	case 0x1d:
+	case 0x1e:
+	case 0x1f:
+	{
+		*source = "reserved for phy layer-based phy events";
+		break;
+	}
+	case 0x20:
+	{
+		*source = "received address frame errors";
+		break;
+	}
+	case 0x21:
+	{
+		*source = "transmitted abandon-class open_rejects";
+		break;
+	}
+	case 0x22:
+	{
+		*source = "received abandon-class open_rejects";
+		break;
+	}
+	case 0x23:
+	{
+		*source = "transmitted retry-class open_rejects";
+		break;
+	}
+	case 0x24:
+	{
+		*source = "received retry-class open_rejects";
+		break;
+	}
+	case 0x25:
+	{
+		*source = "received (waiting on partial) apis";
+		break;
+	}
+	case 0x26:
+	{
+		*source = "received (waiting on connection) apis";
+		break;
+	}
+	case 0x27:
+	{
+		*source = "transmitted breaks";
+		break;
+	}
+	case 0x28:
+	{
+		*source = "received breaks";
+		break;
+	}
+	case 0x29:
+	{
+		*source = "break timeouts";
+		break;
+	}
+	case 0x2a:
+	{
+		*source = "connections";
+		break;
+	}
+	case 0x2b:
+	{
+		*source = "peak transmitted pathway blocks";
+		break;
+	}
+	case 0x2c:
+	{
+		*source = "peak transmitted arbitration wait time";
+		break;
+	}
+	case 0x2d:
+	{
+		*source = "peak arbitration time";
+		break;
+	}
+	case 0x2e:
+	{
+		if (g_dataformat == PREPYTHON_DATA)
+		{
+			*source = "peak connection time";
+		}
+		else
+		{
+			*source = "peak connection time pvd the peak duration, in microseconds, of any connection in which the phy was involved";
+		}
+		break;
+	}
+	case 0x2f:
+		*source = "persistent connections";
+		break;
+	case 0x30:
+	case 0x31:
+	case 0x32:
+	case 0x33:
+	case 0x34:
+	case 0x35:
+	case 0x36:
+	case 0x37:
+	case 0x38:
+	case 0x39:
+	case 0x3a:
+	case 0x3b:
+	case 0x3c:
+	case 0x3d:
+	case 0x3e:
+	case 0x3f:
+	{
+		*source = "reserved for sas arbitration-related phy information";
+		break;
+	}
+	case 0x40:
+	{
+		*source = "transmitted ssp frames";
+		break;
+	}
+	case 0x41:
+	{
+		*source = "received ssp frames";
+		break;
+	}
+	case 0x42:
+	{
+		*source = "transmitted ssp frame errors";
+		break;
+	}
+	case 0x43:
+	{
+		*source = "received ssp frame errors";
+		break;
+	}
+	case 0x44:
+	{
+		*source = "transmitted credit_blockeds";
+		break;
+	}
+	case 0x45:
+	{
+		*source = "received credit_blockeds";
+		break;
+	}
+	case 0x46:
+	case 0x47:
+	case 0x48:
+	case 0x49:
+	case 0x4a:
+	case 0x4b:
+	case 0x4c:
+	case 0x4d:
+	case 0x4e:
+	case 0x4f:
+	{
+		*source = "reserved for ssp-related phy events";
+		break;
+	}
+	case 0x50:
+	{
+		*source = "transmitted sata frames";
+		break;
+	}
+	case 0x51:
+	{
+		*source = "received sata frames";
+		break;
+	}
+	case 0x52:
+	{
+		*source = "sata flow control buffer overflows";
+		break;
+	}
+	case 0x53:
+	case 0x54:
+	case 0x55:
+	case 0x56:
+	case 0x57:
+	case 0x58:
+	case 0x59:
+	case 0x5a:
+	case 0x5b:
+	case 0x5c:
+	case 0x5d:
+	case 0x5e:
+	case 0x5f:
+	{
+		*source = "reserved for stp and sata-related phy events";
+		break;
+	}
+	case 0x60:
+	{
+		*source = "transmitted smp frames";
+		break;
+	}
+	case 0x61:
+	{
+		*source = "received smp frames";
+		break;
+	}
+	case 0x62:
+	{
+		*source = "reserved for smp-related phy events";
+		break;
+	}
+	case 0x63:
+	{
+		*source = "received smp frame errors";
+		break;
+	}
+	case 0x64:
+	case 0x65:
+	case 0x66:
+	case 0x67:
+	case 0x68:
+	case 0x69:
+	case 0x6a:
+	case 0x6b:
+	case 0x6c:
+	case 0x6d:
+	case 0x6e:
+	case 0x6f:
+	{
+		*source = "reserved for smp-related phy events";
+		break;
+	}
+	default:
+	{
+		*source = "vendor specific";
+		break;
+	}
+	}
+}
 //-----------------------------------------------------------------------------
 //
 //! \fn get_Negotiated_Logical_Link_Rate
