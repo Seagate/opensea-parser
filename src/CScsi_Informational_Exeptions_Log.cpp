@@ -232,7 +232,7 @@ eReturnValues CScsiInformationalExeptionsLog::get_Informational_Exceptions_Data(
 		}
 		else
 		{
-			JSONNODE* pageInfo = json_new(JSON_NODE);
+			pageInfo = json_new(JSON_NODE);
 			json_set_name(pageInfo, "Informational Exceptions Log - 2fh length 0x0f");
 		}
 		uint16_t number = 0;
