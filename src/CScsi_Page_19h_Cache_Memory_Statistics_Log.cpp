@@ -135,6 +135,9 @@ void CScsiCacheMemStatLog::get_Parameter_Code_Description(uint16_t paramCode, st
     case 0x0005:
             *cacheStatistics = "time from last hard reset";
         break;
+    case 0x0006:
+            *cacheStatistics = "time interval";
+        break;
     default:
             snprintf(&*tempStr.begin(), BASIC, "vendor specific 0x%04" PRIx16"", paramCode);
             *cacheStatistics = tempStr;
