@@ -60,7 +60,7 @@ CScsiCmdDurationLimitsLog::CScsiCmdDurationLimitsLog()
 //
 //---------------------------------------------------------------------------
 CScsiCmdDurationLimitsLog::CScsiCmdDurationLimitsLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength)
-    : pData()
+    : pData(buffer)
     , m_CMDLimitsName("Command Duration Limits Log")
     , m_LogStatus(IN_PROGRESS)
     , m_PageLength(pageLength)
