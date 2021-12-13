@@ -1174,7 +1174,6 @@ eReturnValues CATA_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint32
     {
         set_json_string_With_Status(pageInfo, "Idle Time (hours)", &*myStr.begin(), vFarmFrame[page].reliPage.idleTime, m_showStatusBits);                                 
         set_json_64_bit_With_Status(pageInfo, "Number of LBAs Corrected by Parity Sector", vFarmFrame[page].reliPage.numberLBACorrectedByParitySector, false, m_showStatusBits);
-        set_json_64_bit_With_Status(pageInfo, "", vFarmFrame[page].reliPage.numberLBACorrectedByParitySector, false, m_showStatusBits);
         set_json_64_bit_With_Status(pageInfo, "Primary Super Parity Coverage Percentae, Actuator 0", vFarmFrame[page].reliPage.SuperParityCovPercent, false, m_showStatusBits);
         set_json_64_bit_With_Status(pageInfo, "Timestamp of last IDD test in Hours(POH), Actuator 1", vFarmFrame[page].reliPage.lastIDDTimeAct1, false, m_showStatusBits);
         set_json_64_bit_With_Status(pageInfo, "Sub Command of last IDD Test, Actuator 1", vFarmFrame[page].reliPage.cmdLastIDDTestAct1, false, m_showStatusBits);
