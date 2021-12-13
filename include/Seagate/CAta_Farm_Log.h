@@ -150,6 +150,7 @@ namespace opensea_parser {
             inline void create_Model_Number_String(std::string &modelNumber, const sDriveInfo * const idInfo)
             {
                 #define MAXSIZE  10
+				#define STRMAXSIZE (MAXSIZE * 4)	
                 uint64_t model[MAXSIZE] = { 0,0,0,0,0,0,0,0,0,0 };
                 // loop for string the 0xc0 off
                 for (uint8_t i = 0; i < MAXSIZE; i++)
@@ -158,18 +159,20 @@ namespace opensea_parser {
                 }
                 // temp string for coping the hex to text, have to resize for c98 issues
                 std::string tempStr = "";
-                tempStr.resize(MAXSIZE);
-                modelNumber.resize(MAXSIZE);
+                tempStr.resize(STRMAXSIZE);
+                modelNumber.resize(STRMAXSIZE);
                 // memset them to 0
-                memset(&*modelNumber.begin(), 0, MAXSIZE);
-                memset(&*tempStr.begin(), 0, MAXSIZE);
+                memset(&*modelNumber.begin(), 0, STRMAXSIZE);
+                memset(&*tempStr.begin(), 0, STRMAXSIZE);
                 // loop to copy the info into the modeleNumber string
                 for (uint8_t n = 0; n < MAXSIZE; n++)
                 {
                     model[n] = idInfo->modelNumber[n] & 0x00FFFFFFFFFFFFFFLL;
                     strncpy(&*tempStr.begin(), (char*)&model[n], 10);
                     byte_Swap_String(&*tempStr.begin());
-                    strncat(&*modelNumber.begin(), &*tempStr.begin(), sizeof(tempStr));
+                    strncat(&*modelNumber.begin(), &*tempStr.begin(), tempStr.size());
+					if ((modelNumber.size() + 4) > STRMAXSIZE)
+						break;
                 }
                 remove_Trailing_Whitespace(&*modelNumber.begin());
             }
