@@ -34,7 +34,7 @@ namespace opensea_parser {
             uint16_t  paramCode;					        // Paramcode
             uint8_t	  controlByte;					        // Controlbyte
             uint8_t	  paramLength;                          // Param Length
-            uint64_t  inactiveMiss;                         // NUMBER OF INACTIVE TARGET MISS COMMANDS
+            uint32_t  inactiveMiss;                         // NUMBER OF INACTIVE TARGET MISS COMMANDS
             uint32_t  activeMiss;                           // NUMBER OF ACTIVE TARGET MISS COMMANDS
             uint32_t  latencyMiss;                          // NUMBER OF LATENCY MISS COMMANDS
             uint32_t  nonconformingMiss;                    // NUMBER OF NONCONFORMING MISS COMMANDS

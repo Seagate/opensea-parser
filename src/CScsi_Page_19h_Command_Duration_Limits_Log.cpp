@@ -118,12 +118,11 @@ void CScsiCmdDurationLimitsLog::get_Parameter_Code_Description(uint16_t paramCod
 {
     if (paramCode >= 0x0011 && paramCode <= 0x0017)
     {
-
-        snprintf(&*generalStr->begin(), BASIC, "Command Duration Limit T2A");
+        *generalStr =  "Command Duration Limit T2A";
     }
-    else if (paramCode >= 0x0011 && paramCode <= 0x0017)
+    else if (paramCode >= 0x0021 && paramCode <= 0x0027)
     {
-        snprintf(&*generalStr->begin(), BASIC, "Command Duration Limit T2B");
+        *generalStr = "Command Duration Limit T2B";
     }
     else
     {
@@ -215,7 +214,7 @@ void CScsiCmdDurationLimitsLog::process_Duration_Limits_Data(JSONNODE* limitData
     get_Parameter_Code_Description(m_limitsLog->paramCode, &myStr);
 
     byte_Swap_32(&m_limitsLog->activeMiss);
-    byte_Swap_64(&m_limitsLog->inactiveMiss);
+    byte_Swap_32(&m_limitsLog->inactiveMiss);
     byte_Swap_32(&m_limitsLog->latencyMiss);
     byte_Swap_32(&m_limitsLog->latencyMissesDeferredErrors);
     byte_Swap_32(&m_limitsLog->latencyMissesDoToError);
