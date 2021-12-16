@@ -323,7 +323,7 @@ namespace opensea_parser {
         {
             if (M_IGETBITRANGE(value, 63, 31) == 0)
             {
-                json_push_back(nowNode, json_new_i(&*myStr.begin(), static_cast<int32_t>(M_DoubleWord0(value))));
+                json_push_back(nowNode, json_new_i(&*myStr.begin(), value));
             }
             else
             {
@@ -365,7 +365,7 @@ namespace opensea_parser {
         {
             if (M_IGETBITRANGE(value,63,32) == 0)
             {
-                json_push_back(nowNode, json_new_i(&*myStr.begin(), static_cast<int32_t>(M_DoubleWord0(value))));
+				json_push_back(nowNode, json_new_i(&*myStr.begin(), value));
             }
             else
             {
