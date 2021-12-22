@@ -180,13 +180,15 @@ void CScsi_DST_Results::print_Self_Test_Log(JSONNODE *dstNode, uint16_t run, uin
 	JSONNODE* runInfo = json_new(JSON_NODE);
 	snprintf(&*myStr.begin(), BASIC, "Entry %3d ", run);   // changed the run# to Entry per Paul
 	json_set_name(runInfo, &*myStr.begin());
-	snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", m_DST->paramCode);
-	json_push_back(runInfo, json_new_a("Parameter Code", &*myStr.begin()));
-	snprintf(&*myStr.begin(), BASIC, "%" PRIx8"", m_DST->paramLength);
-	json_push_back(runInfo, json_new_a("Parameter Length", &*myStr.begin()));
-	snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_DST->paramControlByte);
-	json_push_back(runInfo, json_new_a("Control Byte", &*myStr.begin()));
-
+	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+	{
+		snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", m_DST->paramCode);
+		json_push_back(runInfo, json_new_a("Parameter Code", &*myStr.begin()));
+		snprintf(&*myStr.begin(), BASIC, "%" PRIx8"", m_DST->paramLength);
+		json_push_back(runInfo, json_new_a("Parameter Length", &*myStr.begin()));
+		snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_DST->paramControlByte);
+		json_push_back(runInfo, json_new_a("Control Byte", &*myStr.begin()));
+	}
 	snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", (uint8_t)M_GETBITRANGE(m_DST->stCode, 7, 5));
 	json_push_back(runInfo, json_new_a("Self Test Code", &*myStr.begin()));
 	snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", (uint8_t)M_GETBITRANGE(m_DST->stCode, 3, 0));
