@@ -126,14 +126,14 @@ eReturnValues CScsi_DST_Results::get_Self_Test_Log(uint8_t *buffer, size_t buffe
 		byte_Swap_Self_Test();
 		if (m_DST->paramCode == i && m_DST->paramLength == 0x10)
 		{	
-			print_Self_Test_Log(DstJson, i,0);
+			print_Self_Test_Log(DstJson, i);
 			if (i == 20)
 			{
 				retStatus = SUCCESS;
 			}
 			else
 			{
-				if ( (((size_t)i+1) * sizeof(sSelfTest) ) < bufferSize )
+				if ( (((size_t)i+1) * sizeof(sSelfTest) ) <= bufferSize )
 				{
 					m_DST++;
 					retStatus = IN_PROGRESS;
@@ -172,7 +172,7 @@ eReturnValues CScsi_DST_Results::get_Self_Test_Log(uint8_t *buffer, size_t buffe
 //!   \return void
 //
 //---------------------------------------------------------------------------
-void CScsi_DST_Results::print_Self_Test_Log(JSONNODE *dstNode, uint16_t run, uint32_t offset)
+void CScsi_DST_Results::print_Self_Test_Log(JSONNODE *dstNode, uint16_t run)
 {
 	std::string myStr = "";
 	myStr.resize(BASIC);
