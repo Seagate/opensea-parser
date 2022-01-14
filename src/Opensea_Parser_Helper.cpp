@@ -392,7 +392,7 @@ void opensea_parser::prePython_int(JSONNODE* masterData, const char* name, const
     json_push_back(label, json_new_a("metric_source", &*myStr.begin()));
     json_push_back(data, label);
     json_push_back(data, json_new_i("value", value));
-    snprintf(&*myStr.begin(), BASIC, "%" PRIu64"", value);
+   // snprintf(&*myStr.begin(), BASIC, "%" PRIu64"", value);
 
     json_push_back(masterData, data);
 }
