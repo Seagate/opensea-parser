@@ -13,6 +13,8 @@
 // \file CScsi_Start_Stop_Counter_Log.cpp Implementation of CScsi start stop cycle counter Log class
 //
 #include "CScsi_Start_Stop_Cycle_Counter_Log.h"
+#include <sstream>
+#include <iomanip>
 
 using namespace opensea_parser;
 //-----------------------------------------------------------------------------
@@ -246,42 +248,46 @@ eReturnValues CScsiStartStop::week_Year_Print(JSONNODE *data, uint16_t param, ui
 {
 #define YEARSIZE 4
 #define WEEKSIZE 2
-    std::string myStr = "";
-    myStr.resize(BASIC);
+	std::string myStr = "";
+	myStr.resize(BASIC);
 
-    JSONNODE *dateInfo = json_new(JSON_NODE);
-    json_set_name(dateInfo, &*strHeader.begin());
-
+	JSONNODE *dateInfo = json_new(JSON_NODE);
+	json_set_name(dateInfo, (char *)strHeader.c_str());
+	
     if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
-        snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", param);
-        json_push_back(dateInfo, json_new_a("Parameter Code", &*myStr.begin()));
-        snprintf(&*myStr.begin(), BASIC, "%" PRIu8"", paramlength);
-        json_push_back(dateInfo, json_new_a("Parameter Length", &*myStr.begin()));
-        snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", paramConByte);
-        json_push_back(dateInfo, json_new_a("Control Byte", &*myStr.begin()));
+        std::ostringstream temp;
+
+        temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << param;
+        json_push_back(dateInfo, json_new_a("Parameter Code", temp.str().c_str()));
+
+        temp.clear();
+        temp << std::dec << static_cast<uint16_t>(paramlength); //cast is because streams interpret char/unsigned char as a character, but 16 bits wide will be ok to cast to to get around this. -TJE
+        json_push_back(dateInfo, json_new_a("Parameter Length", temp.str().c_str()));
+
+        temp.clear();
+        temp << "0x" << std::hex << std::setfill('0') <<std::setw(2) << static_cast<uint16_t>(paramConByte); //cast is because streams interpret char/unsigned char as a character, but 16 bits wide will be ok to cast to to get around this. -TJE
+        json_push_back(dateInfo, json_new_a("Control Byte", temp.str().c_str()));
     }
-    myStr.resize(YEARSIZE);
-    memset(&*myStr.begin(), 0, YEARSIZE);
+	
     if (year != 0x20202020)
     {
-        strncpy(&*myStr.begin(), (char*)&year, YEARSIZE);
+        myStr.assign(reinterpret_cast<const char*>(&year), sizeof(year));
     }
     else
     {
         myStr = "0000";
     }
-    json_push_back(dateInfo, json_new_a(&*strYear.begin(), &*myStr.begin()));
-    myStr.resize(WEEKSIZE);
+	json_push_back(dateInfo, json_new_a(strYear.c_str(), myStr.c_str()));
     if (week != 0x2020)
     {
-        strncpy(&*myStr.begin(), (char*)&week, WEEKSIZE);
+        myStr.assign(reinterpret_cast<const char*>(&week), sizeof(week));
     }
     else
     {
         myStr = "00";
     }
-    json_push_back(dateInfo, json_new_a(&*strWeek.begin(), &*myStr.begin()));
+	json_push_back(dateInfo, json_new_a(strWeek.c_str(), myStr.c_str()));
 
     json_push_back(data, dateInfo);
     return SUCCESS;
@@ -302,24 +308,24 @@ eReturnValues CScsiStartStop::week_Year_Print(JSONNODE *data, uint16_t param, ui
 //---------------------------------------------------------------------------
 eReturnValues CScsiStartStop::get_Count(JSONNODE *countData, uint16_t param, uint8_t paramlength, uint8_t paramConByte, uint32_t count, const std::string strHeader, const std::string strCount)
 {
-    std::string myStr = "";
-    myStr.resize(BASIC);
+	std::string myStr = "";
+	myStr.resize(BASIC);
 
-    JSONNODE *countInfo = json_new(JSON_NODE);
-    json_set_name(countInfo, &*strHeader.begin());
+	JSONNODE *countInfo = json_new(JSON_NODE);
+	json_set_name(countInfo, (char *)strHeader.c_str());
 
     if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
-        snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", param);
-        json_push_back(countInfo, json_new_a("Parameter Code", &*myStr.begin()));
-        snprintf(&*myStr.begin(), BASIC, "%" PRIu8"", paramlength);
-        json_push_back(countInfo, json_new_a("Parameter Length", &*myStr.begin()));
-        snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", paramConByte);
-        json_push_back(countInfo, json_new_a("Control Byte", &*myStr.begin()));
+        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", param);
+        json_push_back(countInfo, json_new_a("Parameter Code", (char*)myStr.c_str()));
+        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu8"", paramlength);
+        json_push_back(countInfo, json_new_a("Parameter Length", (char*)myStr.c_str()));
+        snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", paramConByte);
+        json_push_back(countInfo, json_new_a("Control Byte", (char*)myStr.c_str()));
     }
-    byte_Swap_32(&count);
-    json_push_back(countInfo, json_new_i(&*strCount.begin(), count));
+	byte_Swap_32(&count);
+	json_push_back(countInfo, json_new_i((char *)strCount.c_str(),  count )); 
 
-    json_push_back(countData, countInfo);
-    return SUCCESS;
+	json_push_back(countData, countInfo);
+	return SUCCESS;
 }

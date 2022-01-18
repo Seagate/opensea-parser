@@ -132,52 +132,52 @@ void CScsiScanLog::get_Scan_Status_Description(std::string *scan)
 	{
 		case 0x00:
 		{
-			*scan = "No background scans active";
+			scan->assign("No background scans active");
 			break;
 		}
 		case 0x01:
 		{
-			*scan = "Background medium scan is active";
+            scan->assign("Background medium scan is active");
 			break;
 		}
 		case 0x02:
 		{
-			*scan = "Background prescan is active";
+            scan->assign("Background prescan is active");
 			break;
 		}
 		case 0x03:
 		{
-			*scan = "Background medium scan halted due to fatal error";
+            scan->assign("Background medium scan halted due to fatal error");
 			break;
 		}
 		case 0x04:
 		{
-			*scan = "Background medium scan halted due to a vendor specific pattern of errors";
+            scan->assign("Background medium scan halted due to a vendor specific pattern of errors");
 			break;
 		}
 		case 0x05:
 		{
-			*scan = "Background medium scan halted due to medium formatted without Plist";
+            scan->assign("Background medium scan halted due to medium formatted without Plist");
 			break;
 		}
 		case 0x06:
 		{
-			*scan = "Background medium scan halted - vendor specific cause";
+            scan->assign("Background medium scan halted - vendor specific cause");
 			break;
 		}
 		case 0x07:
 		{
-			*scan = "Background medium scan halted due to temperature out of allowed range";
+            scan->assign("Background medium scan halted due to temperature out of allowed range");
 			break;
 		}
 		case 0x08:
 		{
-			*scan = "Background medium scan halted, waiting for Interval timer expiration";
+            scan->assign("Background medium scan halted, waiting for Background Medium Interval timer expiration");
 			break;
 		}
 		default:
 		{
-			*scan = "Reserved";
+            scan->assign("Reserved");
 			break;
 		}
 	}
@@ -203,21 +203,24 @@ void CScsiScanLog::process_Scan_Status_Data(JSONNODE *scanData)
 	printf("Background Scan Status Description \n");
 #endif
 	byte_Swap_16(&m_ScanParam->paramCode);
-	snprintf(&*myStr.begin(), BASIC, "Background Scan Status");
+	myStr.assign("Background Scan Status");
 	JSONNODE *statusInfo = json_new(JSON_NODE);
-	json_set_name(statusInfo, &*myStr.begin());
+	json_set_name(statusInfo, myStr.c_str());
 
-	snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", m_ScanParam->paramCode);
-	json_push_back(statusInfo, json_new_a("Background Scan Status Parameter Code", &*myStr.begin()));
-	snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_ScanParam->paramControlByte);
-	json_push_back(statusInfo, json_new_a("Background Scan Status Control Byte ", &*myStr.begin()));
-	snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_ScanParam->paramLength);
-	json_push_back(statusInfo, json_new_a("Background Scan Status Length ", &*myStr.begin()));
+    std::ostringstream temp;
+    temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << m_ScanParam->paramCode;
+	json_push_back(statusInfo, json_new_a("Background Scan Status Parameter Code", temp.str().c_str()));
+    temp.clear();
+    temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << m_ScanParam->paramControlByte;
+	json_push_back(statusInfo, json_new_a("Background Scan Status Control Byte ", temp.str().c_str()));
+    temp.clear();
+    temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << m_ScanParam->paramLength;
+	json_push_back(statusInfo, json_new_a("Background Scan Status Length ", temp.str().c_str()));
 
 	byte_Swap_32(&m_ScanParam->timeStamp);
 	json_push_back(statusInfo, json_new_i("SMART Time Stamp", static_cast<uint32_t>(m_ScanParam->timeStamp)));
 	get_Scan_Status_Description(&myStr);
-	json_push_back(statusInfo, json_new_i(&*myStr.begin(), static_cast<uint32_t>(m_ScanParam->status)));
+	json_push_back(statusInfo, json_new_i(myStr.c_str(), static_cast<uint32_t>(m_ScanParam->status)));
 	byte_Swap_16(&m_ScanParam->scansPerformed);
 	json_push_back(statusInfo, json_new_i("Number of Background Scans Performed", static_cast<uint32_t>(m_ScanParam->scansPerformed)));
 	byte_Swap_16(&m_ScanParam->mediumProgress);
@@ -248,47 +251,47 @@ void CScsiScanLog::get_Scan_Defect_Status_Description(std::string *defect)
 	{
 		case 0x01:
 		{
-			*defect = "The LBA has not yet been reassigned";
+            defect->assign("The LBA has not yet been reassigned");
 			break;
 		}
 		case 0x02:
 		{
-			*defect = "Performed Automatic Read Reassignment for the LBA";
+            defect->assign("Performed Automatic Read Reassignment for the LBA");
 			break;
 		}
 		case 0x03:
 		{
-			*defect = "Reserved";
+            defect->assign("Reserved");
 			break;
 		}
 		case 0x04:
 		{
-			*defect = "Attempt to Perform Automatic Read Reassignment Failed";
+            defect->assign("Attempt to Perform Automatic Read Reassignment Failed");
 			break;
 		}
 		case 0x05:
 		{
-			*defect = "Error Corrected, Rewriting the LBA without Performing Reassign Operation";
+            defect->assign("Error Corrected, Device rewriting the LBA without Performing Reassign Operation.");
 			break;
 		}
 		case 0x06:
 		{
-			*defect = "Application Client caused automatic write reassignment for the LBA";
+            defect->assign("Application Client caused automatic write reassignment for the LBA or LBPRZ");
 			break;
 		}
 		case 0x07:
 		{
-			*defect = "Application Client,  Reassign by Command - Invalid Data";
+            defect->assign("Application Client,  Reassign by Command - Invalid Data");
 			break;
 		}
 		case 0x08:
 		{
-			*defect = "Application Client, Reassign Command Failed";
+            defect->assign("Application Client, Reassign Command Failed");
 			break;
 		}
 		default:
 		{
-			*defect = "Reserved";
+            defect->assign("Reserved");
 			break;
 		}
 	}
@@ -316,47 +319,47 @@ void CScsiScanLog::process_Defect_Data(JSONNODE *defectData)
 	printf("Background Scan Defect Description \n");
 #endif
 	byte_Swap_16(&m_defect->paramCode);
-	snprintf(&*myStr.begin(), BASIC, "Background Scan Defect Location 0x%" PRIX16"", m_defect->paramCode);;
+	snprintf((char*)myStr.c_str(), BASIC, "Background Scan Defect Location 0x%" PRIX16"", m_defect->paramCode);;
 	JSONNODE *defectInfo = json_new(JSON_NODE);
-	json_set_name(defectInfo, &*myStr.begin());
+	json_set_name(defectInfo, (char*)myStr.c_str());
 
-	snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", m_defect->paramCode);
-	json_push_back(defectInfo, json_new_a("Background Scan Defect Parameter Code", &*myStr.begin()));
-	snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_defect->paramControlByte);
-	json_push_back(defectInfo, json_new_a("Background Scan Defect Control Byte ", &*myStr.begin()));
-	snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_defect->paramLength);
-	json_push_back(defectInfo, json_new_a("Background Scan Defect Length ", &*myStr.begin()));
+	snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_defect->paramCode);
+	json_push_back(defectInfo, json_new_a("Background Scan Defect Parameter Code", (char*)myStr.c_str()));
+	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_defect->paramControlByte);
+	json_push_back(defectInfo, json_new_a("Background Scan Defect Control Byte ", (char*)myStr.c_str()));
+	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_defect->paramLength);
+	json_push_back(defectInfo, json_new_a("Background Scan Defect Length ", (char*)myStr.c_str()));
 
 	byte_Swap_32(&m_defect->powerOnMinutes);
 	json_push_back(defectInfo, json_new_i("Power On Minutes", static_cast<uint32_t>(m_defect->powerOnMinutes)));
 
     //Nayana: Need not print the Scan status here as already printed in process_Scan_Status_Data
 	//get_Scan_Status_Description(&myStr);
-	//json_push_back(defectInfo, json_new_i(&*myStr.begin(), static_cast<uint32_t>(m_ScanParam->status)));
+	//json_push_back(defectInfo, json_new_i(myStr.c_str(), static_cast<uint32_t>(m_ScanParam->status)));
 
 	get_Scan_Defect_Status_Description(&headerStr);
-	snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", (uint8_t)M_GETBITRANGE(m_defect->status,7, 4));
-	json_push_back(defectInfo, json_new_a(&*headerStr.begin(), &*myStr.begin()));
-	snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", (uint8_t)M_GETBITRANGE(m_defect->status,3, 0));
-	json_push_back(defectInfo, json_new_a("Sense Key", &*myStr.begin()));
+	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", static_cast<uint16_t>(M_GETBITRANGE(m_defect->status,7, 4)));
+	json_push_back(defectInfo, json_new_a((char*)headerStr.c_str(), (char*)myStr.c_str()));
+	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", static_cast<uint16_t>(M_GETBITRANGE(m_defect->status,3, 0)));
+	json_push_back(defectInfo, json_new_a("Sense Key", (char*)myStr.c_str()));
 
 
 	//json_push_back(defectInfo, json_new_i("Additional Sense Code", static_cast<uint32_t>(m_defect->senseCode)));
 	//json_push_back(defectInfo, json_new_i("Additional Sense Code Qualifier", static_cast<uint32_t>(m_defect->codeQualifier)));
-    snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_defect->senseCode);
-    json_push_back(defectInfo, json_new_a("Additional Sense Code", &*myStr.begin()));
-    snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_defect->codeQualifier);
-    json_push_back(defectInfo, json_new_a("Additional Sense Code Qualifier", &*myStr.begin()));
+    snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_defect->senseCode);
+    json_push_back(defectInfo, json_new_a("Additional Sense Code", (char*)myStr.c_str()));
+    snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_defect->codeQualifier);
+    json_push_back(defectInfo, json_new_a("Additional Sense Code Qualifier", (char*)myStr.c_str()));
 
-	snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", m_defect->vendorSpecific);
-	json_push_back(defectInfo, json_new_a("Vendor Specific", &*myStr.begin()));
-	snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", m_defect->vendorSpecific1);
-	json_push_back(defectInfo, json_new_a("Vendor Specific 1", &*myStr.begin()));
-	snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_defect->vendorSpecific2);
-	json_push_back(defectInfo, json_new_a("Vendor Specific 2", &*myStr.begin()));
+	snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_defect->vendorSpecific);
+	json_push_back(defectInfo, json_new_a("Vendor Specific", (char*)myStr.c_str()));
+	snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_defect->vendorSpecific1);
+	json_push_back(defectInfo, json_new_a("Vendor Specific 1", (char*)myStr.c_str()));
+	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_defect->vendorSpecific2);
+	json_push_back(defectInfo, json_new_a("Vendor Specific 2", (char*)myStr.c_str()));
 	byte_Swap_64(&m_defect->LBA);
-    snprintf(&*myStr.begin(), BASIC, "%" PRIu64"", m_defect->LBA);
-    json_push_back(defectInfo, json_new_a("Logical Block Address", &*myStr.begin()));
+    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu64"", m_defect->LBA);
+    json_push_back(defectInfo, json_new_a("Logical Block Address", (char*)myStr.c_str()));
 	
 	json_push_back(defectData, defectInfo);
 }
@@ -384,16 +387,16 @@ void CScsiScanLog::process_other_param_data(JSONNODE *scanData, size_t offset)
     printf("Background Scan Defect Description \n");
 #endif
     byte_Swap_16(&m_ParamHeader->paramCode);
-    snprintf(&*myStr.begin(), BASIC, "Background Scan Defect Location 0x%04" PRIX16"", m_ParamHeader->paramCode);
+    snprintf((char*)myStr.c_str(), BASIC, "Background Scan Defect Location 0x%04" PRIX16"", m_ParamHeader->paramCode);
     JSONNODE *defectInfo = json_new(JSON_NODE);
-    json_set_name(defectInfo, &*myStr.begin());
+    json_set_name(defectInfo, (char*)myStr.c_str());
 
-    snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", m_ParamHeader->paramCode);
-    json_push_back(defectInfo, json_new_a("Background Scan Defect Parameter Code", &*myStr.begin()));
-    snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_ParamHeader->paramControlByte);
-    json_push_back(defectInfo, json_new_a("Background Scan Defect Control Byte ", &*myStr.begin()));
-    snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_ParamHeader->paramLength);
-    json_push_back(defectInfo, json_new_a("Background Scan Defect Length ", &*myStr.begin()));
+    snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_ParamHeader->paramCode);
+    json_push_back(defectInfo, json_new_a("Background Scan Defect Parameter Code", (char*)myStr.c_str()));
+    snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_ParamHeader->paramControlByte);
+    json_push_back(defectInfo, json_new_a("Background Scan Defect Control Byte ", (char*)myStr.c_str()));
+    snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_ParamHeader->paramLength);
+    json_push_back(defectInfo, json_new_a("Background Scan Defect Length ", (char*)myStr.c_str()));
     JSONNODE *myArray = json_new(JSON_ARRAY);
     json_set_name(myArray, ("Background Data"));
     // add the size of the param header

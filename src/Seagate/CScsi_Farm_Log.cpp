@@ -515,9 +515,9 @@ void CSCSI_Farm_Log::create_Serial_Number(std::string &serialNumber, const sScsi
         sn = (sn1 | (sn2 << 32));
         byte_Swap_64(&sn);
     }
-	serialNumber.resize(SERIAL_NUMBER_LEN );
-	memset(&*serialNumber.begin(),0, SERIAL_NUMBER_LEN );
-	strncpy(&*serialNumber.begin(), (char*)&sn, SERIAL_NUMBER_LEN);
+    serialNumber.clear();
+    serialNumber.assign(reinterpret_cast<const char*>(&sn), SERIAL_NUMBER_LEN);
+
 }
 //-----------------------------------------------------------------------------
 //
@@ -564,9 +564,7 @@ void CSCSI_Farm_Log::create_Firmware_String(std::string &firmwareRev, const sScs
     uint64_t firm2 = idInfo->firmwareRev & 0x00FFFFFFFFFFFFFFLL;
     firm = (firm2 | (firm1 << 32));
     byte_Swap_64(&firm);
-	firmwareRev.resize(8);
-	memset(&*firmwareRev.begin(), 0, 8);
-	strncpy(&*firmwareRev.begin(), (char*)&firm, 8);
+    firmwareRev.assign(reinterpret_cast<const char*>(&firm), 8);
 }
 //-----------------------------------------------------------------------------
 //
@@ -587,9 +585,7 @@ void CSCSI_Farm_Log::create_Device_Interface_String(std::string &dInterface, con
 {
 	uint64_t dFace = 0;
 	dFace = (idInfo->deviceInterface & 0x00FFFFFFFFFFFFFFLL);
-	dInterface.resize(DEVICE_INTERFACE_LEN);
-	memset(&*dInterface.begin(), 0, DEVICE_INTERFACE_LEN);
-	strncpy(&*dInterface.begin(), (char*)&dFace, DEVICE_INTERFACE_LEN);
+    dInterface.assign(reinterpret_cast<const char*>(&dFace), DEVICE_INTERFACE_LEN);
 
 }
 //-----------------------------------------------------------------------------
@@ -616,22 +612,9 @@ void CSCSI_Farm_Log::create_Model_Number_String(std::string &model, sGeneralDriv
     {
         modelParts[i] = M_DoubleWord0(idInfo->productID[i]); 
         byte_Swap_32(&modelParts[i]);
+        model.append(reinterpret_cast<const char*>(&modelParts[i]), sizeof(uint32_t));
     }
-    // temp string for coping the hex to text, have to resize for c98 issues
-    std::string tempStr = "";
-    tempStr.resize(MODEL_NUMBER_LEN);
-    model.resize(MODEL_NUMBER_LEN);
-    // memset them to 0
-    memset(&*model.begin(), 0, MODEL_NUMBER_LEN);
-    memset(&*tempStr.begin(), 0, MODEL_NUMBER_LEN);
-    // loop to copy the info into the modeleNumber string
-    for (uint8_t n = 0; n < MAXSIZE; n++)
-    {
-        strncpy(&*tempStr.begin(), (char*)&modelParts[n], MAXSIZE);
-        strncat(&*model.begin(), &*tempStr.begin(), sizeof(tempStr));
-    }
-    remove_Trailing_Whitespace(&*model.begin());
-
+    remove_trailing_whitespace_std_string(model);
 }
 //-----------------------------------------------------------------------------
 //
