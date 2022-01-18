@@ -197,7 +197,8 @@ void CScsiFormatStatusLog::process_Format_Status_Data(JSONNODE *formatData)
         }
         else
         {
-            std::string printStr;
+            std::string printStr = "";
+            printStr.resize(BASIC);
             snprintf(&*printStr.begin(), BASIC, "0x%08" PRIx64"", m_Value);
             json_push_back(formatInfo, json_new_a("Value", &*printStr.begin()));
         }
@@ -239,13 +240,13 @@ void CScsiFormatStatusLog::process_Format_Status_Data_Variable_Length(JSONNODE *
     snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_Format->paramLength);
     json_push_back(formatInfo, json_new_a("Format Status Length ", &*myStr.begin()));
 
-    uint8_t lineNumber = 0;
     char *innerMsg = (char*)calloc(128, sizeof(char));
     char* innerStr = (char*)calloc(60, sizeof(char));
-    uint8_t offset = 0;
 
     if (innerMsg != NULL)
     {
+        uint8_t lineNumber = 0;
+        uint8_t offset = 0;
         for (uint8_t outer = 0; outer < m_Format->paramLength - 1; )
         {
             snprintf(&*myStr.begin(), BASIC, "0x%02" PRIX32 "", lineNumber);
@@ -256,7 +257,7 @@ void CScsiFormatStatusLog::process_Format_Status_Data_Variable_Length(JSONNODE *
                 sprintf(innerStr, "%02" PRIX8"", m_FormatDataOutParamValue[offset]);
                 if (inner % 4 == 0)
                 {
-                        strncat(innerMsg, " ", 2);
+                    strncat(innerMsg, " ", 2);
                 }
                 strncat(innerMsg, innerStr, 3);
                 offset++;
@@ -383,7 +384,6 @@ eReturnValues CScsiFormatStatusLog::get_Format_Status_Data(JSONNODE *masterData)
                     {
                         //json_push_back(masterData, pageInfo);
                         return BAD_PARAMETER;
-                        break;
                     }
                     }
                     process_Format_Status_Data(pageInfo);

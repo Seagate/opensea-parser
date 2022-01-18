@@ -30,12 +30,12 @@ using namespace opensea_parser;
 //
 //---------------------------------------------------------------------------
 CScsiStartStop::CScsiStartStop()
-	: pData(NULL)
+    : pData(NULL)
     , m_SSName("Start Stop Log")
-	, m_StartStatus(IN_PROGRESS)
-	, m_PageLength(0)
+    , m_StartStatus(IN_PROGRESS)
+    , m_PageLength(0)
     , m_SubPage(0)
-	, m_Page(0)
+    , m_Page(0)
 {
 
 }
@@ -54,15 +54,15 @@ CScsiStartStop::CScsiStartStop()
 //
 //---------------------------------------------------------------------------
 CScsiStartStop::CScsiStartStop(uint8_t * buffer, size_t bufferSize, JSONNODE *masterData)
-	: pData(NULL)
+    : pData(NULL)
     , m_SSName("Start Stop Log")
-	, m_StartStatus(IN_PROGRESS)
-	, m_PageLength(0)
+    , m_StartStatus(IN_PROGRESS)
+    , m_PageLength(0)
     , m_SubPage(0)
-	, m_Page(0)
+    , m_Page(0)
 {
-	if (buffer != NULL)
-	{
+    if (buffer != NULL)
+    {
         pData = new uint8_t[bufferSize];								// new a buffer to the point				
 #ifndef _WIN64
         memcpy(pData, buffer, bufferSize);
@@ -85,11 +85,11 @@ CScsiStartStop::CScsiStartStop(uint8_t * buffer, size_t bufferSize, JSONNODE *ma
         {
             m_StartStatus = MEMORY_FAILURE;
         }
-	}
-	else
-	{
-		m_StartStatus = FAILURE;
-	}
+    }
+    else
+    {
+        m_StartStatus = FAILURE;
+    }
 
 }
 
@@ -131,77 +131,93 @@ CScsiStartStop::~CScsiStartStop()
 //---------------------------------------------------------------------------
 eReturnValues CScsiStartStop::parse_Start_Stop_Log(JSONNODE *masterData)
 {
-	std::string myStr = "";
-	myStr.resize(BASIC);
-	eReturnValues status = IN_PROGRESS;
-	eReturnValues retStatus = IN_PROGRESS;
-	JSONNODE *pageInfo = json_new(JSON_NODE);
-	json_set_name(pageInfo, "Scsi Start Stop Cycle Counter Log - Eh");
-	byte_Swap_16(&m_Page->manufatureParamCode);
-	if (manufactureDate == m_Page->manufatureParamCode)
-	{
-		retStatus =  week_Year_Print(pageInfo, m_Page->manufatureParamCode, m_Page->paramLength1, m_Page->paramControlByte1, m_Page->year, m_Page->week, "Date of Manufacture", "Year of Manufacture", "Week of Manufacture");
-	}
-	else
-	{
-		retStatus = BAD_PARAMETER;
-	}
-	byte_Swap_16(&m_Page->accountParamCode);
-	if (accountingDate == m_Page->accountParamCode)
-	{
-		retStatus = week_Year_Print(pageInfo, m_Page->accountParamCode, m_Page->paramLength2, m_Page->paramControlByte2, m_Page->accYear, m_Page->accWeek, "Accounting Date","Accounting Year", "Accounting Week");
-	}
-	else
-	{
-		retStatus = BAD_PARAMETER;
-	}
-	byte_Swap_16(&m_Page->specCycleParamCode);
-	if (specLifetime == m_Page->specCycleParamCode)
-	{
-		retStatus = get_Count(pageInfo, m_Page->specCycleParamCode, m_Page->paramLength3, m_Page->paramControlByte3, m_Page->specLifeTime,"Specified Cycle Count", "Specified Cycle Count Over Device Lifetime");
-	}
-	else
-	{
-		retStatus = BAD_PARAMETER;
-	}
-	byte_Swap_16(&m_Page->AccumulatedParamCode);
-	if (accumulated == m_Page->AccumulatedParamCode)
-	{
-		retStatus = get_Count(pageInfo, m_Page->AccumulatedParamCode, m_Page->paramLength4, m_Page->paramControlByte4, m_Page->accumulatedCycles, "Accumulated Start-Stop Count", "Accumulated Start-Stop Over Device Lifetime");
-	}
-	else
-	{
-		retStatus = BAD_PARAMETER;
-	}
-	byte_Swap_16(&m_Page->loadUnloadParamCode);
-	if (loadUnload == m_Page->loadUnloadParamCode)
-	{
-		retStatus = get_Count(pageInfo, m_Page->loadUnloadParamCode, m_Page->paramLength5, m_Page->paramControlByte5, m_Page->loadUnloadCount, "Load - Unload Count", "Specified Load-Unload Count Over Device Lifetime");
-	}
-	else
-	{
-		retStatus = BAD_PARAMETER;
-	}
-	byte_Swap_16(&m_Page->accLoadUnloadParamCode);
-	if (accumulatedLU == m_Page->accLoadUnloadParamCode)
-	{
-		retStatus = get_Count(pageInfo, m_Page->accLoadUnloadParamCode, m_Page->paramLength6, m_Page->paramControlByte6, m_Page->accloadUnloadCount, "Accumulated Load - Unload Count", "Specified Load-Unload Count Over Device Lifetime");
-	}
-	else
-	{
-		retStatus = BAD_PARAMETER;
-	}
-	json_push_back(masterData, pageInfo);
+    std::string myStr = "";
+    myStr.resize(BASIC);
+    eReturnValues status = IN_PROGRESS;
+    eReturnValues retStatus = IN_PROGRESS;
+    JSONNODE *pageInfo = json_new(JSON_NODE);
+    json_set_name(pageInfo, "Scsi Start Stop Cycle Counter Log - Eh");
+    byte_Swap_16(&m_Page->manufatureParamCode);
+    if (manufactureDate == m_Page->manufatureParamCode)
+    {
+        retStatus = week_Year_Print(pageInfo, m_Page->manufatureParamCode, m_Page->paramLength1, m_Page->paramControlByte1, m_Page->year, m_Page->week, "Date of Manufacture", "Year of Manufacture", "Week of Manufacture");
+    }
+    else
+    {
+        retStatus = BAD_PARAMETER;
+    }
 
-	if (retStatus == BAD_PARAMETER || retStatus ==  IN_PROGRESS)
-	{
-		status = BAD_PARAMETER;
-	}
-	else
-	{
-		status = SUCCESS;
-	}
-	return status;
+    if (retStatus == SUCCESS)
+    {
+        byte_Swap_16(&m_Page->accountParamCode);
+        if (accountingDate == m_Page->accountParamCode)
+        {
+            retStatus = week_Year_Print(pageInfo, m_Page->accountParamCode, m_Page->paramLength2, m_Page->paramControlByte2, m_Page->accYear, m_Page->accWeek, "Accounting Date", "Accounting Year", "Accounting Week");
+        }
+        else
+        {
+            retStatus = BAD_PARAMETER;
+        }
+        if (retStatus == SUCCESS)
+        {
+            byte_Swap_16(&m_Page->specCycleParamCode);
+            if (specLifetime == m_Page->specCycleParamCode)
+            {
+                retStatus = get_Count(pageInfo, m_Page->specCycleParamCode, m_Page->paramLength3, m_Page->paramControlByte3, m_Page->specLifeTime, "Specified Cycle Count", "Specified Cycle Count Over Device Lifetime");
+            }
+            else
+            {
+                retStatus = BAD_PARAMETER;
+            }
+            if (retStatus == SUCCESS)
+            {
+                byte_Swap_16(&m_Page->AccumulatedParamCode);
+                if (accumulated == m_Page->AccumulatedParamCode)
+                {
+                    retStatus = get_Count(pageInfo, m_Page->AccumulatedParamCode, m_Page->paramLength4, m_Page->paramControlByte4, m_Page->accumulatedCycles, "Accumulated Start-Stop Count", "Accumulated Start-Stop Over Device Lifetime");
+                }
+                else
+                {
+                    retStatus = BAD_PARAMETER;
+                }
+                if (retStatus == SUCCESS)
+                {
+                    byte_Swap_16(&m_Page->loadUnloadParamCode);
+                    if (loadUnload == m_Page->loadUnloadParamCode)
+                    {
+                        retStatus = get_Count(pageInfo, m_Page->loadUnloadParamCode, m_Page->paramLength5, m_Page->paramControlByte5, m_Page->loadUnloadCount, "Load - Unload Count", "Specified Load-Unload Count Over Device Lifetime");
+                    }
+                    else
+                    {
+                        retStatus = BAD_PARAMETER;
+                    }
+                    if (retStatus == SUCCESS)
+                    {
+                        byte_Swap_16(&m_Page->accLoadUnloadParamCode);
+                        if (accumulatedLU == m_Page->accLoadUnloadParamCode)
+                        {
+                            retStatus = get_Count(pageInfo, m_Page->accLoadUnloadParamCode, m_Page->paramLength6, m_Page->paramControlByte6, m_Page->accloadUnloadCount, "Accumulated Load - Unload Count", "Specified Load-Unload Count Over Device Lifetime");
+                        }
+                        else
+                        {
+                            retStatus = BAD_PARAMETER;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    json_push_back(masterData, pageInfo);
+
+    if (retStatus == BAD_PARAMETER || retStatus == IN_PROGRESS)
+    {
+        status = BAD_PARAMETER;
+    }
+    else
+    {
+        status = SUCCESS;
+    }
+    return status;
 }
 
 //-----------------------------------------------------------------------------
@@ -226,16 +242,16 @@ eReturnValues CScsiStartStop::parse_Start_Stop_Log(JSONNODE *masterData)
 //!   \return eReturnParserValues
 //
 //---------------------------------------------------------------------------
-eReturnValues CScsiStartStop::week_Year_Print(JSONNODE *data,uint16_t param, uint8_t paramlength, uint8_t paramConByte, uint32_t year, uint16_t week,const std::string strHeader, const std::string strYear, const std::string strWeek)
+eReturnValues CScsiStartStop::week_Year_Print(JSONNODE *data, uint16_t param, uint8_t paramlength, uint8_t paramConByte, uint32_t year, uint16_t week, const std::string strHeader, const std::string strYear, const std::string strWeek)
 {
 #define YEARSIZE 4
 #define WEEKSIZE 2
-	std::string myStr = "";
-	myStr.resize(BASIC);
+    std::string myStr = "";
+    myStr.resize(BASIC);
 
-	JSONNODE *dateInfo = json_new(JSON_NODE);
-	json_set_name(dateInfo, &*strHeader.begin());
-	
+    JSONNODE *dateInfo = json_new(JSON_NODE);
+    json_set_name(dateInfo, &*strHeader.begin());
+
     if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
         snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", param);
@@ -245,8 +261,8 @@ eReturnValues CScsiStartStop::week_Year_Print(JSONNODE *data,uint16_t param, uin
         snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", paramConByte);
         json_push_back(dateInfo, json_new_a("Control Byte", &*myStr.begin()));
     }
-	myStr.resize(YEARSIZE);
-	memset(&*myStr.begin(), 0, YEARSIZE);
+    myStr.resize(YEARSIZE);
+    memset(&*myStr.begin(), 0, YEARSIZE);
     if (year != 0x20202020)
     {
         strncpy(&*myStr.begin(), (char*)&year, YEARSIZE);
@@ -255,8 +271,8 @@ eReturnValues CScsiStartStop::week_Year_Print(JSONNODE *data,uint16_t param, uin
     {
         myStr = "0000";
     }
-	json_push_back(dateInfo, json_new_a(&*strYear.begin(), &*myStr.begin()));
-	myStr.resize(WEEKSIZE);
+    json_push_back(dateInfo, json_new_a(&*strYear.begin(), &*myStr.begin()));
+    myStr.resize(WEEKSIZE);
     if (week != 0x2020)
     {
         strncpy(&*myStr.begin(), (char*)&week, WEEKSIZE);
@@ -265,10 +281,10 @@ eReturnValues CScsiStartStop::week_Year_Print(JSONNODE *data,uint16_t param, uin
     {
         myStr = "00";
     }
-	json_push_back(dateInfo, json_new_a(&*strWeek.begin(), &*myStr.begin()));
+    json_push_back(dateInfo, json_new_a(&*strWeek.begin(), &*myStr.begin()));
 
-	json_push_back(data, dateInfo);
-	return SUCCESS;
+    json_push_back(data, dateInfo);
+    return SUCCESS;
 }
 //-----------------------------------------------------------------------------
 //
@@ -286,11 +302,11 @@ eReturnValues CScsiStartStop::week_Year_Print(JSONNODE *data,uint16_t param, uin
 //---------------------------------------------------------------------------
 eReturnValues CScsiStartStop::get_Count(JSONNODE *countData, uint16_t param, uint8_t paramlength, uint8_t paramConByte, uint32_t count, const std::string strHeader, const std::string strCount)
 {
-	std::string myStr = "";
-	myStr.resize(BASIC);
+    std::string myStr = "";
+    myStr.resize(BASIC);
 
-	JSONNODE *countInfo = json_new(JSON_NODE);
-	json_set_name(countInfo, &*strHeader.begin());
+    JSONNODE *countInfo = json_new(JSON_NODE);
+    json_set_name(countInfo, &*strHeader.begin());
 
     if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
@@ -301,9 +317,9 @@ eReturnValues CScsiStartStop::get_Count(JSONNODE *countData, uint16_t param, uin
         snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", paramConByte);
         json_push_back(countInfo, json_new_a("Control Byte", &*myStr.begin()));
     }
-	byte_Swap_32(&count);
-	json_push_back(countInfo, json_new_i(&*strCount.begin(),  count )); 
+    byte_Swap_32(&count);
+    json_push_back(countInfo, json_new_i(&*strCount.begin(), count));
 
-	json_push_back(countData, countInfo);
-	return SUCCESS;
+    json_push_back(countData, countInfo);
+    return SUCCESS;
 }

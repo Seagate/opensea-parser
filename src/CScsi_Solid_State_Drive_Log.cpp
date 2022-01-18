@@ -286,7 +286,6 @@ eReturnValues CScsiSolidStateDriveLog::get_Solid_State_Drive_Data(JSONNODE *mast
                 {
                     json_push_back(masterData, pageInfo);
                     return BAD_PARAMETER;
-                    break;
                 }
                 }
                 process_Solid_State_Drive_Data(pageInfo);

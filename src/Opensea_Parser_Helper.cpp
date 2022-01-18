@@ -345,11 +345,11 @@ void opensea_parser::prePython_unknown_params(JSONNODE* masterData, uint64_t val
 
         JSONNODE* valueRaw = json_new(JSON_ARRAY);
         json_set_name(valueRaw, "value_raw");
-        uint8_t vraw = 0;
+        //uint8_t vraw = 0;
         byte_Swap_64(&value);
         for (size_t i = 0; i < sizeof(uint64_t); i++)          // loop for the zones
         {   
-            vraw = (uint8_t)((value >> (i *8))& 0x00000000000000FFULL );
+            uint8_t vraw = (uint8_t)((value >> (i *8))& 0x00000000000000FFULL );
             json_push_back(valueRaw, json_new_i("value_raw", vraw));
         }
         json_push_back(label, valueRaw);

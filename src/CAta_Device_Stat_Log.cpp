@@ -381,8 +381,8 @@ CAtaDeviceStatisticsLogs::~CAtaDeviceStatisticsLogs()
 //---------------------------------------------------------------------------
 eReturnValues CAtaDeviceStatisticsLogs::ParseSCTDeviceStatLog(JSONNODE *masterData)
 {
-    sHeader *pDeviceHeader = {0};
-    uint64_t *pLogPage = {0};
+    sHeader *pDeviceHeader = NULL;
+    uint64_t *pLogPage = NULL;
     if (VERBOSITY_DEFAULT < g_verbosity)
     {
         printf("\nStarting Device Statistics Parsing \n");
@@ -576,7 +576,7 @@ bool CAtaDeviceStatisticsLogs::isBit63Set(uint64_t *value)
 //---------------------------------------------------------------------------
 void CAtaDeviceStatisticsLogs::DeviceStatFlag(uint64_t *value, JSONNODE *masterData)
 {
-    std::string myStr = "Device stat flag";
+    //std::string myStr = "Device stat flag";
     
     JSONNODE *sctFlag = json_new(JSON_NODE);
     json_set_name(sctFlag, "Device Statistic Flags");
@@ -747,7 +747,7 @@ void CAtaDeviceStatisticsLogs::logPage01(uint64_t *value, JSONNODE *masterData)
     //General Statistics(log page 01) contains general information about the device.
 	sLogPage01 *dsLog;
 	dsLog = (sLogPage01 *)&value[0];
-    string myStr = "Statistics";
+    //string myStr = "Statistics";
     JSONNODE *sctStat = json_new(JSON_NODE);
     json_set_name(sctStat, "General Statistics(log Page 01h)");
 #if defined _DEBUG
@@ -961,7 +961,7 @@ void CAtaDeviceStatisticsLogs::logPage05(uint64_t *value, JSONNODE *masterData)
     TimeInUndTemp = CheckStatusAndValid_32(&cData[12]);
     MinOperTemp = CheckStatusAndValidSigned_8(&cData[13]);
 
-    string myStr = "Temperature Statistics";
+    //string myStr = "Temperature Statistics";
     JSONNODE *sctTemp = json_new(JSON_NODE);
     json_set_name(sctTemp, "Temperature Statistics(log Page 05h)");
 #if defined _DEBUG

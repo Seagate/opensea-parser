@@ -264,7 +264,7 @@ namespace opensea_parser {
         std::string                         m_name;                             //<! name of the class
         eReturnValues                       m_status;                           //<! the status of the class   
 
-        eReturnValues get_Interface_Type();
+        //eReturnValues get_Interface_Type();
         
     public:
         CAta_Identify_Log_30( const std::string & fileName);

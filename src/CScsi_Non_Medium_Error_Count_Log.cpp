@@ -237,7 +237,6 @@ eReturnValues CScsiNonMediumErrorCountLog::get_Non_Medium_Error_Count_Data(JSONN
 				{
 					json_push_back(masterData, pageInfo);
 					return BAD_PARAMETER;
-					break;
 				}
 				}
 				process_Non_Medium_Error_Count_Data(pageInfo);

@@ -241,7 +241,7 @@ eReturnValues CAta_SMART_Log_Dir::print_SMART_Log_Dir(JSONNODE *masterData)
     }
 
     std::vector<sLogDetailStructure>::iterator logItr = m_logDetailList.begin();
-    for (; logItr != m_logDetailList.end(); logItr++)
+    for (; logItr != m_logDetailList.end(); ++logItr)
     {
         sLogDetailStructure logDetail = *logItr;
         snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", logDetail.logAddress);

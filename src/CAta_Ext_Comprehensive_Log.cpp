@@ -27,10 +27,10 @@ using namespace opensea_parser;
 //---------------------------------------------------------------------------
 CExtComp::CExtComp()
     :pData()
-	, m_logSize(0)
-	, m_name("Ext Comp Log")
-	, m_status(IN_PROGRESS)
-	, m_fileName(false)
+    , m_logSize(0)
+    , m_name("Ext Comp Log")
+    , m_status(IN_PROGRESS)
+    , m_fileName(false)
 {
 
 }
@@ -44,22 +44,22 @@ CExtComp::CExtComp()
 //
 //---------------------------------------------------------------------------
 CExtComp::CExtComp(uint8_t *buffer, size_t logSize, JSONNODE *masterData)
-	:pData(buffer)
-	, m_logSize(logSize)
-	, m_name("Ext Comp Log")
-	, m_status(IN_PROGRESS)
+    :pData(buffer)
+    , m_logSize(logSize)
+    , m_name("Ext Comp Log")
+    , m_status(IN_PROGRESS)
     , m_fileName(false)
 {
 
-	if (buffer != NULL)                           // if the buffer is null then exit something did go right
-	{
-		m_status = IN_PROGRESS;
-		m_status = parse_Ext_Comp_Log( masterData);
-	}
-	else
-	{
-		m_status = FAILURE;
-	}
+    if (buffer != NULL)                           // if the buffer is null then exit something did go right
+    {
+        m_status = IN_PROGRESS;
+        m_status = parse_Ext_Comp_Log(masterData);
+    }
+    else
+    {
+        m_status = FAILURE;
+    }
 
 }
 //-----------------------------------------------------------------------------
@@ -73,49 +73,49 @@ CExtComp::CExtComp(uint8_t *buffer, size_t logSize, JSONNODE *masterData)
 //---------------------------------------------------------------------------
 CExtComp::CExtComp(const std::string &fileName, JSONNODE *masterData)
     :pData()
-	, m_logSize()
+    , m_logSize()
     , m_name("Ext Comp Log")
     , m_status(IN_PROGRESS)
     , m_fileName(true)
 {
-	CLog *cCLog;
-	cCLog = new CLog(fileName);
-	if (cCLog->get_Log_Status() == SUCCESS)
-	{
-		if (cCLog->get_Buffer() != NULL)
-		{
-			m_logSize = cCLog->get_Size();
-			pData = new uint8_t[m_logSize];								// new a buffer to the point				
+    CLog *cCLog;
+    cCLog = new CLog(fileName);
+    if (cCLog->get_Log_Status() == SUCCESS)
+    {
+        if (cCLog->get_Buffer() != NULL)
+        {
+            m_logSize = cCLog->get_Size();
+            pData = new uint8_t[m_logSize];								// new a buffer to the point				
 #ifndef _WIN64
-			memcpy(pData, cCLog->get_Buffer(), m_logSize);
+            memcpy(pData, cCLog->get_Buffer(), m_logSize);
 #else
-			memcpy_s(pData, m_logSize, cCLog->get_Buffer(), m_logSize);// copy the buffer data to the class member pBuf
+            memcpy_s(pData, m_logSize, cCLog->get_Buffer(), m_logSize);// copy the buffer data to the class member pBuf
 #endif
-			sLogPageStruct *idCheck;
-			idCheck = (sLogPageStruct *)&pData[0];
-			byte_Swap_16(&idCheck->pageLength);
-			if (IsScsiLogPage(idCheck->pageLength, idCheck->pageCode) == false)
-			{
-				byte_Swap_16(&idCheck->pageLength);  // now that we know it's not scsi we need to flip the bytes back
-				m_status = parse_Ext_Comp_Log(masterData);
-				m_status = SUCCESS;
-			}
-			else
-			{
-				m_status = BAD_PARAMETER;
-			}
-		}
-		else
-		{
+            sLogPageStruct *idCheck;
+            idCheck = (sLogPageStruct *)&pData[0];
+            byte_Swap_16(&idCheck->pageLength);
+            if (IsScsiLogPage(idCheck->pageLength, idCheck->pageCode) == false)
+            {
+                byte_Swap_16(&idCheck->pageLength);  // now that we know it's not scsi we need to flip the bytes back
+                m_status = parse_Ext_Comp_Log(masterData);
+                m_status = SUCCESS;
+            }
+            else
+            {
+                m_status = BAD_PARAMETER;
+            }
+        }
+        else
+        {
 
-			m_status = FAILURE;
-		}
-	}
-	else
-	{
-		m_status = cCLog->get_Log_Status();
-	}
-	delete (cCLog);
+            m_status = FAILURE;
+        }
+    }
+    else
+    {
+        m_status = cCLog->get_Log_Status();
+    }
+    delete (cCLog);
 }
 //-----------------------------------------------------------------------------
 //
@@ -153,37 +153,37 @@ CExtComp::~CExtComp()
 //---------------------------------------------------------------------------
 eReturnValues CExtComp::get_State_Meaning(std::string *stateMeaning, uint8_t state)
 {
-	switch (state)
-	{
-		case 0x0:
-		{
-			stateMeaning->assign("Unknown");
-			break;
-		}
-		case 0x1:
-		{
-			stateMeaning->assign("Sleep");
-			break;
-		}
-		case 0x2:
-		{
-			stateMeaning->assign("Standby");
-			break;
-		}
-		case 0x3:
-		{
-			stateMeaning->assign("Active/Idle");
-			break;
-		}
-		case 0x4:
-		default:
-		{
-			stateMeaning->assign("Vendor Specific");
-			break;
-		}
+    switch (state)
+    {
+    case 0x0:
+    {
+        stateMeaning->assign("Unknown");
+        break;
+    }
+    case 0x1:
+    {
+        stateMeaning->assign("Sleep");
+        break;
+    }
+    case 0x2:
+    {
+        stateMeaning->assign("Standby");
+        break;
+    }
+    case 0x3:
+    {
+        stateMeaning->assign("Active/Idle");
+        break;
+    }
+    case 0x4:
+    default:
+    {
+        stateMeaning->assign("Vendor Specific");
+        break;
+    }
 
-	}
-	return SUCCESS;
+    }
+    return SUCCESS;
 }
 //-----------------------------------------------------------------------------
 //
@@ -202,7 +202,7 @@ eReturnValues CExtComp::get_State_Meaning(std::string *stateMeaning, uint8_t sta
 eReturnValues CExtComp::parse_Ext_Comp_Structure(uint32_t structNumber, uint32_t sector, JSONNODE *structureData)
 {
     std::string myStr = "Parse Ext Comp Log";
-	myStr.resize(BASIC);
+    myStr.resize(BASIC);
     uint8_t  deviceControl = 0;
     uint16_t featureField = 0;
     uint16_t countField = 0;
@@ -222,30 +222,30 @@ eReturnValues CExtComp::parse_Ext_Comp_Structure(uint32_t structNumber, uint32_t
     uint64_t LBA = 0;
     uint16_t deviceErrorCount = 0;
 
-	snprintf(&*myStr.begin(), BASIC, "Ext Comp SMART Log Sturcture %" PRId16"", structNumber);
+    snprintf(&*myStr.begin(), BASIC, "Ext Comp SMART Log Sturcture %" PRId16"", structNumber);
     JSONNODE *EComp = json_new(JSON_NODE);
     json_set_name(EComp, &*myStr.begin());
 
-	if (sector == 0)
-	{
-		json_push_back(EComp, json_new_i("Ext Comp SMART Log Version", static_cast<int>(pData[0])));
+    if (sector == 0)
+    {
+        json_push_back(EComp, json_new_i("Ext Comp SMART Log Version", static_cast<int>(pData[0])));
 
-		COMPIndex = pData[2];
-		json_push_back(EComp, json_new_i("Ext Comp Log Index", static_cast<int>(COMPIndex)));
+        COMPIndex = pData[2];
+        json_push_back(EComp, json_new_i("Ext Comp Log Index", static_cast<int>(COMPIndex)));
 
-		deviceErrorCount = pData[500];
-		json_push_back(EComp, json_new_i("Ext Comp Device Error Count", static_cast<int>(deviceErrorCount)));
-	}
+        deviceErrorCount = pData[500];
+        json_push_back(EComp, json_new_i("Ext Comp Device Error Count", static_cast<int>(deviceErrorCount)));
+    }
     for (uint16_t z = 1; z < 5; z++)
     {
-		snprintf(&*myStr.begin(), BASIC, "Opcode Content %" PRId16"", (z + (structNumber* 4)));
-		JSONNODE *opcode = json_new(JSON_NODE);
-		json_set_name(opcode, &*myStr.begin());
+        snprintf(&*myStr.begin(), BASIC, "Opcode Content %" PRId16"", (z + (structNumber * 4)));
+        JSONNODE *opcode = json_new(JSON_NODE);
+        json_set_name(opcode, &*myStr.begin());
         for (int cmddata = 1; cmddata < 6; cmddata++)
         {
-			snprintf(&*myStr.begin(), BASIC, "Command Data Structure %" PRId16"", cmddata);
-			JSONNODE *cmdNode = json_new(JSON_NODE);
-			json_set_name(cmdNode, &*myStr.begin());
+            snprintf(&*myStr.begin(), BASIC, "Command Data Structure %" PRId16"", cmddata);
+            JSONNODE *cmdNode = json_new(JSON_NODE);
+            json_set_name(cmdNode, &*myStr.begin());
             deviceControl = pData[wOffset];
             featureField = pData[wOffset + 1];
             countField = pData[wOffset + 3];
@@ -259,8 +259,8 @@ eReturnValues CExtComp::parse_Ext_Comp_Structure(uint32_t structNumber, uint32_t
             word_Swap_32(&timeStamp);
             wOffset += 18;
 #if defined _DEBUG
-			printf("\nControl  Feature  Count  lowLBA   midLBA  hiLBA device  command  timeStamp");
-            printf("\n0x%02x     0x%04x   0x%04x 0x%04x   0x%04x  0x%04x 0x%02x   0x%02x      %d \n", \
+            printf("\nControl  Feature  Count  lowLBA   midLBA  hiLBA device  command  timeStamp");
+            printf("\n0x%02x     0x%04x   0x%04x 0x%04x   0x%04x  0x%04x 0x%02x   0x%02x      %u \n", \
                 deviceControl, \
                 featureField, \
                 countField, \
@@ -271,27 +271,27 @@ eReturnValues CExtComp::parse_Ext_Comp_Structure(uint32_t structNumber, uint32_t
                 commandField, \
                 timeStamp);
 #endif
-			snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", deviceControl);
-			json_push_back(cmdNode, json_new_a("Device Control", &*myStr.begin()));
-			snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", featureField);
-			json_push_back(cmdNode, json_new_a("Feature Field", &*myStr.begin()));
-			snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", countField);
-			json_push_back(cmdNode, json_new_a("Count Field", &*myStr.begin()));
-			snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", lowLBA);
-			json_push_back(cmdNode, json_new_a("lowLBA", &*myStr.begin()));
-			snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", midLBA);
-			json_push_back(cmdNode, json_new_a("CmidLBA", &*myStr.begin()));
-			snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", hiLBA);
-			json_push_back(cmdNode, json_new_a("hiLBA", &*myStr.begin()));
-			snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", deviceHead);
-			json_push_back(cmdNode, json_new_a("Device Head", &*myStr.begin()));
-			snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", commandField);
-			json_push_back(cmdNode, json_new_a("Command Field", &*myStr.begin()));
+            snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", deviceControl);
+            json_push_back(cmdNode, json_new_a("Device Control", &*myStr.begin()));
+            snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", featureField);
+            json_push_back(cmdNode, json_new_a("Feature Field", &*myStr.begin()));
+            snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", countField);
+            json_push_back(cmdNode, json_new_a("Count Field", &*myStr.begin()));
+            snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", lowLBA);
+            json_push_back(cmdNode, json_new_a("lowLBA", &*myStr.begin()));
+            snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", midLBA);
+            json_push_back(cmdNode, json_new_a("CmidLBA", &*myStr.begin()));
+            snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", hiLBA);
+            json_push_back(cmdNode, json_new_a("hiLBA", &*myStr.begin()));
+            snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", deviceHead);
+            json_push_back(cmdNode, json_new_a("Device Head", &*myStr.begin()));
+            snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", commandField);
+            json_push_back(cmdNode, json_new_a("Command Field", &*myStr.begin()));
 
-			json_push_back(cmdNode, json_new_i("Time Stamp", static_cast<int>(timeStamp)));
+            json_push_back(cmdNode, json_new_i("Time Stamp", static_cast<int>(timeStamp)));
 
 
-			json_push_back(opcode, cmdNode);
+            json_push_back(opcode, cmdNode);
 
         }
         //printf("offset = %d \n",wOffset);
@@ -323,29 +323,29 @@ eReturnValues CExtComp::parse_Ext_Comp_Structure(uint32_t structNumber, uint32_t
             state, \
             lifeTime);
 #endif
-		snprintf(&*myStr.begin(), BASIC, "0x%x", errorField);
-		json_push_back(opcode, json_new_a("Error", &*myStr.begin()));
+        snprintf(&*myStr.begin(), BASIC, "0x%x", errorField);
+        json_push_back(opcode, json_new_a("Error", &*myStr.begin()));
 
-		snprintf(&*myStr.begin(), BASIC, "0x%" PRIx16"", countField);
-		json_push_back(opcode, json_new_a("Count", &*myStr.begin()));
+        snprintf(&*myStr.begin(), BASIC, "0x%" PRIx16"", countField);
+        json_push_back(opcode, json_new_a("Count", &*myStr.begin()));
 
-		opensea_parser::set_json_64bit(opcode, "LBA", LBA, false);
+        opensea_parser::set_json_64bit(opcode, "LBA", LBA, false);
 
-		json_push_back(opcode, json_new_i("Device", static_cast<int>(deviceControl)));
+        json_push_back(opcode, json_new_i("Device", static_cast<int>(deviceControl)));
 
-		snprintf(&*myStr.begin(), BASIC, "0x%x", status);
-		json_push_back(opcode, json_new_a("Status", &*myStr.begin()));
+        snprintf(&*myStr.begin(), BASIC, "0x%x", status);
+        json_push_back(opcode, json_new_a("Status", &*myStr.begin()));
 
-		get_State_Meaning(&myStr, state);
-		json_push_back(opcode, json_new_a("Ext Comp Error Log State", &*myStr.begin()));
+        get_State_Meaning(&myStr, state);
+        json_push_back(opcode, json_new_a("Ext Comp Error Log State", &*myStr.begin()));
 
-		snprintf(&*myStr.begin(), BASIC, "%" PRId16"", lifeTime);
-		json_push_back(opcode, json_new_a("Ext Comp Error Log Life Timestamp", &*myStr.begin()));
+        snprintf(&*myStr.begin(), BASIC, "%" PRId16"", lifeTime);
+        json_push_back(opcode, json_new_a("Ext Comp Error Log Life Timestamp", &*myStr.begin()));
 
-		json_push_back(EComp, opcode);
+        json_push_back(EComp, opcode);
     }
-    
-    
+
+
     json_push_back(structureData, EComp);
 
     return SUCCESS;
@@ -366,21 +366,21 @@ eReturnValues CExtComp::parse_Ext_Comp_Structure(uint32_t structNumber, uint32_t
 //---------------------------------------------------------------------------
 eReturnValues CExtComp::parse_Ext_Comp_Log(JSONNODE *masterData)
 {
-	eReturnValues retStatus = IN_PROGRESS;
-	uint32_t sectorNumber = 0;
-	JSONNODE *ExtCompData = json_new(JSON_NODE);
-	json_set_name(ExtCompData, "Extended Comperhensive SMART Error Log");
-	for (uint32_t sector = 0; sector < m_logSize; sector += 512)
-	{
-		// call the structure for each sector(512) of data
-		retStatus = parse_Ext_Comp_Structure(sectorNumber, sector, ExtCompData);
-		if (retStatus != SUCCESS)
-		{
-			break;
-		}
-		sectorNumber++;
-	}
-	json_push_back(masterData, ExtCompData);
-	return retStatus;
+    eReturnValues retStatus = IN_PROGRESS;
+    uint32_t sectorNumber = 0;
+    JSONNODE *ExtCompData = json_new(JSON_NODE);
+    json_set_name(ExtCompData, "Extended Comperhensive SMART Error Log");
+    for (uint32_t sector = 0; sector < m_logSize; sector += 512)
+    {
+        // call the structure for each sector(512) of data
+        retStatus = parse_Ext_Comp_Structure(sectorNumber, sector, ExtCompData);
+        if (retStatus != SUCCESS)
+        {
+            break;
+        }
+        sectorNumber++;
+    }
+    json_push_back(masterData, ExtCompData);
+    return retStatus;
 }
 

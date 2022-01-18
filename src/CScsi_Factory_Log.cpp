@@ -30,18 +30,18 @@ using namespace opensea_parser;
 //
 //---------------------------------------------------------------------------
 CScsiFactoryLog::CScsiFactoryLog()
-	: pData()
-	, m_FactoryName("Factory Log Page")
-	, m_FactoryStatus(IN_PROGRESS)
-	, m_PageLength(0)
-	, m_bufferLength()
-	, m_Value(0)
-	, m_factory()
+    : pData()
+    , m_FactoryName("Factory Log Page")
+    , m_FactoryStatus(IN_PROGRESS)
+    , m_PageLength(0)
+    , m_bufferLength()
+    , m_Value(0)
+    , m_factory()
 {
-	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
-	{
-		printf("%s \n", m_FactoryName.c_str());
-	}
+    if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+    {
+        printf("%s \n", m_FactoryName.c_str());
+    }
 }
 //-----------------------------------------------------------------------------
 //
@@ -59,26 +59,26 @@ CScsiFactoryLog::CScsiFactoryLog()
 //
 //---------------------------------------------------------------------------
 CScsiFactoryLog::CScsiFactoryLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength)
-	: pData(buffer)
-	, m_FactoryName("Factory Log Page")
-	, m_FactoryStatus(IN_PROGRESS)
-	, m_PageLength(pageLength)
-	, m_bufferLength(bufferSize)
-	, m_Value(0)
-	, m_factory()
+    : pData(buffer)
+    , m_FactoryName("Factory Log Page")
+    , m_FactoryStatus(IN_PROGRESS)
+    , m_PageLength(pageLength)
+    , m_bufferLength(bufferSize)
+    , m_Value(0)
+    , m_factory()
 {
-	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
-	{
-		printf("%s \n", m_FactoryName.c_str());
-	}
-	if (buffer != NULL)
-	{
-		m_FactoryStatus = IN_PROGRESS;
-	}
-	else
-	{
-		m_FactoryStatus = FAILURE;
-	}
+    if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+    {
+        printf("%s \n", m_FactoryName.c_str());
+    }
+    if (buffer != NULL)
+    {
+        m_FactoryStatus = IN_PROGRESS;
+    }
+    else
+    {
+        m_FactoryStatus = FAILURE;
+    }
 
 }
 
@@ -116,8 +116,8 @@ CScsiFactoryLog::~CScsiFactoryLog()
 //---------------------------------------------------------------------------
 void CScsiFactoryLog::process_Factorty_Data(JSONNODE *factoryData)
 {
-	std::string myStr = "";
-	myStr.resize(BASIC);
+    std::string myStr = "";
+    myStr.resize(BASIC);
     if (m_Value != 0)
     {
 #if defined _DEBUG
@@ -163,99 +163,98 @@ void CScsiFactoryLog::process_Factorty_Data(JSONNODE *factoryData)
 //---------------------------------------------------------------------------
 eReturnValues CScsiFactoryLog::get_Factory_Data(JSONNODE *masterData)
 {
-	eReturnValues retStatus = IN_PROGRESS;
-	if (pData != NULL)
-	{
-		JSONNODE *pageInfo = json_new(JSON_NODE);
-		json_set_name(pageInfo, "Factory Log - 3Eh");
+    eReturnValues retStatus = IN_PROGRESS;
+    if (pData != NULL)
+    {
+        JSONNODE *pageInfo = json_new(JSON_NODE);
+        json_set_name(pageInfo, "Factory Log - 3Eh");
 
-		for (size_t offset = 0; offset < m_PageLength; )
-		{
-			if (offset < m_bufferLength && offset < UINT16_MAX)
-			{
-				m_factory = (sFactoryParams *)&pData[offset];
-				offset += sizeof(sFactoryParams);
-				switch (m_factory->paramLength)
-				{
-				case 1:
-				{
-					if ((offset + m_factory->paramLength) <= m_bufferLength)
-					{
-						m_Value = pData[offset];
-						offset += m_factory->paramLength;
-					}
-					else
-					{
-						json_push_back(masterData, pageInfo);
-						return BAD_PARAMETER;
-					}
-					break;
-				}
-				case 2:
-				{
-					if ((offset + m_factory->paramLength) <= m_bufferLength)
-					{
-						m_Value = M_BytesTo2ByteValue(pData[offset], pData[offset + 1]);
-						offset += m_factory->paramLength;
-					}
-					else
-					{
-						json_push_back(masterData, pageInfo);
-						return BAD_PARAMETER;
-					}
-					break;
-				}
-				case 4:
-				{
-					if ((offset + m_factory->paramLength) <= m_bufferLength)
-					{
-						m_Value = M_BytesTo4ByteValue(pData[offset], pData[offset + 1], pData[offset + 2], pData[offset + 3]);
-						offset += m_factory->paramLength;
-					}
-					else
-					{
-						json_push_back(masterData, pageInfo);
-						return BAD_PARAMETER;
-					}
-					break;
-				}
-				case 8:
-				{
-					if ((offset + m_factory->paramLength) <= m_bufferLength)
-					{
-						m_Value = M_BytesTo8ByteValue(pData[offset], pData[offset + 1], pData[offset + 2], pData[offset + 3], pData[offset + 4], pData[offset + 5], pData[offset + 6], pData[offset + 7]);
-						offset += m_factory->paramLength;
-					}
-					else
-					{
-						json_push_back(masterData, pageInfo);
-						return BAD_PARAMETER;
-					}
-					break;
-				}
-				default:
-				{
-					json_push_back(masterData, pageInfo);
-					return BAD_PARAMETER;
-					break;
-				}
-				}
-				process_Factorty_Data(pageInfo);
-			}
-			else
-			{
-				json_push_back(masterData, pageInfo);
-				return BAD_PARAMETER;
-			}
+        for (size_t offset = 0; offset < m_PageLength; )
+        {
+            if (offset < m_bufferLength && offset < UINT16_MAX)
+            {
+                m_factory = (sFactoryParams *)&pData[offset];
+                offset += sizeof(sFactoryParams);
+                switch (m_factory->paramLength)
+                {
+                case 1:
+                {
+                    if ((offset + m_factory->paramLength) <= m_bufferLength)
+                    {
+                        m_Value = pData[offset];
+                        offset += m_factory->paramLength;
+                    }
+                    else
+                    {
+                        json_push_back(masterData, pageInfo);
+                        return BAD_PARAMETER;
+                    }
+                    break;
+                }
+                case 2:
+                {
+                    if ((offset + m_factory->paramLength) <= m_bufferLength)
+                    {
+                        m_Value = M_BytesTo2ByteValue(pData[offset], pData[offset + 1]);
+                        offset += m_factory->paramLength;
+                    }
+                    else
+                    {
+                        json_push_back(masterData, pageInfo);
+                        return BAD_PARAMETER;
+                    }
+                    break;
+                }
+                case 4:
+                {
+                    if ((offset + m_factory->paramLength) <= m_bufferLength)
+                    {
+                        m_Value = M_BytesTo4ByteValue(pData[offset], pData[offset + 1], pData[offset + 2], pData[offset + 3]);
+                        offset += m_factory->paramLength;
+                    }
+                    else
+                    {
+                        json_push_back(masterData, pageInfo);
+                        return BAD_PARAMETER;
+                    }
+                    break;
+                }
+                case 8:
+                {
+                    if ((offset + m_factory->paramLength) <= m_bufferLength)
+                    {
+                        m_Value = M_BytesTo8ByteValue(pData[offset], pData[offset + 1], pData[offset + 2], pData[offset + 3], pData[offset + 4], pData[offset + 5], pData[offset + 6], pData[offset + 7]);
+                        offset += m_factory->paramLength;
+                    }
+                    else
+                    {
+                        json_push_back(masterData, pageInfo);
+                        return BAD_PARAMETER;
+                    }
+                    break;
+                }
+                default:
+                {
+                    json_push_back(masterData, pageInfo);
+                    return BAD_PARAMETER;
+                }
+                }
+                process_Factorty_Data(pageInfo);
+            }
+            else
+            {
+                json_push_back(masterData, pageInfo);
+                return BAD_PARAMETER;
+            }
 
-		}
+        }
 
-		json_push_back(masterData, pageInfo);
-		retStatus = SUCCESS;
-	}
-	else
-	{
-		retStatus = MEMORY_FAILURE;
-	}
-	return retStatus;
+        json_push_back(masterData, pageInfo);
+        retStatus = SUCCESS;
+    }
+    else
+    {
+        retStatus = MEMORY_FAILURE;
+    }
+    return retStatus;
 }
