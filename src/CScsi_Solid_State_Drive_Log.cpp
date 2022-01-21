@@ -119,13 +119,15 @@ bool CScsiSolidStateDriveLog::get_SSD_Parameter_Code_Description(std::string *ss
     {
     case 0x0001:
     {
-        snprintf(&*ssdString->begin(), BASIC, "Percentage Used Indicator");
+        ssdString->assign("Percentage Used Indicator");
         descriptionFound = true;
         break;
     }
     default:
     {
-        snprintf(&*ssdString->begin(), BASIC, "Vendor Specific 0x%04" PRIx16"", m_SSDParam->paramCode);
+        std::ostringstream temp;
+        temp << "Vendor Specific 0x" << std::hex << std::setfill('0') << std::setw(4) << m_SSDParam->paramCode;
+        ssdString->assign(temp.str());
         break;
     }
     }
@@ -160,17 +162,19 @@ void CScsiSolidStateDriveLog::process_Solid_State_Drive_Data(JSONNODE *ssdData)
     descriptionFound = get_SSD_Parameter_Code_Description(&myHeader);
 
     JSONNODE *ssdInfo = json_new(JSON_NODE);
-    json_set_name(ssdInfo, &*myHeader.begin());
-
-    snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", m_SSDParam->paramCode);
-    json_push_back(ssdInfo, json_new_a("Solid State Drive Param Code", &*myStr.begin()));
+    json_set_name(ssdInfo, myHeader.c_str());
+    std::ostringstream temp;
+    temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << m_SSDParam->paramCode;
+    json_push_back(ssdInfo, json_new_a("Solid State Drive Param Code", temp.str().c_str()));
 
     if (!descriptionFound)
     {
-        snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_SSDParam->paramControlByte);
-        json_push_back(ssdInfo, json_new_a("Solid State Drive Param Control Byte ", &*myStr.begin()));
-        snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_SSDParam->paramLength);
-        json_push_back(ssdInfo, json_new_a("Solid State Drive Param Length ", &*myStr.begin()));
+        temp.clear();
+        temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_SSDParam->paramControlByte);
+        json_push_back(ssdInfo, json_new_a("Solid State Drive Param Control Byte ", temp.str().c_str()));
+        temp.clear();
+        temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_SSDParam->paramLength);
+        json_push_back(ssdInfo, json_new_a("Solid State Drive Param Length ", temp.str().c_str()));
     }
 
     if (m_SSDParam->paramLength == 8 || m_SSDValue > UINT32_MAX)
@@ -185,8 +189,9 @@ void CScsiSolidStateDriveLog::process_Solid_State_Drive_Data(JSONNODE *ssdData)
         }
         else
         {
-            snprintf(&*myStr.begin(), BASIC, "%" PRIu32"", static_cast<uint32_t>(m_SSDValue));
-            json_push_back(ssdInfo, json_new_a("Solid State Drive Param Value", &*myStr.begin()));
+            temp.clear();
+            temp << std::dec << m_SSDValue;
+            json_push_back(ssdInfo, json_new_a("Solid State Drive Param Value", temp.str().c_str()));
         }
     }
 

@@ -126,7 +126,9 @@ void CScsiCmdDurationLimitsLog::get_Parameter_Code_Description(uint16_t paramCod
     }
     else
     {
-        snprintf(&*generalStr->begin(), BASIC, "vendor specific 0x%04" PRIx16"", paramCode);
+        std::ostringstream temp;
+        temp <<"vendor specific 0x" << std::hex << std::setfill('0') << std::setw(4) << paramCode;
+        generalStr->assign(temp.str());
     }
 }
 //-----------------------------------------------------------------------------
@@ -155,8 +157,9 @@ void CScsiCmdDurationLimitsLog::process_Generic_Data(JSONNODE* genericData)
 #endif
     byte_Swap_16(&m_commandLog->paramCode);
     get_Parameter_Code_Description(m_commandLog->paramCode, &myHeader);
-    snprintf(&*myStr.begin(), BASIC, "%" PRIu64"", m_Value);
-    json_push_back(genericData, json_new_a(&*myHeader.begin(), &*myStr.begin()));
+    std::ostringstream temp;
+    temp << std::dec << m_Value;
+    json_push_back(genericData, json_new_a(myHeader.c_str(), temp.str().c_str()));
 }
 //-----------------------------------------------------------------------------
 //
@@ -185,8 +188,9 @@ void CScsiCmdDurationLimitsLog::process_Achievable_Data(JSONNODE * achievableDat
     byte_Swap_16(&m_commandLog->paramCode);
 
     myHeader = "Achievable Latency Target";
-    snprintf(&*myStr.begin(), BASIC, "%" PRIu64"", m_Value);
-    json_push_back(achievableData, json_new_a(&*myHeader.begin(), &*myStr.begin()));
+    std::ostringstream temp;
+    temp << std::dec << m_Value;
+    json_push_back(achievableData, json_new_a(myHeader.c_str(), temp.str().c_str()));
 
 }
 //-----------------------------------------------------------------------------
@@ -223,7 +227,7 @@ void CScsiCmdDurationLimitsLog::process_Duration_Limits_Data(JSONNODE* limitData
     byte_Swap_32(&m_limitsLog->predictiveLatencyMiss);
 
     JSONNODE* limitInfo = json_new(JSON_NODE);
-    json_set_name(limitInfo, &*myStr.begin());
+    json_set_name(limitInfo, myStr.c_str());
 
     set_json_64bit(limitInfo, "Number of Inactive Target Miss Commands", m_limitsLog->inactiveMiss, false);
     set_json_64bit(limitInfo, "Number of Write FUA commands", m_limitsLog->activeMiss, false);
@@ -283,10 +287,10 @@ eReturnValues CScsiCmdDurationLimitsLog::get_Limits_Data(JSONNODE *masterData)
     eReturnValues retStatus = IN_PROGRESS;
     if (pData != NULL)
     {
-        snprintf(&*headerStr.begin(), BASIC, "Command Duration Limits Log - 19h, 21h");
+        headerStr.assign("Command Duration Limits Log - 19h, 21h");
         JSONNODE* pageInfo = json_new(JSON_NODE);
 
-        json_set_name(pageInfo, &*headerStr.begin());
+        json_set_name(pageInfo, headerStr.c_str());
 
         for (uint32_t offset = 0; offset < m_PageLength; )
         {
@@ -296,27 +300,27 @@ eReturnValues CScsiCmdDurationLimitsLog::get_Limits_Data(JSONNODE *masterData)
                 byte_Swap_16(&paramCode);
                 if (paramCode == 0x0001)
                 {
-                    m_commandLog = (sLogParams*)&pData[offset];
+                    m_commandLog = reinterpret_cast<sLogParams*>(&pData[offset]);
                     process_Achievable_Data(pageInfo);
                     offset += m_commandLog->paramLength + LOGPAGESIZE;
                 }
                 else if (paramCode >= 0x0011 && paramCode <= 0x0017)
                 {
 
-                    m_limitsLog = (sCommandDurationLimits*)&pData[offset];
+                    m_limitsLog = reinterpret_cast<sCommandDurationLimits*>(&pData[offset]);
                     process_Duration_Limits_Data(pageInfo);
                     offset += m_limitsLog->paramLength + LOGPAGESIZE;
                 }
                 else if (paramCode >= 0x0021 && paramCode <= 0x0027)
                 {
 
-                    m_limitsLog = (sCommandDurationLimits*)&pData[offset];
+                    m_limitsLog = reinterpret_cast<sCommandDurationLimits*>(&pData[offset]);
                     process_Duration_Limits_Data(pageInfo);
                     offset += m_limitsLog->paramLength + LOGPAGESIZE;
                 }
                 else
                 {
-                    m_commandLog = (sLogParams*)&pData[offset];
+                    m_commandLog = reinterpret_cast<sLogParams*>(&pData[offset]);
                     populate_Generic_Param_Value(m_commandLog->paramLength,offset + LOGPAGESIZE);
                     process_Generic_Data(pageInfo);
                     offset += (m_commandLog->paramLength + LOGPAGESIZE);

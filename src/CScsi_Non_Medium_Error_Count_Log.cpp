@@ -124,18 +124,19 @@ void CScsiNonMediumErrorCountLog::process_Non_Medium_Error_Count_Data(JSONNODE* 
 	printf("Non-Medium Error Count Log Parameters\n");
 #endif
 	byte_Swap_16(&m_CountErrors->paramCode);
-
-	snprintf(&*myStr.begin(), BASIC, "Non-Medium Error Count Log Parameters 0x%04" PRIx16"", m_CountErrors->paramCode);
+    std::ostringstream temp;
+    temp << "Non-Medium Error Count Log Parameters 0x" << std::hex << std::setfill('0') << std::setw(4) << m_CountErrors->paramCode;
 	JSONNODE* cacheInfo = json_new(JSON_NODE);
-	json_set_name(cacheInfo, &*myStr.begin());
-
-	snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", m_CountErrors->paramCode);
-	json_push_back(cacheInfo, json_new_a("Non-Medium Error Count Parameter Code", &*myStr.begin()));
-
-	snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_CountErrors->paramControlByte);
-	json_push_back(cacheInfo, json_new_a("Non-Medium Error Count Control Byte ", &*myStr.begin()));
-	snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_CountErrors->paramLength);
-	json_push_back(cacheInfo, json_new_a("Non-Medium Error CountLength ", &*myStr.begin()));
+	json_set_name(cacheInfo, temp.str().c_str());
+    temp.clear();
+    temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << m_CountErrors->paramCode;
+	json_push_back(cacheInfo, json_new_a("Non-Medium Error Count Parameter Code", temp.str().c_str()));
+    temp.clear();
+    temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_CountErrors->paramControlByte);
+	json_push_back(cacheInfo, json_new_a("Non-Medium Error Count Control Byte ", temp.str().c_str()));
+    temp.clear();
+    temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_CountErrors->paramLength);
+	json_push_back(cacheInfo, json_new_a("Non-Medium Error CountLength ", temp.str().c_str()));
 	if (m_CountErrors->paramLength == 8 || m_Value > UINT32_MAX)
 	{
 		set_json_64bit(cacheInfo, "Non-Medium Error Count", m_Value, false);
@@ -173,13 +174,13 @@ eReturnValues CScsiNonMediumErrorCountLog::get_Non_Medium_Error_Count_Data(JSONN
 		{
 			if (offset < m_bufferLength && offset < UINT16_MAX)
 			{
-			    m_CountErrors = (sLogParams*)&pData[offset];
+			    m_CountErrors = reinterpret_cast<sLogParams*>(&pData[offset]);
 			    offset += PARAMSIZE;
 				switch (m_CountErrors->paramLength)
 				{
 				case 1:
 				{
-					if ((offset + m_CountErrors->paramLength) <= (uint32_t)m_bufferLength)
+					if ((offset + m_CountErrors->paramLength) <= static_cast<uint32_t>(m_bufferLength))
 					{
 						m_Value = pData[offset];
 						offset += m_CountErrors->paramLength;
@@ -193,7 +194,7 @@ eReturnValues CScsiNonMediumErrorCountLog::get_Non_Medium_Error_Count_Data(JSONN
 				}
 				case 2:
 				{
-					if ((offset + m_CountErrors->paramLength) <= (uint32_t)m_bufferLength)
+					if ((offset + m_CountErrors->paramLength) <= static_cast<uint32_t>(m_bufferLength))
 					{
 						m_Value = M_BytesTo2ByteValue(pData[offset], pData[offset + 1]);
 						offset += m_CountErrors->paramLength;
@@ -207,7 +208,7 @@ eReturnValues CScsiNonMediumErrorCountLog::get_Non_Medium_Error_Count_Data(JSONN
 				}
 				case 4:
 				{
-					if ((offset + m_CountErrors->paramLength) <= (uint32_t)m_bufferLength)
+					if ((offset + m_CountErrors->paramLength) <= static_cast<uint32_t>(m_bufferLength))
 					{
 						m_Value = M_BytesTo4ByteValue(pData[offset], pData[offset + 1], pData[offset + 2], pData[offset + 3]);
 						offset += m_CountErrors->paramLength;
@@ -221,7 +222,7 @@ eReturnValues CScsiNonMediumErrorCountLog::get_Non_Medium_Error_Count_Data(JSONN
 				}
 				case 8:
 				{
-					if ((offset + m_CountErrors->paramLength) <= (uint32_t)m_bufferLength)
+					if ((offset + m_CountErrors->paramLength) <= static_cast<uint32_t>(m_bufferLength))
 					{
 						m_Value = M_BytesTo8ByteValue(pData[offset], pData[offset + 1], pData[offset + 2], pData[offset + 3], pData[offset + 4], pData[offset + 5], pData[offset + 6], pData[offset + 7]);
 						offset += m_CountErrors->paramLength;

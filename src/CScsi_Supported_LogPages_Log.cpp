@@ -129,11 +129,11 @@ void CScsiSupportedLog::get_Supported_And_Subpage_Description(std::string *descr
             {
                 if (m_ShowSubPage && m_SubPage == 0xFF)
                 {
-                    snprintf(&*description->begin(), BASIC, "Supported Log Pages and Subpages");
+                    description->assign("Supported Log Pages and Subpages");
                 }
                 else
                 {
-                    snprintf(&*description->begin(), BASIC, "Supported Log Pages");
+                    description->assign("Supported Log Pages");
                 }
                 m_ShowSupportedPagesOnce = false;
             }
@@ -141,119 +141,121 @@ void CScsiSupportedLog::get_Supported_And_Subpage_Description(std::string *descr
 		}
 		case WRITE_ERROR_COUNTER:
 		{
-			snprintf(&*description->begin(), BASIC, "Write Error Counter");
+            description->assign("Write Error Counter");
 			break;
 		}
 		case READ_ERROR_COUNTER:
 		{
-			snprintf(&*description->begin(), BASIC, "Read Error Counter");
+            description->assign("Read Error Counter");
 			break;
 		}
 		case VERIFY_ERROR_COUNTER:
 		{
-			snprintf(&*description->begin(), BASIC, "Verify Error Counter");
+            description->assign("Verify Error Counter");
 			break;
 		}
 		case NON_MEDIUM_ERROR:
 		{
-			snprintf(&*description->begin(), BASIC, "Non-Medium Error");
+            description->assign("Non-Medium Error");
 			break;
 		}
 		case FORMAT_STATUS:
 		{
-			snprintf(&*description->begin(), BASIC, "Format Status");
+            description->assign("Format Status");
 			break;
 		}
 		case LOGICAL_BLOCK_PROVISIONING:
 		{
-			snprintf(&*description->begin(), BASIC, "Logical Block Provisioning");
+            description->assign("Logical Block Provisioning");
 			break;
 		}
 		case ENVIRONMENTAL:
 		{
 			if (m_ShowSubPage && m_SubPage == 0x00)
 			{
-				snprintf(&*description->begin(), BASIC, "Temperature");
+                description->assign("Temperature");
 			}
 			else if (m_ShowSubPage && m_SubPage == 0x01)
 			{
-				snprintf(&*description->begin(), BASIC, "Environmental Reporting");
+                description->assign("Environmental Reporting");
 			}
 			else if (m_ShowSubPage && m_SubPage == 0x02)
 			{
-				snprintf(&*description->begin(), BASIC, "Environmental Limits");
+                description->assign("Environmental Limits");
 			}
 			else
 			{
-				snprintf(&*description->begin(), BASIC, "Environmental");
+                description->assign("Environmental");
 			}
 			break;
 		}
 		case START_STOP_CYCLE_COUNTER:
 		{
-			snprintf(&*description->begin(), BASIC, "Start-Stop Cycle Counter");
+            description->assign("Start-Stop Cycle Counter");
 			break;
 		}
 		case APPLICATION_CLIENT:
 		{
-			snprintf(&*description->begin(), BASIC, "Application Client");
+            description->assign("Application Client");
 			break;
 		}
 		case SELF_TEST_RESULTS:
 		{
-			snprintf(&*description->begin(), BASIC, "Self-Test Results");
+            description->assign("Self-Test Results");
 			break;
 		}
 		case SOLID_STATE_MEDIA:
 		{
-			snprintf(&*description->begin(), BASIC, "Solid State Media");
+            description->assign("Solid State Media");
 			break;
 		}
         case ZONED_DEVICE_STATISTICS:
         {
-            snprintf(&*description->begin(), BASIC, "Zoned Device Statistics");
+            description->assign("Zoned Device Statistics");
             break;
         }
 		case BACKGROUND_SCAN:
 		{
 			if (m_ShowSubPage && m_SubPage == 0x02)
 			{
-				snprintf(&*description->begin(), BASIC, "Background Operation");
+                description->assign("Background Operation");
 			}
 			else
 			{
-				snprintf(&*description->begin(), BASIC, "Background Scan");
+                description->assign("Background Scan");
 			}
 			break;
 		}
 		case PROTOCOL_SPECIFIC_PORT:
 		{
-			snprintf(&*description->begin(), BASIC, "SAS Protocol Log Page");
+            description->assign("SAS Protocol Log Page");
 			break;
 		}
 		case POWER_CONDITION_TRANSITIONS:
 		{
-			snprintf(&*description->begin(), BASIC, "Protocol Specific Port");
+            description->assign("Protocol Specific Port");
 			break;
 		}
 		case INFORMATIONAL_EXCEPTIONS:
 		{
-			snprintf(&*description->begin(), BASIC, "Informational Exceptions");
+            description->assign("Informational Exceptions");
 			break;
 		}
 		case CACHE_STATISTICS:
 		{
-			snprintf(&*description->begin(), BASIC, "Cache Statistics");
+            description->assign("Cache Statistics");
 			break;
 		}
 		case FACTORY_LOG:
 		{
-			snprintf(&*description->begin(), BASIC, "Factory Log");
+            description->assign("Factory Log");
 			break;
 		}
 		default:
 		{
-			snprintf(&*description->begin(), BASIC, "Unknown 0x%02" PRIx8"", m_Page);
+            std::ostringstream temp;
+            temp << "Unknown 0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Page);
+            description->assign(temp.str());
 			break;
 		}
 	}
@@ -281,17 +283,14 @@ void CScsiSupportedLog::process_Supported_Data(JSONNODE *SupportData)
 #if defined _DEBUG
 	printf("Supported Log Pages \n");
 #endif
-
+    std::ostringstream temp;
+    temp << "Page 0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Page);
     if (m_ShowSubPage)
     {
-        snprintf(&*myHeader.begin(), BASIC, "Page 0x%02" PRIx8" SubPage 0x%02" PRIx8"", m_Page, m_SubPage);
-    }
-    else
-    {
-        snprintf(&*myHeader.begin(), BASIC, "Page 0x%02" PRIx8"", m_Page);
+         temp << " SubPage 0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_SubPage);
     }
     get_Supported_And_Subpage_Description(&myStr);
-	json_push_back(SupportData, json_new_a(&*myHeader.begin(), &*myStr.begin()));
+	json_push_back(SupportData, json_new_a(myHeader.c_str(), myStr.c_str()));
 }
 //-----------------------------------------------------------------------------
 //
@@ -316,17 +315,17 @@ eReturnValues CScsiSupportedLog::get_Supported_Log_Data(JSONNODE *masterData)
 	{
 		myStr = "Supported Logs";
 		JSONNODE *pageInfo = json_new(JSON_NODE);
-		json_set_name(pageInfo, &*myStr.begin());
+		json_set_name(pageInfo, myStr.c_str());
 
-		for (size_t offset = 0; offset < (size_t) m_PageLength; )
+		for (size_t offset = 0; offset < static_cast<size_t>(m_PageLength); )
 		{
 			if (offset < m_bufferLength )
 			{
-				m_Page = (uint8_t)pData[offset];
+				m_Page = static_cast<uint8_t>(pData[offset]);
 				offset++;
 				if (m_ShowSubPage && (offset +1 ) < m_bufferLength)
 				{
-					m_SubPage = (uint8_t)pData[offset];
+					m_SubPage = static_cast<uint8_t>(pData[offset]);
 					offset++;
 				}
                 if ((m_Page != 0 || m_SubPage != 0) )

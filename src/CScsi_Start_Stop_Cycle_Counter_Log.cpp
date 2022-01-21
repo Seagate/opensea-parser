@@ -75,7 +75,7 @@ CScsiStartStop::CScsiStartStop(uint8_t * buffer, size_t bufferSize, JSONNODE *ma
         {
             if (bufferSize >= sizeof(sStartStopStruct))				// check for invaid log size < need to add in the size of the log page header
             {
-                m_Page = (sStartStopStruct *)pData;				// set a buffer to the point to the log page info
+                m_Page = reinterpret_cast<sStartStopStruct *>(pData);				// set a buffer to the point to the log page info
                 m_StartStatus = parse_Start_Stop_Log(masterData);
             }
             else
@@ -252,7 +252,7 @@ eReturnValues CScsiStartStop::week_Year_Print(JSONNODE *data, uint16_t param, ui
 	myStr.resize(BASIC);
 
 	JSONNODE *dateInfo = json_new(JSON_NODE);
-	json_set_name(dateInfo, (char *)strHeader.c_str());
+	json_set_name(dateInfo, strHeader.c_str());
 	
     if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
@@ -312,19 +312,22 @@ eReturnValues CScsiStartStop::get_Count(JSONNODE *countData, uint16_t param, uin
 	myStr.resize(BASIC);
 
 	JSONNODE *countInfo = json_new(JSON_NODE);
-	json_set_name(countInfo, (char *)strHeader.c_str());
+	json_set_name(countInfo, strHeader.c_str());
 
     if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", param);
-        json_push_back(countInfo, json_new_a("Parameter Code", (char*)myStr.c_str()));
-        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu8"", paramlength);
-        json_push_back(countInfo, json_new_a("Parameter Length", (char*)myStr.c_str()));
-        snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", paramConByte);
-        json_push_back(countInfo, json_new_a("Control Byte", (char*)myStr.c_str()));
+        std::ostringstream temp;
+        temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << param;
+        json_push_back(countInfo, json_new_a("Parameter Code", temp.str().c_str()));
+        temp.clear();
+        temp << std::dec << static_cast<uint16_t>(paramlength);
+        json_push_back(countInfo, json_new_a("Parameter Length", temp.str().c_str()));
+        temp.clear();
+        temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(paramConByte);
+        json_push_back(countInfo, json_new_a("Control Byte", temp.str().c_str()));
     }
 	byte_Swap_32(&count);
-	json_push_back(countInfo, json_new_i((char *)strCount.c_str(),  count )); 
+	json_push_back(countInfo, json_new_i(strCount.c_str(),  count )); 
 
 	json_push_back(countData, countInfo);
 	return SUCCESS;

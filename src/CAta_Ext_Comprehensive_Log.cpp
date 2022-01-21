@@ -276,7 +276,7 @@ eReturnValues CExtComp::parse_Ext_Comp_Structure(uint32_t structNumber, uint32_t
                 timeStamp);
 #endif
             temp.clear();
-            temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << deviceControl;
+            temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(deviceControl);
 			json_push_back(cmdNode, json_new_a("Device Control", temp.str().c_str()));
             temp.clear();
             temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << featureField;
@@ -294,10 +294,10 @@ eReturnValues CExtComp::parse_Ext_Comp_Structure(uint32_t structNumber, uint32_t
             temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << hiLBA;
 			json_push_back(cmdNode, json_new_a("hiLBA", temp.str().c_str()));
             temp.clear();
-            temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << deviceHead;
+            temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(deviceHead);
 			json_push_back(cmdNode, json_new_a("Device Head", temp.str().c_str()));
             temp.clear();
-            temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << commandField;
+            temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(commandField);
 			json_push_back(cmdNode, json_new_a("Command Field", temp.str().c_str()));
             temp.clear();
 
@@ -335,7 +335,7 @@ eReturnValues CExtComp::parse_Ext_Comp_Structure(uint32_t structNumber, uint32_t
             lifeTime);
 #endif
         temp.clear();
-        temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << errorField;
+        temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(errorField);
 		json_push_back(opcode, json_new_a("Error", temp.str().c_str()));
         temp.clear();
         temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << countField;
@@ -346,7 +346,7 @@ eReturnValues CExtComp::parse_Ext_Comp_Structure(uint32_t structNumber, uint32_t
 
 		json_push_back(opcode, json_new_i("Device", static_cast<int>(deviceControl)));
 
-        temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << status;
+        temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(status);
 		json_push_back(opcode, json_new_a("Status", temp.str().c_str()));
         temp.clear();
 

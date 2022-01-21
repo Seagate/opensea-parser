@@ -186,11 +186,11 @@ eReturnValues CAta_Ext_DST_Log::parse_Ext_Self_Test_Log(JSONNODE *masterData)
     std::string myStr = "Start of Ext DST";
     JSONNODE *DstJson = json_new(JSON_NODE);
     uint16_t DSTIndex = 0;
-    //uint8_t StatusByte = 0;
-    //uint16_t timeStamp = 0;
-    //uint16_t compTime = 0;
-    //int8_t checkPointByte = 0;
-    //uint64_t LBA = 0;
+    uint8_t StatusByte = 0;
+    uint16_t timeStamp = 0;
+    uint16_t compTime = 0;
+    int8_t checkPointByte = 0;
+    uint64_t LBA = 0;
 
     json_set_name(DstJson, "DST Log");
     uint16_t index = M_BytesTo2ByteValue(pData[3], pData[2]);
@@ -212,13 +212,13 @@ eReturnValues CAta_Ext_DST_Log::parse_Ext_Self_Test_Log(JSONNODE *masterData)
         temp << std::dec << timeStamp;
         json_push_back(runInfo, json_new_a("Timestamp", temp.str().c_str()));
         temp.clear();
-        temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << StatusByte;
+        temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(StatusByte);
         json_push_back(runInfo, json_new_a("Status Byte", temp.str().c_str()));
         Get_Status_Meaning(myStr,StatusByte);
         json_push_back(runInfo, json_new_a("Status Meaning", myStr.c_str()));
 
         temp.clear();
-        temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << checkPointByte;
+        temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(checkPointByte);
         json_push_back(runInfo, json_new_a("CheckPoint Byte", temp.str().c_str()));
         temp.clear();
         temp << std::dec << compTime;

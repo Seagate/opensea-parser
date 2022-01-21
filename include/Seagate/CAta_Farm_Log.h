@@ -76,7 +76,7 @@ namespace opensea_parser {
 			inline void create_Serial_Number(std::string &serialNumber, const sDriveInfo * const idInfo)
 			{
 				uint64_t sn = 0;
-				sn = (idInfo->serialNumber & 0x00FFFFFFFFFFFFFFLL) | ((idInfo->serialNumber2 & 0x00FFFFFFFFFFFFFFLL) << 32);
+				sn = (idInfo->serialNumber & UINT64_C(0x00FFFFFFFFFFFFFF)) | ((idInfo->serialNumber2 & UINT64_C(0x00FFFFFFFFFFFFFF)) << 32);
                 serialNumber.clear();
                 serialNumber.assign(reinterpret_cast<const char*>(&sn), SERIAL_NUMBER_LEN);//This is very ugly and I don't like it -TJE
                 //add these characters to the SN string...this is byteswapped, hence this weird order of doing things. -TJE
@@ -100,8 +100,8 @@ namespace opensea_parser {
 			inline void create_World_Wide_Name(std::string &worldWideName, const sDriveInfo * const idInfo)
 			{
 				uint64_t wwn = 0;
-				uint64_t wwn1 = idInfo->worldWideName2 & 0x00FFFFFFFFFFFFFFLL;
-				uint64_t wwn2 = idInfo->worldWideName & 0x00FFFFFFFFFFFFFFLL;
+				uint64_t wwn1 = idInfo->worldWideName2 & UINT64_C(0x00FFFFFFFFFFFFFF);
+				uint64_t wwn2 = idInfo->worldWideName & UINT64_C(0x00FFFFFFFFFFFFFF);
 				word_Swap_64(&wwn1);
 				word_Swap_64(&wwn2);
 				wwn = (wwn2) | ((wwn1) >> 32);
@@ -127,7 +127,7 @@ namespace opensea_parser {
 			inline void create_Firmware_String(std::string &firmwareRev, const sDriveInfo * const idInfo)
 			{
 				uint64_t firm = 0;
-				firm = (idInfo->firmware & 0x00FFFFFFFFFFFFFFLL);
+				firm = (idInfo->firmware & UINT64_C(0x00FFFFFFFFFFFFFF));
                 firmwareRev.clear();
                 firmwareRev.assign(reinterpret_cast<const char*>(&firm), FIRMWARE_REV_LEN);//This is very ugly and I don't like it -TJE
                 //add these characters to the SN string...this is byteswapped, hence this weird order of doing things. -TJE
@@ -156,7 +156,7 @@ namespace opensea_parser {
                 std::string temp;
                 for (uint8_t i = 0; i < MAXSIZE; i++)
                 {
-                    model[i] = idInfo->modelNumber[i] & 0x00FFFFFFFFFFFFFFLL;
+                    model[i] = idInfo->modelNumber[i] & UINT64_C(0x00FFFFFFFFFFFFFF);
                     temp.assign(reinterpret_cast<const char *>(&model[i]), 10);
                     byte_swap_std_string(temp);
                     modelNumber.append(temp);
@@ -181,7 +181,7 @@ namespace opensea_parser {
 			inline void create_Device_Interface_String(std::string &dInterface, const sDriveInfo * const idInfo)
 			{
 				uint64_t dFace = 0;
-				dFace = (idInfo->deviceInterface & 0x00FFFFFFFFFFFFFFLL);
+				dFace = (idInfo->deviceInterface & UINT64_C(0x00FFFFFFFFFFFFFF));
 				byte_Swap_64(&dFace);
 				dFace = (dFace >> 32);
                 dInterface.assign(reinterpret_cast<const char*>(&dFace), DEVICE_INTERFACE_LEN);//This is very ugly and I don't like it -TJE

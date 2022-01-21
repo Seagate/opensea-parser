@@ -129,43 +129,43 @@ bool CScsiPowerConditiontLog::get_Power_Mode_Type(std::string *power, uint16_t c
 	{
 		case ACTIVE:
 		{
-			snprintf(&*power->begin(), BASIC, "Accumulated transitions to active");
+			power->assign("Accumulated transitions to active");
             typeFound = true;
 			break;
 		}
 		case IDLE_A:
 		{
-			snprintf(&*power->begin(), BASIC, "Accumulated transitions to idle_a");
+            power->assign("Accumulated transitions to idle_a");
             typeFound = true;
 			break;
 		}
 		case IDLE_B:
 		{
-			snprintf(&*power->begin(), BASIC, "Accumulated transitions to idle_b");
+            power->assign("Accumulated transitions to idle_b");
             typeFound = true;
 			break;
 		}
 		case IDLE_C:
 		{
-			snprintf(&*power->begin(), BASIC, "Accumulated transitions to idle_c");
+            power->assign("Accumulated transitions to idle_c");
             typeFound = true;
 			break;
 		}
 		case STANDZ:
 		{
-			snprintf(&*power->begin(), BASIC, "Accumulated transitions to standby_z");
+            power->assign("Accumulated transitions to standby_z");
             typeFound = true;
 			break;
 		}
 		case STANDY:
 		{
-			snprintf(&*power->begin(), BASIC, "Accumulated transitions to standby_y");
+            power->assign("Accumulated transitions to standby_y");
             typeFound = true;
 			break;
 		}
 		default:
 		{
-			snprintf(&*power->begin(), BASIC, "Vendor Specific Power Mode Transition Type");
+            power->assign("Vendor Specific Power Mode Transition Type");
 			break;
 		}
 	}
@@ -200,15 +200,18 @@ void CScsiPowerConditiontLog::process_List_Information(JSONNODE *powerData)
     if (m_PowerParam->paramValue != 0)
     {
         JSONNODE *powerInfo = json_new(JSON_NODE);
-        json_set_name(powerInfo, &*myStr.begin());
-        snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", m_PowerParam->paramCode);
-        json_push_back(powerInfo, json_new_a("Power Condition Type", &*myStr.begin()));
+        json_set_name(powerInfo, myStr.c_str());
+        std::ostringstream temp;
+        temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << m_PowerParam->paramCode;
+        json_push_back(powerInfo, json_new_a("Power Condition Type", temp.str().c_str()));
         if (!typeFound)
         {
-            snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_PowerParam->paramControlByte);
-            json_push_back(powerInfo, json_new_a("Control Byte", &*myStr.begin()));
-            snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_PowerParam->paramLength);
-            json_push_back(powerInfo, json_new_a("Length", &*myStr.begin()));
+            temp.clear();
+            temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_PowerParam->paramControlByte);
+            json_push_back(powerInfo, json_new_a("Control Byte", temp.str().c_str()));
+            temp.clear();
+            temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_PowerParam->paramLength);
+            json_push_back(powerInfo, json_new_a("Length", temp.str().c_str()));
         }
         json_push_back(powerInfo, json_new_i("Power Value", m_PowerParam->paramValue));
         json_push_back(powerData, powerInfo);

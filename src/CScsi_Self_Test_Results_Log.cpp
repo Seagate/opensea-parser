@@ -120,7 +120,7 @@ eReturnValues CScsi_DST_Results::get_Self_Test_Log(uint8_t *buffer, size_t buffe
 
 	json_set_name(DstJson, "Self Test Results Log - 10h");
 
-	m_DST = (sSelfTest *)buffer;
+	m_DST = reinterpret_cast<sSelfTest *>(buffer);
 	for (int i = 1; i <= 20; i++)
 	{
 		byte_Swap_Self_Test();
@@ -133,7 +133,7 @@ eReturnValues CScsi_DST_Results::get_Self_Test_Log(uint8_t *buffer, size_t buffe
 			}
 			else
 			{
-				if ( (((size_t)i+1) * sizeof(sSelfTest) ) <= bufferSize )
+				if ( ((static_cast<size_t>(i)+1) * sizeof(sSelfTest) ) <= bufferSize )
 				{
 					m_DST++;
 					retStatus = IN_PROGRESS;
@@ -178,21 +178,27 @@ void CScsi_DST_Results::print_Self_Test_Log(JSONNODE *dstNode, uint16_t run)
 	myStr.resize(BASIC);
 
 	JSONNODE* runInfo = json_new(JSON_NODE);
-	snprintf(&*myStr.begin(), BASIC, "Entry %3d ", run);   // changed the run# to Entry per Paul
-	json_set_name(runInfo, &*myStr.begin());
+    std::ostringstream temp;
+    temp << "Entry " << std::setw(3) << run;   // changed the run# to Entry per Paul
+	json_set_name(runInfo, temp.str().c_str());
 	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
-		snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", m_DST->paramCode);
-		json_push_back(runInfo, json_new_a("Parameter Code", &*myStr.begin()));
-		snprintf(&*myStr.begin(), BASIC, "%" PRIx8"", m_DST->paramLength);
-		json_push_back(runInfo, json_new_a("Parameter Length", &*myStr.begin()));
-		snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_DST->paramControlByte);
-		json_push_back(runInfo, json_new_a("Control Byte", &*myStr.begin()));
+        temp.clear();
+        temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << m_DST->paramCode;
+		json_push_back(runInfo, json_new_a("Parameter Code", temp.str().c_str()));
+        temp.clear();
+        temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_DST->paramLength);
+		json_push_back(runInfo, json_new_a("Parameter Length", temp.str().c_str()));
+        temp.clear();
+        temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << m_DST->paramControlByte;
+		json_push_back(runInfo, json_new_a("Control Byte", temp.str().c_str()));
 	}
-	snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", (uint8_t)M_GETBITRANGE(m_DST->stCode, 7, 5));
-	json_push_back(runInfo, json_new_a("Self Test Code", &*myStr.begin()));
-	snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", (uint8_t)M_GETBITRANGE(m_DST->stCode, 3, 0));
-	json_push_back(runInfo, json_new_a("Self Test Results", &*myStr.begin()));
+    temp.clear();
+    temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint8_t>(M_GETBITRANGE(m_DST->stCode, 7, 5));
+	json_push_back(runInfo, json_new_a("Self Test Code", temp.str().c_str()));
+    temp.clear();
+    temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint8_t>(M_GETBITRANGE(m_DST->stCode, 3, 0));
+	json_push_back(runInfo, json_new_a("Self Test Results", temp.str().c_str()));
 	if (M_GETBITRANGE(m_DST->stCode, 7, 5) == DST_NOT_RUN)
 	{
 		json_push_back(runInfo, json_new_a("Self Test Results Meaning", "Self Test Not Ran"));
@@ -200,19 +206,23 @@ void CScsi_DST_Results::print_Self_Test_Log(JSONNODE *dstNode, uint16_t run)
 	else
 	{
 		get_Self_Test_Results_String(myStr, M_GETBITRANGE(m_DST->stCode, 3, 0));
-		json_push_back(runInfo, json_new_a("Self Test Results Meaning", &*myStr.begin()));
+		json_push_back(runInfo, json_new_a("Self Test Results Meaning", myStr.c_str()));
 	}
 	json_push_back(runInfo, json_new_i("Self Test Number", static_cast<uint32_t>(m_DST->stNumber)));
-	snprintf(&*myStr.begin(), BASIC, "%" PRIu16"", m_DST->accPOH);
-	json_push_back(runInfo, json_new_a("Accumulated Power On Hours", &*myStr.begin()));
+    temp.clear();
+    temp << std::dec << m_DST->accPOH;
+	json_push_back(runInfo, json_new_a("Accumulated Power On Hours", temp.str().c_str()));
 	set_json_64bit(runInfo, "Address of First Failure", m_DST->address, true);
 
-	snprintf(&*myStr.begin(), BASIC, "%" PRIu8"", m_DST->senseKey);
-	json_push_back(runInfo, json_new_a("Sense Key", &*myStr.begin()));
-	snprintf(&*myStr.begin(), BASIC, "%" PRIu8"", m_DST->addSenseCode);
-	json_push_back(runInfo, json_new_a("Additional Sense Code", &*myStr.begin()));
-	snprintf(&*myStr.begin(), BASIC, "%" PRIu8"", m_DST->addSenseCodeQualifier);
-	json_push_back(runInfo, json_new_a("Additional Sense Code Qualifier", &*myStr.begin()));
+    temp.clear();
+    temp << std::dec << static_cast<uint16_t>(m_DST->senseKey);
+	json_push_back(runInfo, json_new_a("Sense Key", temp.str().c_str()));
+    temp.clear();
+    temp << std::dec << static_cast<uint16_t>(m_DST->addSenseCode);
+	json_push_back(runInfo, json_new_a("Additional Sense Code", temp.str().c_str()));
+    temp.clear();
+    temp << std::dec << static_cast<uint16_t>(m_DST->addSenseCodeQualifier);
+	json_push_back(runInfo, json_new_a("Additional Sense Code Qualifier", temp.str().c_str()));
 
 	json_push_back(dstNode, runInfo);
 

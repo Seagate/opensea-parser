@@ -120,73 +120,75 @@ bool CScsiZonedDeviceStatisticsLog::get_ZDS_Parameter_Code_Description(std::stri
     {
     case 0x0000:
     {
-        snprintf(&*zdsString->begin(), BASIC, "maximum open zones");
+        zdsString->assign("maximum open zones");
         descriptionFound = true;
         break;
     }
     case 0x0001:
     {
-        snprintf(&*zdsString->begin(), BASIC, "maximum explicitly open zones");
+        zdsString->assign("maximum explicitly open zones");
         descriptionFound = true;
         break;
     }
     case 0x0002:
     {
-        snprintf(&*zdsString->begin(), BASIC, "maximum implicitly open zones");
+        zdsString->assign("maximum implicitly open zones");
         descriptionFound = true;
         break;
     }
     case 0x0003:
     {
-        snprintf(&*zdsString->begin(), BASIC, "minimum empty zones");
+        zdsString->assign("minimum empty zones");
         descriptionFound = true;
         break;
     }
     case 0x0004:
     {
-        snprintf(&*zdsString->begin(), BASIC, "maximum non-sequential zones");
+        zdsString->assign("maximum non-sequential zones");
         descriptionFound = true;
         break;
     }
     case 0x0005:
     {
-        snprintf(&*zdsString->begin(), BASIC, "zones emptied");
+        zdsString->assign("zones emptied");
         descriptionFound = true;
         break;
     }
     case 0x0006:
     {
-        snprintf(&*zdsString->begin(), BASIC, "suboptimal write commands");
+        zdsString->assign("suboptimal write commands");
         descriptionFound = true;
         break;
     }
     case 0x0007:
     {
-        snprintf(&*zdsString->begin(), BASIC, "commands exceeding optimal limit");
+        zdsString->assign("commands exceeding optimal limit");
         descriptionFound = true;
         break;
     }
     case 0x0008:
     {
-        snprintf(&*zdsString->begin(), BASIC, "failed explicit opens");
+        zdsString->assign("failed explicit opens");
         descriptionFound = true;
         break;
     }
     case 0x0009:
     {
-        snprintf(&*zdsString->begin(), BASIC, "read rule violations");
+        zdsString->assign("read rule violations");
         descriptionFound = true;
         break;
     }
     case 0x000A:
     {
-        snprintf(&*zdsString->begin(), BASIC, "write rule violations");
+        zdsString->assign("write rule violations");
         descriptionFound = true;
         break;
     }
     default:
     {
-        snprintf(&*zdsString->begin(), BASIC, "Vendor Specific 0x%04" PRIx16"", m_ZDSParam->paramCode);
+        std::ostringstream temp;
+        temp << "Vendor Specific 0x" << std::hex << std::setfill('0') << std::setw(4) <<  m_ZDSParam->paramCode;
+        zdsString->assign(temp.str());
         break;
     }
     }
@@ -223,17 +225,20 @@ void CScsiZonedDeviceStatisticsLog::process_Zoned_Device_Statistics_Data(JSONNOD
         bool descriptionFound = get_ZDS_Parameter_Code_Description( &myHeader);
 
         JSONNODE *zdsInfo = json_new(JSON_NODE);
-        json_set_name(zdsInfo, &*myHeader.begin());
+        json_set_name(zdsInfo, myHeader.c_str());
 
-        snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", m_ZDSParam->paramCode);
-        json_push_back(zdsInfo, json_new_a("Zoned Device Statistics Param Code", &*myStr.begin()));
+        std::ostringstream temp;
+        temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << m_ZDSParam->paramCode;
+        json_push_back(zdsInfo, json_new_a("Zoned Device Statistics Param Code", temp.str().c_str()));
 
         if (!descriptionFound)
         {
-            snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_ZDSParam->paramControlByte);
-            json_push_back(zdsInfo, json_new_a("Zoned Device Statistics Param Control Byte ", &*myStr.begin()));
-            snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_ZDSParam->paramLength);
-            json_push_back(zdsInfo, json_new_a("Zoned Device Statistics Param Length ", &*myStr.begin()));
+            temp.clear();
+            temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_ZDSParam->paramControlByte);
+            json_push_back(zdsInfo, json_new_a("Zoned Device Statistics Param Control Byte ", temp.str().c_str()));
+            temp.clear();
+            temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_ZDSParam->paramLength);
+            json_push_back(zdsInfo, json_new_a("Zoned Device Statistics Param Length ", temp.str().c_str()));
         }
 
         if (m_ZDSParam->paramLength == 8 || m_ZDSValue > UINT32_MAX)
@@ -248,8 +253,9 @@ void CScsiZonedDeviceStatisticsLog::process_Zoned_Device_Statistics_Data(JSONNOD
             }
             else
             {
-                snprintf(&*myStr.begin(), BASIC, "%" PRIu32"", static_cast<uint32_t>(m_ZDSValue));
-                json_push_back(zdsInfo, json_new_a("Zoned Device Statistics Param Value", &*myStr.begin()));
+                temp.clear();
+                temp << std::dec << m_ZDSValue;
+                json_push_back(zdsInfo, json_new_a("Zoned Device Statistics Param Value", temp.str().c_str()));
             }
         }
 

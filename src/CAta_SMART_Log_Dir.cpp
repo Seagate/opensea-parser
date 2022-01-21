@@ -245,7 +245,7 @@ eReturnValues CAta_SMART_Log_Dir::print_SMART_Log_Dir(JSONNODE *masterData)
     {
         sLogDetailStructure logDetail = *logItr;
         std::ostringstream temp, temp2;
-        temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << logDetail.logAddress;
+        temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(logDetail.logAddress);
         temp2 << std::dec << logDetail.numberOfPages;
 
         if (is_Host_Specific_Log(logDetail.logAddress) && hostInfo != NULL)

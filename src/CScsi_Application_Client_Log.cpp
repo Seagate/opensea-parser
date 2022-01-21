@@ -134,18 +134,16 @@ void CScsiApplicationLog::process_Client_Data(JSONNODE *appData)
     json_push_back(appInfo, json_new_a("Application Client Parameter Code", temp.str().c_str()));
 
     temp.clear();
-    temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << m_App->paramControlByte;
+    temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_App->paramControlByte);
     json_push_back(appInfo, json_new_a("Application Client Control Byte ", temp.str().c_str()));
     temp.clear();
-    temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << m_App->paramLength;
+    temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_App->paramLength);
     json_push_back(appInfo, json_new_a("Application Client Length ", temp.str().c_str()));
     
     // format to show the buffer data.
     if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
         uint32_t lineNumber = 0;
-        char *innerMsg = static_cast<char*>(calloc(128, sizeof(char)));
-        char* innerStr = static_cast<char*>(calloc(60, sizeof(char)));
         uint32_t offset = 0;
 
 
@@ -153,25 +151,24 @@ void CScsiApplicationLog::process_Client_Data(JSONNODE *appData)
         {
             temp.clear();
             temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << lineNumber;
-            snprintf(innerMsg, 128, "%02" PRIX8 "", m_App->data[offset]);
+
+            std::ostringstream innerMsg;
+            innerMsg << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_App->data[offset]);
             // inner loop for creating a single ling of the buffer data
             for (uint32_t inner = 1; inner < 16 && offset < APP_CLIENT_DATA_LEN - 1; inner++)
             {
-                snprintf(innerStr, 60, "%02" PRIX8"", m_App->data[offset]);
+                innerMsg << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_App->data[offset]);
                 if (inner % 4 == 0)
                 {
-                    strncat(innerMsg, " ", 1);
+                    innerMsg << " ";
                 }
-                strncat(innerMsg, innerStr, 2);
                 offset++;
             }
             // push the line to the json node
-            json_push_back(appInfo, json_new_a(temp.str().c_str(), innerMsg));
+            json_push_back(appInfo, json_new_a(temp.str().c_str(), innerMsg.str().c_str()));
             outer = offset;
             lineNumber = outer;
         }
-        safe_Free(innerMsg);  //free the string
-        safe_Free(innerStr);  // free the string
     }
 	json_push_back(appData, appInfo);
 }

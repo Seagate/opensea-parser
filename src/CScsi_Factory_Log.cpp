@@ -124,17 +124,21 @@ void CScsiFactoryLog::process_Factorty_Data(JSONNODE *factoryData)
         printf("Factory Description \n");
 #endif
         byte_Swap_16(&m_factory->paramCode);
-        snprintf(&*myStr.begin(), BASIC, "Factory Description %" PRIu16"", m_factory->paramCode);
+        std::ostringstream temp;
+        temp << "Factory Description " << std::dec << m_factory->paramCode;
         JSONNODE *factoryInfo = json_new(JSON_NODE);
-        json_set_name(factoryInfo, &*myStr.begin());
+        json_set_name(factoryInfo, temp.str().c_str());
 
-        snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", m_factory->paramCode);
-        json_push_back(factoryInfo, json_new_a("Factory Parameter Code", &*myStr.begin()));
+        temp.clear();
+        temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << m_factory->paramCode;
+        json_push_back(factoryInfo, json_new_a("Factory Parameter Code", temp.str().c_str()));
 
-        snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_factory->paramControlByte);
-        json_push_back(factoryInfo, json_new_a("Factory Control Byte ", &*myStr.begin()));
-        snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_factory->paramLength);
-        json_push_back(factoryInfo, json_new_a("FactoryLength ", &*myStr.begin()));
+        temp.clear();
+        temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_factory->paramControlByte);
+        json_push_back(factoryInfo, json_new_a("Factory Control Byte ", temp.str().c_str()));
+        temp.clear();
+        temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_factory->paramLength);
+        json_push_back(factoryInfo, json_new_a("FactoryLength ", temp.str().c_str()));
         if (m_factory->paramLength == 8 || m_Value > UINT32_MAX)
         {
             set_json_64bit(factoryInfo, "Factory value", m_Value, false);

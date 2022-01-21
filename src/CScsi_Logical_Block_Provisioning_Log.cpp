@@ -115,14 +115,15 @@ CScsiLBAProvisionLog::~CScsiLBAProvisionLog()
 //---------------------------------------------------------------------------
 void CScsiLBAProvisionLog::get_Resource_Percentage(std::string *percentStr)
 {
-    uint16_t percent = static_cast<uint32_t>(m_Provision->resourceCount);
-    if (percent < 100)
+    if (m_Provision->resourceCount < 100)
     {
-        snprintf(&*percentStr->begin(), BASIC, "%" PRId16" Percent", percent);
+        std::ostringstream temp;
+        temp << std::dec << m_Provision->resourceCount << " Percent";
+        percentStr->assign(temp.str());
     }
     else
     {
-        snprintf(&*percentStr->begin(), BASIC, "Invalid Percentage");
+        percentStr->assign("Invalid Percentage");
     }
 }
 //-----------------------------------------------------------------------------
@@ -145,7 +146,7 @@ void CScsiLBAProvisionLog::get_LBA_Provision_Parameter_Description(std::string *
         || (m_Provision->paramCode >= 0x0004 && m_Provision->paramCode <= 0x00FF)
         || (m_Provision->paramCode >= 0x0103 && m_Provision->paramCode <= 0xFFEF))
     {
-        snprintf(&*lbaStr->begin(), BASIC, "Reserved");
+        lbaStr->assign("Reserved");
     }
     else
     {
@@ -153,37 +154,39 @@ void CScsiLBAProvisionLog::get_LBA_Provision_Parameter_Description(std::string *
         {
         case 0x0001:
         {
-            snprintf(&*lbaStr->begin(), BASIC, "available lba mapping resource count");
+            lbaStr->assign("available lba mapping resource count");
             break;
         }
         case 0x0002:
         {
-            snprintf(&*lbaStr->begin(), BASIC, "used lba mapping resource count");
+            lbaStr->assign("used lba mapping resource count");
             break;
         }
         case 0x0003:
         {
-            snprintf(&*lbaStr->begin(), BASIC, "available provisioning resource percentage");
+            lbaStr->assign("available provisioning resource percentage");
             break;
         }
         case 0x0100:
         {
-            snprintf(&*lbaStr->begin(), BASIC, "de-duplicated lba resource count");
+            lbaStr->assign("de-duplicated lba resource count");
             break;
         }
         case 0x0101:
         {
-            snprintf(&*lbaStr->begin(), BASIC, "compressed LBA resource count");
+            lbaStr->assign("compressed LBA resource count");
             break;
         }
         case 0x0102:
         {
-            snprintf(&*lbaStr->begin(), BASIC, "total efficiency LBA resource count");
+            lbaStr->assign("total efficiency LBA resource count");
             break;
         }
         default:
         {
-            snprintf(&*lbaStr->begin(), BASIC, "vendor specific  %" PRId16"", m_Provision->paramCode);
+            std::ostringstream temp;
+            temp << "vendor specific " << std::dec << m_Provision->paramCode;
+            lbaStr->assign(temp.str());
             break;
         }
         }
@@ -213,19 +216,21 @@ void CScsiLBAProvisionLog::process_LBA_Provision_Data(JSONNODE *lbaData)
     byte_Swap_16(&m_Provision->paramCode);
     get_LBA_Provision_Parameter_Description(&myStr);
     JSONNODE *lbaInfo = json_new(JSON_NODE);
-    json_set_name(lbaInfo, &*myStr.begin());
+    json_set_name(lbaInfo, myStr.c_str());
 
-    snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", m_Provision->paramCode);
-    json_push_back(lbaInfo, json_new_a("Logical Block Provisioning Parameter Code", &*myStr.begin()));
-
-    snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_Provision->paramControlByte);
-    json_push_back(lbaInfo, json_new_a("Logical Block Provisioning Control Byte ", &*myStr.begin()));
-    snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_Provision->paramLength);
-    json_push_back(lbaInfo, json_new_a("Logical Block Provisioning Length ", &*myStr.begin()));
+    std::ostringstream temp;
+    temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << m_Provision->paramCode;
+    json_push_back(lbaInfo, json_new_a("Logical Block Provisioning Parameter Code", temp.str().c_str()));
+    temp.clear();
+    temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Provision->paramControlByte);
+    json_push_back(lbaInfo, json_new_a("Logical Block Provisioning Control Byte ", temp.str().c_str()));
+    temp.clear();
+    temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Provision->paramLength);
+    json_push_back(lbaInfo, json_new_a("Logical Block Provisioning Length ", temp.str().c_str()));
     if (m_Provision->paramCode == 0x0003)
     {
         get_Resource_Percentage(&myStr);
-        json_push_back(lbaInfo, json_new_a("Percentage of Resources Available", &*myStr.begin()));
+        json_push_back(lbaInfo, json_new_a("Percentage of Resources Available", myStr.c_str()));
     }
     else
     {
@@ -256,11 +261,11 @@ eReturnValues CScsiLBAProvisionLog::get_LBA_Data(JSONNODE *masterData)
         JSONNODE *pageInfo = json_new(JSON_NODE);
         json_set_name(pageInfo, "Logical Block Provisioning Log - 0Ch");
 
-        for (size_t offset = 0; offset < (size_t)m_PageLength; )
+        for (size_t offset = 0; offset < static_cast<size_t>(m_PageLength); )
         {
             if (offset < m_bufferLength && offset < UINT16_MAX)
             {
-                m_Provision = (sLBA *)&pData[offset];
+                m_Provision = reinterpret_cast<sLBA *>(&pData[offset]);
                 process_LBA_Provision_Data(pageInfo);
                 offset += sizeof(sLBA);
             }

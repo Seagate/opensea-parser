@@ -3264,7 +3264,7 @@ bool CAta_Identify_Log_04::get_Free_Fall_Control(JSONNODE *freeFallData)
     if (set_Feature_Settings(&pLog->freeFallControlSensitivity))
     {
         std::ostringstream temp;
-        temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << M_Byte0(pLog->freeFallControlSensitivity);
+        temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(M_Byte0(pLog->freeFallControlSensitivity));
         json_push_back(freeFallData, json_new_a("Free Fall control sensitivity settings", temp.str().c_str()));
     }
     else
@@ -3905,7 +3905,7 @@ bool CAta_Identify_Log_06::get_Master_Password_Identifier(JSONNODE *mpIdent)
     {
         uint16_t master = M_Word0(m_pLog->masterPassword);
         temp.clear();
-        temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << master;
+        temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(master);
         json_push_back(mpIdent, json_new_a("Master Password Identifier field", temp.str().c_str()));
         if (master & BIT0)
         {

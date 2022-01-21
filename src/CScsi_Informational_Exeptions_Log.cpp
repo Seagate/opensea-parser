@@ -125,6 +125,7 @@ CScsiInformationalExeptionsLog::~CScsiInformationalExeptionsLog()
 void CScsiInformationalExeptionsLog::process_Informational_Exceptions_Data(JSONNODE *exeptionData, uint16_t count, uint16_t offset)
 {
 	std::string myStr = "";
+    std::ostringstream temp;
 	myStr.resize(BASIC);
 #if defined _DEBUG
 	printf("Informational Exceptions Log \n");
@@ -136,12 +137,15 @@ void CScsiInformationalExeptionsLog::process_Informational_Exceptions_Data(JSONN
 		json_push_back(data, json_new_a("name", "environment_temperature"));
 		JSONNODE* label = json_new(JSON_NODE);
 		json_set_name(label, "labels");
-		snprintf(&*myStr.begin(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16":%" PRIu16"", INFORMATIONAL_EXCEPTIONS, 0, m_Exeptions->paramCode, offset);
-		json_push_back(label, json_new_a("metric_source", &*myStr.begin()));
-		snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_Exeptions->senseCode);
-		json_push_back(label, json_new_a("scsi_asc", &*myStr.begin()));
-		snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_Exeptions->senseCodeQualifier);
-		json_push_back(label, json_new_a("scsi_ascq", &*myStr.begin()));
+        std::ostringstream temp;
+        temp << "scsi-log-page:0x" << std::hex << std::setfill('0') << INFORMATIONAL_EXCEPTIONS << "," << 0 << ":0x" << m_Exeptions->paramCode << ":" << offset;
+		json_push_back(label, json_new_a("metric_source", temp.str().c_str()));
+        temp.clear();
+        temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Exeptions->senseCode);
+		json_push_back(label, json_new_a("scsi_asc", temp.str().c_str()));
+        temp.clear();
+        temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Exeptions->senseCodeQualifier);
+		json_push_back(label, json_new_a("scsi_ascq", temp.str().c_str()));
 		json_push_back(label, json_new_a("stat_type", "most recent temperature"));
 		json_push_back(label, json_new_a("units", "celsius"));
 		json_push_back(data, label);
@@ -152,12 +156,15 @@ void CScsiInformationalExeptionsLog::process_Informational_Exceptions_Data(JSONN
 		json_push_back(trip, json_new_a("name", "environment_temperature"));
 		JSONNODE* label1 = json_new(JSON_NODE);
 		json_set_name(label1, "labels");
-		snprintf(&*myStr.begin(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16":%" PRIu16"", INFORMATIONAL_EXCEPTIONS, 0, m_Exeptions->paramCode, offset);
-		json_push_back(label1, json_new_a("metric_source", &*myStr.begin()));
-		snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_Exeptions->senseCode);
-		json_push_back(label1, json_new_a("scsi_asc", &*myStr.begin()));
-		snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_Exeptions->senseCodeQualifier);
-		json_push_back(label1, json_new_a("scsi_ascq", &*myStr.begin()));
+        temp.clear();
+        temp << "scsi-log-page:0x" << std::hex << std::setfill('0') << INFORMATIONAL_EXCEPTIONS << "," << 0 << ":0x" << m_Exeptions->paramCode << ":" << offset;
+		json_push_back(label1, json_new_a("metric_source", temp.str().c_str()));
+        temp.clear();
+        temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Exeptions->senseCode);
+		json_push_back(label1, json_new_a("scsi_asc", temp.str().c_str()));
+        temp.clear();
+        temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Exeptions->senseCodeQualifier);
+		json_push_back(label1, json_new_a("scsi_ascq", temp.str().c_str()));
 		json_push_back(label1, json_new_a("stat_type", "trip point temperature"));
 		json_push_back(label1, json_new_a("units", "celsius"));
 		json_push_back(trip, label1);
@@ -168,12 +175,15 @@ void CScsiInformationalExeptionsLog::process_Informational_Exceptions_Data(JSONN
 		json_push_back(max, json_new_a("name", "environment_temperature"));
 		JSONNODE* label2 = json_new(JSON_NODE);
 		json_set_name(label2, "labels");
-		snprintf(&*myStr.begin(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16":%" PRIu16"", INFORMATIONAL_EXCEPTIONS, 0, m_Exeptions->paramCode, offset);
-		json_push_back(label2, json_new_a("metric_source", &*myStr.begin()));
-		snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_Exeptions->senseCode);
-		json_push_back(label2, json_new_a("scsi_asc", &*myStr.begin()));
-		snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_Exeptions->senseCodeQualifier);
-		json_push_back(label2, json_new_a("scsi_ascq", &*myStr.begin()));
+        temp.clear();
+        temp << "scsi-log-page:0x" << std::hex << std::setfill('0') << INFORMATIONAL_EXCEPTIONS << "," << 0 << ":0x" << m_Exeptions->paramCode << ":" << offset;
+		json_push_back(label2, json_new_a("metric_source", temp.str().c_str()));
+        temp.clear();
+        temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Exeptions->senseCode);
+		json_push_back(label2, json_new_a("scsi_asc", temp.str().c_str()));
+        temp.clear();
+        temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Exeptions->senseCodeQualifier);
+		json_push_back(label2, json_new_a("scsi_ascq", temp.str().c_str()));
 		json_push_back(label2, json_new_a("stat_type", "maximum temperature"));
 		json_push_back(label2, json_new_a("units", "celsius"));
 		json_push_back(max, label2);
@@ -183,16 +193,20 @@ void CScsiInformationalExeptionsLog::process_Informational_Exceptions_Data(JSONN
 	}
 	else
 	{
-		snprintf(&*myStr.begin(), BASIC, "Informational Exception %" PRId16"", count);
+        temp.clear();
+        temp << "Informational Exception " << std::dec << count;
 		JSONNODE* exeptionInfo = json_new(JSON_NODE);
-		json_set_name(exeptionInfo, &*myStr.begin());
+		json_set_name(exeptionInfo, temp.str().c_str());
 		byte_Swap_16(&m_Exeptions->paramCode);
-		snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", m_Exeptions->paramCode);
-		json_push_back(exeptionInfo, json_new_a("Informational Exception Parameter Code", &*myStr.begin()));
-		snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_Exeptions->paramControlByte);
-		json_push_back(exeptionInfo, json_new_a("Informational Exception Control Byte ", &*myStr.begin()));
-		snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_Exeptions->paramLength);
-		json_push_back(exeptionInfo, json_new_a("Informational Exception Length ", &*myStr.begin()));
+        temp.clear();
+        temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << m_Exeptions->paramCode;
+		json_push_back(exeptionInfo, json_new_a("Informational Exception Parameter Code", temp.str().c_str()));
+        temp.clear();
+        temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Exeptions->paramControlByte);
+		json_push_back(exeptionInfo, json_new_a("Informational Exception Control Byte ", temp.str().c_str()));
+        temp.clear();
+        temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Exeptions->paramLength);
+		json_push_back(exeptionInfo, json_new_a("Informational Exception Length ", temp.str().c_str()));
 
 		json_push_back(exeptionInfo, json_new_i("Informational Exception Additional Sense Code", static_cast<uint32_t>(m_Exeptions->senseCode)));
 		json_push_back(exeptionInfo, json_new_i("Informational Exception Additional Sense Code Qualifier", static_cast<uint32_t>(m_Exeptions->senseCodeQualifier)));

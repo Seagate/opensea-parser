@@ -32,6 +32,10 @@
 
 #include <sstream>
 #include <iomanip>
+#include <algorithm>
+#include <cctype>
+#include <string>
+
 
 extern eVerbosityLevels g_verbosity;
 extern eDataFormat g_dataformat;
@@ -257,7 +261,7 @@ namespace opensea_parser {
 	{
 		if (check_For_Active_Status(&value))
 		{
-			value = value & 0x00FFFFFFFFFFFFFFLL;
+			value = value & UINT64_C(0x00FFFFFFFFFFFFFF);
 		}
 		else
 		{
@@ -475,6 +479,12 @@ namespace opensea_parser {
     {
         //search for the last of ASCII characters...so use find_last_of the printable characters that are NOT spaces should do the trick...-TJE
         stringToTrim.erase(stringToTrim.find_last_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-=~!@#$%^&*()_+[]{};':\"\\|,./<>?`") + 1, stringToTrim.back());
+    }
+
+    inline void std_string_to_lowercase(std::string &stringToLowercase)
+    {
+        std::transform(stringToLowercase.begin(), stringToLowercase.end(), stringToLowercase.begin(),
+            [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
     }
 
 #endif // !OPENSEA_PARSER
