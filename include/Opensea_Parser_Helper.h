@@ -478,13 +478,18 @@ namespace opensea_parser {
     inline void remove_trailing_whitespace_std_string(std::string &stringToTrim)
     {
         //search for the last of ASCII characters...so use find_last_of the printable characters that are NOT spaces should do the trick...-TJE
-        stringToTrim.erase(stringToTrim.find_last_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-=~!@#$%^&*()_+[]{};':\"\\|,./<>?`") + 1, stringToTrim.back());
+        stringToTrim.erase(stringToTrim.find_last_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-=~!@#$%^&*()_+[]{};':\"\\|,./<>?`") + 1, stringToTrim.at(stringToTrim.size()));
     }
 
     inline void std_string_to_lowercase(std::string &stringToLowercase)
     {
-        std::transform(stringToLowercase.begin(), stringToLowercase.end(), stringToLowercase.begin(),
-            [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
+		for(size_t iter = 0; iter < stringToLowercase.size(); ++iter)
+		{
+			stringToLowercase.at(iter) = std::tolower(stringToLowercase.at(iter));
+		}
+		//Below is c++11:
+        // std::transform(stringToLowercase.begin(), stringToLowercase.end(), stringToLowercase.begin(),
+        //     [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
     }
 
 #endif // !OPENSEA_PARSER
