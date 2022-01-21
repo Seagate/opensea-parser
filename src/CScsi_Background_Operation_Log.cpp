@@ -167,7 +167,7 @@ void CScsiOperationLog::get_Background_Operations_status(std::string *status)
 //!   \return none
 //
 //---------------------------------------------------------------------------
-void CScsiOperationLog::process_Background_Operations_Data(JSONNODE *operationData, uint32_t offset)
+void CScsiOperationLog::process_Background_Operations_Data(JSONNODE *operationData, M_ATTR_UNUSED uint32_t offset)
 {
 	std::string myStr = "";
 	myStr.resize(BASIC);

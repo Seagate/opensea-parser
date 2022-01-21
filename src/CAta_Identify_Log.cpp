@@ -1371,7 +1371,6 @@ eReturnValues CAta_Identify_Log_02::get_Log_Page02(uint8_t *pData, JSONNODE *mas
     myStr.resize(BASIC);
     sLogPage02 logPage02;
     pCapacity = &logPage02;
-    memset(pCapacity, 0, sizeof(sLogPage02));
     pCapacity = reinterpret_cast<sLogPage02 *>(&pData[0]);
     uint16_t pageNumber = M_Word1(pCapacity->header);
     uint16_t revision = M_Word0(pCapacity->header);
@@ -2726,7 +2725,6 @@ eReturnValues CAta_Identify_Log_03::get_Log_Page03(uint8_t *pData, JSONNODE *mas
     myStr.resize(BASIC);
     sLogPage03 logPage03;
     m_pCap = &logPage03;
-    memset(m_pCap, 0, sizeof(logPage03));
     m_pCap = reinterpret_cast<sLogPage03 *>(&pData[0]);
     uint16_t pageNumber = M_Word1(m_pCap->header);
     uint16_t revision = M_Word0(m_pCap->header);
