@@ -128,13 +128,13 @@ void CScsiNonMediumErrorCountLog::process_Non_Medium_Error_Count_Data(JSONNODE* 
     temp << "Non-Medium Error Count Log Parameters 0x" << std::hex << std::setfill('0') << std::setw(4) << m_CountErrors->paramCode;
 	JSONNODE* cacheInfo = json_new(JSON_NODE);
 	json_set_name(cacheInfo, temp.str().c_str());
-    temp.clear();
+    temp.str().clear(); temp.clear();
     temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << m_CountErrors->paramCode;
 	json_push_back(cacheInfo, json_new_a("Non-Medium Error Count Parameter Code", temp.str().c_str()));
-    temp.clear();
+    temp.str().clear(); temp.clear();
     temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_CountErrors->paramControlByte);
 	json_push_back(cacheInfo, json_new_a("Non-Medium Error Count Control Byte ", temp.str().c_str()));
-    temp.clear();
+    temp.str().clear(); temp.clear();
     temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_CountErrors->paramLength);
 	json_push_back(cacheInfo, json_new_a("Non-Medium Error CountLength ", temp.str().c_str()));
 	if (m_CountErrors->paramLength == 8 || m_Value > UINT32_MAX)

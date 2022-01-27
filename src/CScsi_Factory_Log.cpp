@@ -129,14 +129,14 @@ void CScsiFactoryLog::process_Factorty_Data(JSONNODE *factoryData)
         JSONNODE *factoryInfo = json_new(JSON_NODE);
         json_set_name(factoryInfo, temp.str().c_str());
 
-        temp.clear();
+        temp.str().clear(); temp.clear();
         temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << m_factory->paramCode;
         json_push_back(factoryInfo, json_new_a("Factory Parameter Code", temp.str().c_str()));
 
-        temp.clear();
+        temp.str().clear(); temp.clear();
         temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_factory->paramControlByte);
         json_push_back(factoryInfo, json_new_a("Factory Control Byte ", temp.str().c_str()));
-        temp.clear();
+        temp.str().clear(); temp.clear();
         temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_factory->paramLength);
         json_push_back(factoryInfo, json_new_a("FactoryLength ", temp.str().c_str()));
         if (m_factory->paramLength == 8 || m_Value > UINT32_MAX)

@@ -299,10 +299,10 @@ void CScsiErrorCounterLog::process_Error_Data(JSONNODE *errorData)
         json_push_back(errorInfo, json_new_a("Error Counter Code", temp.str().c_str()));
         if (!descriptionFound)
         {
-            temp.clear();
+            temp.str().clear(); temp.clear();
             temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Error->paramControlByte);
             json_push_back(errorInfo, json_new_a("Error Counter Control Byte ", temp.str().c_str()));
-            temp.clear();
+            temp.str().clear(); temp.clear();
             temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Error->paramLength);
             json_push_back(errorInfo, json_new_a("Error Counter Length ", temp.str().c_str()));
         }
@@ -318,7 +318,7 @@ void CScsiErrorCounterLog::process_Error_Data(JSONNODE *errorData)
             }
             else
             {
-                temp.clear();
+                temp.str().clear(); temp.clear();
                 temp << std::dec << static_cast<uint32_t>(m_ErrorValue);
                 json_push_back(errorInfo, json_new_a(myStr.c_str(), temp.str().c_str()));
             }

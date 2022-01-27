@@ -184,10 +184,10 @@ void CScsiFormatStatusLog::process_Format_Status_Data(JSONNODE *formatData)
     std::ostringstream temp;
     temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << m_Format->paramCode;
     json_push_back(formatInfo, json_new_a("Parameter Code", temp.str().c_str()));
-    temp.clear();
+    temp.str().clear(); temp.clear();
     temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Format->paramControlByte);
     json_push_back(formatInfo, json_new_a("Control Byte ", temp.str().c_str()));
-    temp.clear();
+    temp.str().clear(); temp.clear();
     temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Format->paramLength);
     json_push_back(formatInfo, json_new_a("Length ", temp.str().c_str()));
     if (m_Format->paramLength == 8 || m_Value > UINT32_MAX)
@@ -202,7 +202,7 @@ void CScsiFormatStatusLog::process_Format_Status_Data(JSONNODE *formatData)
         }
         else
         {
-            temp.clear();
+            temp.str().clear(); temp.clear();
             temp << "0x" << std::hex << std::setfill('0') << std::setw(8) << m_Value;
             json_push_back(formatInfo, json_new_a("Value", temp.str().c_str()));
         }
@@ -240,10 +240,10 @@ void CScsiFormatStatusLog::process_Format_Status_Data_Variable_Length(JSONNODE *
     std::ostringstream temp;
     temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << m_Format->paramCode;
     json_push_back(formatInfo, json_new_a("Format Status Parameter Code", temp.str().c_str()));
-    temp.clear();
+    temp.str().clear(); temp.clear();
     temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Format->paramControlByte);
     json_push_back(formatInfo, json_new_a("Format Status Control Byte ", temp.str().c_str()));
-    temp.clear();
+    temp.str().clear(); temp.clear();
     temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Format->paramLength);
     json_push_back(formatInfo, json_new_a("Format Status Length ", temp.str().c_str()));
 
@@ -251,7 +251,7 @@ void CScsiFormatStatusLog::process_Format_Status_Data_Variable_Length(JSONNODE *
     uint8_t offset = 0;
     for (uint8_t outer = 0; outer < m_Format->paramLength - 1; )
     {
-        temp.clear();
+        temp.str().clear(); temp.clear();
         temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(lineNumber);
 
         std::ostringstream innerMsg;

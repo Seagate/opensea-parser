@@ -210,10 +210,10 @@ void CScsiScanLog::process_Scan_Status_Data(JSONNODE *scanData)
     std::ostringstream temp;
     temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << m_ScanParam->paramCode;
 	json_push_back(statusInfo, json_new_a("Background Scan Status Parameter Code", temp.str().c_str()));
-    temp.clear();
+    temp.str().clear(); temp.clear();
     temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_ScanParam->paramControlByte);
 	json_push_back(statusInfo, json_new_a("Background Scan Status Control Byte ", temp.str().c_str()));
-    temp.clear();
+    temp.str().clear(); temp.clear();
     temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_ScanParam->paramLength);
 	json_push_back(statusInfo, json_new_a("Background Scan Status Length ", temp.str().c_str()));
 
@@ -324,13 +324,13 @@ void CScsiScanLog::process_Defect_Data(JSONNODE *defectData)
 	JSONNODE *defectInfo = json_new(JSON_NODE);
 	json_set_name(defectInfo, temp.str().c_str());
 
-    temp.clear();
+    temp.str().clear(); temp.clear();
     temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << m_defect->paramCode;
 	json_push_back(defectInfo, json_new_a("Background Scan Defect Parameter Code", temp.str().c_str()));
-    temp.clear();
+    temp.str().clear(); temp.clear();
     temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_defect->paramControlByte);
 	json_push_back(defectInfo, json_new_a("Background Scan Defect Control Byte ", temp.str().c_str()));
-    temp.clear();
+    temp.str().clear(); temp.clear();
     temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_defect->paramLength);
 	json_push_back(defectInfo, json_new_a("Background Scan Defect Length ", temp.str().c_str()));
 
@@ -342,34 +342,34 @@ void CScsiScanLog::process_Defect_Data(JSONNODE *defectData)
 	//json_push_back(defectInfo, json_new_i(myStr.c_str(), static_cast<uint32_t>(m_ScanParam->status)));
 
 	get_Scan_Defect_Status_Description(&headerStr);
-    temp.clear();
+    temp.str().clear(); temp.clear();
     
     temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(M_GETBITRANGE(m_defect->status,7, 4));
 	json_push_back(defectInfo, json_new_a(headerStr.c_str(), temp.str().c_str()));
-    temp.clear();
+    temp.str().clear(); temp.clear();
     temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(M_GETBITRANGE(m_defect->status,3, 0));
 	json_push_back(defectInfo, json_new_a("Sense Key", temp.str().c_str()));
 
 
 	//json_push_back(defectInfo, json_new_i("Additional Sense Code", static_cast<uint32_t>(m_defect->senseCode)));
 	//json_push_back(defectInfo, json_new_i("Additional Sense Code Qualifier", static_cast<uint32_t>(m_defect->codeQualifier)));
-    temp.clear();
+    temp.str().clear(); temp.clear();
     temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_defect->senseCode);
     json_push_back(defectInfo, json_new_a("Additional Sense Code", temp.str().c_str()));
-    temp.clear();
+    temp.str().clear(); temp.clear();
     temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_defect->codeQualifier);
     json_push_back(defectInfo, json_new_a("Additional Sense Code Qualifier", temp.str().c_str()));
-    temp.clear();
+    temp.str().clear(); temp.clear();
     temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << m_defect->vendorSpecific;
 	json_push_back(defectInfo, json_new_a("Vendor Specific", temp.str().c_str()));
-    temp.clear();
+    temp.str().clear(); temp.clear();
     temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << m_defect->vendorSpecific1;
 	json_push_back(defectInfo, json_new_a("Vendor Specific 1", temp.str().c_str()));
-    temp.clear();
+    temp.str().clear(); temp.clear();
     temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_defect->vendorSpecific2);
 	json_push_back(defectInfo, json_new_a("Vendor Specific 2", temp.str().c_str()));
 	byte_Swap_64(&m_defect->LBA);
-    temp.clear();
+    temp.str().clear(); temp.clear();
     temp << "0x" << std::dec <<  m_defect->LBA;
     json_push_back(defectInfo, json_new_a("Logical Block Address", temp.str().c_str()));
 	
@@ -403,13 +403,13 @@ void CScsiScanLog::process_other_param_data(JSONNODE *scanData, size_t offset)
     temp << "Background Scan Defect Location 0x" << std::hex << std::setfill('0') << m_ParamHeader->paramCode;
     JSONNODE *defectInfo = json_new(JSON_NODE);
     json_set_name(defectInfo, temp.str().c_str());
-    temp.clear();
+    temp.str().clear(); temp.clear();
     temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << m_ParamHeader->paramCode;
     json_push_back(defectInfo, json_new_a("Background Scan Defect Parameter Code", temp.str().c_str()));
-    temp.clear();
+    temp.str().clear(); temp.clear();
     temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_ParamHeader->paramControlByte);
     json_push_back(defectInfo, json_new_a("Background Scan Defect Control Byte ", temp.str().c_str()));
-    temp.clear();
+    temp.str().clear(); temp.clear();
     temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_ParamHeader->paramLength);
     json_push_back(defectInfo, json_new_a("Background Scan Defect Length ", temp.str().c_str()));
     JSONNODE *myArray = json_new(JSON_ARRAY);

@@ -485,7 +485,7 @@ namespace opensea_parser {
     {
 		for(size_t iter = 0; iter < stringToLowercase.size(); ++iter)
 		{
-			stringToLowercase.at(iter) = std::tolower(stringToLowercase.at(iter));
+			stringToLowercase.at(iter) = static_cast<char>(std::tolower(stringToLowercase.at(iter)));
 		}
 		//Below is c++11:
         // std::transform(stringToLowercase.begin(), stringToLowercase.end(), stringToLowercase.begin(),
