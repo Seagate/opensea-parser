@@ -176,7 +176,7 @@ void opensea_parser::get_SMART_Save_Flages(JSONNODE *headerNode, uint8_t flag)
 //! \param flag - the uint8 value from the buffer
 //
 //  Exit:
-//!   \return bool 
+//!   \return void
 //
 //---------------------------------------------------------------------------
 void opensea_parser::get_SMART_Save_Flages_String(std::string& reason, uint8_t flag)
@@ -310,6 +310,57 @@ void opensea_parser::get_SMART_Save_Flages_String(std::string& reason, uint8_t f
 }
 //-----------------------------------------------------------------------------
 //
+//! \fn get_FARM_Reason_For_Capture()
+//
+//! \brief
+//!   Description:  From the farm log Reason the FARM log was capture 
+//
+//  Entry:
+//! \param headerNode - string for the information to be placed
+//! \param flag - the uint8 value from the buffer
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void opensea_parser::get_FARM_Reason_For_Capture(std::string* reason, uint8_t flag)
+{
+    switch (flag)
+    {
+        case FARM_DRAM_COPY:
+            *reason = "FARM log copy";
+            break;
+        case FARM_TIME_SERIES_FRAME:
+            *reason = "time series frame";
+            break;
+        case FARM_LONG_TERM_FRAME:
+            *reason = "long term frame";
+            break;
+        case FARM_GLIST_FRAME:
+            *reason = "1000 g-list disc entries frame";
+            break;
+        case FARM_UNRECOVERABLE_READ_FRAME:
+            *reason = "1st unrecovered read error";
+            break;
+        case FARM_10TH_UNRECOVERALBE_READ_FRAME:
+            *reason = "10th unrecovered read error";
+            break;
+        case FARM_COMMAND_TIME_OUT:
+            *reason = "1st fatal command time out";
+            break;
+        case FARM_LAST_FIRMWARE_UPDATE_CFW_SFW:
+            *reason = "last frame prior to most recent CFW or SFW update";
+            break;
+        case FARM_TEMPERATURE_EXCEEDED_70:
+            *reason = "temperature exceeds 70 degress celsius";
+            break;
+        default:
+            *reason = "unknown";
+            break;
+    }
+}
+//-----------------------------------------------------------------------------
+//
 //! \fn prePython_uknown_params()
 //
 //! \brief
@@ -339,8 +390,8 @@ void opensea_parser::prePython_unknown_params(JSONNODE* masterData, uint64_t val
         json_set_name(label, "labels");
         //json_push_back(label, json_new_a("units", "unknown"));
 
-        snprintf(&*myStr.begin(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16":%" PRIu32"", logPage, subPage, paramCode, offset);
-        json_push_back(label, json_new_a("metric_source", &*myStr.begin()));
+        snprintf(&myStr[0], BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16":%" PRIu32"", logPage, subPage, paramCode, offset);
+        json_push_back(label, json_new_a("metric_source", &myStr[0]));
         json_push_back(data, label);
 
         JSONNODE* valueRaw = json_new(JSON_ARRAY);
@@ -388,11 +439,11 @@ void opensea_parser::prePython_int(JSONNODE* masterData, const char* name, const
     }
     json_push_back(label, json_new_a("units", unit));
 
-    snprintf(&*myStr.begin(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16":%" PRIu32"", logPage, subPage, paramCode, offset);
-    json_push_back(label, json_new_a("metric_source", &*myStr.begin()));
+    snprintf(&myStr[0], BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16":%" PRIu32"", logPage, subPage, paramCode, offset);
+    json_push_back(label, json_new_a("metric_source", &myStr[0]));
     json_push_back(data, label);
     json_push_back(data, json_new_i("value", value));
-   // snprintf(&*myStr.begin(), BASIC, "%" PRIu64"", value);
+   // snprintf(&myStr[0], BASIC, "%" PRIu64"", value);
 
     json_push_back(masterData, data);
 }
@@ -423,8 +474,8 @@ void opensea_parser::prePython_float(JSONNODE* masterData, const char* name, con
         json_push_back(label, json_new_a("stat_type", statType));
     }
     json_push_back(label, json_new_a("units", unit));
-    snprintf(&*myStr.begin(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16":%" PRIu32"", logPage, subPage, paramCode, offset);
-    json_push_back(label, json_new_a("metric_source", &*myStr.begin()));
+    snprintf(&myStr[0], BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16":%" PRIu32"", logPage, subPage, paramCode, offset);
+    json_push_back(label, json_new_a("metric_source", &myStr[0]));
     json_push_back(data, label);
     json_push_back(data, json_new_f("value", value));
 

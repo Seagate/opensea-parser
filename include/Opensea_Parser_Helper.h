@@ -149,6 +149,20 @@ namespace opensea_parser {
         SMART_FRAME_FLAG_F7_CDB_TRIGGER = 0x27,
     }eSMARTFrameFlags;
 
+	typedef enum  _eFARMCAPTUREFlags
+	{
+		FARM_DRAM_COPY = 0,
+		FARM_TIME_SERIES_FRAME = 1,
+		FARM_LONG_TERM_FRAME = 2,
+		FARM_GLIST_FRAME =3,
+		FARM_UNRECOVERABLE_READ_FRAME = 4,
+		FARM_10TH_UNRECOVERALBE_READ_FRAME = 5,
+		FARM_COMMAND_TIME_OUT = 6,
+		FARM_LAST_FIRMWARE_UPDATE_CFW_SFW = 7,
+		FARM_TEMPERATURE_EXCEEDED_70 = 8,
+		FARM_UNKNOWN = 9,
+	}eFARM_CAPTURE_Flags;
+
 #pragma pack(push, 1)
 	typedef struct _sLogPageStruct
 	{
@@ -317,19 +331,19 @@ namespace opensea_parser {
         {
             //json does not support 64 bit numbers. Therefore we will print it as a string
             snprintf(printStr, BASIC, "0x%016" PRIx64"", value);
-            json_push_back(nowNode, json_new_a(&*myStr.begin(), printStr));
+            json_push_back(nowNode, json_new_a(&myStr[0], printStr));
         }
         else
         {
             if (M_IGETBITRANGE(value, 63, 31) == 0)
             {
-                json_push_back(nowNode, json_new_i(&*myStr.begin(), value));
+                json_push_back(nowNode, json_new_i(&myStr[0], value));
             }
             else
             {
                 // if the vale is greater then a unsigned 32 bit number print it as a string
                 snprintf(printStr, BASIC, "%" PRIu64"", value);
-                json_push_back(nowNode, json_new_a(&*myStr.begin(), printStr));
+                json_push_back(nowNode, json_new_a(&myStr[0], printStr));
             }
         }
         safe_Free(printStr);
@@ -359,19 +373,19 @@ namespace opensea_parser {
         {
             //json does not support 64 bit numbers. Therefore we will print it as a string
             snprintf(printStr, BASIC, "0x%016" PRIx64"", value);
-            json_push_back(nowNode, json_new_a(&*myStr.begin(), printStr));
+            json_push_back(nowNode, json_new_a(&myStr[0], printStr));
         }
         else
         {
             if (M_IGETBITRANGE(value,63,32) == 0)
             {
-				json_push_back(nowNode, json_new_i(&*myStr.begin(), value));
+				json_push_back(nowNode, json_new_i(&myStr[0], value));
             }
             else
             {
                 // if the vale is greater then a unsigned 32 bit number print it as a string
                 snprintf(printStr, BASIC, "%" PRIu64"", value);
-                json_push_back(nowNode, json_new_a(&*myStr.begin(), printStr));
+                json_push_back(nowNode, json_new_a(&myStr[0], printStr));
             }
         }
         safe_Free(printStr);
@@ -395,9 +409,9 @@ namespace opensea_parser {
     inline void set_Json_Bool(JSONNODE *nowNode, const std::string & myStr, bool workingValue)
     {
         if (workingValue)
-            json_push_back(nowNode, json_new_b(&*myStr.begin(), true));
+            json_push_back(nowNode, json_new_b(&myStr[0], true));
         else
-            json_push_back(nowNode, json_new_b(&*myStr.begin(), false));
+            json_push_back(nowNode, json_new_b(&myStr[0], false));
     }
 	//-----------------------------------------------------------------------------
 	//
@@ -457,6 +471,7 @@ namespace opensea_parser {
 	}
     void get_SMART_Save_Flages(JSONNODE *headerNode, uint8_t flag);
 	void get_SMART_Save_Flages_String(std::string &reason, uint8_t flag);
+	void get_FARM_Reason_For_Capture(std::string* reason, uint8_t flag);
 	void prePython_unknown_params(JSONNODE* masterData, uint64_t value, uint16_t logPage, uint8_t subPage, uint16_t paramCode, uint32_t offset);
 	void prePython_int(JSONNODE* masterData, const char* name, const char* statType, const char* unit, uint64_t value, uint16_t logPage, uint8_t subPage, uint16_t paramCode, uint32_t offset);
 	void prePython_float(JSONNODE* masterData, const char* name, const char* statType, const char* unit, double value, uint16_t logPage, uint8_t subPage, uint16_t paramCode, uint32_t offset);
