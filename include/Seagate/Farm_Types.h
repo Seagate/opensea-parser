@@ -27,6 +27,7 @@
 #define DATE_YEAR_DATE_SIZE     2
 #define FLASH_EVENTS            8
 #define REALLOCATIONEVENTS      15
+#define PRINTABLE_MODEL_NUMBER  12
 
 #define ASSERT_UNKNOWN                         0x00
 #define MICROPROCESSOR_FAILED                  0x08
