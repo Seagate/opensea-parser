@@ -456,10 +456,10 @@ typedef struct _sScsiEnvironmentStatPage07
     uint64_t            max5v;                                      //!< 5V Power Max(mw) - Highest of last 3 SMART summary frames
 }sScsiEnvStatPage07;
 
-typedef struct _sScsiWorkloadStatPage07
+typedef struct _sScsiWorkloadStatPage08
 {
     sScsiPageParameter  pPageHeader;								//!< pointer the farm header page parameter
-    uint64_t            pageNumber;									//!< Page Number = 7
+    uint64_t            pageNumber;									//!< Page Number = 8
     uint64_t            copyNumber;									//!< Copy Number
     uint64_t            countQueDepth1;                             //!< Count of Queue Depth =1 at 30s intervals for last 3 SMART Summary Frames
     uint64_t            countQueDepth2;                             //!< Count of Queue Depth =2 at 30s intervals for last 3 SMART Summary Frames
@@ -509,6 +509,14 @@ typedef struct _sLUNStruct
     uint64_t            maxRVabsolue;                               //!< Max RV Absolute Mean, value from most recent SMART Summary Frame
     uint64_t            idleTime;                                   //!< Idle Time, value from most recent SMART Summary Frame in seconds
     uint64_t            lbasCorrectedByParity;                      //!< Number of LBAs Corrected by Parity Sector
+    uint64_t            currentLowFrequencyVibe;                    //!< Current Low Frequency Vibe Score
+    uint64_t            currentMidFrequencyVibe;                    //!< Current Mid Frequency Vibe Score
+    uint64_t            currentHighFrequencyVibe;                   //!< Current High Frequency Vibe Score
+    uint64_t            worstLowFrequencyVibe;                      //!< Worst Low Frequency Vibe Score
+    uint64_t            worstMidFrequencyVibe;                      //!< Worst Mid Frequency Vibe Score
+    uint64_t            worstHighFrequencyVibe;                     //!< Worst High Frequency Vibe Score
+    uint64_t            primarySPCovPercentage;                     //!< Primary Super Parity Coverage Percentage
+    uint64_t            primarySPCovPercentageSMR;                  //!< Primary Super Parity Coverage Percentage SMR
 }sLUNStruct;
 
 typedef struct _sActuatorFLEDInfo
