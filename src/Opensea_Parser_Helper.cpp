@@ -308,57 +308,7 @@ void opensea_parser::get_SMART_Save_Flages_String(std::string& reason, uint8_t f
         break;
     }
 }
-//-----------------------------------------------------------------------------
-//
-//! \fn get_FARM_Reason_For_Capture()
-//
-//! \brief
-//!   Description:  From the farm log Reason the FARM log was capture 
-//
-//  Entry:
-//! \param headerNode - string for the information to be placed
-//! \param flag - the uint8 value from the buffer
-//
-//  Exit:
-//!   \return void
-//
-//---------------------------------------------------------------------------
-void opensea_parser::get_FARM_Reason_For_Capture(std::string* reason, uint8_t flag)
-{
-    switch (flag)
-    {
-        case FARM_DRAM_COPY:
-            *reason = "FARM log copy";
-            break;
-        case FARM_TIME_SERIES_FRAME:
-            *reason = "time series frame";
-            break;
-        case FARM_LONG_TERM_FRAME:
-            *reason = "long term frame";
-            break;
-        case FARM_GLIST_FRAME:
-            *reason = "1000 g-list disc entries frame";
-            break;
-        case FARM_UNRECOVERABLE_READ_FRAME:
-            *reason = "1st unrecovered read error";
-            break;
-        case FARM_10TH_UNRECOVERALBE_READ_FRAME:
-            *reason = "10th unrecovered read error";
-            break;
-        case FARM_COMMAND_TIME_OUT:
-            *reason = "1st fatal command time out";
-            break;
-        case FARM_LAST_FIRMWARE_UPDATE_CFW_SFW:
-            *reason = "last frame prior to most recent CFW or SFW update";
-            break;
-        case FARM_TEMPERATURE_EXCEEDED_70:
-            *reason = "temperature exceeds 70 degress celsius";
-            break;
-        default:
-            *reason = "unknown";
-            break;
-    }
-}
+
 //-----------------------------------------------------------------------------
 //
 //! \fn prePython_uknown_params()

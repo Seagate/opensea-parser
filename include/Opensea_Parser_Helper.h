@@ -471,7 +471,6 @@ namespace opensea_parser {
 	}
     void get_SMART_Save_Flages(JSONNODE *headerNode, uint8_t flag);
 	void get_SMART_Save_Flages_String(std::string &reason, uint8_t flag);
-	void get_FARM_Reason_For_Capture(std::string* reason, uint8_t flag);
 	void prePython_unknown_params(JSONNODE* masterData, uint64_t value, uint16_t logPage, uint8_t subPage, uint16_t paramCode, uint32_t offset);
 	void prePython_int(JSONNODE* masterData, const char* name, const char* statType, const char* unit, uint64_t value, uint16_t logPage, uint8_t subPage, uint16_t paramCode, uint32_t offset);
 	void prePython_float(JSONNODE* masterData, const char* name, const char* statType, const char* unit, double value, uint16_t logPage, uint8_t subPage, uint16_t paramCode, uint32_t offset);
