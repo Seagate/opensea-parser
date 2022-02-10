@@ -382,21 +382,21 @@ eReturnValues CAtaPowerConditionsLog::printPowerLogDescriptor(JSONNODE *masterDa
 
 #endif
 
-        //snprintf(&*myStr.begin(), BASIC, "Reserved");
-        //json_push_back(masterData, json_new_a("Reserved :", &*myStr.begin()));
-        snprintf(&*myStr.begin(), BASIC, "0x%x", logDescriptor->bitFlags);
-        json_push_back(masterData, json_new_a("Power Condition Flags", &*myStr.begin()));
+        //snprintf(&myStr[0], BASIC, "Reserved");
+        //json_push_back(masterData, json_new_a("Reserved :", &myStr[0]));
+        snprintf(&myStr[0], BASIC, "0x%x", logDescriptor->bitFlags);
+        json_push_back(masterData, json_new_a("Power Condition Flags", &myStr[0]));
         printPowerConditionFlag(masterData);
-        //snprintf(&*myStr.begin(), BASIC, "Reserved");
-        //json_push_back(masterData, json_new_a("Reserved :", &*myStr.begin()));
+        //snprintf(&myStr[0], BASIC, "Reserved");
+        //json_push_back(masterData, json_new_a("Reserved :", &myStr[0]));
         json_push_back(masterData, json_new_i("Default Timer Setting Field", logDescriptor->defaultTimerSetting));
         json_push_back(masterData, json_new_i("Saved Timer Setting Field", logDescriptor->savedTimerSetting));
         json_push_back(masterData, json_new_i("Current Timer Setting Field", logDescriptor->currentTimerSetting));
         json_push_back(masterData, json_new_i("Norminal Recovery Timer to PM0  Active Filed", logDescriptor->normalRecoveryTime));
         json_push_back(masterData, json_new_i("Minimum Timer Setting Field", logDescriptor->minimumTimerSetting));
         json_push_back(masterData, json_new_i("Maximum Timer Setting Field", logDescriptor->maximumTimerSetting));
-        snprintf(&*myStr.begin(), BASIC, "Reserved");
-        json_push_back(masterData, json_new_a("Reserved :", &*myStr.begin()));
+        snprintf(&myStr[0], BASIC, "Reserved");
+        json_push_back(masterData, json_new_a("Reserved :", &myStr[0]));
     }
     else
     {
