@@ -17,6 +17,7 @@
 #include <inttypes.h>
 #include <string>
 #include "common.h"
+#include "Opensea_Parser_Helper.h"
 #include "Farm_Types.h"
 
 
@@ -27,11 +28,19 @@ namespace opensea_parser {
 	class CFarmCommon 
 	{
 		public:
+
 			CFarmCommon();
 			virtual ~CFarmCommon();
+			void create_Serial_Number(std::string& serialNumberStr, uint32_t serialNumber, uint32_t serialNumber2, uint32_t majorRev, bool sas);
+			void create_World_Wide_Name(std::string& worldWideName, uint64_t wwn, uint64_t wwn2, bool sas);
+			void create_Firmware_String(std::string& firmwareRevStr, uint32_t firmware, uint32_t firmware2, bool sas);
+			void create_Device_Interface_String(std::string& dInterfaceStr, uint32_t deviceInterface, bool sas);
+			void create_Model_Number_String(std::string& modelStr, uint64_t* productID, bool sas);
 			void get_Reallocation_Cause_Meanings(std::string &meaning, uint16_t code);
 			void get_Assert_Code_Meaning(std::string &meaning, uint16_t code);
 			void create_Year_Assembled_String(std::string &dateStr, uint16_t date, bool isSAS);
+			void Get_NVC_Status(JSONNODE* NVC_Node, uint64_t status);
+			void Get_FARM_Reason_For_Capture(std::string* reason, uint8_t flag);
 	};
     
 #endif 
