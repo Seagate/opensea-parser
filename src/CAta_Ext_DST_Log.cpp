@@ -212,19 +212,19 @@ eReturnValues CAta_Ext_DST_Log::parse_Ext_Self_Test_Log(JSONNODE *masterData)
             pData[DSTIndex + 7], pData[DSTIndex + 6], pData[DSTIndex + 5]);
 
         JSONNODE *runInfo = json_new(JSON_NODE);
-        snprintf(&*myStr.begin(), BASIC, "Run %3d ", i);
-        json_set_name(runInfo, &*myStr.begin());
-        snprintf(&*myStr.begin(), BASIC, "%u", timeStamp);
-        json_push_back(runInfo, json_new_a("Timestamp", &*myStr.begin()));
-        snprintf(&*myStr.begin(), BASIC, "0x%02x", int(StatusByte));
-        json_push_back(runInfo, json_new_a("Status Byte", &*myStr.begin()));
+        snprintf(&myStr[0], BASIC, "Run %3d ", i);
+        json_set_name(runInfo, &myStr[0]);
+        snprintf(&myStr[0], BASIC, "%u", timeStamp);
+        json_push_back(runInfo, json_new_a("Timestamp", &myStr[0]));
+        snprintf(&myStr[0], BASIC, "0x%02x", int(StatusByte));
+        json_push_back(runInfo, json_new_a("Status Byte", &myStr[0]));
         Get_Status_Meaning(myStr, StatusByte);
-        json_push_back(runInfo, json_new_a("Status Meaning", &*myStr.begin()));
+        json_push_back(runInfo, json_new_a("Status Meaning", &myStr[0]));
 
-        snprintf(&*myStr.begin(), BASIC, "0x%02x", checkPointByte);
-        json_push_back(runInfo, json_new_a("CheckPoint Byte", &*myStr.begin()));
-        snprintf(&*myStr.begin(), BASIC, "%u", compTime);
-        json_push_back(runInfo, json_new_a("Completion Time", &*myStr.begin()));
+        snprintf(&myStr[0], BASIC, "0x%02x", checkPointByte);
+        json_push_back(runInfo, json_new_a("CheckPoint Byte", &myStr[0]));
+        snprintf(&myStr[0], BASIC, "%u", compTime);
+        json_push_back(runInfo, json_new_a("Completion Time", &myStr[0]));
         set_json_64bit(runInfo, "LBA", LBA, false);
 
         DSTIndex += 26;
