@@ -271,6 +271,12 @@ typedef struct _sAtaReliabilityStat
     uint64_t        idleTimeAct1;                                //!< Idle Time, value from most recent SMART Summary Frame in seconds, Actuator 1                  
     uint64_t        parityCorrLBAAct1;                           //!< Number of LBAs Corrected by Parity Sector, Actuator 1
     uint64_t        superParityCovPercentAct1;                   //!< Primary Super Parity Coverage Percentage, Actuator 1 
+    uint64_t        numOfReaderWriterOffset[MAX_HEAD_COUNT];     //!< Qword[24]	Number of Reader Writer offset Iterations by head
+    H2SAT           microJogOffset[MAX_HEAD_COUNT];              //!< Qword[24][3]	Micro Jog Offset by head
+    H2SAT           preLFABitErrorRate[MAX_HEAD_COUNT];          //!< Qword[24][3]	Pre LFA Bit Error Rate
+    H2SAT           zeroPercentShiftErrorRate[MAX_HEAD_COUNT];   //!< Qword[24][3]	Zero Percent Shift Bit Error Rate
+    uint64_t        superParityCoveragePercentageAct0;           //!< Primary Super Parity Coverage Percentage SMR/SWR, Actuator 0
+    uint64_t        superParityCoveragePercentageAct1;           //!< Primary Super Parity Coverage Percentage SMR/SWR, Actuator 1
 }sAtaReliabilityStat;
 
 typedef struct _sFarmFrame
