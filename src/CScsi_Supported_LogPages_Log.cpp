@@ -129,11 +129,11 @@ void CScsiSupportedLog::get_Supported_And_Subpage_Description(std::string *descr
             {
                 if (m_ShowSubPage && m_SubPage == 0xFF)
                 {
-                    snprintf(&*description->begin(), BASIC, "Supported Log Pages and Subpages");
+					*description = "Supported Log Pages and Subpages";
                 }
                 else
                 {
-                    snprintf(&*description->begin(), BASIC, "Supported Log Pages");
+					*description = "Supported Log Pages";
                 }
                 m_ShowSupportedPagesOnce = false;
             }
@@ -141,114 +141,114 @@ void CScsiSupportedLog::get_Supported_And_Subpage_Description(std::string *descr
 		}
 		case WRITE_ERROR_COUNTER:
 		{
-			snprintf(&*description->begin(), BASIC, "Write Error Counter");
+			*description = "Write Error Counter";
 			break;
 		}
 		case READ_ERROR_COUNTER:
 		{
-			snprintf(&*description->begin(), BASIC, "Read Error Counter");
+			*description = "Read Error Counter";
 			break;
 		}
 		case VERIFY_ERROR_COUNTER:
 		{
-			snprintf(&*description->begin(), BASIC, "Verify Error Counter");
+			*description = "Verify Error Counter";
 			break;
 		}
 		case NON_MEDIUM_ERROR:
 		{
-			snprintf(&*description->begin(), BASIC, "Non-Medium Error");
+			*description = "Non-Medium Error";
 			break;
 		}
 		case FORMAT_STATUS:
 		{
-			snprintf(&*description->begin(), BASIC, "Format Status");
+			*description = "Format Status";
 			break;
 		}
 		case LOGICAL_BLOCK_PROVISIONING:
 		{
-			snprintf(&*description->begin(), BASIC, "Logical Block Provisioning");
+			*description = "Logical Block Provisioning";
 			break;
 		}
 		case ENVIRONMENTAL:
 		{
 			if (m_ShowSubPage && m_SubPage == 0x00)
 			{
-				snprintf(&*description->begin(), BASIC, "Temperature");
+				*description = "Temperature";
 			}
 			else if (m_ShowSubPage && m_SubPage == 0x01)
 			{
-				snprintf(&*description->begin(), BASIC, "Environmental Reporting");
+				*description = "Environmental Reporting";
 			}
 			else if (m_ShowSubPage && m_SubPage == 0x02)
 			{
-				snprintf(&*description->begin(), BASIC, "Environmental Limits");
+				*description = "Environmental Limits";
 			}
 			else
 			{
-				snprintf(&*description->begin(), BASIC, "Environmental");
+				*description = "Environmental";
 			}
 			break;
 		}
 		case START_STOP_CYCLE_COUNTER:
 		{
-			snprintf(&*description->begin(), BASIC, "Start-Stop Cycle Counter");
+			*description = "Start-Stop Cycle Counter";
 			break;
 		}
 		case APPLICATION_CLIENT:
 		{
-			snprintf(&*description->begin(), BASIC, "Application Client");
+			*description = "Application Client";
 			break;
 		}
 		case SELF_TEST_RESULTS:
 		{
-			snprintf(&*description->begin(), BASIC, "Self-Test Results");
+			*description = "Self-Test Results";
 			break;
 		}
 		case SOLID_STATE_MEDIA:
 		{
-			snprintf(&*description->begin(), BASIC, "Solid State Media");
+			*description = "Solid State Media";
 			break;
 		}
         case ZONED_DEVICE_STATISTICS:
         {
-            snprintf(&*description->begin(), BASIC, "Zoned Device Statistics");
+			*description = "Zoned Device Statistics";
             break;
         }
 		case BACKGROUND_SCAN:
 		{
 			if (m_ShowSubPage && m_SubPage == 0x02)
 			{
-				snprintf(&*description->begin(), BASIC, "Background Operation");
+				*description = "Background Operation";
 			}
 			else
 			{
-				snprintf(&*description->begin(), BASIC, "Background Scan");
+				*description = "Background Scan";
 			}
 			break;
 		}
 		case PROTOCOL_SPECIFIC_PORT:
 		{
-			snprintf(&*description->begin(), BASIC, "SAS Protocol Log Page");
+			*description = "SAS Protocol Log Page";
 			break;
 		}
 		case POWER_CONDITION_TRANSITIONS:
 		{
-			snprintf(&*description->begin(), BASIC, "Protocol Specific Port");
+			*description = "Protocol Specific Port";
 			break;
 		}
 		case INFORMATIONAL_EXCEPTIONS:
 		{
-			snprintf(&*description->begin(), BASIC, "Informational Exceptions");
+			*description = "Informational Exceptions";
 			break;
 		}
 		case CACHE_STATISTICS:
 		{
-			snprintf(&*description->begin(), BASIC, "Cache Statistics");
+			*description = "Cache Statistics";
 			break;
 		}
 		case FACTORY_LOG:
 		{
-			snprintf(&*description->begin(), BASIC, "Factory Log");
+			*description = "Factory Log";
 			break;
 		}
 		default:
@@ -291,7 +291,7 @@ void CScsiSupportedLog::process_Supported_Data(JSONNODE *SupportData)
         snprintf(&*myHeader.begin(), BASIC, "Page 0x%02" PRIx8"", m_Page);
     }
     get_Supported_And_Subpage_Description(&myStr);
-	json_push_back(SupportData, json_new_a(&*myHeader.begin(), &*myStr.begin()));
+	json_push_back(SupportData, json_new_a(&*myHeader.begin(), &myStr[0]));
 }
 //-----------------------------------------------------------------------------
 //
@@ -316,7 +316,7 @@ eReturnValues CScsiSupportedLog::get_Supported_Log_Data(JSONNODE *masterData)
 	{
 		myStr = "Supported Logs";
 		JSONNODE *pageInfo = json_new(JSON_NODE);
-		json_set_name(pageInfo, &*myStr.begin());
+		json_set_name(pageInfo, &myStr[0]);
 
 		for (size_t offset = 0; offset < (size_t) m_PageLength; )
 		{
