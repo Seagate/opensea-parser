@@ -31,7 +31,7 @@ namespace opensea_parser {
 #define FARMLOGPAGE 0x3D
 #define FARMSUBPAGE 0x03
 #define FARMSUBPAGEFACTORY 0x04
-    class CSCSI_Farm_Log 
+    class CSCSI_Farm_Log : public CFarmCommon
     {
     protected:
 
@@ -54,13 +54,9 @@ namespace opensea_parser {
         bool                        m_alreadySet;                                     //!< set true one it's already set..  (APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_OUTER)
 		bool						m_showStatusBits;								  //!< show the status bits of each entry
         bool                        m_fromScsiLogPages;                               //!< bool if passed from scsi log pages set as true. We will be off by 4 bytes
-        CFarmCommon         _common;
 
-		void create_Serial_Number(std::string &serialNumber, const sScsiDriveInfo * const idInfo);
-		void create_World_Wide_Name(std::string &worldWideName, const sScsiDriveInfo * const idInfo);
-		void create_Firmware_String(std::string &firmwareRev, const sScsiDriveInfo * const idInfo);
-		void create_Device_Interface_String(std::string &dInterface, const sScsiDriveInfo * const idInfo);
-        void create_Model_Number_String(std::string &model, sGeneralDriveInfoPage06 * const idInfo);
+		
+        
         bool strip_Active_Status(uint64_t *value);
         bool swap_Bytes_sFarmHeader(sScsiFarmHeader *fh);
         bool swap_Bytes_sDriveInfo(sScsiDriveInfo *di);

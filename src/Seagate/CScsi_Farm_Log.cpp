@@ -487,147 +487,6 @@ bool CSCSI_Farm_Log::set_Head_Header(std::string &headerName, eLogPageTypes inde
 }
 //-----------------------------------------------------------------------------
 //
-//! \fn create_Serial_Number()
-//
-//! \brief
-//!   Description:  takes the two uint64 bit seiral number values and create a string serial number
-//
-//  Entry:
-//! \param serialNumber - pointer to the serial number, where once constructed, will hold the serial number of the drive
-//! \param idInfo  =  pointer to the drive info structure that holds the infromation needed
-//
-//  Exit:
-//!   \return serialNumber = the string serialNumber
-//
-//---------------------------------------------------------------------------
-void CSCSI_Farm_Log::create_Serial_Number(std::string &serialNumber, const sScsiDriveInfo * const idInfo)
-{
-	uint64_t sn = 0;
-	uint64_t sn1 = idInfo->serialNumber & 0x00FFFFFFFFFFFFFFLL;
-	uint64_t sn2 = idInfo->serialNumber2 & 0x00FFFFFFFFFFFFFFLL;
-    if (m_MajorRev < MAJORVERSION3)
-    { 
-        sn = (sn2 << 32 | (sn1 ));
-        byte_Swap_64(&sn);
-    }
-    else
-    {
-        sn = (sn1 | (sn2 << 32));
-        byte_Swap_64(&sn);
-    }
-    serialNumber = "00000000";
-	strncpy(&serialNumber[0], (char*)&sn, SERIAL_NUMBER_LEN);
-}
-//-----------------------------------------------------------------------------
-//
-//! \fn create_World_Wide_Name()
-//
-//! \brief
-//!   Description:  takes the two uint64 bit world wide name values and create a string world wide name 
-//
-//  Entry:
-//! \param worldWideName - pointer to the world wide name, where once constructed, will hold the world wide name of the drive
-//! \param idInfo  =  pointer to the drive info structure that holds the infromation needed
-//
-//  Exit:
-//!   \return wordWideName = the string wordWideName
-//
-//---------------------------------------------------------------------------
-void CSCSI_Farm_Log::create_World_Wide_Name(std::string &worldWideName, const sScsiDriveInfo * const idInfo)
-{
-	uint64_t wwn = 0;
-	wwn = (idInfo->worldWideName & 0x00FFFFFFFFFFFFFFLL) | ((idInfo->worldWideName2 & 0x00FFFFFFFFFFFFFFLL) << 32);
-    worldWideName = "0000000000000000000";
-	snprintf(&worldWideName[0], WORLD_WIDE_NAME_LEN, "0x%" PRIX64"", wwn);
-}
-//-----------------------------------------------------------------------------
-//
-//! \fn create_Firmware_String()
-//
-//! \brief
-//!   Description:  takes the two uint64 bit firmware Rev values and create a string firmware Rev 
-//
-//  Entry:
-//! \param firmwareRev - pointer to the firmware Rev, where once constructed, will hold the firmware Rev of the drive
-//! \param idInfo  =  pointer to the drive info structure that holds the infromation needed
-//
-//  Exit:
-//!   \return firmwareRev = the string firmwareRev
-//
-//---------------------------------------------------------------------------
-void CSCSI_Farm_Log::create_Firmware_String(std::string &firmwareRev, const sScsiDriveInfo * const idInfo)
-{
-	uint64_t firm = 0;
-    uint64_t firm1 = idInfo->firmware & 0x00FFFFFFFFFFFFFFLL;
-    uint64_t firm2 = idInfo->firmwareRev & 0x00FFFFFFFFFFFFFFLL;
-    firm = (firm2 | (firm1 << 32));
-    byte_Swap_64(&firm);
-    firmwareRev = "00000000";
-	strncpy(&firmwareRev[0], (char*)&firm, 8);
-}
-//-----------------------------------------------------------------------------
-//
-//! \fn create_Device_Interface_String()
-//
-//! \brief
-//!   Description:  takes the two uint64 bit Devie interface string values and create a string device interface  
-//
-//  Entry:
-//! \param dInterface - pointer to the Devie interface v, where once constructed, will hold the Devie interface of the drive
-//! \param idInfo  =  pointer to the drive info structure that holds the infromation needed
-//
-//  Exit:
-//!   \return dInterface = the string dInterface
-//
-//---------------------------------------------------------------------------
-void CSCSI_Farm_Log::create_Device_Interface_String(std::string &dInterface, const sScsiDriveInfo * const idInfo)
-{
-	uint64_t dFace = 0;
-	dFace = (idInfo->deviceInterface & 0x00FFFFFFFFFFFFFFLL);
-    dInterface = "0000";
-	strncpy(&dInterface[0], (char*)&dFace, DEVICE_INTERFACE_LEN);
-
-}
-//-----------------------------------------------------------------------------
-//
-//! \fn create_Model_Number_String()
-//
-//! \brief
-//!   Description:  fill in the model number of the drive 
-//
-//  Entry:
-//! \param model - pointer to the  model number of the drive
-//! \param idInfo  =  pointer to the drive info structure that holds the infromation needed
-//
-//  Exit:
-//!   \return void
-//
-//---------------------------------------------------------------------------
-void CSCSI_Farm_Log::create_Model_Number_String(std::string &model, sGeneralDriveInfoPage06 *idInfo)
-{
-#define MAXSIZE  4
-    uint32_t modelParts[MAXSIZE] = { 0,0,0,0};
-    // loop for and get the information from the lower bits
-    for (uint8_t i = 0; i < MAXSIZE; i++)
-    {
-        modelParts[i] = M_DoubleWord1(idInfo->productID[i]); 
-        //byte_Swap_32(&modelParts[i]);
-    }
-    // temp string for coping the hex to text, have to resize for c98 issues
-    std::string tempStr = "0000";
-    model = "000000000000";
-    // loop to copy the info into the modeleNumber string
-    for (size_t n = 0; n < MAXSIZE; n++)
-    {
-        strncpy(&tempStr[0], (char*)&modelParts[n], MAXSIZE);
-        model.insert((n*4), tempStr);
-    }
-    model.resize(PRINTABLE_MODEL_NUMBER);
-    remove_Trailing_Whitespace(&model[0]);
-
-}
-//-----------------------------------------------------------------------------
-//
 //! \fn swap_Bytes_sDriveInfo()
 //
 //! \brief
@@ -1206,10 +1065,10 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                         swap_Bytes_sDriveInfo(m_pDriveInfo);// get the id drive information at the time.
                         memcpy(&pFarmFrame->driveInfo,m_pDriveInfo, m_pDriveInfo->pPageHeader.plen);
                         
-                        create_Serial_Number(pFarmFrame->identStringInfo.serialNumber, m_pDriveInfo);							// create the serial number
-                        create_World_Wide_Name(pFarmFrame->identStringInfo.worldWideName, m_pDriveInfo);						// create the wwwn
-                        create_Firmware_String(pFarmFrame->identStringInfo.firmwareRev, m_pDriveInfo);							// create the firmware string
-                        create_Device_Interface_String(pFarmFrame->identStringInfo.deviceInterface, m_pDriveInfo);				// get / create the device interface string
+                        create_Serial_Number(pFarmFrame->identStringInfo.serialNumber, M_DoubleWord0(m_pDriveInfo->serialNumber), M_DoubleWord0(m_pDriveInfo->serialNumber2), m_MajorRev,true );		// create the serial number
+                        create_World_Wide_Name(pFarmFrame->identStringInfo.worldWideName, m_pDriveInfo->worldWideName, m_pDriveInfo->worldWideName2,true);						                        // create the wwwn
+                        create_Firmware_String(pFarmFrame->identStringInfo.firmwareRev, M_DoubleWord0(m_pDriveInfo->firmware), M_DoubleWord0(m_pDriveInfo->firmwareRev),true);							// create the firmware string
+                        create_Device_Interface_String(pFarmFrame->identStringInfo.deviceInterface, M_DoubleWord0(m_pDriveInfo->deviceInterface),true);				// get / create the device interface string
                         offset += (m_pageParam->plen + sizeof(sScsiPageParameter));
                     }
                     break;
@@ -1282,7 +1141,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     pDriveInfo = (sGeneralDriveInfoPage06 *)&pBuf[offset];
                     memcpy((sGeneralDriveInfoPage06 *)&pFarmFrame->gDPage06, pDriveInfo, pDriveInfo->pPageHeader.plen + PARAMSIZE);
                     swap_Bytes_sDrive_Info_Page_06(&pFarmFrame->gDPage06);
-                    create_Model_Number_String(pFarmFrame->identStringInfo.modelNumber, pDriveInfo);
+                    create_Model_Number_String(pFarmFrame->identStringInfo.modelNumber, pDriveInfo->productID,true);
                     offset += (pDriveInfo->pPageHeader.plen + sizeof(sScsiPageParameter));
                 }
                 break;
@@ -1938,7 +1797,7 @@ eReturnValues CSCSI_Farm_Log::print_Header(JSONNODE *masterData)
         json_push_back(label, json_new_a("page_size", &myStr[0]));
         snprintf(&myStr[0], BASIC, "%" PRIu32"", M_DoubleWord0(check_Status_Strip_Status(vFarmFrame[page].farmHeader.farmHeader.reasonForFrameCpature)));
         json_push_back(label, json_new_a("reason_for_frame_capture", &myStr[0]));
-        get_FARM_Reason_For_Capture(&myStr, M_Byte0(vFarmFrame[page].farmHeader.farmHeader.reasonForFrameCpature));
+        Get_FARM_Reason_For_Capture(&myStr, M_Byte0(vFarmFrame[page].farmHeader.farmHeader.reasonForFrameCpature));
         convert_String_To_Lower_Case(&myStr[0]);
         //remove_Leading_And_Trailing_Whitespace(&myStr[0]);
         json_push_back(label, json_new_a("reason_meaning", &myStr[0]));
@@ -1964,7 +1823,8 @@ eReturnValues CSCSI_Farm_Log::print_Header(JSONNODE *masterData)
         }
         json_push_back(pageInfo, json_new_i("Heads Supported", static_cast<uint32_t>(check_Status_Strip_Status(vFarmFrame[page].farmHeader.farmHeader.headsSupported))));
         json_push_back(pageInfo, json_new_i("Reason for Frame Capture", static_cast<uint32_t>(check_Status_Strip_Status(vFarmFrame[page].farmHeader.farmHeader.reasonForFrameCpature))));
-        get_FARM_Reason_For_Capture(&myStr, M_Byte0(vFarmFrame[page].farmHeader.farmHeader.reasonForFrameCpature));
+        Get_FARM_Reason_For_Capture(&myStr, M_Byte0(vFarmFrame[page].farmHeader.farmHeader.reasonForFrameCpature));
+
         json_push_back(pageInfo, json_new_a("Reason meaning", &myStr[0]));
         json_push_back(masterData, pageInfo);
     }
@@ -2102,10 +1962,10 @@ eReturnValues CSCSI_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint
             uint16_t year = M_Word1(vFarmFrame[page].driveInfo.dateOfAssembly);
             uint16_t week = M_Word0(vFarmFrame[page].driveInfo.dateOfAssembly);
 
-            _common.create_Year_Assembled_String(myStr, year, true);
+            create_Year_Assembled_String(myStr, year, true);
             json_push_back(label, json_new_a("year_of_assembled", &myStr[0]));
 
-            _common.create_Year_Assembled_String(myStr, week, true);
+            create_Year_Assembled_String(myStr, week, true);
             json_push_back(label, json_new_a("week_of_assembled", &myStr[0]));
         }
         json_push_back(label, json_new_a("units", "reported"));
@@ -2164,30 +2024,7 @@ eReturnValues CSCSI_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint
         set_json_64_bit_With_Status(pageInfo, "Hardware Reset count", vFarmFrame[page].driveInfo.resetCount, false, m_showStatusBits);									//!< Hardware Reset Count
         set_json_64_bit_With_Status(pageInfo, "NVC Status @ power on", vFarmFrame[page].driveInfo.NVC_StatusATPowerOn, false, m_showStatusBits);						//!< NVC Status on Power-on
 
-        uint64_t status = vFarmFrame[page].driveInfo.NVC_StatusATPowerOn & 0x00FFFFFFFFFFFFFFLL;
-        if (status != 0)
-        {
-            JSONNODE* myArray = json_new(JSON_ARRAY);
-            json_set_name(myArray, ("NVC Status Events"));
-            if (status & BIT8)
-                json_push_back(myArray, json_new_a("NVC Status Events", "flash burn started"));
-            if (status & BIT9)
-                json_push_back(myArray, json_new_a("NVC Status Events", "flash burn finished"));
-            if (status & BIT10)
-                json_push_back(myArray, json_new_a("NVC Status Events", "validate flash erase pattern skipped"));
-            if (status & BIT19)
-                json_push_back(myArray, json_new_a("NVC Status Events", "servo r5 in WFE"));
-            if (status & BIT20)
-                json_push_back(myArray, json_new_a("NVC Status Events", "servo m0 in WFI"));
-            if (status & BIT21)
-                json_push_back(myArray, json_new_a("NVC Status Events", "servo r5 halt timeout"));
-            if (status & BIT22)
-                json_push_back(myArray, json_new_a("NVC Status Events", "servo m0 halt timeout"));
-            if (status & BIT23)
-                json_push_back(myArray, json_new_a("NVC Status Events", "AUX LLP stream timeout"));
-
-            json_push_back(pageInfo, myArray);
-        }
+        Get_NVC_Status(pageInfo, vFarmFrame[page].driveInfo.NVC_StatusATPowerOn);
 
 
         set_json_64_bit_With_Status(pageInfo, "NVC Time Available to save (in 100us)", vFarmFrame[page].driveInfo.timeAvailable, false, m_showStatusBits);					//!< Time Available to Save User Data to Media Over Last Power Cycle (in 100us)
@@ -2202,10 +2039,10 @@ eReturnValues CSCSI_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint
             uint16_t year = M_Word1(vFarmFrame[page].driveInfo.dateOfAssembly);
             uint16_t week = M_Word0(vFarmFrame[page].driveInfo.dateOfAssembly);
 
-            _common.create_Year_Assembled_String(myStr, year, true);
+            create_Year_Assembled_String(myStr, year, true);
             json_push_back(pageInfo, json_new_a("Year of Assembled", &myStr[0]));
 
-            _common.create_Year_Assembled_String(myStr, week, true);
+            create_Year_Assembled_String(myStr, week, true);
             json_push_back(pageInfo, json_new_a("Week of Assembled", &myStr[0]));
         }
         else
@@ -2436,27 +2273,27 @@ eReturnValues CSCSI_Farm_Log::print_WorkLoad(JSONNODE *masterData, uint32_t page
         // found a log where the length of the workload log does not match the spec. Need to check for the 0x50 length
         if (vFarmFrame[page].workLoadPage.PageHeader.plen > 0x50)
         {
-            set_json_64_bit_With_Status(pageInfo, "Number of Read commands from 0-3.125% of LBA space", vFarmFrame[page].workLoadPage.workLoad.totalReadCmdsFromFrames1, false, m_showStatusBits);		//!< Number of Read commands from 0-3.125% of LBA space for last 3 SMART Summary Frames
-            set_json_64_bit_With_Status(pageInfo, "Number of Read commands from 3.125-25% of LBA space", vFarmFrame[page].workLoadPage.workLoad.totalReadCmdsFromFrames2, false, m_showStatusBits);		//!< Number of Read commands from 3.125-25% of LBA space for last 3 SMART Summary Frames
-            set_json_64_bit_With_Status(pageInfo, "Number of Read commands from 25-50% of LBA space", vFarmFrame[page].workLoadPage.workLoad.totalReadCmdsFromFrames3, false, m_showStatusBits);		//!< Number of Read commands from 25-50% of LBA space for last 3 SMART Summary Frames
-            set_json_64_bit_With_Status(pageInfo, "Number of Read commands from 50-100% of LBA space", vFarmFrame[page].workLoadPage.workLoad.totalReadCmdsFromFrames4, false, m_showStatusBits);		//!< Number of Read commands from 50-100% of LBA space for last 3 SMART Summary Frames 
-            set_json_64_bit_With_Status(pageInfo, "Number of Write commands from 0-3.125% of LBA space", vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames1, false, m_showStatusBits);	//!< Number of Write commands from 0-3.125% of LBA space for last 3 SMART Summary Frames
-            set_json_64_bit_With_Status(pageInfo, "Number of Write commands from 3.125-25% of LBA space", vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames2, false, m_showStatusBits);	//!< Number of Write commands from 3.125-25% of LBA space for last 3 SMART Summary Frames
-            set_json_64_bit_With_Status(pageInfo, "Number of Write commands from 25-50% of LBA space", vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames3, false, m_showStatusBits);		//!< Number of Write commands from 25-50% of LBA space for last 3 SMART Summary Frames
-            set_json_64_bit_With_Status(pageInfo, "Number of Write commands from 50-100% of LBA space", vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames4, false, m_showStatusBits);		//!< Number of Write commands from 50-100% of LBA space for last 3 SMART Summary Frames 
+            set_json_64_bit_With_Status(pageInfo, "Number of Read commands from 0-3.125% of LBA space for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.workLoad.totalReadCmdsFromFrames1, false, m_showStatusBits);		//!< Number of Read commands from 0-3.125% of LBA space for last 3 SMART Summary Frames
+            set_json_64_bit_With_Status(pageInfo, "Number of Read commands from 3.125-25% of LBA space for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.workLoad.totalReadCmdsFromFrames2, false, m_showStatusBits);		//!< Number of Read commands from 3.125-25% of LBA space for last 3 SMART Summary Frames
+            set_json_64_bit_With_Status(pageInfo, "Number of Read commands from 25-50% of LBA space for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.workLoad.totalReadCmdsFromFrames3, false, m_showStatusBits);		//!< Number of Read commands from 25-50% of LBA space for last 3 SMART Summary Frames
+            set_json_64_bit_With_Status(pageInfo, "Number of Read commands from 50-100% of LBA space for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.workLoad.totalReadCmdsFromFrames4, false, m_showStatusBits);		//!< Number of Read commands from 50-100% of LBA space for last 3 SMART Summary Frames 
+            set_json_64_bit_With_Status(pageInfo, "Number of Write commands from 0-3.125% of LBA space for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames1, false, m_showStatusBits);	//!< Number of Write commands from 0-3.125% of LBA space for last 3 SMART Summary Frames
+            set_json_64_bit_With_Status(pageInfo, "Number of Write commands from 3.125-25% of LBA space for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames2, false, m_showStatusBits);	//!< Number of Write commands from 3.125-25% of LBA space for last 3 SMART Summary Frames
+            set_json_64_bit_With_Status(pageInfo, "Number of Write commands from 25-50% of LBA space for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames3, false, m_showStatusBits);		//!< Number of Write commands from 25-50% of LBA space for last 3 SMART Summary Frames
+            set_json_64_bit_With_Status(pageInfo, "Number of Write commands from 50-100% of LBA space for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames4, false, m_showStatusBits);		//!< Number of Write commands from 50-100% of LBA space for last 3 SMART Summary Frames 
         }
 
         // 4.21
         if (m_MajorRev >= 4 && m_MinorRev >= 19)
         {
-            set_json_64_bit_With_Status(pageInfo, "Number of Read Commands of transfer length <=16KB", vFarmFrame[page].workLoadPage.workLoad.numReadTransferSmall, false, m_showStatusBits);
-            set_json_64_bit_With_Status(pageInfo, "Number of Read Commands of transfer length (16KB - 512KB)", vFarmFrame[page].workLoadPage.workLoad.numReadTransferMid1, false, m_showStatusBits);
-            set_json_64_bit_With_Status(pageInfo, "Number of Read Commands of transfer length (512KB - 2MB)", vFarmFrame[page].workLoadPage.workLoad.numReadTransferMid2, false, m_showStatusBits);
-            set_json_64_bit_With_Status(pageInfo, "Number of Read Commands of transfer length > 2MB", vFarmFrame[page].workLoadPage.workLoad.numReadTransferLarge, false, m_showStatusBits);
-            set_json_64_bit_With_Status(pageInfo, "Number of Write Commands of transfer length <=16KB", vFarmFrame[page].workLoadPage.workLoad.numWriteTransferSmall, false, m_showStatusBits);
-            set_json_64_bit_With_Status(pageInfo, "Number of Write Commands of transfer length (16KB - 512KB)", vFarmFrame[page].workLoadPage.workLoad.numWriteTransferMid1, false, m_showStatusBits);
-            set_json_64_bit_With_Status(pageInfo, "Number of Write Commands of transfer length (512KB - 2MB)", vFarmFrame[page].workLoadPage.workLoad.numWriteTransferMid2, false, m_showStatusBits);
-            set_json_64_bit_With_Status(pageInfo, "Number of Write Commands of transfer length > 2MB", vFarmFrame[page].workLoadPage.workLoad.numWriteTransferLarge, false, m_showStatusBits);
+            set_json_64_bit_With_Status(pageInfo, "Number of Read Commands of transfer length <=16KB for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.workLoad.numReadTransferSmall, false, m_showStatusBits);
+            set_json_64_bit_With_Status(pageInfo, "Number of Read Commands of transfer length (16KB - 512KB) for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.workLoad.numReadTransferMid1, false, m_showStatusBits);
+            set_json_64_bit_With_Status(pageInfo, "Number of Read Commands of transfer length (512KB - 2MB) for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.workLoad.numReadTransferMid2, false, m_showStatusBits);
+            set_json_64_bit_With_Status(pageInfo, "Number of Read Commands of transfer length > 2MB for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.workLoad.numReadTransferLarge, false, m_showStatusBits);
+            set_json_64_bit_With_Status(pageInfo, "Number of Write Commands of transfer length <=16KB for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.workLoad.numWriteTransferSmall, false, m_showStatusBits);
+            set_json_64_bit_With_Status(pageInfo, "Number of Write Commands of transfer length (16KB - 512KB) for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.workLoad.numWriteTransferMid1, false, m_showStatusBits);
+            set_json_64_bit_With_Status(pageInfo, "Number of Write Commands of transfer length (512KB - 2MB) for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.workLoad.numWriteTransferMid2, false, m_showStatusBits);
+            set_json_64_bit_With_Status(pageInfo, "Number of Write Commands of transfer length > 2MB for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.workLoad.numWriteTransferLarge, false, m_showStatusBits);
         }
 
         json_push_back(masterData, pageInfo);
@@ -2522,7 +2359,7 @@ eReturnValues CSCSI_Farm_Log::print_Error_Information(JSONNODE *masterData, uint
         farm_PrePython_Int(masterData, "mechanical_start_erorr", "total mechanical start failures", "error information", "count", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorStat.totalMechanicalFails));
         farm_PrePython_Int(masterData, "read_error", "total reallocated candidate sectors", "error information", "count", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorStat.totalReallocatedCanidates));
    
-        //farm_PrePython_Int(masterData, "ioedc_error", "total ioedc errors", "error information", "count", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorStat.attrIOEDCErrors));
+        farm_PrePython_Int(masterData, "ioedc_error", "total ioedc errors", "error information", "count", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorStat.attrIOEDCErrors));
         farm_PrePython_Int(masterData, "protocol_erro", "fru code if smart trip", "error information", "code", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorStat.FRUCode));
         farm_PrePython_Int(masterData, "flash_led", "total flash led events", "error information", "count", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorStat.totalFlashLED));
         farm_PrePython_Int(masterData, "error", "super parity on the fly recovery", "error information", "count", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorStat.parity));
@@ -2547,7 +2384,7 @@ eReturnValues CSCSI_Farm_Log::print_Error_Information(JSONNODE *masterData, uint
         set_json_64_bit_With_Status(pageInfo, "Number of Reallocated Sectors", vFarmFrame[page].errorPage.errorStat.totalReallocations, false, m_showStatusBits);					//!< Number of Reallocated Sectors
         set_json_64_bit_With_Status(pageInfo, "Number of Mechanical Start Failures", vFarmFrame[page].errorPage.errorStat.totalMechanicalFails, false, m_showStatusBits);			//!< Number of Mechanical Start Failures
         set_json_64_bit_With_Status(pageInfo, "Number of Reallocated Candidate Sectors", vFarmFrame[page].errorPage.errorStat.totalReallocatedCanidates, false, m_showStatusBits); //!< Number of Reallocated Candidate Sectors
-        //set_json_64_bit_With_Status(pageInfo, "Number of IOEDC Errors (Raw)", vFarmFrame[page].errorPage.errorStat.attrIOEDCErrors, false, m_showStatusBits);						//!< Number of IOEDC Errors (SMART Attribute 184 Raw)
+        set_json_64_bit_With_Status(pageInfo, "Number of IOEDC Errors (Raw)", vFarmFrame[page].errorPage.errorStat.attrIOEDCErrors, false, m_showStatusBits);						//!< Number of IOEDC Errors (SMART Attribute 184 Raw)
         set_json_64_bit_With_Status(pageInfo, "Total Flash LED (Assert) Events", vFarmFrame[page].errorPage.errorStat.totalFlashLED, false, m_showStatusBits);						//!< Total Flash LED (Assert) Events
         set_json_64_bit_With_Status(pageInfo, "SMART Trip FRU code", vFarmFrame[page].errorPage.errorStat.FRUCode, false, m_showStatusBits);		//!< FRU code if smart trip from most recent SMART Frame
         set_json_64_bit_With_Status(pageInfo, "Super Parity on the Fly Recovery", vFarmFrame[page].errorPage.errorStat.parity, false, m_showStatusBits);                      //!< Super Parity on the Fly Recovery
@@ -2619,7 +2456,7 @@ eReturnValues CSCSI_Farm_Log::print_Error_Information_Version_4(JSONNODE *master
         farm_PrePython_Int(masterData, "read_error", "unrecoverable read errors", "error information", "count", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorV4.totalReadECC));
         farm_PrePython_Int(masterData, "write_error", "unrecoverable write errors", "error information", "count", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorV4.totalWriteECC));                           //!< number of unrecoverable write errors
         farm_PrePython_Int(masterData, "mechanical_start_erorr", "total mechanical start failures", "error information", "count", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorV4.totalMechanicalFails));
-        //farm_PrePython_Int(masterData, "ioedc_errors", "total ioedc errors", "error information", "count", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorV4.attrIOEDCErrors));
+        farm_PrePython_Int(masterData, "ioedc_errors", "total ioedc errors", "error information", "count", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorV4.attrIOEDCErrors));
         farm_PrePython_Int(masterData, "protocol_erro", "fru code if smart trip", "error information", "count", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorV4.FRUCode));
         farm_PrePython_Int(masterData, "protocol_error", "invalid dword count (port a)", "error information", "count", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorV4.portAInvalidDwordCount));
         farm_PrePython_Int(masterData, "protocol_error", "invalid dword count (port b)", "error information", "count", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorV4.portBInvalidDwordCount));
@@ -2647,7 +2484,7 @@ eReturnValues CSCSI_Farm_Log::print_Error_Information_Version_4(JSONNODE *master
         set_json_64_bit_With_Status(pageInfo, "Unrecoverable Read Errors", vFarmFrame[page].errorPage.errorV4.totalReadECC, false, m_showStatusBits);							//!< Number of Unrecoverable Read Errors
         set_json_64_bit_With_Status(pageInfo, "Unrecoverable Write Errors", vFarmFrame[page].errorPage.errorV4.totalWriteECC, false, m_showStatusBits);							//!< Number of Unrecoverable Write Errors
         set_json_64_bit_With_Status(pageInfo, "Number of Mechanical Start Failures", vFarmFrame[page].errorPage.errorV4.totalMechanicalFails, false, m_showStatusBits);			//!< Number of Mechanical Start Failures
-        //set_json_64_bit_With_Status(pageInfo, "Number of IOEDC Errors (Raw)", vFarmFrame[page].errorPage.errorV4.attrIOEDCErrors, false, m_showStatusBits);						//!< Number of IOEDC Errors (SMART Attribute 184 Raw)   
+        set_json_64_bit_With_Status(pageInfo, "Number of IOEDC Errors (Raw)", vFarmFrame[page].errorPage.errorV4.attrIOEDCErrors, false, m_showStatusBits);						//!< Number of IOEDC Errors (SMART Attribute 184 Raw)   
         set_json_64_bit_With_Status(pageInfo, "SMART Trip FRU code", vFarmFrame[page].errorPage.errorV4.FRUCode, false, m_showStatusBits);		//!< FRU code if smart trip from most recent SMART Frame
         set_json_64_bit_With_Status(pageInfo, "Invalid DWord Count Port A ", vFarmFrame[page].errorPage.errorV4.portAInvalidDwordCount, false, m_showStatusBits);
         set_json_64_bit_With_Status(pageInfo, "Invalid DWord Count Port B", vFarmFrame[page].errorPage.errorV4.portBInvalidDwordCount, false, m_showStatusBits);
@@ -3458,7 +3295,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
 #if defined _DEBUG
                 printf("\tNumber of TMD for Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].numberOfTMDByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFF);  //!< Number of TMD over last 3 SMART Summary Frame
 #endif
-                snprintf(&myHeader[0], BASIC, "Number of TMD for Head %" PRIu32"", loopCount); // Head count
+                snprintf(&myHeader[0], BASIC, "Number of Servo No Timing Mark Detect for Head %" PRIu32"", loopCount); // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
                     prePython_Head_Int(headPage, "head_tmd", NULL, loopCount, "count", NUMBER_OF_TMD_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD, M_DoubleWord0(vFarmFrame[page].numberOfTMDByHead.headValue[loopCount]));
@@ -3475,7 +3312,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
 #if defined _DEBUG
                 printf("\tVelocity Observer by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].velocityObserverByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFF);  //!< Velocity Observer over last 3 SMART Summary Frame
 #endif
-                snprintf(&myHeader[0], BASIC, "Velocity Observer by Head %" PRIu32"", loopCount); // Head count
+                snprintf(&myHeader[0], BASIC, "Number of Velocity Observer by Head %" PRIu32"", loopCount); // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
                     prePython_Head_Int(headPage, "velocity_observer", "stat head", loopCount, "count", VELOCITY_OBSERVER_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD, M_DoubleWord0(vFarmFrame[page].velocityObserverByHead.headValue[loopCount]));
@@ -3492,7 +3329,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
 #if defined _DEBUG
                 printf("\tNumber of Velocity Observer by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].numberOfVelocityObservedByHead.headValue[loopCount] & 0x00FFFFFFFFFFFFFF);  //!< Number of Velocity Observer over last 3 SMART Summary Frame
 #endif
-                snprintf(&myHeader[0], BASIC, "Number of Velocity Observer by Head %" PRIu32"", loopCount); // Head count
+                snprintf(&myHeader[0], BASIC, "Number of Servo Velocity No Timing Mark Detect by Head %" PRIu32"", loopCount); // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
                     prePython_Head_Int(headPage, "number_of_velocity_observer", "stat head", loopCount, "count", NUMBER_OF_VELOCITY_OBSERVER_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD, M_DoubleWord0(vFarmFrame[page].numberOfVelocityObservedByHead.headValue[loopCount]));
@@ -4469,7 +4306,7 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_FLED_Info(JSONNODE *masterData,
 
             snprintf(&myStr[0], BASIC, "0x%04" PRIx16"", M_Word2(check_Status_Strip_Status(pFLED->flashLEDArray[i])));
             json_push_back(label, json_new_a("Flash LED Code", &myStr[0]));
-            _common.get_Assert_Code_Meaning(timeStr, M_Word2(check_Status_Strip_Status(pFLED->flashLEDArray[i])));
+            get_Assert_Code_Meaning(timeStr, M_Word2(check_Status_Strip_Status(pFLED->flashLEDArray[i])));
             json_push_back(label, json_new_a("Flash LED Code Meaning", &*timeStr.begin()));
             snprintf(&myStr[0], BASIC, "0x%08" PRIx32"", M_DoubleWord0(check_Status_Strip_Status(pFLED->flashLEDArray[i])));
             json_push_back(label, json_new_a("Flash LED Address", &myStr[0]));
@@ -4515,7 +4352,7 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_FLED_Info(JSONNODE *masterData,
 
             snprintf(&myStr[0], BASIC, "0x%04" PRIx16"", M_Word2(check_Status_Strip_Status(pFLED->flashLEDArray[i])));
             json_push_back(eventInfo, json_new_a("Flash LED Code", &myStr[0]));
-            _common.get_Assert_Code_Meaning(timeStr, M_Word2(check_Status_Strip_Status(pFLED->flashLEDArray[i])));
+            get_Assert_Code_Meaning(timeStr, M_Word2(check_Status_Strip_Status(pFLED->flashLEDArray[i])));
             json_push_back(eventInfo, json_new_a("Flash LED Code Meaning", &timeStr[0]));
             snprintf(&myStr[0], BASIC, "0x%08" PRIx32"", M_DoubleWord0(check_Status_Strip_Status(pFLED->flashLEDArray[i])));
             json_push_back(eventInfo, json_new_a("Flash LED Address", &myStr[0]));
@@ -4586,7 +4423,7 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Reallocation(JSONNODE* masterDa
     for (i = 0; i < REALLOCATIONEVENTS; i++)
     {
 
-        _common.get_Reallocation_Cause_Meanings(myStr, i);
+        get_Reallocation_Cause_Meanings(myStr, i);
         printf("\t%-33s:            %" PRIu64" \n", &myStr[0], pReal->reallocatedCauses[i] & 0x00FFFFFFFFFFFFFF);
     }
 #endif
@@ -4608,7 +4445,7 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Reallocation(JSONNODE* masterDa
         farm_PrePython_Int(masterData, "stat", "Reallocated Candidate Sectors", "LUN Reallocation", "count", actNum, M_DoubleWordInt0(pReal->numberReallocatedCandidates));
         for (i = 0; i < REALLOCATIONEVENTS; i++)
         {
-            _common.get_Reallocation_Cause_Meanings(myStr, i);
+            get_Reallocation_Cause_Meanings(myStr, i);
             farm_PrePython_Int(masterData, "stat", &myStr[0], "LUN Reallocation", "count", actNum, M_DoubleWordInt0(pReal->reallocatedCauses[i]));
         }
     }
@@ -4633,7 +4470,7 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Reallocation(JSONNODE* masterDa
 
         for (i = 0; i < REALLOCATIONEVENTS; i++)
         {
-            _common.get_Reallocation_Cause_Meanings(myStr, i);
+            get_Reallocation_Cause_Meanings(myStr, i);
             set_json_64_bit_With_Status(pageInfo, &myStr[0], pReal->reallocatedCauses[i], false, m_showStatusBits);
         }
         json_push_back(masterData, pageInfo);
