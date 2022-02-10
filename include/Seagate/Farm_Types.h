@@ -253,6 +253,7 @@ typedef struct _sWorkLoadStat
     uint64_t        numDithEvtAct1;                               //!< ATA - Number of dither events during current power cycle, Actuator 1
     uint64_t        numRandWLDitherHoldOffAct1;                   //!< ATA - Number of times dither was held off during random workloads during current power cycle, Actuator 1
     uint64_t        numSequentialWLDitherHoldOffAct1;             //!< ATA - Number of times dither was held off during sequential workloads during current power cycle, Actuator 1
+    uint64_t        hotWriteStatistics;                           //!< ATA - Hot write statistics: including metadata and 2400-band/region workload rating data
 
 
     _sWorkLoadStat() : pageNumber(0), copyNumber(0), workloadPercentage(0), totalReadCommands(0), totalWriteCommands(0), totalRandomReads(0), totalRandomWrites(0), 
@@ -261,7 +262,7 @@ typedef struct _sWorkLoadStat
         numReadTransferLarge(0), numWriteTransferSmall(0),  numWriteTransferMid1(0), numWriteTransferMid2(0), numWriteTransferLarge(0), 
         numWriteTransferMid1ATA(0), numWriteTransferMid2ATA(0), numWriteTransferLargeATA(0), cntQueueDepth1(0), cntQueueDepth2(0),
         cntQueueDepth3to4(0), cntQueueDepth5to8(0), cntQueueDepth9to16(0), cntQueueDepth17to32(0), cntQueueDepth33to64(0),
-        cntQueueDepthmorethan64(0), numDithEvtAct1(0), numRandWLDitherHoldOffAct1(0), numSequentialWLDitherHoldOffAct1(0) {};
+        cntQueueDepthmorethan64(0), numDithEvtAct1(0), numRandWLDitherHoldOffAct1(0), numSequentialWLDitherHoldOffAct1(0), hotWriteStatistics(0) {};
 }sWorkLoadStat;
 
 
