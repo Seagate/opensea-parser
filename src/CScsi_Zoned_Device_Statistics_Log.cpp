@@ -118,77 +118,77 @@ bool CScsiZonedDeviceStatisticsLog::get_ZDS_Parameter_Code_Description(std::stri
     bool descriptionFound = false;
     switch (m_ZDSParam->paramCode)
     {
-    case 0x0000:
-    {
-        snprintf(&*zdsString->begin(), BASIC, "maximum open zones");
-        descriptionFound = true;
-        break;
-    }
-    case 0x0001:
-    {
-        snprintf(&*zdsString->begin(), BASIC, "maximum explicitly open zones");
-        descriptionFound = true;
-        break;
-    }
-    case 0x0002:
-    {
-        snprintf(&*zdsString->begin(), BASIC, "maximum implicitly open zones");
-        descriptionFound = true;
-        break;
-    }
-    case 0x0003:
-    {
-        snprintf(&*zdsString->begin(), BASIC, "minimum empty zones");
-        descriptionFound = true;
-        break;
-    }
-    case 0x0004:
-    {
-        snprintf(&*zdsString->begin(), BASIC, "maximum non-sequential zones");
-        descriptionFound = true;
-        break;
-    }
-    case 0x0005:
-    {
-        snprintf(&*zdsString->begin(), BASIC, "zones emptied");
-        descriptionFound = true;
-        break;
-    }
-    case 0x0006:
-    {
-        snprintf(&*zdsString->begin(), BASIC, "suboptimal write commands");
-        descriptionFound = true;
-        break;
-    }
-    case 0x0007:
-    {
-        snprintf(&*zdsString->begin(), BASIC, "commands exceeding optimal limit");
-        descriptionFound = true;
-        break;
-    }
-    case 0x0008:
-    {
-        snprintf(&*zdsString->begin(), BASIC, "failed explicit opens");
-        descriptionFound = true;
-        break;
-    }
-    case 0x0009:
-    {
-        snprintf(&*zdsString->begin(), BASIC, "read rule violations");
-        descriptionFound = true;
-        break;
-    }
-    case 0x000A:
-    {
-        snprintf(&*zdsString->begin(), BASIC, "write rule violations");
-        descriptionFound = true;
-        break;
-    }
-    default:
-    {
-        snprintf(&*zdsString->begin(), BASIC, "Vendor Specific 0x%04" PRIx16"", m_ZDSParam->paramCode);
-        break;
-    }
+        case 0x0000:
+        {
+            *zdsString = "maximum open zones";
+            descriptionFound = true;
+            break;
+        }
+        case 0x0001:
+        {
+            *zdsString = "maximum explicitly open zones";
+            descriptionFound = true;
+            break;
+        }
+        case 0x0002:
+        {
+            *zdsString = "maximum implicitly open zones";
+            descriptionFound = true;
+            break;
+        }
+        case 0x0003:
+        {
+            *zdsString = "minimum empty zones";
+            descriptionFound = true;
+            break;
+        }
+        case 0x0004:
+        {
+            *zdsString = "maximum non-sequential zones";
+            descriptionFound = true;
+            break;
+        }
+        case 0x0005:
+        {
+            *zdsString = "zones emptied";
+            descriptionFound = true;
+            break;
+        }
+        case 0x0006:
+        {
+            *zdsString = "suboptimal write commands";
+            descriptionFound = true;
+            break;
+        }
+        case 0x0007:
+        {
+            *zdsString = "commands exceeding optimal limit";
+            descriptionFound = true;
+            break;
+        }
+        case 0x0008:
+        {
+            *zdsString = "failed explicit opens";
+            descriptionFound = true;
+            break;
+        }
+        case 0x0009:
+        {
+            *zdsString = "read rule violations";
+            descriptionFound = true;
+            break;
+        }
+        case 0x000A:
+        {
+            *zdsString = "write rule violations";
+            descriptionFound = true;
+            break;
+        }
+        default:
+        {
+            snprintf(&*zdsString->begin(), BASIC, "Vendor Specific 0x%04" PRIx16"", m_ZDSParam->paramCode);
+            break;
+        }
     }
     return descriptionFound;
 }
@@ -225,15 +225,15 @@ void CScsiZonedDeviceStatisticsLog::process_Zoned_Device_Statistics_Data(JSONNOD
         JSONNODE *zdsInfo = json_new(JSON_NODE);
         json_set_name(zdsInfo, &*myHeader.begin());
 
-        snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", m_ZDSParam->paramCode);
-        json_push_back(zdsInfo, json_new_a("Zoned Device Statistics Param Code", &*myStr.begin()));
+        snprintf(&myStr[0], BASIC, "0x%04" PRIx16"", m_ZDSParam->paramCode);
+        json_push_back(zdsInfo, json_new_a("Zoned Device Statistics Param Code", &myStr[0]));
 
         if (!descriptionFound)
         {
-            snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_ZDSParam->paramControlByte);
-            json_push_back(zdsInfo, json_new_a("Zoned Device Statistics Param Control Byte ", &*myStr.begin()));
-            snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_ZDSParam->paramLength);
-            json_push_back(zdsInfo, json_new_a("Zoned Device Statistics Param Length ", &*myStr.begin()));
+            snprintf(&myStr[0], BASIC, "0x%02" PRIx8"", m_ZDSParam->paramControlByte);
+            json_push_back(zdsInfo, json_new_a("Zoned Device Statistics Param Control Byte ", &myStr[0]));
+            snprintf(&myStr[0], BASIC, "0x%02" PRIx8"", m_ZDSParam->paramLength);
+            json_push_back(zdsInfo, json_new_a("Zoned Device Statistics Param Length ", &myStr[0]));
         }
 
         if (m_ZDSParam->paramLength == 8 || m_ZDSValue > UINT32_MAX)
@@ -248,8 +248,8 @@ void CScsiZonedDeviceStatisticsLog::process_Zoned_Device_Statistics_Data(JSONNOD
             }
             else
             {
-                snprintf(&*myStr.begin(), BASIC, "%" PRIu32"", static_cast<uint32_t>(m_ZDSValue));
-                json_push_back(zdsInfo, json_new_a("Zoned Device Statistics Param Value", &*myStr.begin()));
+                snprintf(&myStr[0], BASIC, "%" PRIu32"", static_cast<uint32_t>(m_ZDSValue));
+                json_push_back(zdsInfo, json_new_a("Zoned Device Statistics Param Value", &myStr[0]));
             }
         }
 
