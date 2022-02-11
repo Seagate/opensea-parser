@@ -1014,7 +1014,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
     uint64_t signature = m_pHeader->farmHeader.signature & 0x00FFFFFFFFFFFFFFLL;
     m_MajorRev = M_DoubleWord0(m_pHeader->farmHeader.majorRev);
     m_MinorRev = M_DoubleWord0(m_pHeader->farmHeader.minorRev);
-    if (signature != FARMSIGNATURE || signature != FACTORYCOPY || signature == 0x00FFFFFFFFFFFFFF)
+    if ((signature != FARMSIGNATURE && signature != FACTORYCOPY) || signature == 0x00FFFFFFFFFFFFFF)
     {
         if (signature == 0x00FFFFFFFFFFFFFF)
             return SUCCESS;
@@ -1940,12 +1940,12 @@ eReturnValues CSCSI_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint
             snprintf(&myStr[0], BASIC, "%llu", vFarmFrame[page].driveInfo.headLoadEvents & 0x00FFFFFFFFFFFFFFLL);
             json_push_back(label, json_new_a("head_load_events", &myStr[0]));									//!< Head Load Events
         }
-        snprintf(&myStr[0], BASIC, "%llu count", vFarmFrame[page].driveInfo.powerCycleCount & 0x00FFFFFFFFFFFFFFLL);
+        snprintf(&myStr[0], BASIC, "%llu counts", vFarmFrame[page].driveInfo.powerCycleCount & 0x00FFFFFFFFFFFFFFLL);
         json_push_back(label, json_new_a("power_cycle", &myStr[0]));								//!< Power Cycle Count
-        snprintf(&myStr[0], BASIC, "%llu count", vFarmFrame[page].driveInfo.resetCount & 0x00FFFFFFFFFFFFFFLL);
+        snprintf(&myStr[0], BASIC, "%llu counts", vFarmFrame[page].driveInfo.resetCount & 0x00FFFFFFFFFFFFFFLL);
         json_push_back(label, json_new_a("hardware_reset", &myStr[0]));									//!< Hardware Reset Count
         snprintf(&myStr[0], BASIC, "%llu", vFarmFrame[page].driveInfo.NVC_StatusATPowerOn & 0x00FFFFFFFFFFFFFFLL);
-        json_push_back(label, json_new_a("nvc_status_@_power_on", &myStr[0]));
+        json_push_back(label, json_new_a("nvc_status_power_on", &myStr[0]));
         snprintf(&myStr[0], BASIC, "%lf milliseconds", (vFarmFrame[page].driveInfo.timeAvailable & 0x00FFFFFFFFFFFFFFLL) * .01);
         json_push_back(label, json_new_a("nvc_time_available_to_save", &myStr[0]));
         snprintf(&myStr[0], BASIC, "%llu milliseconds", vFarmFrame[page].driveInfo.firstTimeStamp & 0x00FFFFFFFFFFFFFFLL);
