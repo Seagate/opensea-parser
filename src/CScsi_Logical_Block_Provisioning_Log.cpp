@@ -118,11 +118,11 @@ void CScsiLBAProvisionLog::get_Resource_Percentage(std::string *percentStr)
     uint16_t percent = static_cast<uint32_t>(m_Provision->resourceCount);
     if (percent < 100)
     {
-        snprintf(&*percentStr->begin(), BASIC, "%" PRId16" Percent", percent);
+        snprintf((char *)percentStr, BASIC, "%" PRId16" Percent", percent);
     }
     else
     {
-        snprintf(&*percentStr->begin(), BASIC, "Invalid Percentage");
+        *percentStr  = "Invalid Percentage";
     }
 }
 //-----------------------------------------------------------------------------
@@ -145,7 +145,7 @@ void CScsiLBAProvisionLog::get_LBA_Provision_Parameter_Description(std::string *
         || (m_Provision->paramCode >= 0x0004 && m_Provision->paramCode <= 0x00FF)
         || (m_Provision->paramCode >= 0x0103 && m_Provision->paramCode <= 0xFFEF))
     {
-        snprintf(&*lbaStr->begin(), BASIC, "Reserved");
+        *lbaStr = "Reserved";
     }
     else
     {
@@ -153,32 +153,32 @@ void CScsiLBAProvisionLog::get_LBA_Provision_Parameter_Description(std::string *
         {
         case 0x0001:
         {
-            snprintf(&*lbaStr->begin(), BASIC, "available lba mapping resource count");
+            *lbaStr = "available lba mapping resource count";
             break;
         }
         case 0x0002:
         {
-            snprintf(&*lbaStr->begin(), BASIC, "used lba mapping resource count");
+            *lbaStr = "used lba mapping resource count";
             break;
         }
         case 0x0003:
         {
-            snprintf(&*lbaStr->begin(), BASIC, "available provisioning resource percentage");
+            *lbaStr = "available provisioning resource percentage";
             break;
         }
         case 0x0100:
         {
-            snprintf(&*lbaStr->begin(), BASIC, "de-duplicated lba resource count");
+            *lbaStr = "de-duplicated lba resource count";
             break;
         }
         case 0x0101:
         {
-            snprintf(&*lbaStr->begin(), BASIC, "compressed LBA resource count");
+            *lbaStr = "compressed LBA resource count";
             break;
         }
         case 0x0102:
         {
-            snprintf(&*lbaStr->begin(), BASIC, "total efficiency LBA resource count");
+            *lbaStr = "total efficiency LBA resource count";
             break;
         }
         default:
@@ -213,19 +213,19 @@ void CScsiLBAProvisionLog::process_LBA_Provision_Data(JSONNODE *lbaData)
     byte_Swap_16(&m_Provision->paramCode);
     get_LBA_Provision_Parameter_Description(&myStr);
     JSONNODE *lbaInfo = json_new(JSON_NODE);
-    json_set_name(lbaInfo, &*myStr.begin());
+    json_set_name(lbaInfo, &myStr[0]);
 
-    snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", m_Provision->paramCode);
-    json_push_back(lbaInfo, json_new_a("Logical Block Provisioning Parameter Code", &*myStr.begin()));
+    snprintf(&myStr[0], BASIC, "0x%04" PRIx16"", m_Provision->paramCode);
+    json_push_back(lbaInfo, json_new_a("Logical Block Provisioning Parameter Code", &myStr[0]));
 
-    snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_Provision->paramControlByte);
-    json_push_back(lbaInfo, json_new_a("Logical Block Provisioning Control Byte ", &*myStr.begin()));
-    snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_Provision->paramLength);
-    json_push_back(lbaInfo, json_new_a("Logical Block Provisioning Length ", &*myStr.begin()));
+    snprintf(&myStr[0], BASIC, "0x%02" PRIx8"", m_Provision->paramControlByte);
+    json_push_back(lbaInfo, json_new_a("Logical Block Provisioning Control Byte ", &myStr[0]));
+    snprintf(&myStr[0], BASIC, "0x%02" PRIx8"", m_Provision->paramLength);
+    json_push_back(lbaInfo, json_new_a("Logical Block Provisioning Length ", &myStr[0]));
     if (m_Provision->paramCode == 0x0003)
     {
         get_Resource_Percentage(&myStr);
-        json_push_back(lbaInfo, json_new_a("Percentage of Resources Available", &*myStr.begin()));
+        json_push_back(lbaInfo, json_new_a("Percentage of Resources Available", &myStr[0]));
     }
     else
     {
