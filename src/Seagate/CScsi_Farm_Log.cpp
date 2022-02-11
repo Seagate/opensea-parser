@@ -1014,14 +1014,14 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
     uint64_t signature = m_pHeader->farmHeader.signature & 0x00FFFFFFFFFFFFFFLL;
     m_MajorRev = M_DoubleWord0(m_pHeader->farmHeader.majorRev);
     m_MinorRev = M_DoubleWord0(m_pHeader->farmHeader.minorRev);
-    if (signature != FARMSIGNATURE || signature == 0x00FFFFFFFFFFFFFF)
+    if (signature != FARMSIGNATURE || signature != FACTORYCOPY || signature == 0x00FFFFFFFFFFFFFF)
     {
         if (signature == 0x00FFFFFFFFFFFFFF)
             return SUCCESS;
         else
             return VALIDATION_FAILURE;
     }
-    if (signature == FARMSIGNATURE)				// check the head to see if it has the farm signature else fail
+    if (signature == FARMSIGNATURE || signature == FACTORYCOPY)				// check the head to see if it has the farm signature else fail
     {
         
         for (uint32_t index = 0; index <= m_copies; ++index)						// loop for the number of copies. I don't think it's zero base as of now
@@ -2080,7 +2080,7 @@ eReturnValues CSCSI_Farm_Log::print_General_Drive_Information_Continued(JSONNODE
         json_set_name(label, "labels");
         json_push_back(label, json_new_a("stat_type", "general drive information"));
 
-        json_push_back(label, json_new_a("units", "count"));
+        json_push_back(label, json_new_a("units", "counts"));
         json_push_back(label, json_new_i("depopulation_head_mask", M_DoubleWordInt0(vFarmFrame[page].gDPage06.Depop)));                                   //!< Depopulation Head Mask
         std::string type = "cmr";
         if (vFarmFrame[page].gDPage06.driveType & BIT0)
@@ -2226,27 +2226,27 @@ eReturnValues CSCSI_Farm_Log::print_WorkLoad(JSONNODE *masterData, uint32_t page
         {
 
             // found a log where the length of the workload log does not match the spec. Need to check for the 0x50 length
-            farm_PrePython_Int(masterData, "read", "number of read commands from 0-3.125% of LBA space", "workload", "command", WORKLOAD_STATISTICS_PARAMETER, vFarmFrame[page].workLoadPage.workLoad.totalReadCmdsFromFrames1 & 0x00FFFFFFFFFFFFFFLL);		//!< Number of Read commands from 0-3.125% of LBA space for last 3 SMART Summary Frames
-            farm_PrePython_Int(masterData, "read", "number of read commands from 3.125-25% of LBA space", "workload", "command", WORKLOAD_STATISTICS_PARAMETER, vFarmFrame[page].workLoadPage.workLoad.totalReadCmdsFromFrames2 & 0x00FFFFFFFFFFFFFFLL);		//!< Number of Read commands from 3.125-25% of LBA space for last 3 SMART Summary Frames
-            farm_PrePython_Int(masterData, "read", "number of read commands from 25-50% of LBA space", "workload", "command", WORKLOAD_STATISTICS_PARAMETER, vFarmFrame[page].workLoadPage.workLoad.totalReadCmdsFromFrames3 & 0x00FFFFFFFFFFFFFFLL);		//!< Number of Read commands from 25-50% of LBA space for last 3 SMART Summary Frames
-            farm_PrePython_Int(masterData, "read", "number of read commands from 50-100% of LBA space", "workload", "command", WORKLOAD_STATISTICS_PARAMETER, vFarmFrame[page].workLoadPage.workLoad.totalReadCmdsFromFrames4 & 0x00FFFFFFFFFFFFFFLL);		//!< Number of Read commands from 50-100% of LBA space for last 3 SMART Summary Frames 
-            farm_PrePython_Int(masterData, "write", "number of write commands from 0-3.125% of LBA space", "workload", "command", WORKLOAD_STATISTICS_PARAMETER, vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames1 & 0x00FFFFFFFFFFFFFFLL);	//!< Number of Write commands from 0-3.125% of LBA space for last 3 SMART Summary Frames
-            farm_PrePython_Int(masterData, "write", "number of write commands from 3.125-25% of LBA space", "workload", "command", WORKLOAD_STATISTICS_PARAMETER, vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames2 & 0x00FFFFFFFFFFFFFFLL);	//!< Number of Write commands from 3.125-25% of LBA space for last 3 SMART Summary Frames
-            farm_PrePython_Int(masterData, "write", "number of write commands from 25-50% of LBA space", "workload", "command", WORKLOAD_STATISTICS_PARAMETER, vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames3 & 0x00FFFFFFFFFFFFFFLL);		//!< Number of Write commands from 25-50% of LBA space for last 3 SMART Summary Frames
-            farm_PrePython_Int(masterData, "write", "number of write commands from 50-100% of LBA space", "workload", "command", WORKLOAD_STATISTICS_PARAMETER, vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames4 & 0x00FFFFFFFFFFFFFFLL);		//!< Number of Write commands from 50-100% of LBA space for last 3 SMART Summary Frames 
+            farm_PrePython_Int(masterData, "read", "number of read commands from 0-3.125% of LBA space", "workload", "commands", WORKLOAD_STATISTICS_PARAMETER, vFarmFrame[page].workLoadPage.workLoad.totalReadCmdsFromFrames1 & 0x00FFFFFFFFFFFFFFLL);		//!< Number of Read commands from 0-3.125% of LBA space for last 3 SMART Summary Frames
+            farm_PrePython_Int(masterData, "read", "number of read commands from 3.125-25% of LBA space", "workload", "commands", WORKLOAD_STATISTICS_PARAMETER, vFarmFrame[page].workLoadPage.workLoad.totalReadCmdsFromFrames2 & 0x00FFFFFFFFFFFFFFLL);		//!< Number of Read commands from 3.125-25% of LBA space for last 3 SMART Summary Frames
+            farm_PrePython_Int(masterData, "read", "number of read commands from 25-50% of LBA space", "workload", "commands", WORKLOAD_STATISTICS_PARAMETER, vFarmFrame[page].workLoadPage.workLoad.totalReadCmdsFromFrames3 & 0x00FFFFFFFFFFFFFFLL);		//!< Number of Read commands from 25-50% of LBA space for last 3 SMART Summary Frames
+            farm_PrePython_Int(masterData, "read", "number of read commands from 50-100% of LBA space", "workload", "commands", WORKLOAD_STATISTICS_PARAMETER, vFarmFrame[page].workLoadPage.workLoad.totalReadCmdsFromFrames4 & 0x00FFFFFFFFFFFFFFLL);		//!< Number of Read commands from 50-100% of LBA space for last 3 SMART Summary Frames 
+            farm_PrePython_Int(masterData, "write", "number of write commands from 0-3.125% of LBA space", "workload", "commands", WORKLOAD_STATISTICS_PARAMETER, vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames1 & 0x00FFFFFFFFFFFFFFLL);	//!< Number of Write commands from 0-3.125% of LBA space for last 3 SMART Summary Frames
+            farm_PrePython_Int(masterData, "write", "number of write commands from 3.125-25% of LBA space", "workload", "commands", WORKLOAD_STATISTICS_PARAMETER, vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames2 & 0x00FFFFFFFFFFFFFFLL);	//!< Number of Write commands from 3.125-25% of LBA space for last 3 SMART Summary Frames
+            farm_PrePython_Int(masterData, "write", "number of write commands from 25-50% of LBA space", "workload", "commands", WORKLOAD_STATISTICS_PARAMETER, vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames3 & 0x00FFFFFFFFFFFFFFLL);		//!< Number of Write commands from 25-50% of LBA space for last 3 SMART Summary Frames
+            farm_PrePython_Int(masterData, "write", "number of write commands from 50-100% of LBA space", "workload", "commands", WORKLOAD_STATISTICS_PARAMETER, vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames4 & 0x00FFFFFFFFFFFFFFLL);		//!< Number of Write commands from 50-100% of LBA space for last 3 SMART Summary Frames 
 
 
         }
 
         farm_PrePython_Int(masterData, "stat", "rated workload", "workload", "percentage", WORKLOAD_STATISTICS_PARAMETER, vFarmFrame[page].workLoadPage.workLoad.workloadPercentage & 0x00FFFFFFFFFFFFFFLL);
-        farm_PrePython_Int(masterData, "read", "total read", "workload", "command", WORKLOAD_STATISTICS_PARAMETER, vFarmFrame[page].workLoadPage.workLoad.totalReadCommands & 0x00FFFFFFFFFFFFFFLL);
-        farm_PrePython_Int(masterData, "write", "total write", "workload", "command", WORKLOAD_STATISTICS_PARAMETER, vFarmFrame[page].workLoadPage.workLoad.totalWriteCommands & 0x00FFFFFFFFFFFFFFLL);
-        farm_PrePython_Int(masterData, "read", "total random read", "workload", "command", WORKLOAD_STATISTICS_PARAMETER, vFarmFrame[page].workLoadPage.workLoad.totalRandomReads & 0x00FFFFFFFFFFFFFFLL);
-        farm_PrePython_Int(masterData, "write", "total random write", "workload", "command", WORKLOAD_STATISTICS_PARAMETER, vFarmFrame[page].workLoadPage.workLoad.totalRandomWrites & 0x00FFFFFFFFFFFFFFLL);
-        farm_PrePython_Int(masterData, "other", "total other", "workload", "command", WORKLOAD_STATISTICS_PARAMETER, vFarmFrame[page].workLoadPage.workLoad.totalNumberofOtherCMDS & 0x00FFFFFFFFFFFFFFLL);
+        farm_PrePython_Int(masterData, "read", "total read", "workload", "commands", WORKLOAD_STATISTICS_PARAMETER, vFarmFrame[page].workLoadPage.workLoad.totalReadCommands & 0x00FFFFFFFFFFFFFFLL);
+        farm_PrePython_Int(masterData, "write", "total write", "workload", "commands", WORKLOAD_STATISTICS_PARAMETER, vFarmFrame[page].workLoadPage.workLoad.totalWriteCommands & 0x00FFFFFFFFFFFFFFLL);
+        farm_PrePython_Int(masterData, "read", "total random read", "workload", "commands", WORKLOAD_STATISTICS_PARAMETER, vFarmFrame[page].workLoadPage.workLoad.totalRandomReads & 0x00FFFFFFFFFFFFFFLL);
+        farm_PrePython_Int(masterData, "write", "total random write", "workload", "commands", WORKLOAD_STATISTICS_PARAMETER, vFarmFrame[page].workLoadPage.workLoad.totalRandomWrites & 0x00FFFFFFFFFFFFFFLL);
+        farm_PrePython_Int(masterData, "other", "total other", "workload", "commands", WORKLOAD_STATISTICS_PARAMETER, vFarmFrame[page].workLoadPage.workLoad.totalNumberofOtherCMDS & 0x00FFFFFFFFFFFFFFLL);
 
-        farm_PrePython_Int(masterData, "write", "logical sectors written", "workload", "command", WORKLOAD_STATISTICS_PARAMETER, vFarmFrame[page].workLoadPage.workLoad.logicalSecWritten & 0x00FFFFFFFFFFFFFFLL);
-        farm_PrePython_Int(masterData, "read", "logical sectors read", "workload", "command", WORKLOAD_STATISTICS_PARAMETER, (int64_t)vFarmFrame[page].workLoadPage.workLoad.logicalSecRead & 0x00FFFFFFFFFFFFFFLL);
+        farm_PrePython_Int(masterData, "write", "logical sectors written", "workload", "commands", WORKLOAD_STATISTICS_PARAMETER, vFarmFrame[page].workLoadPage.workLoad.logicalSecWritten & 0x00FFFFFFFFFFFFFFLL);
+        farm_PrePython_Int(masterData, "read", "logical sectors read", "workload", "commands", WORKLOAD_STATISTICS_PARAMETER, (int64_t)vFarmFrame[page].workLoadPage.workLoad.logicalSecRead & 0x00FFFFFFFFFFFFFFLL);
     }
     else
     {
@@ -2353,16 +2353,16 @@ eReturnValues CSCSI_Farm_Log::print_Error_Information(JSONNODE *masterData, uint
 #endif
     if (g_dataformat == PREPYTHON_DATA)
     {
-        farm_PrePython_Int(masterData, "read_error", "unrecoverable read errors", "error information", "count", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorStat.totalReadECC));
-        farm_PrePython_Int(masterData, "write_error", "unrecoverable write errors", "error information", "count", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorStat.totalWriteECC));                           //!< number of unrecoverable write errors
-        farm_PrePython_Int(masterData, "read_error", "reallocated sectors", "error information", "count", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorStat.totalReallocations));
-        farm_PrePython_Int(masterData, "mechanical_start_erorr", "total mechanical start failures", "error information", "count", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorStat.totalMechanicalFails));
-        farm_PrePython_Int(masterData, "read_error", "total reallocated candidate sectors", "error information", "count", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorStat.totalReallocatedCanidates));
+        farm_PrePython_Int(masterData, "read_error", "unrecoverable read errors", "error information", "counts", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorStat.totalReadECC));
+        farm_PrePython_Int(masterData, "write_error", "unrecoverable write errors", "error information", "counts", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorStat.totalWriteECC));                           //!< number of unrecoverable write errors
+        farm_PrePython_Int(masterData, "read_error", "reallocated sectors", "error information", "counst", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorStat.totalReallocations));
+        farm_PrePython_Int(masterData, "mechanical_start_erorr", "total mechanical start failures", "error information", "counts", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorStat.totalMechanicalFails));
+        farm_PrePython_Int(masterData, "read_error", "total reallocated candidate sectors", "error information", "counts", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorStat.totalReallocatedCanidates));
    
-        farm_PrePython_Int(masterData, "ioedc_error", "total ioedc errors", "error information", "count", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorStat.attrIOEDCErrors));
+        farm_PrePython_Int(masterData, "ioedc_error", "total ioedc errors", "error information", "counts", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorStat.attrIOEDCErrors));
         farm_PrePython_Int(masterData, "protocol_erro", "fru code if smart trip", "error information", "code", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorStat.FRUCode));
-        farm_PrePython_Int(masterData, "flash_led", "total flash led events", "error information", "count", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorStat.totalFlashLED));
-        farm_PrePython_Int(masterData, "error", "super parity on the fly recovery", "error information", "count", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorStat.parity));
+        farm_PrePython_Int(masterData, "flash_led", "total flash led events", "error information", "counts", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorStat.totalFlashLED));
+        farm_PrePython_Int(masterData, "error", "super parity on the fly recovery", "error information", "counts", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorStat.parity));
    
 
     }
@@ -2453,19 +2453,19 @@ eReturnValues CSCSI_Farm_Log::print_Error_Information_Version_4(JSONNODE *master
 #endif
     if (g_dataformat == PREPYTHON_DATA)
     {
-        farm_PrePython_Int(masterData, "read_error", "unrecoverable read errors", "error information", "count", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorV4.totalReadECC));
-        farm_PrePython_Int(masterData, "write_error", "unrecoverable write errors", "error information", "count", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorV4.totalWriteECC));                           //!< number of unrecoverable write errors
-        farm_PrePython_Int(masterData, "mechanical_start_erorr", "total mechanical start failures", "error information", "count", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorV4.totalMechanicalFails));
-        farm_PrePython_Int(masterData, "ioedc_errors", "total ioedc errors", "error information", "count", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorV4.attrIOEDCErrors));
-        farm_PrePython_Int(masterData, "protocol_erro", "fru code if smart trip", "error information", "count", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorV4.FRUCode));
-        farm_PrePython_Int(masterData, "protocol_error", "invalid dword count (port a)", "error information", "count", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorV4.portAInvalidDwordCount));
-        farm_PrePython_Int(masterData, "protocol_error", "invalid dword count (port b)", "error information", "count", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorV4.portBInvalidDwordCount));
-        farm_PrePython_Int(masterData, "protocol_error", "disparity error count (port a)", "error information", "count", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorV4.portADisparityErrorCount));
-        farm_PrePython_Int(masterData, "protocol_error", "disparity error count (port b)", "error information", "count", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorV4.portBDisparityErrorCount));
-        farm_PrePython_Int(masterData, "protocol_error", "loss of dword sync (port a)", "error information", "count", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorV4.portALossDwordSync));
-        farm_PrePython_Int(masterData, "protocol_error", "loss of dword sync (port b)", "error information", "count", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorV4.portBLossDwordSync));
-        farm_PrePython_Int(masterData, "protocol_error", "phy reset problems (port a)", "error information", "count", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorV4.portAPhyResetProblem));
-        farm_PrePython_Int(masterData, "protocol_error", "phy reset problems (port b)", "error information", "count", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorV4.portBPhyResetProblem));
+        farm_PrePython_Int(masterData, "read_error", "unrecoverable read errors", "error information", "counts", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorV4.totalReadECC));
+        farm_PrePython_Int(masterData, "write_error", "unrecoverable write errors", "error information", "counts", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorV4.totalWriteECC));                           //!< number of unrecoverable write errors
+        farm_PrePython_Int(masterData, "mechanical_start_erorr", "total mechanical start failures", "error information", "counts", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorV4.totalMechanicalFails));
+        farm_PrePython_Int(masterData, "ioedc_errors", "total ioedc errors", "error information", "counts", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorV4.attrIOEDCErrors));
+        farm_PrePython_Int(masterData, "protocol_erro", "fru code if smart trip", "error information", "counts", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorV4.FRUCode));
+        farm_PrePython_Int(masterData, "protocol_error", "invalid dword count (port a)", "error information", "counts", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorV4.portAInvalidDwordCount));
+        farm_PrePython_Int(masterData, "protocol_error", "invalid dword count (port b)", "error information", "counts", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorV4.portBInvalidDwordCount));
+        farm_PrePython_Int(masterData, "protocol_error", "disparity error count (port a)", "error information", "counts", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorV4.portADisparityErrorCount));
+        farm_PrePython_Int(masterData, "protocol_error", "disparity error count (port b)", "error information", "counts", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorV4.portBDisparityErrorCount));
+        farm_PrePython_Int(masterData, "protocol_error", "loss of dword sync (port a)", "error information", "counts", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorV4.portALossDwordSync));
+        farm_PrePython_Int(masterData, "protocol_error", "loss of dword sync (port b)", "error information", "counts", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorV4.portBLossDwordSync));
+        farm_PrePython_Int(masterData, "protocol_error", "phy reset problems (port a)", "error information", "counts", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorV4.portAPhyResetProblem));
+        farm_PrePython_Int(masterData, "protocol_error", "phy reset problems (port b)", "error information", "counts", ERROR_STATISTICS_PARAMETER, M_DoubleWordInt0(vFarmFrame[page].errorPage.errorV4.portBPhyResetProblem));
 
     }
     else
@@ -2562,7 +2562,7 @@ eReturnValues CSCSI_Farm_Log::print_Enviroment_Information(JSONNODE *masterData,
         json_push_back(data, json_new_a("name", "farm_log"));
         JSONNODE* label = json_new(JSON_NODE);
         json_set_name(label, "labels");
-        snprintf(&myStr[0], BASIC, "scsi-log-page:0x%" PRIx8":,%" PRId8":0x%x", FARMLOGPAGE, FARMSUBPAGE, ENVIRONMENTAL_STATISTICS_PARAMETER);
+        snprintf(&myStr[0], BASIC, "scsi-log-page:0x%" PRIx8",%" PRId8":0x%x", FARMLOGPAGE, FARMSUBPAGE, ENVIRONMENTAL_STATISTICS_PARAMETER);
         json_push_back(label, json_new_a("metric_source", &myStr[0]));
         json_push_back(label, json_new_a("stat_type", "environment information"));
 
@@ -2572,7 +2572,7 @@ eReturnValues CSCSI_Farm_Log::print_Enviroment_Information(JSONNODE *masterData,
         snprintf(&myStr[0], BASIC, "%0.02f celsius", static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.minTemp)) * 1.00));							//!< Specified Min Operating Temperature
         json_push_back(label, json_new_a("specified min operating temperature", &myStr[0]));
 
-        json_push_back(label, json_new_a("units", "count"));
+        json_push_back(label, json_new_a("units", "counts"));
 
         json_push_back(data, label);
         json_push_back(data, json_new_i("value", 0));
@@ -2709,7 +2709,7 @@ eReturnValues CSCSI_Farm_Log::print_Enviroment_Statistics_Page_07(JSONNODE *mast
         json_set_name(label, "labels");
         json_push_back(label, json_new_a("stat_type", "environment information"));
 
-        json_push_back(label, json_new_a("units", "count"));
+        json_push_back(label, json_new_a("units", "counts"));
         snprintf(&myStr[0], BASIC, "scsi-log-page:0x%" PRIx8",%" PRId8":0x%" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, ENVIRONMENT_STATISTICS_PAMATER_07);
         json_push_back(label, json_new_a("metric_source", &myStr[0]));
         json_push_back(masterData, label);
@@ -2822,24 +2822,40 @@ eReturnValues CSCSI_Farm_Log::print_Workload_Statistics_Page_08(JSONNODE *master
     
 
     #endif
-        if (vFarmFrame[page].workloadStatPage08.copyNumber == FACTORYCOPY)
+        if (g_dataformat == PREPYTHON_DATA)
         {
-            snprintf(&myStr[0], BASIC, "Workload Information Continued From Farm Log copy FACTORY");
+
+            farm_PrePython_Int(pageInfo, "workload_information", "count of queue depth =1", "workload queue", "counts", WORKLOAD_STATISTICS_PAMATER_08, vFarmFrame[page].workloadStatPage08.countQueDepth1);
+            farm_PrePython_Int(pageInfo, "workload_information", "count of queue depth =2", "workload queue", "counts", WORKLOAD_STATISTICS_PAMATER_08, vFarmFrame[page].workloadStatPage08.countQueDepth2);
+            farm_PrePython_Int(pageInfo, "workload_information", "count of queue depth 2-4", "workload queue", "counts", WORKLOAD_STATISTICS_PAMATER_08, vFarmFrame[page].workloadStatPage08.countQueDepth3_4);
+            farm_PrePython_Int(pageInfo, "workload_information", "count of queue depth 5-8", "workload queue", "counts", WORKLOAD_STATISTICS_PAMATER_08, vFarmFrame[page].workloadStatPage08.countQueDepth5_8);
+            farm_PrePython_Int(pageInfo, "workload_information", "count of queue depth 9-16", "workload queue", "counts", WORKLOAD_STATISTICS_PAMATER_08, vFarmFrame[page].workloadStatPage08.countQueDepth9_16);
+            farm_PrePython_Int(pageInfo, "workload_information", "count of queue depth 17-32", "workload queue", "counts", WORKLOAD_STATISTICS_PAMATER_08, vFarmFrame[page].workloadStatPage08.countQueDepth17_32);
+            farm_PrePython_Int(pageInfo, "workload_information", "count of queue depth 33-64", "workload queue", "counts", WORKLOAD_STATISTICS_PAMATER_08, vFarmFrame[page].workloadStatPage08.countQueDepth33_64);
+            farm_PrePython_Int(pageInfo, "workload_information", "count of queue depth > 64", "workload queue", "counts", WORKLOAD_STATISTICS_PAMATER_08, vFarmFrame[page].workloadStatPage08.countQueDepth_gt_64);
+           
         }
         else
         {
-            snprintf(&myStr[0], BASIC, "Workload Information Continued From Farm Log copy %" PRId32"", page);
+            if (vFarmFrame[page].workloadStatPage08.copyNumber == FACTORYCOPY)
+            {
+                snprintf(&myStr[0], BASIC, "Workload Information Continued From Farm Log copy FACTORY");
+            }
+            else
+            {
+                snprintf(&myStr[0], BASIC, "Workload Information Continued From Farm Log copy %" PRId32"", page);
+            }
+            json_set_name(pageInfo, &myStr[0]);
+            set_json_int_With_Status(pageInfo, "Count of Queue Depth =1 at 30s intervals for last 3 SMART Summary Frames", vFarmFrame[page].workloadStatPage08.countQueDepth1, m_showStatusBits);
+            set_json_int_With_Status(pageInfo, "Count of Queue Depth =2 at 30s intervals for last 3 SMART Summary Frames", vFarmFrame[page].workloadStatPage08.countQueDepth2, m_showStatusBits);
+            set_json_int_With_Status(pageInfo, "Count of Queue Depth 2-4 at 30s intervals for last 3 SMART Summary Frames", vFarmFrame[page].workloadStatPage08.countQueDepth3_4, m_showStatusBits);
+            set_json_int_With_Status(pageInfo, "Count of Queue Depth 5-8 at 30s intervals for last 3 SMART Summary Frames", vFarmFrame[page].workloadStatPage08.countQueDepth5_8, m_showStatusBits);
+            set_json_int_With_Status(pageInfo, "Count of Queue Depth 9-16 at 30s intervals for last 3 SMART Summary Frames", vFarmFrame[page].workloadStatPage08.countQueDepth9_16, m_showStatusBits);
+            set_json_int_With_Status(pageInfo, "Count of Queue Depth 17-32 at 30s intervals for last 3 SMART Summary Frames", vFarmFrame[page].workloadStatPage08.countQueDepth17_32, m_showStatusBits);
+            set_json_int_With_Status(pageInfo, "Count of Queue Depth 33-64 at 30s intervals for last 3 SMART Summary Frames", vFarmFrame[page].workloadStatPage08.countQueDepth33_64, m_showStatusBits);
+            set_json_int_With_Status(pageInfo, "Count of Queue Depth > 64  at 30s intervals for last 3 SMART Summary Frames", vFarmFrame[page].workloadStatPage08.countQueDepth_gt_64, m_showStatusBits);
+            json_push_back(masterData, pageInfo);
         }
-        json_set_name(pageInfo, &myStr[0]);
-        set_json_int_With_Status(pageInfo, "Count of Queue Depth =1 at 30s intervals for last 3 SMART Summary Frames",  vFarmFrame[page].workloadStatPage08.countQueDepth1, m_showStatusBits);
-        set_json_int_With_Status(pageInfo, "Count of Queue Depth =2 at 30s intervals for last 3 SMART Summary Frames",vFarmFrame[page].workloadStatPage08.countQueDepth2, m_showStatusBits);
-        set_json_int_With_Status(pageInfo, "Count of Queue Depth 2-4 at 30s intervals for last 3 SMART Summary Frames", vFarmFrame[page].workloadStatPage08.countQueDepth3_4, m_showStatusBits);
-        set_json_int_With_Status(pageInfo, "Count of Queue Depth 5-8 at 30s intervals for last 3 SMART Summary Frames", vFarmFrame[page].workloadStatPage08.countQueDepth5_8, m_showStatusBits);
-        set_json_int_With_Status(pageInfo, "Count of Queue Depth 9-16 at 30s intervals for last 3 SMART Summary Frames", vFarmFrame[page].workloadStatPage08.countQueDepth9_16, m_showStatusBits);
-        set_json_int_With_Status(pageInfo, "Count of Queue Depth 17-32 at 30s intervals for last 3 SMART Summary Frames", vFarmFrame[page].workloadStatPage08.countQueDepth17_32, m_showStatusBits);
-        set_json_int_With_Status(pageInfo, "Count of Queue Depth 33-64 at 30s intervals for last 3 SMART Summary Frames", vFarmFrame[page].workloadStatPage08.countQueDepth33_64, m_showStatusBits);
-        set_json_int_With_Status(pageInfo, "Count of Queue Depth gt 64  at 30s intervals for last 3 SMART Summary Frames", vFarmFrame[page].workloadStatPage08.countQueDepth_gt_64, m_showStatusBits);
-        json_push_back(masterData, pageInfo);
     }
     return SUCCESS;
 }
@@ -2912,34 +2928,34 @@ eReturnValues CSCSI_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint3
 
             farm_PrePython_Int(masterData, "idd_operations", "timestamp of last idd test", "reliability information", "milliseconds", RELIABILITY_STATISTICS_PARAMETER, check_Status_Strip_Status(vFarmFrame[page].reliPage.reli.lastIDDTest));
             farm_PrePython_Int(masterData, "idd_operations", "sub-command of Last idd test", "reliability information", "commmand", RELIABILITY_STATISTICS_PARAMETER, check_Status_Strip_Status(vFarmFrame[page].reliPage.reli.cmdLastIDDTest));
-            farm_PrePython_Int(masterData, "idd_operations", "total reallocated sector reclamations", "reliability information", "count", RELIABILITY_STATISTICS_PARAMETER, check_Status_Strip_Status(vFarmFrame[page].reliPage.reli.gListReclamed));
-            farm_PrePython_Int(masterData, "servo", " status", "reliability information", "count", RELIABILITY_STATISTICS_PARAMETER, check_Status_Strip_Status(vFarmFrame[page].reliPage.reli.servoStatus));
-            farm_PrePython_Int(masterData, "idd_operations", "total slipped sectors before idd scan", "reliability information", "count", RELIABILITY_STATISTICS_PARAMETER, check_Status_Strip_Status(vFarmFrame[page].reliPage.reli.altsBeforeIDD));
-            farm_PrePython_Int(masterData, "idd_operations", "total slipped sectors after idd scan", "reliability information", "count", RELIABILITY_STATISTICS_PARAMETER, check_Status_Strip_Status(vFarmFrame[page].reliPage.reli.altsAfterIDD));
-            farm_PrePython_Int(masterData, "idd_operations", "total resident reallocated sectors before idd scan", "reliability information", "count", RELIABILITY_STATISTICS_PARAMETER, check_Status_Strip_Status(vFarmFrame[page].reliPage.reli.gListBeforIDD));
-            farm_PrePython_Int(masterData, "idd_operations", "total resident reallocated sectors after idd scan", "reliability information", "count", RELIABILITY_STATISTICS_PARAMETER, check_Status_Strip_Status(vFarmFrame[page].reliPage.reli.gListAfterIDD));
-            farm_PrePython_Int(masterData, "idd_operations", "total successfully scrubbed sectors before idd scan", "reliability information", "count", RELIABILITY_STATISTICS_PARAMETER, check_Status_Strip_Status(vFarmFrame[page].reliPage.reli.scrubsBeforeIDD));
-            farm_PrePython_Int(masterData, "idd_operations", "total successfully scrubbed sectors after idd scan", "reliability information", "count", RELIABILITY_STATISTICS_PARAMETER, check_Status_Strip_Status(vFarmFrame[page].reliPage.reli.scrubsAfterIDD));
-            farm_PrePython_Int(masterData, "idd_operations", "total dos scans performed", "reliability information", "count", RELIABILITY_STATISTICS_PARAMETER, check_Status_Strip_Status(vFarmFrame[page].reliPage.reli.numberDOSScans));
-            farm_PrePython_Int(masterData, "idd_operations", "total lbas corrected by isp", "reliability information", "count", RELIABILITY_STATISTICS_PARAMETER, check_Status_Strip_Status(vFarmFrame[page].reliPage.reli.numberLBACorrect));
-            farm_PrePython_Int(masterData, "idd_operations", "total valid parity sectors", "reliability information", "count", RELIABILITY_STATISTICS_PARAMETER, check_Status_Strip_Status(vFarmFrame[page].reliPage.reli.numberValidParitySec));
-            farm_PrePython_Int(masterData, "raw_operations", "total operations", "reliability information", "count", RELIABILITY_STATISTICS_PARAMETER, check_Status_Strip_Status(vFarmFrame[page].reliPage.reli.numberRAWops));
-            farm_PrePython_Int(masterData, "micro_actuator", "lock-out accumulate", "reliability information", "count", RELIABILITY_STATISTICS_PARAMETER, M_DoubleWord0(check_Status_Strip_Status(vFarmFrame[page].reliPage.reli.microActuatorLockOut)));
-            farm_PrePython_Int(masterData, "disc_slip_reacalibration", "performed", "reliability information", "count", RELIABILITY_STATISTICS_PARAMETER, check_Status_Strip_Status(vFarmFrame[page].reliPage.reli.diskSlipRecalPerformed));
-            farm_PrePython_Int(masterData, "helium_threshold_exceeded", "helium pressure", "reliability information", "count", RELIABILITY_STATISTICS_PARAMETER, check_Status_Strip_Status(vFarmFrame[page].reliPage.reli.heliumPressuretThreshold));
-            farm_PrePython_Int(masterData, "rv_absolute", "mean", "reliability information", "count", RELIABILITY_STATISTICS_PARAMETER, M_DoubleWord0(check_Status_Strip_Status(vFarmFrame[page].reliPage.reli.rvAbsoluteMean)));
-            farm_PrePython_Int(masterData, "rv_absolute", "max mean", "reliability information", "count", RELIABILITY_STATISTICS_PARAMETER, check_Status_Strip_Status(vFarmFrame[page].reliPage.reli.maxRVAbsoluteMean));
+            farm_PrePython_Int(masterData, "idd_operations", "total reallocated sector reclamations", "reliability information", "counts", RELIABILITY_STATISTICS_PARAMETER, check_Status_Strip_Status(vFarmFrame[page].reliPage.reli.gListReclamed));
+            farm_PrePython_Int(masterData, "servo", " status", "reliability information", "counts", RELIABILITY_STATISTICS_PARAMETER, check_Status_Strip_Status(vFarmFrame[page].reliPage.reli.servoStatus));
+            farm_PrePython_Int(masterData, "idd_operations", "total slipped sectors before idd scan", "reliability information", "counts", RELIABILITY_STATISTICS_PARAMETER, check_Status_Strip_Status(vFarmFrame[page].reliPage.reli.altsBeforeIDD));
+            farm_PrePython_Int(masterData, "idd_operations", "total slipped sectors after idd scan", "reliability information", "counts", RELIABILITY_STATISTICS_PARAMETER, check_Status_Strip_Status(vFarmFrame[page].reliPage.reli.altsAfterIDD));
+            farm_PrePython_Int(masterData, "idd_operations", "total resident reallocated sectors before idd scan", "reliability information", "counts", RELIABILITY_STATISTICS_PARAMETER, check_Status_Strip_Status(vFarmFrame[page].reliPage.reli.gListBeforIDD));
+            farm_PrePython_Int(masterData, "idd_operations", "total resident reallocated sectors after idd scan", "reliability information", "counts", RELIABILITY_STATISTICS_PARAMETER, check_Status_Strip_Status(vFarmFrame[page].reliPage.reli.gListAfterIDD));
+            farm_PrePython_Int(masterData, "idd_operations", "total successfully scrubbed sectors before idd scan", "reliability information", "counts", RELIABILITY_STATISTICS_PARAMETER, check_Status_Strip_Status(vFarmFrame[page].reliPage.reli.scrubsBeforeIDD));
+            farm_PrePython_Int(masterData, "idd_operations", "total successfully scrubbed sectors after idd scan", "reliability information", "counts", RELIABILITY_STATISTICS_PARAMETER, check_Status_Strip_Status(vFarmFrame[page].reliPage.reli.scrubsAfterIDD));
+            farm_PrePython_Int(masterData, "idd_operations", "total dos scans performed", "reliability information", "counts", RELIABILITY_STATISTICS_PARAMETER, check_Status_Strip_Status(vFarmFrame[page].reliPage.reli.numberDOSScans));
+            farm_PrePython_Int(masterData, "idd_operations", "total lbas corrected by isp", "reliability information", "counts", RELIABILITY_STATISTICS_PARAMETER, check_Status_Strip_Status(vFarmFrame[page].reliPage.reli.numberLBACorrect));
+            farm_PrePython_Int(masterData, "idd_operations", "total valid parity sectors", "reliability information", "counts", RELIABILITY_STATISTICS_PARAMETER, check_Status_Strip_Status(vFarmFrame[page].reliPage.reli.numberValidParitySec));
+            farm_PrePython_Int(masterData, "raw_operations", "total operations", "reliability information", "counts", RELIABILITY_STATISTICS_PARAMETER, check_Status_Strip_Status(vFarmFrame[page].reliPage.reli.numberRAWops));
+            farm_PrePython_Int(masterData, "micro_actuator", "lock-out accumulate", "reliability information", "counts", RELIABILITY_STATISTICS_PARAMETER, M_DoubleWord0(check_Status_Strip_Status(vFarmFrame[page].reliPage.reli.microActuatorLockOut)));
+            farm_PrePython_Int(masterData, "disc_slip_reacalibration", "performed", "reliability information", "counts", RELIABILITY_STATISTICS_PARAMETER, check_Status_Strip_Status(vFarmFrame[page].reliPage.reli.diskSlipRecalPerformed));
+            farm_PrePython_Int(masterData, "helium_threshold_exceeded", "helium pressure", "reliability information", "counts", RELIABILITY_STATISTICS_PARAMETER, check_Status_Strip_Status(vFarmFrame[page].reliPage.reli.heliumPressuretThreshold));
+            farm_PrePython_Int(masterData, "rv_absolute", "mean", "reliability information", "counts", RELIABILITY_STATISTICS_PARAMETER, M_DoubleWord0(check_Status_Strip_Status(vFarmFrame[page].reliPage.reli.rvAbsoluteMean)));
+            farm_PrePython_Int(masterData, "rv_absolute", "max mean", "reliability information", "counts", RELIABILITY_STATISTICS_PARAMETER, check_Status_Strip_Status(vFarmFrame[page].reliPage.reli.maxRVAbsoluteMean));
             farm_PrePython_Int(masterData, "idle_time", "value from smart (most recent)", "reliability information", "milliseconds", RELIABILITY_STATISTICS_PARAMETER, check_Status_Strip_Status(vFarmFrame[page].reliPage.reli.idleTime));
 
         }
         else
         {
 
-            farm_PrePython_Int(masterData, "raw_operations", "total operations", "reliability information", "count", RELIABILITY_STATISTICS_PARAMETER, M_DoubleWord0(vFarmFrame[page].reliPage.reli4.numberRAWops));
-            farm_PrePython_Int(masterData, "ecc", "total due to erc", "reliability information", "count", RELIABILITY_STATISTICS_PARAMETER, M_DoubleWord0(vFarmFrame[page].reliPage.reli4.cumECCDueToERC));
-            farm_PrePython_Int(masterData, "micro_actuator", "lock-out accumulated", "reliability information", "count", RELIABILITY_STATISTICS_PARAMETER, M_DoubleWord0(vFarmFrame[page].reliPage.reli4.microActuatorLockOut));
-            farm_PrePython_Int(masterData, "disc_slip_reacalibration", "performed", "reliability information", "count", RELIABILITY_STATISTICS_PARAMETER, M_DoubleWord0(vFarmFrame[page].reliPage.reli4.diskSlipRecalPerformed));
-            farm_PrePython_Int(masterData, "helium_threshold_exceeded", "helium pressure", "reliability information", "count", RELIABILITY_STATISTICS_PARAMETER, M_DoubleWord0(vFarmFrame[page].reliPage.reli4.heliumPressuretThreshold));
+            farm_PrePython_Int(masterData, "raw_operations", "total operations", "reliability information", "counts", RELIABILITY_STATISTICS_PARAMETER, M_DoubleWord0(vFarmFrame[page].reliPage.reli4.numberRAWops));
+            farm_PrePython_Int(masterData, "ecc", "total due to erc", "reliability information", "counts", RELIABILITY_STATISTICS_PARAMETER, M_DoubleWord0(vFarmFrame[page].reliPage.reli4.cumECCDueToERC));
+            farm_PrePython_Int(masterData, "micro_actuator", "lock-out accumulated", "reliability information", "counts", RELIABILITY_STATISTICS_PARAMETER, M_DoubleWord0(vFarmFrame[page].reliPage.reli4.microActuatorLockOut));
+            farm_PrePython_Int(masterData, "disc_slip_reacalibration", "performed", "reliability information", "counts", RELIABILITY_STATISTICS_PARAMETER, M_DoubleWord0(vFarmFrame[page].reliPage.reli4.diskSlipRecalPerformed));
+            farm_PrePython_Int(masterData, "helium_threshold_exceeded", "helium pressure", "reliability information", "counts", RELIABILITY_STATISTICS_PARAMETER, M_DoubleWord0(vFarmFrame[page].reliPage.reli4.heliumPressuretThreshold));
 
         }
     }
@@ -2971,10 +2987,10 @@ eReturnValues CSCSI_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint3
             set_json_64_bit_With_Status(pageInfo, "Number of DOS Scans Performed", vFarmFrame[page].reliPage.reli.numberDOSScans, false, m_showStatusBits);						//!< Number of DOS Scans Performed
             set_json_64_bit_With_Status(pageInfo, "Number of LBAs Corrected by ISP", vFarmFrame[page].reliPage.reli.numberLBACorrect, false, m_showStatusBits);					//!< Number of LBAs Corrected by ISP
             set_json_64_bit_With_Status(pageInfo, "Number of Valid Parity Sectors", vFarmFrame[page].reliPage.reli.numberValidParitySec, false, m_showStatusBits);				//!< Number of Valid Parity Sectors
-            set_json_64_bit_With_Status(pageInfo, "Number of RAW Operations", vFarmFrame[page].reliPage.reli.numberRAWops, false, m_showStatusBits);								//!< Number of RAW Operations
-            set_json_64_bit_With_Status(pageInfo, "Micro Actuator Lock-out accumulated", vFarmFrame[page].reliPage.reli.microActuatorLockOut, false, m_showStatusBits);			//!< Micro Actuator Lock-out, head mask accumulated over last 3 Summary Frames8
-            set_json_64_bit_With_Status(pageInfo, "Number of Disc Slip Recalibrations Performed", vFarmFrame[page].reliPage.reli.diskSlipRecalPerformed, false, m_showStatusBits);	            //!< Number of disc slip recalibrations performed
-            set_json_64_bit_With_Status(pageInfo, "Helium Pressure Threshold Trip", vFarmFrame[page].reliPage.reli.heliumPressuretThreshold, false, m_showStatusBits);			//!< helium Pressure Threshold Trip
+            //set_json_64_bit_With_Status(pageInfo, "Number of RAW Operations", vFarmFrame[page].reliPage.reli.numberRAWops, false, m_showStatusBits);								//!< Number of RAW Operations
+           //set_json_64_bit_With_Status(pageInfo, "Micro Actuator Lock-out accumulated", vFarmFrame[page].reliPage.reli.microActuatorLockOut, false, m_showStatusBits);			//!< Micro Actuator Lock-out, head mask accumulated over last 3 Summary Frames8
+            //set_json_64_bit_With_Status(pageInfo, "Number of Disc Slip Recalibrations Performed", vFarmFrame[page].reliPage.reli.diskSlipRecalPerformed, false, m_showStatusBits);	            //!< Number of disc slip recalibrations performed
+            //set_json_64_bit_With_Status(pageInfo, "Helium Pressure Threshold Trip", vFarmFrame[page].reliPage.reli.heliumPressuretThreshold, false, m_showStatusBits);			//!< helium Pressure Threshold Trip
             set_json_64_bit_With_Status(pageInfo, "RV Absolute Mean", vFarmFrame[page].reliPage.reli.rvAbsoluteMean, false, m_showStatusBits);									//!< RV Absulute Mean
             set_json_64_bit_With_Status(pageInfo, "Max RV absolute Mean", vFarmFrame[page].reliPage.reli.maxRVAbsoluteMean, false, m_showStatusBits);							//!< Max RV absulute Mean
             set_json_64_bit_With_Status(pageInfo, "Idle Time value from the most recent SMART Summary Frame", vFarmFrame[page].reliPage.reli.idleTime, false, m_showStatusBits);	//!< idle Time value from the most recent SMART Summary Frame
@@ -3143,7 +3159,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 snprintf(&myHeader[0], BASIC, "DOS Write Refresh Count for Head %" PRIu32"", loopCount); // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Int(headPage, "head_dos", "write refresh", loopCount, "count", DOS_WRITE_REFRESH_COUNT, M_DoubleWord0(vFarmFrame[page].dosWriteRefreshCountByHead.headValue[loopCount]));
+                    prePython_Head_Int(headPage, "head_dos", "write refresh", loopCount, "counts", DOS_WRITE_REFRESH_COUNT, M_DoubleWord0(vFarmFrame[page].dosWriteRefreshCountByHead.headValue[loopCount]));
                 }
                 else
                 {
@@ -3160,7 +3176,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 snprintf(&myHeader[0], BASIC, "DVGA Skip Write Detect for Head %" PRIu32"", loopCount); // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Int(headPage, "head_dvga", "skip write detect", loopCount, "count", DVGA_SKIP_WRITE_DETECT_BY_HEAD, M_DoubleWord0(vFarmFrame[page].dvgaSkipWriteDetectByHead.headValue[loopCount]));
+                    prePython_Head_Int(headPage, "head_dvga", "skip write detect", loopCount, "counts", DVGA_SKIP_WRITE_DETECT_BY_HEAD, M_DoubleWord0(vFarmFrame[page].dvgaSkipWriteDetectByHead.headValue[loopCount]));
                 }
                 else
                 {
@@ -3177,7 +3193,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 snprintf(&myHeader[0], BASIC, "RVGA Skip Write Detect for Head %" PRIu32"", loopCount); // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Int(headPage, "head_rvga", "skip write detect", loopCount, "count", RVGA_SKIP_WRITE_DETECT_BY_HEAD, M_DoubleWord0(vFarmFrame[page].rvgaSkipWriteDetectByHead.headValue[loopCount]));
+                    prePython_Head_Int(headPage, "head_rvga", "skip write detect", loopCount, "counts", RVGA_SKIP_WRITE_DETECT_BY_HEAD, M_DoubleWord0(vFarmFrame[page].rvgaSkipWriteDetectByHead.headValue[loopCount]));
                 }
                 else
                 {
@@ -3194,7 +3210,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 snprintf(&myHeader[0], BASIC, "FVGA Skip Write Detect for Head %" PRIu32"", loopCount); // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Int(headPage, "head_fvga", "skip write detect", loopCount, "count", FVGA_SKIP_WRITE_DETECT_BY_HEAD, M_DoubleWord0(vFarmFrame[page].fvgaSkipWriteDetectByHead.headValue[loopCount]));
+                    prePython_Head_Int(headPage, "head_fvga", "skip write detect", loopCount, "counts", FVGA_SKIP_WRITE_DETECT_BY_HEAD, M_DoubleWord0(vFarmFrame[page].fvgaSkipWriteDetectByHead.headValue[loopCount]));
                 }
                 else
                 {
@@ -3211,7 +3227,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 snprintf(&myHeader[0], BASIC, "Skip Write Detect Threshold Exceeded for Head %" PRIu32"", loopCount); // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Int(headPage, "head_threshold_exceeded", "skip write detect", loopCount, "count", SKIP_WRITE_DETECT_THRESHOLD_EXCEEDED_COUNT_BY_HEAD, M_DoubleWord0(vFarmFrame[page].skipWriteDectedThresholdExceededByHead.headValue[loopCount]));
+                    prePython_Head_Int(headPage, "head_threshold_exceeded", "skip write detect", loopCount, "counts", SKIP_WRITE_DETECT_THRESHOLD_EXCEEDED_COUNT_BY_HEAD, M_DoubleWord0(vFarmFrame[page].skipWriteDectedThresholdExceededByHead.headValue[loopCount]));
                 }
                 else
                 {
@@ -3229,7 +3245,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 snprintf(&myStr[0], BASIC, "%" PRIi8"", static_cast<int8_t>(check_for_signed_int(M_Byte0(check_Status_Strip_Status(vFarmFrame[page].acffSine1xValueByHead.headValue[loopCount])), 8)) * 16);
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Int(headPage, "head_acff", "sine (1x)", loopCount, "count", ACFF_SINE_1X_VALUE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD, static_cast<int8_t>(check_for_signed_int(M_Byte0(check_Status_Strip_Status(vFarmFrame[page].acffSine1xValueByHead.headValue[loopCount])), 8)) * 16);
+                    prePython_Head_Int(headPage, "head_acff", "sine (1x)", loopCount, "counts", ACFF_SINE_1X_VALUE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD, static_cast<int8_t>(check_for_signed_int(M_Byte0(check_Status_Strip_Status(vFarmFrame[page].acffSine1xValueByHead.headValue[loopCount])), 8)) * 16);
                 }
                 else
                 {
@@ -3247,7 +3263,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 snprintf(&myStr[0], BASIC, "%" PRIi8"", (static_cast<int8_t>(check_for_signed_int(M_Byte0(check_Status_Strip_Status(vFarmFrame[page].acffCosine1xValueByHead.headValue[loopCount])), 8)) * 16));
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Int(headPage, "head_acff", "cosine (1x)", loopCount, "count", ACFF_COSINE_1X_VALUE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD, static_cast<int8_t>(check_for_signed_int(M_Byte0(check_Status_Strip_Status(vFarmFrame[page].acffCosine1xValueByHead.headValue[loopCount])), 8)) * 16);
+                    prePython_Head_Int(headPage, "head_acff", "cosine (1x)", loopCount, "counts", ACFF_COSINE_1X_VALUE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD, static_cast<int8_t>(check_for_signed_int(M_Byte0(check_Status_Strip_Status(vFarmFrame[page].acffCosine1xValueByHead.headValue[loopCount])), 8)) * 16);
                 }
                 else
                 {
@@ -3264,7 +3280,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 snprintf(&myHeader[0], BASIC, "PZT Calibration for Head %" PRIu32"", loopCount); // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Int(headPage, "head_pzt", "calibration", loopCount, "count", PZT_CALIBRATION_VALUE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD, M_DoubleWord0(vFarmFrame[page].pztCalibrationValueByHead.headValue[loopCount]));
+                    prePython_Head_Int(headPage, "head_pzt", "calibration", loopCount, "counts", PZT_CALIBRATION_VALUE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD, M_DoubleWord0(vFarmFrame[page].pztCalibrationValueByHead.headValue[loopCount]));
                 }
                 else
                 {
@@ -3281,7 +3297,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 snprintf(&myHeader[0], BASIC, "MR Head Resistance for Head %" PRIu32"", loopCount); // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Int(headPage, "head_mr", "resistance", loopCount, "count", MR_HEAD_RESISTANCE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD, M_DoubleWord0(vFarmFrame[page].mrHeadResistanceByHead.headValue[loopCount]));
+                    prePython_Head_Int(headPage, "head_mr", "resistance", loopCount, "counts", MR_HEAD_RESISTANCE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD, M_DoubleWord0(vFarmFrame[page].mrHeadResistanceByHead.headValue[loopCount]));
                 }
                 else
                 {
@@ -3298,7 +3314,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 snprintf(&myHeader[0], BASIC, "Number of Servo No Timing Mark Detect for Head %" PRIu32"", loopCount); // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Int(headPage, "head_tmd", NULL, loopCount, "count", NUMBER_OF_TMD_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD, M_DoubleWord0(vFarmFrame[page].numberOfTMDByHead.headValue[loopCount]));
+                    prePython_Head_Int(headPage, "head_tmd", NULL, loopCount, "counts", NUMBER_OF_TMD_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD, M_DoubleWord0(vFarmFrame[page].numberOfTMDByHead.headValue[loopCount]));
                 }
                 else
                 {
@@ -3315,7 +3331,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 snprintf(&myHeader[0], BASIC, "Number of Velocity Observer by Head %" PRIu32"", loopCount); // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Int(headPage, "velocity_observer", "stat head", loopCount, "count", VELOCITY_OBSERVER_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD, M_DoubleWord0(vFarmFrame[page].velocityObserverByHead.headValue[loopCount]));
+                    prePython_Head_Int(headPage, "velocity_observer", "stat head", loopCount, "counts", VELOCITY_OBSERVER_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD, M_DoubleWord0(vFarmFrame[page].velocityObserverByHead.headValue[loopCount]));
                 }
                 else
                 {
@@ -3332,7 +3348,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 snprintf(&myHeader[0], BASIC, "Number of Servo Velocity No Timing Mark Detect by Head %" PRIu32"", loopCount); // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Int(headPage, "number_of_velocity_observer", "stat head", loopCount, "count", NUMBER_OF_VELOCITY_OBSERVER_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD, M_DoubleWord0(vFarmFrame[page].numberOfVelocityObservedByHead.headValue[loopCount]));
+                    prePython_Head_Int(headPage, "number_of_velocity_observer", "stat head", loopCount, "counts", NUMBER_OF_VELOCITY_OBSERVER_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD, M_DoubleWord0(vFarmFrame[page].numberOfVelocityObservedByHead.headValue[loopCount]));
                 }
                 else
                 {
@@ -3349,7 +3365,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 snprintf(&myHeader[0], BASIC, "Current H2SAT percentage of codewords at iteration level by Head %" PRIu32"", loopCount); // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Int(headPage, "h2sat", "codeword at iteration level (current)", loopCount, "count", CURRENT_H2SAT_PERCENTAGE_OF_CODEWORDS_AT_ITERATION_LEVEL_BY_HEAD_AVERAGED_ACROSS_TEST_ZONES, M_DoubleWord0(vFarmFrame[page].currentH2SATPercentagedbyHead.headValue[loopCount]));
+                    prePython_Head_Int(headPage, "h2sat", "codeword at iteration level (current)", loopCount, "counts", CURRENT_H2SAT_PERCENTAGE_OF_CODEWORDS_AT_ITERATION_LEVEL_BY_HEAD_AVERAGED_ACROSS_TEST_ZONES, M_DoubleWord0(vFarmFrame[page].currentH2SATPercentagedbyHead.headValue[loopCount]));
                 }
                 else
                 {
@@ -3366,7 +3382,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 snprintf(&myHeader[0], BASIC, "Current H2SAT amplitude by Head %" PRIu32"", loopCount); // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Int(headPage, "h2sat_amplitude", "current", loopCount, "count", CURRENT_H2SAT_AMPLITUDE_BY_HEAD_AVERAGED_ACROSS_TEST_ZONES, M_DoubleWord0(vFarmFrame[page].currentH2STAmplituedByHead.headValue[loopCount]));
+                    prePython_Head_Int(headPage, "h2sat_amplitude", "current", loopCount, "counts", CURRENT_H2SAT_AMPLITUDE_BY_HEAD_AVERAGED_ACROSS_TEST_ZONES, M_DoubleWord0(vFarmFrame[page].currentH2STAmplituedByHead.headValue[loopCount]));
                 }
                 else
                 {
@@ -3383,7 +3399,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 snprintf(&myHeader[0], BASIC, "Current H2SAT asymmetry by Head %" PRIu32"", loopCount); // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Int(headPage, "h2sat_asymmetry", "current", loopCount, "count", CURRENT_H2SAT_ASYMMETRY_BY_HEAD_AVERAGED_ACROSS_TEST_ZONES, M_DoubleWord0(vFarmFrame[page].currentH2STAsymmetryByHead.headValue[loopCount]));
+                    prePython_Head_Int(headPage, "h2sat_asymmetry", "current", loopCount, "counts", CURRENT_H2SAT_ASYMMETRY_BY_HEAD_AVERAGED_ACROSS_TEST_ZONES, M_DoubleWord0(vFarmFrame[page].currentH2STAsymmetryByHead.headValue[loopCount]));
                 }
                 else
                 {
@@ -3400,7 +3416,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 snprintf(&myHeader[0], BASIC, "Number of Reallocated Sectors by Head %" PRIu32"", loopCount); // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Int(headPage, "head_reallocated", "sectors", loopCount, "count", NUMBER_OF_RESIDENT_GLIST_ENTRIES, M_DoubleWord0(vFarmFrame[page].ResidentGlistEntries.headValue[loopCount]));
+                    prePython_Head_Int(headPage, "head_reallocated", "sectors", loopCount, "counts", NUMBER_OF_RESIDENT_GLIST_ENTRIES, M_DoubleWord0(vFarmFrame[page].ResidentGlistEntries.headValue[loopCount]));
                 }
                 else
                 {
@@ -3417,7 +3433,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 snprintf(&myHeader[0], BASIC, "Number of Reallocation Candidate Sectors by Head %" PRIu32"", loopCount); // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Int(headPage, "head_reallocated", "candidate sectors", loopCount, "count", NUMBER_OF_PENDING_ENTRIES, M_DoubleWord0(vFarmFrame[page].ResidentPlistEntries.headValue[loopCount]));
+                    prePython_Head_Int(headPage, "head_reallocated", "candidate sectors", loopCount, "counts", NUMBER_OF_PENDING_ENTRIES, M_DoubleWord0(vFarmFrame[page].ResidentPlistEntries.headValue[loopCount]));
                 }
                 else
                 {
@@ -3434,7 +3450,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 snprintf(&myHeader[0], BASIC, "DOS Ought to scan count by Head %" PRIu32"", loopCount); // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Int(headPage, "head_dos", "ought to", loopCount, "count", DOS_OUGHT_TO_SCAN_COUNT_PER_HEAD, M_DoubleWord0(vFarmFrame[page].DOSOoughtToScan.headValue[loopCount]));
+                    prePython_Head_Int(headPage, "head_dos", "ought to", loopCount, "counts", DOS_OUGHT_TO_SCAN_COUNT_PER_HEAD, M_DoubleWord0(vFarmFrame[page].DOSOoughtToScan.headValue[loopCount]));
                 }
                 else
                 {
@@ -3451,7 +3467,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 snprintf(&myHeader[0], BASIC, "DOS needs to scans count by Head %" PRIu32"", loopCount); // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Int(headPage, "head_dos", "needs to", loopCount, "count", DOS_NEED_TO_SCAN_COUNT_PER_HEAD, M_DoubleWord0(vFarmFrame[page].DOSNeedToScan.headValue[loopCount]));
+                    prePython_Head_Int(headPage, "head_dos", "needs to", loopCount, "counts", DOS_NEED_TO_SCAN_COUNT_PER_HEAD, M_DoubleWord0(vFarmFrame[page].DOSNeedToScan.headValue[loopCount]));
                 }
                 else
                 {
@@ -3468,7 +3484,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 snprintf(&myHeader[0], BASIC, "DOS write Fault scans by Head %" PRIu32"", loopCount); // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Int(headPage, "head_dos", "write fault", loopCount, "count", DOS_WRITE_FAULT_SCAN_COUNT_PER_HEAD, M_DoubleWord0(vFarmFrame[page].DOSWriteFaultScan.headValue[loopCount]));
+                    prePython_Head_Int(headPage, "head_dos", "write fault", loopCount, "counts", DOS_WRITE_FAULT_SCAN_COUNT_PER_HEAD, M_DoubleWord0(vFarmFrame[page].DOSWriteFaultScan.headValue[loopCount]));
                 }
                 else
                 {
@@ -3503,7 +3519,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
 #endif
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Int(headPage, "dos_write", "threshold", loopCount, "count", DOS_WRITE_COUNT_THRESHOLD_PER_HEAD, vFarmFrame[page].dosWriteCount.headValue[loopCount]);
+                    prePython_Head_Int(headPage, "dos_write", "threshold", loopCount, "counts", DOS_WRITE_COUNT_THRESHOLD_PER_HEAD, vFarmFrame[page].dosWriteCount.headValue[loopCount]);
                 }
                 else
                 {
@@ -3521,7 +3537,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 snprintf(&myHeader[0], BASIC, "Cumlative Lifetime Unrecoverable Read Repeat %" PRIu32"", loopCount); // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Int(headPage, "unrecoverable_read", "lifetime repeat", loopCount, "count", CUM_LIFETIME_UNRECOVERALBE_READ_REPET_PER_HEAD, vFarmFrame[page].cumECCReadRepeat.headValue[loopCount]);
+                    prePython_Head_Int(headPage, "unrecoverable_read", "lifetime repeat", loopCount, "counts", CUM_LIFETIME_UNRECOVERALBE_READ_REPET_PER_HEAD, vFarmFrame[page].cumECCReadRepeat.headValue[loopCount]);
                 }
                 else
                 {
@@ -3538,7 +3554,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 snprintf(&myHeader[0], BASIC, "Cumlative Lifetime Unrecoverable Read Unique %" PRIu32"", loopCount); // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Int(headPage, "unrecoverable_read", "lifetime unique", loopCount, "count", CUM_LIFETIME_UNRECOVERABLE_READ_UNIQUE_PER_HEAD, vFarmFrame[page].cumECCReadUnique.headValue[loopCount]);
+                    prePython_Head_Int(headPage, "unrecoverable_read", "lifetime unique", loopCount, "counts", CUM_LIFETIME_UNRECOVERABLE_READ_UNIQUE_PER_HEAD, vFarmFrame[page].cumECCReadUnique.headValue[loopCount]);
                 }
                 else
                 {
@@ -3609,7 +3625,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 snprintf(&myHeader[0], BASIC, "Current H2SAT iterations to converge Test Zone 0 by Head %" PRIu32"", loopCount); // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Float(headPage, "h2sat", "iterations to converge (current),zone:0", loopCount, "count", CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_0, static_cast<float>(M_Word0(vFarmFrame[page].currentH2STIterationsByHeadZone0.headValue[loopCount]) * .10));
+                    prePython_Head_Float(headPage, "h2sat", "iterations to converge (current),zone:0", loopCount, "counts", CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_0, static_cast<float>(M_Word0(vFarmFrame[page].currentH2STIterationsByHeadZone0.headValue[loopCount]) * .10));
                 }
                 else
                 {
@@ -3627,7 +3643,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 snprintf(&myHeader[0], BASIC, "Current H2SAT iterations to converge Test Zone 1 by Head %" PRIu32"", loopCount); // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Float(headPage, "h2sat", "iterations to converge (current),zone:1", loopCount, "count", CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_1, static_cast<float>(M_Word0(vFarmFrame[page].currentH2STIterationsByHeadZone1.headValue[loopCount]) * .10));
+                    prePython_Head_Float(headPage, "h2sat", "iterations to converge (current),zone:1", loopCount, "counts", CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_1, static_cast<float>(M_Word0(vFarmFrame[page].currentH2STIterationsByHeadZone1.headValue[loopCount]) * .10));
                 }
                 else
                 {
@@ -3645,7 +3661,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 snprintf(&myHeader[0], BASIC, "Current H2SAT iterations to converge Test Zone 2 by Head %" PRIu32"", loopCount); // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Float(headPage, "h2sat", "iterations to converge (current),zone:2", loopCount, "count", CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_2, static_cast<float>(M_Word0(vFarmFrame[page].currentH2STIterationsByHeadZone2.headValue[loopCount]) * .10));
+                    prePython_Head_Float(headPage, "h2sat", "iterations to converge (current),zone:2", loopCount, "counts", CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_2, static_cast<float>(M_Word0(vFarmFrame[page].currentH2STIterationsByHeadZone2.headValue[loopCount]) * .10));
                 }
                 else
                 {
@@ -3663,7 +3679,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 snprintf(&myHeader[0], BASIC, "Fly height clearance delta outer by Head %" PRIu32"", loopCount); // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Float(headPage, "head_fly_height", "clearance delta (outer)", loopCount, "count", APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_OUTER, static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].appliedFlyHeightByHeadOuter.headValue[loopCount])) * .001));
+                    prePython_Head_Float(headPage, "head_fly_height", "clearance delta (outer)", loopCount, "counts", APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_OUTER, static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].appliedFlyHeightByHeadOuter.headValue[loopCount])) * .001));
                 }
                 else
                 {
@@ -3681,7 +3697,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 snprintf(&myHeader[0], BASIC, "Fly height clearance delta inner by Head %" PRIu32"", loopCount); // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Float(headPage, "head_fly_height", "clearance delta (inner)", loopCount, "count", APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_INNER, static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].appliedFlyHeightByHeadInner.headValue[loopCount])) * .001));
+                    prePython_Head_Float(headPage, "head_fly_height", "clearance delta (inner)", loopCount, "counts", APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_INNER, static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].appliedFlyHeightByHeadInner.headValue[loopCount])) * .001));
                 }
                 else
                 {
@@ -3699,7 +3715,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 snprintf(&myHeader[0], BASIC, "Fly height clearance delta middle by Head %" PRIu32"", loopCount);     // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Float(headPage, "head_fly_height", "clearance delta (middle)", loopCount, "count", APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_MIDDLE, static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].appliedFlyHeightByHeadMiddle.headValue[loopCount])) * .001));
+                    prePython_Head_Float(headPage, "head_fly_height", "clearance delta (middle)", loopCount, "counts", APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_MIDDLE, static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].appliedFlyHeightByHeadMiddle.headValue[loopCount])) * .001));
                 }
                 else
                 {
@@ -3733,7 +3749,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 snprintf(&myHeader[0], BASIC, "Second MR Head Resistance by Head %" PRIu32"", loopCount);     // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Float(headPage, "head_mr", "resistance (second)", loopCount, "count", SECOND_MR_HEAD_RESISTANCE, static_cast<float>(M_WordInt0(vFarmFrame[page].secondMRHeadResistanceByHead.headValue[loopCount])));
+                    prePython_Head_Float(headPage, "head_mr", "resistance (second)", loopCount, "counts", SECOND_MR_HEAD_RESISTANCE, static_cast<float>(M_WordInt0(vFarmFrame[page].secondMRHeadResistanceByHead.headValue[loopCount])));
                 }
                 else
                 {
@@ -3869,7 +3885,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 snprintf(&myHeader[0], BASIC, "FAFH Low Frequency 0 by Head %" PRIu32"", loopCount);     // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Float(headPage, "fafh", "low frequency diameter 0", loopCount, "count", FAFH_LOW_FREQUENCY_0, static_cast<float>(M_WordInt0(vFarmFrame[page].fafhLowFrequency_0.headValue[loopCount]) * .001));
+                    prePython_Head_Float(headPage, "fafh", "low frequency diameter 0", loopCount, "counts", FAFH_LOW_FREQUENCY_0, static_cast<float>(M_WordInt0(vFarmFrame[page].fafhLowFrequency_0.headValue[loopCount]) * .001));
                 }
                 else
                 {
@@ -3889,7 +3905,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 snprintf(&myHeader[0], BASIC, "FAFH Low Frequency 1 by Head %" PRIu32"", loopCount);     // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Float(headPage, "fafh", "low frequency diameter 1", loopCount, "count", FAFH_LOW_FREQUENCY_1, static_cast<float>(M_WordInt0(vFarmFrame[page].fafhLowFrequency_1.headValue[loopCount]) * .001));
+                    prePython_Head_Float(headPage, "fafh", "low frequency diameter 1", loopCount, "counts", FAFH_LOW_FREQUENCY_1, static_cast<float>(M_WordInt0(vFarmFrame[page].fafhLowFrequency_1.headValue[loopCount]) * .001));
                 }
                 else
                 {
@@ -3909,7 +3925,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 snprintf(&myHeader[0], BASIC, "FAFH Low Frequency 2 by Head %" PRIu32"", loopCount);     // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Float(headPage, "fafh", "low frequency diameter 2", loopCount, "count", FAFH_LOW_FREQUENCY_2, static_cast<float>(M_WordInt0(vFarmFrame[page].fafhLowFrequency_2.headValue[loopCount]) * .001));
+                    prePython_Head_Float(headPage, "fafh", "low frequency diameter 2", loopCount, "counts", FAFH_LOW_FREQUENCY_2, static_cast<float>(M_WordInt0(vFarmFrame[page].fafhLowFrequency_2.headValue[loopCount]) * .001));
                 }
                 else
                 {
@@ -3929,7 +3945,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 snprintf(&myHeader[0], BASIC, "FAFH High Frequency 0 by Head %" PRIu32"", loopCount);     // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Float(headPage, "fafh", "high frequency diameter 0", loopCount, "count", FAFH_HIGH_FREQUENCY_0, static_cast<float>(M_WordInt0(vFarmFrame[page].fafhHighFrequency_0.headValue[loopCount]) * .001));
+                    prePython_Head_Float(headPage, "fafh", "high frequency diameter 0", loopCount, "counts", FAFH_HIGH_FREQUENCY_0, static_cast<float>(M_WordInt0(vFarmFrame[page].fafhHighFrequency_0.headValue[loopCount]) * .001));
                 }
                 else
                 {
@@ -3949,7 +3965,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 snprintf(&myHeader[0], BASIC, "FAFH High Frequency 1 by Head %" PRIu32"", loopCount);     // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Float(headPage, "fafh", "high frequency diameter 1", loopCount, "count", FAFH_HIGH_FREQUENCY_1, static_cast<float>(M_WordInt0(vFarmFrame[page].fafhHighFrequency_1.headValue[loopCount]) * .001));
+                    prePython_Head_Float(headPage, "fafh", "high frequency diameter 1", loopCount, "counts", FAFH_HIGH_FREQUENCY_1, static_cast<float>(M_WordInt0(vFarmFrame[page].fafhHighFrequency_1.headValue[loopCount]) * .001));
                 }
                 else
                 {
@@ -3969,7 +3985,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 snprintf(&myHeader[0], BASIC, "FAFH High Frequency 2 by Head %" PRIu32"", loopCount);     // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Float(headPage, "fafh", "high frequency diameter 2", loopCount, "count", FAFH_HIGH_FREQUENCY_2, static_cast<float>(M_WordInt0(vFarmFrame[page].fafhHighFrequency_2.headValue[loopCount]) * .001));
+                    prePython_Head_Float(headPage, "fafh", "high frequency diameter 2", loopCount, "counts", FAFH_HIGH_FREQUENCY_2, static_cast<float>(M_WordInt0(vFarmFrame[page].fafhHighFrequency_2.headValue[loopCount]) * .001));
                 }
                 else
                 {
@@ -4075,7 +4091,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
 //!   \return SUCCESS
 //
 //---------------------------------------------------------------------------
-eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Information(JSONNODE *masterData, uint32_t page, uint16_t actNum)
+eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Information(JSONNODE *LUNData, uint32_t page, uint16_t actNum)
 {
     std::string myStr = " ";
     myStr.resize(BASIC);
@@ -4132,11 +4148,16 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Information(JSONNODE *masterDat
     printf("\tIdle Time:                                    %" PRIu64" \n", pLUN->idleTime & 0x00FFFFFFFFFFFFFF);		                //!< idle Time value from the most recent SMART Summary Frame
     printf("\tNumber of LBAs Corrected by Parity Sector:    %" PRIu64" \n", pLUN->lbasCorrectedByParity & 0x00FFFFFFFFFFFFFF); //!< Number of LBAs Corrected by Parity Sector
 #endif
+
     if (g_dataformat == PREPYTHON_DATA)
     {
+        JSONNODE* data = json_new(JSON_NODE);
+        json_push_back(data, json_new_a("name", "LUN_actuator"));
         JSONNODE* label = json_new(JSON_NODE);
         json_set_name(label, "labels");
         json_push_back(label, json_new_a("stat_type", "lun actuator information"));
+        snprintf(&myStr[0], BASIC, "scsi-log-page:0x%" PRIx8",0x%" PRId8":0x%" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, actNum);
+        json_push_back(label, json_new_a("metric_source", &myStr[0]));
         if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
         {
             json_push_back(label, json_new_a("farm page", "factory"));
@@ -4145,7 +4166,6 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Information(JSONNODE *masterDat
         {
             json_push_back(label, json_new_i("farm page", actNum));
         }
-        json_push_back(label, json_new_a("units", "count"));
 
         json_push_back(label, json_new_i("lun actuator id", M_DoubleWordInt0(pLUN->LUNID)));						                                //!< LUN ID 
         json_push_back(label, json_new_i("head load events", M_DoubleWordInt0(pLUN->headLoadEvents)));											//!< Head Load Events 
@@ -4167,14 +4187,20 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Information(JSONNODE *masterDat
         snprintf(&myStr[0], BASIC, "%0.03lf", static_cast<double>(M_DoubleWord0(check_Status_Strip_Status(pLUN->idleTime)) * 1.0) / 3600);
         json_push_back(label, json_new_a("idle time (hours)", &myStr[0]));                                 //!< idle Time value from the most recent SMART Summary Frame
         json_push_back(label, json_new_i("number of lbas corrected by parity sector", M_DoubleWordInt0(pLUN->lbasCorrectedByParity)));           //!< Number of LBAs Corrected by Parity Sector
-
-
-        snprintf(&myStr[0], BASIC, "scsi-log-page:0x%" PRIx8":0x%" PRId8":0x%" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, actNum);
-        json_push_back(label, json_new_a("metric_source", &myStr[0]));
-        json_push_back(masterData, label);
-        json_push_back(masterData, json_new_i("value", 1));
-        json_push_back(masterData, json_new_a("name", "lun_actuator"));
-
+        
+        json_push_back(label, json_new_a("units", "counts"));
+        json_push_back(data, label);
+        json_push_back(data, json_new_i("value", 1));
+        
+        json_push_back(LUNData, data);
+        farm_PrePython_Int(LUNData, "LUN_actuator", "current low vibe score", "LUN actuator", "frequency", actNum, pLUN->currentLowFrequencyVibe);
+        farm_PrePython_Int(LUNData, "LUN_actuator", "current mid vibe score", "LUN actuator", "frequency", actNum, pLUN->currentMidFrequencyVibe);
+        farm_PrePython_Int(LUNData, "LUN_actuator", "current high vibe score", "LUN actuator", "frequency", actNum, pLUN->currentHighFrequencyVibe);
+        farm_PrePython_Int(LUNData, "LUN_actuator", "worst low vibe score", "LUN actuator", "frequency", actNum, pLUN->worstLowFrequencyVibe);
+        farm_PrePython_Int(LUNData, "LUN_actuator", "worst mid vibe score", "LUN actuator", "frequency", actNum, pLUN->worstMidFrequencyVibe);
+        farm_PrePython_Int(LUNData, "LUN_actuator", "worst high vibe score", "LUN actuator", "frequency", actNum, pLUN->worstHighFrequencyVibe);
+        farm_PrePython_Int(LUNData, "LUN_actuator", "primary super parity coverage", "LUN actuator", "percentage", actNum, pLUN->primarySPCovPercentage);
+        farm_PrePython_Int(LUNData, "LUN_actuator", "primary super parity coverage SMR", "LUN actuator", "percentage", actNum, pLUN->primarySPCovPercentageSMR);
     }
     else
     {
@@ -4216,7 +4242,15 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Information(JSONNODE *masterDat
         snprintf(&myStr[0], BASIC, "%0.03lf", static_cast<double>(M_DoubleWord0(check_Status_Strip_Status(pLUN->idleTime)) * 1.0) / 3600);
         set_json_string_With_Status(pageInfo, "Idle Time (hours)", &myStr[0], pLUN->idleTime, m_showStatusBits);                                 //!< idle Time value from the most recent SMART Summary Frame
         set_json_64_bit_With_Status(pageInfo, "Number of LBAs Corrected by Parity Sector", pLUN->lbasCorrectedByParity, false, m_showStatusBits);           //!< Number of LBAs Corrected by Parity Sector
-        json_push_back(masterData, pageInfo);
+        set_json_64_bit_With_Status(pageInfo, "current low vibe score",   pLUN->currentLowFrequencyVibe, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "current mid vibe score",   pLUN->currentMidFrequencyVibe, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "current high vibe score",  pLUN->currentHighFrequencyVibe, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "worst low vibe score",  pLUN->worstLowFrequencyVibe, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "worst mid vibe score",  pLUN->worstMidFrequencyVibe, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "worst high vibe score", pLUN->worstHighFrequencyVibe, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "primary super parity coverage",  pLUN->primarySPCovPercentage, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "primary super parity coverage SMR",  pLUN->primarySPCovPercentageSMR, false, m_showStatusBits);
+        json_push_back(LUNData, pageInfo);
     }
     return SUCCESS;
 }
@@ -4235,7 +4269,7 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Information(JSONNODE *masterDat
 //!   \return SUCCESS
 //
 //---------------------------------------------------------------------------
-eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_FLED_Info(JSONNODE *masterData, uint32_t page,  uint16_t actNum)
+eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_FLED_Info(JSONNODE *LUNFLED, uint32_t page,  uint16_t actNum)
 {
 
     uint16_t i = 0;
@@ -4281,8 +4315,14 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_FLED_Info(JSONNODE *masterData,
 #endif
     if (g_dataformat == PREPYTHON_DATA)
     {
+        farm_PrePython_Int(LUNFLED, "LUN_flash_LED", "lun actuator FLED Info", "LUN Reallocation", "id", actNum, M_DoubleWordInt0(pFLED->actID));
+
+        JSONNODE* data = json_new(JSON_NODE);
+        json_push_back(data, json_new_a("name", "LUN_flash_LED"));
         JSONNODE* label = json_new(JSON_NODE);
         json_set_name(label, "labels");
+        snprintf(&myStr[0], BASIC, "scsi_log_page:0x%" PRIx8":%" PRId8":0x%" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, actNum);
+        json_push_back(label, json_new_a("metric_source", &myStr[0]));
         json_push_back(label, json_new_a("stat_type", "lun actuator FLED Info"));
         if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
         {
@@ -4292,37 +4332,37 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_FLED_Info(JSONNODE *masterData,
         {
             json_push_back(label, json_new_i("page", actNum));
         }
-        json_push_back(label, json_new_a("units", "count"));
+        
 
-        json_push_back(label, json_new_i("Actuator ID", M_DoubleWordInt0(pFLED->actID)));						             //!< LUN ID 
-        json_push_back(label, json_new_i("Total Flash LED Evnets", M_DoubleWordInt0(pFLED->totalFLEDEvents)));				 //!< Head Load Events 
-        json_push_back(label, json_new_i("Index of Last Flash LED", M_DoubleWordInt0(pFLED->index)));
+
+        json_push_back(label, json_new_i("total_flash_LED_events", M_DoubleWordInt0(pFLED->totalFLEDEvents)));				 //!< Head Load Events 
+        json_push_back(label, json_new_i("index_of_last_flash_LED", M_DoubleWordInt0(pFLED->index)));
         for (i = 0; i < FLASH_EVENTS; i++)
         {
 
             json_push_back(label, json_new_i("event", i));
 
-            json_push_back(label, json_new_i("Address of Event", M_DoubleWordInt0(pFLED->flashLEDArray[i])));	           //!< Info on the last 8 Flash LED (assert) Events, wrapping array
+            json_push_back(label, json_new_i("address_of_event", M_DoubleWordInt0(pFLED->flashLEDArray[i])));	           //!< Info on the last 8 Flash LED (assert) Events, wrapping array
 
             snprintf(&myStr[0], BASIC, "0x%04" PRIx16"", M_Word2(check_Status_Strip_Status(pFLED->flashLEDArray[i])));
-            json_push_back(label, json_new_a("Flash LED Code", &myStr[0]));
+            json_push_back(label, json_new_a("flash_LED_code", &myStr[0]));
             get_Assert_Code_Meaning(timeStr, M_Word2(check_Status_Strip_Status(pFLED->flashLEDArray[i])));
-            json_push_back(label, json_new_a("Flash LED Code Meaning", &*timeStr.begin()));
+            json_push_back(label, json_new_a("flash_LED_code_meaning", &*timeStr.begin()));
             snprintf(&myStr[0], BASIC, "0x%08" PRIx32"", M_DoubleWord0(check_Status_Strip_Status(pFLED->flashLEDArray[i])));
-            json_push_back(label, json_new_a("Flash LED Address", &myStr[0]));
+            json_push_back(label, json_new_a("flash_LED_address", &myStr[0]));
 
 
-            snprintf(&myStr[0], BASIC, "TimeStamp of Event(hours) %" PRIu16"", i);
+            snprintf(&myStr[0], BASIC, "timeStamp_of_event_hours %" PRIu16"", i);
             snprintf(&timeStr[0], BASIC, "%0.03f", static_cast<double>(M_DoubleWord0(check_Status_Strip_Status(pFLED->timestampForLED[i])) / 3600000) * .001);
             json_push_back(label, json_new_a(&myStr[0], &timeStr[0]));            //!< Universal Timestamp (us) of last 8 Flash LED (assert) Events, wrapping array
-            snprintf(&myStr[0], BASIC, "Power Cycle Event %" PRIu16"", i);
+            snprintf(&myStr[0], BASIC, "power_cycle_event %" PRIu16"", i);
             json_push_back(label, json_new_i(&myStr[0], M_DoubleWordInt0(pFLED->powerCycleOfLED[i])));	         //!< Power Cycle of the last 8 Flash LED (assert) Events, wrapping array
         }
-        snprintf(&myStr[0], BASIC, "scsi_log_page:0x%" PRIx8":%" PRId8":0x%" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, actNum);
-        json_push_back(label, json_new_a("metric_source", &myStr[0]));
-        json_push_back(masterData, label);
-        json_push_back(masterData, json_new_i("value", 0));
-        json_push_back(masterData, json_new_a("name", "farm_log"));
+        json_push_back(label, json_new_a("units", "counts"));
+        json_push_back(data, label);
+        json_push_back(data, json_new_i("value", 0));
+        json_push_back(LUNFLED, data);
+        
     }
     else
     {
@@ -4340,7 +4380,7 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_FLED_Info(JSONNODE *masterData,
         set_json_64_bit_With_Status(pageInfo, "Page Number", pFLED->pageNumber, true, m_showStatusBits);							                        //!< Page Number 
         set_json_64_bit_With_Status(pageInfo, "Copy Number", pFLED->copyNumber, false, m_showStatusBits);						                            //!< Copy Number 
         set_json_64_bit_With_Status(pageInfo, "Actuator ID", pFLED->actID, false, m_showStatusBits);						                                        //!< LUN ID 
-        set_json_64_bit_With_Status(pageInfo, "Total Flash LED Evnets", pFLED->totalFLEDEvents, false, m_showStatusBits);											//!< Head Load Events 
+        set_json_64_bit_With_Status(pageInfo, "Total Flash LED Events", pFLED->totalFLEDEvents, false, m_showStatusBits);											//!< Head Load Events 
         set_json_64_bit_With_Status(pageInfo, "Index of Last Flash LED", pFLED->index, false, m_showStatusBits);
         for (i = 0; i < FLASH_EVENTS; i++)
         {
@@ -4367,7 +4407,7 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_FLED_Info(JSONNODE *masterData,
             json_push_back(pageInfo, eventInfo);
         }
 
-        json_push_back(masterData, pageInfo);
+        json_push_back(LUNFLED, pageInfo);
     }
     return SUCCESS;
 }
@@ -4387,7 +4427,7 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_FLED_Info(JSONNODE *masterData,
 //!   \return SUCCESS
 //
 //---------------------------------------------------------------------------
-eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Reallocation(JSONNODE* masterData, uint32_t page, uint16_t actNum)
+eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Reallocation(JSONNODE* LUNNReallocation, uint32_t page, uint16_t actNum)
 {
     uint16_t i = 0;
     std::string myStr = " ";
@@ -4429,24 +4469,14 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Reallocation(JSONNODE* masterDa
 #endif
     if (g_dataformat == PREPYTHON_DATA)
     {
-        JSONNODE* label = json_new(JSON_NODE);
-        json_set_name(label, "labels");
-        json_push_back(label, json_new_a("stat_type", "lun actuator Reallocation"));
-        json_push_back(label, json_new_a("units", "count"));
-        json_push_back(label, json_new_i("Actuator ID", M_DoubleWordInt0(pReal->actID)));						                                        //!< LUN ID 
-
-        snprintf(&myStr[0], BASIC, "scsi-log-page:0x%" PRIx8":%" PRId8":0x%04" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, actNum);
-        json_push_back(label, json_new_a("metric_source", &myStr[0]));
-        json_push_back(masterData, label);
-        json_push_back(masterData, json_new_i("value", 0));
-        json_push_back(masterData, json_new_a("name", "farm_log"));
-
-        farm_PrePython_Int(masterData, "stat", "Reallocated Sectors", "LUN Reallocation", "count", actNum, M_DoubleWordInt0(pReal->numberReallocatedSectors));
-        farm_PrePython_Int(masterData, "stat", "Reallocated Candidate Sectors", "LUN Reallocation", "count", actNum, M_DoubleWordInt0(pReal->numberReallocatedCandidates));
+        
+        farm_PrePython_Int(LUNNReallocation, "LUN_reallocation", "LUN actuator", "LUN Reallocation", "id", actNum, M_DoubleWordInt0(pReal->actID));
+        farm_PrePython_Int(LUNNReallocation, "LUN_reallocation", "LUN reallocated sectors", "LUN Reallocation", "counts", actNum, M_DoubleWordInt0(pReal->numberReallocatedSectors));
+        farm_PrePython_Int(LUNNReallocation, "LUN_reallocation", "LUN reallocated sectors", "LUN Reallocation", "counts", actNum, M_DoubleWordInt0(pReal->numberReallocatedCandidates));
         for (i = 0; i < REALLOCATIONEVENTS; i++)
         {
             get_Reallocation_Cause_Meanings(myStr, i);
-            farm_PrePython_Int(masterData, "stat", &myStr[0], "LUN Reallocation", "count", actNum, M_DoubleWordInt0(pReal->reallocatedCauses[i]));
+            farm_PrePython_Int(LUNNReallocation, "LUN_reallocation", &myStr[0], "LUN Reallocation", "counts", actNum, M_DoubleWordInt0(pReal->reallocatedCauses[i]));
         }
     }
     else
@@ -4473,7 +4503,7 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Reallocation(JSONNODE* masterDa
             get_Reallocation_Cause_Meanings(myStr, i);
             set_json_64_bit_With_Status(pageInfo, &myStr[0], pReal->reallocatedCauses[i], false, m_showStatusBits);
         }
-        json_push_back(masterData, pageInfo);
+        json_push_back(LUNNReallocation, pageInfo);
     }
     return SUCCESS;
 }
@@ -4918,7 +4948,7 @@ void CSCSI_Farm_Log::farm_PrePython_Int(JSONNODE* masterData, const char* name, 
     json_push_back(label, json_new_a("location", header));
     json_push_back(label, json_new_a("units", unit));
     json_push_back(data, label);
-    json_push_back(data, json_new_f("value", static_cast<double>(value)));    // float is limited to 53 bits of precision (2^53)
+    json_push_back(data, json_new_i("value", value));    
     json_push_back(masterData, data);
     
 }
@@ -4985,7 +5015,8 @@ void CSCSI_Farm_Log::prePython_Head_Float(JSONNODE* masterData, const char* name
     {
         json_push_back(label, json_new_a("stat_type", statType));
     }
-    json_push_back(label, json_new_i("head number", headNumber));
+    snprintf(&myStr[0], BASIC, "%" PRIu32"", headNumber);
+    json_push_back(label, json_new_a("head_number", &myStr[0]));
     json_push_back(label, json_new_a("units", unit));
     json_push_back(data, label);
     json_push_back(data, json_new_f("value", value));         // float is limited to 53 bits of precision (2^53)

@@ -87,9 +87,9 @@ namespace opensea_parser {
         eReturnValues print_Workload_Statistics_Page_08(JSONNODE *masterData, uint32_t page);
         eReturnValues print_Reli_Information(JSONNODE *masterData, uint32_t page);
         eReturnValues print_Head_Information(eLogPageTypes type, JSONNODE *masterData, uint32_t page);
-        eReturnValues print_LUN_Actuator_Information(JSONNODE *masterData, uint32_t page, uint16_t actNum);
-        eReturnValues print_LUN_Actuator_FLED_Info(JSONNODE *masterData, uint32_t page, uint16_t actNum);
-        eReturnValues print_LUN_Actuator_Reallocation(JSONNODE *masterData, uint32_t page, uint16_t actNum);
+        eReturnValues print_LUN_Actuator_Information(JSONNODE * LUNData, uint32_t page, uint16_t actNum);
+        eReturnValues print_LUN_Actuator_FLED_Info(JSONNODE * LUNFLED, uint32_t page, uint16_t actNum);
+        eReturnValues print_LUN_Actuator_Reallocation(JSONNODE * LUNNReallocation, uint32_t page, uint16_t actNum);
         void farm_PrePython_Str(JSONNODE* masterData, const char* name, const char* statType, const char* unit, int pageNum, const char* value);
         void farm_PrePython_Int(JSONNODE* masterData, const char* name, const char* statType, const char* header, \
             const char* unit, int pageNum, int64_t value);
