@@ -91,7 +91,7 @@ void CFarmCommon::create_Serial_Number(std::string& serialNumberStr, uint32_t se
 	{
 		sn = (sn1 | (sn2 << 32));
 	}
-	serialNumberStr = "00000000";
+	serialNumberStr.resize(SERIAL_NUMBER_LEN);
 	strncpy(&serialNumberStr[0], (char*)&sn, SERIAL_NUMBER_LEN);
 	if (!sas)   // sata we need to byte swap the string
 	{
