@@ -62,7 +62,7 @@ namespace opensea_parser {
             CATA_Farm_Log( uint8_t *bufferData, size_t bufferSize, bool showStatus);
             virtual ~CATA_Farm_Log();
             eReturnValues parse_Farm_Log();
-            void get_Reallocated_Sector_By_Cause(std::string *description, uint64_t readWriteRetry);
+            //void get_Reallocated_Sector_By_Cause(std::string *description, uint64_t readWriteRetry);
             void print_All_Pages(JSONNODE *masterData);
             void print_Page(JSONNODE *masterData, uint32_t page);
             void print_Page_Without_Drive_Info(JSONNODE *masterData, uint32_t page);

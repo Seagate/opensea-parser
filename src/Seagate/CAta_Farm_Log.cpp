@@ -916,7 +916,7 @@ eReturnValues CATA_Farm_Log::print_Enviroment_Information(JSONNODE *masterData, 
     //version 4_21
     if (m_MajorRev >= 4 && m_MinorRev > 20)
     {
-        printf("Current Low Frequency Vibe Score - Actuator 0:      %" PRIu64" \n", vFarmFrame[page].environmentPage.currLFVibeAct0 & 0x00FFFFFFFFFFFFFF); //!< Current Low Frequency Vibe Score - Actuator 0
+        printf("\tCurrent Low Frequency Vibe Score - Actuator 0:    %" PRIu64" \n", vFarmFrame[page].environmentPage.currLFVibeAct0 & 0x00FFFFFFFFFFFFFF); //!< Current Low Frequency Vibe Score - Actuator 0
         printf("\tCurrent Mid Frequency Vibe Score - Actuator 0:    %" PRIu64" \n", vFarmFrame[page].environmentPage.currMFVibeAct0 & 0x00FFFFFFFFFFFFFF); //!< Current Mid Frequency Vibe Score - Actuator 0
         printf("\tCurrent High Frequency Vibe Score - Actuator 0:   %" PRIu64" \n", vFarmFrame[page].environmentPage.currHFVibeAct0 & 0x00FFFFFFFFFFFFFF); //!< Current High Frequency Vibe Score - Actuator 0
         printf("\tWorst Low Frequency Vibe Score - Actuator 0       %" PRIu64" \n", vFarmFrame[page].environmentPage.worstLFVibeAct0 & 0x00FFFFFFFFFFFFFF); //!< Worst Low Frequency Vibe Score - Actuator 0 
@@ -1171,6 +1171,7 @@ eReturnValues CATA_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint32
     set_json_64_bit_With_Status(pageInfo, "Micro Actuator Lock-out accumulated", vFarmFrame[page].reliPage.microActuatorLockOUt, false, m_showStatusBits);                  //!< Micro Actuator Lock-out, head mask accumulated over last 3 Summary Frames
     set_json_64_bit_With_Status(pageInfo, "Number of Disc Slip Recalibrations Performed", vFarmFrame[page].reliPage.diskSlipRecalPerformed, false, m_showStatusBits);       //!< Number of disc slip recalibrations performed
     set_json_64_bit_With_Status(pageInfo, "Helium Pressure Threshold Tripped", vFarmFrame[page].reliPage.heliumPresureTrip, false, m_showStatusBits);                       //!< Helium Pressure Threshold Tripped ( 1- trip, 0 -no trip)//!< idle Time, Value from most recent SMART Summary Frame
+
 
     if (m_MajorRev >= 4 && m_MinorRev >= 19)
     {
@@ -1628,8 +1629,8 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
         snprintf(&myStr[0], BASIC, "%0.02f", static_cast<double>(M_DoubleWord0(vFarmFrame[page].reliPage.FAFHHighFrequency[loopCount].outer)) / 10.0);
         set_json_string_With_Status(headInfo, &myHeader[0], &myStr[0], false, m_showStatusBits);                  //!< [24][3] FAFH High Frequency Passive Clearance in ADC counts
     }
-    //4.21
-    if (m_MajorRev >= 4 && m_MinorRev > 20) {
+    //4.19
+    if (m_MajorRev >= 4 && m_MinorRev >= 19) {
         for (loopCount = 0; loopCount < m_heads; ++loopCount)
         {
             snprintf(&myHeader[0], BASIC, "Number of total Laser Field Adjust iterations performed per head %" PRIu32"", loopCount);
@@ -1672,7 +1673,56 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
             snprintf(&myStr[0], BASIC, "%0.01f", static_cast<float> (M_Word0(check_Status_Strip_Status(vFarmFrame[page].reliPage.postLFABER[loopCount].outer))));
             set_json_string_With_Status(headInfo, &myHeader[0], &myStr[0], vFarmFrame[page].reliPage.postLFABER[loopCount].outer, m_showStatusBits);
         }
-
+        for (loopCount = 0; loopCount < m_heads; ++loopCount)
+        {
+            snprintf(&myHeader[0], BASIC, "Number of Reader Writer Offset Iterations by Head %" PRIu32"", loopCount); // Head count
+            set_json_int_With_Status(headInfo, &myHeader[0], vFarmFrame[page].reliPage.numOfReaderWriterOffset[loopCount], m_showStatusBits);
+        }
+        for (loopCount = 0; loopCount < m_heads; ++loopCount)
+        {
+            snprintf(&myHeader[0], BASIC, "Micro Jog Offset Zone 0 by Head %" PRIu32"", loopCount); // Head count
+            set_json_int_With_Status( headInfo, &myHeader[0], vFarmFrame[page].reliPage.microJogOffset[loopCount].zone0, m_showStatusBits);
+        }
+        for (loopCount = 0; loopCount < m_heads; ++loopCount)
+        {
+            snprintf(&myHeader[0], BASIC, "Micro Jog Offset Zone 1 by Head %" PRIu32"", loopCount); // Head count
+            set_json_int_With_Status(headInfo, &myHeader[0], vFarmFrame[page].reliPage.microJogOffset[loopCount].zone1, m_showStatusBits);
+        }
+        for (loopCount = 0; loopCount < m_heads; ++loopCount)
+        {
+            snprintf(&myHeader[0], BASIC, "Micro Jog Offset Zone 2 by Head %" PRIu32"", loopCount); // Head count
+            set_json_int_With_Status(headInfo, &myHeader[0], vFarmFrame[page].reliPage.microJogOffset[loopCount].zone2, m_showStatusBits);
+        }
+        for (loopCount = 0; loopCount < m_heads; ++loopCount)
+        {
+            snprintf(&myHeader[0], BASIC, "Pre LFA Bit Error Rate Zone 0 by Head %" PRIu32"", loopCount); // Head count
+            set_json_int_With_Status(headInfo, &myHeader[0], vFarmFrame[page].reliPage.preLFABitErrorRate[loopCount].zone0, m_showStatusBits);
+        }
+        for (loopCount = 0; loopCount < m_heads; ++loopCount)
+        {
+            snprintf(&myHeader[0], BASIC, "Pre LFA Bit Error Rate Zone 1 by Head %" PRIu32"", loopCount); // Head count
+            set_json_int_With_Status(headInfo, &myHeader[0], vFarmFrame[page].reliPage.preLFABitErrorRate[loopCount].zone1, m_showStatusBits);
+        }
+        for (loopCount = 0; loopCount < m_heads; ++loopCount)
+        {
+            snprintf(&myHeader[0], BASIC, "Pre LFA Bit Error Rate Zone 2 by Head %" PRIu32"", loopCount); // Head count
+            set_json_int_With_Status(headInfo, &myHeader[0], vFarmFrame[page].reliPage.preLFABitErrorRate[loopCount].zone2, m_showStatusBits);
+        }
+        for (loopCount = 0; loopCount < m_heads; ++loopCount)
+        {
+            snprintf(&myHeader[0], BASIC, "Zero Percent shift bit Error Rate Zone 0 by Head %" PRIu32"", loopCount); // Head count
+            set_json_int_With_Status(headInfo, &myHeader[0], vFarmFrame[page].reliPage.zeroPercentShiftErrorRate[loopCount].zone0, m_showStatusBits);
+        }
+        for (loopCount = 0; loopCount < m_heads; ++loopCount)
+        {
+            snprintf(&myHeader[0], BASIC, "Zero Percent shift bit Error Rate Zone 1 by Head %" PRIu32"", loopCount); // Head count
+            set_json_int_With_Status(headInfo, &myHeader[0], vFarmFrame[page].reliPage.zeroPercentShiftErrorRate[loopCount].zone1, m_showStatusBits);
+        }
+        for (loopCount = 0; loopCount < m_heads; ++loopCount)
+        {
+            snprintf(&myHeader[0], BASIC, "Zero Percent shift bit Error Rate Zone 2 by Head %" PRIu32"", loopCount); // Head count
+            set_json_int_With_Status(headInfo, &myHeader[0], vFarmFrame[page].reliPage.zeroPercentShiftErrorRate[loopCount].zone2, m_showStatusBits);
+        }
     }
 
     json_push_back(masterData, headInfo);
