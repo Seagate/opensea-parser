@@ -14,7 +14,6 @@
 // \file Farm_Helper.h  
 #pragma once
 
-#include <inttypes.h>
 #include <string>
 #include "common.h"
 #include "Opensea_Parser_Helper.h"
