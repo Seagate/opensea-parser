@@ -508,7 +508,7 @@ typedef struct _sLUNStruct
     uint64_t            RVabsolue;                                  //!< RV Absolute Mean, value from most recent SMART Summary Frame
     uint64_t            maxRVabsolue;                               //!< Max RV Absolute Mean, value from most recent SMART Summary Frame
     uint64_t            idleTime;                                   //!< Idle Time, value from most recent SMART Summary Frame in seconds
-    uint64_t            lbasCorrectedByParity;                      //!< Number of LBAs Corrected by Parity Sector
+    uint64_t            lbasCorrectedByParity;                      //!< total valid parity sectors
     uint64_t            currentLowFrequencyVibe;                    //!< Current Low Frequency Vibe Score
     uint64_t            currentMidFrequencyVibe;                    //!< Current Mid Frequency Vibe Score
     uint64_t            currentHighFrequencyVibe;                   //!< Current High Frequency Vibe Score

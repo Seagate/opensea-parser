@@ -259,52 +259,52 @@ void CFarmCommon::create_Firmware_String(std::string& firmwareRevStr, uint32_t f
 		switch (code)
 		{
 		case HOST_READ_GENERIC:
-			meaning = "Host Read - Generic";
+			meaning = "host read - generic";
 			break;
 		case HOST_READ_UNCORRECTABLE:
-			meaning = "Host Read - Uncorrectable";
+			meaning = "host read - uncorrectable";
 			break;
 		case HOST_READ_RAW:
-			meaning = "Host Read - RAW";
+			meaning = "host read - RAW";
 			break;
 		case HOST_WRITE_GENERIC:
-			meaning = "Host Write - Generic";
+			meaning = "host write - generic";
 			break;
 		case HOST_WRITE_UNCORRECTABLE:
-			meaning = "Host Write - Uncorrectable";
+			meaning = "host write - uncorrectable";
 			break;
 		case HOST_WRITE_RAW:
-			meaning = "Host Write - RAW";
+			meaning = "host write - RAW";
 			break;
 		case BACKGROUND_READ_GENERIC:
-			meaning = "Background Read - Generic";
+			meaning = "background read - generic";
 			break;
 		case BACKGROUND_READ_RELIABILITY:
-			meaning = "Background Read - Reliability";
+			meaning = "background read - reliability";
 			break;
 		case BACKGROUND_READ_RECOVERY:
-			meaning = "Background Read - Recovery";
+			meaning = "background read - recovery";
 			break;
 		case BACKGROUND_READ_HOST_SELF_TEST:
-			meaning = "Background Read - Host Self Test";
+			meaning = "background read - host self test";
 			break;
 		case BACKGROUND_WRITE_GENERIC:
-			meaning = "Background Write - Generic";
+			meaning = "background write - generic";
 			break;
 		case BACKGROUND_WRITE_RELIABILITY:
-			meaning = "Background Write - Reliability";
+			meaning = "background write - reliability";
 			break;
 		case BACKGROUND_WRITE_RECOVERY:
-			meaning = "Background Write - Recovery";
+			meaning = "background write - recovery";
 			break;
 		case BACKGROUND_WRITE_HOST_SELF_TEST:
-			meaning = "Background Write - Host Self Test";
+			meaning = "background write - host self test";
 			break;
 		case SERVO_WEDGE:
-			meaning = "Servo Wedge";
+			meaning = "servo wedge";
 			break;
 		default:
-			meaning = "Unknown";
+			meaning = "unknown";
 			break;
 		}
    }
@@ -329,25 +329,25 @@ void CFarmCommon::create_Firmware_String(std::string& firmwareRevStr, uint32_t f
 		switch (code)
 		{
 		case ASSERT_UNKNOWN:
-			meaning = "Unknown";
+			meaning = "unknown";
 			break;
 		case MICROPROCESSOR_FAILED:
-			meaning = "Microprocessor Failed";
+			meaning = "microprocessor failed";
 			break;
 		case DRAM_FAILED_POWERUP_OR_WRAM_FAIL:
-			meaning = "DRAM Failed powerup or WRAM Failed";
+			meaning = "DRAM failed powerup or WRAM failed";
 			break;
 		case SCC_FAILED_POWERUP_DIAGNOSTICS:
-			meaning = "SCC Failed Powerup Diagnostics";
+			meaning = "SCC failed powerup diagnostics";
 			break;
 		case FW_DOES_NOT_MATCH_THE_SCC_VERSION:
-			meaning = "Firmware does not match teh SCC Version";
+			meaning = "firmware does not match the SCC version";
 			break;
 		case UNIMPLEMENTED_OPCODE_INTERRUPT:
-			meaning = "Unimplemented opcode interrupt";
+			meaning = "unimplemented opcode interrupt";
 			break;
 		case POWER_UP_XOR_FAILURE_FOR_FIBER_CH:
-			meaning = "Power up XOR failure for fiber CH";
+			meaning = "power up XOR failure for fiber CH";
 			break;
 		case EEPROM_VERIFY_ERROR_EVEN_BYTE:
 			meaning = "EEPROM verify error even byte";
@@ -356,55 +356,55 @@ void CFarmCommon::create_Firmware_String(std::string& firmwareRevStr, uint32_t f
 			meaning = "EEPROM erase error even byte";
 			break;
 		case DOWNLOAD_TPM_FAILED_0:
-			meaning = "Download TPM failed 0";
+			meaning = "download TPM failed 0";
 			break;
 		case DOWNLOAD_TPM_FAILED_1:
-			meaning = "Download TPM failed 1";
+			meaning = "download TPM failed 1";
 			break;
 		case DOWNLOAD_TPM_FAILED_2:
-			meaning = "Download TPM failed 2";
+			meaning = "download TPM failed 2";
 			break;
 		case DOWNLOAD_TPM_FAILED_3:
-			meaning = "Download TPM failed 3";
+			meaning = "download TPM failed 3";
 			break;
 		case DOWNLOAD_TPM_FAILED_4:
-			meaning = "Download TPM failed 4";
+			meaning = "download TPM failed 4";
 			break;
 		case DOWNLOAD_TPM_FAILED_5:
-			meaning = "Download TPM failed 5";
+			meaning = "download TPM failed 5";
 			break;
 		case DOWNLOAD_TPM_FAILED_6:
-			meaning = "Download TPM failed 6";
+			meaning = "download TPM failed 6";
 			break;
 		case DOWNLOAD_TPM_FAILED_7:
-			meaning = "Download TPM failed 7";
+			meaning = "download TPM failed 7";
 			break;
 		case DOWNLOAD_TPM_FAILED_8:
-			meaning = "Download TPM failed 8";
+			meaning = "download TPM failed 8";
 			break;
 		case DOWNLOAD_VOLTAGE_FAULT:
-			meaning = "Download Voltage fault";
+			meaning = "download voltage fault";
 			break;
 		case FAILS_WRITING_ARRAY_DATA_TO_FLASH_0:
-			meaning = "Fails writting array data to flash 0";
+			meaning = "fails writting array data to flash 0";
 			break;
 		case FLASH_LOOKING_FOR_MEMORY_RANGE_ERROR:
-			meaning = "Flash Looking for memory range error";
+			meaning = "flash Looking for memory range error";
 			break;
 		case FAILS_WRITING_ARRAY_DATA_TO_FLASH_1:
-			meaning = "Fails writting array data to flash 1";
+			meaning = "fails writting array data to flash 1";
 			break;
 		case FAILS_WRITING_ARRAY_DATA_TO_FLASH_2:
-			meaning = "Fails writting array data to flash 2";
+			meaning = "fails writting array data to flash 2";
 			break;
 		case FAILS_WRITING_ARRAY_DATA_TO_FLASH_3:
-			meaning = "Fails writting array data to flash 3";
+			meaning = "fails writting array data to flash 3";
 			break;
 		case FAILS_WRITING_ARRAY_DATA_TO_FLASH_4:
-			meaning = "Fails writting array data to flash 4";
+			meaning = "fails writting array data to flash 4";
 			break;
 		case FAILS_WRITING_ARRAY_DATA_TO_FLASH_5:
-			meaning = "Fails writting array data to flash 5";
+			meaning = "fails writting array data to flash 5";
 			break;
 		case ALU_BUFFER_PARITY_ERROR:
 			meaning = "ALU buffer party error";
@@ -416,130 +416,130 @@ void CFarmCommon::create_Firmware_String(std::string& firmwareRevStr, uint32_t f
 			meaning = "Error injection assert";
 			break;
 		case DRAM_CONFIGURATION_PROCESS_FAILED:
-			meaning = "DRAM Configuration Process Failed";
+			meaning = "DRAM configuration process failed";
 			break;
 		case FDE_BUS_PARITY_ERROR:
 			meaning = "FDE Bus parity error";
 			break;
 		case PREFETCH_VECTOR_OR_STACK_POINTER_OUT:
-			meaning = "Prefetch vector or stack pointer out";
+			meaning = "prefetch vector or stack pointer out";
 			break;
 		case ERROR_IN_WRITING_TO_READ_CHIP:
-			meaning = "Error in writting to read chip";
+			meaning = "error in writting to read chip";
 			break;
 		case IER_STACK_OVERFLOW:
-			meaning = "IER Stack overflow";
+			meaning = "IER stack overflow";
 			break;
 		case IER_STACK_UNDERFLOW:
-			meaning = "IER Stack underflow";
+			meaning = "IER stack underflow";
 			break;
 		case IER_STACK_NOT_EMPTY_ON_ENTRY_TO_SLEEP:
-			meaning = "IER Stack Not Empty on Entry to Sleep";
+			meaning = "IER stack Not empty on entry to sleep";
 			break;
 		case IRAW_HAD_MISCOMPARE:
 			meaning = "IRAW has miscompare";
 			break;
 		case UNDEFINED_INSTRUCTION:
-			meaning = "Underfined instruction";
+			meaning = "underfined instruction";
 			break;
 		case LOGGING_SAVE_FAILED_EXCEEDED_ALLOCATED:
-			meaning = "Logging save failed exceeded allocated";
+			meaning = "logging save failed exceeded allocated";
 			break;
 		case CANT_FIND_BACKPLANE_DATA_RATE:
-			meaning = "Cant Find backplane data rate";
+			meaning = "cant find backplane data rate";
 			break;
 		case CONTROLLER_I_TCM_DOUBLE_BIT_ECC_ERROR:
-			meaning = "Controller I TCM Double bit ECC Error";
+			meaning = "controller I TCM bouble bit ECC error";
 			break;
 		case CONTROLLER_D_TCM_DOUBLE_BIT_ECC_ERROR:
-			meaning = "Controller D TCM double bit ECC Error";
+			meaning = "controller D TCM double bit ECC error";
 			break;
 		case SERVO_I_TCM_DOUBLE_BIT_ECC_ERROR:
-			meaning = "Servo I TCM Double bit ECC Error";
+			meaning = "servo I TCM double bit ECC error";
 			break;
 		case SERVO_D_TCM_DOUBLE_BIT_ECC_ERROR:
-			meaning = "Servo D TCM double bit ECC ERROR";
+			meaning = "servo D TCM double bit ECC error";
 			break;
 		case CDPRAM_UNRECOVERABLE_ERROR:
-			meaning = "CDPRAM unrecoverable Error";
+			meaning = "CDPRAM unrecoverable drror";
 			break;
 		case SDPRAM_UNRECOVERABLE_ERROR:
-			meaning = "SDPRAM unrecoverable Error";
+			meaning = "SDPRAM unrecoverable drror";
 			break;
 		case TCM_CRC_RESULT_IS_NON_ZERO:
 			meaning = "TCM CRC result is non zero";
 			break;
 		case SWI_ASSERT_FLASH_CODE_BOOT:
-			meaning = "SWI Assert Flash Code Boot";
+			meaning = "SWI assert flash code boot";
 			break;
 		case SWI_ASSERT_FLASH_CODE_NQNR:
-			meaning = "SWI Assert Flash Code NQNR";
+			meaning = "SWI assert flash code NQNR";
 			break;
 		case SWI_ASSERT_FLASH_CODE_DISC:
-			meaning = "SWI Assert Flash Code DISC";
+			meaning = "SWI assert flash code DISC";
 			break;
 		case REMOTE_ASSERT:
-			meaning = "Remode Assert";
+			meaning = "remode assert";
 			break;
 		case DRAM_INTEGRITY_FAILURE:
-			meaning = "DRAM Integrity Failure";
+			meaning = "DRAM integrity failure";
 			break;
 		case CLOCK_FAILURE:
-			meaning = "Clock Failure";
+			meaning = "clock failure";
 			break;
 		case ASSERT_FLASH_CODE:
-			meaning = "Assert Flash Code";
+			meaning = "assert flash code";
 			break;
 		case ENSURE_FLASH_CODE:
-			meaning = "Ensure Flash Code";
+			meaning = "ensure flash code";
 			break;
 		case REQUIRE_FLASH_CODE:
-			meaning = "Require Flash Code";
+			meaning = "Require flash code";
 			break;
 		case SMART_FLASH_CODE:
-			meaning = "SMART Flash Code";
+			meaning = "SMART flash code";
 			break;
 		case SCSI_UNEXEPCTED_INTERRUPT:
-			meaning = "SCSI Unexpected Interrupt";
+			meaning = "SCSI unexpected interrupt";
 			break;
 		case SCSI_TIMEOUT:
-			meaning = "SCSI Timeout";
+			meaning = "SCSI timeout";
 			break;
 		case ILLEGAL_STATUS_CODE:
-			meaning = "Illegal Status Code";
+			meaning = "illegal status code";
 			break;
 		case SCSI_UNDER_OVER_RUN_OCCURRED:
-			meaning = "SCSI Under Over Run Occurred";
+			meaning = "SCSI under over run occurred";
 			break;
 		case UNEXPECTED_STATUS:
-			meaning = "Unexpected Status";
+			meaning = "unexpected status";
 			break;
 		case DIVIDE_BY_ZERO_INTERRUPT:
-			meaning = "Divide by Zero Interrupt";
+			meaning = "divide by zero interrupt";
 			break;
 		case DATA_ABORT_CACHE_ECC_ERROR:
-			meaning = "Data Abort Cache ECC Error";
+			meaning = "data abort cache ECC error";
 			break;
 		case DATA_ABORT_TCM_ECC_ERROR:
-			meaning = "Data Abort TCM ECC Error";
+			meaning = "data abort TCM ECC error";
 			break;
 		case ABORT_INTERRUPT:
-			meaning = "Abort Interrupt";
+			meaning = "abort interrupt";
 			break;
 		case SELF_SEEK_FAILURE:
-			meaning = "Self Seek Failure";
+			meaning = "self seek failure";
 			break;
 		case CONTROLLER_NUKED_BY_FDE:
-			meaning = "Controller Nuked By FDE";
+			meaning = "controller nuked by FDE";
 			break;
 		case FLASH_IOEDC_PARITY_ERROR:
-			meaning = "Flash IOEDC Parity Error";
+			meaning = "flash IOEDC parity error";
 			break;
 		case SERIAL_PORT_DUMP_MODE:
-			meaning = "Serial Port Dump Mode";
+			meaning = "serial port Ude";
 			break;
 		default:
-			meaning = "Unknow";
+			meaning = "unknow";
 			break;
 		}
    }
