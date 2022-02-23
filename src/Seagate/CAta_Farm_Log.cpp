@@ -155,7 +155,9 @@ eReturnValues CATA_Farm_Log::parse_Farm_Log()
         return retStatus;
     }
     sFarmFrame *pFarmFrame = new sFarmFrame();                                      // create the pointer to the union
-    if ((m_pHeader->signature & 0x00FFFFFFFFFFFFFFLL) == FARMSIGNATURE)                                     // check the head to see if it has the farm signature else fail
+    uint64_t signature = m_pHeader->signature & 0x00FFFFFFFFFFFFFFLL;
+    // TODO:   Add in a check for time series that has all FFFF's even for the signature - show as empty 
+    if (signature == FARMSIGNATURE || signature == FACTORYCOPY)                                     // check the head to see if it has the farm signature else fail
     {
         for (uint32_t index = 0; index <= m_copies; ++index)                       // loop for the number of copies. I don't think it's zero base as of now
         {
