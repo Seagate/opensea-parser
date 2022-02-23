@@ -864,26 +864,35 @@ bool CSCSI_Farm_Log::swap_Bytes_sLUNStruct(sLUNStruct *LUN)
 {
     byte_Swap_64(&LUN->pageNumber);
     byte_Swap_64(&LUN->copyNumber);
-    byte_Swap_64(&LUN->correctedLBAbyISP);
-    byte_Swap_64(&LUN->dosScansPerformed);
-    byte_Swap_64(&LUN->headLoadEvents);
-    byte_Swap_64(&LUN->idleTime);
     byte_Swap_64(&LUN->LUNID);
-    byte_Swap_64(&LUN->maxRVabsolue);
-    byte_Swap_64(&LUN->paritySectors);
-    byte_Swap_64(&LUN->reallocatedCandidates);
+    byte_Swap_64(&LUN->headLoadEvents);
     byte_Swap_64(&LUN->reallocatedSectors);
-    byte_Swap_64(&LUN->reclamedGlist);
-    byte_Swap_64(&LUN->residentReallocatedAfterIDD);
-    byte_Swap_64(&LUN->residentReallocatedBeforeIDD);
-    byte_Swap_64(&LUN->RVabsolue);
-    byte_Swap_64(&LUN->servoStatus);
-    byte_Swap_64(&LUN->slippedSectorsAfterIDD);
-    byte_Swap_64(&LUN->slippedSectorsBeforeIDD);
-    byte_Swap_64(&LUN->subCmdOfIDD);
-    byte_Swap_64(&LUN->successScrubbedAfterIDD);
-    byte_Swap_64(&LUN->successScrubbedBeforeIDD);
+    byte_Swap_64(&LUN->reallocatedCandidates);
     byte_Swap_64(&LUN->timeStampOfIDD);
+    byte_Swap_64(&LUN->subCmdOfIDD);
+    byte_Swap_64(&LUN->reclamedGlist);
+    byte_Swap_64(&LUN->servoStatus);
+    byte_Swap_64(&LUN->slippedSectorsBeforeIDD);
+    byte_Swap_64(&LUN->slippedSectorsAfterIDD);
+    byte_Swap_64(&LUN->residentReallocatedBeforeIDD);
+    byte_Swap_64(&LUN->residentReallocatedAfterIDD);
+    byte_Swap_64(&LUN->successScrubbedBeforeIDD);
+    byte_Swap_64(&LUN->successScrubbedAfterIDD);
+    byte_Swap_64(&LUN->dosScansPerformed);
+    byte_Swap_64(&LUN->correctedLBAbyISP);
+    byte_Swap_64(&LUN->paritySectors);
+    byte_Swap_64(&LUN->RVabsolue);
+    byte_Swap_64(&LUN->maxRVabsolue);
+    byte_Swap_64(&LUN->idleTime);
+    byte_Swap_64(&LUN->lbasCorrectedByParity);                      //!< total valid parity sectors
+    byte_Swap_64(&LUN->currentLowFrequencyVibe);                    //!< Current Low Frequency Vibe Score
+    byte_Swap_64(&LUN->currentMidFrequencyVibe);                    //!< Current Mid Frequency Vibe Score
+    byte_Swap_64(&LUN->currentHighFrequencyVibe);                   //!< Current High Frequency Vibe Score
+    byte_Swap_64(&LUN->worstLowFrequencyVibe);                      //!< Worst Low Frequency Vibe Score
+    byte_Swap_64(&LUN->worstMidFrequencyVibe);                      //!< Worst Mid Frequency Vibe Score
+    byte_Swap_64(&LUN->worstHighFrequencyVibe);                     //!< Worst High Frequency Vibe Score
+    byte_Swap_64(&LUN->primarySPCovPercentage);                     //!< Primary Super Parity Coverage Percentage
+    byte_Swap_64(&LUN->primarySPCovPercentageSMR);                  //!< Primary Super Parity Coverage Percentage SMR
     return true;
 }
 //-----------------------------------------------------------------------------
@@ -3517,7 +3526,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
 #endif
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Int(headPage, "dos_write", "threshold", loopCount, "counts", DOS_WRITE_COUNT_THRESHOLD_PER_HEAD, check_Status_Strip_Status(vFarmFrame[page].dosWriteCount.headValue[loopCount]));
+                    prePython_Head_Int(headPage, "head_DOS_write", "threshold", loopCount, "counts", DOS_WRITE_COUNT_THRESHOLD_PER_HEAD, check_Status_Strip_Status(vFarmFrame[page].dosWriteCount.headValue[loopCount]));
                 }
                 else
                 {
@@ -4149,75 +4158,34 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Information(JSONNODE *LUNData, 
 
     if (g_dataformat == PREPYTHON_DATA)
     {
-        /*
-        JSONNODE* data = json_new(JSON_NODE);
-        json_push_back(data, json_new_a("name", "LUN_actuator"));
-        JSONNODE* label = json_new(JSON_NODE);
-        json_set_name(label, "labels");
-        json_push_back(label, json_new_a("stat_type", "LUN actuator information"));
-        snprintf(&myStr[0], BASIC, "scsi-log-page:0x%" PRIx8",%" PRId8":0x%" PRIx16"", FARMLOGPAGE, FARMSUBPAGE, actNum);
-        json_push_back(label, json_new_a("metric_source", &myStr[0]));
-        
-        if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
-        {
-            json_push_back(label, json_new_a("farm page", "factory"));
-        }
-        else
-        {
-            json_push_back(label, json_new_i("farm page", actNum));
-        }
-        
-        json_push_back(label, json_new_i("lun_actuator_id", M_DoubleWordInt0(pLUN->LUNID)));						                                //!< LUN ID 
-        json_push_back(label, json_new_i("head_load_events", M_DoubleWordInt0(pLUN->headLoadEvents)));											//!< Head Load Events 
-        json_push_back(label, json_new_i("timestamp_of_last_IDD", M_DoubleWordInt0(pLUN->timeStampOfIDD)));						            //!< Timestamp of last IDD test  
-        json_push_back(label, json_new_i("sub-command_of_last_IDD", M_DoubleWordInt0(pLUN->subCmdOfIDD)));				                    //!< Sub-command of last IDD test 
-        json_push_back(label, json_new_i("reallocated_sector_reclamed", M_DoubleWordInt0(pLUN->reclamedGlist)));				                //!< Number of G-list reclamations  
-        json_push_back(label, json_new_i("servo_status", M_DoubleWordInt0(pLUN->servoStatus)));				                                    //!< Servo Status  
-        json_push_back(label, json_new_i("total_slipped_sectors_before_IDD_scan", M_DoubleWordInt0(pLUN->slippedSectorsBeforeIDD)));			//!< Number of Slipped Sectors Before IDD Scan 
-        json_push_back(label, json_new_i("total_slipped_sectors_after_IDD_scan", M_DoubleWordInt0(pLUN->slippedSectorsAfterIDD)));			//!< Number of Slipped Sectors After IDD Scan 
-        json_push_back(label, json_new_i("total_resident_reallocated_sectors_before_IDD_scan", M_DoubleWordInt0(pLUN->residentReallocatedBeforeIDD)));	//!< Number of Resident Reallocated Sectors Before IDD Scan
-        json_push_back(label, json_new_i("total_resident_reallocated_sectors_after_IDD_scan", M_DoubleWordInt0(pLUN->residentReallocatedAfterIDD)));	//!< Number of Resident Reallocated Sectors After IDD Scan
-        json_push_back(label, json_new_i("successfully_scrubbed_sectors_before_IDD_scan", M_DoubleWordInt0(pLUN->successScrubbedBeforeIDD)));	//!< Number of Successfully Scrubbed Sectors Before IDD Scan 
-        json_push_back(label, json_new_i("successfully_scrubbed_sectors_after_IDD_scan", M_DoubleWordInt0(pLUN->successScrubbedAfterIDD)));		//!< Number of Successfully Scrubbed Sectors After IDD Scan 
-        json_push_back(label, json_new_i("total_DOS_scans_performed", M_DoubleWordInt0(pLUN->dosScansPerformed)));	                        //!< Number of DOS Scans Performed 
-        json_push_back(label, json_new_i("total_LBA_corrected_by_ISP", M_DoubleWordInt0(pLUN->correctedLBAbyISP)));                          
-                             
-        
-        json_push_back(label, json_new_a("units", "reported"));
-        json_push_back(data, label);
-        json_push_back(data, json_new_i("value", 1));
-        
-        json_push_back(LUNData, data);
-        */
-
-        farm_PrePython_Int(LUNData, "LUN_actuator", "LUN actuator id", "LUN actuator", "id", actNum, M_DoubleWordInt0(check_Status_Strip_Status(pLUN->LUNID)));
-        farm_PrePython_Int(LUNData, "LUN_actuator", "head load events", "LUN actuator", "counts", actNum, M_DoubleWordInt0(check_Status_Strip_Status(pLUN->headLoadEvents)));
-        farm_PrePython_Int(LUNData, "LUN_actuator", "timestamp of last IDD", "LUN actuator", "hours", actNum, M_DoubleWordInt0(check_Status_Strip_Status(pLUN->timeStampOfIDD)));
-        farm_PrePython_Int(LUNData, "LUN_actuator", "sub-command of last IDD", "LUN actuator", "command", actNum, M_DoubleWordInt0(check_Status_Strip_Status(pLUN->subCmdOfIDD)));
-        farm_PrePython_Int(LUNData, "LUN_actuator", "reallocated sectors reclaimed", "LUN actuator", "counts", actNum, M_DoubleWordInt0(check_Status_Strip_Status(pLUN->reclamedGlist)));
-        farm_PrePython_Int(LUNData, "LUN_actuator", "servo status", "LUN actuator", "status", actNum, M_DoubleWordInt0(check_Status_Strip_Status(pLUN->servoStatus)));
-        farm_PrePython_Int(LUNData, "LUN_actuator", "total slipped sectors before IDD scan", "LUN actuator", "counts", actNum, M_DoubleWordInt0(check_Status_Strip_Status(pLUN->slippedSectorsBeforeIDD)));
-        farm_PrePython_Int(LUNData, "LUN_actuator", "total slipped sectors after IDD scan", "LUN actuator", "counts", actNum, M_DoubleWordInt0(check_Status_Strip_Status(pLUN->slippedSectorsAfterIDD)));
-        farm_PrePython_Int(LUNData, "LUN_actuator", "total resident reallocated sectors before IDD scan", "LUN actuator", "counts", actNum, M_DoubleWordInt0(check_Status_Strip_Status(pLUN->residentReallocatedBeforeIDD)));
-        farm_PrePython_Int(LUNData, "LUN_actuator", "total resident reallocated sectors after IDD scan", "LUN actuator", "counts", actNum, M_DoubleWordInt0(check_Status_Strip_Status(pLUN->residentReallocatedAfterIDD)));
-        farm_PrePython_Int(LUNData, "LUN_actuator", "successfully scrubbed sectors before IDD scan", "LUN actuator", "counts", actNum, M_DoubleWordInt0(check_Status_Strip_Status(pLUN->successScrubbedBeforeIDD)));
-        farm_PrePython_Int(LUNData, "LUN_actuator", "successfully scrubbed sectors after IDD scan", "LUN actuator", "counts", actNum, M_DoubleWordInt0(check_Status_Strip_Status(pLUN->successScrubbedAfterIDD)));
-        farm_PrePython_Int(LUNData, "LUN_actuator", "total DOS scans performed", "LUN actuator", "counts", actNum, M_DoubleWordInt0(check_Status_Strip_Status(pLUN->dosScansPerformed)));
-        farm_PrePython_Int(LUNData, "LUN_actuator", "total LBAs corrected by ISP", "LUN actuator", "counts", actNum, M_DoubleWordInt0(check_Status_Strip_Status(pLUN->correctedLBAbyISP)));          //!< Number of LBAs Corrected by ISP  
-        farm_PrePython_Int(LUNData, "LUN_actuator", "total valid parity sectors", "LUN actuator", "counts", actNum, M_DoubleWordInt0(check_Status_Strip_Status(pLUN->paritySectors)));              //!< Number of Valid Parity Sectors  
-        farm_PrePython_Int(LUNData, "LUN_actuator", "rv absolute mean", "LUN actuator", "rad", actNum, M_DoubleWordInt0(check_Status_Strip_Status(pLUN->RVabsolue)));                               //!< RV Absulute Mean
-        farm_PrePython_Int(LUNData, "LUN_actuator", "max rv absolute mean", "LUN actuator", "rad", actNum, M_DoubleWordInt0(check_Status_Strip_Status(pLUN->maxRVabsolue)));                        //!< Max RV absulute Mean 
+        farm_PrePython_Int(LUNData, "LUN_actuator", "LUN actuator id", "LUN actuator", "id", actNum, static_cast<int64_t> (M_DoubleWord0(check_Status_Strip_Status(pLUN->LUNID))));
+        farm_PrePython_Int(LUNData, "LUN_actuator", "head load events", "LUN actuator", "counts", actNum, static_cast<int64_t> (M_DoubleWord0(check_Status_Strip_Status(pLUN->headLoadEvents))));
+        farm_PrePython_Int(LUNData, "LUN_actuator", "timestamp of last IDD", "LUN actuator", "hours", actNum, static_cast<int64_t> (M_DoubleWord0(check_Status_Strip_Status(pLUN->timeStampOfIDD))));
+        farm_PrePython_Int(LUNData, "LUN_actuator", "sub-command of last IDD", "LUN actuator", "command", actNum, static_cast<int64_t> (M_DoubleWord0(check_Status_Strip_Status(pLUN->subCmdOfIDD))));
+        farm_PrePython_Int(LUNData, "LUN_actuator", "reallocated sectors reclaimed", "LUN actuator", "counts", actNum, static_cast<int64_t> (M_DoubleWord0(check_Status_Strip_Status(pLUN->reclamedGlist))));
+        farm_PrePython_Int(LUNData, "LUN_actuator", "servo status", "LUN actuator", "status", actNum, static_cast<int64_t> (M_DoubleWord0(check_Status_Strip_Status(pLUN->servoStatus))));
+        farm_PrePython_Int(LUNData, "LUN_actuator", "total slipped sectors before IDD scan", "LUN actuator", "counts", actNum, static_cast<int64_t> (M_DoubleWord0(check_Status_Strip_Status(pLUN->slippedSectorsBeforeIDD))));
+        farm_PrePython_Int(LUNData, "LUN_actuator", "total slipped sectors after IDD scan", "LUN actuator", "counts", actNum, static_cast<int64_t> (M_DoubleWord0(check_Status_Strip_Status(pLUN->slippedSectorsAfterIDD))));
+        farm_PrePython_Int(LUNData, "LUN_actuator", "total resident reallocated sectors before IDD scan", "LUN actuator", "counts", actNum, static_cast<int64_t> (M_DoubleWord0(check_Status_Strip_Status(pLUN->residentReallocatedBeforeIDD))));
+        farm_PrePython_Int(LUNData, "LUN_actuator", "total resident reallocated sectors after IDD scan", "LUN actuator", "counts", actNum, static_cast<int64_t> (M_DoubleWord0(check_Status_Strip_Status(pLUN->residentReallocatedAfterIDD))));
+        farm_PrePython_Int(LUNData, "LUN_actuator", "successfully scrubbed sectors before IDD scan", "LUN actuator", "counts", actNum, static_cast<int64_t> (M_DoubleWord0(check_Status_Strip_Status(pLUN->successScrubbedBeforeIDD))));
+        farm_PrePython_Int(LUNData, "LUN_actuator", "successfully scrubbed sectors after IDD scan", "LUN actuator", "counts", actNum, static_cast<int64_t> (M_DoubleWord0(check_Status_Strip_Status(pLUN->successScrubbedAfterIDD))));
+        farm_PrePython_Int(LUNData, "LUN_actuator", "total DOS scans performed", "LUN actuator", "counts", actNum, static_cast<int64_t> (M_DoubleWord0(check_Status_Strip_Status(pLUN->dosScansPerformed))));
+        farm_PrePython_Int(LUNData, "LUN_actuator", "total LBAs corrected by ISP", "LUN actuator", "counts", actNum, static_cast<int64_t> (M_DoubleWord0(check_Status_Strip_Status(pLUN->correctedLBAbyISP))));          //!< Number of LBAs Corrected by ISP  
+        farm_PrePython_Int(LUNData, "LUN_actuator", "total valid parity sectors", "LUN actuator", "counts", actNum, static_cast<int64_t> (M_DoubleWord0(check_Status_Strip_Status(pLUN->paritySectors))));              //!< Number of Valid Parity Sectors  
+        farm_PrePython_Int(LUNData, "LUN_actuator", "rv absolute mean", "LUN actuator", "rad", actNum, static_cast<int64_t> (M_DoubleWord0(check_Status_Strip_Status(pLUN->RVabsolue))));                               //!< RV Absulute Mean
+        farm_PrePython_Int(LUNData, "LUN_actuator", "max rv absolute mean", "LUN actuator", "rad", actNum, static_cast<int64_t> (M_DoubleWord0(check_Status_Strip_Status(pLUN->maxRVabsolue))));                        //!< Max RV absulute Mean 
 
         farm_PrePython_Float(LUNData, "LUN_actuator", "idle time",  "LUN actuator", "hours", actNum, static_cast<double>(M_DoubleWord0(check_Status_Strip_Status(pLUN->idleTime)) * 1.0) / 3600);                                                                                      //!< idle Time value from the most recent SMART Summary Frame
-        farm_PrePython_Int(LUNData, "LUN_actuator", "total LBAs corrected by parity sector", "LUN actuator", "counts", actNum, M_DoubleWordInt0(check_Status_Strip_Status(pLUN->lbasCorrectedByParity)));     //!< Number of LBAs Corrected by Parity Sector
-        farm_PrePython_Int(LUNData, "LUN_actuator", "current low vibe score", "LUN actuator", "frequency", actNum, check_Status_Strip_Status(pLUN->currentLowFrequencyVibe));
-        farm_PrePython_Int(LUNData, "LUN_actuator", "current mid vibe score", "LUN actuator", "frequency", actNum, check_Status_Strip_Status(pLUN->currentMidFrequencyVibe));
-        farm_PrePython_Int(LUNData, "LUN_actuator", "current high vibe score", "LUN actuator", "frequency", actNum, check_Status_Strip_Status(pLUN->currentHighFrequencyVibe));
-        farm_PrePython_Int(LUNData, "LUN_actuator", "worst low vibe score", "LUN actuator", "frequency", actNum, check_Status_Strip_Status(pLUN->worstLowFrequencyVibe));
-        farm_PrePython_Int(LUNData, "LUN_actuator", "worst mid vibe score", "LUN actuator", "frequency", actNum, check_Status_Strip_Status(pLUN->worstMidFrequencyVibe));
-        farm_PrePython_Int(LUNData, "LUN_actuator", "worst high vibe score", "LUN actuator", "frequency", actNum, check_Status_Strip_Status(pLUN->worstHighFrequencyVibe));
-        farm_PrePython_Int(LUNData, "LUN_actuator", "primary super parity coverage", "LUN actuator", "percentage", actNum, check_Status_Strip_Status(pLUN->primarySPCovPercentage));
-        farm_PrePython_Int(LUNData, "LUN_actuator", "primary super parity coverage SMR", "LUN actuator", "percentage", actNum, check_Status_Strip_Status(pLUN->primarySPCovPercentageSMR));
+        farm_PrePython_Int(LUNData, "LUN_actuator", "total LBAs corrected by parity sector", "LUN actuator", "counts", actNum, static_cast<int64_t> (M_DoubleWord0(check_Status_Strip_Status(pLUN->lbasCorrectedByParity))));     //!< Number of LBAs Corrected by Parity Sector
+        farm_PrePython_Int(LUNData, "LUN_actuator", "current low vibe score", "LUN actuator", "frequency", actNum, static_cast<int64_t> (check_Status_Strip_Status(pLUN->currentLowFrequencyVibe)));
+        farm_PrePython_Int(LUNData, "LUN_actuator", "current mid vibe score", "LUN actuator", "frequency", actNum, static_cast<int64_t> (check_Status_Strip_Status(pLUN->currentMidFrequencyVibe)));
+        farm_PrePython_Int(LUNData, "LUN_actuator", "current high vibe score", "LUN actuator", "frequency", actNum, static_cast<int64_t> (check_Status_Strip_Status(pLUN->currentHighFrequencyVibe)));
+        farm_PrePython_Int(LUNData, "LUN_actuator", "worst low vibe score", "LUN actuator", "frequency", actNum, static_cast<int64_t> (check_Status_Strip_Status(pLUN->worstLowFrequencyVibe)));
+        farm_PrePython_Int(LUNData, "LUN_actuator", "worst mid vibe score", "LUN actuator", "frequency", actNum, static_cast<int64_t> (check_Status_Strip_Status(pLUN->worstMidFrequencyVibe)));
+        farm_PrePython_Int(LUNData, "LUN_actuator", "worst high vibe score", "LUN actuator", "frequency", actNum, static_cast<int64_t> (check_Status_Strip_Status(pLUN->worstHighFrequencyVibe)));
+        farm_PrePython_Int(LUNData, "LUN_actuator", "primary super parity coverage", "LUN actuator", "percentage", actNum, static_cast<int64_t> (check_Status_Strip_Status(pLUN->primarySPCovPercentage)));
+        farm_PrePython_Int(LUNData, "LUN_actuator", "primary super parity coverage SMR", "LUN actuator", "percentage", actNum, static_cast<int64_t> (check_Status_Strip_Status(pLUN->primarySPCovPercentageSMR)));
     }
     else
     {
@@ -4332,9 +4300,9 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_FLED_Info(JSONNODE *LUNFLED, ui
 #endif
     if (g_dataformat == PREPYTHON_DATA)
     {
-        farm_PrePython_Int(LUNFLED, "LUN_flash_LED", "actuator id", "LUN FLED", "id", actNum, M_DoubleWordInt0(check_Status_Strip_Status(pFLED->actID)));
-        farm_PrePython_Int(LUNFLED, "LUN_flash_LED", "total flash LED events", "LUN FLED", "counts", actNum, M_DoubleWordInt0(check_Status_Strip_Status(pFLED->totalFLEDEvents)));
-        farm_PrePython_Int(LUNFLED, "LUN_flash_LED", "last entry", "LUN FLED", "index", actNum, M_DoubleWordInt0(check_Status_Strip_Status(pFLED->index)));
+        farm_PrePython_Int(LUNFLED, "LUN_flash_LED", "actuator id", "LUN FLED", "id", actNum, static_cast<int64_t> (M_DoubleWord0(check_Status_Strip_Status(pFLED->actID))));
+        farm_PrePython_Int(LUNFLED, "LUN_flash_LED", "total flash LED events", "LUN FLED", "counts", actNum, static_cast<int64_t> (M_DoubleWord0(check_Status_Strip_Status(pFLED->totalFLEDEvents))));
+        farm_PrePython_Int(LUNFLED, "LUN_flash_LED", "last entry", "LUN FLED", "index", actNum, static_cast<int64_t> (M_DoubleWord0(check_Status_Strip_Status(pFLED->index))));
 
  
 
@@ -4349,9 +4317,6 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_FLED_Info(JSONNODE *LUNFLED, ui
             json_push_back(label, json_new_a("metric_source", &myStr[0]));
             json_push_back(label, json_new_a("stat_type", "flash LED event"));
 
-
-            json_push_back(label, json_new_i("address_of_event", M_DoubleWordInt0(pFLED->flashLEDArray[i])));	           //!< Info on the last 8 Flash LED (assert) Events, wrapping array
-
             snprintf(&myStr[0], BASIC, "0x%04" PRIx16"", M_Word2(check_Status_Strip_Status(pFLED->flashLEDArray[i])));
             json_push_back(label, json_new_a("flash_LED_code", &myStr[0]));
             get_Assert_Code_Meaning(timeStr, M_Word2(check_Status_Strip_Status(pFLED->flashLEDArray[i])));
@@ -4361,10 +4326,10 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_FLED_Info(JSONNODE *LUNFLED, ui
 
 
 
-            snprintf(&timeStr[0], BASIC, "%0.03f hours", static_cast<double>(M_DoubleWord0(check_Status_Strip_Status(pFLED->timestampForLED[i])) / 3600000) * .001);
+            snprintf(&timeStr[0], BASIC, "%0.03f hours", static_cast<double>(check_Status_Strip_Status(pFLED->timestampForLED[i]) / 3600000) * .001);
             json_push_back(label, json_new_a("timeStamp_of_event", &timeStr[0]));            //!< Universal Timestamp (us) of last 8 Flash LED (assert) Events, wrapping array
 
-            json_push_back(label, json_new_i("power_cycle_event", M_DoubleWordInt0(pFLED->powerCycleOfLED[i])));	         //!< Power Cycle of the last 8 Flash LED (assert) Events, wrapping array
+            json_push_back(label, json_new_i("power_cycle_event", static_cast<int64_t> (check_Status_Strip_Status(pFLED->powerCycleOfLED[i]))));	         //!< Power Cycle of the last 8 Flash LED (assert) Events, wrapping array
 
             json_push_back(label, json_new_a("units", "event"));
             json_push_back(data, label);
@@ -4397,8 +4362,7 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_FLED_Info(JSONNODE *LUNFLED, ui
             JSONNODE* eventInfo = json_new(JSON_NODE);
             snprintf(&myStr[0], BASIC, "Event %" PRIu16"", i);
             json_set_name(eventInfo, &myStr[0]);
-
-            set_json_64_bit_With_Status(eventInfo, "Address of Event", pFLED->flashLEDArray[i], true, m_showStatusBits);	           //!< Info on the last 8 Flash LED (assert) Events, wrapping array
+           //!< Info on the last 8 Flash LED (assert) Events, wrapping array
 
             snprintf(&myStr[0], BASIC, "0x%04" PRIx16"", M_Word2(check_Status_Strip_Status(pFLED->flashLEDArray[i])));
             json_push_back(eventInfo, json_new_a("Flash LED Code", &myStr[0]));
@@ -4480,13 +4444,13 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Reallocation(JSONNODE* LUNNReal
     if (g_dataformat == PREPYTHON_DATA)
     {
         
-        farm_PrePython_Int(LUNNReallocation, "LUN_reallocation", "actuator", "LUN reallocation", "id", actNum, M_DoubleWordInt0(pReal->actID));
-        farm_PrePython_Int(LUNNReallocation, "LUN_reallocation", "total reallocated sectors", "LUN reallocation", "counts", actNum, M_DoubleWordInt0(pReal->numberReallocatedSectors));
-        farm_PrePython_Int(LUNNReallocation, "LUN_reallocation", "total reallocated sectors candidate", "LUN reallocation", "counts", actNum, M_DoubleWordInt0(pReal->numberReallocatedCandidates));
+        farm_PrePython_Int(LUNNReallocation, "LUN_reallocation", "actuator", "LUN reallocation", "id", actNum, static_cast<int64_t> (M_DoubleWord0(pReal->actID)));
+        farm_PrePython_Int(LUNNReallocation, "LUN_reallocation", "total reallocated sectors", "LUN reallocation", "counts", actNum, static_cast<int64_t> (M_DoubleWord0(check_Status_Strip_Status(pReal->numberReallocatedSectors))));
+        farm_PrePython_Int(LUNNReallocation, "LUN_reallocation", "total reallocated sectors candidate", "LUN reallocation", "counts", actNum, static_cast<int64_t> (M_DoubleWord0(check_Status_Strip_Status(pReal->numberReallocatedCandidates))));
         for (i = 0; i < REALLOCATIONEVENTS; i++)
         {
             get_Reallocation_Cause_Meanings(myStr, i);
-            farm_PrePython_Int(LUNNReallocation, "LUN_reallocation", &myStr[0], "LUN reallocation", "counts", actNum, M_DoubleWordInt0(pReal->reallocatedCauses[i]));
+            farm_PrePython_Int(LUNNReallocation, "LUN_reallocation", &myStr[0], "LUN reallocation", "counts", actNum, static_cast<int64_t> (M_DoubleWord0(check_Status_Strip_Status(pReal->reallocatedCauses[i]))));
         }
     }
     else
