@@ -3410,7 +3410,9 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 }
                 else
                 {
-                    set_json_64_bit_With_Status(headPage, &myHeader[0], vFarmFrame[page].currentH2STAsymmetryByHead.headValue[loopCount], false, m_showStatusBits);  //!< Current H2SAT asymmetry, averaged across Test Zone
+                    snprintf(&myStr[0], BASIC, "%" PRIi32"", M_DoubleWordInt0(vFarmFrame[page].currentH2STAsymmetryByHead.headValue[loopCount]));
+                    set_json_string_With_Status(headPage, &myHeader[0], &myStr[0], vFarmFrame[page].currentH2STAsymmetryByHead.headValue[loopCount], m_showStatusBits);
+                    //set_json_64_bit_With_Status(headPage, &myHeader[0], vFarmFrame[page].currentH2STAsymmetryByHead.headValue[loopCount], false, m_showStatusBits);  //!< Current H2SAT asymmetry, averaged across Test Zone
                 }
             }
             break;
