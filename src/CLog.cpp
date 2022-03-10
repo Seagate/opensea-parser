@@ -197,5 +197,58 @@ eReturnValues CLog::read_In_Buffer()
 
     return SUCCESS;
 }
+//-----------------------------------------------------------------------------
+//
+//! \fn read_In_Log()
+//
+//! \brief
+//!   Description: it will open the file and reads in the log not as a binary file
+//
+//  Entry:
+//
+//  Exit:
+//!   \return eReturnValues
+//
+//---------------------------------------------------------------------------
+void CLog::read_In_Log()
+{
+    m_logStatus = IN_PROGRESS;
+
+    //open the file and see what the size is first
+    std::ifstream fb(m_fileName.c_str(), std::ios::in);
+    if (fb.is_open())
+    {
+        fb.seekg(0, std::ios::end);
+        m_size = (size_t)fb.tellg();
+        fb.seekg(0, std::ios::beg);			//set back to beginning of the file now that we know the size
+        fb.close();
+    }
+    else
+    {
+        m_logStatus = FILE_OPEN_ERROR;
+    }
+    //set the size of the buffer
+    m_bufferData = (char*)calloc(m_size, sizeof(char));
+
+    // now we need to read in the buffer 
+    if (m_size != 0 && m_logStatus != FILE_OPEN_ERROR)
+    {
+        char* pData = &m_bufferData[0];
+        std::fstream logFile(m_fileName.c_str(), std::ios::in );
+        if (logFile.is_open())
+        {
+            logFile.read(pData, m_size);
+            logFile.close();
+            m_logStatus = SUCCESS;
+        }
+        else
+        {
+            m_logStatus = FILE_OPEN_ERROR;
+            //return FILE_OPEN_ERROR;
+        }
+    }
+
+    //return SUCCESS;
+}
 
 

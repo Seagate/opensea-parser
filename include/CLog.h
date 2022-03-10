@@ -44,10 +44,12 @@ namespace opensea_parser {
         void get_CLog();
 		void get_CLog(const uint8_t * pBuf, uint32_t logSize);
         inline eReturnValues read_In_Buffer();
+        void read_In_Log();
         inline std::string get_Name() const { return m_name; }
         inline std::string get_File_Name() const { return m_fileName; }
         inline size_t get_Size() const { return m_size; }
         inline uint8_t *get_Buffer(){ return reinterpret_cast<uint8_t *>(m_bufferData); };
+        char * get_log() { return m_bufferData; };
         inline eReturnValues get_Log_Status(){ return m_logStatus; };
         inline void set_Log_Status(eReturnValues status){ m_logStatus = status; };
 	};
