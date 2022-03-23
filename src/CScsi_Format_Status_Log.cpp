@@ -37,6 +37,7 @@ CScsiFormatStatusLog::CScsiFormatStatusLog()
     , m_bufferLength()
     , m_Value(0)
     , m_Format()
+    , m_FormatDataOutParamValue()
 {
     if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
@@ -66,6 +67,7 @@ CScsiFormatStatusLog::CScsiFormatStatusLog(uint8_t * buffer, size_t bufferSize, 
     , m_bufferLength(bufferSize)
     , m_Value(0)
     , m_Format()
+    , m_FormatDataOutParamValue()
 {
     if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
@@ -168,10 +170,7 @@ void CScsiFormatStatusLog::get_Format_Parameter_Code_Description(std::string *va
 //---------------------------------------------------------------------------
 void CScsiFormatStatusLog::process_Format_Status_Data(JSONNODE *formatData)
 {
-    std::string myStr = "";
-    myStr.resize(BASIC);
-    std::string myHeader = "";
-    myHeader.resize(BASIC);
+    std::string myHeader;
 
 #if defined _DEBUG
     printf("Format Status Log\n");
@@ -225,10 +224,7 @@ void CScsiFormatStatusLog::process_Format_Status_Data(JSONNODE *formatData)
 //---------------------------------------------------------------------------
 void CScsiFormatStatusLog::process_Format_Status_Data_Variable_Length(JSONNODE * formatData)
 {
-    std::string myStr = "";
-    myStr.resize(BASIC);
-    std::string myHeader = "";
-    myHeader.resize(BASIC);
+    std::string myHeader;
 
 #if defined _DEBUG
     printf("Format Status Log  \n");
@@ -289,24 +285,21 @@ void CScsiFormatStatusLog::process_Format_Status_Data_Variable_Length(JSONNODE *
 //---------------------------------------------------------------------------
 eReturnValues CScsiFormatStatusLog::get_Format_Status_Data(JSONNODE *masterData)
 {
-    std::string headerStr = "";
-    headerStr.resize(BASIC);
     eReturnValues retStatus = IN_PROGRESS;
 
     if (pData != NULL)
     {
-        headerStr = "Format Status Log 08h";
         JSONNODE *pageInfo = json_new(JSON_NODE);
-        json_set_name(pageInfo, headerStr.c_str());
+        json_set_name(pageInfo, "Format Status Log 08h");
 
         for (size_t offset = 0; offset < m_PageLength; )
         {
             if (offset < m_bufferLength && offset < UINT16_MAX)
             {
-                m_Format = (sFormatParams *)&pData[offset];
+                m_Format = reinterpret_cast<sFormatParams*>(&pData[offset]);
                 offset += sizeof(sFormatParams);
                 byte_Swap_16(&m_Format->paramCode);
-                if (m_Format->paramCode == 0x0000 && (m_Format->paramLength > 8))
+                if (m_Format->paramCode == UINT8_C(0x0000) && (m_Format->paramLength > 8))
                 {
                     if ((offset + m_Format->paramLength) < m_bufferLength)
                     {

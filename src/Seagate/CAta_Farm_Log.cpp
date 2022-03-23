@@ -74,7 +74,7 @@ CATA_Farm_Log::CATA_Farm_Log(uint8_t *bufferData, size_t bufferSize, bool showSt
     , m_MinorRev(0)
 {
     pBuf = new uint8_t[bufferSize];                             // new a buffer to the point                
-#ifndef _WIN64
+#ifndef __STDC_SECURE_LIB__
     memcpy(pBuf, bufferData, bufferSize);
 #else
     memcpy_s(pBuf, bufferSize, bufferData, bufferSize);// copy the buffer data to the class member pBuf
@@ -270,8 +270,7 @@ eReturnValues CATA_Farm_Log::print_Header(JSONNODE *masterData)
 //---------------------------------------------------------------------------
 eReturnValues CATA_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint32_t page)
 {
-    std::string myStr = " ";
-    myStr.resize(BASIC);
+    std::string myStr;
     JSONNODE *pageInfo = json_new(JSON_NODE);
 
 #if defined _DEBUG
@@ -450,8 +449,6 @@ eReturnValues CATA_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint3
 //---------------------------------------------------------------------------
 eReturnValues CATA_Farm_Log::print_Work_Load(JSONNODE *masterData, uint32_t page)
 {
-    std::string myStr = " ";
-    myStr.resize(BASIC);
     JSONNODE *pageInfo = json_new(JSON_NODE);
 
 #if defined _DEBUG
@@ -594,12 +591,9 @@ eReturnValues CATA_Farm_Log::print_Work_Load(JSONNODE *masterData, uint32_t page
 //---------------------------------------------------------------------------
 eReturnValues CATA_Farm_Log::print_Error_Information(JSONNODE *masterData, uint32_t page)
 {
-    std::string myStr = " ";
-    std::string timeStr = " ";
-    myStr.resize(BASIC);
-    timeStr.resize(BASIC);
+    std::string myStr;
+    std::string timeStr;
     uint32_t loopCount = 0;
-    myStr.resize(BASIC);
     JSONNODE *pageInfo = json_new(JSON_NODE);
 
 #if defined _DEBUG
@@ -783,7 +777,7 @@ eReturnValues CATA_Farm_Log::print_Error_Information(JSONNODE *masterData, uint3
 
     for (loopCount = 0; loopCount < REALLOCATIONEVENTS; ++loopCount)
     {
-        _common.get_Reallocation_Cause_Meanings(myStr, loopCount);
+        _common.get_Reallocation_Cause_Meanings(myStr, static_cast<uint16_t>(loopCount));
         set_json_64_bit_With_Status(pageInfo, myStr, vFarmFrame[page].errorPage.reallocatedSectors[loopCount], false, m_showStatusBits);
     }
 
@@ -858,8 +852,6 @@ eReturnValues CATA_Farm_Log::print_Error_Information(JSONNODE *masterData, uint3
 //---------------------------------------------------------------------------
 eReturnValues CATA_Farm_Log::print_Enviroment_Information(JSONNODE *masterData, uint32_t page)
 {
-    std::string myStr = " ";
-    myStr.resize(BASIC);
     JSONNODE *pageInfo = json_new(JSON_NODE);
 
 #if defined _DEBUG
@@ -1114,10 +1106,7 @@ eReturnValues CATA_Farm_Log::print_Enviroment_Information(JSONNODE *masterData, 
 //---------------------------------------------------------------------------
 eReturnValues CATA_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint32_t page)
 {
-    std::string myStr = " ";
-    myStr.resize(BASIC);
-    std::string myHeader = "";
-    myHeader.resize(BASIC);
+    std::string myStr;
     JSONNODE *pageInfo = json_new(JSON_NODE);
 
 #if defined _DEBUG
@@ -1274,10 +1263,7 @@ eReturnValues CATA_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint32
 eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32_t page)
 {
     uint32_t loopCount = 0;
-    std::string myStr = " ";
-    myStr.resize(BASIC);
-    std::string myHeader = "";
-    myHeader.resize(BASIC);
+    std::string myHeader;
     JSONNODE *headInfo = json_new(JSON_NODE);
 
 #if defined _DEBUG
@@ -1681,37 +1667,37 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         uint64_t dsHead = check_Status_Strip_Status(vFarmFrame[page].reliPage.FAFHBitErrorRate[loopCount].inner);                   //!< [24][3] FAFH Bit Error Rate, write then read BER on reserved tracks
-        int16_t whole = M_WordInt2(dsHead);                         // get 5:4 whole part of the float
+        int16_t localWhole = M_WordInt2(dsHead);                         // get 5:4 whole part of the float
         double decimal = M_DoubleWordInt0(dsHead);  // get 3:0 for the Deciaml Part of the float
         temp.str().clear(); temp.clear();
         temp << "FAFH Bit Error Rate inner by Head " << std::dec << loopCount;// Head count
         myHeader.assign(temp.str());
         temp.str().clear(); temp.clear();
-        temp << std::dec << whole << std::setprecision(0) << std::setw(4) << std::setfill('0') << decimal;
+        temp << std::dec << localWhole << std::setprecision(0) << std::setw(4) << std::setfill('0') << decimal;
         set_json_string_With_Status(headInfo, myHeader, temp.str(), vFarmFrame[page].reliPage.FAFHBitErrorRate[loopCount].inner, m_showStatusBits);
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         uint64_t dsHead = check_Status_Strip_Status(vFarmFrame[page].reliPage.FAFHBitErrorRate[loopCount].middle);                   //!< [24][3] FAFH Bit Error Rate, write then read BER on reserved tracks 
-        int16_t whole = M_WordInt2(dsHead);                         // get 5:4 whole part of the float
+        int16_t localWhole = M_WordInt2(dsHead);                         // get 5:4 whole part of the float
         double decimal = M_DoubleWordInt0(dsHead);  // get 3:0 for the Deciaml Part of the float
         temp.str().clear(); temp.clear();
         temp << "FAFH Bit Error Rate middle by Head " << std::dec << loopCount;// Head count
         myHeader.assign(temp.str());
         temp.str().clear(); temp.clear();
-        temp << std::dec << whole << std::setprecision(0) << std::setw(4) << std::setfill('0') << decimal;
+        temp << std::dec << localWhole << std::setprecision(0) << std::setw(4) << std::setfill('0') << decimal;
         set_json_string_With_Status(headInfo, myHeader, temp.str(), vFarmFrame[page].reliPage.FAFHBitErrorRate[loopCount].middle, m_showStatusBits);
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         uint64_t dsHead = check_Status_Strip_Status(vFarmFrame[page].reliPage.FAFHBitErrorRate[loopCount].outer);                   //!< [24][3] FAFH Bit Error Rate, write then read BER on reserved tracks 
-        int16_t whole = M_WordInt2(dsHead);                         // get 5:4 whole part of the float
+        int16_t localWhole = M_WordInt2(dsHead);                         // get 5:4 whole part of the float
         double decimal = M_DoubleWordInt0(dsHead);  // get 3:0 for the Deciaml Part of the float
         temp.str().clear(); temp.clear();
         temp << "FAFH Bit Error Rate outer by Head " << std::dec << loopCount;// Head count
         myHeader.assign(temp.str());
         temp.str().clear(); temp.clear();
-        temp << std::dec << whole << std::setprecision(0) << std::setw(4) << std::setfill('0') << decimal;
+        temp << std::dec << localWhole << std::setprecision(0) << std::setw(4) << std::setfill('0') << decimal;
         set_json_string_With_Status(headInfo, myHeader, temp.str(), vFarmFrame[page].reliPage.FAFHBitErrorRate[loopCount].outer, m_showStatusBits);
     }
 

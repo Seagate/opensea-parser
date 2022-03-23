@@ -86,7 +86,7 @@ CExtComp::CExtComp(const std::string &fileName, JSONNODE *masterData)
         {
             m_logSize = cCLog->get_Size();
             pData = new uint8_t[m_logSize];								// new a buffer to the point				
-#ifndef _WIN64
+#ifndef __STDC_SECURE_LIB__
             memcpy(pData, cCLog->get_Buffer(), m_logSize);
 #else
             memcpy_s(pData, m_logSize, cCLog->get_Buffer(), m_logSize);// copy the buffer data to the class member pBuf
@@ -202,7 +202,6 @@ eReturnValues CExtComp::get_State_Meaning(std::string *stateMeaning, uint8_t sta
 eReturnValues CExtComp::parse_Ext_Comp_Structure(uint32_t structNumber, uint32_t sector, JSONNODE *structureData)
 {
     std::string myStr = "Parse Ext Comp Log";
-    myStr.resize(BASIC);
     uint8_t  deviceControl = 0;
     uint16_t featureField = 0;
     uint16_t countField = 0;

@@ -117,9 +117,6 @@ CScsiNonMediumErrorCountLog::~CScsiNonMediumErrorCountLog()
 //---------------------------------------------------------------------------
 void CScsiNonMediumErrorCountLog::process_Non_Medium_Error_Count_Data(JSONNODE* countData)
 {
-	std::string myStr = "";
-	myStr.resize(BASIC);
-
 #if defined _DEBUG
 	printf("Non-Medium Error Count Log Parameters\n");
 #endif

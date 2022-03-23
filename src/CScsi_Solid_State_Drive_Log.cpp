@@ -150,10 +150,7 @@ bool CScsiSolidStateDriveLog::get_SSD_Parameter_Code_Description(std::string *ss
 void CScsiSolidStateDriveLog::process_Solid_State_Drive_Data(JSONNODE *ssdData)
 {
     bool descriptionFound = false;
-    std::string myStr = "";
-    myStr.resize(BASIC);
-    std::string myHeader = "";
-    myHeader.resize(BASIC);
+    std::string myHeader;
 
 #if defined _DEBUG
     printf("Solid State Drive Log  \n");
@@ -213,10 +210,6 @@ void CScsiSolidStateDriveLog::process_Solid_State_Drive_Data(JSONNODE *ssdData)
 //---------------------------------------------------------------------------
 eReturnValues CScsiSolidStateDriveLog::get_Solid_State_Drive_Data(JSONNODE *masterData)
 {
-    std::string myStr = "";
-    myStr.resize(BASIC);
-    std::string headerStr = "";
-    headerStr.resize(BASIC);
     eReturnValues retStatus = IN_PROGRESS;
     if (pData != NULL)
     {
@@ -227,7 +220,7 @@ eReturnValues CScsiSolidStateDriveLog::get_Solid_State_Drive_Data(JSONNODE *mast
         {
             if (offset < m_bufferLength && offset < UINT16_MAX)
             {
-                m_SSDParam = (sLogParams*)&pData[offset];
+                m_SSDParam = reinterpret_cast<sLogParams*>(&pData[offset]);
                 offset += sizeof(sLogParams);
                 switch (m_SSDParam->paramLength)
                 {

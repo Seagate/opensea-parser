@@ -114,8 +114,6 @@ CScsiTemperatureLog::~CScsiTemperatureLog()
 //---------------------------------------------------------------------------
 void CScsiTemperatureLog::get_Temp(JSONNODE *tempData)
 {
-	std::string myStr = "";
-	myStr.resize(BASIC);
 #if defined _DEBUG
 	printf("Temperature Log Page \n");
 	printf("\tParameter Code =   0x%04" PRIx16"  \n", m_Page->paramCode);

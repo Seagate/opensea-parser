@@ -74,7 +74,7 @@ CScsiScanLog::CScsiScanLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLen
 		printf("%s \n", m_ScanName.c_str());
 	}
     pData = new uint8_t[pageLength];								// new a buffer to the point				
-#ifndef _WIN64
+#ifndef __STDC_SECURE_LIB__
     memcpy(pData, buffer, pageLength);
 #else
     memcpy_s(pData, bufferSize, buffer, pageLength);// copy the buffer data to the class member pBuf
@@ -197,15 +197,13 @@ void CScsiScanLog::get_Scan_Status_Description(std::string *scan)
 //---------------------------------------------------------------------------
 void CScsiScanLog::process_Scan_Status_Data(JSONNODE *scanData)
 {
-	std::string myStr = "";
-	myStr.resize(BASIC);
+	std::string myStr;
 #if defined _DEBUG
 	printf("Background Scan Status Description \n");
 #endif
 	byte_Swap_16(&m_ScanParam->paramCode);
-	myStr.assign("Background Scan Status");
 	JSONNODE *statusInfo = json_new(JSON_NODE);
-	json_set_name(statusInfo, myStr.c_str());
+	json_set_name(statusInfo, "Background Scan Status");
 
     std::ostringstream temp;
     temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << m_ScanParam->paramCode;
@@ -311,11 +309,8 @@ void CScsiScanLog::get_Scan_Defect_Status_Description(std::string *defect)
 //---------------------------------------------------------------------------
 void CScsiScanLog::process_Defect_Data(JSONNODE *defectData)
 {
-	std::string myStr = "";
-	myStr.resize(BASIC);
 	std::string headerStr = "";
     std::ostringstream temp;
-	headerStr.resize(BASIC);
 #if defined _DEBUG
 	printf("Background Scan Defect Description \n");
 #endif
@@ -391,10 +386,6 @@ void CScsiScanLog::process_Defect_Data(JSONNODE *defectData)
 //---------------------------------------------------------------------------
 void CScsiScanLog::process_other_param_data(JSONNODE *scanData, size_t offset)
 {
-    std::string myStr = "";
-    myStr.resize(BASIC);
-    std::string headerStr = "";
-    headerStr.resize(BASIC);
 #if defined _DEBUG
     printf("Background Scan Defect Description \n");
 #endif

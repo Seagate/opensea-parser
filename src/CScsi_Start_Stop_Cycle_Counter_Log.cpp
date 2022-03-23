@@ -66,7 +66,7 @@ CScsiStartStop::CScsiStartStop(uint8_t * buffer, size_t bufferSize, JSONNODE *ma
     if (buffer != NULL)
     {
         pData = new uint8_t[bufferSize];								// new a buffer to the point				
-#ifndef _WIN64
+#ifndef __STDC_SECURE_LIB__
         memcpy(pData, buffer, bufferSize);
 #else
         memcpy_s(pData, bufferSize, buffer, bufferSize);// copy the buffer data to the class member pBuf
@@ -133,8 +133,6 @@ CScsiStartStop::~CScsiStartStop()
 //---------------------------------------------------------------------------
 eReturnValues CScsiStartStop::parse_Start_Stop_Log(JSONNODE *masterData)
 {
-    std::string myStr = "";
-    myStr.resize(BASIC);
     eReturnValues status = IN_PROGRESS;
     eReturnValues retStatus = IN_PROGRESS;
     JSONNODE *pageInfo = json_new(JSON_NODE);
@@ -248,8 +246,7 @@ eReturnValues CScsiStartStop::week_Year_Print(JSONNODE *data, uint16_t param, ui
 {
 #define YEARSIZE 4
 #define WEEKSIZE 2
-	std::string myStr = "";
-	myStr.resize(BASIC);
+	std::string myStr;
 
 	JSONNODE *dateInfo = json_new(JSON_NODE);
 	json_set_name(dateInfo, strHeader.c_str());
@@ -270,7 +267,7 @@ eReturnValues CScsiStartStop::week_Year_Print(JSONNODE *data, uint16_t param, ui
         json_push_back(dateInfo, json_new_a("Control Byte", temp.str().c_str()));
     }
 	
-    if (year != 0x20202020)
+    if (year != UINT32_C(0x20202020))
     {
         myStr.assign(reinterpret_cast<const char*>(&year), sizeof(year));
     }
@@ -279,7 +276,7 @@ eReturnValues CScsiStartStop::week_Year_Print(JSONNODE *data, uint16_t param, ui
         myStr = "0000";
     }
 	json_push_back(dateInfo, json_new_a(strYear.c_str(), myStr.c_str()));
-    if (week != 0x2020)
+    if (week != UINT16_C(0x2020))
     {
         myStr.assign(reinterpret_cast<const char*>(&week), sizeof(week));
     }
@@ -308,9 +305,6 @@ eReturnValues CScsiStartStop::week_Year_Print(JSONNODE *data, uint16_t param, ui
 //---------------------------------------------------------------------------
 eReturnValues CScsiStartStop::get_Count(JSONNODE *countData, uint16_t param, uint8_t paramlength, uint8_t paramConByte, uint32_t count, const std::string strHeader, const std::string strCount)
 {
-	std::string myStr = "";
-	myStr.resize(BASIC);
-
 	JSONNODE *countInfo = json_new(JSON_NODE);
 	json_set_name(countInfo, strHeader.c_str());
 

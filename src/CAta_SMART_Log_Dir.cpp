@@ -69,7 +69,7 @@ CAta_SMART_Log_Dir::CAta_SMART_Log_Dir(const std::string &fileName)
         {
             size_t bufferSize = cCLog->get_Size();
             pData = new uint8_t[cCLog->get_Size()];								// new a buffer to the point				
-#ifndef _WIN64
+#ifndef __STDC_SECURE_LIB__
             memcpy(pData, cCLog->get_Buffer(), bufferSize);
 #else
             memcpy_s(pData, bufferSize, cCLog->get_Buffer(), bufferSize);// copy the buffer data to the class member pBuf
@@ -171,7 +171,7 @@ eReturnValues CAta_SMART_Log_Dir::parse_SMART_Log_Dir()
         {
             sLogDetailStructure logDetails;
             logDetails.numberOfPages = logSize;
-            logDetails.logAddress = offset / 2;
+            logDetails.logAddress = static_cast<uint8_t>(offset / UINT16_C(2));
 
             if (!m_hasHostSpecific && is_Host_Specific_Log(logDetails.logAddress))
             {
@@ -217,11 +217,6 @@ bool CAta_SMART_Log_Dir::is_Vendor_Specific_Log(uint8_t logAddress)
 //---------------------------------------------------------------------------
 eReturnValues CAta_SMART_Log_Dir::print_SMART_Log_Dir(JSONNODE *masterData)
 {
-    std::string myStr = "";
-    myStr.resize(BASIC);
-    std::string printStr;
-    printStr.resize(BASIC);
-
     JSONNODE *dirInfo = json_new(JSON_NODE);
     json_set_name(dirInfo, "SMART Log Directory");
 

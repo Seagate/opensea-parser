@@ -69,7 +69,7 @@ CScsiPowerConditiontLog::CScsiPowerConditiontLog(uint8_t * buffer, size_t buffer
 		printf("%s \n", m_PowerName.c_str());
 	}
     pData = new uint8_t[pageLength];								// new a buffer to the point				
-#ifndef _WIN64
+#ifndef __STDC_SECURE_LIB__
     memcpy(pData, buffer, pageLength);
 #else
     memcpy_s(pData, pageLength, buffer, pageLength);// copy the buffer data to the class member pBuf
@@ -189,7 +189,6 @@ void CScsiPowerConditiontLog::process_List_Information(JSONNODE *powerData)
 {
     bool typeFound = false;
 	std::string myStr = "";
-	myStr.resize(BASIC);
 #if defined _DEBUG
 	printf("Power Condition Transitions Log Page\n");
 #endif

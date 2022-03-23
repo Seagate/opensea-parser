@@ -67,7 +67,7 @@ namespace opensea_parser {
 #define MODEL_NUMBER_LEN        20
 #define FIRMWARE_REV_LEN        4
 #define SAS_FIRMWARE_REV_LEN    4
-#define BASIC                   80
+//#define BASIC                   80
 
 #define SAS_SUBPAGE_ZERO			0x00
 #define SAS_SUBPAGE_ONE				0x01

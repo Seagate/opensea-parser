@@ -160,7 +160,6 @@ void CScsiCacheMemStatLog::get_Parameter_Code_Description(uint16_t paramCode, st
 void opensea_parser::CScsiCacheMemStatLog::process_Cache_Memory_Statistics_interval_Data(JSONNODE * cacheData)
 {
     std::string myStr = "";
-    myStr.resize(BASIC);
 
 #if defined_DEBUG
     printf("Cache Memory Statistics Log Description\n");
@@ -198,10 +197,8 @@ void opensea_parser::CScsiCacheMemStatLog::process_Cache_Memory_Statistics_inter
 //---------------------------------------------------------------------------
 void CScsiCacheMemStatLog::process_Generic_Data(JSONNODE *genData)
 {
-    std::string myStr = "";
-    myStr.resize(BASIC);
-    std::string myHeader = "";
-    myHeader.resize(BASIC);
+    std::string myStr;
+    std::string myHeader;
 
 #if defined_DEBUG
     printf("Cache Memory Statistics Log Description\n");
@@ -266,10 +263,8 @@ void CScsiCacheMemStatLog::populate_Generic_Param_Value(uint8_t paramLength, uin
 eReturnValues CScsiCacheMemStatLog::get_Cache_Memory_Statistics_Data(JSONNODE *masterData)
 {
 
-    std::string myStr = "";
-    myStr.resize(BASIC);
-    std::string headerStr = "";
-    headerStr.resize(BASIC);
+    std::string myStr;
+    std::string headerStr;
     eReturnValues retStatus = IN_PROGRESS;
     if (pData != NULL)
     {

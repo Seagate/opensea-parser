@@ -110,7 +110,7 @@ void CLog::get_CLog()
     if (fb.is_open())
     {
         fb.seekg(0, std::ios::end);
-        m_size = fb.tellg();
+        m_size = static_cast<size_t>(fb.tellg());
         fb.seekg(0, std::ios::beg);			//set back to beginning of the file now that we know the size
         fb.close();
     }
@@ -148,7 +148,7 @@ void CLog::get_CLog(const uint8_t * pBuf, uint32_t logSize)
 		m_bufferData = static_cast<char*>(calloc(logSize, sizeof(char)));
 		if (m_bufferData)
 		{
-#ifndef _WIN64 
+#ifndef __STDC_SECURE_LIB__ 
             memcpy(m_bufferData, pBuf, logSize);
 #else
 			memcpy_s(m_bufferData, logSize, pBuf, logSize);

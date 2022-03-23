@@ -84,7 +84,7 @@ CAtaPowerConditionsLog::CAtaPowerConditionsLog(std::string filename)
         {
             size_t logSize = cCLog->get_Size();
             m_powerConditionLog = new uint8_t[logSize];								// new a buffer to the point				
-#ifndef _WIN64
+#ifndef __STDC_SECURE_LIB__
             memcpy(m_powerConditionLog, cCLog->get_Buffer(), logSize);
 #else
             memcpy_s(m_powerConditionLog, logSize, cCLog->get_Buffer(), logSize);// copy the buffer data to the class member pBuf
@@ -142,7 +142,7 @@ CAtaPowerConditionsLog::CAtaPowerConditionsLog(tDataPtr pData, JSONNODE *masterD
     , conditionFlags()
 {
     m_powerConditionLog = new uint8_t[pData.DataLen];								// new a buffer to the point				
-#ifndef _WIN64
+#ifndef __STDC_SECURE_LIB__
     memcpy(m_powerConditionLog, static_cast<uint8_t*>(pData.pData), pData.DataLen);
 #else
     memcpy_s(m_powerConditionLog, pData.DataLen, static_cast<uint8_t*>(pData.pData), pData.DataLen);// copy the buffer data to the class member pBuf
@@ -303,9 +303,6 @@ eReturnValues CAtaPowerConditionsLog::get_Power_Condition_Flags(uint8_t readFlag
 //---------------------------------------------------------------------------
 eReturnValues CAtaPowerConditionsLog::printPowerConditionLog(JSONNODE *masterData)
 {
-    std::string myStr = "";
-    myStr.resize(BASIC);
-
     m_myJSON = json_new(JSON_NODE);
 
     JSONNODE *idleAConditionInfo = json_new(JSON_NODE);
@@ -355,8 +352,6 @@ eReturnValues CAtaPowerConditionsLog::printPowerConditionLog(JSONNODE *masterDat
 //---------------------------------------------------------------------------
 eReturnValues CAtaPowerConditionsLog::printPowerLogDescriptor(JSONNODE *masterData, sPowerLogDescriptor *logDescriptor)
 {
-    std::string myStr = "";
-    myStr.resize(BASIC);
     get_Power_Condition_Flags(logDescriptor->bitFlags);
     if (logDescriptor != NULL)
     {

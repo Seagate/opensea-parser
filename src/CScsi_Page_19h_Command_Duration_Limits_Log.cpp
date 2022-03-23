@@ -147,10 +147,7 @@ void CScsiCmdDurationLimitsLog::get_Parameter_Code_Description(uint16_t paramCod
 //---------------------------------------------------------------------------
 void CScsiCmdDurationLimitsLog::process_Generic_Data(JSONNODE* genericData)
 {
-    std::string myStr = "";
-    myStr.resize(BASIC);
-    std::string myHeader = "";
-    myHeader.resize(BASIC);
+    std::string myHeader;
 
 #if defined_DEBUG
     printf("Genaric Log Description\n");
@@ -177,10 +174,7 @@ void CScsiCmdDurationLimitsLog::process_Generic_Data(JSONNODE* genericData)
 //---------------------------------------------------------------------------
 void CScsiCmdDurationLimitsLog::process_Achievable_Data(JSONNODE * achievableData)
 {
-    std::string myStr = "";
-    myStr.resize(BASIC);
-    std::string myHeader = "";
-    myHeader.resize(BASIC);
+    std::string myHeader;
 
 #if defined_DEBUG
     printf("Achievable Latency Target Log Description\n");
@@ -208,8 +202,7 @@ void CScsiCmdDurationLimitsLog::process_Achievable_Data(JSONNODE * achievableDat
 //---------------------------------------------------------------------------
 void CScsiCmdDurationLimitsLog::process_Duration_Limits_Data(JSONNODE* limitData)
 {
-    std::string myStr = "";
-    myStr.resize(BASIC);
+    std::string myStr;
 
 #if defined_DEBUG
     printf("Command DurationLimits Log Description\n");
@@ -280,18 +273,11 @@ void CScsiCmdDurationLimitsLog::populate_Generic_Param_Value(uint8_t paramLength
 eReturnValues CScsiCmdDurationLimitsLog::get_Limits_Data(JSONNODE *masterData)
 {
 
-    std::string myStr = "";
-    myStr.resize(BASIC);
-    std::string headerStr = "";
-    headerStr.resize(BASIC);
     eReturnValues retStatus = IN_PROGRESS;
     if (pData != NULL)
     {
-        headerStr.assign("Command Duration Limits Log - 19h, 21h");
         JSONNODE* pageInfo = json_new(JSON_NODE);
-
-        json_set_name(pageInfo, headerStr.c_str());
-
+        json_set_name(pageInfo, "Command Duration Limits Log - 19h, 21h");
         for (uint32_t offset = 0; offset < m_PageLength; )
         {
             if (offset < m_bufferLength && offset < UINT16_MAX)

@@ -276,10 +276,7 @@ void CScsiSupportedLog::get_Supported_And_Subpage_Description(std::string *descr
 //---------------------------------------------------------------------------
 void CScsiSupportedLog::process_Supported_Data(JSONNODE *SupportData)
 {
-	std::string myStr = "";
-	myStr.resize(BASIC);
-	std::string myHeader = "";
-	myHeader.resize(BASIC);
+	std::string myStr;
 #if defined _DEBUG
 	printf("Supported Log Pages \n");
 #endif
@@ -290,7 +287,7 @@ void CScsiSupportedLog::process_Supported_Data(JSONNODE *SupportData)
          temp << " SubPage 0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_SubPage);
     }
     get_Supported_And_Subpage_Description(&myStr);
-	json_push_back(SupportData, json_new_a(myHeader.c_str(), myStr.c_str()));
+	json_push_back(SupportData, json_new_a(temp.str().c_str(), myStr.c_str()));
 }
 //-----------------------------------------------------------------------------
 //
@@ -308,14 +305,11 @@ void CScsiSupportedLog::process_Supported_Data(JSONNODE *SupportData)
 //---------------------------------------------------------------------------
 eReturnValues CScsiSupportedLog::get_Supported_Log_Data(JSONNODE *masterData)
 {
-	std::string myStr = "";
-	myStr.resize(BASIC);
 	eReturnValues retStatus = IN_PROGRESS;
 	if (pData != NULL)
 	{
-		myStr = "Supported Logs";
 		JSONNODE *pageInfo = json_new(JSON_NODE);
-		json_set_name(pageInfo, myStr.c_str());
+		json_set_name(pageInfo, "Supported Logs");
 
 		for (size_t offset = 0; offset < static_cast<size_t>(m_PageLength); )
 		{

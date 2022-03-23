@@ -117,7 +117,6 @@ CScsiFactoryLog::~CScsiFactoryLog()
 void CScsiFactoryLog::process_Factorty_Data(JSONNODE *factoryData)
 {
     std::string myStr = "";
-    myStr.resize(BASIC);
     if (m_Value != 0)
     {
 #if defined _DEBUG

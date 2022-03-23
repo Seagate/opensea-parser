@@ -175,8 +175,7 @@ bool CScsiCacheLog::get_Cache_Parameter_Code_Description(std::string *cache)
 //---------------------------------------------------------------------------
 void CScsiCacheLog::process_Cache_Event_Data(JSONNODE *cacheData)
 {
-    std::string myStr = "";
-    myStr.resize(BASIC);
+    std::string myStr;
 #if defined _DEBUG
     printf("Cache Event Description \n");
 #endif

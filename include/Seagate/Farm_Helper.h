@@ -47,8 +47,6 @@ namespace opensea_parser {
 	//-----------------------------------------------------------------------------
 	inline void set_json_64_bit_With_Status(JSONNODE *nowNode, const std::string & myStr, uint64_t value, bool hexPrint, bool showStatusBits)
 	{
-		std::string printStr = " ";
-		printStr.resize(BASIC);
 		std::string lowStr = "64 bit Value Lower value";
 		std::string upperStr = "64 bit Value Upper value";
         //value = check_Status_Strip_Status(value);
@@ -117,8 +115,6 @@ namespace opensea_parser {
 	//-----------------------------------------------------------------------------
 	inline void set_json_int_With_Status(JSONNODE *nowNode, const std::string & myStr, int64_t value, bool showStatusBits)
 	{
-		std::string printStr = " ";
-		printStr.resize(BASIC);
 		if (showStatusBits)
 		{
 			JSONNODE *bigBit = json_new(JSON_NODE);
@@ -169,9 +165,6 @@ namespace opensea_parser {
 	//-----------------------------------------------------------------------------
 	inline void set_json_string_With_Status(JSONNODE *nowNode, const std::string & myStr, const std::string & strValue, uint64_t value, bool showStatusBits)
 	{
-		std::string printStr = " ";
-		printStr.resize(BASIC);
-
 		if (showStatusBits)
 		{
 			JSONNODE *bigBit = json_new(JSON_NODE);

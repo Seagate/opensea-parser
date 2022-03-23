@@ -69,7 +69,7 @@ CScsiProtocolPortLog::CScsiProtocolPortLog(uint8_t *buffer, size_t bufferSize)
 		printf("%s \n", m_PSPName.c_str());
 	}
     pData = new uint8_t[bufferSize];								// new a buffer to the point				
-#ifndef _WIN64
+#ifndef __STDC_SECURE_LIB__
     memcpy(pData, buffer, bufferSize);
 #else
     memcpy_s(pData, bufferSize, buffer, bufferSize);           // copy the buffer data to the class member pBuf
@@ -123,8 +123,6 @@ CScsiProtocolPortLog::~CScsiProtocolPortLog()
 //---------------------------------------------------------------------------
 void CScsiProtocolPortLog::process_Events_Data(JSONNODE *eventData)
 {
-	std::string myStr = "";
-	myStr.resize(BASIC);
 #if defined _DEBUG
 	printf("Phy Event Description \n");
 #endif
@@ -635,8 +633,7 @@ void CScsiProtocolPortLog::get_Negotiated_Logical_Link_Rate(std::string *rate, u
 //---------------------------------------------------------------------------
 void CScsiProtocolPortLog::process_Descriptor_Information(JSONNODE *descData)
 {
-	std::string myStr = "";
-	myStr.resize(BASIC);
+	std::string myStr;
 #if defined _DEBUG
 	printf("Descriptor Information \n");
 #endif
@@ -717,8 +714,6 @@ void CScsiProtocolPortLog::process_Descriptor_Information(JSONNODE *descData)
 //---------------------------------------------------------------------------
 void CScsiProtocolPortLog::process_List_Information(JSONNODE *listData)
 {
-	std::string myStr = "";
-	myStr.resize(BASIC);
 #if defined _DEBUG
 	printf("List Information \n");
 #endif
@@ -755,8 +750,6 @@ void CScsiProtocolPortLog::process_List_Information(JSONNODE *listData)
 //---------------------------------------------------------------------------
 eReturnValues CScsiProtocolPortLog::get_Data(JSONNODE *masterData)
 {
-	std::string myStr = "";
-	myStr.resize(BASIC);
 	eReturnValues retStatus = IN_PROGRESS;
 
 	if (pData != NULL)

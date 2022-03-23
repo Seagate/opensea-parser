@@ -70,7 +70,7 @@ CScsiInformationalExeptionsLog::CScsiInformationalExeptionsLog(uint8_t * buffer,
 		printf("%s \n", m_infoName.c_str());
 	}
     pData = new uint8_t[bufferSize];								// new a buffer to the point				
-#ifndef _WIN64
+#ifndef __STDC_SECURE_LIB__
     memcpy(pData, buffer, bufferSize);
 #else
     memcpy_s(pData, bufferSize, buffer, bufferSize);// copy the buffer data to the class member pBuf
@@ -124,9 +124,7 @@ CScsiInformationalExeptionsLog::~CScsiInformationalExeptionsLog()
 //---------------------------------------------------------------------------
 void CScsiInformationalExeptionsLog::process_Informational_Exceptions_Data(JSONNODE *exeptionData, uint16_t count, uint16_t offset)
 {
-	std::string myStr = "";
     std::ostringstream temp;
-	myStr.resize(BASIC);
 #if defined _DEBUG
 	printf("Informational Exceptions Log \n");
 #endif

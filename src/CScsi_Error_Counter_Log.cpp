@@ -281,9 +281,7 @@ void CScsiErrorCounterLog::process_Error_Data(JSONNODE *errorData)
 {
     bool descriptionFound = false;
     std::string myStr = "";
-    myStr.resize(BASIC);
     std::string myHeader = "";
-    myHeader.resize(BASIC);
 #if defined _DEBUG
     printf("Error Counter Log  \n");
 #endif
@@ -344,9 +342,7 @@ void CScsiErrorCounterLog::process_Error_Data(JSONNODE *errorData)
 eReturnValues CScsiErrorCounterLog::get_Error_Counter_Data(JSONNODE *masterData)
 {
     std::string myStr = "";
-    myStr.resize(BASIC);
     std::string headerStr = "";
-    headerStr.resize(BASIC);
     eReturnValues retStatus = IN_PROGRESS;
     if (pData != NULL)
     {
@@ -359,7 +355,7 @@ eReturnValues CScsiErrorCounterLog::get_Error_Counter_Data(JSONNODE *masterData)
         {
             if (offset < m_bufferLength && offset < UINT16_MAX)
             {
-                m_Error = (sErrorParams *)&pData[offset];
+                m_Error = reinterpret_cast<sErrorParams*>(&pData[offset]);
                 offset += sizeof(sErrorParams);
                 switch (m_Error->paramLength)
                 {

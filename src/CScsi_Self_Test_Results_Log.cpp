@@ -113,15 +113,10 @@ CScsi_DST_Results::~CScsi_DST_Results()
 eReturnValues CScsi_DST_Results::get_Self_Test_Log(uint8_t *buffer, size_t bufferSize, JSONNODE *masterJson)
 {
 	eReturnValues retStatus = IN_PROGRESS;
-	std::string myStr = "";
-	myStr.resize(BASIC);
 	JSONNODE *DstJson = json_new(JSON_NODE);
-
-
 	json_set_name(DstJson, "Self Test Results Log - 10h");
-
 	m_DST = reinterpret_cast<sSelfTest *>(buffer);
-	for (int i = 1; i <= 20; i++)
+	for (uint16_t i = 1; i <= 20; i++)
 	{
 		byte_Swap_Self_Test();
 		if (m_DST->paramCode == i && m_DST->paramLength == 0x10)
@@ -174,9 +169,6 @@ eReturnValues CScsi_DST_Results::get_Self_Test_Log(uint8_t *buffer, size_t buffe
 //---------------------------------------------------------------------------
 void CScsi_DST_Results::print_Self_Test_Log(JSONNODE *dstNode, uint16_t run)
 {
-	std::string myStr = "";
-	myStr.resize(BASIC);
-
 	JSONNODE* runInfo = json_new(JSON_NODE);
     std::ostringstream temp;
     temp << "Entry " << std::setw(3) << run;   // changed the run# to Entry per Paul
@@ -205,6 +197,7 @@ void CScsi_DST_Results::print_Self_Test_Log(JSONNODE *dstNode, uint16_t run)
 	}
 	else
 	{
+		std::string myStr;
 		get_Self_Test_Results_String(myStr, M_GETBITRANGE(m_DST->stCode, 3, 0));
 		json_push_back(runInfo, json_new_a("Self Test Results Meaning", myStr.c_str()));
 	}
@@ -244,69 +237,44 @@ void CScsi_DST_Results::print_Self_Test_Log(JSONNODE *dstNode, uint16_t run)
 //---------------------------------------------------------------------------
 void CScsi_DST_Results::get_Self_Test_Results_String( std::string & meaning, uint8_t result)
 {
-	meaning.resize(BASIC);
 	switch (result)
 	{
 		case DST_COMPLETED_WITHOUT_ERROR:
-		{
 			meaning = "Self Test completed without error";
 			break;
-		}
 		case DST_BACKGROUND_ABORTED:
-		{
 			meaning = "Was Aborted by the host";
 			break;
-		}
 		case DST_ABORTED:
-		{
 			meaning = "Was interepted by the host with a hard reset or a soft reset";
 			break;
-		}
 		case DST_UNKNOWN_ERROR:
-		{
 			meaning = "unknown error and Self Test was unable to complete";
 			break;
-		}
 		case DST_FAILURE_UNKNOWN_SEGMENT:
-		{
 			meaning = "Completed and has failed and the element is unknown";
 			break;
-		}
 		case DST_FAILURE_FIRST_SEGMENT:
-		{
 			meaning = "Completed With an electrical element failing";
 			break;
-		}
 		case DST_FAILURE_SECOND_SEGMENT:
-		{
 			meaning = "Completed having a servo element failure";
 			break;
-		}
 		case DST_FAILURE_CHECK_NUMBER_FOR_SEGMENT:
-		{
 			meaning = "Completed having a read element failure";
 			break;
-		}
         case DST_FAILURE_HANDLING_DAMAGE:
-        {
             meaning = "Completed having handling damage";
 			break;
-        }
         case DST_FAILURE_SUSPECTED_HANDLING_DAMAGE:
-        {
             meaning = "Completed having suspected handling damage";
 			break;
-        }
 		case DST_IN_PROGRESS:
-		{
 			meaning = "Self Test is in progress";
 			break;
-		}
 		default:
-		{
 			meaning = "Reserved.";
 			break;
-		}
 	}
 }
 //-----------------------------------------------------------------------------

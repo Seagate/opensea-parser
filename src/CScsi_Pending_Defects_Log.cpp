@@ -74,7 +74,7 @@ CScsiPendingDefectsLog::CScsiPendingDefectsLog(uint8_t * buffer, size_t bufferSi
 		printf("%s \n", m_PlistName.c_str());
 	}
     pData = new uint8_t[pageLength];								// new a buffer to the point				
-#ifndef _WIN64
+#ifndef __STDC_SECURE_LIB__
     memcpy(pData, buffer, pageLength);
 #else
     memcpy_s(pData, pageLength, buffer, pageLength);// copy the buffer data to the class member pBuf
@@ -128,8 +128,6 @@ CScsiPendingDefectsLog::~CScsiPendingDefectsLog()
 //---------------------------------------------------------------------------
 void CScsiPendingDefectsLog::process_PList_Data(JSONNODE *pendingData)
 {
-	std::string myStr = "";
-	myStr.resize(BASIC);
 	byte_Swap_16(&m_PlistDefect->paramCode);
 	byte_Swap_32(&m_PlistDefect->defectPOH);
 	byte_Swap_64(&m_PlistDefect->defectLBA);
@@ -175,8 +173,6 @@ void CScsiPendingDefectsLog::process_PList_Data(JSONNODE *pendingData)
 //---------------------------------------------------------------------------
 void CScsiPendingDefectsLog::process_PList_Count(JSONNODE *pendingCount)
 {
-	std::string myStr = "";
-	myStr.resize(BASIC);
 	byte_Swap_16(&m_PListCountParam->paramCode);
 	byte_Swap_32(&m_PListCountParam->totalPlistCount);
 
@@ -215,14 +211,11 @@ void CScsiPendingDefectsLog::process_PList_Count(JSONNODE *pendingCount)
 //---------------------------------------------------------------------------
 eReturnValues CScsiPendingDefectsLog::get_Plist_Data(JSONNODE *masterData)
 {
-	std::string myStr = "";
-	myStr.resize(BASIC);
 	eReturnValues retStatus = IN_PROGRESS;
 	if (pData != NULL)
 	{
-		myStr = "Pending Defect Log - 15h";
 		JSONNODE *pageInfo = json_new(JSON_NODE);
-		json_set_name(pageInfo, myStr.c_str());
+		json_set_name(pageInfo, "Pending Defect Log - 15h");
 		m_PListCountParam = reinterpret_cast<sPendindDefectCount *>(pData);
 		process_PList_Count(pageInfo);
 		if (static_cast<size_t>(m_PageLength) > sizeof(sPendindDefectCount))    // for when there is zero count defects

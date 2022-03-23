@@ -117,8 +117,6 @@ CScsiApplicationLog::~CScsiApplicationLog()
 //---------------------------------------------------------------------------
 void CScsiApplicationLog::process_Client_Data(JSONNODE *appData)
 {
-	std::string myStr = "";
-	myStr.resize(BASIC);
 #if defined _DEBUG
 	printf("Application Client Description \n");
 #endif

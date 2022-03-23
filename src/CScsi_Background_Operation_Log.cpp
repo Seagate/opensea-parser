@@ -70,7 +70,7 @@ CScsiOperationLog::CScsiOperationLog(uint8_t * buffer, size_t bufferSize, uint16
 		printf("%s \n", m_OperationName.c_str());
 	}
     pData = new uint8_t[pageLength];								// new a buffer to the point				
-#ifndef _WIN64
+#ifndef __STDC_SECURE_LIB__
     memcpy(pData, buffer, pageLength);
 #else
     memcpy_s(pData, pageLength, buffer, pageLength);// copy the buffer data to the class member pBuf
@@ -170,7 +170,6 @@ void CScsiOperationLog::get_Background_Operations_status(std::string *status)
 void CScsiOperationLog::process_Background_Operations_Data(JSONNODE *operationData, M_ATTR_UNUSED uint32_t offset)
 {
 	std::string myStr = "";
-	myStr.resize(BASIC);
 #if defined _DEBUG
 	printf("Cache Event Description \n");
 #endif

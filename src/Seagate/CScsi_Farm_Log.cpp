@@ -90,7 +90,7 @@ CSCSI_Farm_Log::CSCSI_Farm_Log(uint8_t* bufferData, size_t bufferSize, bool from
     }
 
     pBuf = new uint8_t[bufferSize];								// new a buffer to the point				
-#ifndef _WIN64
+#ifndef __STDC_SECURE_LIB__
     memcpy(pBuf, bufferData, bufferSize);
 #else
     memcpy_s(pBuf, bufferSize, bufferData, bufferSize);// copy the buffer data to the class member pBuf
@@ -154,7 +154,7 @@ CSCSI_Farm_Log::CSCSI_Farm_Log( uint8_t *bufferData, size_t bufferSize, bool fro
     }
 
 	pBuf = new uint8_t[bufferSize];								// new a buffer to the point				
-#ifndef _WIN64
+#ifndef __STDC_SECURE_LIB__
     memcpy(pBuf, bufferData, bufferSize);
 #else
     memcpy_s(pBuf, bufferSize, bufferData, bufferSize);// copy the buffer data to the class member pBuf
@@ -221,14 +221,14 @@ eReturnValues CSCSI_Farm_Log::init_Header_Data()
 	{
         if (m_fromScsiLogPages == true)
         {
-            m_pHeader = (sScsiFarmHeader*)&pBuf[0];
+            m_pHeader = reinterpret_cast<sScsiFarmHeader*>(&pBuf[0]);
         }
         else
         {
-            m_logParam = (sScsiLogParameter*)&pBuf[0];
+            m_logParam = reinterpret_cast<sScsiLogParameter*>(&pBuf[0]);
             m_logSize = m_logParam->length;									    // set the class log size 
             byte_Swap_16(&m_logSize);
-            m_pHeader = (sScsiFarmHeader*)&pBuf[4];
+            m_pHeader = reinterpret_cast<sScsiFarmHeader*>(&pBuf[4]);
         }
 		swap_Bytes_sFarmHeader(m_pHeader);											// swap all the bytes for the header
 		m_totalPages = M_DoubleWord0(m_pHeader->farmHeader.pagesSupported);			// get the total pages
@@ -1871,10 +1871,6 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
 eReturnValues CSCSI_Farm_Log::print_Header(JSONNODE *masterData)
 {
 	uint32_t page = 0;
-    std::string myStr = "";
-    myStr.resize(BASIC);
-    
-                                                          
 #if defined _DEBUG
     printf("\tLog Signature:                      0x%" PRIX64" \n", vFarmFrame[page].farmHeader.farmHeader.signature );                                  //!< Log Signature = 0x00004641524D4552
     printf("\tMajor Revision:                      %" PRIu64"  \n", vFarmFrame[page].farmHeader.farmHeader.majorRev & UINT64_C(0x00FFFFFFFFFFFFFF));                                    //!< Log Major rev
@@ -1890,8 +1886,6 @@ eReturnValues CSCSI_Farm_Log::print_Header(JSONNODE *masterData)
 #endif
     if (g_dataformat == PREPYTHON_DATA)
     {
-        std::string myInfo = "";
-        myInfo.resize(BASIC);
         JSONNODE* data = json_new(JSON_NODE);
 
         json_push_back(data, json_new_a("name", "farm"));
@@ -1926,9 +1920,10 @@ eReturnValues CSCSI_Farm_Log::print_Header(JSONNODE *masterData)
         temp.str().clear(); temp.clear();
         temp << std::dec << M_DoubleWord0(check_Status_Strip_Status(vFarmFrame[page].farmHeader.farmHeader.reasonForFrameCpature));
         json_push_back(label, json_new_a("reason_for_frame_capture", temp.str().c_str()));
-        get_SMART_Save_Flages_String(myStr, M_Byte0(vFarmFrame[page].farmHeader.farmHeader.reasonForFrameCpature));
-        std_string_to_lowercase(myStr);
-        json_push_back(label, json_new_a("smart_save_flag", myStr.c_str()));
+        std::string reason;
+        get_SMART_Save_Flages_String(reason, M_Byte0(vFarmFrame[page].farmHeader.farmHeader.reasonForFrameCpature));
+        std_string_to_lowercase(reason);
+        json_push_back(label, json_new_a("smart_save_flag", reason.c_str()));
         json_push_back(label, json_new_a("units", "reported"));
         json_push_back(data, label);
         json_push_back(data, json_new_i("value", 1));
@@ -1976,10 +1971,6 @@ eReturnValues CSCSI_Farm_Log::print_Header(JSONNODE *masterData)
 
 eReturnValues CSCSI_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint32_t page)
 {
-    std::string myStr = " ";
-    myStr.resize(BASIC);
-    
-
 #if defined _DEBUG
     if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
     {
@@ -2091,16 +2082,15 @@ eReturnValues CSCSI_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint
         if (check_For_Active_Status(&vFarmFrame[page].driveInfo.dateOfAssembly) || \
             (vFarmFrame[page].driveInfo.dateOfAssembly < 0x40000000 && vFarmFrame[page].driveInfo.dateOfAssembly > 0x3030))
         {
-            myStr.resize(DATE_YEAR_DATE_SIZE);
-            myStr.clear();
+            std::string dataAndTime;
             uint16_t year = M_Word1(vFarmFrame[page].driveInfo.dateOfAssembly);
             uint16_t week = M_Word0(vFarmFrame[page].driveInfo.dateOfAssembly);
 
-            _common.create_Year_Assembled_String(myStr, year, true);
-            json_push_back(label, json_new_a("year_of_assembled", myStr.c_str()));
-            myStr.clear();
-            _common.create_Year_Assembled_String(myStr, week, true);
-            json_push_back(label, json_new_a("week_of_assembled", myStr.c_str()));
+            _common.create_Year_Assembled_String(dataAndTime, year, true);
+            json_push_back(label, json_new_a("year_of_assembled", dataAndTime.c_str()));
+            dataAndTime.clear();
+            _common.create_Year_Assembled_String(dataAndTime, week, true);
+            json_push_back(label, json_new_a("week_of_assembled", dataAndTime.c_str()));
         }
         json_push_back(label, json_new_a("units", "reported"));
         json_push_back(data, label);
@@ -2111,17 +2101,18 @@ eReturnValues CSCSI_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint
     {
         std::ostringstream temp;
         JSONNODE* pageInfo = json_new(JSON_NODE);
+        std::string header;
         if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
         {
-            myStr.assign("Drive Information From Farm Log copy FACTORY");
+            header.assign("Drive Information From Farm Log copy FACTORY");
         }
         else
         {
             temp.str().clear(); temp.clear();
             temp << "Drive Information From Farm Log copy " << std::dec << page;
-            myStr.assign(temp.str());
+            header.assign(temp.str());
         }
-        json_set_name(pageInfo, myStr.c_str());
+        json_set_name(pageInfo, header.c_str());
         
         json_push_back(pageInfo, json_new_a("Serial Number", vFarmFrame[page].identStringInfo.serialNumber.c_str()));
         json_push_back(pageInfo, json_new_a("World Wide Name", vFarmFrame[page].identStringInfo.worldWideName.c_str()));
@@ -2136,7 +2127,7 @@ eReturnValues CSCSI_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint
         json_push_back(pageInfo, json_new_a("Device Interface", vFarmFrame[page].identStringInfo.deviceInterface.c_str()));
         temp.str().clear(); temp.clear();
         temp << std::dec << (vFarmFrame[page].driveInfo.deviceCapacity & UINT64_C(0x00FFFFFFFFFFFFFF));
-        set_json_string_With_Status(pageInfo, "Device Capacity in Sectors", myStr, vFarmFrame[page].driveInfo.deviceCapacity, m_showStatusBits);
+        set_json_string_With_Status(pageInfo, "Device Capacity in Sectors", temp.str(), vFarmFrame[page].driveInfo.deviceCapacity, m_showStatusBits);
         set_json_64_bit_With_Status(pageInfo, "Physical Sector size", vFarmFrame[page].driveInfo.psecSize, false, m_showStatusBits);									//!< Physical Sector Size in Bytes
         set_json_64_bit_With_Status(pageInfo, "Logical Sector Size", vFarmFrame[page].driveInfo.lsecSize, false, m_showStatusBits);										//!< Logical Sector Size in Bytes
         set_json_64_bit_With_Status(pageInfo, "Device Buffer Size", vFarmFrame[page].driveInfo.deviceBufferSize, false, m_showStatusBits);								//!< Device Buffer Size in Bytes
@@ -2163,16 +2154,15 @@ eReturnValues CSCSI_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint
         if (check_For_Active_Status(&vFarmFrame[page].driveInfo.dateOfAssembly) || \
             (vFarmFrame[page].driveInfo.dateOfAssembly < 0x40000000 && vFarmFrame[page].driveInfo.dateOfAssembly > 0x3030))
         {
-            myStr.resize(DATE_YEAR_DATE_SIZE);
-            myStr.clear();
+            std::string dataAndTime;
             uint16_t year = M_Word1(vFarmFrame[page].driveInfo.dateOfAssembly);
             uint16_t week = M_Word0(vFarmFrame[page].driveInfo.dateOfAssembly);
 
-            _common.create_Year_Assembled_String(myStr, year, true);
-            json_push_back(pageInfo, json_new_a("Year of Assembled", myStr.c_str()));
-            myStr.clear();
-            _common.create_Year_Assembled_String(myStr, week, true);
-            json_push_back(pageInfo, json_new_a("Week of Assembled", myStr.c_str()));
+            _common.create_Year_Assembled_String(dataAndTime, year, true);
+            json_push_back(pageInfo, json_new_a("Year of Assembled", dataAndTime.c_str()));
+            dataAndTime.clear();
+            _common.create_Year_Assembled_String(dataAndTime, week, true);
+            json_push_back(pageInfo, json_new_a("Week of Assembled", dataAndTime.c_str()));
         }
         else
         {
@@ -2200,9 +2190,6 @@ eReturnValues CSCSI_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint
 //---------------------------------------------------------------------------
 eReturnValues CSCSI_Farm_Log::print_General_Drive_Information_Continued(JSONNODE* masterData, uint32_t page)
 {
-    std::string myStr = " ";
-    myStr.resize(BASIC);
-
     if (g_dataformat == PREPYTHON_DATA)
     {
         std::ostringstream temp;
@@ -2219,14 +2206,13 @@ eReturnValues CSCSI_Farm_Log::print_General_Drive_Information_Continued(JSONNODE
         }
         json_push_back(label, json_new_a("drive_recording_type", type.c_str()));
 
-        myStr = "has_drive_been_depopped";
         if (check_Status_Strip_Status(vFarmFrame[page].gDPage06.Depop) != 0)
         {
-            set_Json_Bool(label, myStr, true);
+            set_Json_Bool(label, "has_drive_been_depopped", true);
         }
         else
         {
-            set_Json_Bool(label, myStr, false);
+            set_Json_Bool(label, "has_drive_been_depopped", false);
         }
         temp.str().clear(); temp.clear();
         temp << std::dec << M_DoubleWord0(check_Status_Strip_Status(vFarmFrame[page].gDPage06.maxNumAvaliableSectors)) << " sectors";
@@ -2252,36 +2238,35 @@ eReturnValues CSCSI_Farm_Log::print_General_Drive_Information_Continued(JSONNODE
 
         JSONNODE* pageInfo = json_new(JSON_NODE);
         std::ostringstream temp;
+        std::string header;
         if (vFarmFrame[page].driveInfo.copyNumber == FACTORYCOPY)
         {
-            myStr.assign("General Drive Informatio From Farm Log copy FACTORY");
+            header.assign("General Drive Informatio From Farm Log copy FACTORY");
         }
         else
         {
             temp << "General  Drive Information From Farm Log copy " << std::dec << page;
-            myStr.assign(temp.str());
+            header.assign(temp.str());
         }
-        json_set_name(pageInfo, myStr.c_str());
+        json_set_name(pageInfo, header.c_str());
 
         set_json_64_bit_With_Status(pageInfo, "Depopulation Head Mask", vFarmFrame[page].gDPage06.Depop, false, m_showStatusBits);                                   //!< Depopulation Head Mask
 
-        myStr = "Drive Recording Type";
         std::string type = "CMR";
         if (vFarmFrame[page].gDPage06.driveType & BIT0)
         {
             type = "SMR";
         }
 
-        set_json_string_With_Status(pageInfo, myStr, type, vFarmFrame[page].gDPage06.driveType, m_showStatusBits);
+        set_json_string_With_Status(pageInfo, "Drive Recording Type", type, vFarmFrame[page].gDPage06.driveType, m_showStatusBits);
 
-        myStr = "Has Drive been Depopped";
         if (check_Status_Strip_Status(vFarmFrame[page].gDPage06.Depop) != 0)
         {
-            set_Json_Bool(pageInfo, myStr, true);
+            set_Json_Bool(pageInfo, "Has Drive been Depopped", true);
         }
         else
         {
-            set_Json_Bool(pageInfo, myStr, false);
+            set_Json_Bool(pageInfo, "Has Drive been Depopped", false);
         }
 
         set_json_64_bit_With_Status(pageInfo, "Max Number of Available Sectors for Reassignment", vFarmFrame[page].gDPage06.maxNumAvaliableSectors, false, m_showStatusBits);          //!< Max Number of Available Sectors for Reassignment – Value in disc sectors(started in 3.3 )
@@ -2316,9 +2301,6 @@ eReturnValues CSCSI_Farm_Log::print_General_Drive_Information_Continued(JSONNODE
 //---------------------------------------------------------------------------
 eReturnValues CSCSI_Farm_Log::print_WorkLoad(JSONNODE *masterData, uint32_t page)
 {
-    std::string myStr = " ";
-    myStr.resize(BASIC);
-    
 #if defined _DEBUG
     if (vFarmFrame[page].workLoadPage.workLoad.copyNumber == FACTORYCOPY)
     {
@@ -2391,16 +2373,17 @@ eReturnValues CSCSI_Farm_Log::print_WorkLoad(JSONNODE *masterData, uint32_t page
     {
         JSONNODE* pageInfo = json_new(JSON_NODE);
         std::ostringstream temp;
+        std::string header;
         if (vFarmFrame[page].workLoadPage.workLoad.copyNumber == FACTORYCOPY)
         {
-            myStr.assign("Workload From Farm Log copy FACTORY");
+            header.assign("Workload From Farm Log copy FACTORY");
         }
         else
         {
             temp << "Workload From Farm Log copy " << std::dec << page;
-            myStr.assign(temp.str());
+            header.assign(temp.str());
         }
-        json_set_name(pageInfo, myStr.c_str());
+        json_set_name(pageInfo, header.c_str());
         set_json_64_bit_With_Status(pageInfo, "Rated Workload Percentage", vFarmFrame[page].workLoadPage.workLoad.workloadPercentage, false, m_showStatusBits);				//!< rated Workload Percentage
         set_json_64_bit_With_Status(pageInfo, "Total Number of Read Commands", vFarmFrame[page].workLoadPage.workLoad.totalReadCommands, false, m_showStatusBits);			//!< Total Number of Read Commands
         set_json_64_bit_With_Status(pageInfo, "Total Number of Write Commands", vFarmFrame[page].workLoadPage.workLoad.totalWriteCommands, false, m_showStatusBits);			//!< Total Number of Write Commands
@@ -2461,10 +2444,6 @@ eReturnValues CSCSI_Farm_Log::print_WorkLoad(JSONNODE *masterData, uint32_t page
 //---------------------------------------------------------------------------
 eReturnValues CSCSI_Farm_Log::print_Error_Information(JSONNODE *masterData, uint32_t page)
 {
-    std::string myStr = " ";
-    myStr.resize(BASIC);
-    
-
 #if defined _DEBUG
     if (vFarmFrame[page].errorPage.errorStat.copyNumber == FACTORYCOPY)
     {
@@ -2513,16 +2492,17 @@ eReturnValues CSCSI_Farm_Log::print_Error_Information(JSONNODE *masterData, uint
     {
         JSONNODE* pageInfo = json_new(JSON_NODE);
         std::ostringstream temp;
+        std::string header;
         if (vFarmFrame[page].errorPage.errorStat.copyNumber == FACTORYCOPY)
         {
-            myStr.assign("Error Information From Farm Log copy FACTORY");
+            header.assign("Error Information From Farm Log copy FACTORY");
         }
         else
         {
             temp << "Error Information Log From Farm Log copy " << std::dec << page;
-            myStr.assign(temp.str());
+            header.assign(temp.str());
         }
-        json_set_name(pageInfo, myStr.c_str());
+        json_set_name(pageInfo, header.c_str());
 
         set_json_64_bit_With_Status(pageInfo, "Unrecoverable Read Errors", vFarmFrame[page].errorPage.errorStat.totalReadECC, false, m_showStatusBits);							//!< Number of Unrecoverable Read Errors
         set_json_64_bit_With_Status(pageInfo, "Unrecoverable Write Errors", vFarmFrame[page].errorPage.errorStat.totalWriteECC, false, m_showStatusBits);							//!< Number of Unrecoverable Write Errors
@@ -2556,10 +2536,6 @@ eReturnValues CSCSI_Farm_Log::print_Error_Information(JSONNODE *masterData, uint
 //---------------------------------------------------------------------------
 eReturnValues CSCSI_Farm_Log::print_Error_Information_Version_4(JSONNODE *masterData, uint32_t page)
 {
-    std::string myStr = " ";
-    myStr.resize(BASIC);
-    
-
 #if defined _DEBUG
     if (vFarmFrame[page].errorPage.errorV4.copyNumber == FACTORYCOPY)
     {
@@ -2662,10 +2638,6 @@ eReturnValues CSCSI_Farm_Log::print_Error_Information_Version_4(JSONNODE *master
 //---------------------------------------------------------------------------
 eReturnValues CSCSI_Farm_Log::print_Enviroment_Information(JSONNODE *masterData, uint32_t page)
 {
-    std::string myStr = " ";
-    myStr.resize(BASIC);
-    
-
 #if defined _DEBUG
     if (vFarmFrame[page].environmentPage.copyNumber == FACTORYCOPY)
     {
@@ -2710,7 +2682,7 @@ eReturnValues CSCSI_Farm_Log::print_Enviroment_Information(JSONNODE *masterData,
         json_set_name(label, "labels");
         std::ostringstream temp;
         temp << "scsi-log-page:0x" << std::hex << FARMLOGPAGE << "," << std::hex << FARMSUBPAGE << ":0x" << std::hex << ENVIRONMENTAL_STATISTICS_PARAMETER;
-        json_push_back(label, json_new_a("metric_source", myStr.c_str()));
+        json_push_back(label, json_new_a("metric_source", temp.str().c_str()));
         json_push_back(label, json_new_a("stat_type", "environment information"));
         temp.str().clear(); temp.clear();
         temp << std::setprecision(2) << (static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.maxTemp)) * 1.00)) << " celcius";							//!< Specified Max Operating Temperature
@@ -2760,16 +2732,17 @@ eReturnValues CSCSI_Farm_Log::print_Enviroment_Information(JSONNODE *masterData,
     {
         JSONNODE* pageInfo = json_new(JSON_NODE);
         std::ostringstream temp;
+        std::string header;
         if (vFarmFrame[page].environmentPage.copyNumber == FACTORYCOPY)
         {
-            myStr.assign("Environment Information From Farm Log copy FACTORY");
+            header.assign("Environment Information From Farm Log copy FACTORY");
         }
         else
         {
             temp << "Environment Information From Farm Log copy " << std::dec << page;
-            myStr.assign(temp.str());
+            header.assign(temp.str());
         }
-        json_set_name(pageInfo, myStr.c_str());
+        json_set_name(pageInfo, header.c_str());
         temp.str().clear(); temp.clear();
         temp << std::setprecision(2) << (static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.curentTemp)) * .10));							//!< Current Temperature in Celsius
         set_json_string_With_Status(pageInfo, "Current Temperature (Celsius)", temp.str().c_str(), vFarmFrame[page].environmentPage.curentTemp, m_showStatusBits);
@@ -2838,10 +2811,6 @@ eReturnValues CSCSI_Farm_Log::print_Enviroment_Information(JSONNODE *masterData,
 //---------------------------------------------------------------------------
 eReturnValues CSCSI_Farm_Log::print_Enviroment_Statistics_Page_07(JSONNODE *masterData, uint32_t page)
 {
-    std::string myStr = " ";
-    myStr.resize(BASIC);
-    
-
 #if defined _DEBUG
     if (vFarmFrame[page].envStatPage07.copyNumber == FACTORYCOPY)
     {
@@ -2901,13 +2870,13 @@ eReturnValues CSCSI_Farm_Log::print_Enviroment_Statistics_Page_07(JSONNODE *mast
         std::ostringstream temp;
         if (vFarmFrame[page].envStatPage07.copyNumber == FACTORYCOPY)
         {
-            myStr.assign("Environment Information Continued From Farm Log copy FACTORY");
+            temp << "Environment Information Continued From Farm Log copy FACTORY";
         }
         else
         {
             temp << "Environment Information Continued From Farm Log copy " << std::dec << page;
         }
-        json_set_name(pageInfo, myStr.c_str());
+        json_set_name(pageInfo, temp.str().c_str());
 
         temp.str().clear(); temp.clear();
         temp << std::dec << static_cast<uint16_t>(M_Word0(check_Status_Strip_Status(vFarmFrame[page].envStatPage07.average12v)) / 1000) << "." << std::dec << std::setfill('0') << std::setw(3) << static_cast<uint16_t>(M_Word0(check_Status_Strip_Status(vFarmFrame[page].envStatPage07.average12v)) % 1000);
@@ -2953,9 +2922,6 @@ eReturnValues CSCSI_Farm_Log::print_Workload_Statistics_Page_08(JSONNODE *master
 {
     if (m_MajorRev >= 4 && m_MinorRev > 20)
     {
-    
-        std::string myStr = " ";
-        myStr.resize(BASIC);
         JSONNODE *pageInfo = json_new(JSON_NODE);
 
     #if defined _DEBUG
@@ -3035,10 +3001,6 @@ eReturnValues CSCSI_Farm_Log::print_Workload_Statistics_Page_08(JSONNODE *master
 //---------------------------------------------------------------------------
 eReturnValues CSCSI_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint32_t page)
 {
-    std::string myStr = " ";
-    myStr.resize(BASIC);
-    
-    
 #if defined _DEBUG
     if (m_MajorRev < 4)
     {
@@ -3233,11 +3195,7 @@ eReturnValues CSCSI_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint3
 eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNODE *headPage, uint32_t page)
 {
     uint32_t loopCount = 0;
-	std::string myStr = " ";
-	myStr.resize(BASIC);
-
-    std::string myHeader = " ";
-    myHeader.resize(BASIC);
+    std::string myHeader;
 
     if (set_Head_Header(myHeader, type) == false)
     {
@@ -4299,10 +4257,6 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
 //---------------------------------------------------------------------------
 eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Information(JSONNODE *masterData, uint32_t page, uint16_t actNum)
 {
-    std::string myStr = " ";
-    myStr.resize(BASIC);
-    
-
     sLUNStruct *pLUN;
     pLUN = &vFarmFrame[page].vLUN50;
     if (actNum == LUN_1_ACTUATOR)
@@ -4464,12 +4418,6 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_FLED_Info(JSONNODE *masterData,
 {
 
     uint16_t i = 0;
-    std::string myStr = " ";
-    std::string timeStr = " ";
-    myStr.resize(BASIC);
-    timeStr.resize(BASIC);
-    
-
     sActuatorFLEDInfo *pFLED;
     if (actNum == LUN_1_FLASH_LED)
         pFLED = &vFarmFrame[page].fled61;
@@ -4533,8 +4481,9 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_FLED_Info(JSONNODE *masterData,
             
             temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << M_Word2(check_Status_Strip_Status(pFLED->flashLEDArray[i]));
             json_push_back(label, json_new_a("Flash LED Code", temp.str().c_str()));
-            _common.get_Assert_Code_Meaning(timeStr, M_Word2(check_Status_Strip_Status(pFLED->flashLEDArray[i])));
-            json_push_back(label, json_new_a("Flash LED Code Meaning", timeStr.c_str()));
+            std::string meaning;
+            _common.get_Assert_Code_Meaning(meaning, M_Word2(check_Status_Strip_Status(pFLED->flashLEDArray[i])));
+            json_push_back(label, json_new_a("Flash LED Code Meaning", meaning.c_str()));
             temp.str().clear(); temp.clear();
             temp << "0x" << std::hex << std::setfill('0') << std::setw(8) << M_DoubleWord0(check_Status_Strip_Status(pFLED->flashLEDArray[i]));
             json_push_back(label, json_new_a("Flash LED Address", temp.str().c_str()));
@@ -4586,8 +4535,9 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_FLED_Info(JSONNODE *masterData,
             set_json_64_bit_With_Status(eventInfo, "Address of Event", pFLED->flashLEDArray[i], true, m_showStatusBits);	           //!< Info on the last 8 Flash LED (assert) Events, wrapping array
             temp << "0x" << std::hex << std::setfill('0') << std::setw(4) <<  M_Word2(check_Status_Strip_Status(pFLED->flashLEDArray[i]));
             json_push_back(eventInfo, json_new_a("Flash LED Code", temp.str().c_str()));
-            _common.get_Assert_Code_Meaning(timeStr, M_Word2(check_Status_Strip_Status(pFLED->flashLEDArray[i])));
-            json_push_back(eventInfo, json_new_a("Flash LED Code Meaning", timeStr.c_str()));
+            std::string meaning;
+            _common.get_Assert_Code_Meaning(meaning, M_Word2(check_Status_Strip_Status(pFLED->flashLEDArray[i])));
+            json_push_back(eventInfo, json_new_a("Flash LED Code Meaning", meaning.c_str()));
             temp.str().clear(); temp.clear();
             temp << "0x" << std::hex << std::setfill('0') << std::setw(8) << M_DoubleWord0(check_Status_Strip_Status(pFLED->flashLEDArray[i]));
             json_push_back(eventInfo, json_new_a("Flash LED Address", temp.str().c_str()));
@@ -4625,12 +4575,6 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_FLED_Info(JSONNODE *masterData,
 eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Reallocation(JSONNODE* masterData, uint32_t page, uint16_t actNum)
 {
     uint16_t i = 0;
-    std::string myStr = " ";
-    std::string timeStr = " ";
-    myStr.resize(BASIC);
-    timeStr.resize(BASIC);
-
-
     sActReallocationData* pReal;
     if (actNum == LUN_REALLOCATION_1)
         pReal = &vFarmFrame[page].reall62;
@@ -4657,9 +4601,9 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Reallocation(JSONNODE* masterDa
     printf("\tNumber of Reallocated Candidate Sectors:      %" PRIu64" \n", pReal->numberReallocatedCandidates & UINT64_C(0x00FFFFFFFFFFFFFF));
     for (i = 0; i < REALLOCATIONEVENTS; i++)
     {
-
-        _common.get_Reallocation_Cause_Meanings(myStr, i);
-        printf("\t%-33s:            %" PRIu64" \n", myStr.c_str(), pReal->reallocatedCauses[i] & UINT64_C(0x00FFFFFFFFFFFFFF));
+        std::string meaning;
+        _common.get_Reallocation_Cause_Meanings(meaning, i);
+        printf("\t%-33s:            %" PRIu64" \n", meaning.c_str(), pReal->reallocatedCauses[i] & UINT64_C(0x00FFFFFFFFFFFFFF));
     }
 #endif
     if (g_dataformat == PREPYTHON_DATA)
@@ -4680,8 +4624,9 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Reallocation(JSONNODE* masterDa
         farm_PrePython_Int(masterData, "stat", "Reallocated Candidate Sectors", "LUN Reallocation", "count", actNum, M_DoubleWordInt0(pReal->numberReallocatedCandidates));
         for (i = 0; i < REALLOCATIONEVENTS; i++)
         {
-            _common.get_Reallocation_Cause_Meanings(myStr, i);
-            farm_PrePython_Int(masterData, "stat", myStr.c_str(), "LUN Reallocation", "count", actNum, M_DoubleWordInt0(pReal->reallocatedCauses[i]));
+            std::string meaning;
+            _common.get_Reallocation_Cause_Meanings(meaning, i);
+            farm_PrePython_Int(masterData, "stat", meaning.c_str(), "LUN Reallocation", "count", actNum, M_DoubleWordInt0(pReal->reallocatedCauses[i]));
         }
     }
     else
@@ -4706,8 +4651,9 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Reallocation(JSONNODE* masterDa
 
         for (i = 0; i < REALLOCATIONEVENTS; i++)
         {
-            _common.get_Reallocation_Cause_Meanings(myStr, i);
-            set_json_64_bit_With_Status(pageInfo, myStr.c_str(), pReal->reallocatedCauses[i], false, m_showStatusBits);
+            std::string meaning;
+            _common.get_Reallocation_Cause_Meanings(meaning, i);
+            set_json_64_bit_With_Status(pageInfo, meaning.c_str(), pReal->reallocatedCauses[i], false, m_showStatusBits);
         }
         json_push_back(masterData, pageInfo);
     }

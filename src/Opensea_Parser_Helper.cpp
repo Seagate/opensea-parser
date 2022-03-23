@@ -332,7 +332,6 @@ void opensea_parser::prePython_unknown_params(JSONNODE* masterData, uint64_t val
     if (g_parseUnknown)
     {
         std::string myStr = "";
-        myStr.resize(BASIC);
         JSONNODE* data = json_new(JSON_NODE);
         json_push_back(data, json_new_a("name", "unknown_parameter"));
         JSONNODE* label = json_new(JSON_NODE);
@@ -377,7 +376,6 @@ void opensea_parser::prePython_unknown_params(JSONNODE* masterData, uint64_t val
 void opensea_parser::prePython_int(JSONNODE* masterData, const char* name, const char* statType, const char* unit, uint64_t value, uint16_t logPage, uint8_t subPage, uint16_t paramCode, uint32_t offset)
 {
     std::string myStr = "";
-    myStr.resize(BASIC);
     JSONNODE* data = json_new(JSON_NODE);
     json_push_back(data, json_new_a("name", name));
     JSONNODE* label = json_new(JSON_NODE);
@@ -413,7 +411,6 @@ void opensea_parser::prePython_int(JSONNODE* masterData, const char* name, const
 void opensea_parser::prePython_float(JSONNODE* masterData, const char* name, const char* statType, const char* unit, double value, uint16_t logPage,uint8_t subPage, uint16_t paramCode, uint32_t offset)
 {
     std::string myStr = "";
-    myStr.resize(BASIC);
     JSONNODE* data = json_new(JSON_NODE);
     json_push_back(data, json_new_a("name", name));
     JSONNODE* label = json_new(JSON_NODE);

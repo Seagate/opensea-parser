@@ -210,12 +210,7 @@ bool CScsiZonedDeviceStatisticsLog::get_ZDS_Parameter_Code_Description(std::stri
 //---------------------------------------------------------------------------
 void CScsiZonedDeviceStatisticsLog::process_Zoned_Device_Statistics_Data(JSONNODE *zdsData)
 {
-    //bool descriptionFound = false;
-    std::string myStr = "";
-    myStr.resize(BASIC);
-    std::string myHeader = "";
-    myHeader.resize(BASIC);
-
+    std::string myHeader;
     if (m_ZDSValue != 0)
     {
 #if defined _DEBUG
@@ -278,10 +273,6 @@ void CScsiZonedDeviceStatisticsLog::process_Zoned_Device_Statistics_Data(JSONNOD
 //---------------------------------------------------------------------------
 eReturnValues CScsiZonedDeviceStatisticsLog::get_Zoned_Device_Statistics_Data(JSONNODE *masterData)
 {
-    std::string myStr = "";
-    myStr.resize(BASIC);
-    std::string headerStr = "";
-    headerStr.resize(BASIC);
     eReturnValues retStatus = IN_PROGRESS;
     if (pData != NULL)
     {
@@ -292,7 +283,7 @@ eReturnValues CScsiZonedDeviceStatisticsLog::get_Zoned_Device_Statistics_Data(JS
         {
             if (offset < m_bufferLength && offset < UINT16_MAX)
             {
-                m_ZDSParam = (sZDSParams *)&pData[offset];
+                m_ZDSParam = reinterpret_cast<sZDSParams*>(&pData[offset]);
                 offset += sizeof(sZDSParams);
                 switch (m_ZDSParam->paramLength)
                 {
