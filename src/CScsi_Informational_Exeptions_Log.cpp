@@ -135,7 +135,6 @@ void CScsiInformationalExeptionsLog::process_Informational_Exceptions_Data(JSONN
 		json_push_back(data, json_new_a("name", "environment_temperature"));
 		JSONNODE* label = json_new(JSON_NODE);
 		json_set_name(label, "labels");
-        std::ostringstream temp;
         temp << "scsi-log-page:0x" << std::hex << std::setfill('0') << INFORMATIONAL_EXCEPTIONS << "," << 0 << ":0x" << m_Exeptions->paramCode << ":" << offset;
 		json_push_back(label, json_new_a("metric_source", temp.str().c_str()));
         temp.str().clear(); temp.clear();
@@ -253,7 +252,7 @@ eReturnValues CScsiInformationalExeptionsLog::get_Informational_Exceptions_Data(
 			if (offset < m_bufferLength && offset < UINT16_MAX)
 			{
 				number++;
-				m_Exeptions = (sExeptionsParams *)&pData[offset];
+				m_Exeptions = reinterpret_cast<sExeptionsParams*>(&pData[offset]);
 				process_Informational_Exceptions_Data(pageInfo, number, offset);
 				offset += sizeof(sExeptionsParams);
 			}

@@ -230,7 +230,7 @@ eReturnValues CScsiCacheLog::get_Cache_Data(JSONNODE *masterData)
         {
             if (offset < m_bufferLength && offset < UINT16_MAX)
             {
-                m_cache = (sCacheParams *)&pData[offset];
+                m_cache = reinterpret_cast<sCacheParams*>(&pData[offset]);
                 offset += sizeof(sCacheParams);
                 switch (m_cache->paramLength)
                 {

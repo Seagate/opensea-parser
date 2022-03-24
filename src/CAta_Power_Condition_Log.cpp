@@ -90,7 +90,7 @@ CAtaPowerConditionsLog::CAtaPowerConditionsLog(std::string filename)
             memcpy_s(m_powerConditionLog, logSize, cCLog->get_Buffer(), logSize);// copy the buffer data to the class member pBuf
 #endif
             sLogPageStruct *idCheck;
-            idCheck = (sLogPageStruct *)&m_powerConditionLog[0];
+            idCheck = reinterpret_cast<sLogPageStruct*>(&m_powerConditionLog[0]);
             byte_Swap_16(&idCheck->pageLength);
             if (IsScsiLogPage(idCheck->pageLength, idCheck->pageCode) == false)
             {
@@ -201,19 +201,19 @@ eReturnValues CAtaPowerConditionsLog::get_Power_Condition_Log()
 {
 
     //get the idle_a power condition descriptor
-    m_idleAPowerConditions = (sPowerLogDescriptor*)&m_powerConditionLog[OFFSET_IDLE_A];
+    m_idleAPowerConditions = reinterpret_cast<sPowerLogDescriptor*>(&m_powerConditionLog[OFFSET_IDLE_A]);
 
     //get the idle_b power condition descriptor
-    m_idleBPowerConditions = (sPowerLogDescriptor*)&m_powerConditionLog[OFFSET_IDLE_B];
+    m_idleBPowerConditions = reinterpret_cast<sPowerLogDescriptor*>(&m_powerConditionLog[OFFSET_IDLE_B]);
 
     //get the idle_c power condition descriptor
-    m_idleCPowerConditions = (sPowerLogDescriptor*)&m_powerConditionLog[OFFSET_IDLE_C];
+    m_idleCPowerConditions = reinterpret_cast<sPowerLogDescriptor*>(&m_powerConditionLog[OFFSET_IDLE_C]);
 
     //get the standby_y power condition descriptor
-    m_standbyYPowerConditions = (sPowerLogDescriptor*)&m_powerConditionLog[OFFSET_STANDBY_Y];
+    m_standbyYPowerConditions = reinterpret_cast<sPowerLogDescriptor*>(&m_powerConditionLog[OFFSET_STANDBY_Y]);
 
     //get the standby_z power condition descriptor
-    m_standbyZPowerConditions = (sPowerLogDescriptor*)&m_powerConditionLog[OFFSET_STANDBY_Z];
+    m_standbyZPowerConditions = reinterpret_cast<sPowerLogDescriptor*>(&m_powerConditionLog[OFFSET_STANDBY_Z]);
 
     return SUCCESS;
 }

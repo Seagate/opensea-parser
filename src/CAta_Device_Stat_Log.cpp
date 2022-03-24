@@ -110,7 +110,7 @@ CSAtaDevicStatisticsTempLogs::CSAtaDevicStatisticsTempLogs(const std::string &fi
 			memcpy_s(pData, m_logSize, cCLog->get_Buffer(), m_logSize);// copy the buffer data to the class member pBuf
 #endif
 			sLogPageStruct *idCheck;
-			idCheck = (sLogPageStruct *)&pData[0];
+			idCheck = reinterpret_cast<sLogPageStruct*>(&pData[0]);
 			byte_Swap_16(&idCheck->pageLength);
 			if (IsScsiLogPage(idCheck->pageLength, idCheck->pageCode) == false)
 			{
@@ -184,7 +184,7 @@ eReturnValues CSAtaDevicStatisticsTempLogs::parse_SCT_Temp_Log()
 	JSONNODE *sctTemp = json_new(JSON_NODE);
 	json_set_name(sctTemp, "SCT Temp Log");
 
-	if (m_dataSize > 0 && m_dataSize < (size_t)(34 + CBIndex))   // check the size fo the data
+	if (m_dataSize > 0 && m_dataSize < static_cast<size_t>(34 + CBIndex))   // check the size fo the data
 	{
 		json_push_back(JsonData, sctTemp);
 		return static_cast<eReturnValues>(INVALID_LENGTH);
@@ -329,7 +329,7 @@ CAtaDeviceStatisticsLogs::CAtaDeviceStatisticsLogs(const std::string &fileName, 
 			memcpy_s(pData, m_deviceLogSize, cCLog->get_Buffer(), m_deviceLogSize);// copy the buffer data to the class member pBuf
 #endif
 			sLogPageStruct *idCheck;
-			idCheck = (sLogPageStruct *)&pData[0];
+			idCheck = reinterpret_cast<sLogPageStruct*>(&pData[0]);
 			byte_Swap_16(&idCheck->pageLength);
 			if (IsScsiLogPage(idCheck->pageLength, idCheck->pageCode) == false)
 			{
@@ -400,8 +400,8 @@ eReturnValues CAtaDeviceStatisticsLogs::ParseSCTDeviceStatLog(JSONNODE *masterDa
     //Define each valid log page.
     for (uint32_t offset = 0; offset < m_deviceLogSize; offset += 512)
     {	
-        pDeviceHeader = (sHeader*)&pData[offset];
-        pLogPage = (uint64_t*)&pData[offset];
+        pDeviceHeader = reinterpret_cast<sHeader*>(&pData[offset]);
+        pLogPage = reinterpret_cast<uint64_t*>(&pData[offset]);
 
         //The members of the sHeader were updated - LogPageNum is corrected from uint16_t to uint8_t as per the spec
         //Nayana Commented the below ifcheck and kept it to know if any such scenario that satisfies this condition
@@ -656,7 +656,7 @@ uint8_t CAtaDeviceStatisticsLogs::CheckStatusAndValid_8(uint64_t *value)
     //Bit 62 : Valid value and 63 bit needs to be set
     if (isBit62Set(value) && isBit63Set(value))
     {
-        retValue = (uint8_t)(*value);
+        retValue = static_cast<uint8_t>(*value);
     }
     return retValue;
 }
@@ -680,7 +680,7 @@ int8_t CAtaDeviceStatisticsLogs::CheckStatusAndValidSigned_8(uint64_t *value)
     //Bit 62 : Valid value and 63 bit needs to be set
     if (isBit62Set(value) && isBit63Set(value))
     {
-        retValue = (int8_t)(*value);
+        retValue = static_cast<int8_t>(*value);
     }
     return retValue;
 }
@@ -704,7 +704,7 @@ uint32_t CAtaDeviceStatisticsLogs::CheckStatusAndValid_32(uint64_t *value)
     //Bit 62 : Valid value and 63 bit needs to be set
     if (isBit62Set(value) && isBit63Set(value))
     {
-        retValue = (uint32_t)(*value);
+        retValue = static_cast<uint32_t>(*value);
     }
     return retValue;
 }
@@ -725,7 +725,7 @@ uint32_t CAtaDeviceStatisticsLogs::CheckStatusAndValid_32(uint64_t *value)
 void CAtaDeviceStatisticsLogs::logPage00(uint64_t *value)
 {
 
-    uint8_t *pEntries = (uint8_t *)&value[0];
+    uint8_t *pEntries = reinterpret_cast<uint8_t*>(&value[0]);
     uint8_t TotalEntries = 0;
     TotalEntries = pEntries[8];
 
@@ -751,7 +751,7 @@ void CAtaDeviceStatisticsLogs::logPage01(uint64_t *value, JSONNODE *masterData)
 {
     //General Statistics(log page 01) contains general information about the device.
 	sLogPage01 *dsLog;
-	dsLog = (sLogPage01 *)&value[0];
+	dsLog = reinterpret_cast<sLogPage01*>(&value[0]);
     //string myStr = "Statistics";
     JSONNODE *sctStat = json_new(JSON_NODE);
     json_set_name(sctStat, "General Statistics(log Page 01h)");

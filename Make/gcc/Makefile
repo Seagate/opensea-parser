@@ -31,7 +31,8 @@ VERSION=$(MAJOR).$(MINOR).$(PATCH)
 SRC_DIR=../../src/
 INC_DIR=-I../../include -I../../include/Seagate -I../../../opensea-common/include -I../../../libjson
 CXX ?= g++
-CXXFLAGS ?= -Wall -Wextra
+CXXFLAGS ?= -Wall -Wextra -Werror=old-style-cast -Wshadow -Wmaybe-uninitialized -Wvla -Wfloat-equal -Wnull-dereference -Wduplicated-cond \
+    -Wlogical-not-parentheses -Wlogical-op -Wshift-overflow=2 -Wdouble-promotion -Wformat-security
 CXXFLAGS += -c -fPIC -std=c++98 -I.
 ARCHIVE ?= ar
 LFLAGS ?= -Wall-Wl,--whole-archive ../../../opensea-common/Make/gcc/lib/$(FILE_OUTPUT_DIR)/libopensea-common.a -Wl,--no-whole-archive

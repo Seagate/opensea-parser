@@ -242,7 +242,7 @@ eReturnValues CScsiPowerConditiontLog::get_Data(JSONNODE *masterData)
 		{
 			if (offset < m_bufferLength && offset < UINT16_MAX)
 			{
-				m_PowerParam = (sPowerParams *)&pData[offset];
+				m_PowerParam = reinterpret_cast<sPowerParams*>(&pData[offset]);
 				// process the power information
 				process_List_Information(pageInfo);			
 			}

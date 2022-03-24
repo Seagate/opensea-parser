@@ -219,7 +219,7 @@ eReturnValues CScsiOperationLog::get_Background_Operations_Data(JSONNODE *master
 		{
 			if (offset < m_bufferLength && offset < UINT16_MAX)
 			{
-				m_Operation = (sOperationParams *)&pData[offset];
+				m_Operation = reinterpret_cast<sOperationParams*>(&pData[offset]);
 				process_Background_Operations_Data(pageInfo,offset);
 				offset += sizeof(sOperationParams);
 			}

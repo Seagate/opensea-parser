@@ -92,7 +92,7 @@ CExtComp::CExtComp(const std::string &fileName, JSONNODE *masterData)
             memcpy_s(pData, m_logSize, cCLog->get_Buffer(), m_logSize);// copy the buffer data to the class member pBuf
 #endif
             sLogPageStruct *idCheck;
-            idCheck = (sLogPageStruct *)&pData[0];
+            idCheck = reinterpret_cast<sLogPageStruct*>(&pData[0]);
             byte_Swap_16(&idCheck->pageLength);
             if (IsScsiLogPage(idCheck->pageLength, idCheck->pageCode) == false)
             {

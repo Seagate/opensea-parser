@@ -2216,15 +2216,15 @@ eReturnValues CSCSI_Farm_Log::print_General_Drive_Information_Continued(JSONNODE
         }
         temp.str().clear(); temp.clear();
         temp << std::dec << M_DoubleWord0(check_Status_Strip_Status(vFarmFrame[page].gDPage06.maxNumAvaliableSectors)) << " sectors";
-        json_push_back(label, json_new_a("max number of available sectors for reassignment", temp.str().c_str()));          //!< Max Number of Available Sectors for Reassignment – Value in disc sectors(started in 3.3 )
+        json_push_back(label, json_new_a("max number of available sectors for reassignment", temp.str().c_str()));          //!< Max Number of Available Sectors for Reassignment ï¿½ Value in disc sectors(started in 3.3 )
         temp.str().clear(); temp.clear();
-        temp << (static_cast<float>(M_Word0(vFarmFrame[page].gDPage06.timeToReady)) * .001) << " seconds";
+        temp << (static_cast<float>(M_Word0(vFarmFrame[page].gDPage06.timeToReady)) * .001F) << " seconds";
         json_push_back(label, json_new_a("time to ready of the last power cycle", temp.str().c_str()));			//!< time to ready of the last power cycle
         temp.str().clear(); temp.clear();
-        temp << (static_cast<float>(M_Word0(vFarmFrame[page].gDPage06.holdTime)) * .001) << " seconds";
+        temp << (static_cast<float>(M_Word0(vFarmFrame[page].gDPage06.holdTime)) * .001F) << " seconds";
         json_push_back(label, json_new_a("time drive is held in staggered spin", temp.str().c_str()));                //!< time drive is held in staggered spin during the last power on sequence
         temp.str().clear(); temp.clear();
-        temp << std::setprecision(3) << (static_cast<float>(M_Word0(vFarmFrame[page].gDPage06.servoSpinUpTime)) * .001) << " seconds";
+        temp << std::setprecision(3) << (static_cast<float>(M_Word0(vFarmFrame[page].gDPage06.servoSpinUpTime)) * .001F) << " seconds";
         json_push_back(label, json_new_a("last servo spin up time", temp.str().c_str()));			//!< time to ready of the last power cycle
         temp.str().clear(); temp.clear();
         temp << "scsi-log-page:0x" << std::hex << FARMLOGPAGE << "," << std::hex << FARMSUBPAGE << ":0x" << std::hex << GENERAL_DRIVE_INFORMATION_06;
@@ -2269,15 +2269,15 @@ eReturnValues CSCSI_Farm_Log::print_General_Drive_Information_Continued(JSONNODE
             set_Json_Bool(pageInfo, "Has Drive been Depopped", false);
         }
 
-        set_json_64_bit_With_Status(pageInfo, "Max Number of Available Sectors for Reassignment", vFarmFrame[page].gDPage06.maxNumAvaliableSectors, false, m_showStatusBits);          //!< Max Number of Available Sectors for Reassignment – Value in disc sectors(started in 3.3 )
+        set_json_64_bit_With_Status(pageInfo, "Max Number of Available Sectors for Reassignment", vFarmFrame[page].gDPage06.maxNumAvaliableSectors, false, m_showStatusBits);          //!< Max Number of Available Sectors for Reassignment ï¿½ Value in disc sectors(started in 3.3 )
         temp.str().clear(); temp.clear();
-        temp << std::setprecision(3) << (static_cast<float>(M_Word0(vFarmFrame[page].gDPage06.timeToReady)) * .001);
+        temp << std::setprecision(3) << (static_cast<float>(M_Word0(vFarmFrame[page].gDPage06.timeToReady)) * .001F);
         set_json_string_With_Status(pageInfo, "Time to ready of the last power cycle (sec)", temp.str().c_str(), vFarmFrame[page].gDPage06.timeToReady, m_showStatusBits);			//!< time to ready of the last power cycle
         temp.str().clear(); temp.clear();
-        temp << std::setprecision(3) << (static_cast<float>(M_Word0(vFarmFrame[page].gDPage06.holdTime)) * .001);
+        temp << std::setprecision(3) << (static_cast<float>(M_Word0(vFarmFrame[page].gDPage06.holdTime)) * .001F);
         set_json_string_With_Status(pageInfo, "Time drive is held in staggered spin (sec)", temp.str().c_str(), vFarmFrame[page].gDPage06.holdTime, m_showStatusBits);                //!< time drive is held in staggered spin during the last power on sequence
         temp.str().clear(); temp.clear();
-        temp << std::setprecision(3) << (static_cast<float>(M_Word0(vFarmFrame[page].gDPage06.servoSpinUpTime)) * .001);
+        temp << std::setprecision(3) << (static_cast<float>(M_Word0(vFarmFrame[page].gDPage06.servoSpinUpTime)) * .001F);
         set_json_string_With_Status(pageInfo, "Last Servo Spin up Time (sec)", temp.str().c_str(), vFarmFrame[page].gDPage06.servoSpinUpTime, m_showStatusBits);			//!< time to ready of the last power cycle
 
         json_push_back(masterData, pageInfo);
@@ -2329,12 +2329,12 @@ eReturnValues CSCSI_Farm_Log::print_WorkLoad(JSONNODE *masterData, uint32_t page
     //4.21
     if (m_MajorRev >= 4 && m_MinorRev > 20) {
         printf("\tNumber of Read Commands of transfer length <=16KB for last 3 SMART Summary Frames   %" PRIu64"  \n", vFarmFrame[page].workLoadPage.workLoad.numReadTransferSmall & UINT64_C(0x00FFFFFFFFFFFFFF));		//!< Number of Read commands from 0-3.125% of LBA space for last 3 SMART Summary Frames
-        printf("\tNumber of Read Commands of transfer length (16KB – 512KB] for last 3 SMART Summary Frames  %" PRIu64"  \n", vFarmFrame[page].workLoadPage.workLoad.numReadTransferMid1 & UINT64_C(0x00FFFFFFFFFFFFFF));		//!< Number of Read commands from 3.125-25% of LBA space for last 3 SMART Summary Frames
-        printf("\tNumber of Read Commands of transfer length (512KB – 2MB] for last 3 SMART Summary Frames     %" PRIu64"  \n", vFarmFrame[page].workLoadPage.workLoad.numReadTransferMid2 & UINT64_C(0x00FFFFFFFFFFFFFF));		//!< Number of Read commands from 25-50% of LBA space for last 3 SMART Summary Frames
+        printf("\tNumber of Read Commands of transfer length (16KB ï¿½ 512KB] for last 3 SMART Summary Frames  %" PRIu64"  \n", vFarmFrame[page].workLoadPage.workLoad.numReadTransferMid1 & UINT64_C(0x00FFFFFFFFFFFFFF));		//!< Number of Read commands from 3.125-25% of LBA space for last 3 SMART Summary Frames
+        printf("\tNumber of Read Commands of transfer length (512KB ï¿½ 2MB] for last 3 SMART Summary Frames     %" PRIu64"  \n", vFarmFrame[page].workLoadPage.workLoad.numReadTransferMid2 & UINT64_C(0x00FFFFFFFFFFFFFF));		//!< Number of Read commands from 25-50% of LBA space for last 3 SMART Summary Frames
         printf("\tNumber of Read Commands of transfer length > 2MB for last 3 SMART Summary Frames    %" PRIu64"  \n", vFarmFrame[page].workLoadPage.workLoad.numReadTransferLarge & UINT64_C(0x00FFFFFFFFFFFFFF));		//!< Number of Read commands from 50-100% of LBA space for last 3 SMART Summary Frames 
         printf("\tNumber of Write Commands of transfer length <=16KB for last 3 SMART Summary Frames  %" PRIu64"  \n", vFarmFrame[page].workLoadPage.workLoad.numWriteTransferSmall & UINT64_C(0x00FFFFFFFFFFFFFF));	    //!< Number of Write commands from 0-3.125% of LBA space for last 3 SMART Summary Frames
-        printf("\tNumber of Write Commands of transfer length (16KB – 512KB] for last 3 SMART Summary Frames %" PRIu64"  \n", vFarmFrame[page].workLoadPage.workLoad.numWriteTransferMid1 & UINT64_C(0x00FFFFFFFFFFFFFF));	    //!< Number of Write commands from 3.125-25% of LBA space for last 3 SMART Summary Frames
-        printf("\tNumber of Write Commands of transfer length (512KB – 2MB] for last 3 SMART Summary Frames    %" PRIu64"  \n", vFarmFrame[page].workLoadPage.workLoad.numWriteTransferMid2 & UINT64_C(0x00FFFFFFFFFFFFFF));		//!< Number of Write commands from 25-50% of LBA space for last 3 SMART Summary Frames
+        printf("\tNumber of Write Commands of transfer length (16KB ï¿½ 512KB] for last 3 SMART Summary Frames %" PRIu64"  \n", vFarmFrame[page].workLoadPage.workLoad.numWriteTransferMid1 & UINT64_C(0x00FFFFFFFFFFFFFF));	    //!< Number of Write commands from 3.125-25% of LBA space for last 3 SMART Summary Frames
+        printf("\tNumber of Write Commands of transfer length (512KB ï¿½ 2MB] for last 3 SMART Summary Frames    %" PRIu64"  \n", vFarmFrame[page].workLoadPage.workLoad.numWriteTransferMid2 & UINT64_C(0x00FFFFFFFFFFFFFF));		//!< Number of Write commands from 25-50% of LBA space for last 3 SMART Summary Frames
         printf("\tNumber of Write Commands of transfer length > 2MB for last 3 SMART Summary Frames   %" PRIu64"  \n", vFarmFrame[page].workLoadPage.workLoad.numWriteTransferLarge & UINT64_C(0x00FFFFFFFFFFFFFF));		//!< Number of Write commands from 50-100% of LBA space for last 3 SMART Summary Frames
     
     }
@@ -2413,12 +2413,12 @@ eReturnValues CSCSI_Farm_Log::print_WorkLoad(JSONNODE *masterData, uint32_t page
         if (m_MajorRev >= 4 && m_MinorRev > 20)
         {
             set_json_64_bit_With_Status(pageInfo, "Number of Read Commands of transfer length <=16KB for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.workLoad.numReadTransferSmall, false, m_showStatusBits);
-            set_json_64_bit_With_Status(pageInfo, "Number of Read Commands of transfer length (16KB – 512KB] for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.workLoad.numReadTransferMid1, false, m_showStatusBits);
-            set_json_64_bit_With_Status(pageInfo, "Number of Read Commands of transfer length (512KB – 2MB] for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.workLoad.numReadTransferMid2, false, m_showStatusBits);
+            set_json_64_bit_With_Status(pageInfo, "Number of Read Commands of transfer length (16KB ï¿½ 512KB] for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.workLoad.numReadTransferMid1, false, m_showStatusBits);
+            set_json_64_bit_With_Status(pageInfo, "Number of Read Commands of transfer length (512KB ï¿½ 2MB] for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.workLoad.numReadTransferMid2, false, m_showStatusBits);
             set_json_64_bit_With_Status(pageInfo, "Number of Read Commands of transfer length > 2MB for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.workLoad.numReadTransferLarge, false, m_showStatusBits);
             set_json_64_bit_With_Status(pageInfo, "Number of Write Commands of transfer length <=16KB for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.workLoad.numWriteTransferSmall, false, m_showStatusBits);
-            set_json_64_bit_With_Status(pageInfo, "Number of Write Commands of transfer length (16KB – 512KB] for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.workLoad.numWriteTransferMid1, false, m_showStatusBits);
-            set_json_64_bit_With_Status(pageInfo, "Number of Write Commands of transfer length (512KB – 2MB] for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.workLoad.numWriteTransferMid2, false, m_showStatusBits);
+            set_json_64_bit_With_Status(pageInfo, "Number of Write Commands of transfer length (16KB ï¿½ 512KB] for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.workLoad.numWriteTransferMid1, false, m_showStatusBits);
+            set_json_64_bit_With_Status(pageInfo, "Number of Write Commands of transfer length (512KB ï¿½ 2MB] for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.workLoad.numWriteTransferMid2, false, m_showStatusBits);
             set_json_64_bit_With_Status(pageInfo, "Number of Write Commands of transfer length > 2MB for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.workLoad.numWriteTransferLarge, false, m_showStatusBits);
         }
 

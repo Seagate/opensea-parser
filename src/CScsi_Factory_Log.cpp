@@ -176,7 +176,7 @@ eReturnValues CScsiFactoryLog::get_Factory_Data(JSONNODE *masterData)
         {
             if (offset < m_bufferLength && offset < UINT16_MAX)
             {
-                m_factory = (sFactoryParams *)&pData[offset];
+                m_factory = reinterpret_cast<sFactoryParams*>(&pData[offset]);
                 offset += sizeof(sFactoryParams);
                 switch (m_factory->paramLength)
                 {

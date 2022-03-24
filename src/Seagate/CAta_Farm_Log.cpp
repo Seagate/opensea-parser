@@ -159,7 +159,7 @@ eReturnValues CATA_Farm_Log::parse_Farm_Log()
     {
         for (uint32_t index = 0; index <= m_copies; ++index)                       // loop for the number of copies. I don't think it's zero base as of now
         {
-            sDriveInfo *idInfo = (sDriveInfo *)&pBuf[offset];                   // get the id drive information at the time.
+            sDriveInfo *idInfo = reinterpret_cast<sDriveInfo*>(&pBuf[offset]);                   // get the id drive information at the time.
             pFarmFrame->driveInfo = *idInfo;
             sStringIdentifyData strIdInfo;
 
@@ -179,19 +179,19 @@ eReturnValues CATA_Farm_Log::parse_Farm_Log()
 
             offset += m_pageSize;
 
-            sWorkLoadStat *pworkLoad = (sWorkLoadStat *)&pBuf[offset];           // get the work load information
+            sWorkLoadStat *pworkLoad = reinterpret_cast<sWorkLoadStat*>(&pBuf[offset]);           // get the work load information
             memcpy(&pFarmFrame->workLoadPage, pworkLoad, sizeof(sWorkLoadStat));
             offset += m_pageSize;
 
-            sErrorStat *pError = (sErrorStat *)&pBuf[offset];                    // get the error status
+            sErrorStat *pError = reinterpret_cast<sErrorStat*>(&pBuf[offset]);                    // get the error status
             memcpy(&pFarmFrame->errorPage, pError, sizeof(sErrorStat));
             offset += m_pageSize;
 
-            sEnvironementStat *pEnvironment = (sEnvironementStat *)&pBuf[offset]; // get the envirmonent information 
+            sEnvironementStat *pEnvironment = reinterpret_cast<sEnvironementStat*>(&pBuf[offset]); // get the envirmonent information 
             memcpy(&pFarmFrame->environmentPage, pEnvironment, sizeof(sEnvironementStat));
             offset += m_pageSize;
 
-            sAtaReliabilityStat *pReli = (sAtaReliabilityStat *)&pBuf[offset];         // get the Reliabliity stat
+            sAtaReliabilityStat *pReli = reinterpret_cast<sAtaReliabilityStat*>(&pBuf[offset]);         // get the Reliabliity stat
             memcpy(&pFarmFrame->reliPage, pReli, sizeof(sAtaReliabilityStat));
             offset += m_pageSize;                                                  // add another page size. I think there is only on header
             vFarmFrame.push_back(*pFarmFrame);                                   // push the data to the vector
@@ -1551,7 +1551,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
         temp << "Current H2SAT iterations to converge Test Zone 0 by Head " << std::dec << loopCount;// Head count
         myHeader.assign(temp.str());
         temp.str().clear(); temp.clear();
-        temp << std::setprecision(1) << std::setfill('0') << static_cast<float> (M_Word0(check_Status_Strip_Status(vFarmFrame[page].reliPage.currentH2SATIterations[loopCount].zone0))) *.1;
+        temp << std::setprecision(1) << std::setfill('0') << static_cast<float> (M_Word0(check_Status_Strip_Status(vFarmFrame[page].reliPage.currentH2SATIterations[loopCount].zone0))) *.1F;
         set_json_string_With_Status(headInfo, myHeader, temp.str(), vFarmFrame[page].reliPage.currentH2SATIterations[loopCount].zone0, m_showStatusBits);        //!< [24] Qword[24][3] Current H2SAT iterations to converge by Head, by Test Zone 9, 11
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
@@ -1560,7 +1560,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
         temp << "Current H2SAT iterations to converge Test Zone 1 by Head " << std::dec << loopCount;// Head count
         myHeader.assign(temp.str());
         temp.str().clear(); temp.clear();
-        temp << std::setprecision(1) << std::setfill('0') << static_cast<float> (M_Word0(check_Status_Strip_Status(vFarmFrame[page].reliPage.currentH2SATIterations[loopCount].zone1)))*.1;
+        temp << std::setprecision(1) << std::setfill('0') << static_cast<float> (M_Word0(check_Status_Strip_Status(vFarmFrame[page].reliPage.currentH2SATIterations[loopCount].zone1)))*.1F;
         set_json_string_With_Status(headInfo, myHeader, temp.str(), vFarmFrame[page].reliPage.currentH2SATIterations[loopCount].zone1, m_showStatusBits);     //!< [24] Qword[24][3] Current H2SAT iterations to converge by Head, by Test Zone 9, 11
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
@@ -1569,7 +1569,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
         temp << "Current H2SAT iterations to converge Test Zone 2 by Head " << std::dec << loopCount;// Head count
         myHeader.assign(temp.str());
         temp.str().clear(); temp.clear();
-        temp << std::setprecision(1) << std::setfill('0') << static_cast<float> (M_Word0(check_Status_Strip_Status(vFarmFrame[page].reliPage.currentH2SATIterations[loopCount].zone2))) *.1;
+        temp << std::setprecision(1) << std::setfill('0') << static_cast<float> (M_Word0(check_Status_Strip_Status(vFarmFrame[page].reliPage.currentH2SATIterations[loopCount].zone2))) *.1F;
         set_json_string_With_Status(headInfo, myHeader, temp.str(), vFarmFrame[page].reliPage.currentH2SATIterations[loopCount].zone2, m_showStatusBits);          //!< [24] Qword[24][3] Current H2SAT iterations to converge by Head, by Test Zone 9, 11
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
@@ -1590,7 +1590,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
         temp << "Current H2SAT asymmetry by Head " << std::dec << loopCount;// Head count
         myHeader.assign(temp.str());
         temp.str().clear(); temp.clear();
-        temp << std::setprecision(1) << std::setfill('0') << static_cast<float>(M_Word0(check_Status_Strip_Status(vFarmFrame[page].reliPage.currentH2SATasymmetry[loopCount])))  * .1;
+        temp << std::setprecision(1) << std::setfill('0') << static_cast<float>(M_Word0(check_Status_Strip_Status(vFarmFrame[page].reliPage.currentH2SATasymmetry[loopCount])))  * .1F;
         set_json_string_With_Status(headInfo, myHeader, temp.str(), vFarmFrame[page].reliPage.currentH2SATasymmetry[loopCount], m_showStatusBits);             //!< [24] Qword[24] Current H2SAT asymmetry by Head, averaged across Test Zones
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)

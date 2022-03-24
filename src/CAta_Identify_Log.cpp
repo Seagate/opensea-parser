@@ -152,7 +152,7 @@ CAta_Identify_log::CAta_Identify_log(const std::string & fileName)
             memcpy_s(pData, bufferSize, cCLog->get_Buffer(), bufferSize);// copy the buffer data to the class member pBuf
 #endif
             sLogPageStruct *idCheck;
-            idCheck = (sLogPageStruct *)&pData[0];
+            idCheck = reinterpret_cast<sLogPageStruct*>(&pData[0]);
             byte_Swap_16(&idCheck->pageLength);
             if (IsScsiLogPage(idCheck->pageLength, idCheck->pageCode) == false)
             {
@@ -344,9 +344,9 @@ eReturnValues CAta_Identify_log::parse_Device_Info()
     {
         m_sDriveInfo.smartFeatureEnabled = true;
     }
-    if (((uint32_t)(identWordPtr[117] << 8) & identWordPtr[118]) > 0)
+    if ((static_cast<uint32_t>(identWordPtr[117] << 8) & identWordPtr[118]) > 0)
     {
-        m_sDriveInfo.ataReportedLogicalSectorSize = (uint32_t)(identWordPtr[117] << 8) & identWordPtr[118];
+        m_sDriveInfo.ataReportedLogicalSectorSize = static_cast<uint32_t>(identWordPtr[117] << 8) & identWordPtr[118];
     }
     if ((identWordPtr[206] & BIT0) > 0)
     {
@@ -427,15 +427,16 @@ eReturnValues CAta_Identify_log::parse_Device_Info()
 
     }
 
-    m_sDriveInfo.sCapInfo.capUnit = (double)(m_sDriveInfo.maxLBA48 * m_sDriveInfo.sSizes.logicalSectorSize);
+    m_sDriveInfo.sCapInfo.capUnit = static_cast<double>(m_sDriveInfo.maxLBA48 * m_sDriveInfo.sSizes.logicalSectorSize);
     m_sDriveInfo.sCapInfo.capacityUnit.resize(3);
-    char * capUnit = (char*)&m_sDriveInfo.sCapInfo.capacityUnit.c_str()[0];
-    capacity_Unit_Convert((double *)&m_sDriveInfo.sCapInfo.capUnit, &capUnit);
-
+    char capUnitBuf[5] = { 0 };
+    char * capUnit = &capUnitBuf[0];
+    capacity_Unit_Convert(&m_sDriveInfo.sCapInfo.capUnit, &capUnit);
+    m_sDriveInfo.sCapInfo.capacityUnit.assign(capUnit);
 
     //sata speeds
-    m_sDriveInfo.sataGenSupported = (uint8_t)(identWordPtr[76] & 0x000F) >> 1;                         //we only care about the lower bits right now
-    m_sDriveInfo.sataNegotiated = (uint8_t)(identWordPtr[77] & 0x000F) >> 1;                           //coded value
+    m_sDriveInfo.sataGenSupported = static_cast<uint8_t>((identWordPtr[76] & 0x000F) >> 1);                         //we only care about the lower bits right now
+    m_sDriveInfo.sataNegotiated = static_cast<uint8_t>((identWordPtr[77] & 0x000F) >> 1);                           //coded value
     //ATA spec supported
 
     m_sDriveInfo.ataSpecBits = identWordPtr[80];
@@ -3875,7 +3876,7 @@ bool CAta_Identify_Log_06::get_Time_for_Enhanced_Erase(JSONNODE *enhanced)
             opensea_parser::set_Json_Bool(enhanced, "Enhanced Security Erased Time format bit", false);
         }
         temp.str().clear(); temp.clear();
-        temp << std::dec << ((uint16_t)(M_Word0(m_pLog->timeEnhancedErase)) & 0x0FFF) * 2;
+        temp << std::dec << (static_cast<uint16_t>(M_Word0(m_pLog->timeEnhancedErase)) & 0x0FFF) * 2;
         json_push_back(enhanced, json_new_a("Time for Enhanced Erase in Minutes", temp.str().c_str()));
     }
     return true;
@@ -3914,7 +3915,7 @@ bool CAta_Identify_Log_06::get_Time_for_Normal_Erase(JSONNODE *normal)
             opensea_parser::set_Json_Bool(normal, "Normal Security Time format bit", false);
         }
         temp.str().clear(); temp.clear();
-        temp << std::dec << ((uint16_t)(M_Word0(m_pLog->timeNormalErase)) & 0x0FFF) * 2;
+        temp << std::dec << (static_cast<uint16_t>(M_Word0(m_pLog->timeNormalErase)) & 0x0FFF) * 2;
         json_push_back(normal, json_new_a("Time for Normal Erase in Minutes", temp.str().c_str()));
     }
     return true;
@@ -4797,7 +4798,7 @@ CAta_Identify_Log_30::CAta_Identify_Log_30(const std::string & fileName)
             memcpy_s(pData, bufferSize, cCLog->get_Buffer(), bufferSize);// copy the buffer data to the class member pBuf
 #endif
             sLogPageStruct *idCheck;
-            idCheck = (sLogPageStruct *)&pData[0];
+            idCheck = reinterpret_cast<sLogPageStruct*>(&pData[0]);
             byte_Swap_16(&idCheck->pageLength);
             if (IsScsiLogPage(idCheck->pageLength, idCheck->pageCode) == false)
             {

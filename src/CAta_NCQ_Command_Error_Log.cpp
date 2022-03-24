@@ -64,7 +64,7 @@ CAta_NCQ_Command_Error_Log::CAta_NCQ_Command_Error_Log(const std::string & fileN
 			memcpy_s(pBuf, logSize, cCLog->get_Buffer(), logSize);// copy the buffer data to the class member pBuf
 #endif
 			sLogPageStruct *idCheck;
-			idCheck = (sLogPageStruct *)&pBuf[0];
+			idCheck = reinterpret_cast<sLogPageStruct*>(&pBuf[0]);
 			byte_Swap_16(&idCheck->pageLength);
 			if (IsScsiLogPage(idCheck->pageLength, idCheck->pageCode) == false)
 			{
@@ -209,7 +209,7 @@ eReturnValues CAta_NCQ_Command_Error_Log::get_NCQ_Command_Error_Log(JSONNODE *ma
 {
     JSONNODE *NCQInfo = json_new(JSON_NODE);
     json_set_name(NCQInfo, "NCQ Command Error Log");
-    ncqError = (sNCQError *)&pBuf[0];
+    ncqError = reinterpret_cast<sNCQError*>(&pBuf[0]);
     get_Bit_Name_Info(NCQInfo);
     create_LBA();
     json_push_back(NCQInfo, json_new_i("Status", static_cast<uint32_t>(ncqError->status)));
