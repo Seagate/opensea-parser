@@ -260,6 +260,9 @@ eReturnValues CSAtaDevicStatisticsTempLogs::parse_SCT_Temp_Log()
 CAtaDeviceStatisticsLogs::CAtaDeviceStatisticsLogs()
     :m_name("Device Stat Log")
     , m_status(IN_PROGRESS)
+    , pData(NULL)
+    , m_deviceLogSize(0)
+    , m_Response()
 {
     m_deviceLogSize = 0;
 }
@@ -284,6 +287,7 @@ CAtaDeviceStatisticsLogs::CAtaDeviceStatisticsLogs(uint32_t logSize, JSONNODE *m
     , m_status(IN_PROGRESS)
     , pData(buffer)
     , m_deviceLogSize(logSize)
+    , m_Response()
 {
     if (pData != NULL)
     {
@@ -314,6 +318,7 @@ CAtaDeviceStatisticsLogs::CAtaDeviceStatisticsLogs(const std::string &fileName, 
 	, m_status(IN_PROGRESS)
 	, pData()
 	, m_deviceLogSize(0)
+    , m_Response()
 {
 	CLog *cCLog;
 	cCLog = new CLog(fileName);
@@ -729,9 +734,10 @@ void CAtaDeviceStatisticsLogs::logPage00(uint64_t *value)
     uint8_t TotalEntries = 0;
     TotalEntries = pEntries[8];
 
+#if defined _DEBUG
     printf("*****List Of Supported Device(log Page 00h)*****");
     printf("\t%s %d \n\n", "Number of entries  : ", TotalEntries);
-
+#endif
 }
 //-----------------------------------------------------------------------------
 //

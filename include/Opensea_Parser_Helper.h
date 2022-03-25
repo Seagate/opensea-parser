@@ -155,6 +155,20 @@ namespace opensea_parser {
         SMART_FRAME_FLAG_F7_CDB_TRIGGER = 0x27,
     }eSMARTFrameFlags;
 
+	typedef enum  _eFARMCAPTUREFlags
+	{
+		FARM_DRAM_COPY = 0,
+		FARM_TIME_SERIES_FRAME = 1,
+		FARM_LONG_TERM_FRAME = 2,
+		FARM_GLIST_FRAME =3,
+		FARM_UNRECOVERABLE_READ_FRAME = 4,
+		FARM_10TH_UNRECOVERALBE_READ_FRAME = 5,
+		FARM_COMMAND_TIME_OUT = 6,
+		FARM_LAST_FIRMWARE_UPDATE_CFW_SFW = 7,
+		FARM_TEMPERATURE_EXCEEDED_70 = 8,
+		FARM_UNKNOWN = 9,
+	}eFARM_CAPTURE_Flags;
+
 #pragma pack(push, 1)
 	typedef struct _sLogPageStruct
 	{

@@ -155,7 +155,9 @@ eReturnValues CATA_Farm_Log::parse_Farm_Log()
         return retStatus;
     }
     sFarmFrame *pFarmFrame = new sFarmFrame();                                      // create the pointer to the union
-    if ((m_pHeader->signature & UINT64_C(0x00FFFFFFFFFFFFFF)) == FARMSIGNATURE)                                     // check the head to see if it has the farm signature else fail
+    uint64_t signature = m_pHeader->signature & UINT64_C(0x00FFFFFFFFFFFFFF);
+    // TODO:   Add in a check for time series that has all FFFF's even for the signature - show as empty 
+    if (signature == FARMSIGNATURE || signature == FACTORYCOPY)                                     // check the head to see if it has the farm signature else fail
     {
         for (uint32_t index = 0; index <= m_copies; ++index)                       // loop for the number of copies. I don't think it's zero base as of now
         {
@@ -163,13 +165,13 @@ eReturnValues CATA_Farm_Log::parse_Farm_Log()
             pFarmFrame->driveInfo = *idInfo;
             sStringIdentifyData strIdInfo;
 
-            create_Serial_Number(pFarmFrame->identStringInfo.serialNumber, idInfo);
-            create_World_Wide_Name(pFarmFrame->identStringInfo.worldWideName, idInfo);
-            create_Firmware_String(pFarmFrame->identStringInfo.firmwareRev, idInfo);
-            create_Device_Interface_String(pFarmFrame->identStringInfo.deviceInterface, idInfo);
+            create_Serial_Number(pFarmFrame->identStringInfo.serialNumber, M_DoubleWord0(idInfo->serialNumber), M_DoubleWord0(idInfo->serialNumber2), m_MajorRev, false);
+            create_World_Wide_Name(pFarmFrame->identStringInfo.worldWideName, idInfo->worldWideName2, idInfo->worldWideName,false);
+            create_Firmware_String(pFarmFrame->identStringInfo.firmwareRev, M_DoubleWord0(idInfo->firmware), M_DoubleWord0(idInfo->firmwareRev),false);
+            create_Device_Interface_String(pFarmFrame->identStringInfo.deviceInterface, M_DoubleWord0(idInfo->deviceInterface),false);
             if (m_MajorRev >= MAJORVERSION3)                    // must be higher then version 3.0 for the model number
             {
-                create_Model_Number_String(pFarmFrame->identStringInfo.modelNumber, idInfo);
+                create_Model_Number_String(pFarmFrame->identStringInfo.modelNumber, idInfo->modelNumber,false);
             }
             else
             {
@@ -282,11 +284,11 @@ eReturnValues CATA_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint3
     {
         printf("\nDrive Information From Farm Log copy %" PRIu32" \n", page);
     }
-    printf("\tserial number(debug):                            %s         \n", &*vFarmFrame[page].identStringInfo.serialNumber.begin());
-    printf("\tworkd wide name(debug):                          %s         \n", &*vFarmFrame[page].identStringInfo.worldWideName.begin());
-    printf("\tfirmware Rev(debug):                             %s         \n", &*vFarmFrame[page].identStringInfo.firmwareRev.begin());                                                 //!< Firmware Revision [0:3]
+    printf("\tserial number(debug):                            %s         \n", vFarmFrame[page].identStringInfo.serialNumber.c_str());
+    printf("\tworkd wide name(debug):                          %s         \n", vFarmFrame[page].identStringInfo.worldWideName.c_str());
+    printf("\tfirmware Rev(debug):                             %s         \n", vFarmFrame[page].identStringInfo.firmwareRev.c_str());                                                 //!< Firmware Revision [0:3]
     printf("\nDrive Information From Farm Log copy %d(debug): \n", page);
-    printf("\tDevice Interface(debug):                         %s \n", &*vFarmFrame[page].identStringInfo.deviceInterface.begin());
+    printf("\tDevice Interface(debug):                         %s \n", vFarmFrame[page].identStringInfo.deviceInterface.c_str());
     printf("\tDevice Capacity in sectors(debug):               %" PRId64" \n", (vFarmFrame[page].driveInfo.deviceCapacity & UINT64_C(0x00FFFFFFFFFFFFFF)));
     printf("\tPhysical Sector size(debug):                     %" PRIX64" \n", (vFarmFrame[page].driveInfo.psecSize & UINT64_C(0x00FFFFFFFFFFFFFF)));                                  //!< Physical Sector Size in Bytes
     printf("\tLogical Sector Size(debug):                      %" PRIX64" \n", (vFarmFrame[page].driveInfo.lsecSize & UINT64_C(0x00FFFFFFFFFFFFFF)));                                  //!< Logical Sector Size in Bytes
@@ -364,6 +366,7 @@ eReturnValues CATA_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint3
     set_json_64_bit_With_Status(pageInfo, "Spin-up Time", vFarmFrame[page].driveInfo.spinUpTime, false, m_showStatusBits);                                      //!< SMART Spin-Up time in milliseconds
 
     set_json_64_bit_With_Status(pageInfo, "NVC Status @ power on", vFarmFrame[page].driveInfo.NVC_StatusATPowerOn, false, m_showStatusBits);                    //!< NVC Status on Power-on
+    Get_NVC_Status(pageInfo, vFarmFrame[page].driveInfo.NVC_StatusATPowerOn);
     set_json_64_bit_With_Status(pageInfo, "NVC Time Available to save (in 100us)", vFarmFrame[page].driveInfo.timeAvailable, false, m_showStatusBits);                          //!< Time Available to Save User Data to Media Over Last Power Cycle (in 100us)
 
     temp.str().clear(); temp.clear();
@@ -407,10 +410,10 @@ eReturnValues CATA_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint3
         uint16_t year = M_Word1(vFarmFrame[page].driveInfo.dateOfAssembly);
         uint16_t week = M_Word0(vFarmFrame[page].driveInfo.dateOfAssembly);
 
-        _common.create_Year_Assembled_String(myStr, year, false);
+        create_Year_Assembled_String(myStr, year, false);
         json_push_back(pageInfo, json_new_a("Year of Assembled", myStr.c_str()));
 
-        _common.create_Year_Assembled_String(myStr, week, false);
+        create_Year_Assembled_String(myStr, week, false);
         json_push_back(pageInfo, json_new_a("Week of Assembled", myStr.c_str()));
     }
     else
@@ -485,12 +488,12 @@ eReturnValues CATA_Farm_Log::print_Work_Load(JSONNODE *masterData, uint32_t page
     if (m_MajorRev >= 4 && m_MinorRev > 20)
     {
         printf("\tNumber of Read Commands of transfer length <=16KB for last 3 SMART Summary Frames   %llu  \n", vFarmFrame[page].workLoadPage.numReadTransferSmallATA & UINT64_C(0x00FFFFFFFFFFFFFF));
-        printf("\tNumber of Read Commands of transfer length (16KB – 512KB] for last 3 SMART Summary Frames  %llu  \n", vFarmFrame[page].workLoadPage.numReadTransferMid1ATA & UINT64_C(0x00FFFFFFFFFFFFFF));
-        printf("\tNumber of Read Commands of transfer length (512KB – 2MB] for last 3 SMART Summary Frames     %llu  \n", vFarmFrame[page].workLoadPage.numReadTransferMid2ATA & UINT64_C(0x00FFFFFFFFFFFFFF));
+        printf("\tNumber of Read Commands of transfer length (16KB - 512KB] for last 3 SMART Summary Frames  %llu  \n", vFarmFrame[page].workLoadPage.numReadTransferMid1ATA & UINT64_C(0x00FFFFFFFFFFFFFF));
+        printf("\tNumber of Read Commands of transfer length (512KB - 2MB] for last 3 SMART Summary Frames     %llu  \n", vFarmFrame[page].workLoadPage.numReadTransferMid2ATA & UINT64_C(0x00FFFFFFFFFFFFFF));
         printf("\tNumber of Read Commands of transfer length > 2MB for last 3 SMART Summary Frames    %llu  \n", vFarmFrame[page].workLoadPage.numReadTransferLargeATA & UINT64_C(0x00FFFFFFFFFFFFFF));
         printf("\tNumber of Write Commands of transfer length <=16KB for last 3 SMART Summary Frames  %llu  \n", vFarmFrame[page].workLoadPage.numWriteTransferSmallATA & UINT64_C(0x00FFFFFFFFFFFFFF));
-        printf("\tNumber of Write Commands of transfer length (16KB – 512KB] for last 3 SMART Summary Frames %llu  \n", vFarmFrame[page].workLoadPage.numWriteTransferMid1ATA & UINT64_C(0x00FFFFFFFFFFFFFF));
-        printf("\tNumber of Write Commands of transfer length (512KB – 2MB] for last 3 SMART Summary Frames    %llu  \n", vFarmFrame[page].workLoadPage.numWriteTransferMid2ATA & UINT64_C(0x00FFFFFFFFFFFFFF));
+        printf("\tNumber of Write Commands of transfer length (16KB - 512KB] for last 3 SMART Summary Frames %llu  \n", vFarmFrame[page].workLoadPage.numWriteTransferMid1ATA & UINT64_C(0x00FFFFFFFFFFFFFF));
+        printf("\tNumber of Write Commands of transfer length (512KB - 2MB] for last 3 SMART Summary Frames    %llu  \n", vFarmFrame[page].workLoadPage.numWriteTransferMid2ATA & UINT64_C(0x00FFFFFFFFFFFFFF));
         printf("\tNumber of Write Commands of transfer length > 2MB for last 3 SMART Summary Frames   %llu  \n", vFarmFrame[page].workLoadPage.numWriteTransferLargeATA & UINT64_C(0x00FFFFFFFFFFFFFF));
         printf("\tCount of Queue Depth =1 at 30s intervals for last 3 SMART Summary Frames   %llu  \n", vFarmFrame[page].workLoadPage.cntQueueDepth1 & UINT64_C(0x00FFFFFFFFFFFFFF));
         printf("\tCount of Queue Depth =2 at 30s intervals for last 3 SMART Summary Frames   %llu  \n", vFarmFrame[page].workLoadPage.cntQueueDepth2 & UINT64_C(0x00FFFFFFFFFFFFFF));
@@ -533,9 +536,9 @@ eReturnValues CATA_Farm_Log::print_Work_Load(JSONNODE *masterData, uint32_t page
     temp << std::dec << (vFarmFrame[page].workLoadPage.logicalSecRead & UINT64_C(0x00FFFFFFFFFFFFFF));
     set_json_string_With_Status(pageInfo, "Logical Sectors Read", temp.str().c_str(), vFarmFrame[page].workLoadPage.logicalSecRead, m_showStatusBits);                        //!< Logical Sectors Read
     temp.str().clear(); temp.clear();
-    set_json_64_bit_With_Status(pageInfo, "Number of dither events during current power cycle", vFarmFrame[page].workLoadPage.dither, false, m_showStatusBits);             //!< Number of dither events during current power cycle (added 3.4)
-    set_json_64_bit_With_Status(pageInfo, "Number of times dither was held off during random workloads", vFarmFrame[page].workLoadPage.ditherRandom, false, m_showStatusBits);          //!< Number of times dither was held off during random workloads during current power cycle(added 3.4)
-    set_json_64_bit_With_Status(pageInfo, "Number of times dither was held off during sequential workloads", vFarmFrame[page].workLoadPage.ditherSequential, false, m_showStatusBits);          //!< Number of times dither was held off during sequential workloads during current power cycle(added 3.4)
+    set_json_64_bit_With_Status(pageInfo, "Number of dither events during current power cycle, Actuator 0", vFarmFrame[page].workLoadPage.dither, false, m_showStatusBits);             //!< Number of dither events during current power cycle (added 3.4)
+    set_json_64_bit_With_Status(pageInfo, "Number of times dither was held off during random workloads during current power cycle, Actuator 0", vFarmFrame[page].workLoadPage.ditherRandom, false, m_showStatusBits);          //!< Number of times dither was held off during random workloads during current power cycle(added 3.4)
+    set_json_64_bit_With_Status(pageInfo, "Number of times dither was held off during sequential workloads during current power cycle, Actuator 0", vFarmFrame[page].workLoadPage.ditherSequential, false, m_showStatusBits);          //!< Number of times dither was held off during sequential workloads during current power cycle(added 3.4)
 
     set_json_64_bit_With_Status(pageInfo, "Number of Read commands from 0-3.125% of LBA space for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.numberOfReadCmds1, false, m_showStatusBits);          //!< Number of Read commands from 0-3.125% of LBA space for last 3 SMART Summary Frames(added 4.4)
     set_json_64_bit_With_Status(pageInfo, "Number of Read commands from 3.125-25% of LBA space for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.numberOfReadCmds2, false, m_showStatusBits);         //!< Number of Read commands from 3.125-25% of LBA space for last 3 SMART Summary Frames(added 4.4)
@@ -551,12 +554,12 @@ eReturnValues CATA_Farm_Log::print_Work_Load(JSONNODE *masterData, uint32_t page
 
     }
     set_json_64_bit_With_Status(pageInfo, "Number of Read Commands of transfer length <=16KB for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.numReadTransferSmallATA, false, m_showStatusBits);
-    set_json_64_bit_With_Status(pageInfo, "Number of Read Commands of transfer length (16KB – 512KB] for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.numReadTransferMid1ATA, false, m_showStatusBits);
-    set_json_64_bit_With_Status(pageInfo, "Number of Read Commands of transfer length (512KB – 2MB] for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.numReadTransferMid2ATA, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Number of Read Commands of transfer length (16KB - 512KB] for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.numReadTransferMid1ATA, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Number of Read Commands of transfer length (512KB - 2MB] for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.numReadTransferMid2ATA, false, m_showStatusBits);
     set_json_64_bit_With_Status(pageInfo, "Number of Read Commands of transfer length > 2MB for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.numReadTransferLargeATA, false, m_showStatusBits);
     set_json_64_bit_With_Status(pageInfo, "Number of Write Commands of transfer length <=16KB for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.numWriteTransferSmallATA, false, m_showStatusBits);
-    set_json_64_bit_With_Status(pageInfo, "Number of Write Commands of transfer length (16KB – 512KB] for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.numWriteTransferMid1ATA, false, m_showStatusBits);
-    set_json_64_bit_With_Status(pageInfo, "Number of Write Commands of transfer length (512KB – 2MB] for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.numWriteTransferMid2ATA, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Number of Write Commands of transfer length (16KB - 512KB] for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.numWriteTransferMid1ATA, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Number of Write Commands of transfer length (512KB - 2MB] for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.numWriteTransferMid2ATA, false, m_showStatusBits);
     set_json_64_bit_With_Status(pageInfo, "Number of Write Commands of transfer length > 2MB for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.numWriteTransferLargeATA, false, m_showStatusBits);
     set_json_64_bit_With_Status(pageInfo, "Count of Queue Depth =1 at 30s intervals for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.cntQueueDepth1, false, m_showStatusBits);
     set_json_64_bit_With_Status(pageInfo, "Count of Queue Depth =2 at 30s intervals for last 3 SMART Summary Frames", vFarmFrame[page].workLoadPage.cntQueueDepth2, false, m_showStatusBits);
@@ -569,6 +572,7 @@ eReturnValues CATA_Farm_Log::print_Work_Load(JSONNODE *masterData, uint32_t page
     set_json_64_bit_With_Status(pageInfo, "Number of dither events during current power cycle, Actuator 1", vFarmFrame[page].workLoadPage.numDithEvtAct1, false, m_showStatusBits);
     set_json_64_bit_With_Status(pageInfo, "Number of times dither was held off during random workloads during current power cycle, Actuator 1", vFarmFrame[page].workLoadPage.numRandWLDitherHoldOffAct1, false, m_showStatusBits);
     set_json_64_bit_With_Status(pageInfo, "Number of times dither was held off during sequential workloads during current power cycle, Actuator 1", vFarmFrame[page].workLoadPage.numSequentialWLDitherHoldOffAct1, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Hot Write Statistics", vFarmFrame[page].workLoadPage.hotWriteStatistics, false, m_showStatusBits);
     json_push_back(masterData, pageInfo);
 
     return SUCCESS;
@@ -717,7 +721,7 @@ eReturnValues CATA_Farm_Log::print_Error_Information(JSONNODE *masterData, uint3
         temp.str().clear(); temp.clear();
         temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << M_Word2(check_Status_Strip_Status(vFarmFrame[page].errorPage.flashLEDArray[loopCount]));
         json_push_back(eventInfo, json_new_a("Flash LED Code", temp.str().c_str()));
-        _common.get_Assert_Code_Meaning(timeStr, M_Word2(check_Status_Strip_Status(vFarmFrame[page].errorPage.flashLEDArray[loopCount])));
+        get_Assert_Code_Meaning(timeStr, M_Word2(check_Status_Strip_Status(vFarmFrame[page].errorPage.flashLEDArray[loopCount])));
         json_push_back(eventInfo, json_new_a("Flash LED Code Meaning", timeStr.c_str()));
         temp.str().clear(); temp.clear();
         temp << "0x" << std::hex << std::setfill('0') << std::setw(8) << M_DoubleWord0(check_Status_Strip_Status(vFarmFrame[page].errorPage.flashLEDArray[loopCount]));
@@ -777,7 +781,7 @@ eReturnValues CATA_Farm_Log::print_Error_Information(JSONNODE *masterData, uint3
 
     for (loopCount = 0; loopCount < REALLOCATIONEVENTS; ++loopCount)
     {
-        _common.get_Reallocation_Cause_Meanings(myStr, static_cast<uint16_t>(loopCount));
+        get_Reallocation_Cause_Meanings(myStr, static_cast<uint16_t>(loopCount));
         set_json_64_bit_With_Status(pageInfo, myStr, vFarmFrame[page].errorPage.reallocatedSectors[loopCount], false, m_showStatusBits);
     }
 
@@ -922,7 +926,7 @@ eReturnValues CATA_Farm_Log::print_Enviroment_Information(JSONNODE *masterData, 
     //version 4_21
     if (m_MajorRev >= 4 && m_MinorRev > 20)
     {
-        printf("Current Low Frequency Vibe Score - Actuator 0:      %" PRIu64" \n", vFarmFrame[page].environmentPage.currLFVibeAct0 & UINT64_C(0x00FFFFFFFFFFFFFF)); //!< Current Low Frequency Vibe Score - Actuator 0
+        printf("\tCurrent Low Frequency Vibe Score - Actuator 0:    %" PRIu64" \n", vFarmFrame[page].environmentPage.currLFVibeAct0 & UINT64_C(0x00FFFFFFFFFFFFFF)); //!< Current Low Frequency Vibe Score - Actuator 0
         printf("\tCurrent Mid Frequency Vibe Score - Actuator 0:    %" PRIu64" \n", vFarmFrame[page].environmentPage.currMFVibeAct0 & UINT64_C(0x00FFFFFFFFFFFFFF)); //!< Current Mid Frequency Vibe Score - Actuator 0
         printf("\tCurrent High Frequency Vibe Score - Actuator 0:   %" PRIu64" \n", vFarmFrame[page].environmentPage.currHFVibeAct0 & UINT64_C(0x00FFFFFFFFFFFFFF)); //!< Current High Frequency Vibe Score - Actuator 0
         printf("\tWorst Low Frequency Vibe Score - Actuator 0       %" PRIu64" \n", vFarmFrame[page].environmentPage.worstLFVibeAct0 & UINT64_C(0x00FFFFFFFFFFFFFF)); //!< Worst Low Frequency Vibe Score - Actuator 0 
@@ -1216,7 +1220,8 @@ eReturnValues CATA_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint32
     set_json_64_bit_With_Status(pageInfo, "Number of Disc Slip Recalibrations Performed", vFarmFrame[page].reliPage.diskSlipRecalPerformed, false, m_showStatusBits);       //!< Number of disc slip recalibrations performed
     set_json_64_bit_With_Status(pageInfo, "Helium Pressure Threshold Tripped", vFarmFrame[page].reliPage.heliumPresureTrip, false, m_showStatusBits);                       //!< Helium Pressure Threshold Tripped ( 1- trip, 0 -no trip)//!< idle Time, Value from most recent SMART Summary Frame
 
-    if (m_MajorRev >= 4 && m_MinorRev > 20)
+
+    if (m_MajorRev >= 4 && m_MinorRev >= 19)
     {
         set_json_string_With_Status(pageInfo, "Idle Time (hours)", myStr, vFarmFrame[page].reliPage.idleTime, m_showStatusBits);                                 
         set_json_64_bit_With_Status(pageInfo, "Number of LBAs Corrected by Parity Sector", vFarmFrame[page].reliPage.numberLBACorrectedByParitySector, false, m_showStatusBits);
@@ -1224,8 +1229,8 @@ eReturnValues CATA_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint32
         set_json_64_bit_With_Status(pageInfo, "Timestamp of last IDD test in Hours(POH), Actuator 1", vFarmFrame[page].reliPage.lastIDDTimeAct1, false, m_showStatusBits);
         set_json_64_bit_With_Status(pageInfo, "Sub Command of last IDD Test, Actuator 1", vFarmFrame[page].reliPage.cmdLastIDDTestAct1, false, m_showStatusBits);
         set_json_64_bit_With_Status(pageInfo, "Number of Reallocated Sector Reclamations, Actuator 1", vFarmFrame[page].reliPage.reallocSectorReclamAct1, false, m_showStatusBits);
-        set_json_64_bit_With_Status(pageInfo, "Servo Status (follows standard DST error code definitions), Actuator 1", vFarmFrame[page].reliPage.servoStatusAct1, false, m_showStatusBits);
-        set_json_64_bit_With_Status(pageInfo, "Number of Slipped Sectors Before IDD Scan, Actuator ", vFarmFrame[page].reliPage.slippedSectorsBefIDDAct1, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Servo Status, Actuator 1", vFarmFrame[page].reliPage.servoStatusAct1, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Number of Slipped Sectors Before IDD Scan, Actuator 1", vFarmFrame[page].reliPage.slippedSectorsBefIDDAct1, false, m_showStatusBits);
         set_json_64_bit_With_Status(pageInfo, "Number of Slipped Sectors After IDD Scan, Actuator 1", vFarmFrame[page].reliPage.slippedSectorsAftIDDAct1, false, m_showStatusBits);
         set_json_64_bit_With_Status(pageInfo, "Number of Resident Reallocated Sectors Before IDD Scan, Actuator 1", vFarmFrame[page].reliPage.resReallocSectorsBefIDDAct1, false, m_showStatusBits);
         set_json_64_bit_With_Status(pageInfo, "Number of Resident Reallocated Sectors After IDD Scan, Actuator 1", vFarmFrame[page].reliPage.resReallocSectorsAftIDDAct1, false, m_showStatusBits);
@@ -1234,14 +1239,14 @@ eReturnValues CATA_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint32
         set_json_64_bit_With_Status(pageInfo, "Number of DOS Scans Performed, Actuator 1", vFarmFrame[page].reliPage.DOSScansAct1, false, m_showStatusBits);
         set_json_64_bit_With_Status(pageInfo, "Number of LBAs Corrected by ISP, Acuator 1", vFarmFrame[page].reliPage.correctedLBAsAct1, false, m_showStatusBits);
         set_json_64_bit_With_Status(pageInfo, "Number of Valid Parity Sectors, Actuator 1", vFarmFrame[page].reliPage.validParitySectAct1, false, m_showStatusBits);
-        set_json_64_bit_With_Status(pageInfo, "RV Absolute Mean, value from most recent SMART Summary Frame in rad for each s^2, Actuator 1", vFarmFrame[page].reliPage.rvAbsMeanAct1, false, m_showStatusBits);
-        set_json_64_bit_With_Status(pageInfo, "Max RV Absolute Mean, value from most recent SMART Summary Frame in rad or each s^2, Actuator", vFarmFrame[page].reliPage.rvAbsMeanMaxAct1, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "RV Absolute Mean, value from most recent SMART Summary Frame, Actuator 1", vFarmFrame[page].reliPage.rvAbsMeanAct1, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Max RV Absolute Mean, value from most recent SMART Summary Frame, Actuator 1", vFarmFrame[page].reliPage.rvAbsMeanMaxAct1, false, m_showStatusBits);
         set_json_64_bit_With_Status(pageInfo, "Idle Time, value from most recent SMART Summary Frame in seconds, Actuator 1", vFarmFrame[page].reliPage.idleTimeAct1, false, m_showStatusBits);
         set_json_64_bit_With_Status(pageInfo, "Number of LBAs Corrected by Parity Sector, Actuator 1", vFarmFrame[page].reliPage.parityCorrLBAAct1, false, m_showStatusBits);
         set_json_64_bit_With_Status(pageInfo, "Primary Super Parity Coverage Percentage, Actuator 1", vFarmFrame[page].reliPage.superParityCovPercentAct1, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Primary Super Parity Coverage Percentage SMR/SWR, Actuator 0", vFarmFrame[page].reliPage.superParityCoveragePercentageAct0, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Primary Super Parity Coverage Percentage SMR/SWR, Actuator 1", vFarmFrame[page].reliPage.superParityCoveragePercentageAct1, false, m_showStatusBits);
     }
-
-
     json_push_back(masterData, pageInfo);
     return SUCCESS;
 }
@@ -1275,7 +1280,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
     }
     else
     {
-        printf("\n Head Information From Farm Log copy %d\n", page);
+        printf("\n Head Information From Farm Log copy %" PRIu32"\n", page);
     }
 
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
@@ -1756,8 +1761,8 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
         temp << std::setprecision(2) << std::setfill('0') << static_cast<double>(M_DoubleWord0(vFarmFrame[page].reliPage.FAFHHighFrequency[loopCount].outer)) / 10.0;
         set_json_string_With_Status(headInfo, myHeader, temp.str(), false, m_showStatusBits);                  //!< [24][3] FAFH High Frequency Passive Clearance in ADC counts
     }
-    //4.21
-    if (m_MajorRev >= 4 && m_MinorRev > 20) {
+    //4.19
+    if (m_MajorRev >= 4 && m_MinorRev >= 19) {
         for (loopCount = 0; loopCount < m_heads; ++loopCount)
         {
             temp.str().clear(); temp.clear();
@@ -1819,7 +1824,66 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
             temp << std::setprecision(1) << std::setfill('0') << static_cast<float> (M_Word0(check_Status_Strip_Status(vFarmFrame[page].reliPage.postLFABER[loopCount].outer)));
             set_json_string_With_Status(headInfo, myHeader, temp.str(), vFarmFrame[page].reliPage.postLFABER[loopCount].outer, m_showStatusBits);
         }
-
+        for (loopCount = 0; loopCount < m_heads; ++loopCount)
+        {
+            temp.str().clear(); temp.clear();
+            temp << "Number of Reader Writer Offset Iterations by Head " << std::dec << loopCount; // Head count
+            set_json_int_With_Status(headInfo, myHeader, vFarmFrame[page].reliPage.numOfReaderWriterOffset[loopCount], m_showStatusBits);
+        }
+        for (loopCount = 0; loopCount < m_heads; ++loopCount)
+        {
+            temp.str().clear(); temp.clear();
+            temp << "Micro Jog Offset Zone 0 by Head " << std::dec << loopCount; // Head count
+            set_json_int_With_Status( headInfo, myHeader, vFarmFrame[page].reliPage.microJogOffset[loopCount].zone0, m_showStatusBits);
+        }
+        for (loopCount = 0; loopCount < m_heads; ++loopCount)
+        {
+            temp.str().clear(); temp.clear();
+            temp << "Micro Jog Offset Zone 1 by Head " << std::dec << loopCount; // Head count
+            set_json_int_With_Status(headInfo, myHeader, vFarmFrame[page].reliPage.microJogOffset[loopCount].zone1, m_showStatusBits);
+        }
+        for (loopCount = 0; loopCount < m_heads; ++loopCount)
+        {
+            temp.str().clear(); temp.clear();
+            temp << "Micro Jog Offset Zone 2 by Head " << std::dec << loopCount; // Head count
+            set_json_int_With_Status(headInfo, myHeader, vFarmFrame[page].reliPage.microJogOffset[loopCount].zone2, m_showStatusBits);
+        }
+        for (loopCount = 0; loopCount < m_heads; ++loopCount)
+        {
+            temp.str().clear(); temp.clear();
+            temp << "Pre LFA Bit Error Rate Zone 0 by Head " << std::dec << loopCount; // Head count
+            set_json_int_With_Status(headInfo, myHeader, vFarmFrame[page].reliPage.preLFABitErrorRate[loopCount].zone0, m_showStatusBits);
+        }
+        for (loopCount = 0; loopCount < m_heads; ++loopCount)
+        {
+            temp.str().clear(); temp.clear();
+            temp << "Pre LFA Bit Error Rate Zone 1 by Head " << std::dec << loopCount; // Head count
+            set_json_int_With_Status(headInfo, myHeader, vFarmFrame[page].reliPage.preLFABitErrorRate[loopCount].zone1, m_showStatusBits);
+        }
+        for (loopCount = 0; loopCount < m_heads; ++loopCount)
+        {
+            temp.str().clear(); temp.clear();
+            temp << "Pre LFA Bit Error Rate Zone 2 by Head " << std::dec << loopCount; // Head count
+            set_json_int_With_Status(headInfo, myHeader, vFarmFrame[page].reliPage.preLFABitErrorRate[loopCount].zone2, m_showStatusBits);
+        }
+        for (loopCount = 0; loopCount < m_heads; ++loopCount)
+        {
+            temp.str().clear(); temp.clear();
+            temp << "Zero Percent shift bit Error Rate Zone 0 by Head " << std::dec << loopCount; // Head count
+            set_json_int_With_Status(headInfo, myHeader, vFarmFrame[page].reliPage.zeroPercentShiftErrorRate[loopCount].zone0, m_showStatusBits);
+        }
+        for (loopCount = 0; loopCount < m_heads; ++loopCount)
+        {
+            temp.str().clear(); temp.clear();
+            temp << "Zero Percent shift bit Error Rate Zone 1 by Head " << std::dec << loopCount; // Head count
+            set_json_int_With_Status(headInfo, myHeader, vFarmFrame[page].reliPage.zeroPercentShiftErrorRate[loopCount].zone1, m_showStatusBits);
+        }
+        for (loopCount = 0; loopCount < m_heads; ++loopCount)
+        {
+            temp.str().clear(); temp.clear();
+            temp << "Zero Percent shift bit Error Rate Zone 2 by Head " << std::dec << loopCount; // Head count
+            set_json_int_With_Status(headInfo, myHeader, vFarmFrame[page].reliPage.zeroPercentShiftErrorRate[loopCount].zone2, m_showStatusBits);
+        }
     }
 
     json_push_back(masterData, headInfo);

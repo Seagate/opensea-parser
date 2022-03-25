@@ -176,7 +176,7 @@ void opensea_parser::get_SMART_Save_Flages(JSONNODE *headerNode, uint8_t flag)
 //! \param flag - the uint8 value from the buffer
 //
 //  Exit:
-//!   \return bool 
+//!   \return void
 //
 //---------------------------------------------------------------------------
 void opensea_parser::get_SMART_Save_Flages_String(std::string& reason, uint8_t flag)
@@ -308,6 +308,7 @@ void opensea_parser::get_SMART_Save_Flages_String(std::string& reason, uint8_t f
         break;
     }
 }
+
 //-----------------------------------------------------------------------------
 //
 //! \fn prePython_uknown_params()

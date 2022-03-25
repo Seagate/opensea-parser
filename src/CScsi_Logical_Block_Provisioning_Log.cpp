@@ -153,35 +153,23 @@ void CScsiLBAProvisionLog::get_LBA_Provision_Parameter_Description(std::string *
         switch (m_Provision->paramCode)
         {
         case 0x0001:
-        {
             lbaStr->assign("available lba mapping resource count");
             break;
-        }
         case 0x0002:
-        {
             lbaStr->assign("used lba mapping resource count");
             break;
-        }
         case 0x0003:
-        {
             lbaStr->assign("available provisioning resource percentage");
             break;
-        }
         case 0x0100:
-        {
             lbaStr->assign("de-duplicated lba resource count");
             break;
-        }
         case 0x0101:
-        {
             lbaStr->assign("compressed LBA resource count");
             break;
-        }
         case 0x0102:
-        {
             lbaStr->assign("total efficiency LBA resource count");
             break;
-        }
         default:
         {
             std::ostringstream temp;
