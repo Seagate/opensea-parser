@@ -3976,7 +3976,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 header << "FAFH Low Frequency 2 by Head " << std::dec << loopCount;     // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Float(headPage, "fafh", "low frequency diameter 2", loopCount, "counts", FAFH_LOW_FREQUENCY_2, static_cast<float>(M_WordInt0(vFarmFrame[page].fafhLowFrequency_2.headValue[loopCount])) * .001);
+                    prePython_Head_Float(headPage, "fafh", "low frequency diameter 2", loopCount, "counts", FAFH_LOW_FREQUENCY_2, static_cast<float>(M_WordInt0(vFarmFrame[page].fafhLowFrequency_2.headValue[loopCount])) * .001F);
                 }
                 else
                 {
@@ -3997,7 +3997,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 header << "FAFH High Frequency 0 by Head " << std::dec << loopCount;     // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Float(headPage, "fafh", "high frequency diameter 0", loopCount, "counts", FAFH_HIGH_FREQUENCY_0, static_cast<float>(M_WordInt0(vFarmFrame[page].fafhHighFrequency_0.headValue[loopCount])) * .001);
+                    prePython_Head_Float(headPage, "fafh", "high frequency diameter 0", loopCount, "counts", FAFH_HIGH_FREQUENCY_0, static_cast<float>(M_WordInt0(vFarmFrame[page].fafhHighFrequency_0.headValue[loopCount])) * .001F);
                 }
                 else
                 {
@@ -4018,7 +4018,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 header << "FAFH High Frequency 1 by Head " << std::dec << loopCount;     // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Float(headPage, "fafh", "high frequency diameter 1", loopCount, "counts", FAFH_HIGH_FREQUENCY_1, static_cast<float>(M_WordInt0(vFarmFrame[page].fafhHighFrequency_1.headValue[loopCount])) * .001);
+                    prePython_Head_Float(headPage, "fafh", "high frequency diameter 1", loopCount, "counts", FAFH_HIGH_FREQUENCY_1, static_cast<float>(M_WordInt0(vFarmFrame[page].fafhHighFrequency_1.headValue[loopCount])) * .001F);
                 }
                 else
                 {
@@ -4039,7 +4039,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 header << "FAFH High Frequency 2 by Head " << std::dec << loopCount;     // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Float(headPage, "fafh", "high frequency diameter 2", loopCount, "counts", FAFH_HIGH_FREQUENCY_2, static_cast<float>(M_WordInt0(vFarmFrame[page].fafhHighFrequency_2.headValue[loopCount])) * .001);
+                    prePython_Head_Float(headPage, "fafh", "high frequency diameter 2", loopCount, "counts", FAFH_HIGH_FREQUENCY_2, static_cast<float>(M_WordInt0(vFarmFrame[page].fafhHighFrequency_2.headValue[loopCount])) * .001F);
                 }
                 else
                 {

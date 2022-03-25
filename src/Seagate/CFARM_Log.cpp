@@ -158,15 +158,15 @@ CFARMLog::CFARMLog(const std::string & fileName)
 //!   \return 
 //
 //---------------------------------------------------------------------------
-CFARMLog::CFARMLog(uint8_t *bufferData, size_t bufferSize, bool showStatus)
-	:bufferData(bufferData)
+CFARMLog::CFARMLog(uint8_t *farmbufferData, size_t bufferSize, bool showStatus)
+	:bufferData(farmbufferData)
 	, m_LogSize(bufferSize)
 	, m_status(IN_PROGRESS)
 	, m_isScsi(false)
 	, m_shwoStatus(showStatus)
     , m_bufferdelete(false)
 {
-	if (bufferData != NULL)
+	if (farmbufferData != NULL)
 	{
 		m_isScsi = is_Device_Scsi();
 		m_status = IN_PROGRESS;
