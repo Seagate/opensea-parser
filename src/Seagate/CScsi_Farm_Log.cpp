@@ -1805,7 +1805,7 @@ eReturnValues CSCSI_Farm_Log::print_Header(JSONNODE *masterData)
         json_push_back(label, json_new_a("log_size", temp.str().c_str()));
         //temp.str().clear(); temp.clear();
         //temp << std::dec << M_DoubleWord0(check_Status_Strip_Status(vFarmFrame[page].farmHeader.farmHeader.pageSize)) << " bytes";
-        j//son_push_back(label, json_new_a("page_size", temp.str().c_str()));
+        //json_push_back(label, json_new_a("page_size", temp.str().c_str()));
         temp.str().clear(); temp.clear();
         temp << std::dec << M_DoubleWord0(check_Status_Strip_Status(vFarmFrame[page].farmHeader.farmHeader.reasonForFrameCpature));
         json_push_back(label, json_new_a("reason_for_frame_capture", temp.str().c_str()));
@@ -1835,9 +1835,10 @@ eReturnValues CSCSI_Farm_Log::print_Header(JSONNODE *masterData)
         }
         json_push_back(pageInfo, json_new_i("Heads Supported", static_cast<uint32_t>(check_Status_Strip_Status(vFarmFrame[page].farmHeader.farmHeader.headsSupported))));
         json_push_back(pageInfo, json_new_i("Reason for Frame Capture", static_cast<uint32_t>(check_Status_Strip_Status(vFarmFrame[page].farmHeader.farmHeader.reasonForFrameCpature))));
-        Get_FARM_Reason_For_Capture(&myStr, M_Byte0(vFarmFrame[page].farmHeader.farmHeader.reasonForFrameCpature));
+        std::string meaning;
+        Get_FARM_Reason_For_Capture(&meaning, M_Byte0(vFarmFrame[page].farmHeader.farmHeader.reasonForFrameCpature));
 
-        json_push_back(pageInfo, json_new_a("Reason meaning", &myStr[0]));
+        json_push_back(pageInfo, json_new_a("Reason meaning", meaning.c_str()));
         json_push_back(masterData, pageInfo);
     }
     return SUCCESS;
@@ -1976,10 +1977,10 @@ eReturnValues CSCSI_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint
             uint16_t year = M_Word1(vFarmFrame[page].driveInfo.dateOfAssembly);
             uint16_t week = M_Word0(vFarmFrame[page].driveInfo.dateOfAssembly);
 
-            _common.create_Year_Assembled_String(dataAndTime, year, true);
+            create_Year_Assembled_String(dataAndTime, year, true);
             json_push_back(label, json_new_a("year_of_assembled", dataAndTime.c_str()));
             dataAndTime.clear();
-            _common.create_Year_Assembled_String(dataAndTime, week, true);
+            create_Year_Assembled_String(dataAndTime, week, true);
             json_push_back(label, json_new_a("week_of_assembled", dataAndTime.c_str()));
         }
         json_push_back(label, json_new_a("units", "reported"));
@@ -2052,10 +2053,10 @@ eReturnValues CSCSI_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint
             uint16_t year = M_Word1(vFarmFrame[page].driveInfo.dateOfAssembly);
             uint16_t week = M_Word0(vFarmFrame[page].driveInfo.dateOfAssembly);
 
-            _common.create_Year_Assembled_String(dataAndTime, year, true);
+            create_Year_Assembled_String(dataAndTime, year, true);
             json_push_back(pageInfo, json_new_a("Year of Assembled", dataAndTime.c_str()));
             dataAndTime.clear();
-            _common.create_Year_Assembled_String(dataAndTime, week, true);
+            create_Year_Assembled_String(dataAndTime, week, true);
             json_push_back(pageInfo, json_new_a("Week of Assembled", dataAndTime.c_str()));
         }
         else
@@ -2246,7 +2247,7 @@ eReturnValues CSCSI_Farm_Log::print_WorkLoad(JSONNODE *masterData, uint32_t page
         farm_PrePython_Int(masterData, "other", "total other", "workload", "commands", WORKLOAD_STATISTICS_PARAMETER, check_Status_Strip_Status(vFarmFrame[page].workLoadPage.workLoad.totalNumberofOtherCMDS));
 
         farm_PrePython_Int(masterData, "write", "logical sectors written", "workload", "sectors", WORKLOAD_STATISTICS_PARAMETER, check_Status_Strip_Status(vFarmFrame[page].workLoadPage.workLoad.logicalSecWritten));
-        farm_PrePython_Int(masterData, "read", "logical sectors read", "workload", "sectors", WORKLOAD_STATISTICS_PARAMETER, (int64_t)check_Status_Strip_Status(vFarmFrame[page].workLoadPage.workLoad.logicalSecRead));
+        farm_PrePython_Int(masterData, "read", "logical sectors read", "workload", "sectors", WORKLOAD_STATISTICS_PARAMETER, static_cast<int64_t>(check_Status_Strip_Status(vFarmFrame[page].workLoadPage.workLoad.logicalSecRead)));
 
         if (vFarmFrame[page].workLoadPage.PageHeader.plen > 0x50)
         {
@@ -3604,7 +3605,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 header << "Current H2SAT trimmed mean bits in error Zone 0 by Head " << std::dec << loopCount; // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Float(headPage, "h2sat", "trimmed mean (current),zone:0", loopCount, "mean-bits-in-error", CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_0, (static_cast<float>(M_Word0(vFarmFrame[page].currentH2STTrimmedbyHeadZone0.headValue[loopCount]))) * .10);
+                    prePython_Head_Float(headPage, "h2sat", "trimmed mean (current),zone:0", loopCount, "mean-bits-in-error", CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_0, (static_cast<float>(M_Word0(vFarmFrame[page].currentH2STTrimmedbyHeadZone0.headValue[loopCount]))) * .10F);
                 }
                 else
                 {
@@ -3623,7 +3624,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 header << "Current H2SAT trimmed mean bits in error Zone 1 by Head " << std::dec << loopCount; // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Float(headPage, "h2sat", "trimmed mean (current),zone:1", loopCount, "mean-bits-in-error", CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_1, static_cast<float>(M_Word0(vFarmFrame[page].currentH2STTrimmedbyHeadZone1.headValue[loopCount]) )* .10);
+                    prePython_Head_Float(headPage, "h2sat", "trimmed mean (current),zone:1", loopCount, "mean-bits-in-error", CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_1, static_cast<float>(M_Word0(vFarmFrame[page].currentH2STTrimmedbyHeadZone1.headValue[loopCount]) )* .10F);
                 }
                 else
                 {
@@ -3642,7 +3643,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 header << "Current H2SAT trimmed mean bits in error Zone 2 by Head " << std::dec << loopCount;// Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Float(headPage, "h2sat", "trimmed mean (current),zone:2", loopCount, "mean-bits-in-error", CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_2, static_cast<float>(M_Word0(vFarmFrame[page].currentH2STTrimmedbyHeadZone2.headValue[loopCount])) * .10);
+                    prePython_Head_Float(headPage, "h2sat", "trimmed mean (current),zone:2", loopCount, "mean-bits-in-error", CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_2, static_cast<float>(M_Word0(vFarmFrame[page].currentH2STTrimmedbyHeadZone2.headValue[loopCount])) * .10F);
                 }
                 else
                 {
@@ -3661,7 +3662,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 header << "Current H2SAT iterations to converge Test Zone 0 by Head " << std::dec << loopCount; // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Float(headPage, "h2sat", "iterations to converge (current),zone:0", loopCount, "counts", CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_0, static_cast<float>(M_Word0(vFarmFrame[page].currentH2STIterationsByHeadZone0.headValue[loopCount]) * .10));
+                    prePython_Head_Float(headPage, "h2sat", "iterations to converge (current),zone:0", loopCount, "counts", CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_0, static_cast<float>(M_Word0(vFarmFrame[page].currentH2STIterationsByHeadZone0.headValue[loopCount]) * .10F));
                 }
                 else
                 {
@@ -3680,7 +3681,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 header << "Current H2SAT iterations to converge Test Zone 1 by Head " << std::dec << loopCount; // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Float(headPage, "h2sat", "iterations to converge (current),zone:1", loopCount, "counts", CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_1, static_cast<float>(M_Word0(vFarmFrame[page].currentH2STIterationsByHeadZone1.headValue[loopCount]) * .10));
+                    prePython_Head_Float(headPage, "h2sat", "iterations to converge (current),zone:1", loopCount, "counts", CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_1, static_cast<float>(M_Word0(vFarmFrame[page].currentH2STIterationsByHeadZone1.headValue[loopCount]) * .10F));
                 }
                 else
                 {
@@ -3699,7 +3700,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 header << "Current H2SAT iterations to converge Test Zone 2 by Head " << std::dec << loopCount; // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Float(headPage, "h2sat", "iterations to converge (current),zone:2", loopCount, "counts", CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_2, static_cast<float>(M_Word0(vFarmFrame[page].currentH2STIterationsByHeadZone2.headValue[loopCount]) * .10));
+                    prePython_Head_Float(headPage, "h2sat", "iterations to converge (current),zone:2", loopCount, "counts", CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_2, static_cast<float>(M_Word0(vFarmFrame[page].currentH2STIterationsByHeadZone2.headValue[loopCount]) * .10F));
                 }
                 else
                 {
@@ -3718,7 +3719,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 header << "Fly height clearance delta outer by Head " << std::dec << loopCount; // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Float(headPage, "head_fly_height", "clearance delta (outer)", loopCount, "counts", APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_OUTER, static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].appliedFlyHeightByHeadOuter.headValue[loopCount])) * .001));
+                    prePython_Head_Float(headPage, "head_fly_height", "clearance delta (outer)", loopCount, "counts", APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_OUTER, static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].appliedFlyHeightByHeadOuter.headValue[loopCount])) * .001F));
                 }
                 else
                 {
@@ -3737,7 +3738,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 header << "Fly height clearance delta inner by Head " << std::dec << loopCount; // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Float(headPage, "head_fly_height", "clearance delta (inner)", loopCount, "counts", APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_INNER, static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].appliedFlyHeightByHeadInner.headValue[loopCount])) * .001));
+                    prePython_Head_Float(headPage, "head_fly_height", "clearance delta (inner)", loopCount, "counts", APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_INNER, static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].appliedFlyHeightByHeadInner.headValue[loopCount])) * .001F));
                 }
                 else
                 {
@@ -3756,7 +3757,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 header << "Fly height clearance delta middle by Head " << std::dec << loopCount;     // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Float(headPage, "head_fly_height", "clearance delta (middle)", loopCount, "counts", APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_MIDDLE, static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].appliedFlyHeightByHeadMiddle.headValue[loopCount])) * .001));
+                    prePython_Head_Float(headPage, "head_fly_height", "clearance delta (middle)", loopCount, "counts", APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_MIDDLE, static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].appliedFlyHeightByHeadMiddle.headValue[loopCount])) * .001F));
                 }
                 else
                 {
@@ -3933,7 +3934,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 header << "FAFH Low Frequency 0 by Head " << std::dec << loopCount;     // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Float(headPage, "fafh", "low frequency diameter 0", loopCount, "counts", FAFH_LOW_FREQUENCY_0, static_cast<float>(M_WordInt0(vFarmFrame[page].fafhLowFrequency_0.headValue[loopCount])) * .001);
+                    prePython_Head_Float(headPage, "fafh", "low frequency diameter 0", loopCount, "counts", FAFH_LOW_FREQUENCY_0, static_cast<float>(M_WordInt0(vFarmFrame[page].fafhLowFrequency_0.headValue[loopCount])) * .001F);
                 }
                 else
                 {
@@ -3954,11 +3955,11 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 header << "FAFH Low Frequency 1 by Head " << std::dec << loopCount;     // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Float(headPage, "fafh", "low frequency diameter 1", loopCount, "counts", FAFH_LOW_FREQUENCY_1, static_cast<float>(M_WordInt0(vFarmFrame[page].fafhLowFrequency_1.headValue[loopCount])) * .001);
+                    prePython_Head_Float(headPage, "fafh", "low frequency diameter 1", loopCount, "counts", FAFH_LOW_FREQUENCY_1, static_cast<float>(M_WordInt0(vFarmFrame[page].fafhLowFrequency_1.headValue[loopCount])) * .001F);
                 }
                 else
                 {
-                    temp << std::setprecision(2) << static_cast<float>(M_WordInt0(vFarmFrame[page].fafhLowFrequency_1.headValue[loopCount]) * .001);
+                    temp << std::setprecision(2) << static_cast<float>(M_WordInt0(vFarmFrame[page].fafhLowFrequency_1.headValue[loopCount]) * .001F);
                     set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].fafhLowFrequency_1.headValue[loopCount], m_showStatusBits);
                 }
             }
@@ -3979,7 +3980,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 }
                 else
                 {
-                    temp << std::setprecision(2) << static_cast<float>(M_WordInt0(vFarmFrame[page].fafhLowFrequency_2.headValue[loopCount]) * .001);
+                    temp << std::setprecision(2) << static_cast<float>(M_WordInt0(vFarmFrame[page].fafhLowFrequency_2.headValue[loopCount]) * .001F);
                     set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].fafhLowFrequency_2.headValue[loopCount], m_showStatusBits);
                 }
             }
@@ -4000,7 +4001,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 }
                 else
                 {
-                    temp << std::setprecision(2) << static_cast<float>(M_WordInt0(vFarmFrame[page].fafhHighFrequency_0.headValue[loopCount]) * .001);
+                    temp << std::setprecision(2) << static_cast<float>(M_WordInt0(vFarmFrame[page].fafhHighFrequency_0.headValue[loopCount]) * .001F);
                     set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].fafhHighFrequency_0.headValue[loopCount], m_showStatusBits);
                 }
             }
@@ -4021,7 +4022,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 }
                 else
                 {
-                    temp << std::setprecision(2) << static_cast<float>(M_WordInt0(vFarmFrame[page].fafhHighFrequency_1.headValue[loopCount]) * .001);
+                    temp << std::setprecision(2) << static_cast<float>(M_WordInt0(vFarmFrame[page].fafhHighFrequency_1.headValue[loopCount]) * .001F);
                     set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].fafhHighFrequency_1.headValue[loopCount], m_showStatusBits);
                 }
             }
@@ -4042,7 +4043,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 }
                 else
                 {
-                    temp << std::setprecision(2) << static_cast<float>(M_WordInt0(vFarmFrame[page].fafhHighFrequency_2.headValue[loopCount]) * .001);
+                    temp << std::setprecision(2) << static_cast<float>(M_WordInt0(vFarmFrame[page].fafhHighFrequency_2.headValue[loopCount]) * .001F);
                     set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].fafhHighFrequency_2.headValue[loopCount], m_showStatusBits);
                 }
             }
@@ -4367,7 +4368,7 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_FLED_Info(JSONNODE *LUNFLED, ui
 
             temp.str().clear();
             temp.clear();
-            temp << std::fixed << std::setprecision(3) << ((static_cast<double>(check_Status_Strip_Status(pFLED->timestampForLED[i]) / 3600000) * .001);
+            temp << std::fixed << std::setprecision(3) << (static_cast<double>(check_Status_Strip_Status(pFLED->timestampForLED[i]) / 3600000) * .001);
             json_push_back(label, json_new_a("timeStamp_of_event", temp.str().c_str()));            //!< Universal Timestamp (us) of last 8 Flash LED (assert) Events, wrapping array
 
             json_push_back(label, json_new_i("power_cycle_event", static_cast<int64_t> (check_Status_Strip_Status(pFLED->powerCycleOfLED[i]))));	         //!< Power Cycle of the last 8 Flash LED (assert) Events, wrapping array
@@ -4412,7 +4413,7 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_FLED_Info(JSONNODE *LUNFLED, ui
             temp << "0x" << std::hex << std::setfill('0') << std::setw(4) <<  M_Word2(check_Status_Strip_Status(pFLED->flashLEDArray[i]));
             json_push_back(eventInfo, json_new_a("Flash LED Code", temp.str().c_str()));
             std::string meaning;
-            _common.get_Assert_Code_Meaning(meaning, M_Word2(check_Status_Strip_Status(pFLED->flashLEDArray[i])));
+            get_Assert_Code_Meaning(meaning, M_Word2(check_Status_Strip_Status(pFLED->flashLEDArray[i])));
             json_push_back(eventInfo, json_new_a("Flash LED Code Meaning", meaning.c_str()));
             temp.str().clear(); temp.clear();
             temp << "0x" << std::hex << std::setfill('0') << std::setw(8) << M_DoubleWord0(check_Status_Strip_Status(pFLED->flashLEDArray[i]));
@@ -5031,8 +5032,10 @@ void CSCSI_Farm_Log::prePython_Head_Float(JSONNODE* masterData, const char* name
     {
         json_push_back(label, json_new_a("stat_type", statType));
     }
-    snprintf(&myStr[0], BASIC, "%" PRIu32"", headNumber);
-    json_push_back(label, json_new_a("head_number", &myStr[0]));
+    temp.str().clear();
+    temp.clear();
+    temp << std::dec << headNumber;
+    json_push_back(label, json_new_a("head_number", temp.str().c_str()));
     json_push_back(label, json_new_a("units", unit));
     json_push_back(data, label);
     json_push_back(data, json_new_f("value", value));         // float is limited to 53 bits of precision (2^53)
@@ -5066,8 +5069,10 @@ void CSCSI_Farm_Log::prePython_Head_Int(JSONNODE* masterData, const char* name, 
     {
         json_push_back(label, json_new_a("stat_type", statType));
     }
-    snprintf(&myStr[0], BASIC, "%" PRIu32"", headNumber);
-    json_push_back(label, json_new_a("head_number", &myStr[0]));
+    temp.str().clear();
+    temp.clear();
+    temp << std::dec << headNumber;
+    json_push_back(label, json_new_a("head_number", temp.str().c_str()));
     json_push_back(label, json_new_a("units", unit));
     json_push_back(data, label);
     json_push_back(data, json_new_f("value", static_cast<double>(value)));                   // float is limited to 53 bits of precision (2^53)

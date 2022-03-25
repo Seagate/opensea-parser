@@ -737,6 +737,8 @@ void CAtaDeviceStatisticsLogs::logPage00(uint64_t *value)
 #if defined _DEBUG
     printf("*****List Of Supported Device(log Page 00h)*****");
     printf("\t%s %d \n\n", "Number of entries  : ", TotalEntries);
+#else
+    M_USE_UNUSED(TotalEntries);
 #endif
 }
 //-----------------------------------------------------------------------------

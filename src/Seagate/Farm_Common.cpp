@@ -192,7 +192,7 @@ void CFarmCommon::create_World_Wide_Name(std::string& worldWideName, uint64_t ww
 	wwnFinal = M_DWordsTo8ByteValue(stwwn2, stwwn);
 	worldWideName = "0000000000000000000";
 	std::ostringstream temp;
-    temp << "0x" << std::hex << wwn;
+    temp << "0x" << std::hex << wwnFinal;
     worldWideName.assign(temp.str());
 }
 //-----------------------------------------------------------------------------
