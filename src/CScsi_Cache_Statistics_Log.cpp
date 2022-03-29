@@ -151,7 +151,9 @@ bool CScsiCacheLog::get_Cache_Parameter_Code_Description(std::string *cache)
     }
     default:
     {
-        snprintf(&*cache->begin(), BASIC, "Vendor specific 0x%04" PRIx16"", m_cache->paramCode);
+        std::ostringstream temp;
+        temp << "Vendor specific 0x" << std::hex << std::setfill('0') << std::setw(4) << m_cache->paramCode;
+        cache->assign(temp.str());
         break;
     }
     }
@@ -173,8 +175,7 @@ bool CScsiCacheLog::get_Cache_Parameter_Code_Description(std::string *cache)
 //---------------------------------------------------------------------------
 void CScsiCacheLog::process_Cache_Event_Data(JSONNODE *cacheData)
 {
-    std::string myStr = "";
-    myStr.resize(BASIC);
+    std::string myStr;
 #if defined _DEBUG
     printf("Cache Event Description \n");
 #endif
@@ -182,21 +183,21 @@ void CScsiCacheLog::process_Cache_Event_Data(JSONNODE *cacheData)
     {
         byte_Swap_16(&m_cache->paramCode);
         bool discriptionIsFound = get_Cache_Parameter_Code_Description(&myStr);
-        //snprintf(&*myStr.begin(), BASIC, "Cache Statistics Description %" PRId16"", m_cache->paramCode);
         JSONNODE *cacheInfo = json_new(JSON_NODE);
-        json_set_name(cacheInfo, &*myStr.begin());
-        snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", m_cache->paramCode);
-        json_push_back(cacheInfo, json_new_a("Cache Statistics Parameter Code", &*myStr.begin()));
+        json_set_name(cacheInfo, myStr.c_str());
+        std::ostringstream temp;
+        temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << m_cache->paramCode;
+        json_push_back(cacheInfo, json_new_a("Cache Statistics Parameter Code", temp.str().c_str()));
         if (!discriptionIsFound)
         {
+            temp.str().clear(); temp.clear();
 
+            temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_cache->paramControlByte);
+            json_push_back(cacheInfo, json_new_a("Cache Statistics Control Byte ", temp.str().c_str()));
+            temp.str().clear(); temp.clear();
+            temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_cache->paramLength);
 
-            //json_push_back(cacheInfo, json_new_a("Cache Statistics Description", &*myStr.begin()));
-            snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_cache->paramControlByte);
-            json_push_back(cacheInfo, json_new_a("Cache Statistics Control Byte ", &*myStr.begin()));
-            snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_cache->paramLength);
-
-            json_push_back(cacheInfo, json_new_a("Cache Statistics Length ", &*myStr.begin()));
+            json_push_back(cacheInfo, json_new_a("Cache Statistics Length ", temp.str().c_str()));
         }
         set_json_64bit(cacheInfo, "Cache Statistics Value", m_Value, false);
 
@@ -229,7 +230,7 @@ eReturnValues CScsiCacheLog::get_Cache_Data(JSONNODE *masterData)
         {
             if (offset < m_bufferLength && offset < UINT16_MAX)
             {
-                m_cache = (sCacheParams *)&pData[offset];
+                m_cache = reinterpret_cast<sCacheParams*>(&pData[offset]);
                 offset += sizeof(sCacheParams);
                 switch (m_cache->paramLength)
                 {

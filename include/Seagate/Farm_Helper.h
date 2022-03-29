@@ -19,6 +19,8 @@
 #include "libjson.h"
 #include "Opensea_Parser_Helper.h"
 #include "Farm_Types.h"
+#include <sstream>
+#include <iomanip>
 
 
 namespace opensea_parser {
@@ -45,8 +47,6 @@ namespace opensea_parser {
 	//-----------------------------------------------------------------------------
 	inline void set_json_64_bit_With_Status(JSONNODE *nowNode, const std::string & myStr, uint64_t value, bool hexPrint, bool showStatusBits)
 	{
-		std::string printStr = " ";
-		printStr.resize(BASIC);
 		std::string lowStr = "64 bit Value Lower value";
 		std::string upperStr = "64 bit Value Upper value";
         //value = check_Status_Strip_Status(value);
@@ -55,12 +55,13 @@ namespace opensea_parser {
 		{
 			if (hexPrint) 
 			{
-				snprintf(&*printStr.begin(), BASIC, "0x%08" PRIx32"", static_cast<int32_t>(M_DoubleWord0(value)));
-				json_push_back(nowNode, json_new_a(&myStr[0], &*printStr.begin()));
+                std::ostringstream temp;
+                temp << "0x" << std::hex << std::setfill('0') << std::setw(8) << static_cast<int32_t>(M_DoubleWord0(value));
+				json_push_back(nowNode, json_new_a(myStr.c_str(), temp.str().c_str()));
 			}
 			else
 			{
-				json_push_back(nowNode, json_new_i(&myStr[0], static_cast<int32_t>(M_DoubleWord0(value))));
+				json_push_back(nowNode, json_new_i(myStr.c_str(), static_cast<int32_t>(M_DoubleWord0(value))));
 			}
 			return;
 		}
@@ -69,7 +70,7 @@ namespace opensea_parser {
 		if (showStatusBits)
 		{
             JSONNODE *bigBit = json_new(JSON_NODE);
-            json_set_name(bigBit, &myStr[0]);
+            json_set_name(bigBit, myStr.c_str());
 			if ((value & BIT63) == BIT63)
 			{
 				set_Json_Bool(bigBit, "Field Supported", true);
@@ -114,12 +115,10 @@ namespace opensea_parser {
 	//-----------------------------------------------------------------------------
 	inline void set_json_int_With_Status(JSONNODE *nowNode, const std::string & myStr, int64_t value, bool showStatusBits)
 	{
-		std::string printStr = " ";
-		printStr.resize(BASIC);
 		if (showStatusBits)
 		{
 			JSONNODE *bigBit = json_new(JSON_NODE);
-			json_set_name(bigBit, &myStr[0]);
+			json_set_name(bigBit, myStr.c_str());
 			if ((value & BIT63) == BIT63)
 			{
 				set_Json_Bool(bigBit, "Field Supported", true);
@@ -137,13 +136,13 @@ namespace opensea_parser {
 				set_Json_Bool(bigBit, "Field Valid", false);
 			}
 			value = check_Status_Strip_Status(value);
-			json_push_back(bigBit, json_new_i(&myStr[0], static_cast<int32_t>(M_DoubleWord0(value))));
+			json_push_back(bigBit, json_new_i(myStr.c_str(), static_cast<int32_t>(M_DoubleWord0(value))));
 			json_push_back(nowNode, bigBit);
 		}
 		else
 		{
 			value = check_Status_Strip_Status(value);
-			json_push_back(nowNode, json_new_i(&myStr[0], static_cast<int32_t>(M_DoubleWord0(value))));
+			json_push_back(nowNode, json_new_i(myStr.c_str(), static_cast<int32_t>(M_DoubleWord0(value))));
 		}
 	}
 	//-----------------------------------------------------------------------------
@@ -166,13 +165,10 @@ namespace opensea_parser {
 	//-----------------------------------------------------------------------------
 	inline void set_json_string_With_Status(JSONNODE *nowNode, const std::string & myStr, const std::string & strValue, uint64_t value, bool showStatusBits)
 	{
-		std::string printStr = " ";
-		printStr.resize(BASIC);
-
 		if (showStatusBits)
 		{
 			JSONNODE *bigBit = json_new(JSON_NODE);
-			json_set_name(bigBit, &myStr[0]);
+			json_set_name(bigBit, myStr.c_str());
 			if ((value & BIT63) == BIT63)
 			{
 				set_Json_Bool(bigBit, "Field Supported", true);
@@ -189,12 +185,12 @@ namespace opensea_parser {
 			{
 				set_Json_Bool(bigBit, "Field Valid", false);
 			}
-			json_push_back(bigBit, json_new_a(&myStr[0], (char *)&*strValue.begin()));
+			json_push_back(bigBit, json_new_a(myStr.c_str(), strValue.c_str()));
 			json_push_back(nowNode, bigBit);
 		}
 		else
 		{
-			json_push_back(nowNode, json_new_a(&myStr[0], (char *)&*strValue.begin()));
+			json_push_back(nowNode, json_new_a(myStr.c_str(), strValue.c_str()));
 		}
 	}
    

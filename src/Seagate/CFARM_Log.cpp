@@ -70,7 +70,7 @@ CFARMLog::CFARMLog(const std::string & fileName,bool showStatus)
 		{
 			m_LogSize = cCLog->get_Size();
 			bufferData = new uint8_t[m_LogSize];								// new a buffer to the point				
-#ifndef _WIN64
+#ifndef __STDC_SECURE_LIB__
 			memcpy(bufferData, cCLog->get_Buffer(), m_LogSize);
 #else
 			memcpy_s(bufferData, m_LogSize, cCLog->get_Buffer(), m_LogSize);// copy the buffer data to the class member pBuf
@@ -121,7 +121,7 @@ CFARMLog::CFARMLog(const std::string & fileName)
 		{
 			m_LogSize = cCLog->get_Size();
 			bufferData = new uint8_t[m_LogSize];								// new a buffer to the point				
-#ifndef _WIN64
+#ifndef __STDC_SECURE_LIB__
 			memcpy(bufferData, cCLog->get_Buffer(), m_LogSize);
 #else
 			memcpy_s(bufferData, m_LogSize, cCLog->get_Buffer(), m_LogSize);// copy the buffer data to the class member pBuf
@@ -158,15 +158,15 @@ CFARMLog::CFARMLog(const std::string & fileName)
 //!   \return 
 //
 //---------------------------------------------------------------------------
-CFARMLog::CFARMLog(uint8_t *bufferData, size_t bufferSize, bool showStatus)
-	:bufferData(bufferData)
+CFARMLog::CFARMLog(uint8_t *farmbufferData, size_t bufferSize, bool showStatus)
+	:bufferData(farmbufferData)
 	, m_LogSize(bufferSize)
 	, m_status(IN_PROGRESS)
 	, m_isScsi(false)
 	, m_shwoStatus(showStatus)
     , m_bufferdelete(false)
 {
-	if (bufferData != NULL)
+	if (farmbufferData != NULL)
 	{
 		m_isScsi = is_Device_Scsi();
 		m_status = IN_PROGRESS;
@@ -248,7 +248,7 @@ eReturnValues CFARMLog::parse_Device_Farm_Log(JSONNODE *masterJson)
     if (m_isScsi)
     {
         CSCSI_Farm_Log *pCFarm;
-        pCFarm = new CSCSI_Farm_Log((uint8_t *)bufferData, m_LogSize,false, m_shwoStatus);
+        pCFarm = new CSCSI_Farm_Log(bufferData, m_LogSize, m_shwoStatus);
         if (pCFarm->get_Log_Status() == SUCCESS)
         {
             pCFarm->print_All_Pages(masterJson);
@@ -263,7 +263,7 @@ eReturnValues CFARMLog::parse_Device_Farm_Log(JSONNODE *masterJson)
     else
     {
         CATA_Farm_Log *pCFarm;
-        pCFarm = new CATA_Farm_Log((uint8_t *)bufferData, m_LogSize, m_shwoStatus);
+        pCFarm = new CATA_Farm_Log(bufferData, m_LogSize, m_shwoStatus);
         if (pCFarm->get_Log_Status() == IN_PROGRESS)
         {
 			try

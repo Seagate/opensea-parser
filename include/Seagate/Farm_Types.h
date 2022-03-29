@@ -101,7 +101,6 @@
 #define SERIAL_PORT_DUMP_MODE                  0xF5
 
 
-#pragma pack(push, 1)
 typedef enum _eReallocationCauses
 {
     HOST_READ_GENERIC,
@@ -131,6 +130,7 @@ typedef struct _sStringIdentifyData
     std::string modelNumber;                                    //!< Model Number (4.3 and newer will have this)
 }sStringIdentifyData;
 
+#pragma pack(push, 1)
 typedef struct _sFarmHeader
 {
     uint64_t        signature;                                  //!< Log Signature = 0x00004641524D4552
@@ -265,8 +265,4 @@ typedef struct _sWorkLoadStat
         cntQueueDepthmorethan64(0), numDithEvtAct1(0), numRandWLDitherHoldOffAct1(0), numSequentialWLDitherHoldOffAct1(0), hotWriteStatistics(0) {};
 }sWorkLoadStat;
 
-
-
-
 #pragma pack(pop)
-

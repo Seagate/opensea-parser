@@ -70,7 +70,7 @@ CScsiTemperatureLog::CScsiTemperatureLog(uint8_t * buffer, size_t bufferSize)
 	if (buffer != NULL)
 	{
 		pData = buffer;
-		m_Page = (sTempLogPageStruct *)buffer;				// set a buffer to the point to the log page info
+		m_Page = reinterpret_cast<sTempLogPageStruct *>(buffer);				// set a buffer to the point to the log page info
 		m_TempStatus = SUCCESS;
 	}
 	else
@@ -114,22 +114,24 @@ CScsiTemperatureLog::~CScsiTemperatureLog()
 //---------------------------------------------------------------------------
 void CScsiTemperatureLog::get_Temp(JSONNODE *tempData)
 {
-	std::string myStr = "";
-	myStr.resize(BASIC);
 #if defined _DEBUG
 	printf("Temperature Log Page \n");
 	printf("\tParameter Code =   0x%04" PRIx16"  \n", m_Page->paramCode);
 #endif
-	snprintf(&myStr[0], BASIC, "Parameter Code 0x%04" PRIx16"", m_Page->paramCode);
+    std::ostringstream temp;
+    temp << "Parameter Code 0x" << std::hex << std::setfill('0') << std::setw(4) << m_Page->paramCode;
 	JSONNODE *paramInfo = json_new(JSON_NODE);
-	json_set_name(paramInfo, &myStr[0]);
+	json_set_name(paramInfo, temp.str().c_str());
 
-	snprintf(&myStr[0], BASIC, "0x%02" PRIx8"", m_Page->paramLength);
-	json_push_back(paramInfo, json_new_a("Parameter Length", &myStr[0]));
-	snprintf(&myStr[0], BASIC, "0x%02" PRIx8"", m_Page->paramControlByte);
-	json_push_back(paramInfo, json_new_a("Control Byte", &myStr[0]));
-	snprintf(&myStr[0], BASIC, "%" PRIu8"", m_Page->temp);
-	json_push_back(paramInfo, json_new_a("Temperature", &myStr[0]));
+    temp.str().clear(); temp.clear();
+    temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Page->paramLength);
+	json_push_back(paramInfo, json_new_a("Parameter Length", temp.str().c_str()));
+    temp.str().clear(); temp.clear();
+    temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Page->paramControlByte);
+	json_push_back(paramInfo, json_new_a("Control Byte", temp.str().c_str()));
+    temp.str().clear(); temp.clear();
+    temp << std::dec << static_cast<uint16_t>(m_Page->temp);
+	json_push_back(paramInfo, json_new_a("Temperature", temp.str().c_str()));
 
 	json_push_back(tempData, paramInfo);
 }

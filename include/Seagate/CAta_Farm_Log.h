@@ -23,6 +23,7 @@
 #include "Farm_Helper.h"
 #include "Farm_Common.h"
 #include "Ata_Farm_Types.h"
+#include <sstream>
 
 namespace opensea_parser {
 

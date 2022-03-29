@@ -80,7 +80,7 @@ namespace opensea_parser {
     public:
         CAta_Identify_Log_02(uint8_t *Buffer);
         ~CAta_Identify_Log_02();
-        eReturnValues get_Log_Page02(uint8_t *pData, JSONNODE *masterData);
+        eReturnValues get_Log_Page02(uint8_t *lp2pData, JSONNODE *masterData);
     };
 
     class CAta_Identify_Log_03
@@ -119,7 +119,7 @@ namespace opensea_parser {
     public:
         CAta_Identify_Log_03(uint8_t *Buffer);
         ~CAta_Identify_Log_03();
-        eReturnValues get_Log_Page03(uint8_t *pData, JSONNODE *masterData);
+        eReturnValues get_Log_Page03(uint8_t *lp3pData, JSONNODE *masterData);
     };
 
     class CAta_Identify_Log_04 
@@ -146,7 +146,7 @@ namespace opensea_parser {
     public:
         CAta_Identify_Log_04(uint8_t *Buffer);
         ~CAta_Identify_Log_04();
-        eReturnValues get_Log_Page04(uint8_t *pData, JSONNODE *masterData);
+        eReturnValues get_Log_Page04(uint8_t *lp4pData, JSONNODE *masterData);
     };
 
     class CAta_Identify_Log_05
@@ -168,6 +168,9 @@ namespace opensea_parser {
             uint8_t             productInformation[LOG5_PRODUCT_INFO];              //<! streaming Performance Granularity                                      95 - 103
                 
         }sLogPage05;
+
+#pragma pack(pop)
+
         typedef struct _sPrintablePage05
         {
             std::string         serialStr;
@@ -175,7 +178,7 @@ namespace opensea_parser {
             std::string         modelNumberStr;
             std::string         productStr;
         }sPrintablePage05;
-#pragma pack(pop)
+
     protected:
         std::string                         m_name;                                                     //!< name of the class
         uint8_t                             *pData;                                                     //!< pointer to the data
@@ -190,7 +193,7 @@ namespace opensea_parser {
     public:
         CAta_Identify_Log_05(uint8_t *Buffer);
         ~CAta_Identify_Log_05();
-        eReturnValues get_Log_Page05(uint8_t *pData, JSONNODE *masterData);
+        eReturnValues get_Log_Page05(uint8_t *lp5pData, JSONNODE *masterData);
     };
 
     class CAta_Identify_Log_06 
@@ -214,7 +217,7 @@ namespace opensea_parser {
     public:
         CAta_Identify_Log_06(uint8_t *Buffer);
         ~CAta_Identify_Log_06();
-        eReturnValues get_Log_Page06(uint8_t *pData, JSONNODE *masterData);
+        eReturnValues get_Log_Page06(uint8_t *lp6pData, JSONNODE *masterData);
     };
 
     class CAta_Identify_Log_07 
@@ -230,7 +233,7 @@ namespace opensea_parser {
     public:
         CAta_Identify_Log_07(uint8_t *Buffer);
         ~CAta_Identify_Log_07();
-        eReturnValues get_Log_Page07(uint8_t *pData, JSONNODE *masterData);
+        eReturnValues get_Log_Page07(uint8_t *lp7pData, JSONNODE *masterData);
     };
 
     class CAta_Identify_Log_08 

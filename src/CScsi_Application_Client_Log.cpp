@@ -13,6 +13,8 @@
 // \file CScsi_Application_Client_Log.cpp  Definition of Application Client Log where clients store information
 //
 #include "CScsi_Application_Client_Log.h"
+#include <sstream>
+#include <iomanip>
 
 using namespace opensea_parser;
 //-----------------------------------------------------------------------------
@@ -115,60 +117,57 @@ CScsiApplicationLog::~CScsiApplicationLog()
 //---------------------------------------------------------------------------
 void CScsiApplicationLog::process_Client_Data(JSONNODE *appData)
 {
-#define MSGSIZE 128
-#define STRMSGSIZE 1201
-	std::string myStr = "";
-	myStr.resize(BASIC);
-
 #if defined _DEBUG
 	printf("Application Client Description \n");
 #endif
 	byte_Swap_16(&m_App->paramCode);
 	//get_Cache_Parameter_Code_Description(&myStr);
-	snprintf(&*myStr.begin(), BASIC, "Application Client Log 0x%04" PRIx16"", m_App->paramCode);
-	JSONNODE* appInfo = json_new(JSON_NODE);
-	json_set_name(appInfo, &*myStr.begin());
+    std::ostringstream temp;
+    temp << "Application Client Log 0x" << std::hex << std::setfill('0') << std::setw(4) << m_App->paramCode;
+	JSONNODE *appInfo = json_new(JSON_NODE);
+	json_set_name(appInfo, temp.str().c_str());
+    
+    temp.str().clear(); temp.clear();
+    temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << m_App->paramCode;
+    json_push_back(appInfo, json_new_a("Application Client Parameter Code", temp.str().c_str()));
 
-	snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", m_App->paramCode);
-	json_push_back(appInfo, json_new_a("Application Client Parameter Code", &*myStr.begin()));
-
-	snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_App->paramControlByte);
-	json_push_back(appInfo, json_new_a("Application Client Control Byte ", &*myStr.begin()));
-	snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_App->paramLength);
-	json_push_back(appInfo, json_new_a("Application Client Length ", &*myStr.begin()));
-
-	// format to show the buffer data.
-	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
-	{
-		uint32_t lineNumber = 0;
-		char* innerMsg = (char*)calloc(MSGSIZE, sizeof(char));
-		char* innerStr = (char*)calloc(60, sizeof(char));
-		uint32_t offset = 0;
+    temp.str().clear(); temp.clear();
+    temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_App->paramControlByte);
+    json_push_back(appInfo, json_new_a("Application Client Control Byte ", temp.str().c_str()));
+    temp.str().clear(); temp.clear();
+    temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_App->paramLength);
+    json_push_back(appInfo, json_new_a("Application Client Length ", temp.str().c_str()));
+    
+    // format to show the buffer data.
+    if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+    {
+        uint32_t lineNumber = 0;
+        uint32_t offset = 0;
 
 
-		for (uint32_t outer = 0; outer < APP_CLIENT_DATA_LEN - 1; )
-		{
-			snprintf(&*myStr.begin(), BASIC, "0x%02" PRIX32 "", lineNumber);
-			sprintf(innerMsg, "%02" PRIX8 "", m_App->data[offset]);
-			// inner loop for creating a single ling of the buffer data
-			for (uint32_t inner = 1; inner < 16 && offset < APP_CLIENT_DATA_LEN - 1; inner++)
-			{
-				sprintf(innerStr, "%02" PRIX8"", m_App->data[offset]);
-				if (inner % 4 == 0)
-				{
-					strncat(innerMsg, " ", 2);
-				}
-				strncat(innerMsg, innerStr, 2);
-				offset++;
-			}
-			// push the line to the json node
-			json_push_back(appInfo, json_new_a(&*myStr.begin(), innerMsg));
-			outer = offset;
-			lineNumber = outer;
-		}
-		safe_Free(innerMsg);  //free the string
-		safe_Free(innerStr);  // free the string
-	}
+        for (uint32_t outer = 0; outer < APP_CLIENT_DATA_LEN - 1; )
+        {
+            temp.str().clear(); temp.clear();
+            temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << lineNumber;
+
+            std::ostringstream innerMsg;
+            innerMsg << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_App->data[offset]);
+            // inner loop for creating a single ling of the buffer data
+            for (uint32_t inner = 1; inner < 16 && offset < APP_CLIENT_DATA_LEN - 1; inner++)
+            {
+                innerMsg << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_App->data[offset]);
+                if (inner % 4 == 0)
+                {
+                    innerMsg << " ";
+                }
+                offset++;
+            }
+            // push the line to the json node
+            json_push_back(appInfo, json_new_a(temp.str().c_str(), innerMsg.str().c_str()));
+            outer = offset;
+            lineNumber = outer;
+        }
+    }
 	json_push_back(appData, appInfo);
 }
 //-----------------------------------------------------------------------------

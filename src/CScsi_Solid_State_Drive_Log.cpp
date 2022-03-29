@@ -119,13 +119,15 @@ bool CScsiSolidStateDriveLog::get_SSD_Parameter_Code_Description(std::string *ss
     {
     case 0x0001:
     {
-        snprintf(&*ssdString->begin(), BASIC, "Percentage Used Indicator");
+        ssdString->assign("Percentage Used Indicator");
         descriptionFound = true;
         break;
     }
     default:
     {
-        snprintf(&*ssdString->begin(), BASIC, "Vendor Specific 0x%04" PRIx16"", m_SSDParam->paramCode);
+        std::ostringstream temp;
+        temp << "Vendor Specific 0x" << std::hex << std::setfill('0') << std::setw(4) << m_SSDParam->paramCode;
+        ssdString->assign(temp.str());
         break;
     }
     }
@@ -148,10 +150,7 @@ bool CScsiSolidStateDriveLog::get_SSD_Parameter_Code_Description(std::string *ss
 void CScsiSolidStateDriveLog::process_Solid_State_Drive_Data(JSONNODE *ssdData)
 {
     bool descriptionFound = false;
-    std::string myStr = "";
-    myStr.resize(BASIC);
-    std::string myHeader = "";
-    myHeader.resize(BASIC);
+    std::string myHeader;
 
 #if defined _DEBUG
     printf("Solid State Drive Log  \n");
@@ -160,17 +159,19 @@ void CScsiSolidStateDriveLog::process_Solid_State_Drive_Data(JSONNODE *ssdData)
     descriptionFound = get_SSD_Parameter_Code_Description(&myHeader);
 
     JSONNODE *ssdInfo = json_new(JSON_NODE);
-    json_set_name(ssdInfo, &*myHeader.begin());
-
-    snprintf(&myStr[0], BASIC, "0x%04" PRIx16"", m_SSDParam->paramCode);
-    json_push_back(ssdInfo, json_new_a("Solid State Drive Param Code", &myStr[0]));
+    json_set_name(ssdInfo, myHeader.c_str());
+    std::ostringstream temp;
+    temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << m_SSDParam->paramCode;
+    json_push_back(ssdInfo, json_new_a("Solid State Drive Param Code", temp.str().c_str()));
 
     if (!descriptionFound)
     {
-        snprintf(&myStr[0], BASIC, "0x%02" PRIx8"", m_SSDParam->paramControlByte);
-        json_push_back(ssdInfo, json_new_a("Solid State Drive Param Control Byte ", &myStr[0]));
-        snprintf(&myStr[0], BASIC, "0x%02" PRIx8"", m_SSDParam->paramLength);
-        json_push_back(ssdInfo, json_new_a("Solid State Drive Param Length ", &myStr[0]));
+        temp.str().clear(); temp.clear();
+        temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_SSDParam->paramControlByte);
+        json_push_back(ssdInfo, json_new_a("Solid State Drive Param Control Byte ", temp.str().c_str()));
+        temp.str().clear(); temp.clear();
+        temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_SSDParam->paramLength);
+        json_push_back(ssdInfo, json_new_a("Solid State Drive Param Length ", temp.str().c_str()));
     }
 
     if (m_SSDParam->paramLength == 8 || m_SSDValue > UINT32_MAX)
@@ -185,8 +186,9 @@ void CScsiSolidStateDriveLog::process_Solid_State_Drive_Data(JSONNODE *ssdData)
         }
         else
         {
-            snprintf(&myStr[0], BASIC, "%" PRIu32"", static_cast<uint32_t>(m_SSDValue));
-            json_push_back(ssdInfo, json_new_a("Solid State Drive Param Value", &myStr[0]));
+            temp.str().clear(); temp.clear();
+            temp << std::dec << m_SSDValue;
+            json_push_back(ssdInfo, json_new_a("Solid State Drive Param Value", temp.str().c_str()));
         }
     }
 
@@ -208,10 +210,6 @@ void CScsiSolidStateDriveLog::process_Solid_State_Drive_Data(JSONNODE *ssdData)
 //---------------------------------------------------------------------------
 eReturnValues CScsiSolidStateDriveLog::get_Solid_State_Drive_Data(JSONNODE *masterData)
 {
-    std::string myStr = "";
-    myStr.resize(BASIC);
-    std::string headerStr = "";
-    headerStr.resize(BASIC);
     eReturnValues retStatus = IN_PROGRESS;
     if (pData != NULL)
     {
@@ -222,7 +220,7 @@ eReturnValues CScsiSolidStateDriveLog::get_Solid_State_Drive_Data(JSONNODE *mast
         {
             if (offset < m_bufferLength && offset < UINT16_MAX)
             {
-                m_SSDParam = (sLogParams*)&pData[offset];
+                m_SSDParam = reinterpret_cast<sLogParams*>(&pData[offset]);
                 offset += sizeof(sLogParams);
                 switch (m_SSDParam->paramLength)
                 {

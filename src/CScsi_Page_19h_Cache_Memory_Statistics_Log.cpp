@@ -116,8 +116,7 @@ CScsiCacheMemStatLog::~CScsiCacheMemStatLog()
 //---------------------------------------------------------------------------
 void CScsiCacheMemStatLog::get_Parameter_Code_Description(uint16_t paramCode, std::string *cacheStatistics)
 {
-    std::string tempStr;
-    tempStr.resize(BASIC);
+    std::ostringstream temp;
     switch (paramCode)
     {
     case 0x0001:
@@ -139,8 +138,8 @@ void CScsiCacheMemStatLog::get_Parameter_Code_Description(uint16_t paramCode, st
             *cacheStatistics = "time interval";
         break;
     default:
-            snprintf(&*tempStr.begin(), BASIC, "vendor specific 0x%04" PRIx16"", paramCode);
-            *cacheStatistics = tempStr;
+        temp << "vendor specific 0x" << std::hex << std::setfill('0') << std::setw(4) << paramCode;
+            *cacheStatistics = temp.str();
         break;
     }
 }
@@ -161,7 +160,6 @@ void CScsiCacheMemStatLog::get_Parameter_Code_Description(uint16_t paramCode, st
 void opensea_parser::CScsiCacheMemStatLog::process_Cache_Memory_Statistics_interval_Data(JSONNODE * cacheData)
 {
     std::string myStr = "";
-    myStr.resize(BASIC);
 
 #if defined_DEBUG
     printf("Cache Memory Statistics Log Description\n");
@@ -174,7 +172,7 @@ void opensea_parser::CScsiCacheMemStatLog::process_Cache_Memory_Statistics_inter
     byte_Swap_32(&m_TimeIntervalDescriptorParam->intervalInteger);
 
     JSONNODE* cacheStatisticsInfo = json_new(JSON_NODE);
-    json_set_name(cacheStatisticsInfo, &*myStr.begin());
+    json_set_name(cacheStatisticsInfo, myStr.c_str());
 
     json_push_back(cacheStatisticsInfo, json_new_i("Time Interval Descriptor-Exponent", m_TimeIntervalDescriptorParam->intervalExponent));
     json_push_back(cacheStatisticsInfo, json_new_i("Time Interval Descriptor-Integer", m_TimeIntervalDescriptorParam->intervalExponent));
@@ -199,10 +197,8 @@ void opensea_parser::CScsiCacheMemStatLog::process_Cache_Memory_Statistics_inter
 //---------------------------------------------------------------------------
 void CScsiCacheMemStatLog::process_Generic_Data(JSONNODE *genData)
 {
-    std::string myStr = "";
-    myStr.resize(BASIC);
-    std::string myHeader = "";
-    myHeader.resize(BASIC);
+    std::string myStr;
+    std::string myHeader;
 
 #if defined_DEBUG
     printf("Cache Memory Statistics Log Description\n");
@@ -210,8 +206,9 @@ void CScsiCacheMemStatLog::process_Generic_Data(JSONNODE *genData)
     byte_Swap_16(&m_CacheMemLog->paramCode);
     get_Parameter_Code_Description(m_CacheMemLog->paramCode, &myHeader);
 
-    snprintf(&*myStr.begin(), BASIC, "%" PRIu64"", m_Value);
-    json_push_back(genData, json_new_a(&*myHeader.begin(), &*myStr.begin()));
+    std::ostringstream temp;
+    temp << std::dec << m_Value;
+    json_push_back(genData, json_new_a(myHeader.c_str(), temp.str().c_str()));
 }
 //-----------------------------------------------------------------------------
 //
@@ -266,17 +263,15 @@ void CScsiCacheMemStatLog::populate_Generic_Param_Value(uint8_t paramLength, uin
 eReturnValues CScsiCacheMemStatLog::get_Cache_Memory_Statistics_Data(JSONNODE *masterData)
 {
 
-    std::string myStr = "";
-    myStr.resize(BASIC);
-    std::string headerStr = "";
-    headerStr.resize(BASIC);
+    std::string myStr;
+    std::string headerStr;
     eReturnValues retStatus = IN_PROGRESS;
     if (pData != NULL)
     {
-        snprintf(&*headerStr.begin(), BASIC, "Cache Memory Statistics Log - 19h");
+        headerStr = "Cache Memory Statistics Log - 19h";
         JSONNODE* pageInfo = json_new(JSON_NODE);
 
-        json_set_name(pageInfo, &*headerStr.begin());
+        json_set_name(pageInfo, headerStr.c_str());
 
         for (uint32_t offset = 0; offset < m_PageLength; )
         {
@@ -286,13 +281,13 @@ eReturnValues CScsiCacheMemStatLog::get_Cache_Memory_Statistics_Data(JSONNODE *m
                 byte_Swap_16(&paramCode);
                 if (paramCode == 0x0005)
                 {
-                    m_TimeIntervalDescriptorParam = (sTimeIntervalDescriptors*)&pData[offset];
+                    m_TimeIntervalDescriptorParam = reinterpret_cast<sTimeIntervalDescriptors*>(&pData[offset]);
                     process_Cache_Memory_Statistics_interval_Data(pageInfo);
                     offset += m_TimeIntervalDescriptorParam->paramLength + LOGPAGESIZE;
                 }
                 else
                 {
-                    m_CacheMemLog = (sLogParams*)&pData[offset];
+                    m_CacheMemLog = reinterpret_cast<sLogParams*>(&pData[offset]);
                     populate_Generic_Param_Value(m_CacheMemLog->paramLength,offset + LOGPAGESIZE);
                     process_Generic_Data(pageInfo);
                     offset += (m_CacheMemLog->paramLength + LOGPAGESIZE);

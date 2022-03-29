@@ -70,7 +70,7 @@ CScsiOperationLog::CScsiOperationLog(uint8_t * buffer, size_t bufferSize, uint16
 		printf("%s \n", m_OperationName.c_str());
 	}
     pData = new uint8_t[pageLength];								// new a buffer to the point				
-#ifndef _WIN64
+#ifndef __STDC_SECURE_LIB__
     memcpy(pData, buffer, pageLength);
 #else
     memcpy_s(pData, pageLength, buffer, pageLength);// copy the buffer data to the class member pBuf
@@ -128,27 +128,27 @@ void CScsiOperationLog::get_Background_Operations_status(std::string *status)
 	{
 		case 0x00:
 		{
-			*status = "No indication";
+            status->assign("No indication");
 			break;
 		}
 		case 0x01:
 		{
-			*status = "No advanced background operation being performed";
+            status->assign("No advanced background operation being performed");
 			break;
 		}
 		case 0x02:
 		{
-			*status = "Host initiated advanced background operation being performed";
+            status->assign("Host initiated advanced background operation being performed");
 			break;
 		}
 		case 0x03:
 		{
-			*status = "Device initiated advanced background operation being performed";
+            status->assign("Device initiated advanced background operation being performed");
 			break;
 		}
 		default:
 		{
-			*status = "reserved";
+            status->assign("reserved");
 			break;
 		}
 	}
@@ -167,51 +167,31 @@ void CScsiOperationLog::get_Background_Operations_status(std::string *status)
 //!   \return none
 //
 //---------------------------------------------------------------------------
-void CScsiOperationLog::process_Background_Operations_Data(JSONNODE *operationData, uint32_t offset)
+void CScsiOperationLog::process_Background_Operations_Data(JSONNODE *operationData, M_ATTR_UNUSED uint32_t offset)
 {
 	std::string myStr = "";
-	myStr.resize(BASIC);
 #if defined _DEBUG
 	printf("Cache Event Description \n");
 #endif
 	byte_Swap_16(&m_Operation->paramCode);
-	if (g_dataformat == PREPYTHON_DATA)
-	{
-		JSONNODE* data = json_new(JSON_NODE);
+    std::ostringstream temp;
+    temp << "Background Operation Description " << std::dec << m_Operation->paramCode;
+	JSONNODE *operationInfo = json_new(JSON_NODE);
+	json_set_name(operationInfo, temp.str().c_str());
+    temp.str().clear(); temp.clear();
+    temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << m_Operation->paramCode;
+	json_push_back(operationInfo, json_new_a("Background Operation Parameter Code", temp.str().c_str()));
+    temp.str().clear(); temp.clear();
+    temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Operation->paramControlByte);
+	json_push_back(operationInfo, json_new_a("Background Operation Control Byte ", temp.str().c_str()));
+    temp.str().clear(); temp.clear();
+    temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Operation->paramLength);
+	json_push_back(operationInfo, json_new_a("Background Operation Length ", temp.str().c_str()));
 
-		json_push_back(data, json_new_a("name", "background_operation_status"));
-		JSONNODE* label = json_new(JSON_NODE);
-		json_set_name(label, "labels");
-		snprintf(&*myStr.begin(), BASIC, "scsi-log-page:0x%" PRIx8",%" PRIx8":0x%" PRIx16":%" PRIu32"", 0x15, 0x02, m_Operation->paramCode, offset);
-		json_push_back(label, json_new_a("metric_source", &*myStr.begin()));
-		get_Background_Operations_status(&myStr);
-		json_push_back(label, json_new_a("operation", &*myStr.begin()));
-		json_push_back(label, json_new_a("units", "status"));
-		json_push_back(data, label);
-		json_push_back(data, json_new_i("value", m_Operation->bo_Status));
-		json_push_back(operationData, data);
+	get_Background_Operations_status(&myStr);
+	json_push_back(operationInfo, json_new_i(myStr.c_str(), static_cast<uint32_t>(m_Operation->bo_Status)));
 
-	}
-	else
-	{
-		
-		snprintf(&*myStr.begin(), BASIC, "Background Operation Description %" PRId16"", m_Operation->paramCode);
-		JSONNODE* operationInfo = json_new(JSON_NODE);
-		json_set_name(operationInfo, &*myStr.begin());
-
-		snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", m_Operation->paramCode);
-		json_push_back(operationInfo, json_new_a("Background Operation Parameter Code", &*myStr.begin()));
-
-		snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_Operation->paramControlByte);
-		json_push_back(operationInfo, json_new_a("Background Operation Control Byte ", &*myStr.begin()));
-		snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_Operation->paramLength);
-		json_push_back(operationInfo, json_new_a("Background Operation Length ", &*myStr.begin()));
-
-		get_Background_Operations_status(&myStr);
-		json_push_back(operationInfo, json_new_i(&*myStr.begin(), static_cast<uint32_t>(m_Operation->bo_Status)));
-
-		json_push_back(operationData, operationInfo);
-	}
+	json_push_back(operationData, operationInfo);
 }
 //-----------------------------------------------------------------------------
 //
@@ -239,7 +219,7 @@ eReturnValues CScsiOperationLog::get_Background_Operations_Data(JSONNODE *master
 		{
 			if (offset < m_bufferLength && offset < UINT16_MAX)
 			{
-				m_Operation = (sOperationParams *)&pData[offset];
+				m_Operation = reinterpret_cast<sOperationParams*>(&pData[offset]);
 				process_Background_Operations_Data(pageInfo,offset);
 				offset += sizeof(sOperationParams);
 			}

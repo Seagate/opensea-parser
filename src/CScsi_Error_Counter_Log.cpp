@@ -127,27 +127,29 @@ CScsiErrorCounterLog::~CScsiErrorCounterLog()
 //---------------------------------------------------------------------------
 void CScsiErrorCounterLog::append_Error_Log_Page_Number(std::string *typeStr, std::string main)
 {
+    std::ostringstream temp;
     switch (m_pageType)
     {
     case 0x02:
     {
-        snprintf(&*typeStr->begin(), BASIC, "%s - %s", &*main.begin(), "02h");// WRITE
+        temp << main << "02h";// WRITE
         break;
     }
     case 0x03:
     {
-        snprintf(&*typeStr->begin(), BASIC, "%s - %s", &*main.begin(), "03h"); // READ
+        temp << main << "03h"; // READ
         break;
     }
     case 0x05:
     {
-        snprintf(&*typeStr->begin(), BASIC, "%s - %s", &*main.begin(), "05h"); // VERIFY
+        temp << main << "05h"; // VERIFY
         break;
     }
     default:
-        snprintf(&*typeStr->begin(), BASIC, "%s - %s", &*main.begin(), "03h");  ///READ
+        temp << main << "03h";  //READ
         break;
     }
+    typeStr->assign(temp.str());
 }
 //-----------------------------------------------------------------------------
 //
@@ -166,27 +168,29 @@ void CScsiErrorCounterLog::append_Error_Log_Page_Number(std::string *typeStr, st
 //---------------------------------------------------------------------------
 void CScsiErrorCounterLog::set_Master_String(std::string *typeStr, std::string main)
 {
+    std::ostringstream temp;
     switch (m_pageType)
     {
     case 0x02:
     {
-        snprintf(&*typeStr->begin(), BASIC, "%s %s", "WRITE", &*main.begin());
+        temp << "WRITE" << main;
         break;
     }
     case 0x03:
     {
-        snprintf(&*typeStr->begin(), BASIC, "%s %s", "READ", &*main.begin());
+        temp << "READ" << main;
         break;
     }
     case 0x05:
     {
-        snprintf(&*typeStr->begin(), BASIC, "%s %s", "VERIFY", &*main.begin());
+        temp << "VERIFY" << main;
         break;
     }
     default:
-        snprintf(&*typeStr->begin(), BASIC, "%s %s", "READ", &*main.begin());
+        temp << "READ" << main;
         break;
     }
+    typeStr->assign(temp.str());
 }
 //-----------------------------------------------------------------------------
 //
@@ -209,49 +213,51 @@ bool CScsiErrorCounterLog::get_Error_Parameter_Code_Description(std::string *err
     {
     case 0x0000:
     {
-        snprintf(&*error->begin(), BASIC, "Corrected Without Substantial Delay");
+        error->assign("Corrected Without Substantial Delay");
         descriptionFound = true;
         break;
     }
     case 0x0001:
     {
-        snprintf(&*error->begin(), BASIC, "Corrected With Possible Delay");
+        error->assign("Corrected With Possible Delay");
         descriptionFound = true;
         break;
     }
     case 0x0002:
     {
-        snprintf(&*error->begin(), BASIC, "Number of Errors that are Corrected by Applying Retries");
+        error->assign("Number of Errors that are Corrected by Applying Retries");
         descriptionFound = true;
         break;
     }
     case 0x0003:
     {
-        snprintf(&*error->begin(), BASIC, "Total Number of Errors Corrected");
+        error->assign("Total Number of Errors Corrected");
         descriptionFound = true;
         break;
     }
     case 0x0004:
     {
-        snprintf(&*error->begin(), BASIC, "Total Times Correction Algorithm Processed");
+        error->assign("Total Times Correction Algorithm Processed");
         descriptionFound = true;
         break;
     }
     case 0x0005:
     {
-        snprintf(&*error->begin(), BASIC, "Total Bytes Processed");
+        error->assign("Total Bytes Processed");
         descriptionFound = true;
         break;
     }
     case 0x0006:
     {
-        snprintf(&*error->begin(), BASIC, "Total Uncorrected Errors");
+        error->assign("Total Uncorrected Errors");
         descriptionFound = true;
         break;
     }
     default:
     {
-        snprintf(&*error->begin(), BASIC, "Vendor Specific 0x%04" PRIx16"", m_Error->paramCode);
+        std::ostringstream temp;
+        temp << "Vendor Specific 0x" << std::hex << std::setfill('0') << std::setw << m_Error->paramCode;
+        error->assign(temp.str());
         break;
     }
     }
@@ -275,9 +281,7 @@ void CScsiErrorCounterLog::process_Error_Data(JSONNODE *errorData)
 {
     bool descriptionFound = false;
     std::string myStr = "";
-    myStr.resize(BASIC);
     std::string myHeader = "";
-    myHeader.resize(BASIC);
 #if defined _DEBUG
     printf("Error Counter Log  \n");
 #endif
@@ -287,16 +291,18 @@ void CScsiErrorCounterLog::process_Error_Data(JSONNODE *errorData)
     {
         set_Master_String(&myStr, myHeader);
         JSONNODE *errorInfo = json_new(JSON_NODE);
-        json_set_name(errorInfo, &*myStr.begin());
-        snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", m_Error->paramCode);
-        json_push_back(errorInfo, json_new_a("Error Counter Code", &*myStr.begin()));
+        json_set_name(errorInfo, myStr.c_str());
+        std::ostringstream temp;
+        temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << m_Error->paramCode;
+        json_push_back(errorInfo, json_new_a("Error Counter Code", temp.str().c_str()));
         if (!descriptionFound)
         {
-
-            snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_Error->paramControlByte);
-            json_push_back(errorInfo, json_new_a("Error Counter Control Byte ", &*myStr.begin()));
-            snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_Error->paramLength);
-            json_push_back(errorInfo, json_new_a("Error Counter Length ", &*myStr.begin()));
+            temp.str().clear(); temp.clear();
+            temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Error->paramControlByte);
+            json_push_back(errorInfo, json_new_a("Error Counter Control Byte ", temp.str().c_str()));
+            temp.str().clear(); temp.clear();
+            temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Error->paramLength);
+            json_push_back(errorInfo, json_new_a("Error Counter Length ", temp.str().c_str()));
         }
         if (m_Error->paramLength == 8 || m_ErrorValue > UINT32_MAX)
         {
@@ -308,13 +314,11 @@ void CScsiErrorCounterLog::process_Error_Data(JSONNODE *errorData)
             {
                 json_push_back(errorInfo, json_new_i("Error Count", static_cast<uint32_t>(m_ErrorValue)));
             }
-
             else
             {
-                std::string printStr = "";
-                printStr.resize(BASIC);
-                snprintf(&*printStr.begin(), BASIC, "%" PRIu32"", static_cast<uint32_t>(m_ErrorValue));
-                json_push_back(errorInfo, json_new_a(&*myStr.begin(), &*printStr.begin()));
+                temp.str().clear(); temp.clear();
+                temp << std::dec << static_cast<uint32_t>(m_ErrorValue);
+                json_push_back(errorInfo, json_new_a(myStr.c_str(), temp.str().c_str()));
             }
         }
 
@@ -338,22 +342,20 @@ void CScsiErrorCounterLog::process_Error_Data(JSONNODE *errorData)
 eReturnValues CScsiErrorCounterLog::get_Error_Counter_Data(JSONNODE *masterData)
 {
     std::string myStr = "";
-    myStr.resize(BASIC);
     std::string headerStr = "";
-    headerStr.resize(BASIC);
     eReturnValues retStatus = IN_PROGRESS;
     if (pData != NULL)
     {
         set_Master_String(&headerStr, "Error Counter Log");
         append_Error_Log_Page_Number(&myStr, headerStr);
         JSONNODE *pageInfo = json_new(JSON_NODE);
-        json_set_name(pageInfo, &*myStr.begin());
+        json_set_name(pageInfo, myStr.c_str());
 
         for (size_t offset = 0; offset < m_PageLength; )
         {
             if (offset < m_bufferLength && offset < UINT16_MAX)
             {
-                m_Error = (sErrorParams *)&pData[offset];
+                m_Error = reinterpret_cast<sErrorParams*>(&pData[offset]);
                 offset += sizeof(sErrorParams);
                 switch (m_Error->paramLength)
                 {

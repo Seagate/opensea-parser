@@ -74,7 +74,7 @@ CScsiPendingDefectsLog::CScsiPendingDefectsLog(uint8_t * buffer, size_t bufferSi
 		printf("%s \n", m_PlistName.c_str());
 	}
     pData = new uint8_t[pageLength];								// new a buffer to the point				
-#ifndef _WIN64
+#ifndef __STDC_SECURE_LIB__
     memcpy(pData, buffer, pageLength);
 #else
     memcpy_s(pData, pageLength, buffer, pageLength);// copy the buffer data to the class member pBuf
@@ -128,8 +128,6 @@ CScsiPendingDefectsLog::~CScsiPendingDefectsLog()
 //---------------------------------------------------------------------------
 void CScsiPendingDefectsLog::process_PList_Data(JSONNODE *pendingData)
 {
-	std::string myStr = "";
-	myStr.resize(BASIC);
 	byte_Swap_16(&m_PlistDefect->paramCode);
 	byte_Swap_32(&m_PlistDefect->defectPOH);
 	byte_Swap_64(&m_PlistDefect->defectLBA);
@@ -138,17 +136,20 @@ void CScsiPendingDefectsLog::process_PList_Data(JSONNODE *pendingData)
 #if defined _DEBUG
 	printf("Pending Defect Log  \n");
 #endif
-		
-	snprintf(&*myStr.begin(), BASIC, "Pending Defect number %" PRIi16"", m_PlistDefect->paramCode);
+    std::ostringstream temp;
+    temp << "Pending Defect number " << std::dec << m_PlistDefect->paramCode;
 	JSONNODE* pListInfo = json_new(JSON_NODE);
-	json_set_name(pListInfo, &*myStr.begin());
+	json_set_name(pListInfo, temp.str().c_str());
 
-	snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", m_PlistDefect->paramCode);
-	json_push_back(pListInfo, json_new_a("Pending Defect Code", &*myStr.begin()));
-	snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_PlistDefect->paramControlByte);
-	json_push_back(pListInfo, json_new_a("Pending DefectControl Byte ", &*myStr.begin()));
-	snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_PlistDefect->paramLength);
-	json_push_back(pListInfo, json_new_a("Pending Defect Length ", &*myStr.begin()));
+    temp.str().clear(); temp.clear();
+    temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << m_PlistDefect->paramCode;
+	json_push_back(pListInfo, json_new_a("Pending Defect Code", temp.str().c_str()));
+    temp.str().clear(); temp.clear();
+    temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_PlistDefect->paramControlByte);
+	json_push_back(pListInfo, json_new_a("Pending DefectControl Byte ", temp.str().c_str()));
+    temp.str().clear(); temp.clear();
+    temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_PlistDefect->paramLength);
+	json_push_back(pListInfo, json_new_a("Pending Defect Length ", temp.str().c_str()));
 	json_push_back(pListInfo, json_new_i("Pending Defect Power On Hours", static_cast<uint32_t>(m_PlistDefect->defectPOH)));
 
 	set_json_64bit(pListInfo, "Pending Defect LBA", m_PlistDefect->defectLBA, true);
@@ -172,8 +173,6 @@ void CScsiPendingDefectsLog::process_PList_Data(JSONNODE *pendingData)
 //---------------------------------------------------------------------------
 void CScsiPendingDefectsLog::process_PList_Count(JSONNODE *pendingCount)
 {
-	std::string myStr = "";
-	myStr.resize(BASIC);
 	byte_Swap_16(&m_PListCountParam->paramCode);
 	byte_Swap_32(&m_PListCountParam->totalPlistCount);
 
@@ -182,13 +181,15 @@ void CScsiPendingDefectsLog::process_PList_Count(JSONNODE *pendingCount)
 #endif
 	JSONNODE* countInfo = json_new(JSON_NODE);
 	json_set_name(countInfo, "Pending Defect count");
-
-	snprintf(&*myStr.begin(), BASIC, "0x%04" PRIx16"", m_PListCountParam->paramCode);
-	json_push_back(countInfo, json_new_a("Pending Defect Counter Code", &*myStr.begin()));
-	snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_PListCountParam->paramControlByte);
-	json_push_back(countInfo, json_new_a("Pending Defect Counter Control Byte ", &*myStr.begin()));
-	snprintf(&*myStr.begin(), BASIC, "0x%02" PRIx8"", m_PListCountParam->paramLength);
-	json_push_back(countInfo, json_new_a("Pending Defect Counter Length ", &*myStr.begin()));
+    std::ostringstream temp;
+    temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << m_PListCountParam->paramCode;
+	json_push_back(countInfo, json_new_a("Pending Defect Counter Code", temp.str().c_str()));
+    temp.str().clear(); temp.clear();
+    temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_PListCountParam->paramControlByte);
+	json_push_back(countInfo, json_new_a("Pending Defect Counter Control Byte ", temp.str().c_str()));
+    temp.str().clear(); temp.clear();
+    temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_PListCountParam->paramLength);
+	json_push_back(countInfo, json_new_a("Pending Defect Counter Length ", temp.str().c_str()));
 	json_push_back(countInfo, json_new_i("Pending Defect Count", static_cast<uint32_t>(m_PListCountParam->totalPlistCount)));
 
 	json_push_back(pendingCount, countInfo);
@@ -210,23 +211,20 @@ void CScsiPendingDefectsLog::process_PList_Count(JSONNODE *pendingCount)
 //---------------------------------------------------------------------------
 eReturnValues CScsiPendingDefectsLog::get_Plist_Data(JSONNODE *masterData)
 {
-	std::string myStr = "";
-	myStr.resize(BASIC);
 	eReturnValues retStatus = IN_PROGRESS;
 	if (pData != NULL)
 	{
-		myStr = "Pending Defect Log - 15h";
 		JSONNODE *pageInfo = json_new(JSON_NODE);
-		json_set_name(pageInfo, &*myStr.begin());
-		m_PListCountParam = (sPendindDefectCount *)pData;
+		json_set_name(pageInfo, "Pending Defect Log - 15h");
+		m_PListCountParam = reinterpret_cast<sPendindDefectCount *>(pData);
 		process_PList_Count(pageInfo);
-		if ((size_t)m_PageLength > sizeof(sPendindDefectCount))    // for when there is zero count defects
+		if (static_cast<size_t>(m_PageLength) > sizeof(sPendindDefectCount))    // for when there is zero count defects
 		{
-			for (uint32_t offset = sizeof(sPendindDefectCount); offset < (size_t)m_PageLength; )
+			for (uint32_t offset = sizeof(sPendindDefectCount); offset < static_cast<size_t>(m_PageLength); )
 			{
 				if (offset < (m_bufferLength - sizeof(sLogPageStruct)))
 				{
-					m_PlistDefect = (sDefect *)&pData[offset];
+					m_PlistDefect = reinterpret_cast<sDefect *>(&pData[offset]);
 					offset += sizeof(sDefect);
 					m_count++;    // defect found add one to the count
 					process_PList_Data(pageInfo);

@@ -91,11 +91,11 @@ void CFarmCommon::create_Serial_Number(std::string& serialNumberStr, uint32_t se
 	{
 		sn = (sn1 | (sn2 << 32));
 	}
-	serialNumberStr.resize(SERIAL_NUMBER_LEN);
-	strncpy(&serialNumberStr[0], (char*)&sn, SERIAL_NUMBER_LEN);
+	serialNumberStr.clear();
+    serialNumberStr.assign(reinterpret_cast<const char*>(&sn), SERIAL_NUMBER_LEN);
 	if (!sas)   // sata we need to byte swap the string
 	{
-		byte_Swap_String(&serialNumberStr[0]);
+		byte_swap_std_string(serialNumberStr);
 	}
 }
 //-----------------------------------------------------------------------------
@@ -127,22 +127,13 @@ void CFarmCommon::create_Model_Number_String(std::string& modelStr, uint64_t *pr
 		{
 			modelParts[i] = M_DoubleWord0(productID[i]);
 		}
-	}
-	// temp string for coping the hex to text, have to resize for c98 issues
-	std::string tempStr = "0000";
-	modelStr = "000000000000";
-	// loop to copy the info into the modeleNumber string
-	for (size_t n = 0; n < MAXSIZE; n++)
-	{
-		strncpy(&tempStr[0], (char*)&modelParts[n], MAXSIZE);
-		modelStr.insert((n * 4), tempStr);
+		modelStr.append(reinterpret_cast<const char*>(&modelParts[i]), sizeof(uint32_t));
 	}
 	if (!sas)   // sata we need to byte swap the string
 	{
-		byte_Swap_String(&modelStr[0]);
+		byte_swap_std_string(modelStr);
 	}
-	modelStr.resize(PRINTABLE_MODEL_NUMBER);
-	remove_Trailing_Whitespace(&modelStr[0]);
+	remove_trailing_whitespace_std_string(modelStr);
 
 }
 //-----------------------------------------------------------------------------
@@ -170,7 +161,7 @@ void CFarmCommon::create_Device_Interface_String(std::string& dInterfaceStr, uin
 		byte_Swap_32(&dFace);
 	}
 	dInterfaceStr = "0000";
-	strncpy(&dInterfaceStr[0], (char*)&dFace, DEVICE_INTERFACE_LEN);
+	dInterfaceStr.assign(reinterpret_cast<const char*>(&dFace), DEVICE_INTERFACE_LEN);
 }
 //-----------------------------------------------------------------------------
 //
@@ -198,9 +189,11 @@ void CFarmCommon::create_World_Wide_Name(std::string& worldWideName, uint64_t ww
 		word_Swap_32(&stwwn);
 		word_Swap_32(&stwwn2);
 	}
-	wwnFinal = (stwwn | ((uint64_t)stwwn2 << 32));
+	wwnFinal = M_DWordsTo8ByteValue(stwwn2, stwwn);
 	worldWideName = "0000000000000000000";
-	snprintf(&worldWideName[0], WORLD_WIDE_NAME_LEN, "0x%" PRIX64"", wwnFinal);
+	std::ostringstream temp;
+    temp << "0x" << std::hex << wwnFinal;
+    worldWideName.assign(temp.str());
 }
 //-----------------------------------------------------------------------------
 //
@@ -233,10 +226,10 @@ void CFarmCommon::create_Firmware_String(std::string& firmwareRevStr, uint32_t f
 		firm = firmware;
 	}
 	firmwareRevStr = "00000000";
-	strncpy(&firmwareRevStr[0], (char*)&firm, 8);
+	firmwareRevStr.assign(reinterpret_cast<const char*>(&firm), 8);
 	if (!sas)
 	{
-		byte_Swap_String(&firmwareRevStr[0]);
+		byte_swap_std_string(firmwareRevStr);
 	}
 }
 //-----------------------------------------------------------------------------
@@ -543,36 +536,38 @@ void CFarmCommon::create_Firmware_String(std::string& firmwareRevStr, uint32_t f
 			break;
 		}
    }
-//-----------------------------------------------------------------------------
-//
-//! \fn create_Year_Assembled_String()
-//
-//! \brief
-//!   Description:  fill in the date string from the date. used for year and week assembled
-//
-//  Entry:
-//! \param dateStr - pointer to the date string
-//! \param date  =  pointer to the date data
-//
-//  Exit:
-//!   \return void
-//
-//---------------------------------------------------------------------------
-void CFarmCommon::create_Year_Assembled_String(std::string &dateStr, uint16_t date, bool isSAS)
-{
-	if (isSAS)
-	{
-		byte_Swap_16(&date);
-	}
-	if (date >= 0xFFFF)
-	{
-		dateStr = "00";
-	}
-	else
-	{
-		strncpy(&*dateStr.begin(), (char*)&date, DATE_YEAR_DATE_SIZE);
-	}
-}
+
+   //-----------------------------------------------------------------------------
+	//
+	//! \fn create_Year_Assembled_String()
+	//
+	//! \brief
+	//!   Description:  fill in the date string from the date. used for year and week assembled
+	//
+	//  Entry:
+	//! \param dateStr - pointer to the date string
+	//! \param date  =  pointer to the date data
+	//
+	//  Exit:
+	//!   \return void
+	//
+	//---------------------------------------------------------------------------
+   void CFarmCommon::create_Year_Assembled_String(std::string &dateStr, uint16_t date, bool isSAS)
+   {
+		if (isSAS)
+		{
+			byte_Swap_16(&date);
+		}
+		if (date >= 0xFFFF)
+		{
+			dateStr = "00";
+		}
+		else
+		{
+            dateStr.assign(reinterpret_cast<const char*>(&date), sizeof(uint16_t));
+		}
+   }
+
 //-----------------------------------------------------------------------------
 //
 //! \fn Get_NVC_Status()
