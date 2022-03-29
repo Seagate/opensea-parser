@@ -168,6 +168,9 @@ namespace opensea_parser {
             uint8_t             productInformation[LOG5_PRODUCT_INFO];              //<! streaming Performance Granularity                                      95 - 103
                 
         }sLogPage05;
+
+#pragma pack(pop)
+
         typedef struct _sPrintablePage05
         {
             std::string         serialStr;
@@ -175,7 +178,7 @@ namespace opensea_parser {
             std::string         modelNumberStr;
             std::string         productStr;
         }sPrintablePage05;
-#pragma pack(pop)
+
     protected:
         std::string                         m_name;                                                     //!< name of the class
         uint8_t                             *pData;                                                     //!< pointer to the data

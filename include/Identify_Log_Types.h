@@ -22,7 +22,7 @@ namespace opensea_parser {
 
 #define MAX_NUMBER_OF_ENTRIES   9
 #define LEGACY_DRIVE_SEC_SIZE 512
-#define MAX_48_BIT_LBA                (0xFFFFFFFFFFFFULL)
+#define MAX_48_BIT_LBA                UINT64_C(0xFFFFFFFFFFFF)
 #pragma pack(push, 1)
 
 	typedef struct _sSectorSizes
