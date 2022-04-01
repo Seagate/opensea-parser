@@ -493,7 +493,9 @@ namespace opensea_parser {
     inline void remove_trailing_whitespace_std_string(std::string &stringToTrim)
     {
         //search for the last of ASCII characters...so use find_last_of the printable characters that are NOT spaces should do the trick...-TJE
-        stringToTrim.erase(stringToTrim.find_last_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-=~!@#$%^&*()_+[]{};':\"\\|,./<>?`") + 1, stringToTrim.at(stringToTrim.size()));
+		size_t lastChar = stringToTrim.find_last_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-=~!@#$%^&*()_+[]{};':\"\\|,./<>?`") + 1;
+		if(lastChar != std::string::npos)
+			stringToTrim.erase(lastChar, stringToTrim.size() - lastChar);
     }
 
     inline void std_string_to_lowercase(std::string &stringToLowercase)
