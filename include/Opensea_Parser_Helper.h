@@ -67,7 +67,7 @@ namespace opensea_parser {
 #define MODEL_NUMBER_LEN        20
 #define FIRMWARE_REV_LEN        4
 #define SAS_FIRMWARE_REV_LEN    4
-//#define BASIC                   80
+#define BASIC                   80
 
 #define SAS_SUBPAGE_ZERO			0x00
 #define SAS_SUBPAGE_ONE				0x01
@@ -480,6 +480,7 @@ namespace opensea_parser {
     inline void byte_swap_std_string(std::string &stringToSwap)
     {
         std::string tempString;
+		tempString.resize(stringToSwap.size());
         for (size_t strOffset = 0; (strOffset + 1) < stringToSwap.size(); strOffset += 2)
         {
             tempString[strOffset] = stringToSwap[strOffset + 1];
