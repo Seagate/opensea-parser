@@ -175,20 +175,20 @@ void CScsi_DST_Results::print_Self_Test_Log(JSONNODE *dstNode, uint16_t run)
 	json_set_name(runInfo, temp.str().c_str());
 	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << m_DST->paramCode;
 		json_push_back(runInfo, json_new_a("Parameter Code", temp.str().c_str()));
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_DST->paramLength);
 		json_push_back(runInfo, json_new_a("Parameter Length", temp.str().c_str()));
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << m_DST->paramControlByte;
 		json_push_back(runInfo, json_new_a("Control Byte", temp.str().c_str()));
 	}
-    temp.str().clear(); temp.clear();
+    temp.str("");temp.clear();
     temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint8_t>(M_GETBITRANGE(m_DST->stCode, 7, 5));
 	json_push_back(runInfo, json_new_a("Self Test Code", temp.str().c_str()));
-    temp.str().clear(); temp.clear();
+    temp.str("");temp.clear();
     temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint8_t>(M_GETBITRANGE(m_DST->stCode, 3, 0));
 	json_push_back(runInfo, json_new_a("Self Test Results", temp.str().c_str()));
 	if (M_GETBITRANGE(m_DST->stCode, 7, 5) == DST_NOT_RUN)
@@ -202,18 +202,18 @@ void CScsi_DST_Results::print_Self_Test_Log(JSONNODE *dstNode, uint16_t run)
 		json_push_back(runInfo, json_new_a("Self Test Results Meaning", myStr.c_str()));
 	}
 	json_push_back(runInfo, json_new_i("Self Test Number", static_cast<uint32_t>(m_DST->stNumber)));
-    temp.str().clear(); temp.clear();
+    temp.str("");temp.clear();
     temp << std::dec << m_DST->accPOH;
 	json_push_back(runInfo, json_new_a("Accumulated Power On Hours", temp.str().c_str()));
 	set_json_64bit(runInfo, "Address of First Failure", m_DST->address, true);
 
-    temp.str().clear(); temp.clear();
+    temp.str("");temp.clear();
     temp << std::dec << static_cast<uint16_t>(m_DST->senseKey);
 	json_push_back(runInfo, json_new_a("Sense Key", temp.str().c_str()));
-    temp.str().clear(); temp.clear();
+    temp.str("");temp.clear();
     temp << std::dec << static_cast<uint16_t>(m_DST->addSenseCode);
 	json_push_back(runInfo, json_new_a("Additional Sense Code", temp.str().c_str()));
-    temp.str().clear(); temp.clear();
+    temp.str("");temp.clear();
     temp << std::dec << static_cast<uint16_t>(m_DST->addSenseCodeQualifier);
 	json_push_back(runInfo, json_new_a("Additional Sense Code Qualifier", temp.str().c_str()));
 

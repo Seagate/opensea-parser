@@ -228,10 +228,10 @@ void CScsiZonedDeviceStatisticsLog::process_Zoned_Device_Statistics_Data(JSONNOD
 
         if (!descriptionFound)
         {
-            temp.str().clear(); temp.clear();
+            temp.str("");temp.clear();
             temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_ZDSParam->paramControlByte);
             json_push_back(zdsInfo, json_new_a("Zoned Device Statistics Param Control Byte ", temp.str().c_str()));
-            temp.str().clear(); temp.clear();
+            temp.str("");temp.clear();
             temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_ZDSParam->paramLength);
             json_push_back(zdsInfo, json_new_a("Zoned Device Statistics Param Length ", temp.str().c_str()));
         }
@@ -248,7 +248,7 @@ void CScsiZonedDeviceStatisticsLog::process_Zoned_Device_Statistics_Data(JSONNOD
             }
             else
             {
-                temp.str().clear(); temp.clear();
+                temp.str("");temp.clear();
                 temp << std::dec << m_ZDSValue;
                 json_push_back(zdsInfo, json_new_a("Zoned Device Statistics Param Value", temp.str().c_str()));
             }

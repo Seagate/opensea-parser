@@ -178,13 +178,13 @@ void CScsiOperationLog::process_Background_Operations_Data(JSONNODE *operationDa
     temp << "Background Operation Description " << std::dec << m_Operation->paramCode;
 	JSONNODE *operationInfo = json_new(JSON_NODE);
 	json_set_name(operationInfo, temp.str().c_str());
-    temp.str().clear(); temp.clear();
+    temp.str("");temp.clear();
     temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << m_Operation->paramCode;
 	json_push_back(operationInfo, json_new_a("Background Operation Parameter Code", temp.str().c_str()));
-    temp.str().clear(); temp.clear();
+    temp.str("");temp.clear();
     temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Operation->paramControlByte);
 	json_push_back(operationInfo, json_new_a("Background Operation Control Byte ", temp.str().c_str()));
-    temp.str().clear(); temp.clear();
+    temp.str("");temp.clear();
     temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Operation->paramLength);
 	json_push_back(operationInfo, json_new_a("Background Operation Length ", temp.str().c_str()));
 

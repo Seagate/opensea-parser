@@ -190,11 +190,11 @@ void CScsiCacheLog::process_Cache_Event_Data(JSONNODE *cacheData)
         json_push_back(cacheInfo, json_new_a("Cache Statistics Parameter Code", temp.str().c_str()));
         if (!discriptionIsFound)
         {
-            temp.str().clear(); temp.clear();
+            temp.str("");temp.clear();
 
             temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_cache->paramControlByte);
             json_push_back(cacheInfo, json_new_a("Cache Statistics Control Byte ", temp.str().c_str()));
-            temp.str().clear(); temp.clear();
+            temp.str("");temp.clear();
             temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_cache->paramLength);
 
             json_push_back(cacheInfo, json_new_a("Cache Statistics Length ", temp.str().c_str()));

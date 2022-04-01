@@ -208,10 +208,10 @@ void CScsiLBAProvisionLog::process_LBA_Provision_Data(JSONNODE *lbaData)
     std::ostringstream temp;
     temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << m_Provision->paramCode;
     json_push_back(lbaInfo, json_new_a("Logical Block Provisioning Parameter Code", temp.str().c_str()));
-    temp.str().clear(); temp.clear();
+    temp.str("");temp.clear();
     temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Provision->paramControlByte);
     json_push_back(lbaInfo, json_new_a("Logical Block Provisioning Control Byte ", temp.str().c_str()));
-    temp.str().clear(); temp.clear();
+    temp.str("");temp.clear();
     temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Provision->paramLength);
     json_push_back(lbaInfo, json_new_a("Logical Block Provisioning Length ", temp.str().c_str()));
     if (m_Provision->paramCode == 0x0003)

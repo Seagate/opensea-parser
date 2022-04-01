@@ -237,7 +237,7 @@ eReturnValues CExtComp::parse_Ext_Comp_Structure(uint32_t structNumber, uint32_t
 		deviceErrorCount = pData[500];
 		json_push_back(EComp, json_new_i("Ext Comp Device Error Count", static_cast<int>(deviceErrorCount)));
 	}
-    temp.str().clear(); temp.clear();
+    temp.str("");temp.clear();
     for (uint16_t z = 1; z < 5; z++)
     {
         temp << "Opcode Content " << std::dec << (z + (structNumber * 4));
@@ -245,7 +245,7 @@ eReturnValues CExtComp::parse_Ext_Comp_Structure(uint32_t structNumber, uint32_t
 		json_set_name(opcode, temp.str().c_str());
         for (int cmddata = 1; cmddata < 6; cmddata++)
         {
-            temp.str().clear(); temp.clear();
+            temp.str("");temp.clear();
             temp << "Command Data Structure " << std::dec << cmddata;
 			JSONNODE *cmdNode = json_new(JSON_NODE);
 			json_set_name(cmdNode, temp.str().c_str());
@@ -274,31 +274,31 @@ eReturnValues CExtComp::parse_Ext_Comp_Structure(uint32_t structNumber, uint32_t
                 commandField, \
                 timeStamp);
 #endif
-            temp.str().clear(); temp.clear();
+            temp.str("");temp.clear();
             temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(deviceControl);
 			json_push_back(cmdNode, json_new_a("Device Control", temp.str().c_str()));
-            temp.str().clear(); temp.clear();
+            temp.str("");temp.clear();
             temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << featureField;
 			json_push_back(cmdNode, json_new_a("Feature Field", temp.str().c_str()));
-            temp.str().clear(); temp.clear();
+            temp.str("");temp.clear();
             temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << countField;
 			json_push_back(cmdNode, json_new_a("Count Field", temp.str().c_str()));
-            temp.str().clear(); temp.clear();
+            temp.str("");temp.clear();
             temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << lowLBA;
 			json_push_back(cmdNode, json_new_a("lowLBA", temp.str().c_str()));
-            temp.str().clear(); temp.clear();
+            temp.str("");temp.clear();
             temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << midLBA;
 			json_push_back(cmdNode, json_new_a("CmidLBA", temp.str().c_str()));
-            temp.str().clear(); temp.clear();
+            temp.str("");temp.clear();
             temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << hiLBA;
 			json_push_back(cmdNode, json_new_a("hiLBA", temp.str().c_str()));
-            temp.str().clear(); temp.clear();
+            temp.str("");temp.clear();
             temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(deviceHead);
 			json_push_back(cmdNode, json_new_a("Device Head", temp.str().c_str()));
-            temp.str().clear(); temp.clear();
+            temp.str("");temp.clear();
             temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(commandField);
 			json_push_back(cmdNode, json_new_a("Command Field", temp.str().c_str()));
-            temp.str().clear(); temp.clear();
+            temp.str("");temp.clear();
 
             json_push_back(cmdNode, json_new_i("Time Stamp", static_cast<int>(timeStamp)));
 
@@ -333,13 +333,13 @@ eReturnValues CExtComp::parse_Ext_Comp_Structure(uint32_t structNumber, uint32_t
             state, \
             lifeTime);
 #endif
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(errorField);
 		json_push_back(opcode, json_new_a("Error", temp.str().c_str()));
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << countField;
 		json_push_back(opcode, json_new_a("Count", temp.str().c_str()));
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
 
 		opensea_parser::set_json_64bit(opcode, "LBA", LBA, false);
 
@@ -347,7 +347,7 @@ eReturnValues CExtComp::parse_Ext_Comp_Structure(uint32_t structNumber, uint32_t
 
         temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(status);
 		json_push_back(opcode, json_new_a("Status", temp.str().c_str()));
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
 
 		get_State_Meaning(&myStr, state);
 		json_push_back(opcode, json_new_a("Ext Comp Error Log State", myStr.c_str()));

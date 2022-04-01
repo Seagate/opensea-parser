@@ -283,11 +283,11 @@ void CAta_Identify_log::create_WWN_Info()
     uint64_t ieeeOUI = static_cast<uint64_t>((wwn & UINT64_C(0x0FFFFFF000000000)) >> 36);
     uint64_t uniqueID = static_cast<uint64_t>(wwn & UINT64_C(0x0000000FFFFFFFFF));
 
-    temp.str().clear(); temp.clear();
+    temp.str("");temp.clear();
     temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(6) << ieeeOUI;
     m_sDriveInfo.ieeeOUI.assign(temp.str());
 
-    temp.str().clear(); temp.clear();
+    temp.str("");temp.clear();
     temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(9) << uniqueID;
     m_sDriveInfo.uniqueID.assign(temp.str());
     m_sDriveInfo.worldWideName.resize(WORLD_WIDE_NAME_LEN);
@@ -727,25 +727,25 @@ eReturnValues CAta_Identify_log::print_Identify_Information(JSONNODE *masterData
     std::ostringstream temp;
     temp << std::dec << m_sDriveInfo.maxLBA28;
     json_push_back(identifyInfo, json_new_a("MaxLBA (28bit)", temp.str().c_str()));
-    temp.str().clear(); temp.clear();
+    temp.str("");temp.clear();
     temp << std::dec << m_sDriveInfo.maxLBA48;
     json_push_back(identifyInfo, json_new_a("MaxLBA (48bit)", temp.str().c_str()));
-    temp.str().clear(); temp.clear();
+    temp.str("");temp.clear();
     // sector sizes
     JSONNODE *sectorSize = json_new(JSON_NODE);
     json_set_name(sectorSize, "Sector Sizes");
     if (m_sDriveInfo.sSizes.sectorSizeReported)
     {
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << std::dec << m_sDriveInfo.sSizes.logicalSectorSize;
         json_push_back(sectorSize, json_new_a("Logical", temp.str().c_str()));
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << std::dec << m_sDriveInfo.sSizes.sectorSizeExponent;
         json_push_back(sectorSize, json_new_a("Sector Size Exponent", temp.str().c_str()));
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << std::dec << m_sDriveInfo.sSizes.physicalSectorSize;
         json_push_back(sectorSize, json_new_a("Physical", temp.str().c_str()));
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << std::dec << m_sDriveInfo.logicalSectorAlignment;
         json_push_back(sectorSize, json_new_a("Logical Sector alignment", temp.str().c_str()));
     }
@@ -756,11 +756,11 @@ eReturnValues CAta_Identify_log::print_Identify_Information(JSONNODE *masterData
     json_push_back(identifyInfo, sectorSize);
 
     // capacity
-    temp.str().clear(); temp.clear();
+    temp.str("");temp.clear();
     temp << std::setprecision(2) << std::setfill('0') << m_sDriveInfo.sCapInfo.capUnit << " " << m_sDriveInfo.sCapInfo.capacityUnit;
     json_push_back(identifyInfo, json_new_a("Identify Log Device Capacity", temp.str().c_str()));
     // Spec 
-    temp.str().clear(); temp.clear();
+    temp.str("");temp.clear();
     switch (m_sDriveInfo.ataSpecCounter)
     {
     case 15:
@@ -814,12 +814,12 @@ eReturnValues CAta_Identify_log::print_Identify_Information(JSONNODE *masterData
     }
     json_push_back(identifyInfo, json_new_a("ATA Spec Supported", temp.str().c_str()));
     //minor spec version number
-    temp.str().clear(); temp.clear();
+    temp.str("");temp.clear();
     temp << std::dec << m_sDriveInfo.minorSpecVersionNumber;
     json_push_back(identifyInfo, json_new_a("ATA Spec Minor Version Number", temp.str().c_str()));
 
     //Transport
-    temp.str().clear(); temp.clear();
+    temp.str("");temp.clear();
     if (m_sDriveInfo.sTrans.transportReported)
     {
         switch (m_sDriveInfo.sTrans.transportType)
@@ -884,12 +884,12 @@ eReturnValues CAta_Identify_log::print_Identify_Information(JSONNODE *masterData
     }
     json_push_back(identifyInfo, json_new_a("Transport Supported", temp.str().c_str()));
 
-    temp.str().clear(); temp.clear();
+    temp.str("");temp.clear();
     temp << std::dec << m_sDriveInfo.sTrans.transportMinorVersion;
     json_push_back(identifyInfo, json_new_a("Transport Minor Version", temp.str().c_str()));
 
     // Form Factor
-    temp.str().clear(); temp.clear();
+    temp.str("");temp.clear();
     switch (m_sDriveInfo.formFactor)
     {
     case 0:
@@ -1004,7 +1004,7 @@ eReturnValues CAta_Identify_log::print_Identify_Information(JSONNODE *masterData
         JSONNODE *secruity = json_new(JSON_NODE);
         json_set_name(secruity, "Device Security");
 
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << m_sDriveInfo.SecurityID;
         json_push_back(secruity, json_new_a("Security Status Bit:", temp.str().c_str()));
 
@@ -1142,16 +1142,16 @@ eReturnValues CAta_Identify_Log_00::get_Log_Page00(JSONNODE *masterData)
         std::ostringstream temp;
         temp << "0x" << std::hex << std::setfill('0') << std::setw(16) << m_pLog0->header;
         json_push_back(pageInfo, json_new_a("Page Header", temp.str().c_str()));
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << pageNumber;
         json_push_back(pageInfo, json_new_a("Page Number", temp.str().c_str()));
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << revision;
         json_push_back(pageInfo, json_new_a("Revision Number", temp.str().c_str()));
         // get the pages supported
         for (uint8_t pageNumber_1 = 0; pageNumber_1 <= MAX_NUMBER_OF_ENTRIES; pageNumber_1++)
         {
-            temp.str().clear(); temp.clear();
+            temp.str("");temp.clear();
             temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(pageNumber_1);//cast is to make sure it doesn't try interpretting a uint8 as a char instead of a decimal - TJE
             opensea_parser::set_Json_Bool(pageInfo, temp.str().c_str(), is_Page_Supported(pageNumber_1));
         }
@@ -1245,7 +1245,7 @@ bool CAta_Identify_Log_02::get_Device_Capacity(JSONNODE *capData)
             capacity = capacity / 1024.00;
             unitCounter += 1;
         }
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         switch (unitCounter)
         {
         case 0:
@@ -1334,7 +1334,7 @@ bool CAta_Identify_Log_02::get_Sector_Size(JSONNODE *sectorData)
             opensea_parser::set_Json_Bool(sectorData, "Long Physical Sector Alignment Error reporting is enabled", false);
         }
         uint16_t sectorOffset = M_Word0(pCapacity->sectorSize);
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << sectorOffset;
         json_push_back(sectorData, json_new_a("Logical Sector Offset", temp.str().c_str()));
     }
@@ -1375,10 +1375,10 @@ eReturnValues CAta_Identify_Log_02::get_Log_Page02(uint8_t *lp2pData, JSONNODE *
         std::ostringstream temp;
         temp << "0x" << std::hex << std::setfill('0') << std::setw(16) << pCapacity->header;
         json_push_back(pageInfo, json_new_a("Page Header", temp.str().c_str()));
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << pageNumber;
         json_push_back(pageInfo, json_new_a("Page Number", temp.str().c_str()));
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << revision;
         json_push_back(pageInfo, json_new_a("Revision Number", temp.str().c_str()));
 
@@ -1772,10 +1772,10 @@ bool CAta_Identify_Log_03::get_DownLoad_MicroCode(JSONNODE *DM)
         opensea_parser::set_Json_Bool(download, "DM Offsets Deferred Supported", m_sDownloadMicrocode.dmDefferedSupported);
         opensea_parser::set_Json_Bool(download, "DM Immediate Supported", m_sDownloadMicrocode.dmImmedaiateSupported);
         opensea_parser::set_Json_Bool(download, "DM Offsets Immediate Supported", m_sDownloadMicrocode.dmOffsetsImmediateSupported);
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << m_sDownloadMicrocode.dmMaxTransferSize;
         json_push_back(download, json_new_a("Dm Maximum Transfer Size", temp.str().c_str()));
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << m_sDownloadMicrocode.dmMinTranserSize;
         json_push_back(download, json_new_a("Dm Minimum Transfer Size", temp.str().c_str()));
 
@@ -1831,7 +1831,7 @@ bool CAta_Identify_Log_03::get_Media_Rotation_Rate(JSONNODE *MRR)
         }
         else
         {
-            temp.str().clear(); temp.clear();
+            temp.str("");temp.clear();
             temp << std::dec << rate;
             json_push_back(MRR, json_new_a("Nominal Media Rotation Rate", temp.str().c_str()));
         }
@@ -1895,7 +1895,7 @@ bool CAta_Identify_Log_03::get_Form_Factor(JSONNODE *ff)
         }
         else
         {
-            temp.str().clear(); temp.clear();
+            temp.str("");temp.clear();
             temp << std::dec << static_cast<uint16_t>(form);
             json_push_back(ff, json_new_a("Nominal Form Factor", temp.str().c_str()));
         }
@@ -1933,7 +1933,7 @@ bool CAta_Identify_Log_03::get_Write_Read_Verify_Mode3(JSONNODE *mode3)
     {
         JSONNODE *wrv = json_new(JSON_NODE);
         json_set_name(wrv, "Write Read Verify sector count Mode 3");
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << std::dec << M_DoubleWord0(m_pCap->mode3);
         json_push_back(wrv, json_new_a("WRV Mode 3 count", temp.str().c_str()));
 
@@ -1972,7 +1972,7 @@ bool CAta_Identify_Log_03::get_Write_Read_Verify_Mode2(JSONNODE *mode2)
     {
         JSONNODE *wrv = json_new(JSON_NODE);
         json_set_name(wrv, "Write Read Verify sector count Mode 2");
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << std::dec << M_DoubleWord0(m_pCap->mode2);
         json_push_back(wrv, json_new_a("WRV Mode 2 count", temp.str().c_str()));
 
@@ -2087,26 +2087,26 @@ bool CAta_Identify_Log_03::get_Utilization_Unit_Time(JSONNODE *unitTime)
     std::ostringstream temp;
     temp << "0x" << std::hex << std::setfill('0') << std::setw(16) << m_pCap->utilization;
     json_push_back(unitTime, json_new_a("Utilization Per Unit Time", temp.str().c_str()));
-    temp.str().clear(); temp.clear();
+    temp.str("");temp.clear();
     temp << "0x" << std::hex << std::setfill('0') << std::setw(16) << m_pCap->utilTime2;
     json_push_back(unitTime, json_new_a("Utilization Per Unit Time2", temp.str().c_str()));
     if (check_For_Active_Status(&m_pCap->utilization))
     {
         JSONNODE *data = json_new(JSON_NODE);
         json_set_name(data, "Utilization Per Unit Time");
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << std::dec << static_cast<uint16_t>(M_Byte2(m_pCap->utilization));
         json_push_back(data, json_new_a("Utiliztion Type field", temp.str().c_str()));
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << std::dec << static_cast<uint16_t>(M_Byte1(m_pCap->utilization));
         json_push_back(data, json_new_a("Utiliztion Unites Field", temp.str().c_str()));
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << std::dec << static_cast<uint16_t>(M_Byte0(m_pCap->utilization));
         json_push_back(data, json_new_a("Utiliztion Interval Field", temp.str().c_str()));
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << std::dec << M_DoubleWord1(m_pCap->utilTime2);
         json_push_back(data, json_new_a("Utiliztion B Field", temp.str().c_str()));
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << std::dec << M_DoubleWord0(m_pCap->utilTime2);
         json_push_back(data, json_new_a("Utiliztion A Field", temp.str().c_str()));
 
@@ -2358,11 +2358,11 @@ bool CAta_Identify_Log_03::get_Background_Operations_Capabilities(JSONNODE *bgOp
         {
             opensea_parser::set_Json_Bool(data, "ABO IR Mode Supported", false);
         }
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << std::dec << M_WordsTo4ByteValue(M_Word2(m_pCap->backgroundOpsCapabilities), M_Word1(m_pCap->backgroundOpsCapabilities));
         json_push_back(data, json_new_a("ABO Minimum Fraction field", temp.str().c_str()));
 
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << std::dec << M_Word0(m_pCap->backgroundOpsCapabilities);
         json_push_back(data, json_new_a("ABO Minimum Supported Timelimit field", temp.str().c_str()));
         json_push_back(bgOperation, data);
@@ -2400,10 +2400,10 @@ bool CAta_Identify_Log_03::get_Background_Operations_Recommendations(JSONNODE *r
     {
         JSONNODE *data = json_new(JSON_NODE);
         json_set_name(data, "Advanced Background Operations Recommendations");
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << std::dec << M_Word1(m_pCap->backgroundOpsRecommendations);
         json_push_back(data, json_new_a("Device Maintenance Polling Time field", temp.str().c_str()));
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << std::dec << M_Word0(m_pCap->backgroundOpsRecommendations);
         json_push_back(data, json_new_a("ABO Recommended Abo Start Interval field", temp.str().c_str()));
         json_push_back(recommendations, data);
@@ -2441,7 +2441,7 @@ bool CAta_Identify_Log_03::get_Queue_Depth(JSONNODE *qd)
     {
         JSONNODE *data = json_new(JSON_NODE);
         json_set_name(data, "Queue Depth");
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << std::dec << M_Byte0(m_pCap->queueDepth);
         json_push_back(data, json_new_a("Queue Depth", temp.str().c_str()));
 
@@ -2646,7 +2646,7 @@ bool CAta_Identify_Log_03::get_Depopulation_Execution_Time(JSONNODE *depop)
     {
         JSONNODE *data = json_new(JSON_NODE);
         json_set_name(data, "Depopulation Execution Time");
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << "0x" << std::hex << std::setfill('0') << std::setw(16) << (m_pCap->depopExTime & UINT64_C(0x00FFFFFFFFFFFFFF));
         json_push_back(depop, json_new_a("Depopulation Time", temp.str().c_str()));
         json_push_back(depop, data);
@@ -2692,10 +2692,10 @@ eReturnValues CAta_Identify_Log_03::get_Log_Page03(uint8_t *lp3pData, JSONNODE *
         temp << "0x" << std::hex << std::setfill('0') << std::setw(16) << m_pCap->header;
         json_push_back(pageInfo, json_new_a("Page Header", temp.str().c_str()));
 
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << pageNumber;
         json_push_back(pageInfo, json_new_a("Page Number", temp.str().c_str()));
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << revision;
         json_push_back(pageInfo, json_new_a("Revision Number", temp.str().c_str()));
         get_Supported_Capabilities(pageInfo);
@@ -2960,14 +2960,14 @@ bool CAta_Identify_Log_04::get_Feature_Settings(JSONNODE *featureData)
         JSONNODE *featSettings = json_new(JSON_NODE);
         json_set_name(featSettings, "Feature Settings breakdown");
 
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << m_FS.wrvMode;
         json_push_back(featSettings, json_new_a("Write Read Verify", temp.str().c_str()));
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << m_FS.apmLevel;
         json_push_back(featSettings, json_new_a("APM Level", temp.str().c_str()));
 
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << m_FS.powerScource;
         if (m_FS.powerScource & BIT1)
         {
@@ -3019,7 +3019,7 @@ bool CAta_Identify_Log_04::get_DMS_Times(JSONNODE *dmaData)
     json_push_back(dmaData, json_new_a("DMA Host Interface Sector Times", temp.str().c_str()));
     if (set_Feature_Settings(&pLog->DMAHostInterfaceSectorTimes))
     {
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << M_Word0(pLog->DMAHostInterfaceSectorTimes);
         json_push_back(dmaData, json_new_a("DMA Sector Time ", temp.str().c_str()));
     }
@@ -3054,7 +3054,7 @@ bool CAta_Identify_Log_04::get_PIO_Times(JSONNODE *pioData)
     json_push_back(pioData, json_new_a("PIO Host Interface Sector Times", temp.str().c_str()));
     if (set_Feature_Settings(&pLog->PioHostInterfaceSectorTImes))
     {
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << M_Word0(pLog->PioHostInterfaceSectorTImes);
         json_push_back(pioData, json_new_a("PIO Sector Time ", temp.str().c_str()));
     }
@@ -3124,7 +3124,7 @@ bool CAta_Identify_Log_04::get_Streaming_Access_Latency(JSONNODE *accessData)
     json_push_back(accessData, json_new_a("Streaming Access Latency", temp.str().c_str()));
     if (set_Feature_Settings(&pLog->streamingAccessLatency))
     {
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << M_Word0(pLog->streamingAccessLatency);
         json_push_back(accessData, json_new_a("Steaming Access Latency data", temp.str().c_str()));
     }
@@ -3161,7 +3161,7 @@ bool CAta_Identify_Log_04::get_Streaming_Performance_Granularity(JSONNODE *perfo
 
     if (set_Feature_Settings(&pLog->streamingPerformanceGranularity))
     {
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << "0x" << std::hex << std::setfill('0') << std::setw(8) << M_DoubleWord0(pLog->streamingPerformanceGranularity);
         json_push_back(performanceData, json_new_a("Steaming Granularity", temp.str().c_str()));
     }
@@ -3234,13 +3234,13 @@ bool CAta_Identify_Log_04::get_Device_Maintenance_Schedule(JSONNODE *maintenaceD
     json_push_back(maintenaceData, json_new_a("Device Maintenace Schedule", temp.str().c_str()));
     if (set_Feature_Settings(&pLog->deviceMaintenaceSchedule))
     {
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << M_Word0(pLog->deviceMaintenaceSchedule);
         json_push_back(maintenaceData, json_new_a("Minimum Inactive Time", temp.str().c_str()));
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << M_Word1(pLog->deviceMaintenaceSchedule);
         json_push_back(maintenaceData, json_new_a("Time to Preformance Degradation", temp.str().c_str()));
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << M_Word2(pLog->deviceMaintenaceSchedule);
         json_push_back(maintenaceData, json_new_a("Time Scheduled for Device Maintenance", temp.str().c_str()));
 
@@ -3340,10 +3340,10 @@ eReturnValues CAta_Identify_Log_04::get_Log_Page04(uint8_t *lp4pData, JSONNODE *
         std::ostringstream temp;
         temp << "0x" << std::hex << std::setfill('0') << std::setw(16) << pLog->header;
         json_push_back(pageInfo, json_new_a("Page Header", temp.str().c_str()));
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << pageNumber;
         json_push_back(pageInfo, json_new_a("Page Number", temp.str().c_str()));
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << revision;
         json_push_back(pageInfo, json_new_a("Revision Number", temp.str().c_str()));
 
@@ -3631,10 +3631,10 @@ eReturnValues CAta_Identify_Log_05::get_Log_Page05(uint8_t *lp5pData, JSONNODE *
         std::ostringstream temp;
         temp << "0x" << std::hex << std::setfill('0') << std::setw(16) << m_pLog->header;
         json_push_back(pageInfo, json_new_a("Page Header", temp.str().c_str()));
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << pageNumber;
         json_push_back(pageInfo, json_new_a("Page Number", temp.str().c_str()));
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << revision;
         json_push_back(pageInfo, json_new_a("Revision Number", temp.str().c_str()));
 
@@ -3828,7 +3828,7 @@ bool CAta_Identify_Log_06::get_Master_Password_Identifier(JSONNODE *mpIdent)
     if (check_For_Active_Status(&m_pLog->masterPassword))
     {
         uint16_t master = M_Word0(m_pLog->masterPassword);
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(master);
         json_push_back(mpIdent, json_new_a("Master Password Identifier field", temp.str().c_str()));
         if (master & BIT0)
@@ -3875,7 +3875,7 @@ bool CAta_Identify_Log_06::get_Time_for_Enhanced_Erase(JSONNODE *enhanced)
         {
             opensea_parser::set_Json_Bool(enhanced, "Enhanced Security Erased Time format bit", false);
         }
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << std::dec << (static_cast<uint16_t>(M_Word0(m_pLog->timeEnhancedErase)) & 0x0FFF) * 2;
         json_push_back(enhanced, json_new_a("Time for Enhanced Erase in Minutes", temp.str().c_str()));
     }
@@ -3914,7 +3914,7 @@ bool CAta_Identify_Log_06::get_Time_for_Normal_Erase(JSONNODE *normal)
         {
             opensea_parser::set_Json_Bool(normal, "Normal Security Time format bit", false);
         }
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << std::dec << (static_cast<uint16_t>(M_Word0(m_pLog->timeNormalErase)) & 0x0FFF) * 2;
         json_push_back(normal, json_new_a("Time for Normal Erase in Minutes", temp.str().c_str()));
     }
@@ -4085,10 +4085,10 @@ eReturnValues CAta_Identify_Log_06::get_Log_Page06(uint8_t *lp6pData, JSONNODE *
         temp << "0x" << std::hex << std::setfill('0') << std::setw(16) << m_pLog->header;
         json_push_back(pageInfo, json_new_a("Page Header", temp.str().c_str()));
 
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << pageNumber;
         json_push_back(pageInfo, json_new_a("Page Number", temp.str().c_str()));
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << revision;
         json_push_back(pageInfo, json_new_a("Revision Number", temp.str().c_str()));
         get_Master_Password_Identifier(pageInfo);
@@ -4191,10 +4191,10 @@ eReturnValues CAta_Identify_Log_07::get_Log_Page07(uint8_t *lp7pData, JSONNODE *
         std::ostringstream temp;
         temp << "0x" << std::hex << std::setfill('0') << std::setw(16) << m_pLog->header;
         json_push_back(pageInfo, json_new_a("Page Header", temp.str().c_str()));
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << pageNumber;
         json_push_back(pageInfo, json_new_a("Page Number", temp.str().c_str()));
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << revision;
         json_push_back(pageInfo, json_new_a("Revision Number", temp.str().c_str()));
 
@@ -4668,7 +4668,7 @@ void CAta_Identify_Log_08::get_Device_Sleep_Timing_Variables(JSONNODE *sleep)
         temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << M_GETBITRANGE(m_pLog->deviceSleepTiming, 15, 8);
         json_push_back(sleep, json_new_a("DEVSLEEP Exit Timeout Field (DETO)", temp.str().c_str()));
 
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << "0x" << std::hex << std::setfill('0') << std::setw(16) << M_GETBITRANGE(m_pLog->deviceSleepTiming, 4, 0);
         json_push_back(sleep, json_new_a("Minimum DEVSLP Assertion Time Field (MDAT)", temp.str().c_str()));
 
@@ -4715,10 +4715,10 @@ eReturnValues CAta_Identify_Log_08::get_Log_Page08(uint8_t *lp8pData, JSONNODE *
         std::ostringstream temp;
         temp << "0x" << std::hex << std::setfill('0') << std::setw(16) << m_pLog->header;
         json_push_back(pageInfo, json_new_a("Page Header", temp.str().c_str()));
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << pageNumber;
         json_push_back(pageInfo, json_new_a("Page Number", temp.str().c_str()));
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << revision;
         json_push_back(pageInfo, json_new_a("Revision Number", temp.str().c_str()));
 

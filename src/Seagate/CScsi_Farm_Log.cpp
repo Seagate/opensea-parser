@@ -1785,28 +1785,28 @@ eReturnValues CSCSI_Farm_Log::print_Header(JSONNODE *masterData)
         json_push_back(label, json_new_a("metric_source", temp.str().c_str()));
         json_push_back(label, json_new_a("location", "farm header"));
 
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << "0x" << std::hex << check_Status_Strip_Status(vFarmFrame[page].farmHeader.farmHeader.signature);
         json_push_back(label, json_new_a("log_signature", temp.str().c_str()));
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << std::dec << M_DoubleWord0(check_Status_Strip_Status(vFarmFrame[page].farmHeader.farmHeader.majorRev));
         json_push_back(label, json_new_a("major_revision", temp.str().c_str()));
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << std::dec << M_DoubleWord0(check_Status_Strip_Status(vFarmFrame[page].farmHeader.farmHeader.minorRev));
         json_push_back(label, json_new_a("minor_revision", temp.str().c_str()));
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << std::dec << M_DoubleWord0(check_Status_Strip_Status(vFarmFrame[page].farmHeader.farmHeader.pagesSupported));
         json_push_back(label, json_new_a("pages_supported", temp.str().c_str()));
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << std::dec << M_DoubleWord0(check_Status_Strip_Status(vFarmFrame[page].farmHeader.farmHeader.headsSupported));
         json_push_back(label, json_new_a("heads_supported", temp.str().c_str()));
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << std::dec << M_DoubleWord0(check_Status_Strip_Status(vFarmFrame[page].farmHeader.farmHeader.logSize)) << " bytes";
         json_push_back(label, json_new_a("log_size", temp.str().c_str()));
-        //temp.str().clear(); temp.clear();
+        //temp.str("");temp.clear();
         //temp << std::dec << M_DoubleWord0(check_Status_Strip_Status(vFarmFrame[page].farmHeader.farmHeader.pageSize)) << " bytes";
         //json_push_back(label, json_new_a("page_size", temp.str().c_str()));
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << std::dec << M_DoubleWord0(check_Status_Strip_Status(vFarmFrame[page].farmHeader.farmHeader.reasonForFrameCpature));
         json_push_back(label, json_new_a("reason_for_frame_capture", temp.str().c_str()));
         std::string reason;
@@ -1922,52 +1922,52 @@ eReturnValues CSCSI_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint
         }
 
         json_push_back(label, json_new_a("device_interface", vFarmFrame[page].identStringInfo.deviceInterface.c_str()));
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << std::dec << (vFarmFrame[page].driveInfo.deviceCapacity & UINT64_C(0x00FFFFFFFFFFFFFF)) << " sectors";
         json_push_back(label, json_new_a("device_capacity", temp.str().c_str()));
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << std::dec << (vFarmFrame[page].driveInfo.psecSize & UINT64_C(0x00FFFFFFFFFFFFFF)) << " bytes";
         json_push_back(label, json_new_a("physical_sector_size", temp.str().c_str()));
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << std::dec << (vFarmFrame[page].driveInfo.lsecSize & UINT64_C(0x00FFFFFFFFFFFFFF)) << " bytes";
         json_push_back(label, json_new_a("logical_sector_size", temp.str().c_str()));
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << std::dec << (vFarmFrame[page].driveInfo.deviceBufferSize & UINT64_C(0x00FFFFFFFFFFFFFF)) << " bytes";
         json_push_back(label, json_new_a("device_buffer_size", temp.str().c_str()));								//!< Device Buffer Size in Bytes
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << std::dec << (vFarmFrame[page].driveInfo.factor & UINT64_C(0x00FFFFFFFFFFFFFF));
         json_push_back(label, json_new_a("device_form_factor", temp.str().c_str()));										//!< Device Form Factor (ID Word 168)
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << std::dec << (vFarmFrame[page].driveInfo.rotationRate & UINT64_C(0x00FFFFFFFFFFFFFF)) << " rpm";
         json_push_back(label, json_new_a("rotation_rate", temp.str().c_str()));										//!< Rotational Rate of Device (ID Word 217)
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << std::dec << (vFarmFrame[page].driveInfo.poh & UINT64_C(0x00FFFFFFFFFFFFFF)) << " hours";
         json_push_back(label, json_new_a("power_on", temp.str().c_str()));                                                //!< Power-on Hour
         if (m_MajorRev < MAJORVERSION4)
         {
-            temp.str().clear(); temp.clear();
+            temp.str("");temp.clear();
             temp << std::dec << (vFarmFrame[page].driveInfo.headLoadEvents & UINT64_C(0x00FFFFFFFFFFFFFF));
             json_push_back(label, json_new_a("head_load_events", temp.str().c_str()));									//!< Head Load Events
         }
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << std::dec << (vFarmFrame[page].driveInfo.powerCycleCount & UINT64_C(0x00FFFFFFFFFFFFFF)) << " count";
         json_push_back(label, json_new_a("power_cycle", temp.str().c_str()));								//!< Power Cycle Count
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << std::dec << (vFarmFrame[page].driveInfo.resetCount & UINT64_C(0x00FFFFFFFFFFFFFF)) << " count";
         json_push_back(label, json_new_a("hardware_reset", temp.str().c_str()));									//!< Hardware Reset Count
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << std::dec << (vFarmFrame[page].driveInfo.NVC_StatusATPowerOn & UINT64_C(0x00FFFFFFFFFFFFFF));
         json_push_back(label, json_new_a("nvc_status_@_power_on", temp.str().c_str()));
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << ((vFarmFrame[page].driveInfo.timeAvailable & UINT64_C(0x00FFFFFFFFFFFFFF)) * .01) << " milliseconds";
         json_push_back(label, json_new_a("nvc_time_available_to_save", temp.str().c_str()));
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << std::dec << (vFarmFrame[page].driveInfo.firstTimeStamp & UINT64_C(0x00FFFFFFFFFFFFFF)) << " milliseconds";
         json_push_back(label, json_new_a("timestamp_of_first_smart_summary_frame", temp.str().c_str()));		//!< Timestamp of first SMART Summary Frame in Power-On Hours Milliseconds
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << std::dec << (vFarmFrame[page].driveInfo.lastTimeStamp & UINT64_C(0x00FFFFFFFFFFFFFF)) << " milliseconds";
         json_push_back(label, json_new_a("timeStamp_of_last_smart_summary_frame", temp.str().c_str()));			//!< Timestamp of latest SMART Summary Frame in Power-On Hours Milliseconds
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << std::dec << (vFarmFrame[page].driveInfo.heads & UINT64_C(0x00FFFFFFFFFFFFFF));
         json_push_back(label, json_new_a("number_of_heads", temp.str().c_str()));
         if (check_For_Active_Status(&vFarmFrame[page].driveInfo.dateOfAssembly) || \
@@ -1999,7 +1999,7 @@ eReturnValues CSCSI_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint
         }
         else
         {
-            temp.str().clear(); temp.clear();
+            temp.str("");temp.clear();
             temp << "Drive Information From Farm Log copy " << std::dec << page;
             header.assign(temp.str());
         }
@@ -2016,7 +2016,7 @@ eReturnValues CSCSI_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint
         json_push_back(pageInfo, json_new_a("Model Number", vFarmFrame[page].identStringInfo.modelNumber.c_str()));
 
         json_push_back(pageInfo, json_new_a("Device Interface", vFarmFrame[page].identStringInfo.deviceInterface.c_str()));
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << std::dec << (vFarmFrame[page].driveInfo.deviceCapacity & UINT64_C(0x00FFFFFFFFFFFFFF));
         set_json_string_With_Status(pageInfo, "Device Capacity in Sectors", temp.str(), vFarmFrame[page].driveInfo.deviceCapacity, m_showStatusBits);
         set_json_64_bit_With_Status(pageInfo, "Physical Sector size", vFarmFrame[page].driveInfo.psecSize, false, m_showStatusBits);									//!< Physical Sector Size in Bytes
@@ -2109,19 +2109,19 @@ eReturnValues CSCSI_Farm_Log::print_General_Drive_Information_Continued(JSONNODE
         {
             set_Json_Bool(label, "has_drive_been_depopped", false);
         }
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << std::dec << M_DoubleWord0(check_Status_Strip_Status(vFarmFrame[page].gDPage06.maxNumAvaliableSectors)) << " sectors";
         json_push_back(label, json_new_a("max number of available sectors for reassignment", temp.str().c_str()));          //!< Max Number of Available Sectors for Reassignment � Value in disc sectors(started in 3.3 )
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << (static_cast<float>(M_Word0(vFarmFrame[page].gDPage06.timeToReady)) * .001F) << " seconds";
         json_push_back(label, json_new_a("time to ready of the last power cycle", temp.str().c_str()));			//!< time to ready of the last power cycle
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << (static_cast<float>(M_Word0(vFarmFrame[page].gDPage06.holdTime)) * .001F) << " seconds";
         json_push_back(label, json_new_a("time drive is held in staggered spin", temp.str().c_str()));                //!< time drive is held in staggered spin during the last power on sequence
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << std::setprecision(3) << (static_cast<float>(M_Word0(vFarmFrame[page].gDPage06.servoSpinUpTime)) * .001F) << " seconds";
         json_push_back(label, json_new_a("last servo spin up time", temp.str().c_str()));			//!< time to ready of the last power cycle
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << "scsi-log-page:0x" << std::hex << FARMLOGPAGE << "," << std::hex << FARMSUBPAGE << ":0x" << std::hex << GENERAL_DRIVE_INFORMATION_06;
         json_push_back(label, json_new_a("metric_source", temp.str().c_str()));
         json_push_back(masterData, label);
@@ -2165,13 +2165,13 @@ eReturnValues CSCSI_Farm_Log::print_General_Drive_Information_Continued(JSONNODE
         }
 
         set_json_64_bit_With_Status(pageInfo, "Max Number of Available Sectors for Reassignment", vFarmFrame[page].gDPage06.maxNumAvaliableSectors, false, m_showStatusBits);          //!< Max Number of Available Sectors for Reassignment � Value in disc sectors(started in 3.3 )
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << std::setprecision(3) << (static_cast<float>(M_Word0(vFarmFrame[page].gDPage06.timeToReady)) * .001F);
         set_json_string_With_Status(pageInfo, "Time to ready of the last power cycle (sec)", temp.str().c_str(), vFarmFrame[page].gDPage06.timeToReady, m_showStatusBits);			//!< time to ready of the last power cycle
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << std::setprecision(3) << (static_cast<float>(M_Word0(vFarmFrame[page].gDPage06.holdTime)) * .001F);
         set_json_string_With_Status(pageInfo, "Time drive is held in staggered spin (sec)", temp.str().c_str(), vFarmFrame[page].gDPage06.holdTime, m_showStatusBits);                //!< time drive is held in staggered spin during the last power on sequence
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << std::setprecision(3) << (static_cast<float>(M_Word0(vFarmFrame[page].gDPage06.servoSpinUpTime)) * .001F);
         set_json_string_With_Status(pageInfo, "Last Servo Spin up Time (sec)", temp.str().c_str(), vFarmFrame[page].gDPage06.servoSpinUpTime, m_showStatusBits);			//!< time to ready of the last power cycle
 
@@ -2299,10 +2299,10 @@ eReturnValues CSCSI_Farm_Log::print_WorkLoad(JSONNODE *masterData, uint32_t page
         set_json_64_bit_With_Status(pageInfo, "Total Number of Random Read Cmds", vFarmFrame[page].workLoadPage.workLoad.totalRandomReads, false, m_showStatusBits);			//!< Total Number of Random Read Commands
         set_json_64_bit_With_Status(pageInfo, "Total Number of Random Write Cmds", vFarmFrame[page].workLoadPage.workLoad.totalRandomWrites, false, m_showStatusBits);		//!< Total Number of Random Write Commands
         set_json_64_bit_With_Status(pageInfo, "Total Number of Other Commands", vFarmFrame[page].workLoadPage.workLoad.totalNumberofOtherCMDS, false, m_showStatusBits);		//!< Total Number Of Other Commands
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << std::dec << (vFarmFrame[page].workLoadPage.workLoad.logicalSecWritten & UINT64_C(0x00FFFFFFFFFFFFFF));
         set_json_string_With_Status(pageInfo, "Logical Sectors Written", temp.str().c_str(), vFarmFrame[page].workLoadPage.workLoad.logicalSecWritten, m_showStatusBits);					//!< Logical Sectors Written
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << std::dec << (vFarmFrame[page].workLoadPage.workLoad.logicalSecRead & UINT64_C(0x00FFFFFFFFFFFFFF));
         set_json_string_With_Status(pageInfo, "Logical Sectors Read", temp.str().c_str(), vFarmFrame[page].workLoadPage.workLoad.logicalSecRead, m_showStatusBits);						//!< Logical Sectors Read
         // found a log where the length of the workload log does not match the spec. Need to check for the 0x50 length
@@ -2634,49 +2634,49 @@ eReturnValues CSCSI_Farm_Log::print_Enviroment_Information(JSONNODE *masterData,
             header.assign(temp.str());
         }
         json_set_name(pageInfo, header.c_str());
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << std::setprecision(2) << (static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.curentTemp)) * .10));							//!< Current Temperature in Celsius
         set_json_string_With_Status(pageInfo, "Current Temperature (Celsius)", temp.str().c_str(), vFarmFrame[page].environmentPage.curentTemp, m_showStatusBits);
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << std::setprecision(2) << (static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.highestTemp)) * .10));						//!< Highest Average Long Term Temperature
         set_json_string_With_Status(pageInfo, "Highest Temperature", temp.str().c_str(), vFarmFrame[page].environmentPage.highestTemp, m_showStatusBits);
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << std::setprecision(2) << (static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.lowestTemp)) * .10));							//!< Lowest Average Long Term Temperature
         set_json_string_With_Status(pageInfo, "Lowest Temperature", temp.str().c_str(), vFarmFrame[page].environmentPage.lowestTemp, m_showStatusBits);
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << std::setprecision(2) << (static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.maxTemp)) * 1.00));							//!< Specified Max Operating Temperature
         set_json_string_With_Status(pageInfo, "Specified Max Operating Temperature", temp.str().c_str(), vFarmFrame[page].environmentPage.maxTemp, m_showStatusBits);
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << std::setprecision(2) << (static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.minTemp)) * 1.00));							//!< Specified Min Operating Temperature
         set_json_string_With_Status(pageInfo, "Specified Min Operating Temperature", temp.str().c_str(), vFarmFrame[page].environmentPage.minTemp, m_showStatusBits);
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << std::setprecision(2) << (static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.humidity)) * 0.1));							//!< Current Relative Humidity (in units of .1%)
         set_json_string_With_Status(pageInfo, "Current Relative Humidity", temp.str().c_str(), vFarmFrame[page].environmentPage.humidity, m_showStatusBits);
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << std::setprecision(2) << (static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.humidityRatio)) / 8.0));						//!< Humidity Mixed Ratio multiplied by 8 (divide by 8 to get actual value)
         set_json_string_With_Status(pageInfo, "Humidity Mixed Ratio", temp.str().c_str(), vFarmFrame[page].environmentPage.humidityRatio, m_showStatusBits);
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << std::dec << M_Word0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.currentMotorPower));
         set_json_string_With_Status(pageInfo, "Current Motor Power", temp.str().c_str(), vFarmFrame[page].environmentPage.currentMotorPower, m_showStatusBits);					    //!< Current Motor Power, value from most recent SMART Summary Frame6
 
         if (m_MajorRev >= 4)
         {
-            temp.str().clear(); temp.clear();
+            temp.str("");temp.clear();
             temp << std::dec << static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.average12v)) / 1000) << "." << std::dec << std::setfill('0') << std::setw(3) << static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.average12v)) % 1000);
             set_json_string_With_Status(pageInfo, "12V Power Average", temp.str().c_str(), vFarmFrame[page].environmentPage.average12v, m_showStatusBits);
-            temp.str().clear(); temp.clear();
+            temp.str("");temp.clear();
             temp << std::dec << static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.min12v)) / 1000) << "." <<std::dec << std::setfill('0') << std::setw(3) << static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.min12v)) % 1000);
             set_json_string_With_Status(pageInfo, "12V Power Minimum", temp.str().c_str(), vFarmFrame[page].environmentPage.min12v, m_showStatusBits);
-            temp.str().clear(); temp.clear();
+            temp.str("");temp.clear();
             temp << std::dec << static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.max12v)) / 1000) << "." << std::dec << std::setfill('0') << std::setw(3) << static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.max12v)) % 1000);
             set_json_string_With_Status(pageInfo, "12V Power Maximum", temp.str().c_str(), vFarmFrame[page].environmentPage.max12v, m_showStatusBits);
-            temp.str().clear(); temp.clear();
+            temp.str("");temp.clear();
             temp << std::dec << static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.average5v)) / 1000) << "." << std::dec << std::setfill('0') << std::setw(3) << static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.average5v)) % 1000);
             set_json_string_With_Status(pageInfo, "5V Power Average", temp.str().c_str(), vFarmFrame[page].environmentPage.average5v, m_showStatusBits);
-            temp.str().clear(); temp.clear();
+            temp.str("");temp.clear();
             temp << std::dec << static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.min5v)) / 1000) << "." << std::dec << std::setfill('0') << std::setw(3) << static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.min5v)) % 1000);
             set_json_string_With_Status(pageInfo, "5V Power Minimum", temp.str().c_str(), vFarmFrame[page].environmentPage.min5v, m_showStatusBits);
-            temp.str().clear(); temp.clear();
+            temp.str("");temp.clear();
             temp << std::dec << static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.max5v)) / 1000) << "." << std::dec << std::setfill('0') << std::setw(3) << static_cast<uint16_t>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.max5v)) % 1000);
             set_json_string_With_Status(pageInfo, "5V Power Maximum", temp.str().c_str(), vFarmFrame[page].environmentPage.max5v, m_showStatusBits);
         }
@@ -2769,22 +2769,22 @@ eReturnValues CSCSI_Farm_Log::print_Enviroment_Statistics_Page_07(JSONNODE *mast
         }
         json_set_name(pageInfo, temp.str().c_str());
 
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << std::dec << static_cast<uint16_t>(M_Word0(check_Status_Strip_Status(vFarmFrame[page].envStatPage07.average12v)) / 1000) << "." << std::dec << std::setfill('0') << std::setw(3) << static_cast<uint16_t>(M_Word0(check_Status_Strip_Status(vFarmFrame[page].envStatPage07.average12v)) % 1000);
         set_json_string_With_Status(pageInfo, "Current 12 volts", temp.str().c_str(), vFarmFrame[page].envStatPage07.average12v, m_showStatusBits);
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << std::dec << static_cast<uint16_t>(M_Word0(check_Status_Strip_Status(vFarmFrame[page].envStatPage07.min12v)) / 1000) << "." << std::dec << std::setfill('0') << std::setw(3) << static_cast<uint16_t>(M_Word0(check_Status_Strip_Status(vFarmFrame[page].envStatPage07.min12v)) % 1000);
         set_json_string_With_Status(pageInfo, "Minimum 12 volts", temp.str().c_str(), vFarmFrame[page].envStatPage07.min12v, m_showStatusBits);
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << std::dec << static_cast<uint16_t>(M_Word0(check_Status_Strip_Status(vFarmFrame[page].envStatPage07.max12v)) / 1000) << "." << std::dec << std::setfill('0') << std::setw(3) << static_cast<uint16_t>(M_Word0(check_Status_Strip_Status(vFarmFrame[page].envStatPage07.max12v)) % 1000);
         set_json_string_With_Status(pageInfo, "Maximum 12 volts", temp.str().c_str(), vFarmFrame[page].envStatPage07.max12v, m_showStatusBits);
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << std::dec << (M_Word0(check_Status_Strip_Status(vFarmFrame[page].envStatPage07.average5v)) / 1000) << "." << std::dec << std::setfill('0') << std::setw(3) << static_cast<uint16_t>(M_Word0(check_Status_Strip_Status(vFarmFrame[page].envStatPage07.average5v)) % 1000);
         set_json_string_With_Status(pageInfo, "Current 5 volts", temp.str().c_str(), vFarmFrame[page].envStatPage07.average5v, m_showStatusBits);
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << std::dec << (M_Word0(check_Status_Strip_Status(vFarmFrame[page].envStatPage07.min5v)) / 1000) << "." << std::dec << std::setfill('0') << std::setw(3) << M_Word0(check_Status_Strip_Status(vFarmFrame[page].envStatPage07.min5v)) % 1000;
         set_json_string_With_Status(pageInfo, "Minimum 5 volts", temp.str().c_str(), vFarmFrame[page].envStatPage07.min5v, m_showStatusBits);
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << std::dec << (M_Word0(check_Status_Strip_Status(vFarmFrame[page].envStatPage07.max5v)) / 1000) << "." << std::dec << std::setfill('0') << std::setw(3) << M_Word0(check_Status_Strip_Status(vFarmFrame[page].envStatPage07.max5v)) % 1000;
         set_json_string_With_Status(pageInfo, "Maximum 5 volts", temp.str().c_str(), vFarmFrame[page].envStatPage07.max5v, m_showStatusBits);
 
@@ -4268,7 +4268,7 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Information(JSONNODE *LUNData, 
         set_json_64_bit_With_Status(pageInfo, "Number of Valid Parity Sectors", pLUN->paritySectors, false, m_showStatusBits);                              //!< Number of Valid Parity Sectors  
         set_json_64_bit_With_Status(pageInfo, "RV Absulute Mean", pLUN->RVabsolue, false, m_showStatusBits);									            //!< RV Absulute Mean
         set_json_64_bit_With_Status(pageInfo, "Max RV Absolute Mean", pLUN->maxRVabsolue, false, m_showStatusBits);							                //!< Max RV absulute Mean 
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << std::setprecision(3) << (static_cast<double>(M_DoubleWord0(check_Status_Strip_Status(pLUN->idleTime)) * 1.0) / 3600);
         set_json_string_With_Status(pageInfo, "Idle Time (hours)", temp.str().c_str(), pLUN->idleTime, m_showStatusBits);                                 //!< idle Time value from the most recent SMART Summary Frame
         set_json_64_bit_With_Status(pageInfo, "Number of LBAs Corrected by Parity Sector", pLUN->lbasCorrectedByParity, false, m_showStatusBits);           //!< Number of LBAs Corrected by Parity Sector
@@ -4355,7 +4355,7 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_FLED_Info(JSONNODE *LUNFLED, ui
             temp << "scsi-log-page:0x" << std::hex << FARMLOGPAGE << "," << std::hex << FARMSUBPAGE << ":0x" << std::hex << actNum;
             json_push_back(label, json_new_a("metric_source", temp.str().c_str()));
             json_push_back(label, json_new_a("stat_type", "flash LED event"));
-            temp.str().clear(); temp.clear();
+            temp.str("");temp.clear();
             temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << M_Word2(check_Status_Strip_Status(pFLED->flashLEDArray[i]));
             json_push_back(label, json_new_a("flash_LED_code", temp.str().c_str()));
             std::string meaning;
@@ -4403,26 +4403,31 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_FLED_Info(JSONNODE *LUNFLED, ui
         for (i = 0; i < FLASH_EVENTS; i++)
         {
             JSONNODE* eventInfo = json_new(JSON_NODE);
-            std::ostringstream time;
-            temp.str().clear(); temp.clear();
-            time.clear();
+            temp.str("");
+            temp.clear();
             temp << "Event " << std::dec << i;
             json_set_name(eventInfo, temp.str().c_str());
 
             set_json_64_bit_With_Status(eventInfo, "Address of Event", pFLED->flashLEDArray[i], true, m_showStatusBits);	           //!< Info on the last 8 Flash LED (assert) Events, wrapping array
+            temp.str().clear();
+            temp.clear();
             temp << "0x" << std::hex << std::setfill('0') << std::setw(4) <<  M_Word2(check_Status_Strip_Status(pFLED->flashLEDArray[i]));
             json_push_back(eventInfo, json_new_a("Flash LED Code", temp.str().c_str()));
             std::string meaning;
             get_Assert_Code_Meaning(meaning, M_Word2(check_Status_Strip_Status(pFLED->flashLEDArray[i])));
             json_push_back(eventInfo, json_new_a("Flash LED Code Meaning", meaning.c_str()));
-            temp.str().clear(); temp.clear();
+            temp.str("");
+            temp.clear();
             temp << "0x" << std::hex << std::setfill('0') << std::setw(8) << M_DoubleWord0(check_Status_Strip_Status(pFLED->flashLEDArray[i]));
             json_push_back(eventInfo, json_new_a("Flash LED Address", temp.str().c_str()));
-            temp.str().clear(); temp.clear();
+            temp.str("");
+            temp.clear();
             temp << "TimeStamp of Event(hours) " << std::dec << i;
+            std::ostringstream time;
             time << std::setprecision(3) << (static_cast<double>(M_DoubleWord0(check_Status_Strip_Status(pFLED->timestampForLED[i])) / 3600000) * .001);
             set_json_string_With_Status(eventInfo, temp.str(), time.str(), pFLED->timestampForLED[i], m_showStatusBits);//!< Universal Timestamp (us) of last 8 Flash LED (assert) Events, wrapping array
-            temp.str().clear(); temp.clear();
+            temp.str("");
+            temp.clear();
             temp << "Power Cycle Event " << std::dec << i;
             set_json_64_bit_With_Status(eventInfo, temp.str(), pFLED->powerCycleOfLED[i], false, m_showStatusBits);	         //!< Power Cycle of the last 8 Flash LED (assert) Events, wrapping array
 

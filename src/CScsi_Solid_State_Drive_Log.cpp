@@ -166,10 +166,10 @@ void CScsiSolidStateDriveLog::process_Solid_State_Drive_Data(JSONNODE *ssdData)
 
     if (!descriptionFound)
     {
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_SSDParam->paramControlByte);
         json_push_back(ssdInfo, json_new_a("Solid State Drive Param Control Byte ", temp.str().c_str()));
-        temp.str().clear(); temp.clear();
+        temp.str("");temp.clear();
         temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_SSDParam->paramLength);
         json_push_back(ssdInfo, json_new_a("Solid State Drive Param Length ", temp.str().c_str()));
     }
@@ -186,7 +186,7 @@ void CScsiSolidStateDriveLog::process_Solid_State_Drive_Data(JSONNODE *ssdData)
         }
         else
         {
-            temp.str().clear(); temp.clear();
+            temp.str("");temp.clear();
             temp << std::dec << m_SSDValue;
             json_push_back(ssdInfo, json_new_a("Solid State Drive Param Value", temp.str().c_str()));
         }

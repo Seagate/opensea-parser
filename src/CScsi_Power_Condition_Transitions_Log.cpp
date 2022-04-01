@@ -205,10 +205,10 @@ void CScsiPowerConditiontLog::process_List_Information(JSONNODE *powerData)
         json_push_back(powerInfo, json_new_a("Power Condition Type", temp.str().c_str()));
         if (!typeFound)
         {
-            temp.str().clear(); temp.clear();
+            temp.str("");temp.clear();
             temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_PowerParam->paramControlByte);
             json_push_back(powerInfo, json_new_a("Control Byte", temp.str().c_str()));
-            temp.str().clear(); temp.clear();
+            temp.str("");temp.clear();
             temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_PowerParam->paramLength);
             json_push_back(powerInfo, json_new_a("Length", temp.str().c_str()));
         }

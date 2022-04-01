@@ -141,13 +141,13 @@ void CScsiPendingDefectsLog::process_PList_Data(JSONNODE *pendingData)
 	JSONNODE* pListInfo = json_new(JSON_NODE);
 	json_set_name(pListInfo, temp.str().c_str());
 
-    temp.str().clear(); temp.clear();
+    temp.str("");temp.clear();
     temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << m_PlistDefect->paramCode;
 	json_push_back(pListInfo, json_new_a("Pending Defect Code", temp.str().c_str()));
-    temp.str().clear(); temp.clear();
+    temp.str("");temp.clear();
     temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_PlistDefect->paramControlByte);
 	json_push_back(pListInfo, json_new_a("Pending DefectControl Byte ", temp.str().c_str()));
-    temp.str().clear(); temp.clear();
+    temp.str("");temp.clear();
     temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_PlistDefect->paramLength);
 	json_push_back(pListInfo, json_new_a("Pending Defect Length ", temp.str().c_str()));
 	json_push_back(pListInfo, json_new_i("Pending Defect Power On Hours", static_cast<uint32_t>(m_PlistDefect->defectPOH)));
@@ -184,10 +184,10 @@ void CScsiPendingDefectsLog::process_PList_Count(JSONNODE *pendingCount)
     std::ostringstream temp;
     temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << m_PListCountParam->paramCode;
 	json_push_back(countInfo, json_new_a("Pending Defect Counter Code", temp.str().c_str()));
-    temp.str().clear(); temp.clear();
+    temp.str("");temp.clear();
     temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_PListCountParam->paramControlByte);
 	json_push_back(countInfo, json_new_a("Pending Defect Counter Control Byte ", temp.str().c_str()));
-    temp.str().clear(); temp.clear();
+    temp.str("");temp.clear();
     temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_PListCountParam->paramLength);
 	json_push_back(countInfo, json_new_a("Pending Defect Counter Length ", temp.str().c_str()));
 	json_push_back(countInfo, json_new_i("Pending Defect Count", static_cast<uint32_t>(m_PListCountParam->totalPlistCount)));
