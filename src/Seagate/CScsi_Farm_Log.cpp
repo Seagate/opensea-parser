@@ -4361,12 +4361,12 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_FLED_Info(JSONNODE *LUNFLED, ui
             std::string meaning;
             get_Assert_Code_Meaning(meaning, M_Word2(check_Status_Strip_Status(pFLED->flashLEDArray[i])));
             json_push_back(label, json_new_a("flash_LED_code_meaning", meaning.c_str()));
-            temp.str().clear();
+            temp.str("");
             temp.clear();
             temp << "0x" << std::hex << std::setfill('0') << std::setw(8) << M_DoubleWord0(check_Status_Strip_Status(pFLED->flashLEDArray[i]));
             json_push_back(label, json_new_a("flash_LED_address", temp.str().c_str()));
 
-            temp.str().clear();
+            temp.str("");
             temp.clear();
             temp << std::fixed << std::setprecision(3) << (static_cast<double>(check_Status_Strip_Status(pFLED->timestampForLED[i]) / 3600000) * .001);
             json_push_back(label, json_new_a("timeStamp_of_event", temp.str().c_str()));            //!< Universal Timestamp (us) of last 8 Flash LED (assert) Events, wrapping array
@@ -4409,7 +4409,7 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_FLED_Info(JSONNODE *LUNFLED, ui
             json_set_name(eventInfo, temp.str().c_str());
 
             set_json_64_bit_With_Status(eventInfo, "Address of Event", pFLED->flashLEDArray[i], true, m_showStatusBits);	           //!< Info on the last 8 Flash LED (assert) Events, wrapping array
-            temp.str().clear();
+            temp.str("");
             temp.clear();
             temp << "0x" << std::hex << std::setfill('0') << std::setw(4) <<  M_Word2(check_Status_Strip_Status(pFLED->flashLEDArray[i]));
             json_push_back(eventInfo, json_new_a("Flash LED Code", temp.str().c_str()));
@@ -5037,7 +5037,7 @@ void CSCSI_Farm_Log::prePython_Head_Float(JSONNODE* masterData, const char* name
     {
         json_push_back(label, json_new_a("stat_type", statType));
     }
-    temp.str().clear();
+    temp.str("");
     temp.clear();
     temp << std::dec << headNumber;
     json_push_back(label, json_new_a("head_number", temp.str().c_str()));
@@ -5074,7 +5074,7 @@ void CSCSI_Farm_Log::prePython_Head_Int(JSONNODE* masterData, const char* name, 
     {
         json_push_back(label, json_new_a("stat_type", statType));
     }
-    temp.str().clear();
+    temp.str("");
     temp.clear();
     temp << std::dec << headNumber;
     json_push_back(label, json_new_a("head_number", temp.str().c_str()));

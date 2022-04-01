@@ -3089,7 +3089,7 @@ bool CAta_Identify_Log_04::get_Streaming_Min_Request_Times(JSONNODE *streamMinDa
     json_push_back(streamMinData, json_new_a("Streaming Minimum request Times", temp.str().c_str()));
     if (set_Feature_Settings(&pLog->streamingMinRequestSize))
     {
-        temp.str().clear();
+        temp.str("");
         temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << M_Word0(pLog->streamingMinRequestSize);
         json_push_back(streamMinData, json_new_a("Steaming Min Request Size", temp.str().c_str()));
     }
@@ -3197,7 +3197,7 @@ bool CAta_Identify_Log_04::get_Free_Fall_Control(JSONNODE *freeFallData)
     json_push_back(freeFallData, json_new_a("Free Fall control sensitivity ", temp.str().c_str()));
     if (set_Feature_Settings(&pLog->freeFallControlSensitivity))
     {
-        temp.str().clear();
+        temp.str("");
         temp.clear();
         temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(M_Byte0(pLog->freeFallControlSensitivity));
         json_push_back(freeFallData, json_new_a("Free Fall control sensitivity settings", temp.str().c_str()));
