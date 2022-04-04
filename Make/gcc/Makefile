@@ -31,8 +31,8 @@ VERSION=$(MAJOR).$(MINOR).$(PATCH)
 SRC_DIR=../../src/
 INC_DIR=-I../../include -I../../include/Seagate -I../../../opensea-common/include -I../../../libjson
 CXX ?= g++
-CXXFLAGS ?= -Wall -Wextra -Werror=old-style-cast -Wshadow -Wmaybe-uninitialized -Wvla -Wfloat-equal -Wnull-dereference -Wduplicated-cond \
-    -Wlogical-not-parentheses -Wlogical-op -Wshift-overflow=2 -Wdouble-promotion -Wformat-security
+CXXFLAGS ?= -Wall -Wextra -Werror=old-style-cast -Wshadow -Wmaybe-uninitialized -Wvla -Wfloat-equal \
+    -Wlogical-op -Wdouble-promotion -Wformat-security
 CXXFLAGS += -c -fPIC -std=c++98 -I.
 ARCHIVE ?= ar
 LFLAGS ?= -Wall-Wl,--whole-archive ../../../opensea-common/Make/gcc/lib/$(FILE_OUTPUT_DIR)/libopensea-common.a -Wl,--no-whole-archive
@@ -85,6 +85,33 @@ FILE_OUTPUT_DIR=lib
 #DEPFILES = $(LIB_SRC_FILES:.c=.d)
 
 #-include $(DEPFILES)
+
+#Add more warnings for the GCC versions that support them
+#gcc 5.5 and up : -Wlogical-not-parentheses
+#    6.5 and up : -Wnull-dereference -Wduplicated-cond -Wshift-overflow=2
+ifeq ($(UNAME),Linux)
+	GCC_VERSION_STRING = $(shell $(CC) -dumpversion)
+	GCC_VER = $(subst ., ,$(GCC_VERSION_STRING))
+	GCC_MAJOR = $(word 1,$(GCC_VER))
+	GCC_MINOR = $(word 2,$(GCC_VER))
+	GCC_SUBMINOR = $(word 3,$(GCC_VER))
+	ifeq ($(GCC_MINOR),)
+		GCC_MINOR = 0
+	endif 
+	ifeq ($(GCC_SUBMINOR),)
+		GCC_SUBMINOR = 0
+	endif
+	ifeq ($(shell test $(GCC_MAJOR) -gt 4; echo $$?),0)
+		ifeq ($(shell test $(GCC_MINOR) -gt 4; echo $$?),0)
+			CXXFLAGS += -Wlogical-not-parentheses
+		endif
+	endif
+	ifeq ($(shell test $(GCC_MAJOR) -gt 5; echo $$?),0)
+		ifeq ($(shell test $(GCC_MINOR) -gt 4; echo $$?),0)
+			CXXFLAGS += -Wnull-dereference -Wduplicated-cond -Wshift-overflow=2
+		endif
+	endif
+endif
 
 .PHONY: all
  
