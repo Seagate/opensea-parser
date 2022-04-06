@@ -1481,19 +1481,19 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         temp.str("");temp.clear();
-        temp << "Number of TMD for Head " << std::dec << loopCount;// Head count
+        temp << "Number of Servo No Timing Mark Detect for Head " << std::dec << loopCount;// Head count
         set_json_64_bit_With_Status(headInfo, temp.str(), vFarmFrame[page].reliPage.numberOfTMD[loopCount], false, m_showStatusBits);                          //!< [24] Number of TMD over last 3 SMART Summary Frames by Head9,10
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         temp.str("");temp.clear();
-        temp << "Velocity Observer by Head " << std::dec << loopCount;// Head count
+        temp << "Number of Velocity Observer by Head " << std::dec << loopCount;// Head count
         set_json_64_bit_With_Status(headInfo, temp.str(), vFarmFrame[page].reliPage.velocityObserver[loopCount], false, m_showStatusBits);                     //!< [24] Velocity Observer over last 3 SMART Summary Frames by Head9,10
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         temp.str("");temp.clear();
-        temp << "Number of Velocity Observer by Head " << std::dec << loopCount;// Head count
+        temp << "Number of Servo Velocity No Timing Mark Detect by Head " << std::dec << loopCount;// Head count
         set_json_64_bit_With_Status(headInfo, temp.str(), vFarmFrame[page].reliPage.numberOfVelocityObserver[loopCount], false, m_showStatusBits);             //!< [24] Number of Velocity Observer over last 3 SMART Summary Frames by Head9,10
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
