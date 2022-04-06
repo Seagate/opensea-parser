@@ -953,50 +953,50 @@ eReturnValues CATA_Farm_Log::print_Enviroment_Information(JSONNODE *masterData, 
     json_set_name(pageInfo, temp.str().c_str());
 
     temp.str("");temp.clear();
-    temp << std::setprecision(2) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.curentTemp)*1.00);
+    temp << std::fixed << std::setprecision(2) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.curentTemp)*1.00);
     set_json_string_With_Status(pageInfo, "Current Temperature (Celsius)", temp.str().c_str(), vFarmFrame[page].environmentPage.curentTemp, m_showStatusBits);                                //!< Current Temperature in Celsius
     temp.str("");temp.clear();
-    temp << std::setprecision(2) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.highestTemp)*1.00);
+    temp << std::fixed << std::setprecision(2) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.highestTemp)*1.00);
     set_json_string_With_Status(pageInfo, "Highest Temperature", temp.str().c_str(), vFarmFrame[page].environmentPage.highestTemp, m_showStatusBits);                             //!< Highest Temperature in Celsius
     temp.str("");temp.clear();
-    temp << std::setprecision(2) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.lowestTemp)*1.00);
+    temp << std::fixed << std::setprecision(2) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.lowestTemp)*1.00);
     set_json_string_With_Status(pageInfo, "Lowest Temperature", temp.str().c_str(), vFarmFrame[page].environmentPage.lowestTemp, m_showStatusBits);                               //!< Lowest Temperature
     temp.str("");temp.clear();
-    temp << std::setprecision(2) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.averageTemp)*1.00);
+    temp << std::fixed << std::setprecision(2) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.averageTemp)*1.00);
     set_json_string_With_Status(pageInfo, "Average Short Term Temperature", temp.str().c_str(), vFarmFrame[page].environmentPage.averageTemp, m_showStatusBits);                  //!< Average Short Term Temperature
     temp.str("");temp.clear();
-    temp << std::setprecision(2) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.averageLongTemp)*1.00);
+    temp << std::fixed << std::setprecision(2) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.averageLongTemp)*1.00);
     set_json_string_With_Status(pageInfo, "Average Long Term Temperatures", temp.str().c_str(), vFarmFrame[page].environmentPage.averageLongTemp, m_showStatusBits);              //!< Average Long Term Temperature
     temp.str("");temp.clear();
-    temp << std::setprecision(2) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.highestShortTemp)*1.00);
+    temp << std::fixed << std::setprecision(2) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.highestShortTemp)*1.00);
     set_json_string_With_Status(pageInfo, "Highest Average Short Term Temperature", temp.str().c_str(), vFarmFrame[page].environmentPage.highestShortTemp, m_showStatusBits);     //!< Highest Average Short Term Temperature
     temp.str("");temp.clear();
-    temp << std::setprecision(2) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.lowestShortTemp)*1.00);
+    temp << std::fixed << std::setprecision(2) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.lowestShortTemp)*1.00);
     set_json_string_With_Status(pageInfo, "Lowest Average Short Term Temperature", temp.str().c_str(), vFarmFrame[page].environmentPage.lowestShortTemp, m_showStatusBits);       //!< Lowest Average Short Term Temperature
     temp.str("");temp.clear();
-    temp << std::setprecision(2) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.highestLongTemp)*1.00);
+    temp << std::fixed << std::setprecision(2) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.highestLongTemp)*1.00);
     set_json_string_With_Status(pageInfo, "Highest Average Long Term Temperature", temp.str().c_str(), vFarmFrame[page].environmentPage.highestLongTemp, m_showStatusBits);       //!< Highest Average Long Term Temperature
     temp.str("");temp.clear();
-    temp << std::setprecision(2) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.lowestLongTemp)*1.00);
+    temp << std::fixed << std::setprecision(2) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.lowestLongTemp)*1.00);
     set_json_string_With_Status(pageInfo, "Lowest Average Long Term Temperature", temp.str().c_str(), vFarmFrame[page].environmentPage.lowestLongTemp, m_showStatusBits);         //!< Lowest Average Long Term Temperature
 
     set_json_int_With_Status(pageInfo, "Time In Over Temperature", vFarmFrame[page].environmentPage.overTempTime, m_showStatusBits);                                                //!< Time In Over Temperature
     set_json_int_With_Status(pageInfo, "Time In Under Temperature", vFarmFrame[page].environmentPage.underTempTime, m_showStatusBits);                                              //!< Time In Under Temperature
     temp.str("");temp.clear();
-    temp << std::setprecision(2) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.maxTemp)*1.00);
+    temp << std::fixed << std::setprecision(2) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.maxTemp)*1.00);
     set_json_string_With_Status(pageInfo, "Specified Max Operating Temperature", temp.str().c_str(), vFarmFrame[page].environmentPage.maxTemp, m_showStatusBits);                 //!< Specified Max Operating Temperature
 
     temp.str("");temp.clear();
-    temp << std::setprecision(2) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.minTemp)*1.00);
+    temp << std::fixed << std::setprecision(2) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.minTemp)*1.00);
     set_json_string_With_Status(pageInfo, "Specified Min Operating Temperature", temp.str().c_str(), vFarmFrame[page].environmentPage.minTemp, m_showStatusBits);                 //!< Specified Min Operating Temperature
 
     set_json_int_With_Status(pageInfo, "Over-Limit Shock Events Count(Raw)", vFarmFrame[page].environmentPage.shockEvents, m_showStatusBits);                                       //!< Over-Limit Shock Events Count
     set_json_int_With_Status(pageInfo, "High Fly Write Count (Raw)", vFarmFrame[page].environmentPage.hfWriteCounts, m_showStatusBits);                                             //!< High Fly Write Count 
     temp.str("");temp.clear();
-    temp << std::setprecision(2) << std::setfill('0') << (check_Status_Strip_Status(vFarmFrame[page].environmentPage.humidity))*0.1;                                                    //!< Current Relative Humidity (in units of .1%)
+    temp << std::fixed << std::setprecision(2) << std::setfill('0') << (check_Status_Strip_Status(vFarmFrame[page].environmentPage.humidity))*0.1;                                                    //!< Current Relative Humidity (in units of .1%)
     set_json_string_With_Status(pageInfo, "Current Relative Humidity", temp.str().c_str(), vFarmFrame[page].environmentPage.humidity, m_showStatusBits);
     temp.str("");temp.clear();
-    temp << std::setprecision(2) << std::setfill('0') << (check_Status_Strip_Status(vFarmFrame[page].environmentPage.humidityRatio) / 8.0);                                             //!< Humidity Mixed Ratio multiplied by 8 (divide by 8 to get actual value)
+    temp << std::fixed << std::setprecision(2) << std::setfill('0') << (check_Status_Strip_Status(vFarmFrame[page].environmentPage.humidityRatio) / 8.0);                                             //!< Humidity Mixed Ratio multiplied by 8 (divide by 8 to get actual value)
     set_json_string_With_Status(pageInfo, "Humidity Mixed Ratio", temp.str().c_str(), vFarmFrame[page].environmentPage.humidityRatio, m_showStatusBits);
     set_json_int_With_Status(pageInfo, "Current Motor Power", vFarmFrame[page].environmentPage.currentMotorPower, m_showStatusBits);                                                //!< Current Motor Power, value from most recent SMART Summary Frame6
 
@@ -1051,40 +1051,40 @@ eReturnValues CATA_Farm_Log::print_Enviroment_Information(JSONNODE *masterData, 
     if (m_MajorRev >= 4 && m_MinorRev > 20)
     {
         temp.str("");temp.clear();
-        temp << std::setprecision(2) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.currLFVibeAct0));
+        temp << std::fixed << std::setprecision(2) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.currLFVibeAct0));
         set_json_string_With_Status(pageInfo, "Current Low Frequency Vibe Score - Actuator 0:", temp.str().c_str(), vFarmFrame[page].environmentPage.currLFVibeAct0, m_showStatusBits);                   
         temp.str("");temp.clear();
-        temp << std::setprecision(2) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.currMFVibeAct0));
+        temp << std::fixed << std::setprecision(2) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.currMFVibeAct0));
         set_json_string_With_Status(pageInfo, "Current Mid Frequency Vibe Score - Actuator 0:", temp.str().c_str(), vFarmFrame[page].environmentPage.currMFVibeAct0, m_showStatusBits);
         temp.str("");temp.clear();
-        temp << std::setprecision(2) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.currHFVibeAct0));
+        temp << std::fixed << std::setprecision(2) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.currHFVibeAct0));
         set_json_string_With_Status(pageInfo, "Current High Frequency Vibe Score - Actuator 0:", temp.str().c_str(), vFarmFrame[page].environmentPage.currHFVibeAct0, m_showStatusBits);
         temp.str("");temp.clear();
-        temp << std::setprecision(2) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.worstLFVibeAct0));
+        temp << std::fixed << std::setprecision(2) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.worstLFVibeAct0));
         set_json_string_With_Status(pageInfo, "Worst Low Frequency Vibe Score - Actuator 0:", temp.str().c_str(), vFarmFrame[page].environmentPage.worstLFVibeAct0, m_showStatusBits);
         temp.str("");temp.clear();
-        temp << std::setprecision(2) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.worstMFVibeAct0));
+        temp << std::fixed << std::setprecision(2) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.worstMFVibeAct0));
         set_json_string_With_Status(pageInfo, "Worst Mid Frequency Vibe Score - Actuator 0:", temp.str().c_str(), vFarmFrame[page].environmentPage.worstMFVibeAct0, m_showStatusBits);
         temp.str("");temp.clear();
-        temp << std::setprecision(2) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.worstHFVibeAct0));
+        temp << std::fixed << std::setprecision(2) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.worstHFVibeAct0));
         set_json_string_With_Status(pageInfo, "Worst High Frequency Vibe Score - Actuator 0:", temp.str().c_str(), vFarmFrame[page].environmentPage.worstHFVibeAct0, m_showStatusBits);
         temp.str("");temp.clear();
-        temp << std::setprecision(2) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.currLFVibeAct1));
+        temp << std::fixed << std::setprecision(2) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.currLFVibeAct1));
         set_json_string_With_Status(pageInfo, "Current Low Frequency Vibe Score - Actuator 1:", temp.str().c_str(), vFarmFrame[page].environmentPage.currLFVibeAct1, m_showStatusBits);
         temp.str("");temp.clear();
-        temp << std::setprecision(2) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.currMFVibeAct1));
+        temp << std::fixed << std::setprecision(2) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.currMFVibeAct1));
         set_json_string_With_Status(pageInfo, "Current Mid Frequency Vibe Score - Actuator 1:", temp.str().c_str(), vFarmFrame[page].environmentPage.currMFVibeAct1, m_showStatusBits);
         temp.str("");temp.clear();
-        temp << std::setprecision(2) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.currHFVibeAct1));
+        temp << std::fixed << std::setprecision(2) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.currHFVibeAct1));
         set_json_string_With_Status(pageInfo, "Current High Frequency Vibe Score - Actuator 1:", temp.str().c_str(), vFarmFrame[page].environmentPage.currHFVibeAct1, m_showStatusBits);
         temp.str("");temp.clear();
-        temp << std::setprecision(2) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.worstLFVibeAct1));
+        temp << std::fixed << std::setprecision(2) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.worstLFVibeAct1));
         set_json_string_With_Status(pageInfo, "Worst Low Frequency Vibe Score - Actuator 1:", temp.str().c_str(), vFarmFrame[page].environmentPage.worstLFVibeAct1, m_showStatusBits);
         temp.str("");temp.clear();
-        temp << std::setprecision(2) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.worstMFVibeAct1));
+        temp << std::fixed << std::setprecision(2) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.worstMFVibeAct1));
         set_json_string_With_Status(pageInfo, "Worst Mid Frequency Vibe Score - Actuator 1:", temp.str().c_str(), vFarmFrame[page].environmentPage.worstMFVibeAct1, m_showStatusBits);
         temp.str("");temp.clear();
-        temp << std::setprecision(2) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.worstHFVibeAct1));
+        temp << std::fixed << std::setprecision(2) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.worstHFVibeAct1));
         set_json_string_With_Status(pageInfo, "Worst High Frequency Vibe Score - Actuator 1:", temp.str().c_str(), vFarmFrame[page].environmentPage.worstHFVibeAct1, m_showStatusBits);
     }
 
@@ -1502,7 +1502,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
         temp << "Fly height clearance delta outer by Head " << std::dec << loopCount;// Head count
         myHeader.assign(temp.str());
         temp.str("");temp.clear();
-        temp << std::setprecision(3) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].reliPage.flyHeightClearance[loopCount].outer) * .001);
+        temp << std::fixed << std::setprecision(3) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].reliPage.flyHeightClearance[loopCount].outer) * .001);
         set_json_string_With_Status(headInfo, myHeader, temp.str(), vFarmFrame[page].reliPage.flyHeightClearance[loopCount].outer, m_showStatusBits);//!< [24][3] Applied fly height clearance delta per head in thousandths of one Angstrom.
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
@@ -1511,7 +1511,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
         temp << "Fly height clearance delta inner by Head " << std::dec << loopCount;// Head count
         myHeader.assign(temp.str());
         temp.str("");temp.clear();
-        temp << std::setprecision(3) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].reliPage.flyHeightClearance[loopCount].inner)*.001);
+        temp << std::fixed << std::setprecision(3) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].reliPage.flyHeightClearance[loopCount].inner)*.001);
         set_json_string_With_Status(headInfo, myHeader, temp.str(), vFarmFrame[page].reliPage.flyHeightClearance[loopCount].inner, m_showStatusBits);  //!< [24][3] Applied fly height clearance delta per head in thousandths of one Angstrom.
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
@@ -1520,7 +1520,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
         temp << "Fly height clearance delta middle by Head " << std::dec << loopCount;// Head count
         myHeader.assign(temp.str());
         temp.str("");temp.clear();
-        temp << std::setprecision(3) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].reliPage.flyHeightClearance[loopCount].middle) * .001);
+        temp << std::fixed << std::setprecision(3) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].reliPage.flyHeightClearance[loopCount].middle) * .001);
         set_json_string_With_Status(headInfo, myHeader, temp.str(), vFarmFrame[page].reliPage.flyHeightClearance[loopCount].middle, m_showStatusBits); //!< [24][3] Applied fly height clearance delta per head in thousandths of one Angstrom.
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
@@ -1529,7 +1529,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
         temp << "Current H2SAT trimmed mean bits in error Zone 0 by Head " << std::dec << loopCount;// Head count
         myHeader.assign(temp.str());
         temp.str("");temp.clear();
-        temp << std::setprecision(1) << std::setfill('0') << static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].reliPage.currentH2SAT[loopCount].zone0)) *.1);
+        temp << std::fixed << std::setprecision(1) << std::setfill('0') << static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].reliPage.currentH2SAT[loopCount].zone0)) *.1);
         set_json_string_With_Status(headInfo, myHeader, temp.str(), vFarmFrame[page].reliPage.currentH2SAT[loopCount].zone0, m_showStatusBits);    //!< [24] Current H2SAT trimmed mean bits in error by Head, by Test Zone 9,
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
@@ -1538,7 +1538,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
         temp << "Current H2SAT trimmed mean bits in error Zone 1 by Head " << std::dec << loopCount;// Head count
         myHeader.assign(temp.str());
         temp.str("");temp.clear();
-        temp << std::setprecision(1) << std::setfill('0') << static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].reliPage.currentH2SAT[loopCount].zone1)) *.1);
+        temp << std::fixed << std::setprecision(1) << std::setfill('0') << static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].reliPage.currentH2SAT[loopCount].zone1)) *.1);
         set_json_string_With_Status(headInfo, myHeader, temp.str(), vFarmFrame[page].reliPage.currentH2SAT[loopCount].zone1, m_showStatusBits);   //!< [24] Current H2SAT trimmed mean bits in error by Head, by Test Zone 9,
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
@@ -1547,7 +1547,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
         temp << "Current H2SAT trimmed mean bits in error Zone 2 by Head " << std::dec << loopCount;// Head count
         myHeader.assign(temp.str());
         temp.str("");temp.clear();
-        temp << std::setprecision(1) << std::setfill('0') << static_cast<float> (M_Word0(check_Status_Strip_Status(vFarmFrame[page].reliPage.currentH2SAT[loopCount].zone2)) *.1);
+        temp << std::fixed << std::setprecision(1) << std::setfill('0') << static_cast<float> (M_Word0(check_Status_Strip_Status(vFarmFrame[page].reliPage.currentH2SAT[loopCount].zone2)) *.1);
         set_json_string_With_Status(headInfo, myHeader, temp.str(), vFarmFrame[page].reliPage.currentH2SAT[loopCount].zone2, m_showStatusBits);   //!< [24] Current H2SAT trimmed mean bits in error by Head, by Test Zone 9,
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
@@ -1556,7 +1556,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
         temp << "Current H2SAT iterations to converge Test Zone 0 by Head " << std::dec << loopCount;// Head count
         myHeader.assign(temp.str());
         temp.str("");temp.clear();
-        temp << std::setprecision(1) << std::setfill('0') << static_cast<float> (M_Word0(check_Status_Strip_Status(vFarmFrame[page].reliPage.currentH2SATIterations[loopCount].zone0))) *.1F;
+        temp << std::fixed << std::setprecision(1) << std::setfill('0') << static_cast<float> (M_Word0(check_Status_Strip_Status(vFarmFrame[page].reliPage.currentH2SATIterations[loopCount].zone0))) *.1F;
         set_json_string_With_Status(headInfo, myHeader, temp.str(), vFarmFrame[page].reliPage.currentH2SATIterations[loopCount].zone0, m_showStatusBits);        //!< [24] Qword[24][3] Current H2SAT iterations to converge by Head, by Test Zone 9, 11
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
@@ -1565,7 +1565,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
         temp << "Current H2SAT iterations to converge Test Zone 1 by Head " << std::dec << loopCount;// Head count
         myHeader.assign(temp.str());
         temp.str("");temp.clear();
-        temp << std::setprecision(1) << std::setfill('0') << static_cast<float> (M_Word0(check_Status_Strip_Status(vFarmFrame[page].reliPage.currentH2SATIterations[loopCount].zone1)))*.1F;
+        temp << std::fixed << std::setprecision(1) << std::setfill('0') << static_cast<float> (M_Word0(check_Status_Strip_Status(vFarmFrame[page].reliPage.currentH2SATIterations[loopCount].zone1)))*.1F;
         set_json_string_With_Status(headInfo, myHeader, temp.str(), vFarmFrame[page].reliPage.currentH2SATIterations[loopCount].zone1, m_showStatusBits);     //!< [24] Qword[24][3] Current H2SAT iterations to converge by Head, by Test Zone 9, 11
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
@@ -1574,7 +1574,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
         temp << "Current H2SAT iterations to converge Test Zone 2 by Head " << std::dec << loopCount;// Head count
         myHeader.assign(temp.str());
         temp.str("");temp.clear();
-        temp << std::setprecision(1) << std::setfill('0') << static_cast<float> (M_Word0(check_Status_Strip_Status(vFarmFrame[page].reliPage.currentH2SATIterations[loopCount].zone2))) *.1F;
+        temp << std::fixed << std::setprecision(1) << std::setfill('0') << static_cast<float> (M_Word0(check_Status_Strip_Status(vFarmFrame[page].reliPage.currentH2SATIterations[loopCount].zone2))) *.1F;
         set_json_string_With_Status(headInfo, myHeader, temp.str(), vFarmFrame[page].reliPage.currentH2SATIterations[loopCount].zone2, m_showStatusBits);          //!< [24] Qword[24][3] Current H2SAT iterations to converge by Head, by Test Zone 9, 11
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
@@ -1595,7 +1595,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
         temp << "Current H2SAT asymmetry by Head " << std::dec << loopCount;// Head count
         myHeader.assign(temp.str());
         temp.str("");temp.clear();
-        temp << std::setprecision(1) << std::setfill('0') << static_cast<float>(M_Word0(check_Status_Strip_Status(vFarmFrame[page].reliPage.currentH2SATasymmetry[loopCount])))  * .1F;
+        temp << std::fixed << std::setprecision(1) << std::setfill('0') << static_cast<float>(M_Word0(check_Status_Strip_Status(vFarmFrame[page].reliPage.currentH2SATasymmetry[loopCount])))  * 0.1F;
         set_json_string_With_Status(headInfo, myHeader, temp.str(), vFarmFrame[page].reliPage.currentH2SATasymmetry[loopCount], m_showStatusBits);             //!< [24] Qword[24] Current H2SAT asymmetry by Head, averaged across Test Zones
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
@@ -1634,7 +1634,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
         temp << "Write Power On (hrs) by Head " << std::dec << loopCount;// Head count
         myHeader.assign(temp.str());
         temp.str("");temp.clear();
-        temp << std::setprecision(4) << std::setfill('0') << ROUNDF(static_cast<double>(M_DoubleWord0(vFarmFrame[page].reliPage.writePOH[loopCount])) / 3600, 1000);
+        temp << std::fixed << std::setprecision(4) << std::setfill('0') << ROUNDF(static_cast<double>(M_DoubleWord0(vFarmFrame[page].reliPage.writePOH[loopCount])) / 3600, 1000);
         set_json_string_With_Status(headInfo, myHeader, temp.str(), vFarmFrame[page].reliPage.writePOH[loopCount], m_showStatusBits);                         //!< [24] write POS in sec value from most recent SMART Frame by head
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
@@ -1665,7 +1665,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
         temp << "FAFH HF-LF Relative Amplitude by Head " << std::dec << loopCount;// Head count
         myHeader.assign(temp.str());
         temp.str("");temp.clear();
-        temp << std::setprecision(2) << std::setw(4) << std::setfill('0') << static_cast<double>(M_DoubleWordInt0(check_Status_Strip_Status(vFarmFrame[page].reliPage.FAFHRelativeAmptitude[loopCount]))) * .1;
+        temp << std::fixed << std::setprecision(2) << std::setw(4) << std::setfill('0') << static_cast<double>(M_DoubleWordInt0(check_Status_Strip_Status(vFarmFrame[page].reliPage.FAFHRelativeAmptitude[loopCount]))) * .1;
         set_json_string_With_Status(headInfo, myHeader, temp.str(), vFarmFrame[page].reliPage.FAFHRelativeAmptitude[loopCount], m_showStatusBits);
     }
 
@@ -1678,7 +1678,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
         temp << "FAFH Bit Error Rate inner by Head " << std::dec << loopCount;// Head count
         myHeader.assign(temp.str());
         temp.str("");temp.clear();
-        temp << std::dec << localWhole << std::setprecision(0) << std::setw(4) << std::setfill('0') << decimal;
+        temp << std::dec << localWhole << std::fixed << std::setprecision(0) << std::setw(4) << std::setfill('0') << decimal;
         set_json_string_With_Status(headInfo, myHeader, temp.str(), vFarmFrame[page].reliPage.FAFHBitErrorRate[loopCount].inner, m_showStatusBits);
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
@@ -1690,7 +1690,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
         temp << "FAFH Bit Error Rate middle by Head " << std::dec << loopCount;// Head count
         myHeader.assign(temp.str());
         temp.str("");temp.clear();
-        temp << std::dec << localWhole << std::setprecision(0) << std::setw(4) << std::setfill('0') << decimal;
+        temp << std::dec << localWhole << std::fixed << std::setprecision(0) << std::setw(4) << std::setfill('0') << decimal;
         set_json_string_With_Status(headInfo, myHeader, temp.str(), vFarmFrame[page].reliPage.FAFHBitErrorRate[loopCount].middle, m_showStatusBits);
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
@@ -1702,7 +1702,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
         temp << "FAFH Bit Error Rate outer by Head " << std::dec << loopCount;// Head count
         myHeader.assign(temp.str());
         temp.str("");temp.clear();
-        temp << std::dec << localWhole << std::setprecision(0) << std::setw(4) << std::setfill('0') << decimal;
+        temp << std::dec << localWhole << std::fixed << std::setprecision(0) << std::setw(4) << std::setfill('0') << decimal;
         set_json_string_With_Status(headInfo, myHeader, temp.str(), vFarmFrame[page].reliPage.FAFHBitErrorRate[loopCount].outer, m_showStatusBits);
     }
 
@@ -1712,7 +1712,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
         temp << "FAFH Low Frequency Passive Clearance in ADC counts inner by Head " << std::dec << loopCount;// Head count
         myHeader.assign(temp.str());
         temp.str("");temp.clear();
-        temp << std::setprecision(2) << std::setfill('0') << static_cast<double>(M_DoubleWord0(vFarmFrame[page].reliPage.FAFHLowFrequency[loopCount].inner)) / 10.0;
+        temp << std::fixed << std::setprecision(2) << std::setfill('0') << static_cast<double>(M_DoubleWord0(vFarmFrame[page].reliPage.FAFHLowFrequency[loopCount].inner)) / 10.0;
         set_json_string_With_Status(headInfo, myHeader, temp.str(), false, m_showStatusBits);                  //!< [24][3] FAFH Low Frequency Passive Clearance in ADC counts
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
@@ -1721,7 +1721,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
         temp << "FAFH Low Frequency Passive Clearance in ADC counts middle by Head " << std::dec << loopCount;// Head count
         myHeader.assign(temp.str());
         temp.str("");temp.clear();
-        temp << std::setprecision(2) << std::setfill('0') << static_cast<double>(M_DoubleWord0(vFarmFrame[page].reliPage.FAFHLowFrequency[loopCount].middle)) / 10.0;
+        temp << std::fixed << std::setprecision(2) << std::setfill('0') << static_cast<double>(M_DoubleWord0(vFarmFrame[page].reliPage.FAFHLowFrequency[loopCount].middle)) / 10.0;
         set_json_string_With_Status(headInfo, myHeader, temp.str(), false, m_showStatusBits);                  //!< [24][3] FAFH Low Frequency Passive Clearance in ADC counts
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
@@ -1730,7 +1730,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
         temp << "FAFH Low Frequency Passive Clearance in ADC counts outer by Head " << std::dec << loopCount;// Head count
         myHeader.assign(temp.str());
         temp.str("");temp.clear();
-        temp << std::setprecision(2) << std::setfill('0') << static_cast<double>(M_DoubleWord0(vFarmFrame[page].reliPage.FAFHLowFrequency[loopCount].outer)) / 10.0;  // Head count
+        temp << std::fixed << std::setprecision(2) << std::setfill('0') << static_cast<double>(M_DoubleWord0(vFarmFrame[page].reliPage.FAFHLowFrequency[loopCount].outer)) / 10.0;  // Head count
         set_json_string_With_Status(headInfo, myHeader, temp.str(), false, m_showStatusBits);                  //!< [24][3] FAFH Low Frequency Passive Clearance in ADC counts
     }
 
@@ -1740,7 +1740,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
         temp << "FAFH High Frequency Passive Clearance in ADC counts inner by Head " << std::dec << loopCount;// Head count
         myHeader.assign(temp.str());
         temp.str("");temp.clear();
-        temp << std::setprecision(2) << std::setfill('0') << static_cast<double>(M_DoubleWord0(vFarmFrame[page].reliPage.FAFHHighFrequency[loopCount].inner)) / 10.0;
+        temp << std::fixed << std::setprecision(2) << std::setfill('0') << static_cast<double>(M_DoubleWord0(vFarmFrame[page].reliPage.FAFHHighFrequency[loopCount].inner)) / 10.0;
         set_json_string_With_Status(headInfo, myHeader, temp.str(), false, m_showStatusBits);                  //!< [24][3] FAFH High Frequency Passive Clearance in ADC counts
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
@@ -1749,7 +1749,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
         temp << "FAFH High Frequency Passive Clearance in ADC counts middle by Head " << std::dec << loopCount;// Head count
         myHeader.assign(temp.str());
         temp.str("");temp.clear();
-        temp << std::setprecision(2) << std::setfill('0') << static_cast<double>(M_DoubleWord0(vFarmFrame[page].reliPage.FAFHHighFrequency[loopCount].middle)) / 10.0;
+        temp << std::fixed << std::setprecision(2) << std::setfill('0') << static_cast<double>(M_DoubleWord0(vFarmFrame[page].reliPage.FAFHHighFrequency[loopCount].middle)) / 10.0;
         set_json_string_With_Status(headInfo, myHeader, temp.str(), false, m_showStatusBits);                  //!< [24][3] FAFH High Frequency Passive Clearance in ADC counts
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
@@ -1758,7 +1758,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
         temp << "FAFH High Frequency Passive Clearance in ADC counts outer by Head " << std::dec << loopCount;// Head count
         myHeader.assign(temp.str());
         temp.str("");temp.clear();
-        temp << std::setprecision(2) << std::setfill('0') << static_cast<double>(M_DoubleWord0(vFarmFrame[page].reliPage.FAFHHighFrequency[loopCount].outer)) / 10.0;
+        temp << std::fixed << std::setprecision(2) << std::setfill('0') << static_cast<double>(M_DoubleWord0(vFarmFrame[page].reliPage.FAFHHighFrequency[loopCount].outer)) / 10.0;
         set_json_string_With_Status(headInfo, myHeader, temp.str(), false, m_showStatusBits);                  //!< [24][3] FAFH High Frequency Passive Clearance in ADC counts
     }
     //4.19
@@ -1776,7 +1776,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
             temp << "Laser Operating Current by outer  head Diameter " << std::dec << loopCount;// Head count
             myHeader.assign(temp.str());
             temp.str("");temp.clear();
-            temp << std::setprecision(1) << std::setfill('0') << static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].reliPage.laserOperCurrent[loopCount].inner)));
+            temp << std::fixed << std::setprecision(1) << std::setfill('0') << static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].reliPage.laserOperCurrent[loopCount].inner)));
             set_json_string_With_Status(headInfo, myHeader, temp.str(), vFarmFrame[page].reliPage.laserOperCurrent[loopCount].inner, m_showStatusBits);
         }
         for (loopCount = 0; loopCount < m_heads; ++loopCount)
@@ -1785,7 +1785,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
             temp << "Laser Operating Current by inner  head Diameter " << std::dec << loopCount;// Head count
             myHeader.assign(temp.str());
             temp.str("");temp.clear();
-            temp << std::setprecision(1) << std::setfill('0') << static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].reliPage.laserOperCurrent[loopCount].middle)));
+            temp << std::fixed << std::setprecision(1) << std::setfill('0') << static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].reliPage.laserOperCurrent[loopCount].middle)));
             set_json_string_With_Status(headInfo, myHeader, temp.str(), vFarmFrame[page].reliPage.laserOperCurrent[loopCount].middle, m_showStatusBits);
         }
         for (loopCount = 0; loopCount < m_heads; ++loopCount)
@@ -1794,7 +1794,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
             temp << "Laser Operating Current by middle  head Diameter " << std::dec << loopCount;// Head count
             myHeader.assign(temp.str());
             temp.str("");temp.clear();
-            temp << std::setprecision(1) << std::setfill('0') << static_cast<float> (M_Word0(check_Status_Strip_Status(vFarmFrame[page].reliPage.laserOperCurrent[loopCount].outer)));
+            temp << std::fixed << std::setprecision(1) << std::setfill('0') << static_cast<float> (M_Word0(check_Status_Strip_Status(vFarmFrame[page].reliPage.laserOperCurrent[loopCount].outer)));
             set_json_string_With_Status(headInfo, myHeader, temp.str(), vFarmFrame[page].reliPage.laserOperCurrent[loopCount].outer, m_showStatusBits);
         }
         for (loopCount = 0; loopCount < m_heads; ++loopCount)
@@ -1803,7 +1803,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
             temp << "Post LFA Optimal BER by outer head Diameter " << std::dec << loopCount;// Head count
             myHeader.assign(temp.str());
             temp.str("");temp.clear();
-            temp << std::setprecision(1) << std::setfill('0') << static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].reliPage.postLFABER[loopCount].inner)));
+            temp << std::fixed << std::setprecision(1) << std::setfill('0') << static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].reliPage.postLFABER[loopCount].inner)));
             set_json_string_With_Status(headInfo, myHeader, temp.str(), vFarmFrame[page].reliPage.postLFABER[loopCount].inner, m_showStatusBits);
         }
         for (loopCount = 0; loopCount < m_heads; ++loopCount)
@@ -1812,7 +1812,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
             temp << "Post LFA Optimal BER by inner head Diameter " << std::dec << loopCount;// Head count
             myHeader.assign(temp.str());
             temp.str("");temp.clear();
-            temp << std::setprecision(1) << std::setfill('0') << static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].reliPage.postLFABER[loopCount].middle)));
+            temp << std::fixed << std::setprecision(1) << std::setfill('0') << static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].reliPage.postLFABER[loopCount].middle)));
             set_json_string_With_Status(headInfo, myHeader, temp.str(), vFarmFrame[page].reliPage.postLFABER[loopCount].middle, m_showStatusBits);
         }
         for (loopCount = 0; loopCount < m_heads; ++loopCount)
@@ -1821,7 +1821,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
             temp << "Post LFA Optimal BER by middle head Diameter " << std::dec << loopCount;// Head count
             myHeader.assign(temp.str());
             temp.str("");temp.clear();
-            temp << std::setprecision(1) << std::setfill('0') << static_cast<float> (M_Word0(check_Status_Strip_Status(vFarmFrame[page].reliPage.postLFABER[loopCount].outer)));
+            temp << std::fixed << std::setprecision(1) << std::setfill('0') << static_cast<float> (M_Word0(check_Status_Strip_Status(vFarmFrame[page].reliPage.postLFABER[loopCount].outer)));
             set_json_string_With_Status(headInfo, myHeader, temp.str(), vFarmFrame[page].reliPage.postLFABER[loopCount].outer, m_showStatusBits);
         }
         for (loopCount = 0; loopCount < m_heads; ++loopCount)

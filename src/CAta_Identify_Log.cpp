@@ -757,7 +757,7 @@ eReturnValues CAta_Identify_log::print_Identify_Information(JSONNODE *masterData
 
     // capacity
     temp.str("");temp.clear();
-    temp << std::setprecision(2) << std::setfill('0') << m_sDriveInfo.sCapInfo.capUnit << " " << m_sDriveInfo.sCapInfo.capacityUnit;
+    temp << std::fixed << std::setprecision(2) << std::setfill('0') << m_sDriveInfo.sCapInfo.capUnit << " " << m_sDriveInfo.sCapInfo.capacityUnit;
     json_push_back(identifyInfo, json_new_a("Identify Log Device Capacity", temp.str().c_str()));
     // Spec 
     temp.str("");temp.clear();

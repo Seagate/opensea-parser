@@ -2119,7 +2119,7 @@ eReturnValues CSCSI_Farm_Log::print_General_Drive_Information_Continued(JSONNODE
         temp << (static_cast<float>(M_Word0(vFarmFrame[page].gDPage06.holdTime)) * .001F) << " seconds";
         json_push_back(label, json_new_a("time drive is held in staggered spin", temp.str().c_str()));                //!< time drive is held in staggered spin during the last power on sequence
         temp.str("");temp.clear();
-        temp << std::setprecision(3) << (static_cast<float>(M_Word0(vFarmFrame[page].gDPage06.servoSpinUpTime)) * .001F) << " seconds";
+        temp << std::fixed << std::setprecision(3) << (static_cast<float>(M_Word0(vFarmFrame[page].gDPage06.servoSpinUpTime)) * .001F) << " seconds";
         json_push_back(label, json_new_a("last servo spin up time", temp.str().c_str()));			//!< time to ready of the last power cycle
         temp.str("");temp.clear();
         temp << "scsi-log-page:0x" << std::hex << FARMLOGPAGE << "," << std::hex << FARMSUBPAGE << ":0x" << std::hex << GENERAL_DRIVE_INFORMATION_06;
@@ -2166,13 +2166,13 @@ eReturnValues CSCSI_Farm_Log::print_General_Drive_Information_Continued(JSONNODE
 
         set_json_64_bit_With_Status(pageInfo, "Max Number of Available Sectors for Reassignment", vFarmFrame[page].gDPage06.maxNumAvaliableSectors, false, m_showStatusBits);          //!< Max Number of Available Sectors for Reassignment � Value in disc sectors(started in 3.3 )
         temp.str("");temp.clear();
-        temp << std::setprecision(3) << (static_cast<float>(M_Word0(vFarmFrame[page].gDPage06.timeToReady)) * .001F);
+        temp << std::fixed << std::setprecision(3) << (static_cast<float>(M_Word0(vFarmFrame[page].gDPage06.timeToReady)) * .001F);
         set_json_string_With_Status(pageInfo, "Time to ready of the last power cycle (sec)", temp.str().c_str(), vFarmFrame[page].gDPage06.timeToReady, m_showStatusBits);			//!< time to ready of the last power cycle
         temp.str("");temp.clear();
-        temp << std::setprecision(3) << (static_cast<float>(M_Word0(vFarmFrame[page].gDPage06.holdTime)) * .001F);
+        temp << std::fixed << std::setprecision(3) << (static_cast<float>(M_Word0(vFarmFrame[page].gDPage06.holdTime)) * .001F);
         set_json_string_With_Status(pageInfo, "Time drive is held in staggered spin (sec)", temp.str().c_str(), vFarmFrame[page].gDPage06.holdTime, m_showStatusBits);                //!< time drive is held in staggered spin during the last power on sequence
         temp.str("");temp.clear();
-        temp << std::setprecision(3) << (static_cast<float>(M_Word0(vFarmFrame[page].gDPage06.servoSpinUpTime)) * .001F);
+        temp << std::fixed << std::setprecision(3) << (static_cast<float>(M_Word0(vFarmFrame[page].gDPage06.servoSpinUpTime)) * .001F);
         set_json_string_With_Status(pageInfo, "Last Servo Spin up Time (sec)", temp.str().c_str(), vFarmFrame[page].gDPage06.servoSpinUpTime, m_showStatusBits);			//!< time to ready of the last power cycle
 
         json_push_back(masterData, pageInfo);
@@ -2635,25 +2635,25 @@ eReturnValues CSCSI_Farm_Log::print_Enviroment_Information(JSONNODE *masterData,
         }
         json_set_name(pageInfo, header.c_str());
         temp.str("");temp.clear();
-        temp << std::setprecision(2) << (static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.curentTemp)) * .10));							//!< Current Temperature in Celsius
+        temp << std::fixed << std::setprecision(2) << (static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.curentTemp)) * .10));							//!< Current Temperature in Celsius
         set_json_string_With_Status(pageInfo, "Current Temperature (Celsius)", temp.str().c_str(), vFarmFrame[page].environmentPage.curentTemp, m_showStatusBits);
         temp.str("");temp.clear();
-        temp << std::setprecision(2) << (static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.highestTemp)) * .10));						//!< Highest Average Long Term Temperature
+        temp << std::fixed << std::setprecision(2) << (static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.highestTemp)) * .10));						//!< Highest Average Long Term Temperature
         set_json_string_With_Status(pageInfo, "Highest Temperature", temp.str().c_str(), vFarmFrame[page].environmentPage.highestTemp, m_showStatusBits);
         temp.str("");temp.clear();
-        temp << std::setprecision(2) << (static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.lowestTemp)) * .10));							//!< Lowest Average Long Term Temperature
+        temp << std::fixed << std::setprecision(2) << (static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.lowestTemp)) * .10));							//!< Lowest Average Long Term Temperature
         set_json_string_With_Status(pageInfo, "Lowest Temperature", temp.str().c_str(), vFarmFrame[page].environmentPage.lowestTemp, m_showStatusBits);
         temp.str("");temp.clear();
-        temp << std::setprecision(2) << (static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.maxTemp)) * 1.00));							//!< Specified Max Operating Temperature
+        temp << std::fixed << std::setprecision(2) << (static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.maxTemp)) * 1.00));							//!< Specified Max Operating Temperature
         set_json_string_With_Status(pageInfo, "Specified Max Operating Temperature", temp.str().c_str(), vFarmFrame[page].environmentPage.maxTemp, m_showStatusBits);
         temp.str("");temp.clear();
-        temp << std::setprecision(2) << (static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.minTemp)) * 1.00));							//!< Specified Min Operating Temperature
+        temp << std::fixed << std::setprecision(2) << (static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.minTemp)) * 1.00));							//!< Specified Min Operating Temperature
         set_json_string_With_Status(pageInfo, "Specified Min Operating Temperature", temp.str().c_str(), vFarmFrame[page].environmentPage.minTemp, m_showStatusBits);
         temp.str("");temp.clear();
-        temp << std::setprecision(2) << (static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.humidity)) * 0.1));							//!< Current Relative Humidity (in units of .1%)
+        temp << std::fixed << std::setprecision(2) << (static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.humidity)) * 0.1));							//!< Current Relative Humidity (in units of .1%)
         set_json_string_With_Status(pageInfo, "Current Relative Humidity", temp.str().c_str(), vFarmFrame[page].environmentPage.humidity, m_showStatusBits);
         temp.str("");temp.clear();
-        temp << std::setprecision(2) << (static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.humidityRatio)) / 8.0));						//!< Humidity Mixed Ratio multiplied by 8 (divide by 8 to get actual value)
+        temp << std::fixed << std::setprecision(2) << (static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.humidityRatio)) / 8.0));						//!< Humidity Mixed Ratio multiplied by 8 (divide by 8 to get actual value)
         set_json_string_With_Status(pageInfo, "Humidity Mixed Ratio", temp.str().c_str(), vFarmFrame[page].environmentPage.humidityRatio, m_showStatusBits);
         temp.str("");temp.clear();
         temp << std::dec << M_Word0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.currentMotorPower));
@@ -3530,7 +3530,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 std::ostringstream header, temp;
                 header << "Write Power On (hrs) by Head " << std::dec << loopCount; // Head count
                 //set_json_64_bit_With_Status(headPage, header.str().c_str(), vFarmFrame[page].writePowerOnHours.headValue[loopCount], false, m_showStatusBits);
-                temp << std::setprecision(4) << ROUNDF((static_cast<double>( M_DoubleWord0(vFarmFrame[page].writePowerOnHours.headValue[loopCount])) /3600),1000);
+                temp << std::fixed << std::setprecision(4) << ROUNDF((static_cast<double>( M_DoubleWord0(vFarmFrame[page].writePowerOnHours.headValue[loopCount])) /3600),1000);
                 if (g_dataformat == PREPYTHON_DATA)
                 {
                     prePython_Head_Float(headPage, "head_write_power_on", NULL, loopCount, "hours", WRITE_POWERON_HOURS_FROM_MOST_RECENT_SMART, static_cast<double>(M_DoubleWord0(vFarmFrame[page].writePowerOnHours.headValue[loopCount])) / 3600);   //ROUNDF(,1000
@@ -3609,7 +3609,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 }
                 else
                 {
-                    temp << std::setprecision(2) << static_cast<float>(M_Word0(vFarmFrame[page].currentH2STTrimmedbyHeadZone0.headValue[loopCount]) * .10);
+                    temp << std::fixed << std::setprecision(2) << static_cast<float>(M_Word0(vFarmFrame[page].currentH2STTrimmedbyHeadZone0.headValue[loopCount]) * .10);
                     set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].currentH2STTrimmedbyHeadZone0.headValue[loopCount], m_showStatusBits); //!< Current H2SAT trimmed mean bits in error by Head, by Test Zone 0
                 }
             }
@@ -3628,7 +3628,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 }
                 else
                 {
-                    temp << std::setprecision(2) << static_cast<float>(M_Word0(vFarmFrame[page].currentH2STTrimmedbyHeadZone1.headValue[loopCount]) * .10);
+                    temp << std::fixed << std::setprecision(2) << static_cast<float>(M_Word0(vFarmFrame[page].currentH2STTrimmedbyHeadZone1.headValue[loopCount]) * .10);
                     set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].currentH2STTrimmedbyHeadZone1.headValue[loopCount], m_showStatusBits); //!< Current H2SAT trimmed mean bits in error by Head, by Test Zone 1
                 }
             }
@@ -3647,7 +3647,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 }
                 else
                 {
-                    temp << std::setprecision(2) << static_cast<float>(M_Word0(vFarmFrame[page].currentH2STTrimmedbyHeadZone2.headValue[loopCount]) * .10);
+                    temp << std::fixed << std::setprecision(2) << static_cast<float>(M_Word0(vFarmFrame[page].currentH2STTrimmedbyHeadZone2.headValue[loopCount]) * .10);
                     set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].currentH2STTrimmedbyHeadZone2.headValue[loopCount], m_showStatusBits);//!< Current H2SAT trimmed mean bits in error by Head, by Test Zone 2
                 }
             }
@@ -3666,7 +3666,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 }
                 else
                 {
-                    temp << std::setprecision(2) << static_cast<float>(M_Word0(vFarmFrame[page].currentH2STIterationsByHeadZone0.headValue[loopCount]) * .10);
+                    temp << std::fixed << std::setprecision(2) << static_cast<float>(M_Word0(vFarmFrame[page].currentH2STIterationsByHeadZone0.headValue[loopCount]) * .10);
                     set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].currentH2STIterationsByHeadZone0.headValue[loopCount], m_showStatusBits);  //!< Current H2SAT iterations to cnverge by Head, by Test Zone 0
                 }
             }
@@ -3685,7 +3685,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 }
                 else
                 {
-                    temp << std::setprecision(2) << static_cast<float>(M_Word0(vFarmFrame[page].currentH2STIterationsByHeadZone1.headValue[loopCount]) * .10);
+                    temp << std::fixed << std::setprecision(2) << static_cast<float>(M_Word0(vFarmFrame[page].currentH2STIterationsByHeadZone1.headValue[loopCount]) * .10);
                     set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].currentH2STIterationsByHeadZone1.headValue[loopCount], m_showStatusBits);  //!< Current H2SAT iterations to cnverge by Head, by Test Zone 1
                 }
             }
@@ -3704,7 +3704,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 }
                 else
                 {
-                    temp << std::setprecision(2) << static_cast<float>(M_Word0(vFarmFrame[page].currentH2STIterationsByHeadZone2.headValue[loopCount]) * .10);
+                    temp << std::fixed << std::setprecision(2) << static_cast<float>(M_Word0(vFarmFrame[page].currentH2STIterationsByHeadZone2.headValue[loopCount]) * .10);
                     set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].currentH2STIterationsByHeadZone2.headValue[loopCount], m_showStatusBits); //!< Current H2SAT iterations to cnverge by Head, by Test Zone 2
                 }
             }
@@ -3723,7 +3723,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 }
                 else
                 {
-                    temp << std::setprecision(3) << static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].appliedFlyHeightByHeadOuter.headValue[loopCount])) * .001);   //!< Applied fly height clearance delta per head in thousandths of one Angstrom: Outer by Head
+                    temp << std::fixed << std::setprecision(3) << static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].appliedFlyHeightByHeadOuter.headValue[loopCount])) * .001);   //!< Applied fly height clearance delta per head in thousandths of one Angstrom: Outer by Head
                     set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].appliedFlyHeightByHeadOuter.headValue[loopCount], m_showStatusBits);
                 }
             }
@@ -3742,7 +3742,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 }
                 else
                 {
-                    temp << std::setprecision(2) << static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].appliedFlyHeightByHeadInner.headValue[loopCount])) * .001);   //!< Applied fly height clearance delta per head in thousandths of one Angstrom: Inner by Head
+                    temp << std::fixed << std::setprecision(2) << static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].appliedFlyHeightByHeadInner.headValue[loopCount])) * .001);   //!< Applied fly height clearance delta per head in thousandths of one Angstrom: Inner by Head
                     set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].appliedFlyHeightByHeadInner.headValue[loopCount], m_showStatusBits);
                 }
             }
@@ -3761,7 +3761,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 }
                 else
                 {
-                    temp << std::setprecision(2) << static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].appliedFlyHeightByHeadMiddle.headValue[loopCount])) * .001);   //!< Applied fly height clearance delta per head in thousandths of one Angstrom:middle by Head
+                    temp << std::fixed << std::setprecision(2) << static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].appliedFlyHeightByHeadMiddle.headValue[loopCount])) * .001);   //!< Applied fly height clearance delta per head in thousandths of one Angstrom:middle by Head
                     set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].appliedFlyHeightByHeadMiddle.headValue[loopCount], m_showStatusBits);
                 }
             }
@@ -3796,7 +3796,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 }
                 else
                 {
-                    temp << std::setprecision(2) << static_cast<float>(M_WordInt0(vFarmFrame[page].secondMRHeadResistanceByHead.headValue[loopCount]) * .1);   //!< Second MR Head Resistance
+                    temp << std::fixed << std::setprecision(2) << static_cast<float>(M_WordInt0(vFarmFrame[page].secondMRHeadResistanceByHead.headValue[loopCount]) * .1);   //!< Second MR Head Resistance
                     set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].secondMRHeadResistanceByHead.headValue[loopCount], m_showStatusBits);
                 }
             }
@@ -3842,7 +3842,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 }
                 else
                 {
-                    temp << std::setw(4) << std::setfill('0') << std::setprecision(2) << (static_cast<double>(M_DoubleWordInt0(check_Status_Strip_Status(vFarmFrame[page].fafhRelativeApmlitude.headValue[loopCount]))) * .1);
+                    temp << std::setw(4) << std::setfill('0') << std::fixed << std::setprecision(2) << (static_cast<double>(M_DoubleWordInt0(check_Status_Strip_Status(vFarmFrame[page].fafhRelativeApmlitude.headValue[loopCount]))) * .1);
                     set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].fafhRelativeApmlitude.headValue[loopCount], m_showStatusBits);
                 }
             }
@@ -3867,7 +3867,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 }
                 else
                 {
-                    temp << std::dec << whole << "." << std::setw(4) << std::setfill('0') << std::setprecision(0) << decimal;
+                    temp << std::dec << whole << "." << std::setw(4) << std::setfill('0') << std::fixed << std::setprecision(0) << decimal;
                     set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].fafh_bit_error_rate_0.headValue[loopCount], m_showStatusBits);
                 }
             }
@@ -3892,7 +3892,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 }
                 else
                 {
-                    temp << std::dec << whole << "." << std::setw(4) << std::setfill('0') << std::setprecision(0) << decimal;
+                    temp << std::dec << whole << "." << std::setw(4) << std::setfill('0') << std::fixed << std::setprecision(0) << decimal;
                     set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].fafh_bit_error_rate_1.headValue[loopCount], m_showStatusBits);
                 }
             }
@@ -3917,7 +3917,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 }
                 else
                 {
-                    temp << std::dec << whole << "." << std::setw(4) << std::setfill('0') << std::setprecision(0) << decimal;
+                    temp << std::dec << whole << "." << std::setw(4) << std::setfill('0') << std::fixed << std::setprecision(0) << decimal;
                     set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].fafh_bit_error_rate_2.headValue[loopCount], m_showStatusBits);
                 }
             }
@@ -3938,7 +3938,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 }
                 else
                 {
-                    temp << std::setprecision(2) << static_cast<float>(M_WordInt0(vFarmFrame[page].fafhLowFrequency_0.headValue[loopCount]) * .001);
+                    temp << std::fixed << std::setprecision(2) << static_cast<float>(M_WordInt0(vFarmFrame[page].fafhLowFrequency_0.headValue[loopCount]) * .001);
                     set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].fafhLowFrequency_0.headValue[loopCount], m_showStatusBits);
                 }
             }
@@ -3959,7 +3959,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 }
                 else
                 {
-                    temp << std::setprecision(2) << static_cast<float>(M_WordInt0(vFarmFrame[page].fafhLowFrequency_1.headValue[loopCount]) * .001F);
+                    temp << std::fixed << std::setprecision(2) << static_cast<float>(M_WordInt0(vFarmFrame[page].fafhLowFrequency_1.headValue[loopCount]) * .001F);
                     set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].fafhLowFrequency_1.headValue[loopCount], m_showStatusBits);
                 }
             }
@@ -3980,7 +3980,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 }
                 else
                 {
-                    temp << std::setprecision(2) << static_cast<float>(M_WordInt0(vFarmFrame[page].fafhLowFrequency_2.headValue[loopCount]) * .001F);
+                    temp << std::fixed << std::setprecision(2) << static_cast<float>(M_WordInt0(vFarmFrame[page].fafhLowFrequency_2.headValue[loopCount]) * .001F);
                     set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].fafhLowFrequency_2.headValue[loopCount], m_showStatusBits);
                 }
             }
@@ -4001,7 +4001,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 }
                 else
                 {
-                    temp << std::setprecision(2) << static_cast<float>(M_WordInt0(vFarmFrame[page].fafhHighFrequency_0.headValue[loopCount]) * .001F);
+                    temp << std::fixed << std::setprecision(2) << static_cast<float>(M_WordInt0(vFarmFrame[page].fafhHighFrequency_0.headValue[loopCount]) * .001F);
                     set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].fafhHighFrequency_0.headValue[loopCount], m_showStatusBits);
                 }
             }
@@ -4022,7 +4022,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 }
                 else
                 {
-                    temp << std::setprecision(2) << static_cast<float>(M_WordInt0(vFarmFrame[page].fafhHighFrequency_1.headValue[loopCount]) * .001F);
+                    temp << std::fixed << std::setprecision(2) << static_cast<float>(M_WordInt0(vFarmFrame[page].fafhHighFrequency_1.headValue[loopCount]) * .001F);
                     set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].fafhHighFrequency_1.headValue[loopCount], m_showStatusBits);
                 }
             }
@@ -4043,7 +4043,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 }
                 else
                 {
-                    temp << std::setprecision(2) << static_cast<float>(M_WordInt0(vFarmFrame[page].fafhHighFrequency_2.headValue[loopCount]) * .001F);
+                    temp << std::fixed << std::setprecision(2) << static_cast<float>(M_WordInt0(vFarmFrame[page].fafhHighFrequency_2.headValue[loopCount]) * .001F);
                     set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].fafhHighFrequency_2.headValue[loopCount], m_showStatusBits);
                 }
             }
@@ -4269,7 +4269,7 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Information(JSONNODE *LUNData, 
         set_json_64_bit_With_Status(pageInfo, "RV Absulute Mean", pLUN->RVabsolue, false, m_showStatusBits);									            //!< RV Absulute Mean
         set_json_64_bit_With_Status(pageInfo, "Max RV Absolute Mean", pLUN->maxRVabsolue, false, m_showStatusBits);							                //!< Max RV absulute Mean 
         temp.str("");temp.clear();
-        temp << std::setprecision(3) << (static_cast<double>(M_DoubleWord0(check_Status_Strip_Status(pLUN->idleTime)) * 1.0) / 3600);
+        temp << std::fixed << std::setprecision(3) << (static_cast<double>(M_DoubleWord0(check_Status_Strip_Status(pLUN->idleTime)) * 1.0) / 3600);
         set_json_string_With_Status(pageInfo, "Idle Time (hours)", temp.str().c_str(), pLUN->idleTime, m_showStatusBits);                                 //!< idle Time value from the most recent SMART Summary Frame
         set_json_64_bit_With_Status(pageInfo, "Number of LBAs Corrected by Parity Sector", pLUN->lbasCorrectedByParity, false, m_showStatusBits);           //!< Number of LBAs Corrected by Parity Sector
         set_json_64_bit_With_Status(pageInfo, "current low vibe score",   pLUN->currentLowFrequencyVibe, false, m_showStatusBits);
