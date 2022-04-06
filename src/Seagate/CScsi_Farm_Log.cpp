@@ -3427,7 +3427,9 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 }
                 else
                 {
-                    set_json_64_bit_With_Status(headPage, header.str().c_str(), vFarmFrame[page].currentH2STAsymmetryByHead.headValue[loopCount], false, m_showStatusBits);  //!< Current H2SAT asymmetry, averaged across Test Zone
+                    std::ostringstream asymmetryStr;
+                    asymmetryStr << std::dec << M_DoubleWordInt0(vFarmFrame[page].currentH2STAsymmetryByHead.headValue[loopCount]);
+                    set_json_string_With_Status(headPage, header.str().c_str(), asymmetryStr.str(), vFarmFrame[page].currentH2STAsymmetryByHead.headValue[loopCount], m_showStatusBits);  //!< Current H2SAT asymmetry, averaged across Test Zone
                 }
             }
             break;
