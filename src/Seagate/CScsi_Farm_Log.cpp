@@ -1786,7 +1786,7 @@ eReturnValues CSCSI_Farm_Log::print_Header(JSONNODE *masterData)
         json_push_back(label, json_new_a("location", "farm header"));
 
         temp.str("");temp.clear();
-        temp << "0x" << std::hex << check_Status_Strip_Status(vFarmFrame[page].farmHeader.farmHeader.signature);
+        temp << "0x" << std::hex << std::uppercase << check_Status_Strip_Status(vFarmFrame[page].farmHeader.farmHeader.signature);
         json_push_back(label, json_new_a("log_signature", temp.str().c_str()));
         temp.str("");temp.clear();
         temp << std::dec << M_DoubleWord0(check_Status_Strip_Status(vFarmFrame[page].farmHeader.farmHeader.majorRev));
@@ -4358,14 +4358,14 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_FLED_Info(JSONNODE *LUNFLED, ui
             json_push_back(label, json_new_a("metric_source", temp.str().c_str()));
             json_push_back(label, json_new_a("stat_type", "flash LED event"));
             temp.str("");temp.clear();
-            temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << M_Word2(check_Status_Strip_Status(pFLED->flashLEDArray[i]));
+            temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << M_Word2(check_Status_Strip_Status(pFLED->flashLEDArray[i]));
             json_push_back(label, json_new_a("flash_LED_code", temp.str().c_str()));
             std::string meaning;
             get_Assert_Code_Meaning(meaning, M_Word2(check_Status_Strip_Status(pFLED->flashLEDArray[i])));
             json_push_back(label, json_new_a("flash_LED_code_meaning", meaning.c_str()));
             temp.str("");
             temp.clear();
-            temp << "0x" << std::hex << std::setfill('0') << std::setw(8) << M_DoubleWord0(check_Status_Strip_Status(pFLED->flashLEDArray[i]));
+            temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(8) << M_DoubleWord0(check_Status_Strip_Status(pFLED->flashLEDArray[i]));
             json_push_back(label, json_new_a("flash_LED_address", temp.str().c_str()));
 
             temp.str("");
@@ -4413,14 +4413,14 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_FLED_Info(JSONNODE *LUNFLED, ui
             set_json_64_bit_With_Status(eventInfo, "Address of Event", pFLED->flashLEDArray[i], true, m_showStatusBits);	           //!< Info on the last 8 Flash LED (assert) Events, wrapping array
             temp.str("");
             temp.clear();
-            temp << "0x" << std::hex << std::setfill('0') << std::setw(4) <<  M_Word2(check_Status_Strip_Status(pFLED->flashLEDArray[i]));
+            temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) <<  M_Word2(check_Status_Strip_Status(pFLED->flashLEDArray[i]));
             json_push_back(eventInfo, json_new_a("Flash LED Code", temp.str().c_str()));
             std::string meaning;
             get_Assert_Code_Meaning(meaning, M_Word2(check_Status_Strip_Status(pFLED->flashLEDArray[i])));
             json_push_back(eventInfo, json_new_a("Flash LED Code Meaning", meaning.c_str()));
             temp.str("");
             temp.clear();
-            temp << "0x" << std::hex << std::setfill('0') << std::setw(8) << M_DoubleWord0(check_Status_Strip_Status(pFLED->flashLEDArray[i]));
+            temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(8) << M_DoubleWord0(check_Status_Strip_Status(pFLED->flashLEDArray[i]));
             json_push_back(eventInfo, json_new_a("Flash LED Address", temp.str().c_str()));
             temp.str("");
             temp.clear();

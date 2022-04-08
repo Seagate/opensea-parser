@@ -255,7 +255,7 @@ eReturnValues CScsiStartStop::week_Year_Print(JSONNODE *data, uint16_t param, ui
     {
         std::ostringstream temp;
 
-        temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << param;
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << param;
         json_push_back(dateInfo, json_new_a("Parameter Code", temp.str().c_str()));
 
         temp.str("");temp.clear();
@@ -263,7 +263,7 @@ eReturnValues CScsiStartStop::week_Year_Print(JSONNODE *data, uint16_t param, ui
         json_push_back(dateInfo, json_new_a("Parameter Length", temp.str().c_str()));
 
         temp.str("");temp.clear();
-        temp << "0x" << std::hex << std::setfill('0') <<std::setw(2) << static_cast<uint16_t>(paramConByte); //cast is because streams interpret char/unsigned char as a character, but 16 bits wide will be ok to cast to to get around this. -TJE
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') <<std::setw(2) << static_cast<uint16_t>(paramConByte); //cast is because streams interpret char/unsigned char as a character, but 16 bits wide will be ok to cast to to get around this. -TJE
         json_push_back(dateInfo, json_new_a("Control Byte", temp.str().c_str()));
     }
 	
@@ -311,13 +311,13 @@ eReturnValues CScsiStartStop::get_Count(JSONNODE *countData, uint16_t param, uin
     if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
         std::ostringstream temp;
-        temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << param;
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << param;
         json_push_back(countInfo, json_new_a("Parameter Code", temp.str().c_str()));
         temp.str("");temp.clear();
         temp << std::dec << static_cast<uint16_t>(paramlength);
         json_push_back(countInfo, json_new_a("Parameter Length", temp.str().c_str()));
         temp.str("");temp.clear();
-        temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(paramConByte);
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(paramConByte);
         json_push_back(countInfo, json_new_a("Control Byte", temp.str().c_str()));
     }
 	byte_Swap_32(&count);

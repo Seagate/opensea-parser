@@ -161,16 +161,16 @@ void CScsiSolidStateDriveLog::process_Solid_State_Drive_Data(JSONNODE *ssdData)
     JSONNODE *ssdInfo = json_new(JSON_NODE);
     json_set_name(ssdInfo, myHeader.c_str());
     std::ostringstream temp;
-    temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << m_SSDParam->paramCode;
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << m_SSDParam->paramCode;
     json_push_back(ssdInfo, json_new_a("Solid State Drive Param Code", temp.str().c_str()));
 
     if (!descriptionFound)
     {
         temp.str("");temp.clear();
-        temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_SSDParam->paramControlByte);
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_SSDParam->paramControlByte);
         json_push_back(ssdInfo, json_new_a("Solid State Drive Param Control Byte ", temp.str().c_str()));
         temp.str("");temp.clear();
-        temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_SSDParam->paramLength);
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_SSDParam->paramLength);
         json_push_back(ssdInfo, json_new_a("Solid State Drive Param Length ", temp.str().c_str()));
     }
 

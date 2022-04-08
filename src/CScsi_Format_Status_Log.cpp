@@ -181,13 +181,13 @@ void CScsiFormatStatusLog::process_Format_Status_Data(JSONNODE *formatData)
     json_set_name(formatInfo, myHeader.c_str());
 
     std::ostringstream temp;
-    temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << m_Format->paramCode;
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << m_Format->paramCode;
     json_push_back(formatInfo, json_new_a("Parameter Code", temp.str().c_str()));
     temp.str("");temp.clear();
-    temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Format->paramControlByte);
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Format->paramControlByte);
     json_push_back(formatInfo, json_new_a("Control Byte ", temp.str().c_str()));
     temp.str("");temp.clear();
-    temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Format->paramLength);
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Format->paramLength);
     json_push_back(formatInfo, json_new_a("Length ", temp.str().c_str()));
     if (m_Format->paramLength == 8 || m_Value > UINT32_MAX)
     {
@@ -202,7 +202,7 @@ void CScsiFormatStatusLog::process_Format_Status_Data(JSONNODE *formatData)
         else
         {
             temp.str("");temp.clear();
-            temp << "0x" << std::hex << std::setfill('0') << std::setw(8) << m_Value;
+            temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(8) << m_Value;
             json_push_back(formatInfo, json_new_a("Value", temp.str().c_str()));
         }
     }
@@ -234,13 +234,13 @@ void CScsiFormatStatusLog::process_Format_Status_Data_Variable_Length(JSONNODE *
     json_set_name(formatInfo, myHeader.c_str());
 
     std::ostringstream temp;
-    temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << m_Format->paramCode;
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << m_Format->paramCode;
     json_push_back(formatInfo, json_new_a("Format Status Parameter Code", temp.str().c_str()));
     temp.str("");temp.clear();
-    temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Format->paramControlByte);
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Format->paramControlByte);
     json_push_back(formatInfo, json_new_a("Format Status Control Byte ", temp.str().c_str()));
     temp.str("");temp.clear();
-    temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Format->paramLength);
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Format->paramLength);
     json_push_back(formatInfo, json_new_a("Format Status Length ", temp.str().c_str()));
 
     uint8_t lineNumber = 0;
@@ -248,14 +248,14 @@ void CScsiFormatStatusLog::process_Format_Status_Data_Variable_Length(JSONNODE *
     for (uint8_t outer = 0; outer < m_Format->paramLength - 1; )
     {
         temp.str("");temp.clear();
-        temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(lineNumber);
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(lineNumber);
 
         std::ostringstream innerMsg;
-        innerMsg << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_FormatDataOutParamValue[offset++]);
+        innerMsg << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_FormatDataOutParamValue[offset++]);
         // inner loop for creating a single ling of the buffer data
         for (uint8_t inner = 1; inner < 16 && offset < m_Format->paramLength - 1; inner++)
         {
-            innerMsg << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_FormatDataOutParamValue[offset]);
+            innerMsg << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_FormatDataOutParamValue[offset]);
             if (inner % 4 == 0)
             {
                 innerMsg << " ";

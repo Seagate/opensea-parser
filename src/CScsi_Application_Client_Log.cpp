@@ -128,14 +128,14 @@ void CScsiApplicationLog::process_Client_Data(JSONNODE *appData)
 	json_set_name(appInfo, temp.str().c_str());
     
     temp.str("");temp.clear();
-    temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << m_App->paramCode;
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << m_App->paramCode;
     json_push_back(appInfo, json_new_a("Application Client Parameter Code", temp.str().c_str()));
 
     temp.str("");temp.clear();
-    temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_App->paramControlByte);
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_App->paramControlByte);
     json_push_back(appInfo, json_new_a("Application Client Control Byte ", temp.str().c_str()));
     temp.str("");temp.clear();
-    temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_App->paramLength);
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_App->paramLength);
     json_push_back(appInfo, json_new_a("Application Client Length ", temp.str().c_str()));
     
     // format to show the buffer data.
@@ -148,7 +148,7 @@ void CScsiApplicationLog::process_Client_Data(JSONNODE *appData)
         for (uint32_t outer = 0; outer < APP_CLIENT_DATA_LEN - 1; )
         {
             temp.str("");temp.clear();
-            temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << lineNumber;
+            temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << lineNumber;
 
             std::ostringstream innerMsg;
             innerMsg << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_App->data[offset]);

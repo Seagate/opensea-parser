@@ -238,7 +238,7 @@ eReturnValues CATA_Farm_Log::print_Header(JSONNODE *masterData)
 #endif
     json_set_name(pageInfo, "FARM Log Header");
     std::ostringstream temp;
-    temp << "0x" << std::hex << std::uppercase << check_Status_Strip_Status(header->signature);
+    temp << "0x" << std::hex << std::uppercase << std::uppercase << check_Status_Strip_Status(header->signature);
     json_push_back(pageInfo, json_new_a("Log Signature", temp.str().c_str()));
     json_push_back(pageInfo, json_new_i("Major Revision", static_cast<uint32_t>(check_Status_Strip_Status(header->majorRev))));
     json_push_back(pageInfo, json_new_i("Minor Revision", static_cast<uint32_t>(check_Status_Strip_Status(header->minorRev))));
@@ -719,12 +719,12 @@ eReturnValues CATA_Farm_Log::print_Error_Information(JSONNODE *masterData, uint3
         set_json_64_bit_With_Status(eventInfo, "Event Information", vFarmFrame[page].errorPage.flashLEDArray[loopCount], true, m_showStatusBits);              //!< Info on the last 8 Flash LED (assert) Events, wrapping array
 
         temp.str("");temp.clear();
-        temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << M_Word2(check_Status_Strip_Status(vFarmFrame[page].errorPage.flashLEDArray[loopCount]));
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << M_Word2(check_Status_Strip_Status(vFarmFrame[page].errorPage.flashLEDArray[loopCount]));
         json_push_back(eventInfo, json_new_a("Flash LED Code", temp.str().c_str()));
         get_Assert_Code_Meaning(timeStr, M_Word2(check_Status_Strip_Status(vFarmFrame[page].errorPage.flashLEDArray[loopCount])));
         json_push_back(eventInfo, json_new_a("Flash LED Code Meaning", timeStr.c_str()));
         temp.str("");temp.clear();
-        temp << "0x" << std::hex << std::setfill('0') << std::setw(8) << M_DoubleWord0(check_Status_Strip_Status(vFarmFrame[page].errorPage.flashLEDArray[loopCount]));
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(8) << M_DoubleWord0(check_Status_Strip_Status(vFarmFrame[page].errorPage.flashLEDArray[loopCount]));
         json_push_back(eventInfo, json_new_a("Flash LED Address", temp.str().c_str()));
 
         temp.str("");temp.clear();

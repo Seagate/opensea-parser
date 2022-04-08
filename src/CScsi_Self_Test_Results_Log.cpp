@@ -176,20 +176,20 @@ void CScsi_DST_Results::print_Self_Test_Log(JSONNODE *dstNode, uint16_t run)
 	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
         temp.str("");temp.clear();
-        temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << m_DST->paramCode;
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << m_DST->paramCode;
 		json_push_back(runInfo, json_new_a("Parameter Code", temp.str().c_str()));
         temp.str("");temp.clear();
-        temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_DST->paramLength);
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_DST->paramLength);
 		json_push_back(runInfo, json_new_a("Parameter Length", temp.str().c_str()));
         temp.str("");temp.clear();
-        temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << m_DST->paramControlByte;
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << m_DST->paramControlByte;
 		json_push_back(runInfo, json_new_a("Control Byte", temp.str().c_str()));
 	}
     temp.str("");temp.clear();
-    temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint8_t>(M_GETBITRANGE(m_DST->stCode, 7, 5));
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(M_GETBITRANGE(m_DST->stCode, 7, 5));
 	json_push_back(runInfo, json_new_a("Self Test Code", temp.str().c_str()));
     temp.str("");temp.clear();
-    temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint8_t>(M_GETBITRANGE(m_DST->stCode, 3, 0));
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(M_GETBITRANGE(m_DST->stCode, 3, 0));
 	json_push_back(runInfo, json_new_a("Self Test Results", temp.str().c_str()));
 	if (M_GETBITRANGE(m_DST->stCode, 7, 5) == DST_NOT_RUN)
 	{

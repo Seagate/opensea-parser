@@ -223,16 +223,16 @@ void CScsiZonedDeviceStatisticsLog::process_Zoned_Device_Statistics_Data(JSONNOD
         json_set_name(zdsInfo, myHeader.c_str());
 
         std::ostringstream temp;
-        temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << m_ZDSParam->paramCode;
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << m_ZDSParam->paramCode;
         json_push_back(zdsInfo, json_new_a("Zoned Device Statistics Param Code", temp.str().c_str()));
 
         if (!descriptionFound)
         {
             temp.str("");temp.clear();
-            temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_ZDSParam->paramControlByte);
+            temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_ZDSParam->paramControlByte);
             json_push_back(zdsInfo, json_new_a("Zoned Device Statistics Param Control Byte ", temp.str().c_str()));
             temp.str("");temp.clear();
-            temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_ZDSParam->paramLength);
+            temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_ZDSParam->paramLength);
             json_push_back(zdsInfo, json_new_a("Zoned Device Statistics Param Length ", temp.str().c_str()));
         }
 

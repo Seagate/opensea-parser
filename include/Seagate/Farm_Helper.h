@@ -56,7 +56,7 @@ namespace opensea_parser {
 			if (hexPrint) 
 			{
                 std::ostringstream temp;
-                temp << "0x" << std::hex << std::setfill('0') << std::setw(8) << static_cast<int32_t>(M_DoubleWord0(value));
+                temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(8) << static_cast<int32_t>(M_DoubleWord0(value));
 				json_push_back(nowNode, json_new_a(myStr.c_str(), temp.str().c_str()));
 			}
 			else

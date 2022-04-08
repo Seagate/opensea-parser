@@ -335,7 +335,7 @@ namespace opensea_parser {
         if (hexPrint)
         {
             //json does not support 64 bit numbers. Therefore we will print it as a string
-            temp << "0x" << std::hex << std::setfill('0') << std::setw(16) << value;
+            temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(16) << value;
             json_push_back(nowNode, json_new_a(myStr.c_str(), temp.str().c_str()));
         }
         else
@@ -375,7 +375,7 @@ namespace opensea_parser {
         if (hexPrint)
         {
             //json does not support 64 bit numbers. Therefore we will print it as a string
-            temp << "0x" << std::hex << std::setfill('0') << std::setw(16) << value;
+            temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(16) << value;
             json_push_back(nowNode, json_new_a(myStr.c_str(), temp.str().c_str()));
         }
         else

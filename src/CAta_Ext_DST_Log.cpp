@@ -211,13 +211,13 @@ eReturnValues CAta_Ext_DST_Log::parse_Ext_Self_Test_Log(JSONNODE *masterData)
         temp << std::dec << timeStamp;
         json_push_back(runInfo, json_new_a("Timestamp", temp.str().c_str()));
         temp.str("");temp.clear();
-        temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(StatusByte);
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(StatusByte);
         json_push_back(runInfo, json_new_a("Status Byte", temp.str().c_str()));
         Get_Status_Meaning(myStr,StatusByte);
         json_push_back(runInfo, json_new_a("Status Meaning", myStr.c_str()));
 
         temp.str("");temp.clear();
-        temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(checkPointByte);
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(checkPointByte);
         json_push_back(runInfo, json_new_a("CheckPoint Byte", temp.str().c_str()));
         temp.str("");temp.clear();
         temp << std::dec << compTime;

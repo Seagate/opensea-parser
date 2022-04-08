@@ -124,10 +124,10 @@ void CScsiTemperatureLog::get_Temp(JSONNODE *tempData)
 	json_set_name(paramInfo, temp.str().c_str());
 
     temp.str("");temp.clear();
-    temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Page->paramLength);
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Page->paramLength);
 	json_push_back(paramInfo, json_new_a("Parameter Length", temp.str().c_str()));
     temp.str("");temp.clear();
-    temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Page->paramControlByte);
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Page->paramControlByte);
 	json_push_back(paramInfo, json_new_a("Control Byte", temp.str().c_str()));
     temp.str("");temp.clear();
     temp << std::dec << static_cast<uint16_t>(m_Page->temp);

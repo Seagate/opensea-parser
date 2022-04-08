@@ -206,13 +206,13 @@ void CScsiLBAProvisionLog::process_LBA_Provision_Data(JSONNODE *lbaData)
     json_set_name(lbaInfo, myStr.c_str());
 
     std::ostringstream temp;
-    temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << m_Provision->paramCode;
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << m_Provision->paramCode;
     json_push_back(lbaInfo, json_new_a("Logical Block Provisioning Parameter Code", temp.str().c_str()));
     temp.str("");temp.clear();
-    temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Provision->paramControlByte);
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Provision->paramControlByte);
     json_push_back(lbaInfo, json_new_a("Logical Block Provisioning Control Byte ", temp.str().c_str()));
     temp.str("");temp.clear();
-    temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Provision->paramLength);
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Provision->paramLength);
     json_push_back(lbaInfo, json_new_a("Logical Block Provisioning Length ", temp.str().c_str()));
     if (m_Provision->paramCode == 0x0003)
     {

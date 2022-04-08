@@ -132,16 +132,16 @@ void CScsiProtocolPortLog::process_Events_Data(JSONNODE *eventData)
 	json_set_name(eventInfo, temp.str().c_str());
 
     temp.str("");temp.clear();
-    temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Event->eventSource);
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Event->eventSource);
 	json_push_back(eventInfo, json_new_a("Phy Event Source", temp.str().c_str()));
 
     byte_Swap_32(&m_Event->event);              // need to byte swap on SAS 
     byte_Swap_32(&m_Event->threshold);          // need to byte swap on SAS 
     temp.str("");temp.clear();
-    temp << "0x" << std::hex << std::setfill('0') << std::setw(8) << m_Event->event;
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(8) << m_Event->event;
 	json_push_back(eventInfo, json_new_a("Phy Event", temp.str().c_str()));
     temp.str("");temp.clear();
-    temp << "0x" << std::hex << std::setfill('0') << std::setw(8) << m_Event->threshold;
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(8) << m_Event->threshold;
 	json_push_back(eventInfo, json_new_a("Peak Value Detector Threshold", temp.str().c_str()));
 
 	json_push_back(eventData, eventInfo);
@@ -638,13 +638,13 @@ void CScsiProtocolPortLog::process_Descriptor_Information(JSONNODE *descData)
 	printf("Descriptor Information \n");
 #endif
     std::ostringstream temp;
-    temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Descriptor->phyIdent);
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Descriptor->phyIdent);
 	json_push_back(descData, json_new_a("PHY Identifier", temp.str().c_str()));
     temp.str("");temp.clear();
-    temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Descriptor->phyLength);
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Descriptor->phyLength);
 	json_push_back(descData, json_new_a("SAS Phy Descriptor Length", temp.str().c_str()));
     temp.str("");temp.clear();
-    temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Descriptor->attached);
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Descriptor->attached);
 	json_push_back(descData, json_new_a("Attached Device Type and Reason", temp.str().c_str()));
     temp.str("");temp.clear();
 	get_Device_Type_Field(&myStr,M_GETBITRANGE(m_Descriptor->attached, 6, 4));
@@ -652,27 +652,27 @@ void CScsiProtocolPortLog::process_Descriptor_Information(JSONNODE *descData)
 	get_Reason_Field(&myStr, M_GETBITRANGE(m_Descriptor->attached, 3, 0));
 	json_push_back(descData, json_new_a("Attached Reason Meaning", myStr.c_str()));
     temp.str("");temp.clear();
-    temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Descriptor->reason);
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Descriptor->reason);
 	json_push_back(descData, json_new_a("Attached Rate", temp.str().c_str()));
 	get_Negotiated_Logical_Link_Rate(&myStr, M_GETBITRANGE(m_Descriptor->reason, 3, 0));
 	json_push_back(descData, json_new_a("Attached Rate Meaning", myStr.c_str()));
     temp.str("");temp.clear();
-    temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Descriptor->initiatorPort);
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Descriptor->initiatorPort);
 	json_push_back(descData, json_new_a("Attached Initiator Port", temp.str().c_str()));
     temp.str("");temp.clear();
-    temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Descriptor->targetPort);
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Descriptor->targetPort);
 	json_push_back(descData, json_new_a("Attached Target Port", temp.str().c_str()));
 
 	byte_Swap_64(&m_Descriptor->address);						// need to byte swap on SAS 64 bit
 	byte_Swap_64(&m_Descriptor->attachedAddress);				// need to byte swap on SAS 64 bit
     temp.str("");temp.clear();
-    temp << "0x" << std::hex << std::setfill('0') << std::setw(14) << m_Descriptor->address;
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(14) << m_Descriptor->address;
     json_push_back(descData, json_new_a("World Wide Name", temp.str().c_str()));
     temp.str("");temp.clear();
-    temp << "0x" << std::hex << std::setfill('0') << std::setw(14) << m_Descriptor->attachedAddress;
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(14) << m_Descriptor->attachedAddress;
     json_push_back(descData, json_new_a("Attached Address", temp.str().c_str()));
     temp.str("");temp.clear();
-    temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Descriptor->attachedPhyIdent);
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Descriptor->attachedPhyIdent);
 	json_push_back(descData, json_new_a("Attached Phy Identifier", temp.str().c_str()));
 
 	byte_Swap_32(&m_Descriptor->invalidDwordCount);				// need to byte swap on SAS 
@@ -680,21 +680,22 @@ void CScsiProtocolPortLog::process_Descriptor_Information(JSONNODE *descData)
 	byte_Swap_32(&m_Descriptor->synchronization);				// need to byte swap on SAS 
 	byte_Swap_32(&m_Descriptor->phyResetProblem);				// need to byte swap on SAS 
     temp.str("");temp.clear();
-    temp << "0x" << std::hex << std::setfill('0') << std::setw(8) << m_Descriptor->invalidDwordCount;
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(8) << m_Descriptor->invalidDwordCount;
 	json_push_back(descData, json_new_a("Invalid Dword Count", temp.str().c_str()));
     temp.str("");temp.clear();
-    temp << "0x" << std::hex << std::setfill('0') << std::setw(8) << m_Descriptor->disparityErrorCount;
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(8) << m_Descriptor->disparityErrorCount;
 	json_push_back(descData, json_new_a("Running Dispariity Error Count", temp.str().c_str()));
     temp.str("");temp.clear();
-    temp << "0x" << std::hex << std::setfill('0') << std::setw(8) << m_Descriptor->synchronization;
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(8) << m_Descriptor->synchronization;
 	json_push_back(descData, json_new_a("Loss Of DWORD Synchronization", temp.str().c_str()));
     temp.str("");temp.clear();
-    temp << "0x" << std::hex << std::setfill('0') << std::setw(8) << m_Descriptor->phyResetProblem;
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(8) << m_Descriptor->phyResetProblem;
 	json_push_back(descData, json_new_a("Phy Reset Problem", temp.str().c_str()));
     temp.str("");temp.clear();
-    temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Descriptor->phyEventLength);
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Descriptor->phyEventLength);
 	json_push_back(descData, json_new_a("Phy Event Descriptor Length", temp.str().c_str()));
-    temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Descriptor->numberOfEvents);
+	temp.str(""); temp.clear();
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Descriptor->numberOfEvents);
 	json_push_back(descData, json_new_a("Number of Pyh Events", temp.str().c_str()));
 
 }
@@ -718,19 +719,19 @@ void CScsiProtocolPortLog::process_List_Information(JSONNODE *listData)
 	printf("List Information \n");
 #endif
     std::ostringstream temp;
-    temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << m_List->paramCode;
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << m_List->paramCode;
 	json_push_back(listData, json_new_a("Relative Target Port Identifier", temp.str().c_str()));
     temp.str("");temp.clear();
-    temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_List->paramControlByte);
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_List->paramControlByte);
 	json_push_back(listData, json_new_a("Relative Target Port Control Byte", temp.str().c_str()));
     temp.str("");temp.clear();
-    temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_List->paramLength);
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_List->paramLength);
 	json_push_back(listData, json_new_a("Relative Target Port Length", temp.str().c_str()));
     temp.str("");temp.clear();
-    temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_List->ident);
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_List->ident);
 	json_push_back(listData, json_new_a("Port Identifier", temp.str().c_str()));
     temp.str("");temp.clear();
-    temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_List->genCode);
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_List->genCode);
 	json_push_back(listData, json_new_a("Generation Code", temp.str().c_str()));
 	json_push_back(listData, json_new_i("Number of Phys", m_List->numberOfPhys));
 }

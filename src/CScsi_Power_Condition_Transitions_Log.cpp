@@ -201,15 +201,15 @@ void CScsiPowerConditiontLog::process_List_Information(JSONNODE *powerData)
         JSONNODE *powerInfo = json_new(JSON_NODE);
         json_set_name(powerInfo, myStr.c_str());
         std::ostringstream temp;
-        temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << m_PowerParam->paramCode;
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << m_PowerParam->paramCode;
         json_push_back(powerInfo, json_new_a("Power Condition Type", temp.str().c_str()));
         if (!typeFound)
         {
             temp.str("");temp.clear();
-            temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_PowerParam->paramControlByte);
+            temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_PowerParam->paramControlByte);
             json_push_back(powerInfo, json_new_a("Control Byte", temp.str().c_str()));
             temp.str("");temp.clear();
-            temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_PowerParam->paramLength);
+            temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_PowerParam->paramLength);
             json_push_back(powerInfo, json_new_a("Length", temp.str().c_str()));
         }
         json_push_back(powerInfo, json_new_i("Power Value", m_PowerParam->paramValue));

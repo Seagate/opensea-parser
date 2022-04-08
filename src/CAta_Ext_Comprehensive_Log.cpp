@@ -275,28 +275,28 @@ eReturnValues CExtComp::parse_Ext_Comp_Structure(uint32_t structNumber, uint32_t
                 timeStamp);
 #endif
             temp.str("");temp.clear();
-            temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(deviceControl);
+            temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(deviceControl);
 			json_push_back(cmdNode, json_new_a("Device Control", temp.str().c_str()));
             temp.str("");temp.clear();
-            temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << featureField;
+            temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << featureField;
 			json_push_back(cmdNode, json_new_a("Feature Field", temp.str().c_str()));
             temp.str("");temp.clear();
-            temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << countField;
+            temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << countField;
 			json_push_back(cmdNode, json_new_a("Count Field", temp.str().c_str()));
             temp.str("");temp.clear();
-            temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << lowLBA;
+            temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << lowLBA;
 			json_push_back(cmdNode, json_new_a("lowLBA", temp.str().c_str()));
             temp.str("");temp.clear();
-            temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << midLBA;
+            temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << midLBA;
 			json_push_back(cmdNode, json_new_a("CmidLBA", temp.str().c_str()));
             temp.str("");temp.clear();
-            temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << hiLBA;
+            temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << hiLBA;
 			json_push_back(cmdNode, json_new_a("hiLBA", temp.str().c_str()));
             temp.str("");temp.clear();
-            temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(deviceHead);
+            temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(deviceHead);
 			json_push_back(cmdNode, json_new_a("Device Head", temp.str().c_str()));
             temp.str("");temp.clear();
-            temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(commandField);
+            temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(commandField);
 			json_push_back(cmdNode, json_new_a("Command Field", temp.str().c_str()));
             temp.str("");temp.clear();
 
@@ -334,10 +334,10 @@ eReturnValues CExtComp::parse_Ext_Comp_Structure(uint32_t structNumber, uint32_t
             lifeTime);
 #endif
         temp.str("");temp.clear();
-        temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(errorField);
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(errorField);
 		json_push_back(opcode, json_new_a("Error", temp.str().c_str()));
         temp.str("");temp.clear();
-        temp << "0x" << std::hex << std::setfill('0') << std::setw(4) << countField;
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << countField;
 		json_push_back(opcode, json_new_a("Count", temp.str().c_str()));
         temp.str("");temp.clear();
 
@@ -345,7 +345,7 @@ eReturnValues CExtComp::parse_Ext_Comp_Structure(uint32_t structNumber, uint32_t
 
 		json_push_back(opcode, json_new_i("Device", static_cast<int>(deviceControl)));
 
-        temp << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(status);
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(status);
 		json_push_back(opcode, json_new_a("Status", temp.str().c_str()));
         temp.str("");temp.clear();
 
