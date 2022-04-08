@@ -238,7 +238,7 @@ eReturnValues CATA_Farm_Log::print_Header(JSONNODE *masterData)
 #endif
     json_set_name(pageInfo, "FARM Log Header");
     std::ostringstream temp;
-    temp << "0x" << std::hex << check_Status_Strip_Status(header->signature);
+    temp << "0x" << std::hex << std::uppercase << check_Status_Strip_Status(header->signature);
     json_push_back(pageInfo, json_new_a("Log Signature", temp.str().c_str()));
     json_push_back(pageInfo, json_new_i("Major Revision", static_cast<uint32_t>(check_Status_Strip_Status(header->majorRev))));
     json_push_back(pageInfo, json_new_i("Minor Revision", static_cast<uint32_t>(check_Status_Strip_Status(header->minorRev))));
@@ -1405,7 +1405,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
         temp << "Disc Slip in micro-inches by Head " << std::dec << loopCount;// Head count
         myHeader.assign(temp.str());
         temp.str("");temp.clear();
-        temp << std::dec << M_WordInt2(vFarmFrame[page].reliPage.discSlip[loopCount]) << "." << std::setprecision(4) << std::setfill('0') << static_cast<double>(M_DoubleWordInt0(vFarmFrame[page].reliPage.discSlip[loopCount]));
+        temp << std::dec << M_WordInt2(vFarmFrame[page].reliPage.discSlip[loopCount]) << "." << std::fixed << std::setprecision(4) << std::setfill('0') << static_cast<double>(M_DoubleWordInt0(vFarmFrame[page].reliPage.discSlip[loopCount]));
         //!< Disc Slip in micro-inches by Head
         json_push_back(headInfo, json_new_a(myHeader.c_str(), temp.str().c_str()));
     }
@@ -1415,7 +1415,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
         temp << "Bit Error Rate of Zone 0 by Head " << std::dec << loopCount;// Head count
         myHeader.assign(temp.str());
         temp.str("");temp.clear();
-        temp << std::dec << M_WordInt2(vFarmFrame[page].reliPage.bitErrorRate[loopCount]) << "." << std::setprecision(4) << std::setfill('0') << static_cast<double>(M_DoubleWordInt0(vFarmFrame[page].reliPage.bitErrorRate[loopCount]));
+        temp << std::dec << M_WordInt2(vFarmFrame[page].reliPage.bitErrorRate[loopCount]) << "." << std::fixed << std::setprecision(4) << std::setfill('0') << static_cast<double>(M_DoubleWordInt0(vFarmFrame[page].reliPage.bitErrorRate[loopCount]));
         json_push_back(headInfo, json_new_a(myHeader.c_str(), temp.str().c_str()));
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)

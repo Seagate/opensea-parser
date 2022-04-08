@@ -1823,7 +1823,7 @@ eReturnValues CSCSI_Farm_Log::print_Header(JSONNODE *masterData)
         JSONNODE* pageInfo = json_new(JSON_NODE);
         json_set_name(pageInfo, "FARM Log Header");
         std::ostringstream temp;
-        temp << "0x" <<std::hex << check_Status_Strip_Status(vFarmFrame[page].farmHeader.farmHeader.signature);
+        temp << "0x" <<std::hex << std::uppercase << check_Status_Strip_Status(vFarmFrame[page].farmHeader.farmHeader.signature);
         json_push_back(pageInfo, json_new_a("Log Signature", temp.str().c_str()));
         json_push_back(pageInfo, json_new_i("Major Revision", static_cast<uint32_t>(check_Status_Strip_Status(vFarmFrame[page].farmHeader.farmHeader.majorRev))));
         json_push_back(pageInfo, json_new_i("Minor Revision", static_cast<uint32_t>(check_Status_Strip_Status(vFarmFrame[page].farmHeader.farmHeader.minorRev))));
@@ -3128,7 +3128,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 {
                     std::ostringstream header, temp;
                     header << "Disc Slip in micro-inches for Head " <<std::dec << loopCount; // Head count
-                    temp << std::dec << whole << "." << std::setprecision(0) << std::setw(4) << std::setfill('0') << decimal;   //!< Disc Slip in micro-inches by Head
+                    temp << std::dec << whole << "." << std::fixed << std::setprecision(0) << std::setw(4) << std::setfill('0') << decimal;   //!< Disc Slip in micro-inches by Head
 
                     set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].discSlipPerHead.headValue[loopCount], m_showStatusBits);
                 }
@@ -3146,7 +3146,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
 #endif
                 std::ostringstream header, temp;
                 header << "Bit Error Rate of Zone 0 for Head " << std::dec << loopCount; // Head count
-                temp << std::dec << whole << "." << std::setprecision(0) << std::setw(4) << std::setfill('0') << decimal;
+                temp << std::dec << whole << "." << std::fixed << std::setprecision(0) << std::setw(4) << std::setfill('0') << decimal;
                 if (g_dataformat == PREPYTHON_DATA)
                 {
                     double number = whole + (decimal * .0001);
