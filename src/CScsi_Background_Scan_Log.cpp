@@ -391,7 +391,7 @@ void CScsiScanLog::process_other_param_data(JSONNODE *scanData, size_t offset)
 #endif
     byte_Swap_16(&m_ParamHeader->paramCode);
     std::ostringstream temp;
-    temp << "Background Scan Defect Location 0x" << std::hex << std::setfill('0') << m_ParamHeader->paramCode;
+    temp << "Background Scan Defect Location 0x" << std::hex << std::uppercase << std::setfill('0') << m_ParamHeader->paramCode;
     JSONNODE *defectInfo = json_new(JSON_NODE);
     json_set_name(defectInfo, temp.str().c_str());
     temp.str("");temp.clear();

@@ -152,7 +152,7 @@ bool CScsiCacheLog::get_Cache_Parameter_Code_Description(std::string *cache)
     default:
     {
         std::ostringstream temp;
-        temp << "Vendor specific 0x" << std::hex << std::setfill('0') << std::setw(4) << m_cache->paramCode;
+        temp << "Vendor specific 0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << m_cache->paramCode;
         cache->assign(temp.str());
         break;
     }

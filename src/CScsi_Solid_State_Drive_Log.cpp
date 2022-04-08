@@ -126,7 +126,7 @@ bool CScsiSolidStateDriveLog::get_SSD_Parameter_Code_Description(std::string *ss
     default:
     {
         std::ostringstream temp;
-        temp << "Vendor Specific 0x" << std::hex << std::setfill('0') << std::setw(4) << m_SSDParam->paramCode;
+        temp << "Vendor Specific 0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << m_SSDParam->paramCode;
         ssdString->assign(temp.str());
         break;
     }

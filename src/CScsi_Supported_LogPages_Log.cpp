@@ -254,7 +254,7 @@ void CScsiSupportedLog::get_Supported_And_Subpage_Description(std::string *descr
 		default:
 		{
             std::ostringstream temp;
-            temp << "Unknown 0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Page);
+            temp << "Unknown 0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Page);
             description->assign(temp.str());
 			break;
 		}
@@ -281,10 +281,10 @@ void CScsiSupportedLog::process_Supported_Data(JSONNODE *SupportData)
 	printf("Supported Log Pages \n");
 #endif
     std::ostringstream temp;
-    temp << "Page 0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Page);
+    temp << "Page 0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Page);
     if (m_ShowSubPage)
     {
-         temp << " SubPage 0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_SubPage);
+         temp << " SubPage 0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_SubPage);
     }
     get_Supported_And_Subpage_Description(&myStr);
 	json_push_back(SupportData, json_new_a(temp.str().c_str(), myStr.c_str()));

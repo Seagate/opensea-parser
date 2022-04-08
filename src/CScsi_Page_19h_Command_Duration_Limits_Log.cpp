@@ -127,7 +127,7 @@ void CScsiCmdDurationLimitsLog::get_Parameter_Code_Description(uint16_t paramCod
     else
     {
         std::ostringstream temp;
-        temp <<"vendor specific 0x" << std::hex << std::setfill('0') << std::setw(4) << paramCode;
+        temp <<"vendor specific 0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << paramCode;
         generalStr->assign(temp.str());
     }
 }

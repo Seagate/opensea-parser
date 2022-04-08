@@ -187,7 +187,7 @@ bool CScsiZonedDeviceStatisticsLog::get_ZDS_Parameter_Code_Description(std::stri
     default:
     {
         std::ostringstream temp;
-        temp << "Vendor Specific 0x" << std::hex << std::setfill('0') << std::setw(4) <<  m_ZDSParam->paramCode;
+        temp << "Vendor Specific 0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) <<  m_ZDSParam->paramCode;
         zdsString->assign(temp.str());
         break;
     }

@@ -119,7 +119,7 @@ void CScsiTemperatureLog::get_Temp(JSONNODE *tempData)
 	printf("\tParameter Code =   0x%04" PRIx16"  \n", m_Page->paramCode);
 #endif
     std::ostringstream temp;
-    temp << "Parameter Code 0x" << std::hex << std::setfill('0') << std::setw(4) << m_Page->paramCode;
+    temp << "Parameter Code 0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << m_Page->paramCode;
 	JSONNODE *paramInfo = json_new(JSON_NODE);
 	json_set_name(paramInfo, temp.str().c_str());
 

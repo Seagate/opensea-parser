@@ -123,7 +123,7 @@ void CScsiApplicationLog::process_Client_Data(JSONNODE *appData)
 	byte_Swap_16(&m_App->paramCode);
 	//get_Cache_Parameter_Code_Description(&myStr);
     std::ostringstream temp;
-    temp << "Application Client Log 0x" << std::hex << std::setfill('0') << std::setw(4) << m_App->paramCode;
+    temp << "Application Client Log 0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << m_App->paramCode;
 	JSONNODE *appInfo = json_new(JSON_NODE);
 	json_set_name(appInfo, temp.str().c_str());
     

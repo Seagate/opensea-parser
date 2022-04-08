@@ -148,7 +148,7 @@ void CScsiFormatStatusLog::get_Format_Parameter_Code_Description(std::string *va
     default:
     {
         std::ostringstream temp;
-        temp << "Vendor Specific 0x" << std::hex << std::setfill('0') << std::setw(4) << m_Format->paramCode;
+        temp << "Vendor Specific 0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << m_Format->paramCode;
         valueData->assign(temp.str());
         break;
     }

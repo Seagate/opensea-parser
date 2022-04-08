@@ -122,7 +122,7 @@ void CScsiNonMediumErrorCountLog::process_Non_Medium_Error_Count_Data(JSONNODE* 
 #endif
 	byte_Swap_16(&m_CountErrors->paramCode);
     std::ostringstream temp;
-    temp << "Non-Medium Error Count Log Parameters 0x" << std::hex << std::setfill('0') << std::setw(4) << m_CountErrors->paramCode;
+    temp << "Non-Medium Error Count Log Parameters 0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << m_CountErrors->paramCode;
 	JSONNODE* cacheInfo = json_new(JSON_NODE);
 	json_set_name(cacheInfo, temp.str().c_str());
     temp.str("");temp.clear();

@@ -138,7 +138,7 @@ void CScsiCacheMemStatLog::get_Parameter_Code_Description(uint16_t paramCode, st
             *cacheStatistics = "time interval";
         break;
     default:
-        temp << "vendor specific 0x" << std::hex << std::setfill('0') << std::setw(4) << paramCode;
+        temp << "vendor specific 0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << paramCode;
             *cacheStatistics = temp.str();
         break;
     }
