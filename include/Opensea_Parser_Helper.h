@@ -508,6 +508,17 @@ namespace opensea_parser {
         // std::transform(stringToLowercase.begin(), stringToLowercase.end(), stringToLowercase.begin(),
         //     [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
     }
+	inline eReturnValues fill_Log_Params(sLogParams &myStruct, uint8_t *buffer )
+	{
+		if (&myStruct != NULL)
+		{
+			myStruct.paramCode = buffer[0];
+			myStruct.paramControlByte = buffer[1];
+			myStruct.paramLength = M_BytesTo2ByteValue(buffer[2], buffer[3]);
+			return SUCCESS;
+		}
+		return BAD_PARAMETER;
+	}
 
 #endif // !OPENSEA_PARSER
 }
