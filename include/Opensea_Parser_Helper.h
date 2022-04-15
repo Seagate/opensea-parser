@@ -510,14 +510,12 @@ namespace opensea_parser {
     }
 	inline eReturnValues fill_Log_Params(sLogParams &myStruct, uint8_t *buffer )
 	{
-		if (&myStruct != NULL)
-		{
-			myStruct.paramCode = buffer[0];
-			myStruct.paramControlByte = buffer[1];
-			myStruct.paramLength = M_BytesTo2ByteValue(buffer[2], buffer[3]);
-			return SUCCESS;
-		}
-		return BAD_PARAMETER;
+
+		myStruct.paramCode = M_BytesTo2ByteValue(buffer[0],buffer[1]);
+		myStruct.paramControlByte = buffer[2];
+		myStruct.paramLength = buffer[3];
+		return SUCCESS;
+
 	}
 
 #endif // !OPENSEA_PARSER
