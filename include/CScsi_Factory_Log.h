@@ -20,16 +20,7 @@
 namespace opensea_parser {
 #ifndef SCSIFACTORYLOG
 #define SCSIFACTORYLOG
-#pragma pack(push, 1)
-	typedef struct _sFactoryParameters
-	{
-		uint16_t		paramCode;							//<! The PARAMETER CODE field is defined
-		uint8_t			paramControlByte;					//<! binary format list log parameter
-		uint8_t			paramLength;						//<! The PARAMETER LENGTH field 
-		_sFactoryParameters() : paramCode(0), paramControlByte(0), paramLength(0) {};
-	} sFactoryParams;
 
-#pragma pack(pop)
 	class CScsiFactoryLog
 	{
 	private:
@@ -40,7 +31,7 @@ namespace opensea_parser {
 		uint16_t					m_PageLength;				//<! length of the page
 		size_t						m_bufferLength;			    //<! length of the buffer from reading in the log
 		uint64_t					m_Value;					//<! Parameter Value
-		sFactoryParams				*m_factory;					//<! factory structure 
+		sLogParams					*m_factory;					//<! factory structure 
 
 		void process_Factorty_Data(JSONNODE *factoryData);
 		eReturnValues get_Factory_Data(JSONNODE *masterData);
