@@ -339,7 +339,7 @@ void opensea_parser::prePython_unknown_params(JSONNODE* masterData, uint64_t val
         json_set_name(label, "labels");
         //json_push_back(label, json_new_a("units", "unknown"));
         std::ostringstream temp;
-        temp << "scsi-log-page:0x" << std::hex << logPage << "," << std::hex << subPage << ":0x" << std::hex << paramCode << ":" << std::hex << offset;
+        temp << "scsi-log-page:0x" << std::hex << logPage << "," << std::hex << static_cast<uint16_t>(subPage) << ":0x" << std::hex << paramCode << ":" << std::hex << offset;
         json_push_back(label, json_new_a("metric_source", temp.str().c_str()));
         json_push_back(data, label);
 
@@ -388,7 +388,7 @@ void opensea_parser::prePython_int(JSONNODE* masterData, const char* name, const
     json_push_back(label, json_new_a("units", unit));
 
     std::ostringstream temp;
-    temp << "scsi-log-page:0x" << std::hex << logPage << "," << std::hex << subPage << ":0x" << std::hex << paramCode << ":" << std::hex << offset;
+    temp << "scsi-log-page:0x" << std::hex << logPage << "," << std::hex << static_cast<uint16_t>(subPage) << ":0x" << std::hex << paramCode << ":" << std::hex << offset;
     json_push_back(label, json_new_a("metric_source", temp.str().c_str()));
     json_push_back(data, label);
     json_push_back(data, json_new_i("value", value));
@@ -422,7 +422,7 @@ void opensea_parser::prePython_float(JSONNODE* masterData, const char* name, con
     }
     json_push_back(label, json_new_a("units", unit));
     std::ostringstream temp;
-    temp << "scsi-log-page:0x" << std::hex << logPage << "," << std::hex << subPage << ":0x" << std::hex << paramCode << ":" << std::hex << offset;
+    temp << "scsi-log-page:0x" << std::hex << logPage << "," << std::hex << static_cast<uint16_t>(subPage) << ":0x" << std::hex << paramCode << ":" << std::hex << offset;
     json_push_back(label, json_new_a("metric_source", temp.str().c_str()));
     json_push_back(data, label);
     json_push_back(data, json_new_f("value", value));
