@@ -1783,7 +1783,7 @@ eReturnValues CSCSI_Farm_Log::print_Header(JSONNODE *masterData)
         std::ostringstream temp;
         temp << "scsi-log-page:0x" << std::hex << FARMLOGPAGE << "," << std::hex << FARMSUBPAGE << ":0x" << std::hex << FARM_HEADER_PARAMETER;
         json_push_back(label, json_new_a("metric_source", temp.str().c_str()));
-        json_push_back(label, json_new_a("location", "farm header"));
+        json_push_back(label, json_new_a("location", "FARM header"));
 
         temp.str("");temp.clear();
         temp << "0x" << std::hex << std::uppercase << check_Status_Strip_Status(vFarmFrame[page].farmHeader.farmHeader.signature);
@@ -1810,7 +1810,7 @@ eReturnValues CSCSI_Farm_Log::print_Header(JSONNODE *masterData)
         temp << std::dec << M_DoubleWord0(check_Status_Strip_Status(vFarmFrame[page].farmHeader.farmHeader.reasonForFrameCpature));
         json_push_back(label, json_new_a("reason_for_frame_capture", temp.str().c_str()));
         std::string reason;
-        get_SMART_Save_Flages_String(reason, M_Byte0(vFarmFrame[page].farmHeader.farmHeader.reasonForFrameCpature));
+        Get_FARM_Reason_For_Capture(&reason, M_Byte0(vFarmFrame[page].farmHeader.farmHeader.reasonForFrameCpature));
         std_string_to_lowercase(reason);
         json_push_back(label, json_new_a("reason_meaning", reason.c_str()));
         json_push_back(label, json_new_a("units", "reported"));
@@ -1950,14 +1950,14 @@ eReturnValues CSCSI_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint
             json_push_back(label, json_new_a("head_load_events", temp.str().c_str()));									//!< Head Load Events
         }
         temp.str("");temp.clear();
-        temp << std::dec << (vFarmFrame[page].driveInfo.powerCycleCount & UINT64_C(0x00FFFFFFFFFFFFFF)) << " count";
+        temp << std::dec << (vFarmFrame[page].driveInfo.powerCycleCount & UINT64_C(0x00FFFFFFFFFFFFFF)) << " counts";
         json_push_back(label, json_new_a("power_cycle", temp.str().c_str()));								//!< Power Cycle Count
         temp.str("");temp.clear();
-        temp << std::dec << (vFarmFrame[page].driveInfo.resetCount & UINT64_C(0x00FFFFFFFFFFFFFF)) << " count";
+        temp << std::dec << (vFarmFrame[page].driveInfo.resetCount & UINT64_C(0x00FFFFFFFFFFFFFF)) << " counts";
         json_push_back(label, json_new_a("hardware_reset", temp.str().c_str()));									//!< Hardware Reset Count
         temp.str("");temp.clear();
         temp << std::dec << (vFarmFrame[page].driveInfo.NVC_StatusATPowerOn & UINT64_C(0x00FFFFFFFFFFFFFF));
-        json_push_back(label, json_new_a("nvc_status_@_power_on", temp.str().c_str()));
+        json_push_back(label, json_new_a("nvc_status_power_on", temp.str().c_str()));
         temp.str("");temp.clear();
         temp << ((vFarmFrame[page].driveInfo.timeAvailable & UINT64_C(0x00FFFFFFFFFFFFFF)) * .01) << " milliseconds";
         json_push_back(label, json_new_a("nvc_time_available_to_save", temp.str().c_str()));
@@ -2253,14 +2253,14 @@ eReturnValues CSCSI_Farm_Log::print_WorkLoad(JSONNODE *masterData, uint32_t page
         {
 
             // found a log where the length of the workload log does not match the spec. Need to check for the 0x50 length
-            farm_PrePython_Int(masterData, "read", "total read commands from 0-3.125% of LBA space", "workload", "command", WORKLOAD_STATISTICS_PARAMETER, vFarmFrame[page].workLoadPage.workLoad.totalReadCmdsFromFrames1 & UINT64_C(0x00FFFFFFFFFFFFFF));		//!< total Read commands from 0-3.125% of LBA space for last 3 SMART Summary Frames
-            farm_PrePython_Int(masterData, "read", "total read commands from 3.125-25% of LBA space", "workload", "command", WORKLOAD_STATISTICS_PARAMETER, vFarmFrame[page].workLoadPage.workLoad.totalReadCmdsFromFrames2 & UINT64_C(0x00FFFFFFFFFFFFFF));		//!< total Read commands from 3.125-25% of LBA space for last 3 SMART Summary Frames
-            farm_PrePython_Int(masterData, "read", "total read commands from 25-50% of LBA space", "workload", "command", WORKLOAD_STATISTICS_PARAMETER, vFarmFrame[page].workLoadPage.workLoad.totalReadCmdsFromFrames3 & UINT64_C(0x00FFFFFFFFFFFFFF));		//!< total Read commands from 25-50% of LBA space for last 3 SMART Summary Frames
-            farm_PrePython_Int(masterData, "read", "total read commands from 50-100% of LBA space", "workload", "command", WORKLOAD_STATISTICS_PARAMETER, vFarmFrame[page].workLoadPage.workLoad.totalReadCmdsFromFrames4 & UINT64_C(0x00FFFFFFFFFFFFFF));		//!< total Read commands from 50-100% of LBA space for last 3 SMART Summary Frames 
-            farm_PrePython_Int(masterData, "write", "total write commands from 0-3.125% of LBA space", "workload", "command", WORKLOAD_STATISTICS_PARAMETER, vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames1 & UINT64_C(0x00FFFFFFFFFFFFFF));	//!< total Write commands from 0-3.125% of LBA space for last 3 SMART Summary Frames
-            farm_PrePython_Int(masterData, "write", "total write commands from 3.125-25% of LBA space", "workload", "command", WORKLOAD_STATISTICS_PARAMETER, vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames2 & UINT64_C(0x00FFFFFFFFFFFFFF));	//!< total Write commands from 3.125-25% of LBA space for last 3 SMART Summary Frames
-            farm_PrePython_Int(masterData, "write", "total write commands from 25-50% of LBA space", "workload", "command", WORKLOAD_STATISTICS_PARAMETER, vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames3 & UINT64_C(0x00FFFFFFFFFFFFFF));		//!< total Write commands from 25-50% of LBA space for last 3 SMART Summary Frames
-            farm_PrePython_Int(masterData, "write", "total write commands from 50-100% of LBA space", "workload", "command", WORKLOAD_STATISTICS_PARAMETER, vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames4 & UINT64_C(0x00FFFFFFFFFFFFFF));		//!< total Write commands from 50-100% of LBA space for last 3 SMART Summary Frames 
+            farm_PrePython_Int(masterData, "read", "total read commands from 0-3.125% of LBA space", "workload", "commands", WORKLOAD_STATISTICS_PARAMETER, vFarmFrame[page].workLoadPage.workLoad.totalReadCmdsFromFrames1 & UINT64_C(0x00FFFFFFFFFFFFFF));		//!< total Read commands from 0-3.125% of LBA space for last 3 SMART Summary Frames
+            farm_PrePython_Int(masterData, "read", "total read commands from 3.125-25% of LBA space", "workload", "commands", WORKLOAD_STATISTICS_PARAMETER, vFarmFrame[page].workLoadPage.workLoad.totalReadCmdsFromFrames2 & UINT64_C(0x00FFFFFFFFFFFFFF));		//!< total Read commands from 3.125-25% of LBA space for last 3 SMART Summary Frames
+            farm_PrePython_Int(masterData, "read", "total read commands from 25-50% of LBA space", "workload", "commands", WORKLOAD_STATISTICS_PARAMETER, vFarmFrame[page].workLoadPage.workLoad.totalReadCmdsFromFrames3 & UINT64_C(0x00FFFFFFFFFFFFFF));		//!< total Read commands from 25-50% of LBA space for last 3 SMART Summary Frames
+            farm_PrePython_Int(masterData, "read", "total read commands from 50-100% of LBA space", "workload", "commands", WORKLOAD_STATISTICS_PARAMETER, vFarmFrame[page].workLoadPage.workLoad.totalReadCmdsFromFrames4 & UINT64_C(0x00FFFFFFFFFFFFFF));		//!< total Read commands from 50-100% of LBA space for last 3 SMART Summary Frames 
+            farm_PrePython_Int(masterData, "write", "total write commands from 0-3.125% of LBA space", "workload", "commands", WORKLOAD_STATISTICS_PARAMETER, vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames1 & UINT64_C(0x00FFFFFFFFFFFFFF));	//!< total Write commands from 0-3.125% of LBA space for last 3 SMART Summary Frames
+            farm_PrePython_Int(masterData, "write", "total write commands from 3.125-25% of LBA space", "workload", "commands", WORKLOAD_STATISTICS_PARAMETER, vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames2 & UINT64_C(0x00FFFFFFFFFFFFFF));	//!< total Write commands from 3.125-25% of LBA space for last 3 SMART Summary Frames
+            farm_PrePython_Int(masterData, "write", "total write commands from 25-50% of LBA space", "workload", "commands", WORKLOAD_STATISTICS_PARAMETER, vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames3 & UINT64_C(0x00FFFFFFFFFFFFFF));		//!< total Write commands from 25-50% of LBA space for last 3 SMART Summary Frames
+            farm_PrePython_Int(masterData, "write", "total write commands from 50-100% of LBA space", "workload", "commands", WORKLOAD_STATISTICS_PARAMETER, vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames4 & UINT64_C(0x00FFFFFFFFFFFFFF));		//!< total Write commands from 50-100% of LBA space for last 3 SMART Summary Frames 
 
             if (m_MajorRev >= 4 && m_MinorRev >= 19)
             {
