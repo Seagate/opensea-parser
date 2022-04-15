@@ -1959,7 +1959,7 @@ eReturnValues CSCSI_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint
         temp << std::dec << (vFarmFrame[page].driveInfo.NVC_StatusATPowerOn & UINT64_C(0x00FFFFFFFFFFFFFF));
         json_push_back(label, json_new_a("nvc_status_power_on", temp.str().c_str()));
         temp.str("");temp.clear();
-        temp << ((vFarmFrame[page].driveInfo.timeAvailable & UINT64_C(0x00FFFFFFFFFFFFFF)) * .01) << " milliseconds";
+        temp << std::fixed << std::setprecision(6) << ((vFarmFrame[page].driveInfo.timeAvailable & UINT64_C(0x00FFFFFFFFFFFFFF)) * .01) << " milliseconds";
         json_push_back(label, json_new_a("nvc_time_available_to_save", temp.str().c_str()));
         temp.str("");temp.clear();
         temp << std::dec << (vFarmFrame[page].driveInfo.firstTimeStamp & UINT64_C(0x00FFFFFFFFFFFFFF)) << " milliseconds";
@@ -4370,7 +4370,7 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_FLED_Info(JSONNODE *LUNFLED, ui
 
             temp.str("");
             temp.clear();
-            temp << std::fixed << std::setprecision(3) << (static_cast<double>(check_Status_Strip_Status(pFLED->timestampForLED[i]) / 3600000) * .001);
+            temp << std::fixed << std::setprecision(3) << (static_cast<double>(check_Status_Strip_Status(pFLED->timestampForLED[i]) / 3600000) * .001) << " hours";
             json_push_back(label, json_new_a("timeStamp_of_event", temp.str().c_str()));            //!< Universal Timestamp (us) of last 8 Flash LED (assert) Events, wrapping array
 
             json_push_back(label, json_new_i("power_cycle_event", static_cast<int64_t> (check_Status_Strip_Status(pFLED->powerCycleOfLED[i]))));	         //!< Power Cycle of the last 8 Flash LED (assert) Events, wrapping array
