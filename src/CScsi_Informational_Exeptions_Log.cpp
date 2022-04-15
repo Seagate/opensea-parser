@@ -135,7 +135,7 @@ void CScsiInformationalExeptionsLog::process_Informational_Exceptions_Data(JSONN
 		json_push_back(data, json_new_a("name", "environment_temperature"));
 		JSONNODE* label = json_new(JSON_NODE);
 		json_set_name(label, "labels");
-        temp << "scsi-log-page:0x" << std::hex << std::uppercase << std::setfill('0') << INFORMATIONAL_EXCEPTIONS << "," << 0 << ":0x" << m_Exeptions->paramCode << ":" << offset;
+        temp << "scsi-log-page:0x" << std::hex << std::uppercase << std::setfill('0') << INFORMATIONAL_EXCEPTIONS << "," << 0 << ":0x" << m_Exeptions->paramCode << ":" << std::dec << offset;
 		json_push_back(label, json_new_a("metric_source", temp.str().c_str()));
         temp.str("");temp.clear();
         temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Exeptions->senseCode);
@@ -154,7 +154,7 @@ void CScsiInformationalExeptionsLog::process_Informational_Exceptions_Data(JSONN
 		JSONNODE* label1 = json_new(JSON_NODE);
 		json_set_name(label1, "labels");
         temp.str("");temp.clear();
-        temp << "scsi-log-page:0x" << std::hex << std::uppercase << std::setfill('0') << INFORMATIONAL_EXCEPTIONS << "," << 0 << ":0x" << m_Exeptions->paramCode << ":" << offset;
+        temp << "scsi-log-page:0x" << std::hex << std::uppercase << std::setfill('0') << INFORMATIONAL_EXCEPTIONS << "," << 0 << ":0x" << m_Exeptions->paramCode << ":" << std::dec << offset;
 		json_push_back(label1, json_new_a("metric_source", temp.str().c_str()));
         temp.str("");temp.clear();
         temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Exeptions->senseCode);
@@ -173,7 +173,7 @@ void CScsiInformationalExeptionsLog::process_Informational_Exceptions_Data(JSONN
 		JSONNODE* label2 = json_new(JSON_NODE);
 		json_set_name(label2, "labels");
         temp.str("");temp.clear();
-        temp << "scsi-log-page:0x" << std::hex << std::uppercase << std::setfill('0') << INFORMATIONAL_EXCEPTIONS << "," << 0 << ":0x" << m_Exeptions->paramCode << ":" << offset;
+        temp << "scsi-log-page:0x" << std::hex << std::uppercase << std::setfill('0') << INFORMATIONAL_EXCEPTIONS << "," << 0 << ":0x" << m_Exeptions->paramCode << ":" << std::dec << offset;
 		json_push_back(label2, json_new_a("metric_source", temp.str().c_str()));
         temp.str("");temp.clear();
         temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Exeptions->senseCode);
