@@ -483,8 +483,8 @@ namespace opensea_parser {
 		tempString.resize(stringToSwap.size());
         for (size_t strOffset = 0; (strOffset + 1) < stringToSwap.size(); strOffset += 2)
         {
-            tempString[strOffset] = stringToSwap[strOffset + 1];
-            tempString[strOffset + 1] = stringToSwap[strOffset];
+            tempString.push_back(stringToSwap.at(strOffset + 1));
+            tempString.push_back(stringToSwap.at(strOffset));
         }
         stringToSwap.clear();//clear out the old byte swapped string
         stringToSwap = tempString;//assign it to the correctly swapped string
