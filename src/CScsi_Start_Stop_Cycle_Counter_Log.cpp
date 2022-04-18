@@ -269,7 +269,26 @@ eReturnValues CScsiStartStop::week_Year_Print(JSONNODE *data, uint16_t param, ui
 	
     if (year != UINT32_C(0x20202020))
     {
-        myStr.assign(reinterpret_cast<const char*>(&year), sizeof(year));
+        bool validASCII = false;
+        char charYear[YEARSIZE + 1] = { 0 };
+        memcpy(&charYear[0], &year, YEARSIZE);
+        //Check if all ascii characters or not
+        for (uint8_t i = 0; i <= YEARSIZE; ++i)
+        {
+            if (!is_ASCII(charYear[i]))
+            {
+                validASCII = false;
+                break;
+            }
+        }
+        if (validASCII)
+        {
+            myStr.assign(reinterpret_cast<const char*>(&year), sizeof(year));
+        }
+        else
+        {
+            myStr = "0000";
+        }
     }
     else
     {
@@ -278,7 +297,26 @@ eReturnValues CScsiStartStop::week_Year_Print(JSONNODE *data, uint16_t param, ui
 	json_push_back(dateInfo, json_new_a(strYear.c_str(), myStr.c_str()));
     if (week != UINT16_C(0x2020))
     {
-        myStr.assign(reinterpret_cast<const char*>(&week), sizeof(week));
+        bool validASCII = false;
+        char charWeek[WEEKSIZE + 1] = { 0 };
+        memcpy(&charWeek[0], &week, WEEKSIZE);
+        //Check if all ascii characters or not
+        for (uint8_t i = 0; i <= WEEKSIZE; ++i)
+        {
+            if (!is_ASCII(charWeek[i]))
+            {
+                validASCII = false;
+                break;
+            }
+        }
+        if (validASCII)
+        {
+            myStr.assign(reinterpret_cast<const char*>(&week), sizeof(week));
+        }
+        else
+        {
+            myStr = "00";
+        }
     }
     else
     {
