@@ -479,15 +479,14 @@ namespace opensea_parser {
 
     inline void byte_swap_std_string(std::string &stringToSwap)
     {
-        std::string tempString;
-		tempString.resize(stringToSwap.size());
+        std::stringstream tempString;
         for (size_t strOffset = 0; (strOffset + 1) < stringToSwap.size(); strOffset += 2)
         {
-            tempString.push_back(stringToSwap.at(strOffset + 1));
-            tempString.push_back(stringToSwap.at(strOffset));
+			tempString << stringToSwap.at(strOffset + 1);
+            tempString << stringToSwap.at(strOffset);
         }
         stringToSwap.clear();//clear out the old byte swapped string
-        stringToSwap = tempString;//assign it to the correctly swapped string
+        stringToSwap = tempString.str();//assign it to the correctly swapped string
     }
 
     inline void remove_trailing_whitespace_std_string(std::string &stringToTrim)
