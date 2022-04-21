@@ -1811,7 +1811,7 @@ eReturnValues CSCSI_Farm_Log::print_Header(JSONNODE *masterData)
         json_push_back(label, json_new_a("reason_for_frame_capture", temp.str().c_str()));
         std::string reason;
         Get_FARM_Reason_For_Capture(&reason, M_Byte0(vFarmFrame[page].farmHeader.farmHeader.reasonForFrameCpature));
-        std_string_to_lowercase(reason);
+        //std_string_to_lowercase(reason); // don't need this to be lower case do to acronym stay upper case
         json_push_back(label, json_new_a("reason_meaning", reason.c_str()));
         json_push_back(label, json_new_a("units", "reported"));
         json_push_back(data, label);
