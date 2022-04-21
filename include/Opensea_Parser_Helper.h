@@ -517,6 +517,15 @@ namespace opensea_parser {
 
 	}
 
+	inline double remove_Double_Transfer_Digits(double* decimalValue)
+	{
+		double newValue = 0.0;
+		std::ostringstream temp;
+		temp << std::fixed << std::setprecision(6) << *decimalValue;
+		newValue = std::atof(temp.str().c_str());
+		return newValue;
+	}
+
 #endif // !OPENSEA_PARSER
 }
 
