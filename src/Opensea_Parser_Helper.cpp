@@ -52,7 +52,7 @@ void opensea_parser::get_SMART_Save_Flages(JSONNODE *headerNode, uint8_t flag)
         json_push_back(headerNode, json_new_a("SMART Save Flag", "03 XX Error"));
         break;
     case SMART_FRAME_FLAG_SAVED_DUE_TO_04_XX_ERROR:
-        json_push_back(headerNode, json_new_a("SMART Save Flag", "04 XX Errror"));
+        json_push_back(headerNode, json_new_a("SMART Save Flag", "04 XX Error"));
         break;
     case SMART_FRAME_FLAG_SAVED_DUE_TO_1_5D_ERROR_FOR_PREDICTIVE_FAILURE:
         json_push_back(headerNode, json_new_a("SMART Save Flag", "5D Error for Predictive Failure"));
