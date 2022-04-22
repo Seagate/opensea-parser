@@ -118,7 +118,7 @@ void opensea_parser::get_SMART_Save_Flages(JSONNODE *headerNode, uint8_t flag)
         json_push_back(headerNode, json_new_a("SMART Save Flag", "Write Protect Invocation"));
         break;
     case SMART_FRAME_FLAG_SAVED_DUE_TO_FACTORY_COMMAND_TO_INVOCATE_A_FRAME_THAT_CAN_BE_INTERRUPTABLE:
-        json_push_back(headerNode, json_new_a("SMART Save Flag", "Invocate a frame that can be interruptable"));
+        json_push_back(headerNode, json_new_a("SMART Save Flag", "Invocate a frame that can be interruptible"));
         break;
     case SMART_FRAME_FLAG_SAVED_DUE_TO_SMART_SCT_COMMAND:
         json_push_back(headerNode, json_new_a("SMART Save Flag", "SCT Command"));
