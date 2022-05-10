@@ -1057,7 +1057,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                         {
                             m_pHeader = reinterpret_cast<sScsiFarmHeader *>(&pBuf[offset]);                    // get the Farm Header information
                             memcpy(reinterpret_cast<sScsiFarmHeader *>(&pFarmFrame->farmHeader), m_pHeader, m_pageParam->plen + PARAMSIZE);
-                            byte_Swap_64(&pFarmFrame->farmHeader.farmHeader.reasonForFrameCpature);  // need to swap the header information
+                            byte_Swap_64(&pFarmFrame->farmHeader.farmHeader.reasonForFrameCapture);  // need to swap the header information
                             offset += (m_pageParam->plen + sizeof(sScsiPageParameter));
                             headerAlreadyFound = true;                                      // set the header to true so we will not look at the data a second time
                         }
@@ -1771,7 +1771,7 @@ eReturnValues CSCSI_Farm_Log::print_Header(JSONNODE *masterData)
         printf("\tPage Size:                           %" PRIu64"  \n", vFarmFrame[page].farmHeader.farmHeader.pageSize & UINT64_C(0x00FFFFFFFFFFFFFF));                                   //!< page size in bytes
     }
     printf("\tHeads Supported:                     %" PRIu64"  \n", vFarmFrame[page].farmHeader.farmHeader.headsSupported & UINT64_C(0x00FFFFFFFFFFFFFF));                             //!< Maximum Drive Heads Supported
-    printf("\tReason for Frame Capture(debug):     %" PRId64"  \n", vFarmFrame[page].farmHeader.farmHeader.reasonForFrameCpature & 0x00FFFFFFFFFFFFF);	      //!< Reason for Frame Capture
+    printf("\tReason for Frame Capture(debug):     %" PRId64"  \n", vFarmFrame[page].farmHeader.farmHeader.reasonForFrameCapture & 0x00FFFFFFFFFFFFF);	      //!< Reason for Frame Capture
 #endif
     if (g_dataformat == PREPYTHON_DATA)
     {
@@ -1807,10 +1807,10 @@ eReturnValues CSCSI_Farm_Log::print_Header(JSONNODE *masterData)
         //temp << std::dec << M_DoubleWord0(check_Status_Strip_Status(vFarmFrame[page].farmHeader.farmHeader.pageSize)) << " bytes";
         //json_push_back(label, json_new_a("page_size", temp.str().c_str()));
         temp.str("");temp.clear();
-        temp << std::dec << M_DoubleWord0(check_Status_Strip_Status(vFarmFrame[page].farmHeader.farmHeader.reasonForFrameCpature));
+        temp << std::dec << M_DoubleWord0(check_Status_Strip_Status(vFarmFrame[page].farmHeader.farmHeader.reasonForFrameCapture));
         json_push_back(label, json_new_a("reason_for_frame_capture", temp.str().c_str()));
         std::string reason;
-        Get_FARM_Reason_For_Capture(&reason, M_Byte0(vFarmFrame[page].farmHeader.farmHeader.reasonForFrameCpature));
+        Get_FARM_Reason_For_Capture(&reason, M_Byte0(vFarmFrame[page].farmHeader.farmHeader.reasonForFrameCapture));
         //std_string_to_lowercase(reason); // don't need this to be lower case do to acronym stay upper case
         json_push_back(label, json_new_a("reason_meaning", reason.c_str()));
         json_push_back(label, json_new_a("units", "reported"));
@@ -1834,9 +1834,9 @@ eReturnValues CSCSI_Farm_Log::print_Header(JSONNODE *masterData)
             json_push_back(pageInfo, json_new_i("Page Size", static_cast<uint32_t>(check_Status_Strip_Status(vFarmFrame[page].farmHeader.farmHeader.pageSize))));
         }
         json_push_back(pageInfo, json_new_i("Heads Supported", static_cast<uint32_t>(check_Status_Strip_Status(vFarmFrame[page].farmHeader.farmHeader.headsSupported))));
-        json_push_back(pageInfo, json_new_i("Reason for Frame Capture", static_cast<uint32_t>(check_Status_Strip_Status(vFarmFrame[page].farmHeader.farmHeader.reasonForFrameCpature))));
+        json_push_back(pageInfo, json_new_i("Reason for Frame Capture", static_cast<uint32_t>(check_Status_Strip_Status(vFarmFrame[page].farmHeader.farmHeader.reasonForFrameCapture))));
         std::string meaning;
-        Get_FARM_Reason_For_Capture(&meaning, M_Byte0(vFarmFrame[page].farmHeader.farmHeader.reasonForFrameCpature));
+        Get_FARM_Reason_For_Capture(&meaning, M_Byte0(vFarmFrame[page].farmHeader.farmHeader.reasonForFrameCapture));
 
         json_push_back(pageInfo, json_new_a("Reason meaning", meaning.c_str()));
         json_push_back(masterData, pageInfo);
@@ -3535,7 +3535,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 temp << std::fixed << std::setprecision(4) << ROUNDF((static_cast<double>( M_DoubleWord0(vFarmFrame[page].writePowerOnHours.headValue[loopCount])) /3600),1000);
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Float(headPage, "head_write_power_on", NULL, loopCount, "hours", WRITE_POWERON_HOURS_FROM_MOST_RECENT_SMART, static_cast<double>(M_DoubleWord0(vFarmFrame[page].writePowerOnHours.headValue[loopCount])) / 3600);   //ROUNDF(,1000
+                    prePython_Head_Float(headPage, "head_write_power_on", NULL, loopCount, "hours", WRITE_POWERON_HOURS_FROM_MOST_RECENT_SMART, (static_cast<double>(M_DoubleWord0(vFarmFrame[page].writePowerOnHours.headValue[loopCount])) / 3600) );   
                 }
                 else
                 {
@@ -3607,7 +3607,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 header << "Current H2SAT trimmed mean bits in error Zone 0 by Head " << std::dec << loopCount; // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Float(headPage, "h2sat", "trimmed mean (current),zone:0", loopCount, "mean-bits-in-error", CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_0, (static_cast<float>(M_Word0(vFarmFrame[page].currentH2STTrimmedbyHeadZone0.headValue[loopCount]))) * .10F);
+                    prePython_Head_Float(headPage, "h2sat", "trimmed mean (current),zone:0", loopCount, "mean-bits-in-error", CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_0, ROUNDF(((static_cast<float>(M_Word0(vFarmFrame[page].currentH2STTrimmedbyHeadZone0.headValue[loopCount]))) * .10F),1000));
                 }
                 else
                 {
