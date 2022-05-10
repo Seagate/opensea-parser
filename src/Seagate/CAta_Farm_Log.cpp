@@ -233,7 +233,7 @@ eReturnValues CATA_Farm_Log::print_Header(JSONNODE *masterData)
     printf("\tPage Size               (debug):                 %" PRIu64"  \n", header->pageSize & UINT64_C(0x00FFFFFFFFFFFFFF));                       //!< page size in bytes
     printf("\tHeads Supported         (debug):                 %" PRIu64"  \n", header->headsSupported & UINT64_C(0x00FFFFFFFFFFFFFF));                 //!< Maximum Drive Heads Supported
     printf("\tNumber of Copies        (debug):                 %" PRIu64"  \n", header->copies & UINT64_C(0x00FFFFFFFFFFFFF));                                //!< Number of Historical Copies
-    printf("\tReason for Frame Capture(debug):                 %" PRIu64"  \n", header->reasonForFrameCpature & UINT64_C(0x00FFFFFFFFFFFFF));              //!< Reason for Frame Capture
+    printf("\tReason for Frame Capture(debug):                 %" PRIu64"  \n", header->reasonForFrameCapture & UINT64_C(0x00FFFFFFFFFFFFF));              //!< Reason for Frame Capture
 
 #endif
     json_set_name(pageInfo, "FARM Log Header");
@@ -247,8 +247,8 @@ eReturnValues CATA_Farm_Log::print_Header(JSONNODE *masterData)
     json_push_back(pageInfo, json_new_i("Page Size", static_cast<uint32_t>(check_Status_Strip_Status(header->pageSize))));
     json_push_back(pageInfo, json_new_i("Heads Supported", static_cast<uint32_t>(check_Status_Strip_Status(header->headsSupported))));
     json_push_back(pageInfo, json_new_i("Number of Copies", static_cast<uint32_t>(check_Status_Strip_Status(header->copies))));
-    json_push_back(pageInfo, json_new_i("Reason for Frame Capture", static_cast<uint32_t>(check_Status_Strip_Status(header->reasonForFrameCpature))));
-    get_SMART_Save_Flages(pageInfo, M_Byte0(header->reasonForFrameCpature));
+    json_push_back(pageInfo, json_new_i("Reason for Frame Capture", static_cast<uint32_t>(check_Status_Strip_Status(header->reasonForFrameCapture))));
+    get_SMART_Save_Flages(pageInfo, M_Byte0(header->reasonForFrameCapture));
 
     json_push_back(masterData, pageInfo);
 
