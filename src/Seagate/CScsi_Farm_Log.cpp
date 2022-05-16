@@ -383,13 +383,23 @@ bool CSCSI_Farm_Log::set_Head_Header(std::string &headerName, eLogPageTypes inde
     case CUM_LIFETIME_UNRECOVERABLE_READ_UNIQUE_PER_HEAD:
         headerName = "Cumlative Lifetime Unrecoverable Read Unique by head";
         break;
-    case RESERVED_FOR_FUTURE_EXPANSION_4:
-    case RESERVED_FOR_FUTURE_EXPANSION_5:
-    case RESERVED_FOR_FUTURE_EXPANSION_6:
-    case RESERVED_FOR_FUTURE_EXPANSION_7:
-    case RESERVED_FOR_FUTURE_EXPANSION_8:
-    case RESERVED_FOR_FUTURE_EXPANSION_9:
-        headerName = "Something is wrong. Please report error SAS FARM 613";
+    case TOTAL_LASER_FIELD_ADJUST_ITERATIONS:
+        headerName = "Number of total Laser Field Adjust iterations performed";
+        break;
+    case TOTAL_READER_WRITEER_OFFSET_ITERATIONS_PERFORMED:
+        headerName = "Number of total Reader Writer Offset iterations performed";
+        break;
+    case PRE_LFA_ZONE_0:
+        headerName = "Pre LFA Zone 0 Bit Error Rate";
+        break;
+    case PRE_LFA_ZONE_1:
+        headerName = "Pre LFA Zone 1 Bit Error Rate";
+        break;
+    case PRE_LFA_ZONE_2:
+        headerName = "Pre LFA Zone 2 Bit Error Rate";
+        break;
+    case ZERO_PERCENT_SHIFT:
+        headerName = "Zero Percent Shift Zone 0 Bit Error Rate";
         break;
     case CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_0:
         headerName = "Current H2SAT trimmed mean bits in error Test Zone 0";
@@ -409,17 +419,35 @@ bool CSCSI_Farm_Log::set_Head_Header(std::string &headerName, eLogPageTypes inde
     case CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_2:
         headerName = "Current H2SAT iterations to converge Test Zone 2";
         break;
-    case RESERVED_FOR_FUTURE_EXPANSION_10:
-    case RESERVED_FOR_FUTURE_EXPANSION_11:
-    case RESERVED_FOR_FUTURE_EXPANSION_12:
-    case RESERVED_FOR_FUTURE_EXPANSION_13:
-    case RESERVED_FOR_FUTURE_EXPANSION_14:
-    case RESERVED_FOR_FUTURE_EXPANSION_15:
-    case RESERVED_FOR_FUTURE_EXPANSION_16:
-    case RESERVED_FOR_FUTURE_EXPANSION_17:
-    case RESERVED_FOR_FUTURE_EXPANSION_18:
-    case RESERVED_FOR_FUTURE_EXPANSION_19:
-        headerName = "Something is wrong. Please report error SAS FARM 614";
+    case LASER_OPERATING_ZONE_0:
+        headerName = "Laser Operating Current Zone 2";
+        break;
+    case LASER_OPERATING_ZONE_1:
+        headerName = "Laser Operating Current Zone 2";
+        break;
+    case LASER_OPERATING_ZONE_2:
+        headerName = "Laser Operating Current Zone 2";
+        break;
+    case POST_LFA_OPTIMAL_BER_ZONE_0:
+        headerName = "Post LFA Optimal BER Zone 0";
+        break;
+    case POST_LFA_OPTIMAL_BER_ZONE_1:
+        headerName = "Post LFA Optimal BER Zone 1";
+        break;
+    case POST_LFA_OPTIMAL_BER_ZONE_2:
+        headerName = "Post LFA Optimal BER Zone 2";
+        break;
+    case MICRO_JOG_OFFSET_ZONE_0:
+        headerName = "Micro Jog Offset Zone 0";
+        break;
+    case MICRO_JOG_OFFSET_ZONE_1:
+        headerName = "Micro Jog Offset Zone 14";
+        break;
+    case MICRO_JOG_OFFSET_ZONE_2:
+        headerName = "Micro Jog Offset Zone 2";
+        break;
+    case ZERO_PERCENT_SHIFT_ZONE_1:
+        headerName = "Zero Percent Shift Zone 1";
         break;
     case APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_OUTER:
         if (!m_alreadySet)
@@ -1163,15 +1191,15 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     offset += (pEnvStat->pPageHeader.plen + sizeof(sScsiPageParameter));
                 }
                 break;
-                    case  WORKLOAD_STATISTICS_PAMATER_08:
-                    {
-                        sScsiWorkloadStatPage08 *pWorkloadStat;
-                        pWorkloadStat = reinterpret_cast<sScsiWorkloadStatPage08 *>(&pBuf[offset]);
-                        memcpy(reinterpret_cast<sScsiWorkloadStatPage08 *>(&pFarmFrame->workloadStatPage08), pWorkloadStat, pWorkloadStat->pPageHeader.plen + PARAMSIZE);
-                        swap_Bytes_WorkloadPage08(&pFarmFrame->workloadStatPage08);
-                        offset += (pWorkloadStat->pPageHeader.plen + sizeof(sScsiPageParameter));
-                    }
-                    break;
+                case  WORKLOAD_STATISTICS_PAMATER_08:
+                {
+                    sScsiWorkloadStatPage08 *pWorkloadStat;
+                    pWorkloadStat = reinterpret_cast<sScsiWorkloadStatPage08 *>(&pBuf[offset]);
+                    memcpy(reinterpret_cast<sScsiWorkloadStatPage08 *>(&pFarmFrame->workloadStatPage08), pWorkloadStat, pWorkloadStat->pPageHeader.plen + PARAMSIZE);
+                    swap_Bytes_WorkloadPage08(&pFarmFrame->workloadStatPage08);
+                    offset += (pWorkloadStat->pPageHeader.plen + sizeof(sScsiPageParameter));
+                }
+                break;
                 case  RESERVED_FOR_FUTURE_STATISTICS_4:
                 case  RESERVED_FOR_FUTURE_STATISTICS_5:
                 case  RESERVED_FOR_FUTURE_STATISTICS_6:
@@ -1179,337 +1207,473 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                 case  RESERVED_FOR_FUTURE_STATISTICS_8:
                 case  RESERVED_FOR_FUTURE_STATISTICS_9:
                 case  RESERVED_FOR_FUTURE_STATISTICS_10:
-                    {
-                        sHeadInformation *pHeadInfo = new sHeadInformation();
-                        get_Head_Info(pHeadInfo, &pBuf[offset]);
-                        memcpy(&pFarmFrame->discSlipPerHead, pHeadInfo, sizeof(*pHeadInfo));
-                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                        delete pHeadInfo;
-                    }
-                    break;
+                {
+                    sHeadInformation *pHeadInfo = new sHeadInformation();
+                    get_Head_Info(pHeadInfo, &pBuf[offset]);
+                    memcpy(&pFarmFrame->discSlipPerHead, pHeadInfo, sizeof(*pHeadInfo));
+                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    delete pHeadInfo;
+                }
+                break;
                 case DISC_SLIP_IN_MICRO_INCHES_BY_HEAD:     
-                    {
-                        sHeadInformation *pHeadInfo = new sHeadInformation();
-                        get_Head_Info(pHeadInfo, &pBuf[offset]);
-                        memcpy(&pFarmFrame->discSlipPerHead, pHeadInfo, sizeof(*pHeadInfo));
-                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                        delete pHeadInfo;  
-                    }
-                    break;
+                {
+                    sHeadInformation *pHeadInfo = new sHeadInformation();
+                    get_Head_Info(pHeadInfo, &pBuf[offset]);
+                    memcpy(&pFarmFrame->discSlipPerHead, pHeadInfo, sizeof(*pHeadInfo));
+                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    delete pHeadInfo;  
+                }
+                break;
                 case BIT_ERROR_RATE_OF_ZONE_0_BY_DRIVE_HEAD:     
-                    {
-                        sHeadInformation *pHeadInfo = new sHeadInformation();
-                        get_Head_Info(pHeadInfo, &pBuf[offset]);
-                        memcpy(&pFarmFrame->bitErrorRateByHead, pHeadInfo, sizeof(*pHeadInfo));
-                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                        delete pHeadInfo;  
-                    }
-                    break;
+                {
+                    sHeadInformation *pHeadInfo = new sHeadInformation();
+                    get_Head_Info(pHeadInfo, &pBuf[offset]);
+                    memcpy(&pFarmFrame->bitErrorRateByHead, pHeadInfo, sizeof(*pHeadInfo));
+                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    delete pHeadInfo;  
+                }
+                break;
                 case DOS_WRITE_REFRESH_COUNT:     
-                    {
-                        sHeadInformation *pHeadInfo = new sHeadInformation();
-                        get_Head_Info(pHeadInfo, &pBuf[offset]);
-                        memcpy(&pFarmFrame->dosWriteRefreshCountByHead, pHeadInfo, sizeof(*pHeadInfo));
-                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                        delete pHeadInfo;  
-                    }
-                    break;
+                {
+                    sHeadInformation *pHeadInfo = new sHeadInformation();
+                    get_Head_Info(pHeadInfo, &pBuf[offset]);
+                    memcpy(&pFarmFrame->dosWriteRefreshCountByHead, pHeadInfo, sizeof(*pHeadInfo));
+                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    delete pHeadInfo;  
+                }
+                break;
                 case DVGA_SKIP_WRITE_DETECT_BY_HEAD:     
-                    {
-                        sHeadInformation *pHeadInfo = new sHeadInformation();
-                        get_Head_Info(pHeadInfo, &pBuf[offset]);
-                        memcpy(&pFarmFrame->dvgaSkipWriteDetectByHead, pHeadInfo, sizeof(*pHeadInfo));
-                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter)); 
-                        delete pHeadInfo;  
-                    }
-                    break;
+                {
+                    sHeadInformation *pHeadInfo = new sHeadInformation();
+                    get_Head_Info(pHeadInfo, &pBuf[offset]);
+                    memcpy(&pFarmFrame->dvgaSkipWriteDetectByHead, pHeadInfo, sizeof(*pHeadInfo));
+                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter)); 
+                    delete pHeadInfo;  
+                }
+                break;
                 case RVGA_SKIP_WRITE_DETECT_BY_HEAD:     
-                    {
-                        sHeadInformation *pHeadInfo = new sHeadInformation();
-                        get_Head_Info(pHeadInfo, &pBuf[offset]);
-                        memcpy(&pFarmFrame->rvgaSkipWriteDetectByHead, pHeadInfo, sizeof(*pHeadInfo));
-                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter)); 
-                        delete pHeadInfo;  
-                    }
-                    break;        
+                {
+                    sHeadInformation *pHeadInfo = new sHeadInformation();
+                    get_Head_Info(pHeadInfo, &pBuf[offset]);
+                    memcpy(&pFarmFrame->rvgaSkipWriteDetectByHead, pHeadInfo, sizeof(*pHeadInfo));
+                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter)); 
+                    delete pHeadInfo;  
+                }
+                break;        
                 case FVGA_SKIP_WRITE_DETECT_BY_HEAD:     
-                    {
-                        sHeadInformation *pHeadInfo = new sHeadInformation();
-                        get_Head_Info(pHeadInfo, &pBuf[offset]);
-                        memcpy(&pFarmFrame->fvgaSkipWriteDetectByHead, pHeadInfo, sizeof(*pHeadInfo));
-                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                        delete pHeadInfo;  
-                    }
-                    break;
+                {
+                    sHeadInformation *pHeadInfo = new sHeadInformation();
+                    get_Head_Info(pHeadInfo, &pBuf[offset]);
+                    memcpy(&pFarmFrame->fvgaSkipWriteDetectByHead, pHeadInfo, sizeof(*pHeadInfo));
+                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    delete pHeadInfo;  
+                }
+                break;
                 case SKIP_WRITE_DETECT_THRESHOLD_EXCEEDED_COUNT_BY_HEAD:     
-                    {
-                        sHeadInformation *pHeadInfo = new sHeadInformation();
-                        get_Head_Info(pHeadInfo, &pBuf[offset]);
-                        memcpy(&pFarmFrame->skipWriteDectedThresholdExceededByHead, pHeadInfo, sizeof(*pHeadInfo));
-                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                        delete pHeadInfo;  
-                    }
-                    break;
+                {
+                    sHeadInformation *pHeadInfo = new sHeadInformation();
+                    get_Head_Info(pHeadInfo, &pBuf[offset]);
+                    memcpy(&pFarmFrame->skipWriteDectedThresholdExceededByHead, pHeadInfo, sizeof(*pHeadInfo));
+                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    delete pHeadInfo;  
+                }
+                break;
                 case ACFF_SINE_1X_VALUE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD:     
-                    {
-                        sHeadInformation *pHeadInfo = new sHeadInformation(); 
-                        get_Head_Info(pHeadInfo, &pBuf[offset]);
-                        memcpy(&pFarmFrame->acffSine1xValueByHead, pHeadInfo, sizeof(*pHeadInfo));
-                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                        delete pHeadInfo;  
-                    }
-                    break;
+                {
+                    sHeadInformation *pHeadInfo = new sHeadInformation(); 
+                    get_Head_Info(pHeadInfo, &pBuf[offset]);
+                    memcpy(&pFarmFrame->acffSine1xValueByHead, pHeadInfo, sizeof(*pHeadInfo));
+                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    delete pHeadInfo;  
+                }
+                break;
                 case ACFF_COSINE_1X_VALUE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD:     
-                    {
-                        sHeadInformation *pHeadInfo = new sHeadInformation();
-                        get_Head_Info(pHeadInfo, &pBuf[offset]);
-                        memcpy(&pFarmFrame->acffCosine1xValueByHead, pHeadInfo, sizeof(*pHeadInfo));
-                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                        delete pHeadInfo;  
-                    }
-                    break;
+                {
+                    sHeadInformation *pHeadInfo = new sHeadInformation();
+                    get_Head_Info(pHeadInfo, &pBuf[offset]);
+                    memcpy(&pFarmFrame->acffCosine1xValueByHead, pHeadInfo, sizeof(*pHeadInfo));
+                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    delete pHeadInfo;  
+                }
+                break;
                 case PZT_CALIBRATION_VALUE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD:     
-                    {
-                        sHeadInformation *pHeadInfo = new sHeadInformation();
-                        get_Head_Info(pHeadInfo, &pBuf[offset]);
-                        memcpy(&pFarmFrame->pztCalibrationValueByHead, pHeadInfo, sizeof(*pHeadInfo));
-                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                        delete pHeadInfo;  
-                    }
-                    break;
+                {
+                    sHeadInformation *pHeadInfo = new sHeadInformation();
+                    get_Head_Info(pHeadInfo, &pBuf[offset]);
+                    memcpy(&pFarmFrame->pztCalibrationValueByHead, pHeadInfo, sizeof(*pHeadInfo));
+                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    delete pHeadInfo;  
+                }
+                break;
                 case MR_HEAD_RESISTANCE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD:     
-                    {
-                        sHeadInformation *pHeadInfo = new sHeadInformation(); 
-                        get_Head_Info(pHeadInfo, &pBuf[offset]);
-                        memcpy(&pFarmFrame->mrHeadResistanceByHead, pHeadInfo, sizeof(*pHeadInfo));
-                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                        delete pHeadInfo;  
-                    }
-                    break;
+                {
+                    sHeadInformation *pHeadInfo = new sHeadInformation(); 
+                    get_Head_Info(pHeadInfo, &pBuf[offset]);
+                    memcpy(&pFarmFrame->mrHeadResistanceByHead, pHeadInfo, sizeof(*pHeadInfo));
+                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    delete pHeadInfo;  
+                }
+                break;
                 case NUMBER_OF_TMD_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD:  
-                    {
-                        sHeadInformation *pHeadInfo = new sHeadInformation();
-                        get_Head_Info(pHeadInfo, &pBuf[offset]);
-                        memcpy(&pFarmFrame->numberOfTMDByHead, pHeadInfo, sizeof(*pHeadInfo));
-                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                        delete pHeadInfo;  
-                    }
-                    break;
+                {
+                    sHeadInformation *pHeadInfo = new sHeadInformation();
+                    get_Head_Info(pHeadInfo, &pBuf[offset]);
+                    memcpy(&pFarmFrame->numberOfTMDByHead, pHeadInfo, sizeof(*pHeadInfo));
+                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    delete pHeadInfo;  
+                }
+                break;
                 case VELOCITY_OBSERVER_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD:     
-                    {
-                        sHeadInformation *pHeadInfo = new sHeadInformation();
-                        get_Head_Info(pHeadInfo, &pBuf[offset]);
-                        memcpy(&pFarmFrame->velocityObserverByHead, pHeadInfo, sizeof(*pHeadInfo));
-                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                        delete pHeadInfo;  
-                    }
-                    break;
+                {
+                    sHeadInformation *pHeadInfo = new sHeadInformation();
+                    get_Head_Info(pHeadInfo, &pBuf[offset]);
+                    memcpy(&pFarmFrame->velocityObserverByHead, pHeadInfo, sizeof(*pHeadInfo));
+                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    delete pHeadInfo;  
+                }
+                break;
                 case NUMBER_OF_VELOCITY_OBSERVER_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD:     
-                    {
-                        sHeadInformation *pHeadInfo = new sHeadInformation();
-                        get_Head_Info(pHeadInfo, &pBuf[offset]);
-                        memcpy(&pFarmFrame->numberOfVelocityObservedByHead, pHeadInfo, sizeof(*pHeadInfo));
-                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                        delete pHeadInfo;  
-                    }
-                    break;
+                {
+                    sHeadInformation *pHeadInfo = new sHeadInformation();
+                    get_Head_Info(pHeadInfo, &pBuf[offset]);
+                    memcpy(&pFarmFrame->numberOfVelocityObservedByHead, pHeadInfo, sizeof(*pHeadInfo));
+                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    delete pHeadInfo;  
+                }
+                break;
                 case CURRENT_H2SAT_PERCENTAGE_OF_CODEWORDS_AT_ITERATION_LEVEL_BY_HEAD_AVERAGED_ACROSS_TEST_ZONES:  
-                    {
-                        sHeadInformation *pHeadInfo = new sHeadInformation();
-                        get_Head_Info(pHeadInfo, &pBuf[offset]);
-                        memcpy(&pFarmFrame->currentH2SATPercentagedbyHead, pHeadInfo, sizeof(*pHeadInfo));
-                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                        delete pHeadInfo;  
-                    }
-                    break;
+                {
+                    sHeadInformation *pHeadInfo = new sHeadInformation();
+                    get_Head_Info(pHeadInfo, &pBuf[offset]);
+                    memcpy(&pFarmFrame->currentH2SATPercentagedbyHead, pHeadInfo, sizeof(*pHeadInfo));
+                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    delete pHeadInfo;  
+                }
+                break;
                 case CURRENT_H2SAT_AMPLITUDE_BY_HEAD_AVERAGED_ACROSS_TEST_ZONES:     
-                    {
-                        sHeadInformation *pHeadInfo = new sHeadInformation(); 
-                        get_Head_Info(pHeadInfo, &pBuf[offset]);
-                        memcpy(&pFarmFrame->currentH2STAmplituedByHead, pHeadInfo, sizeof(*pHeadInfo));
-                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                        delete pHeadInfo;  
-                    }
-                    break;
+                {
+                    sHeadInformation *pHeadInfo = new sHeadInformation(); 
+                    get_Head_Info(pHeadInfo, &pBuf[offset]);
+                    memcpy(&pFarmFrame->currentH2STAmplituedByHead, pHeadInfo, sizeof(*pHeadInfo));
+                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    delete pHeadInfo;  
+                }
+                break;
                 case CURRENT_H2SAT_ASYMMETRY_BY_HEAD_AVERAGED_ACROSS_TEST_ZONES:     
-                    {
-                        sHeadInformation *pHeadInfo = new sHeadInformation();
-                        get_Head_Info(pHeadInfo, &pBuf[offset]);
-                        memcpy(&pFarmFrame->currentH2STAsymmetryByHead, pHeadInfo, sizeof(*pHeadInfo));
-                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                        delete pHeadInfo;  
-                    }
-                    break;
+                {
+                    sHeadInformation *pHeadInfo = new sHeadInformation();
+                    get_Head_Info(pHeadInfo, &pBuf[offset]);
+                    memcpy(&pFarmFrame->currentH2STAsymmetryByHead, pHeadInfo, sizeof(*pHeadInfo));
+                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    delete pHeadInfo;  
+                }
+                break;
                 case NUMBER_OF_RESIDENT_GLIST_ENTRIES:     
-                    {
-                        sHeadInformation *pHeadInfo = new sHeadInformation();
-                        get_Head_Info(pHeadInfo, &pBuf[offset]);
-                        memcpy(&pFarmFrame->ResidentGlistEntries, pHeadInfo, sizeof(*pHeadInfo));
-                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                        delete pHeadInfo;  
-                    }
-                    break;
+                {
+                    sHeadInformation *pHeadInfo = new sHeadInformation();
+                    get_Head_Info(pHeadInfo, &pBuf[offset]);
+                    memcpy(&pFarmFrame->ResidentGlistEntries, pHeadInfo, sizeof(*pHeadInfo));
+                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    delete pHeadInfo;  
+                }
+                break;
                 case     NUMBER_OF_PENDING_ENTRIES:     
-                    {
-                        sHeadInformation *pHeadInfo = new sHeadInformation();
-                        get_Head_Info(pHeadInfo, &pBuf[offset]);
-                        memcpy(&pFarmFrame->ResidentPlistEntries, pHeadInfo, sizeof(*pHeadInfo));
-                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter)); 
-                        delete pHeadInfo;  
-                    }
-                    break;
-                case    DOS_OUGHT_TO_SCAN_COUNT_PER_HEAD:     
-                    {
-                        sHeadInformation *pHeadInfo = new sHeadInformation();
-                        get_Head_Info(pHeadInfo, &pBuf[offset]);
-                        memcpy(&pFarmFrame->DOSOoughtToScan, pHeadInfo, sizeof(*pHeadInfo));
-                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                        delete pHeadInfo;  
-                    }
-                    break;
-                case   DOS_NEED_TO_SCAN_COUNT_PER_HEAD:     
-                    {
-                        sHeadInformation *pHeadInfo = new sHeadInformation(); 
-                        get_Head_Info(pHeadInfo, &pBuf[offset]);
-                        memcpy(&pFarmFrame->DOSNeedToScan, pHeadInfo, sizeof(*pHeadInfo));
-                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                        delete pHeadInfo;  
-                    }
-                    break;
-                case   DOS_WRITE_FAULT_SCAN_COUNT_PER_HEAD:     
-                    {
-                        sHeadInformation *pHeadInfo = new sHeadInformation();
-                        get_Head_Info(pHeadInfo, &pBuf[offset]);
-                        memcpy(&pFarmFrame->DOSWriteFaultScan, pHeadInfo, sizeof(*pHeadInfo));
-                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                        delete pHeadInfo;  
-                    }
-                    break;
-               
-                case  WRITE_POWERON_HOURS_FROM_MOST_RECENT_SMART:     
-                    {
-                        sHeadInformation *pHeadInfo = new sHeadInformation();
-                        get_Head_Info(pHeadInfo, &pBuf[offset]);
-                        memcpy(&pFarmFrame->writePowerOnHours, pHeadInfo, sizeof(*pHeadInfo));
-                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                        delete pHeadInfo;  
-                    }
-                    break;
+                {
+                    sHeadInformation *pHeadInfo = new sHeadInformation();
+                    get_Head_Info(pHeadInfo, &pBuf[offset]);
+                    memcpy(&pFarmFrame->ResidentPlistEntries, pHeadInfo, sizeof(*pHeadInfo));
+                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter)); 
+                    delete pHeadInfo;  
+                }
+                break;
+                case DOS_OUGHT_TO_SCAN_COUNT_PER_HEAD:     
+                {
+                    sHeadInformation *pHeadInfo = new sHeadInformation();
+                    get_Head_Info(pHeadInfo, &pBuf[offset]);
+                    memcpy(&pFarmFrame->DOSOoughtToScan, pHeadInfo, sizeof(*pHeadInfo));
+                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    delete pHeadInfo;  
+                }
+                break;
+                case DOS_NEED_TO_SCAN_COUNT_PER_HEAD:     
+                {
+                    sHeadInformation *pHeadInfo = new sHeadInformation(); 
+                    get_Head_Info(pHeadInfo, &pBuf[offset]);
+                    memcpy(&pFarmFrame->DOSNeedToScan, pHeadInfo, sizeof(*pHeadInfo));
+                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    delete pHeadInfo;  
+                }
+                break;
+                case DOS_WRITE_FAULT_SCAN_COUNT_PER_HEAD:     
+                {
+                    sHeadInformation *pHeadInfo = new sHeadInformation();
+                    get_Head_Info(pHeadInfo, &pBuf[offset]);
+                    memcpy(&pFarmFrame->DOSWriteFaultScan, pHeadInfo, sizeof(*pHeadInfo));
+                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    delete pHeadInfo;  
+                }
+                break;
+                case WRITE_POWERON_HOURS_FROM_MOST_RECENT_SMART:     
+                {
+                    sHeadInformation *pHeadInfo = new sHeadInformation();
+                    get_Head_Info(pHeadInfo, &pBuf[offset]);
+                    memcpy(&pFarmFrame->writePowerOnHours, pHeadInfo, sizeof(*pHeadInfo));
+                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    delete pHeadInfo;  
+                }
+                break;
                 case DOS_WRITE_COUNT_THRESHOLD_PER_HEAD:     
-                    {
-                         sHeadInformation *pHeadInfo = new sHeadInformation();
-                         get_Head_Info(pHeadInfo, &pBuf[offset]);
-                         memcpy(&pFarmFrame->dosWriteCount, pHeadInfo, sizeof(*pHeadInfo));
-                         offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                         delete pHeadInfo; 
-                    }
-                    break;
-                case CUM_LIFETIME_UNRECOVERALBE_READ_REPET_PER_HEAD:
-                    {
+                {
                         sHeadInformation *pHeadInfo = new sHeadInformation();
                         get_Head_Info(pHeadInfo, &pBuf[offset]);
-                        memcpy(&pFarmFrame->cumECCReadRepeat, pHeadInfo, sizeof(*pHeadInfo));
-                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                        delete pHeadInfo;
-                    }
-                    break;
-                case CUM_LIFETIME_UNRECOVERABLE_READ_UNIQUE_PER_HEAD:
-                    {
-                        sHeadInformation *pHeadInfo = new sHeadInformation();
-                        get_Head_Info(pHeadInfo, &pBuf[offset]);
-                        memcpy(&pFarmFrame->cumECCReadUnique, pHeadInfo, sizeof(*pHeadInfo));
-                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                        delete pHeadInfo;
-                    }
-                    break;
-                case RESERVED_FOR_FUTURE_EXPANSION_4:
-                case RESERVED_FOR_FUTURE_EXPANSION_5:
-                case RESERVED_FOR_FUTURE_EXPANSION_6:
-                case RESERVED_FOR_FUTURE_EXPANSION_7:
-                case RESERVED_FOR_FUTURE_EXPANSION_8:
-                case RESERVED_FOR_FUTURE_EXPANSION_9:
-                    break;
-                case CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_0:    
-                    {
-                        sHeadInformation *pHeadInfo = new sHeadInformation();
-                        get_Head_Info(pHeadInfo, &pBuf[offset]);
-                        memcpy(&pFarmFrame->currentH2STTrimmedbyHeadZone0, pHeadInfo, sizeof(*pHeadInfo));
-                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                        delete pHeadInfo;  
-                    }
-                    break;
-                case CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_1:     
-                    {
-                        sHeadInformation *pHeadInfo = new sHeadInformation();
-                        get_Head_Info(pHeadInfo, &pBuf[offset]);
-                        memcpy(&pFarmFrame->currentH2STTrimmedbyHeadZone1, pHeadInfo, sizeof(*pHeadInfo));
-                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                        delete pHeadInfo;  
-                    }
-                    break;
-                case CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_2:     
-                    {
-                        sHeadInformation *pHeadInfo = new sHeadInformation();
-                        get_Head_Info(pHeadInfo, &pBuf[offset]);
-                        memcpy(&pFarmFrame->currentH2STTrimmedbyHeadZone2, pHeadInfo, sizeof(*pHeadInfo));
-                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter)); 
-                        delete pHeadInfo;  
-                    }
-                    break;
-                case CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_0:     
-                    {
-                        sHeadInformation *pHeadInfo = new sHeadInformation();
-                        get_Head_Info(pHeadInfo, &pBuf[offset]);
-                        memcpy(&pFarmFrame->currentH2STIterationsByHeadZone0, pHeadInfo, sizeof(*pHeadInfo));
-                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                        delete pHeadInfo;  
-                    }
-                    break;
-                case CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_1:  
-                    {
-                        sHeadInformation *pHeadInfo = new sHeadInformation();
-                        get_Head_Info(pHeadInfo, &pBuf[offset]);
-                        memcpy(&pFarmFrame->currentH2STIterationsByHeadZone1, pHeadInfo, sizeof(*pHeadInfo));
-                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                        delete pHeadInfo;  
-                    }
-                    break;
-                case CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_2:     
-                    {
-                        sHeadInformation *pHeadInfo = new sHeadInformation(); 
-                        get_Head_Info(pHeadInfo, &pBuf[offset]);
-                        memcpy(&pFarmFrame->currentH2STIterationsByHeadZone2, pHeadInfo, sizeof(*pHeadInfo));
-                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                        delete pHeadInfo;  
-                    }
-                    break;
-                case APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_OUTER:   
-                    {
-                        sHeadInformation *pHeadInfo = new sHeadInformation();
-                        get_Head_Info(pHeadInfo, &pBuf[offset]);
-                        memcpy(&pFarmFrame->appliedFlyHeightByHeadOuter, pHeadInfo, sizeof(*pHeadInfo));
-                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                        delete pHeadInfo;  
-                    }
-                    break;
-                case APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_INNER:    
-                    {
-                        sHeadInformation *pHeadInfo = new sHeadInformation();
-                        get_Head_Info(pHeadInfo, &pBuf[offset]);
-                        memcpy(&pFarmFrame->appliedFlyHeightByHeadInner, pHeadInfo, sizeof(*pHeadInfo));
-                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
-                        delete pHeadInfo;
-                    }
-                    break;
-                case APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_MIDDLE:     
-                    {
-                        sHeadInformation *pHeadInfo = new sHeadInformation();
-                        get_Head_Info(pHeadInfo, &pBuf[offset]);
-                        memcpy(&pFarmFrame->appliedFlyHeightByHeadMiddle, pHeadInfo, sizeof(*pHeadInfo));
+                        memcpy(&pFarmFrame->dosWriteCount, pHeadInfo, sizeof(*pHeadInfo));
                         offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
                         delete pHeadInfo; 
-                    }
-                    break; 
+                }
+                break;
+                case CUM_LIFETIME_UNRECOVERALBE_READ_REPET_PER_HEAD:
+                {
+                    sHeadInformation *pHeadInfo = new sHeadInformation();
+                    get_Head_Info(pHeadInfo, &pBuf[offset]);
+                    memcpy(&pFarmFrame->cumECCReadRepeat, pHeadInfo, sizeof(*pHeadInfo));
+                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    delete pHeadInfo;
+                }
+                break;
+                case CUM_LIFETIME_UNRECOVERABLE_READ_UNIQUE_PER_HEAD:
+                {
+                    sHeadInformation *pHeadInfo = new sHeadInformation();
+                    get_Head_Info(pHeadInfo, &pBuf[offset]);
+                    memcpy(&pFarmFrame->cumECCReadUnique, pHeadInfo, sizeof(*pHeadInfo));
+                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    delete pHeadInfo;
+                }
+                break;
+                case TOTAL_LASER_FIELD_ADJUST_ITERATIONS:
+                {
+                    sHeadInformation* pHeadInfo = new sHeadInformation();
+                    get_Head_Info(pHeadInfo, &pBuf[offset]);
+                    memcpy(&pFarmFrame->totalLaserFieldAdjustIterations, pHeadInfo, sizeof(*pHeadInfo));
+                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    delete pHeadInfo;
+                }
+                break;
+                case TOTAL_READER_WRITEER_OFFSET_ITERATIONS_PERFORMED:
+                {
+                    sHeadInformation* pHeadInfo = new sHeadInformation();
+                    get_Head_Info(pHeadInfo, &pBuf[offset]);
+                    memcpy(&pFarmFrame->totalReaderWriteerOffsetIterationsPerformed, pHeadInfo, sizeof(*pHeadInfo));
+                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    delete pHeadInfo;
+                }
+                break;
+                case PRE_LFA_ZONE_0:
+                {
+                    sHeadInformation* pHeadInfo = new sHeadInformation();
+                    get_Head_Info(pHeadInfo, &pBuf[offset]);
+                    memcpy(&pFarmFrame->pre_lfaZone_0, pHeadInfo, sizeof(*pHeadInfo));
+                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    delete pHeadInfo;
+                }
+                break;
+                case PRE_LFA_ZONE_1:
+                {
+                    sHeadInformation* pHeadInfo = new sHeadInformation();
+                    get_Head_Info(pHeadInfo, &pBuf[offset]);
+                    memcpy(&pFarmFrame->pre_lfaZone_1, pHeadInfo, sizeof(*pHeadInfo));
+                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    delete pHeadInfo;
+                }
+                break;
+                case PRE_LFA_ZONE_2:
+                {
+                    sHeadInformation* pHeadInfo = new sHeadInformation();
+                    get_Head_Info(pHeadInfo, &pBuf[offset]);
+                    memcpy(&pFarmFrame->pre_lfaZone_2, pHeadInfo, sizeof(*pHeadInfo));
+                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    delete pHeadInfo;
+                }
+                break;
+                case ZERO_PERCENT_SHIFT:
+                {
+                    sHeadInformation* pHeadInfo = new sHeadInformation();
+                    get_Head_Info(pHeadInfo, &pBuf[offset]);
+                    memcpy(&pFarmFrame->zeroPercentShift, pHeadInfo, sizeof(*pHeadInfo));
+                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    delete pHeadInfo;
+                }
+                break;
+                case CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_0:    
+                {
+                    sHeadInformation *pHeadInfo = new sHeadInformation();
+                    get_Head_Info(pHeadInfo, &pBuf[offset]);
+                    memcpy(&pFarmFrame->currentH2STTrimmedbyHeadZone0, pHeadInfo, sizeof(*pHeadInfo));
+                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    delete pHeadInfo;  
+                }
+                break;
+                case CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_1:     
+                {
+                    sHeadInformation *pHeadInfo = new sHeadInformation();
+                    get_Head_Info(pHeadInfo, &pBuf[offset]);
+                    memcpy(&pFarmFrame->currentH2STTrimmedbyHeadZone1, pHeadInfo, sizeof(*pHeadInfo));
+                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    delete pHeadInfo;  
+                }
+                break;
+                case CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_2:     
+                {
+                    sHeadInformation *pHeadInfo = new sHeadInformation();
+                    get_Head_Info(pHeadInfo, &pBuf[offset]);
+                    memcpy(&pFarmFrame->currentH2STTrimmedbyHeadZone2, pHeadInfo, sizeof(*pHeadInfo));
+                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter)); 
+                    delete pHeadInfo;  
+                }
+                break;
+                case CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_0:     
+                {
+                    sHeadInformation *pHeadInfo = new sHeadInformation();
+                    get_Head_Info(pHeadInfo, &pBuf[offset]);
+                    memcpy(&pFarmFrame->currentH2STIterationsByHeadZone0, pHeadInfo, sizeof(*pHeadInfo));
+                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    delete pHeadInfo;  
+                }
+                break;
+                case CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_1:  
+                {
+                    sHeadInformation *pHeadInfo = new sHeadInformation();
+                    get_Head_Info(pHeadInfo, &pBuf[offset]);
+                    memcpy(&pFarmFrame->currentH2STIterationsByHeadZone1, pHeadInfo, sizeof(*pHeadInfo));
+                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    delete pHeadInfo;  
+                }
+                break;
+                case CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_2:     
+                {
+                    sHeadInformation *pHeadInfo = new sHeadInformation(); 
+                    get_Head_Info(pHeadInfo, &pBuf[offset]);
+                    memcpy(&pFarmFrame->currentH2STIterationsByHeadZone2, pHeadInfo, sizeof(*pHeadInfo));
+                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    delete pHeadInfo;  
+                }
+                break;
+                case LASER_OPERATING_ZONE_0:
+                {
+                    sHeadInformation* pHeadInfo = new sHeadInformation();
+                    get_Head_Info(pHeadInfo, &pBuf[offset]);
+                    memcpy(&pFarmFrame->laser_operatingZone_0, pHeadInfo, sizeof(*pHeadInfo));
+                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    delete pHeadInfo;
+                }
+                break;
+                case LASER_OPERATING_ZONE_1:
+                {
+                    sHeadInformation* pHeadInfo = new sHeadInformation();
+                    get_Head_Info(pHeadInfo, &pBuf[offset]);
+                    memcpy(&pFarmFrame->laser_operatingZone_1, pHeadInfo, sizeof(*pHeadInfo));
+                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    delete pHeadInfo;
+                }
+                break;
+                case LASER_OPERATING_ZONE_2:
+                {
+                    sHeadInformation* pHeadInfo = new sHeadInformation();
+                    get_Head_Info(pHeadInfo, &pBuf[offset]);
+                    memcpy(&pFarmFrame->laserOperatingZone_2, pHeadInfo, sizeof(*pHeadInfo));
+                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    delete pHeadInfo;
+                }
+                break;
+                case POST_LFA_OPTIMAL_BER_ZONE_0:
+                {
+                    sHeadInformation* pHeadInfo = new sHeadInformation();
+                    get_Head_Info(pHeadInfo, &pBuf[offset]);
+                    memcpy(&pFarmFrame->postLFAOptimalBERZone_0, pHeadInfo, sizeof(*pHeadInfo));
+                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    delete pHeadInfo;
+                }
+                break;
+                case POST_LFA_OPTIMAL_BER_ZONE_1:
+                {
+                    sHeadInformation* pHeadInfo = new sHeadInformation();
+                    get_Head_Info(pHeadInfo, &pBuf[offset]);
+                    memcpy(&pFarmFrame->postLFAOptimalBERZone_1, pHeadInfo, sizeof(*pHeadInfo));
+                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    delete pHeadInfo;
+                }
+                break;
+                case POST_LFA_OPTIMAL_BER_ZONE_2:
+                {
+                    sHeadInformation* pHeadInfo = new sHeadInformation();
+                    get_Head_Info(pHeadInfo, &pBuf[offset]);
+                    memcpy(&pFarmFrame->postLFAOptimalBERZone_2, pHeadInfo, sizeof(*pHeadInfo));
+                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    delete pHeadInfo;
+                }
+                break;
+                case MICRO_JOG_OFFSET_ZONE_0:
+                {
+                    sHeadInformation* pHeadInfo = new sHeadInformation();
+                    get_Head_Info(pHeadInfo, &pBuf[offset]);
+                    memcpy(&pFarmFrame->microJogOffsetZone_0, pHeadInfo, sizeof(*pHeadInfo));
+                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    delete pHeadInfo;
+                }
+                break;
+                case MICRO_JOG_OFFSET_ZONE_1:
+                {
+                    sHeadInformation* pHeadInfo = new sHeadInformation();
+                    get_Head_Info(pHeadInfo, &pBuf[offset]);
+                    memcpy(&pFarmFrame->microJogOffsetZone_1, pHeadInfo, sizeof(*pHeadInfo));
+                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    delete pHeadInfo;
+                }
+                break;
+                case MICRO_JOG_OFFSET_ZONE_2:
+                {
+                    sHeadInformation* pHeadInfo = new sHeadInformation();
+                    get_Head_Info(pHeadInfo, &pBuf[offset]);
+                    memcpy(&pFarmFrame->microJogOffsetZone_2, pHeadInfo, sizeof(*pHeadInfo));
+                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    delete pHeadInfo;
+                }
+                break;
+                case ZERO_PERCENT_SHIFT_ZONE_1:
+                {
+                    sHeadInformation* pHeadInfo = new sHeadInformation();
+                    get_Head_Info(pHeadInfo, &pBuf[offset]);
+                    memcpy(&pFarmFrame->zeroPercentShiftZone_1, pHeadInfo, sizeof(*pHeadInfo));
+                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    delete pHeadInfo;
+                }
+                break;
+                case APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_OUTER:   
+                {
+                    sHeadInformation *pHeadInfo = new sHeadInformation();
+                    get_Head_Info(pHeadInfo, &pBuf[offset]);
+                    memcpy(&pFarmFrame->appliedFlyHeightByHeadOuter, pHeadInfo, sizeof(*pHeadInfo));
+                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    delete pHeadInfo;  
+                }
+                break;
+                case APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_INNER:    
+                {
+                    sHeadInformation *pHeadInfo = new sHeadInformation();
+                    get_Head_Info(pHeadInfo, &pBuf[offset]);
+                    memcpy(&pFarmFrame->appliedFlyHeightByHeadInner, pHeadInfo, sizeof(*pHeadInfo));
+                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    delete pHeadInfo;
+                }
+                break;
+                case APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_MIDDLE:     
+                {
+                    sHeadInformation *pHeadInfo = new sHeadInformation();
+                    get_Head_Info(pHeadInfo, &pBuf[offset]);
+                    memcpy(&pFarmFrame->appliedFlyHeightByHeadMiddle, pHeadInfo, sizeof(*pHeadInfo));
+                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    delete pHeadInfo; 
+                }
+                break; 
                 case SECOND_MR_HEAD_RESISTANCE:
                 {
                     sHeadInformation *pHeadInfo = new sHeadInformation();
@@ -1618,6 +1782,15 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     delete pHeadInfo;
                 }
                 break;
+                case ZERO_PERCENT_SHIFT_ZONE_2:
+                {
+                    sHeadInformation* pHeadInfo = new sHeadInformation();
+                    get_Head_Info(pHeadInfo, &pBuf[offset]);
+                    memcpy(&pFarmFrame->zeroPercentShiftZone_2, pHeadInfo, sizeof(*pHeadInfo));
+                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    delete pHeadInfo;
+                }
+                    break;
                 case LUN_0_ACTUATOR:
                 {
                     sLUNStruct *pLUNInfo;
@@ -3091,10 +3264,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
     {
         return FAILURE;
     }
-    if (type != RESERVED_FOR_FUTURE_EXPANSION_10 && type != RESERVED_FOR_FUTURE_EXPANSION_11 && type != RESERVED_FOR_FUTURE_EXPANSION_12 &&
-        type != RESERVED_FOR_FUTURE_EXPANSION_13 && type != RESERVED_FOR_FUTURE_EXPANSION_14 && type != RESERVED_FOR_FUTURE_EXPANSION_15 &&
-        type != RESERVED_FOR_FUTURE_EXPANSION_16 && type != RESERVED_FOR_FUTURE_EXPANSION_17 && type != RESERVED_FOR_FUTURE_EXPANSION_18 &&
-        type != RESERVED_FOR_FUTURE_EXPANSION_19 && type != RESERVED_FOR_FUTURE_EXPANSION)
+    if (type != RESERVED_FOR_FUTURE_EXPANSION)
     {
         
         
@@ -3108,32 +3278,43 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
         case RELIABILITY_STATISTICS_PARAMETER:
             break;
         case DISC_SLIP_IN_MICRO_INCHES_BY_HEAD:
+        {
+            std::ostringstream header;
+            header << "Disc Slip in micro-inches"; 
+           //JSONNODE* myArray = json_new(JSON_ARRAY);
+            //json_set_name(myArray, "Disc Slip in micro-inches");
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
                 uint64_t dsHead = check_Status_Strip_Status(vFarmFrame[page].discSlipPerHead.headValue[loopCount]);
-                int16_t whole = M_WordInt2(dsHead);							// get 5:4 whole part of the float
+                int16_t whole = M_WordInt2(dsHead);							                      // get 5:4 whole part of the float
                 double decimal = static_cast<double>(M_DoubleWordInt0(dsHead));                   // get 3:0 for the Deciaml Part of the float
+                double number = 0.0;
+                if (whole > 0)
+                {
+                    number = static_cast<double>(whole) + (decimal * .0001);
+                }
+                else
+                {
+                    number = static_cast<double>(whole) - (decimal * .0001);
+                }
 #if defined _DEBUG
                 printf("\tDisc Slip in micro-inches for Head %" PRIu32":  raw 0x%" PRIx64", calculated %" PRIi16".%04.0f (debug) \n" \
                     , loopCount, vFarmFrame[page].discSlipPerHead.headValue[loopCount], whole, decimal);  //!< Disc Slip in micro-inches
 #endif
-                
+
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-
-                    double number = whole + (decimal * .0001);
                     prePython_Head_Float(headPage, "head_disc_slip", NULL, loopCount, "micro-inches", DISC_SLIP_IN_MICRO_INCHES_BY_HEAD, number);
                 }
                 else
                 {
-                    std::ostringstream header, temp;
-                    header << "Disc Slip in micro-inches for Head " <<std::dec << loopCount; // Head count
-                    temp << std::dec << whole << "." << std::fixed << std::setprecision(0) << std::setw(4) << std::setfill('0') << decimal;   //!< Disc Slip in micro-inches by Head
-
-                    set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].discSlipPerHead.headValue[loopCount], m_showStatusBits);
+                    set_json_float_With_Status(headPage, header.str().c_str(), number, vFarmFrame[page].discSlipPerHead.headValue[loopCount], m_showStatusBits);
                 }
+
             }
-            break;
+            //json_push_back(headPage, myArray);
+        }
+        break;
         case BIT_ERROR_RATE_OF_ZONE_0_BY_DRIVE_HEAD:
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
@@ -3141,6 +3322,15 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 uint64_t beHead = check_Status_Strip_Status(vFarmFrame[page].bitErrorRateByHead.headValue[loopCount]);
                 int16_t whole = M_WordInt2(beHead);							// get 5:4 whole part of the float
                 double decimal = static_cast<double>(M_DoubleWordInt0(beHead));                     // get 3:0 for the Deciaml Part of the float
+                double number = 0.0;
+                if (whole > 0)
+                {
+                    number = static_cast<double>(whole) + (decimal * .0001);
+                }
+                else
+                {
+                    number = static_cast<double>(whole) - (decimal * .0001);
+                }
 #if defined _DEBUG
                 printf("\tBit Error Rate of Zone 0 by Head %" PRIu32":  raw 0x%" PRIx64", %" PRIi16".%04.0f \n", loopCount, vFarmFrame[page].bitErrorRateByHead.headValue[loopCount], whole, decimal);  //!< Bit Error Rate of Zone 0 by Drive Head
 #endif
@@ -3149,12 +3339,11 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 temp << std::dec << whole << "." << std::fixed << std::setprecision(0) << std::setw(4) << std::setfill('0') << decimal;
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    double number = whole + (decimal * .0001);
                     prePython_Head_Float(headPage, "head_error_rate", "zone 0", loopCount, "bit-error-rate", BIT_ERROR_RATE_OF_ZONE_0_BY_DRIVE_HEAD, number);
                 }
                 else
                 {
-                    set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].bitErrorRateByHead.headValue[loopCount], m_showStatusBits);
+                    set_json_float_With_Status(headPage, header.str().c_str(),number , vFarmFrame[page].bitErrorRateByHead.headValue[loopCount], m_showStatusBits);
                 }
 
             }
@@ -3257,14 +3446,15 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
 #endif
                 std::ostringstream temp, header;
                 header << "ACFF Sine 1X for Head " << std::dec << loopCount; // Head count
-                temp << std::dec << static_cast<int16_t>(static_cast<int8_t>(check_for_signed_int(M_Byte0(check_Status_Strip_Status(vFarmFrame[page].acffSine1xValueByHead.headValue[loopCount])), 8)) * 16);
+                //temp << std::dec << static_cast<int16_t>(static_cast<int8_t>(check_for_signed_int(M_Byte0(check_Status_Strip_Status(vFarmFrame[page].acffSine1xValueByHead.headValue[loopCount])), 8)) * 16);
                 if (g_dataformat == PREPYTHON_DATA)
                 {
                     prePython_Head_Int(headPage, "head_acff", "sine (1x)", loopCount, "counts", ACFF_SINE_1X_VALUE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD, static_cast<int8_t>(check_for_signed_int(M_Byte0(check_Status_Strip_Status(vFarmFrame[page].acffSine1xValueByHead.headValue[loopCount])), 8)) * 16);
                 }
                 else
                 {
-                    set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].acffSine1xValueByHead.headValue[loopCount], m_showStatusBits);  //!< ACFF Sine 1X, value from most recent SMART Summary Frame
+                    //set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].acffSine1xValueByHead.headValue[loopCount], m_showStatusBits);  //!< ACFF Sine 1X, value from most recent SMART Summary Frame
+                    set_json_int_Check_Status(headPage, header.str().c_str(), static_cast<int8_t>(M_Byte0(vFarmFrame[page].acffSine1xValueByHead.headValue[loopCount])) * 16, vFarmFrame[page].acffSine1xValueByHead.headValue[loopCount], m_showStatusBits);  //!< ACFF Sine 1X, value from most recent SMART Summary Frame
                 }
             }
             break;
@@ -3276,14 +3466,15 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
 #endif
                 std::ostringstream temp, header;
                 header << "ACFF Cosine 1X for Head " << std::dec << loopCount; // Head count
-                temp << std::dec << static_cast<int16_t>(static_cast<int8_t>(check_for_signed_int(M_Byte0(check_Status_Strip_Status(vFarmFrame[page].acffCosine1xValueByHead.headValue[loopCount])), 8)) * 16);
+                //temp << std::dec << static_cast<int16_t>(static_cast<int8_t>(check_for_signed_int(M_Byte0(check_Status_Strip_Status(vFarmFrame[page].acffCosine1xValueByHead.headValue[loopCount])), 8)) * 16);
                 if (g_dataformat == PREPYTHON_DATA)
                 {
                     prePython_Head_Int(headPage, "head_acff", "cosine (1x)", loopCount, "counts", ACFF_COSINE_1X_VALUE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD, static_cast<int8_t>(check_for_signed_int(M_Byte0(check_Status_Strip_Status(vFarmFrame[page].acffCosine1xValueByHead.headValue[loopCount])), 8)) * 16);
                 }
                 else
                 {
-                    set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].acffCosine1xValueByHead.headValue[loopCount], m_showStatusBits);  //!< ACFF Cosine 1X, value from most recent SMART Summary Frame
+                    //set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].acffCosine1xValueByHead.headValue[loopCount], m_showStatusBits);  //!< ACFF Cosine 1X, value from most recent SMART Summary Frame
+                    set_json_int_Check_Status(headPage, header.str().c_str(), static_cast<int8_t>(M_Byte0(vFarmFrame[page].acffCosine1xValueByHead.headValue[loopCount])) * 16, vFarmFrame[page].acffCosine1xValueByHead.headValue[loopCount], m_showStatusBits);  //!< ACFF Cosine 1X, value from most recent SMART Summary Frame
                 }
             }
             break;
@@ -3429,7 +3620,8 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 {
                     std::ostringstream asymmetryStr;
                     asymmetryStr << std::dec << M_DoubleWordInt0(vFarmFrame[page].currentH2STAsymmetryByHead.headValue[loopCount]);
-                    set_json_string_With_Status(headPage, header.str().c_str(), asymmetryStr.str(), vFarmFrame[page].currentH2STAsymmetryByHead.headValue[loopCount], m_showStatusBits);  //!< Current H2SAT asymmetry, averaged across Test Zone
+                    //set_json_string_With_Status(headPage, header.str().c_str(), asymmetryStr.str(), vFarmFrame[page].currentH2STAsymmetryByHead.headValue[loopCount], m_showStatusBits);  //!< Current H2SAT asymmetry, averaged across Test Zone
+                    set_json_int_With_Status(headPage, header.str().c_str(),  vFarmFrame[page].currentH2STAsymmetryByHead.headValue[loopCount], m_showStatusBits);  //!< Current H2SAT asymmetry, averaged across Test Zone
                 }
             }
             break;
@@ -3532,14 +3724,16 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 std::ostringstream header, temp;
                 header << "Write Power On (hrs) by Head " << std::dec << loopCount; // Head count
                 //set_json_64_bit_With_Status(headPage, header.str().c_str(), vFarmFrame[page].writePowerOnHours.headValue[loopCount], false, m_showStatusBits);
-                temp << std::fixed << std::setprecision(4) << ROUNDF((static_cast<double>( M_DoubleWord0(vFarmFrame[page].writePowerOnHours.headValue[loopCount])) /3600),1000);
+                double number = static_cast<double>(M_DoubleWord0(vFarmFrame[page].writePowerOnHours.headValue[loopCount]) / 3600);
+                //temp << std::fixed << std::setprecision(4) << ROUNDF((static_cast<double>( M_DoubleWord0(vFarmFrame[page].writePowerOnHours.headValue[loopCount])) /3600),1000);
                 if (g_dataformat == PREPYTHON_DATA)
                 {
                     prePython_Head_Float(headPage, "head_write_power_on", NULL, loopCount, "hours", WRITE_POWERON_HOURS_FROM_MOST_RECENT_SMART, (static_cast<double>(M_DoubleWord0(vFarmFrame[page].writePowerOnHours.headValue[loopCount])) / 3600) );   
                 }
                 else
                 {
-                    set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].writePowerOnHours.headValue[loopCount], m_showStatusBits);
+                    //set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].writePowerOnHours.headValue[loopCount], m_showStatusBits);
+                    set_json_float_With_Status(headPage, header.str().c_str(), number, vFarmFrame[page].discSlipPerHead.headValue[loopCount], m_showStatusBits);
                 }
             }
             break;
@@ -3611,8 +3805,10 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 }
                 else
                 {
-                    temp << std::fixed << std::setprecision(2) << static_cast<float>(M_Word0(vFarmFrame[page].currentH2STTrimmedbyHeadZone0.headValue[loopCount]) * .10);
-                    set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].currentH2STTrimmedbyHeadZone0.headValue[loopCount], m_showStatusBits); //!< Current H2SAT trimmed mean bits in error by Head, by Test Zone 0
+                    double number = static_cast<double>(M_Word0(vFarmFrame[page].currentH2STTrimmedbyHeadZone0.headValue[loopCount]) * 0.10);
+                    //temp << std::fixed << std::setprecision(2) << static_cast<float>(M_Word0(vFarmFrame[page].currentH2STTrimmedbyHeadZone0.headValue[loopCount]) * .10);
+                    //set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].currentH2STTrimmedbyHeadZone0.headValue[loopCount], m_showStatusBits); //!< Current H2SAT trimmed mean bits in error by Head, by Test Zone 0
+                    set_json_float_With_Status(headPage, header.str().c_str(), number, vFarmFrame[page].currentH2STTrimmedbyHeadZone0.headValue[loopCount], m_showStatusBits); //!< Current H2SAT trimmed mean bits in error by Head, by Test Zone 0
                 }
             }
             break;
@@ -3630,8 +3826,10 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 }
                 else
                 {
-                    temp << std::fixed << std::setprecision(2) << static_cast<float>(M_Word0(vFarmFrame[page].currentH2STTrimmedbyHeadZone1.headValue[loopCount]) * .10);
-                    set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].currentH2STTrimmedbyHeadZone1.headValue[loopCount], m_showStatusBits); //!< Current H2SAT trimmed mean bits in error by Head, by Test Zone 1
+                    double number = static_cast<double>(M_Word0(vFarmFrame[page].currentH2STTrimmedbyHeadZone1.headValue[loopCount]) * 0.10);
+                    //temp << std::fixed << std::setprecision(2) << static_cast<float>(M_Word0(vFarmFrame[page].currentH2STTrimmedbyHeadZone1.headValue[loopCount]) * .10);
+                    //set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].currentH2STTrimmedbyHeadZone1.headValue[loopCount], m_showStatusBits); //!< Current H2SAT trimmed mean bits in error by Head, by Test Zone 1
+                    set_json_float_With_Status(headPage, header.str().c_str(), number, vFarmFrame[page].currentH2STTrimmedbyHeadZone1.headValue[loopCount], m_showStatusBits); //!< Current H2SAT trimmed mean bits in error by Head, by Test Zone 1
                 }
             }
             break;
@@ -3649,8 +3847,10 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 }
                 else
                 {
-                    temp << std::fixed << std::setprecision(2) << static_cast<float>(M_Word0(vFarmFrame[page].currentH2STTrimmedbyHeadZone2.headValue[loopCount]) * .10);
-                    set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].currentH2STTrimmedbyHeadZone2.headValue[loopCount], m_showStatusBits);//!< Current H2SAT trimmed mean bits in error by Head, by Test Zone 2
+                    double number = static_cast<double>(M_Word0(vFarmFrame[page].currentH2STTrimmedbyHeadZone2.headValue[loopCount]) * 0.10);
+                    //temp << std::fixed << std::setprecision(2) << static_cast<float>(M_Word0(vFarmFrame[page].currentH2STTrimmedbyHeadZone2.headValue[loopCount]) * .10);
+                    //set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].currentH2STTrimmedbyHeadZone2.headValue[loopCount], m_showStatusBits);//!< Current H2SAT trimmed mean bits in error by Head, by Test Zone 2
+                    set_json_float_With_Status(headPage, header.str().c_str(), number, vFarmFrame[page].currentH2STTrimmedbyHeadZone2.headValue[loopCount], m_showStatusBits); //!< Current H2SAT trimmed mean bits in error by Head, by Test Zone 2
                 }
             }
             break;
@@ -3668,8 +3868,10 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 }
                 else
                 {
-                    temp << std::fixed << std::setprecision(2) << static_cast<float>(M_Word0(vFarmFrame[page].currentH2STIterationsByHeadZone0.headValue[loopCount]) * .10);
-                    set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].currentH2STIterationsByHeadZone0.headValue[loopCount], m_showStatusBits);  //!< Current H2SAT iterations to cnverge by Head, by Test Zone 0
+                    double number = static_cast<double>(M_Word0(vFarmFrame[page].currentH2STIterationsByHeadZone0.headValue[loopCount]) * 0.10);
+                    //temp << std::fixed << std::setprecision(2) << static_cast<float>(M_Word0(vFarmFrame[page].currentH2STIterationsByHeadZone0.headValue[loopCount]) * .10);
+                    //set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].currentH2STIterationsByHeadZone0.headValue[loopCount], m_showStatusBits);  //!< Current H2SAT iterations to cnverge by Head, by Test Zone 0
+                    set_json_float_With_Status(headPage, header.str().c_str(), number, vFarmFrame[page].currentH2STIterationsByHeadZone0.headValue[loopCount], m_showStatusBits);  //!< Current H2SAT iterations to cnverge by Head, by Test Zone 0
                 }
             }
             break;
@@ -3687,8 +3889,10 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 }
                 else
                 {
-                    temp << std::fixed << std::setprecision(2) << static_cast<float>(M_Word0(vFarmFrame[page].currentH2STIterationsByHeadZone1.headValue[loopCount]) * .10);
-                    set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].currentH2STIterationsByHeadZone1.headValue[loopCount], m_showStatusBits);  //!< Current H2SAT iterations to cnverge by Head, by Test Zone 1
+                    double number = static_cast<double>(M_Word0(vFarmFrame[page].currentH2STIterationsByHeadZone1.headValue[loopCount]) * 0.10);
+                    //temp << std::fixed << std::setprecision(2) << static_cast<float>(M_Word0(vFarmFrame[page].currentH2STIterationsByHeadZone1.headValue[loopCount]) * .10);
+                    //set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].currentH2STIterationsByHeadZone1.headValue[loopCount], m_showStatusBits);  //!< Current H2SAT iterations to cnverge by Head, by Test Zone 1
+                    set_json_float_With_Status(headPage, header.str().c_str(), number, vFarmFrame[page].currentH2STIterationsByHeadZone1.headValue[loopCount], m_showStatusBits);  //!< Current H2SAT iterations to cnverge by Head, by Test Zone 1
                 }
             }
             break;
@@ -3706,8 +3910,10 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 }
                 else
                 {
-                    temp << std::fixed << std::setprecision(2) << static_cast<float>(M_Word0(vFarmFrame[page].currentH2STIterationsByHeadZone2.headValue[loopCount]) * .10);
-                    set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].currentH2STIterationsByHeadZone2.headValue[loopCount], m_showStatusBits); //!< Current H2SAT iterations to cnverge by Head, by Test Zone 2
+                    double number = static_cast<double>(M_Word0(vFarmFrame[page].currentH2STIterationsByHeadZone1.headValue[loopCount]) * 0.10);
+                    //temp << std::fixed << std::setprecision(2) << static_cast<float>(M_Word0(vFarmFrame[page].currentH2STIterationsByHeadZone2.headValue[loopCount]) * .10);
+                    //set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].currentH2STIterationsByHeadZone2.headValue[loopCount], m_showStatusBits); //!< Current H2SAT iterations to cnverge by Head, by Test Zone 2
+                    set_json_float_With_Status(headPage, header.str().c_str(), number, vFarmFrame[page].currentH2STIterationsByHeadZone2.headValue[loopCount], m_showStatusBits);  //!< Current H2SAT iterations to cnverge by Head, by Test Zone 2
                 }
             }
             break;
@@ -3725,8 +3931,10 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 }
                 else
                 {
-                    temp << std::fixed << std::setprecision(3) << static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].appliedFlyHeightByHeadOuter.headValue[loopCount])) * .001);   //!< Applied fly height clearance delta per head in thousandths of one Angstrom: Outer by Head
-                    set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].appliedFlyHeightByHeadOuter.headValue[loopCount], m_showStatusBits);
+                    double number = static_cast<double>(M_WordInt0(vFarmFrame[page].appliedFlyHeightByHeadOuter.headValue[loopCount]) * 0.001);
+                    //temp << std::fixed << std::setprecision(3) << static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].appliedFlyHeightByHeadOuter.headValue[loopCount])) * .001);   //!< Applied fly height clearance delta per head in thousandths of one Angstrom: Outer by Head
+                    //set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].appliedFlyHeightByHeadOuter.headValue[loopCount], m_showStatusBits);
+                    set_json_float_With_Status(headPage, header.str().c_str(), number, vFarmFrame[page].appliedFlyHeightByHeadOuter.headValue[loopCount], m_showStatusBits);
                 }
             }
             break;
@@ -3744,8 +3952,10 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 }
                 else
                 {
-                    temp << std::fixed << std::setprecision(2) << static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].appliedFlyHeightByHeadInner.headValue[loopCount])) * .001);   //!< Applied fly height clearance delta per head in thousandths of one Angstrom: Inner by Head
-                    set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].appliedFlyHeightByHeadInner.headValue[loopCount], m_showStatusBits);
+                    double number = static_cast<double>(M_WordInt0(vFarmFrame[page].appliedFlyHeightByHeadInner.headValue[loopCount]) * 0.001);
+                    //temp << std::fixed << std::setprecision(2) << static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].appliedFlyHeightByHeadInner.headValue[loopCount])) * .001);   //!< Applied fly height clearance delta per head in thousandths of one Angstrom: Inner by Head
+                    //set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].appliedFlyHeightByHeadInner.headValue[loopCount], m_showStatusBits);
+                    set_json_float_With_Status(headPage, header.str().c_str(), number, vFarmFrame[page].appliedFlyHeightByHeadInner.headValue[loopCount], m_showStatusBits);
                 }
             }
             break;
@@ -3763,25 +3973,12 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 }
                 else
                 {
-                    temp << std::fixed << std::setprecision(2) << static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].appliedFlyHeightByHeadMiddle.headValue[loopCount])) * .001);   //!< Applied fly height clearance delta per head in thousandths of one Angstrom:middle by Head
-                    set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].appliedFlyHeightByHeadMiddle.headValue[loopCount], m_showStatusBits);
+                    double number = static_cast<double>(M_WordInt0(vFarmFrame[page].appliedFlyHeightByHeadMiddle.headValue[loopCount]) * 0.001);
+                    //temp << std::fixed << std::setprecision(2) << static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].appliedFlyHeightByHeadMiddle.headValue[loopCount])) * .001);   //!< Applied fly height clearance delta per head in thousandths of one Angstrom:middle by Head
+                    //set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].appliedFlyHeightByHeadMiddle.headValue[loopCount], m_showStatusBits);
+                    set_json_float_With_Status(headPage, header.str().c_str(), number, vFarmFrame[page].appliedFlyHeightByHeadMiddle.headValue[loopCount], m_showStatusBits);
                 }
             }
-            break;
-        case RESERVED_FOR_FUTURE_EXPANSION_10:
-        case RESERVED_FOR_FUTURE_EXPANSION_11:
-        case RESERVED_FOR_FUTURE_EXPANSION_12:
-        case RESERVED_FOR_FUTURE_EXPANSION_13:
-        case RESERVED_FOR_FUTURE_EXPANSION_14:
-        case RESERVED_FOR_FUTURE_EXPANSION_15:
-        case RESERVED_FOR_FUTURE_EXPANSION_16:
-        case RESERVED_FOR_FUTURE_EXPANSION_17:
-        case RESERVED_FOR_FUTURE_EXPANSION_18:
-        case RESERVED_FOR_FUTURE_EXPANSION_19:
-#if defined _DEBUG
-            printf("\tSomething went wrong, ERROR \n");
-#endif
-            return FAILURE;
             break;
         case SECOND_MR_HEAD_RESISTANCE:
         {
@@ -3798,8 +3995,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 }
                 else
                 {
-                    temp << std::fixed << std::setprecision(2) << static_cast<float>(M_WordInt0(vFarmFrame[page].secondMRHeadResistanceByHead.headValue[loopCount]) * .1);   //!< Second MR Head Resistance
-                    set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].secondMRHeadResistanceByHead.headValue[loopCount], m_showStatusBits);
+                    set_json_64_bit_With_Status(headPage, header.str().c_str(), vFarmFrame[page].secondMRHeadResistanceByHead.headValue[loopCount], false, m_showStatusBits);  //!< Second MR Head Resistance
                 }
             }
         }
@@ -3844,8 +4040,10 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 }
                 else
                 {
-                    temp << std::setw(4) << std::setfill('0') << std::fixed << std::setprecision(2) << (static_cast<double>(M_DoubleWordInt0(check_Status_Strip_Status(vFarmFrame[page].fafhRelativeApmlitude.headValue[loopCount]))) * .1);
-                    set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].fafhRelativeApmlitude.headValue[loopCount], m_showStatusBits);
+                    double number = static_cast<double>(M_WordInt0(vFarmFrame[page].fafhRelativeApmlitude.headValue[loopCount]) * 0.1);
+                    //temp << std::setw(4) << std::setfill('0') << std::fixed << std::setprecision(2) << (static_cast<double>(M_DoubleWordInt0(check_Status_Strip_Status(vFarmFrame[page].fafhRelativeApmlitude.headValue[loopCount]))) * .1);
+                    //set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].fafhRelativeApmlitude.headValue[loopCount], m_showStatusBits);
+                    set_json_float_With_Status(headPage, header.str().c_str(), number, vFarmFrame[page].fafhRelativeApmlitude.headValue[loopCount], m_showStatusBits);
                 }
             }
         }
@@ -3857,6 +4055,15 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 uint64_t dsHead = check_Status_Strip_Status(vFarmFrame[page].fafh_bit_error_rate_0.headValue[loopCount]);
                 int16_t whole = M_WordInt2(dsHead);							// get 5:4 whole part of the float
                 double decimal = static_cast<double>(M_DoubleWordInt0(dsHead)) ;  // get 3:0 for the Deciaml Part of the float
+                double number = 0.0;
+                if (whole > 0)
+                {
+                    number = static_cast<double>(whole) + (decimal * .0001);
+                }
+                else
+                {
+                    number = static_cast<double>(whole) - (decimal * .0001);
+                }
 #if defined _DEBUG
                 printf("\tFAFH Bit Error Rate 0 by Head %" PRIu32":     raw 0x%" PRIx64"  calculated %" PRIi16".%03.0f (debug)\n", loopCount, vFarmFrame[page].fafh_bit_error_rate_0.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF), whole,decimal);
 #endif
@@ -3864,13 +4071,14 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 header << "FAFH Bit Error Rate 0 by Head " << std::dec << loopCount;     // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    double number = whole + (decimal * .0001);
+                    //double number = whole + (decimal * .0001);
                     prePython_Head_Float(headPage, "fafh", "reserved tracks diameter 0", loopCount, "bit-error-rate", FAFH_BIT_ERROR_RATE_0, number);
                 }
                 else
                 {
-                    temp << std::dec << whole << "." << std::setw(4) << std::setfill('0') << std::fixed << std::setprecision(0) << decimal;
-                    set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].fafh_bit_error_rate_0.headValue[loopCount], m_showStatusBits);
+                    //temp << std::dec << whole << "." << std::setw(4) << std::setfill('0') << std::fixed << std::setprecision(0) << decimal;
+                    //set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].fafh_bit_error_rate_0.headValue[loopCount], m_showStatusBits);
+                    set_json_float_With_Status(headPage, header.str().c_str(), number, vFarmFrame[page].fafh_bit_error_rate_0.headValue[loopCount], m_showStatusBits);
                 }
             }
         }
@@ -3882,6 +4090,15 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 uint64_t dsHead = check_Status_Strip_Status(vFarmFrame[page].fafh_bit_error_rate_1.headValue[loopCount]);
                 int16_t whole = M_WordInt2(dsHead);							// get 5:4 whole part of the float
                 double decimal = static_cast<double>(M_DoubleWordInt0(dsHead));  // get 3:0 for the Deciaml Part of the float
+                double number = 0.0;
+                if (whole > 0)
+                {
+                    number = static_cast<double>(whole) + (decimal * .0001);
+                }
+                else
+                {
+                    number = static_cast<double>(whole) - (decimal * .0001);
+                }
 #if defined _DEBUG
                 printf("\tFAFH Bit Error Rate 1 by Head %" PRIu32":     raw 0x%" PRIx64"  calculated %" PRIi16".%03.0f (debug)\n", loopCount, vFarmFrame[page].fafh_bit_error_rate_1.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF), whole, decimal);
 #endif
@@ -3889,13 +4106,14 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 header << "FAFH Bit Error Rate 1 by Head " << std::dec << loopCount;     // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    double number = whole + (decimal * .0001);
+                    //double number = whole + (decimal * .0001);
                     prePython_Head_Float(headPage, "fafh", "reserved tracks diameter 1", loopCount, "bit-error-rate", FAFH_BIT_ERROR_RATE_1, number);
                 }
                 else
                 {
-                    temp << std::dec << whole << "." << std::setw(4) << std::setfill('0') << std::fixed << std::setprecision(0) << decimal;
-                    set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].fafh_bit_error_rate_1.headValue[loopCount], m_showStatusBits);
+                    //temp << std::dec << whole << "." << std::setw(4) << std::setfill('0') << std::fixed << std::setprecision(0) << decimal;
+                    //set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].fafh_bit_error_rate_1.headValue[loopCount], m_showStatusBits);
+                    set_json_float_With_Status(headPage, header.str().c_str(), number, vFarmFrame[page].fafh_bit_error_rate_1.headValue[loopCount], m_showStatusBits);
                 }
             }
         }
@@ -3907,6 +4125,15 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 uint64_t dsHead = check_Status_Strip_Status(vFarmFrame[page].fafh_bit_error_rate_2.headValue[loopCount]);
                 int16_t whole = M_WordInt2(dsHead);							// get 5:4 whole part of the float
                 double decimal = static_cast<double>(M_DoubleWordInt0(dsHead));  // get 3:0 for the Deciaml Part of the float
+                double number = 0.0;
+                if (whole > 0)
+                {
+                    number = static_cast<double>(whole) + (decimal * .0001);
+                }
+                else
+                {
+                    number = static_cast<double>(whole) - (decimal * .0001);
+                }
 #if defined _DEBUG
                 printf("\tFAFH Bit Error Rate 2 by Head %" PRIu32":     raw 0x%" PRIx64"  calculated %" PRIi16".%03.0f (debug)\n", loopCount, vFarmFrame[page].fafh_bit_error_rate_2.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF), whole, decimal);
 #endif
@@ -3914,13 +4141,13 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 header << "FAFH Bit Error Rate 2 by Head " << std::dec << loopCount;     // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    double number = whole + (decimal * .0001);
                     prePython_Head_Float(headPage, "fafh", "reserved tracks diameter 2", loopCount, "bit-error-rate", FAFH_BIT_ERROR_RATE_2, number);
                 }
                 else
                 {
-                    temp << std::dec << whole << "." << std::setw(4) << std::setfill('0') << std::fixed << std::setprecision(0) << decimal;
-                    set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].fafh_bit_error_rate_2.headValue[loopCount], m_showStatusBits);
+                    //temp << std::dec << whole << "." << std::setw(4) << std::setfill('0') << std::fixed << std::setprecision(0) << decimal;
+                    //set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].fafh_bit_error_rate_2.headValue[loopCount], m_showStatusBits);
+                    set_json_float_With_Status(headPage, header.str().c_str(), number, vFarmFrame[page].fafh_bit_error_rate_2.headValue[loopCount], m_showStatusBits);
                 }
             }
         }
@@ -3940,8 +4167,10 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 }
                 else
                 {
-                    temp << std::fixed << std::setprecision(2) << static_cast<float>(M_WordInt0(vFarmFrame[page].fafhLowFrequency_0.headValue[loopCount]) * .001);
-                    set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].fafhLowFrequency_0.headValue[loopCount], m_showStatusBits);
+                    double number = static_cast<double>(M_WordInt0(vFarmFrame[page].fafhLowFrequency_0.headValue[loopCount]) * 0.001);
+                    //temp << std::fixed << std::setprecision(2) << static_cast<float>(M_WordInt0(vFarmFrame[page].fafhLowFrequency_0.headValue[loopCount]) * .001);
+                    //set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].fafhLowFrequency_0.headValue[loopCount], m_showStatusBits);
+                    set_json_float_With_Status(headPage, header.str().c_str(), number, vFarmFrame[page].fafhLowFrequency_0.headValue[loopCount], m_showStatusBits);
                 }
             }
         }
@@ -3961,8 +4190,10 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 }
                 else
                 {
-                    temp << std::fixed << std::setprecision(2) << static_cast<float>(M_WordInt0(vFarmFrame[page].fafhLowFrequency_1.headValue[loopCount]) * .001F);
-                    set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].fafhLowFrequency_1.headValue[loopCount], m_showStatusBits);
+                    double number = static_cast<double>(M_WordInt0(vFarmFrame[page].fafhLowFrequency_1.headValue[loopCount]) * 0.001);
+                    //temp << std::fixed << std::setprecision(2) << static_cast<float>(M_WordInt0(vFarmFrame[page].fafhLowFrequency_1.headValue[loopCount]) * .001F);
+                    //set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].fafhLowFrequency_1.headValue[loopCount], m_showStatusBits);
+                    set_json_float_With_Status(headPage, header.str().c_str(), number, vFarmFrame[page].fafhLowFrequency_1.headValue[loopCount], m_showStatusBits);
                 }
             }
         }
@@ -3982,8 +4213,10 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 }
                 else
                 {
-                    temp << std::fixed << std::setprecision(2) << static_cast<float>(M_WordInt0(vFarmFrame[page].fafhLowFrequency_2.headValue[loopCount]) * .001F);
-                    set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].fafhLowFrequency_2.headValue[loopCount], m_showStatusBits);
+                    double number = static_cast<double>(M_WordInt0(vFarmFrame[page].fafhLowFrequency_2.headValue[loopCount]) * 0.001);
+                    //temp << std::fixed << std::setprecision(2) << static_cast<float>(M_WordInt0(vFarmFrame[page].fafhLowFrequency_2.headValue[loopCount]) * .001F);
+                    //set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].fafhLowFrequency_2.headValue[loopCount], m_showStatusBits);
+                    set_json_float_With_Status(headPage, header.str().c_str(), number, vFarmFrame[page].fafhLowFrequency_2.headValue[loopCount], m_showStatusBits);
                 }
             }
         }
@@ -4003,8 +4236,10 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 }
                 else
                 {
-                    temp << std::fixed << std::setprecision(2) << static_cast<float>(M_WordInt0(vFarmFrame[page].fafhHighFrequency_0.headValue[loopCount]) * .001F);
-                    set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].fafhHighFrequency_0.headValue[loopCount], m_showStatusBits);
+                    double number = static_cast<double>(M_WordInt0(vFarmFrame[page].fafhHighFrequency_0.headValue[loopCount]) * 0.001);
+                    //temp << std::fixed << std::setprecision(2) << static_cast<float>(M_WordInt0(vFarmFrame[page].fafhHighFrequency_0.headValue[loopCount]) * .001F);
+                    //set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].fafhHighFrequency_0.headValue[loopCount], m_showStatusBits);
+                    set_json_float_With_Status(headPage, header.str().c_str(), number, vFarmFrame[page].fafhHighFrequency_0.headValue[loopCount], m_showStatusBits);
                 }
             }
         }
@@ -4024,8 +4259,10 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 }
                 else
                 {
-                    temp << std::fixed << std::setprecision(2) << static_cast<float>(M_WordInt0(vFarmFrame[page].fafhHighFrequency_1.headValue[loopCount]) * .001F);
-                    set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].fafhHighFrequency_1.headValue[loopCount], m_showStatusBits);
+                    double number = static_cast<double>(M_WordInt0(vFarmFrame[page].fafhHighFrequency_1.headValue[loopCount]) * 0.001);
+                    //temp << std::fixed << std::setprecision(2) << static_cast<float>(M_WordInt0(vFarmFrame[page].fafhHighFrequency_1.headValue[loopCount]) * .001F);
+                    //set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].fafhHighFrequency_1.headValue[loopCount], m_showStatusBits);
+                    set_json_float_With_Status(headPage, header.str().c_str(), number, vFarmFrame[page].fafhHighFrequency_1.headValue[loopCount], m_showStatusBits);
                 }
             }
         }
@@ -4045,13 +4282,15 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 }
                 else
                 {
-                    temp << std::fixed << std::setprecision(2) << static_cast<float>(M_WordInt0(vFarmFrame[page].fafhHighFrequency_2.headValue[loopCount]) * .001F);
-                    set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].fafhHighFrequency_2.headValue[loopCount], m_showStatusBits);
+                    double number = static_cast<double>(M_WordInt0(vFarmFrame[page].fafhHighFrequency_2.headValue[loopCount]) * 0.001);
+                    //temp << std::fixed << std::setprecision(2) << static_cast<float>(M_WordInt0(vFarmFrame[page].fafhHighFrequency_2.headValue[loopCount]) * .001F);
+                    //set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].fafhHighFrequency_2.headValue[loopCount], m_showStatusBits);
+                    set_json_float_With_Status(headPage, header.str().c_str(), number, vFarmFrame[page].fafhHighFrequency_2.headValue[loopCount], m_showStatusBits);
                 }
             }
         }
         break;
-        case RESERVED_FOR_FUTURE_EXPANSION_31:
+        case ZERO_PERCENT_SHIFT_ZONE_2:
         case LUN_0_ACTUATOR:
         case LUN_0_FLASH_LED:
         case LUN_REALLOCATION_0:
@@ -4639,19 +4878,19 @@ void CSCSI_Farm_Log::print_All_Pages(JSONNODE *masterData)
                 case CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_0:
                 case CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_1:
                 case CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_2:
+                case LASER_OPERATING_ZONE_0:
+                case LASER_OPERATING_ZONE_1:
+                case LASER_OPERATING_ZONE_2:
+                case POST_LFA_OPTIMAL_BER_ZONE_0:
+                case POST_LFA_OPTIMAL_BER_ZONE_1:
+                case POST_LFA_OPTIMAL_BER_ZONE_2:
+                case MICRO_JOG_OFFSET_ZONE_0:
+                case MICRO_JOG_OFFSET_ZONE_1:
+                case MICRO_JOG_OFFSET_ZONE_2:
+                case ZERO_PERCENT_SHIFT_ZONE_1:
                 case APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_OUTER:
                 case APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_INNER:
                 case APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_MIDDLE:
-                case RESERVED_FOR_FUTURE_EXPANSION_10:
-                case RESERVED_FOR_FUTURE_EXPANSION_11:
-                case RESERVED_FOR_FUTURE_EXPANSION_12:
-                case RESERVED_FOR_FUTURE_EXPANSION_13:
-                case RESERVED_FOR_FUTURE_EXPANSION_14:
-                case RESERVED_FOR_FUTURE_EXPANSION_15:
-                case RESERVED_FOR_FUTURE_EXPANSION_16:
-                case RESERVED_FOR_FUTURE_EXPANSION_17:
-                case RESERVED_FOR_FUTURE_EXPANSION_18:
-                case RESERVED_FOR_FUTURE_EXPANSION_19:
                 case SECOND_MR_HEAD_RESISTANCE:
 
                     print_Head_Information(vFarmFrame.at(index).vFramesFound.at(pramCode), headPage, index);   
@@ -4690,7 +4929,8 @@ void CSCSI_Farm_Log::print_All_Pages(JSONNODE *masterData)
                     print_Head_Information(vFarmFrame.at(index).vFramesFound.at(pramCode), headPage, index);
                     break;
 
-                case RESERVED_FOR_FUTURE_EXPANSION_31:
+                case ZERO_PERCENT_SHIFT_ZONE_2:
+                    print_Head_Information(vFarmFrame.at(index).vFramesFound.at(pramCode), headPage, index);
                     break;
                 case LUN_0_ACTUATOR:
                     print_LUN_Actuator_Information(masterData, index, LUN_0_ACTUATOR);
