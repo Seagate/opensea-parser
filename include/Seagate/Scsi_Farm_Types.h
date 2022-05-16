@@ -63,28 +63,28 @@ typedef enum _eLogPageTypes
 	DOS_WRITE_COUNT_THRESHOLD_PER_HEAD,
 	CUM_LIFETIME_UNRECOVERALBE_READ_REPET_PER_HEAD,
 	CUM_LIFETIME_UNRECOVERABLE_READ_UNIQUE_PER_HEAD,
-	RESERVED_FOR_FUTURE_EXPANSION_4,
-	RESERVED_FOR_FUTURE_EXPANSION_5,
-	RESERVED_FOR_FUTURE_EXPANSION_6,
-	RESERVED_FOR_FUTURE_EXPANSION_7,
-	RESERVED_FOR_FUTURE_EXPANSION_8,
-	RESERVED_FOR_FUTURE_EXPANSION_9,
+    TOTAL_LASER_FIELD_ADJUST_ITERATIONS,
+    TOTAL_READER_WRITEER_OFFSET_ITERATIONS_PERFORMED,
+    PRE_LFA_ZONE_0,
+    PRE_LFA_ZONE_1,
+    PRE_LFA_ZONE_2,
+    ZERO_PERCENT_SHIFT,
 	CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_0,
 	CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_1,
 	CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_2,
 	CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_0,
 	CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_1,
 	CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_2,
-	RESERVED_FOR_FUTURE_EXPANSION_10,
-	RESERVED_FOR_FUTURE_EXPANSION_11,
-	RESERVED_FOR_FUTURE_EXPANSION_12,
-	RESERVED_FOR_FUTURE_EXPANSION_13,
-	RESERVED_FOR_FUTURE_EXPANSION_14,
-	RESERVED_FOR_FUTURE_EXPANSION_15,
-	RESERVED_FOR_FUTURE_EXPANSION_16,
-	RESERVED_FOR_FUTURE_EXPANSION_17,
-	RESERVED_FOR_FUTURE_EXPANSION_18,
-	RESERVED_FOR_FUTURE_EXPANSION_19,
+    LASER_OPERATING_ZONE_0,
+    LASER_OPERATING_ZONE_1,
+    LASER_OPERATING_ZONE_2,
+    POST_LFA_OPTIMAL_BER_ZONE_0,
+    POST_LFA_OPTIMAL_BER_ZONE_1,
+    POST_LFA_OPTIMAL_BER_ZONE_2,
+    MICRO_JOG_OFFSET_ZONE_0,
+    MICRO_JOG_OFFSET_ZONE_1,
+    MICRO_JOG_OFFSET_ZONE_2,
+    ZERO_PERCENT_SHIFT_ZONE_1,
 	APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_OUTER,
 	APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_INNER,
 	APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_MIDDLE,
@@ -100,7 +100,7 @@ typedef enum _eLogPageTypes
     FAFH_HIGH_FREQUENCY_0,              // FAFH High Frequency Passive Clearance in ADC counts Diameter 0 : outer
     FAFH_HIGH_FREQUENCY_1,              // FAFH High Frequency Passive Clearance in ADC counts Diameter 1 : outer
     FAFH_HIGH_FREQUENCY_2,              // FAFH High Frequency Passive Clearance in ADC counts Diameter 2 : outer
-    RESERVED_FOR_FUTURE_EXPANSION_31,
+    ZERO_PERCENT_SHIFT_ZONE_2,
     LUN_0_ACTUATOR,
     LUN_0_FLASH_LED,
     LUN_REALLOCATION_0, 
@@ -581,12 +581,28 @@ typedef struct _sScsiFarmFrame
 	sHeadInformation		dosWriteCount; 
     sHeadInformation        cumECCReadRepeat;
     sHeadInformation        cumECCReadUnique;
+    sHeadInformation        totalLaserFieldAdjustIterations;
+    sHeadInformation        totalReaderWriteerOffsetIterationsPerformed;
+    sHeadInformation        pre_lfaZone_0;
+    sHeadInformation        pre_lfaZone_1;
+    sHeadInformation        pre_lfaZone_2;
+    sHeadInformation        zeroPercentShift;
 	sHeadInformation        currentH2STTrimmedbyHeadZone0;
 	sHeadInformation        currentH2STTrimmedbyHeadZone1;
 	sHeadInformation        currentH2STTrimmedbyHeadZone2;
 	sHeadInformation        currentH2STIterationsByHeadZone0;
 	sHeadInformation        currentH2STIterationsByHeadZone1;
 	sHeadInformation        currentH2STIterationsByHeadZone2;
+    sHeadInformation        laser_operatingZone_0;
+    sHeadInformation        laser_operatingZone_1;
+    sHeadInformation        laserOperatingZone_2;
+    sHeadInformation        postLFAOptimalBERZone_0;
+    sHeadInformation        postLFAOptimalBERZone_1;
+    sHeadInformation        postLFAOptimalBERZone_2;
+    sHeadInformation        microJogOffsetZone_0;
+    sHeadInformation        microJogOffsetZone_1;
+    sHeadInformation        microJogOffsetZone_2;
+    sHeadInformation        zeroPercentShiftZone_1;
 	sHeadInformation        appliedFlyHeightByHeadOuter;
 	sHeadInformation        appliedFlyHeightByHeadInner;
 	sHeadInformation        appliedFlyHeightByHeadMiddle;
@@ -602,6 +618,7 @@ typedef struct _sScsiFarmFrame
     sHeadInformation        fafhHighFrequency_0;                    //!< FAFH High Frequency Passive Clearance in ADC counts Diameter 0 : outer
     sHeadInformation        fafhHighFrequency_1;                    //!< FAFH High Frequency Passive Clearance in ADC counts Diameter 1 : outer
     sHeadInformation        fafhHighFrequency_2;                    //!< FAFH High Frequency Passive Clearance in ADC counts Diameter 2 : outer
+    sHeadInformation        zeroPercentShiftZone_2;
     sLUNStruct              vLUN50;
     sActuatorFLEDInfo       fled51;
     sActReallocationData    reall52;
