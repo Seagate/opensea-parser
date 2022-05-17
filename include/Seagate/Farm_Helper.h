@@ -265,7 +265,7 @@ namespace opensea_parser {
 //  Entry:
 //! \param  nowNode = the Json node that the data will be added to
 //! \param  myStr = the string data what will be adding to
-//! \param value  =  int 32 value that would have already been calculated.
+//! \param value  =  int value that would have already been calculated.
 //! \param value  =  64 bit value to check to see if the bit is set or not
 //! \param showStatusBits = flag to force showing the status bits on the value
 //
