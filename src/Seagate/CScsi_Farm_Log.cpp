@@ -2481,27 +2481,27 @@ eReturnValues CSCSI_Farm_Log::print_WorkLoad(JSONNODE *masterData, uint32_t page
         // found a log where the length of the workload log does not match the spec. Need to check for the 0x50 length
         if (vFarmFrame[page].workLoadPage.PageHeader.plen > 0x50)
         {
-            set_json_64_bit_With_Status(pageInfo, "Number of Read commands from 0-3.125% of LBA space for last 3 SMART Summary Frames", check_Status_Strip_Status(vFarmFrame[page].workLoadPage.workLoad.totalReadCmdsFromFrames1), false, m_showStatusBits);		//!< Number of Read commands from 0-3.125% of LBA space for last 3 SMART Summary Frames
-            set_json_64_bit_With_Status(pageInfo, "Number of Read commands from 3.125-25% of LBA space for last 3 SMART Summary Frames", check_Status_Strip_Status(vFarmFrame[page].workLoadPage.workLoad.totalReadCmdsFromFrames2), false, m_showStatusBits);		//!< Number of Read commands from 3.125-25% of LBA space for last 3 SMART Summary Frames
-            set_json_64_bit_With_Status(pageInfo, "Number of Read commands from 25-50% of LBA space for last 3 SMART Summary Frames", check_Status_Strip_Status(vFarmFrame[page].workLoadPage.workLoad.totalReadCmdsFromFrames3), false, m_showStatusBits);		//!< Number of Read commands from 25-50% of LBA space for last 3 SMART Summary Frames
-            set_json_64_bit_With_Status(pageInfo, "Number of Read commands from 50-100% of LBA space for last 3 SMART Summary Frames", check_Status_Strip_Status(vFarmFrame[page].workLoadPage.workLoad.totalReadCmdsFromFrames4), false, m_showStatusBits);		//!< Number of Read commands from 50-100% of LBA space for last 3 SMART Summary Frames 
-            set_json_64_bit_With_Status(pageInfo, "Number of Write commands from 0-3.125% of LBA space for last 3 SMART Summary Frames", check_Status_Strip_Status(vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames1), false, m_showStatusBits);	//!< Number of Write commands from 0-3.125% of LBA space for last 3 SMART Summary Frames
-            set_json_64_bit_With_Status(pageInfo, "Number of Write commands from 3.125-25% of LBA space for last 3 SMART Summary Frames", check_Status_Strip_Status(vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames2), false, m_showStatusBits);	//!< Number of Write commands from 3.125-25% of LBA space for last 3 SMART Summary Frames
-            set_json_64_bit_With_Status(pageInfo, "Number of Write commands from 25-50% of LBA space for last 3 SMART Summary Frames", check_Status_Strip_Status(vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames3), false, m_showStatusBits);		//!< Number of Write commands from 25-50% of LBA space for last 3 SMART Summary Frames
-            set_json_64_bit_With_Status(pageInfo, "Number of Write commands from 50-100% of LBA space for last 3 SMART Summary Frames", check_Status_Strip_Status(vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames4), false, m_showStatusBits);		//!< Number of Write commands from 50-100% of LBA space for last 3 SMART Summary Frames 
+            set_json_64_bit_With_Status(pageInfo, "Number of Read commands from 0-3.125% of LBA space", check_Status_Strip_Status(vFarmFrame[page].workLoadPage.workLoad.totalReadCmdsFromFrames1), false, m_showStatusBits);		//!< Number of Read commands from 0-3.125% of LBA space for last 3 SMART Summary Frames
+            set_json_64_bit_With_Status(pageInfo, "Number of Read commands from 3.125-25% of LBA space", check_Status_Strip_Status(vFarmFrame[page].workLoadPage.workLoad.totalReadCmdsFromFrames2), false, m_showStatusBits);		//!< Number of Read commands from 3.125-25% of LBA space for last 3 SMART Summary Frames
+            set_json_64_bit_With_Status(pageInfo, "Number of Read commands from 25-50% of LBA space", check_Status_Strip_Status(vFarmFrame[page].workLoadPage.workLoad.totalReadCmdsFromFrames3), false, m_showStatusBits);		//!< Number of Read commands from 25-50% of LBA space for last 3 SMART Summary Frames
+            set_json_64_bit_With_Status(pageInfo, "Number of Read commands from 50-100% of LBA space", check_Status_Strip_Status(vFarmFrame[page].workLoadPage.workLoad.totalReadCmdsFromFrames4), false, m_showStatusBits);		//!< Number of Read commands from 50-100% of LBA space for last 3 SMART Summary Frames 
+            set_json_64_bit_With_Status(pageInfo, "Number of Write commands from 0-3.125% of LBA space", check_Status_Strip_Status(vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames1), false, m_showStatusBits);	//!< Number of Write commands from 0-3.125% of LBA space for last 3 SMART Summary Frames
+            set_json_64_bit_With_Status(pageInfo, "Number of Write commands from 3.125-25% of LBA space", check_Status_Strip_Status(vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames2), false, m_showStatusBits);	//!< Number of Write commands from 3.125-25% of LBA space for last 3 SMART Summary Frames
+            set_json_64_bit_With_Status(pageInfo, "Number of Write commands from 25-50% of LBA space", check_Status_Strip_Status(vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames3), false, m_showStatusBits);		//!< Number of Write commands from 25-50% of LBA space for last 3 SMART Summary Frames
+            set_json_64_bit_With_Status(pageInfo, "Number of Write commands from 50-100% of LBA space", check_Status_Strip_Status(vFarmFrame[page].workLoadPage.workLoad.totalWriteCmdsFromFrames4), false, m_showStatusBits);		//!< Number of Write commands from 50-100% of LBA space for last 3 SMART Summary Frames 
         }
 
         // 4.21
         if (m_MajorRev >= 4 && m_MinorRev >= 19)
         {
-            set_json_64_bit_With_Status(pageInfo, "Number of Read Commands of transfer length <4kb for last 3 SMART Summary Frames", check_Status_Strip_Status(vFarmFrame[page].workLoadPage.workLoad.numReadTransferSmall), false, m_showStatusBits);
-            set_json_64_bit_With_Status(pageInfo, "Number of Read Commands of transfer length (4kb - 16kb) for last 3 SMART Summary Frames", check_Status_Strip_Status(vFarmFrame[page].workLoadPage.workLoad.numReadTransferMid1), false, m_showStatusBits);
-            set_json_64_bit_With_Status(pageInfo, "Number of Read Commands of transfer length (16kb - 128kb) for last 3 SMART Summary Frames", check_Status_Strip_Status(vFarmFrame[page].workLoadPage.workLoad.numReadTransferMid2), false, m_showStatusBits);
-            set_json_64_bit_With_Status(pageInfo, "Number of Read Commands of transfer length >= 128kb for last 3 SMART Summary Frames", check_Status_Strip_Status(vFarmFrame[page].workLoadPage.workLoad.numReadTransferLarge), false, m_showStatusBits);
-            set_json_64_bit_With_Status(pageInfo, "Number of Write Commands of transfer length <4kb for last 3 SMART Summary Frames", check_Status_Strip_Status(vFarmFrame[page].workLoadPage.workLoad.numWriteTransferSmall), false, m_showStatusBits);
-            set_json_64_bit_With_Status(pageInfo, "Number of Write Commands of transfer length (4kb - 16kb) for last 3 SMART Summary Frames", check_Status_Strip_Status(vFarmFrame[page].workLoadPage.workLoad.numWriteTransferMid1), false, m_showStatusBits);
-            set_json_64_bit_With_Status(pageInfo, "Number of Write Commands of transfer length (16kb - 128kb) for last 3 SMART Summary Frames", check_Status_Strip_Status(vFarmFrame[page].workLoadPage.workLoad.numWriteTransferMid2), false, m_showStatusBits);
-            set_json_64_bit_With_Status(pageInfo, "Number of Write Commands of transfer length >= 128kb for last 3 SMART Summary Frames", check_Status_Strip_Status(vFarmFrame[page].workLoadPage.workLoad.numWriteTransferLarge), false, m_showStatusBits);
+            set_json_64_bit_With_Status(pageInfo, "Number of Read Commands of transfer length <4kb", check_Status_Strip_Status(vFarmFrame[page].workLoadPage.workLoad.numReadTransferSmall), false, m_showStatusBits);
+            set_json_64_bit_With_Status(pageInfo, "Number of Read Commands of transfer length (4kb - 16kb)", check_Status_Strip_Status(vFarmFrame[page].workLoadPage.workLoad.numReadTransferMid1), false, m_showStatusBits);
+            set_json_64_bit_With_Status(pageInfo, "Number of Read Commands of transfer length (16kb - 128kb)", check_Status_Strip_Status(vFarmFrame[page].workLoadPage.workLoad.numReadTransferMid2), false, m_showStatusBits);
+            set_json_64_bit_With_Status(pageInfo, "Number of Read Commands of transfer length >= 128kb", check_Status_Strip_Status(vFarmFrame[page].workLoadPage.workLoad.numReadTransferLarge), false, m_showStatusBits);
+            set_json_64_bit_With_Status(pageInfo, "Number of Write Commands of transfer length <4kb", check_Status_Strip_Status(vFarmFrame[page].workLoadPage.workLoad.numWriteTransferSmall), false, m_showStatusBits);
+            set_json_64_bit_With_Status(pageInfo, "Number of Write Commands of transfer length (4kb - 16kb)", check_Status_Strip_Status(vFarmFrame[page].workLoadPage.workLoad.numWriteTransferMid1), false, m_showStatusBits);
+            set_json_64_bit_With_Status(pageInfo, "Number of Write Commands of transfer length (16kb - 128kb)", check_Status_Strip_Status(vFarmFrame[page].workLoadPage.workLoad.numWriteTransferMid2), false, m_showStatusBits);
+            set_json_64_bit_With_Status(pageInfo, "Number of Write Commands of transfer length >= 128kb", check_Status_Strip_Status(vFarmFrame[page].workLoadPage.workLoad.numWriteTransferLarge), false, m_showStatusBits);
         }
 
         json_push_back(masterData, pageInfo);
@@ -2997,14 +2997,14 @@ eReturnValues CSCSI_Farm_Log::print_Workload_Statistics_Page_08(JSONNODE *master
         {
             printf("\nWorkload Information Continued From Farm Log copy %d: \n", page);
         }
-        printf("\tCount of Queue Depth =1 at 30s intervals for last 3 SMART Summary Frames:    %" PRIu64" \n", vFarmFrame[page].workloadStatPage08.countQueDepth1 & UINT64_C(0x00FFFFFFFFFFFFFF));
-        printf("\tCount of Queue Depth =2 at 30s intervals for last 3 SMART Summary Frames:    %" PRIu64" \n", vFarmFrame[page].workloadStatPage08.countQueDepth2 & UINT64_C(0x00FFFFFFFFFFFFFF));
-        printf("\tCount of Queue Depth 2-4 at 30s intervals for last 3 SMART Summary Frames:   %" PRIu64" \n", vFarmFrame[page].workloadStatPage08.countQueDepth3_4 & UINT64_C(0x00FFFFFFFFFFFFFF));
-        printf("\tCount of Queue Depth 5-8 at 30s intervals for last 3 SMART Summary Frames:   %" PRIu64" \n", vFarmFrame[page].workloadStatPage08.countQueDepth5_8 & UINT64_C(0x00FFFFFFFFFFFFFF));
-        printf("\tCount of Queue Depth 9-16 at 30s intervals for last 3 SMART Summary Frames:  %" PRIu64" \n", vFarmFrame[page].workloadStatPage08.countQueDepth9_16 & UINT64_C(0x00FFFFFFFFFFFFFF));
-        printf("\tCount of Queue Depth 17-32 at 30s intervals for last 3 SMART Summary Frames: %" PRIu64" \n", vFarmFrame[page].workloadStatPage08.countQueDepth17_32 & UINT64_C(0x00FFFFFFFFFFFFFF));
-        printf("\tCount of Queue Depth 33-64 at 30s intervals for last 3 SMART Summary Frames: %" PRIu64" \n", vFarmFrame[page].workloadStatPage08.countQueDepth33_64 & UINT64_C(0x00FFFFFFFFFFFFFF));
-        printf("\tCount of Queue Depth gt 64  at 30s intervals for last 3 SMART Summary Frames:%" PRIu64" \n", vFarmFrame[page].workloadStatPage08.countQueDepth_gt_64 & UINT64_C(0x00FFFFFFFFFFFFFF));
+        printf("\tCount of Queue Depth =1 at 30s intervals:    %" PRIu64" \n", vFarmFrame[page].workloadStatPage08.countQueDepth1 & UINT64_C(0x00FFFFFFFFFFFFFF));
+        printf("\tCount of Queue Depth =2 at 30s intervals:    %" PRIu64" \n", vFarmFrame[page].workloadStatPage08.countQueDepth2 & UINT64_C(0x00FFFFFFFFFFFFFF));
+        printf("\tCount of Queue Depth 2-4 at 30s intervals:   %" PRIu64" \n", vFarmFrame[page].workloadStatPage08.countQueDepth3_4 & UINT64_C(0x00FFFFFFFFFFFFFF));
+        printf("\tCount of Queue Depth 5-8 at 30s intervals:   %" PRIu64" \n", vFarmFrame[page].workloadStatPage08.countQueDepth5_8 & UINT64_C(0x00FFFFFFFFFFFFFF));
+        printf("\tCount of Queue Depth 9-16 at 30s intervals:  %" PRIu64" \n", vFarmFrame[page].workloadStatPage08.countQueDepth9_16 & UINT64_C(0x00FFFFFFFFFFFFFF));
+        printf("\tCount of Queue Depth 17-32 at 30s intervals: %" PRIu64" \n", vFarmFrame[page].workloadStatPage08.countQueDepth17_32 & UINT64_C(0x00FFFFFFFFFFFFFF));
+        printf("\tCount of Queue Depth 33-64 at 30s intervals: %" PRIu64" \n", vFarmFrame[page].workloadStatPage08.countQueDepth33_64 & UINT64_C(0x00FFFFFFFFFFFFFF));
+        printf("\tCount of Queue Depth gt 64  at 30s intervals:%" PRIu64" \n", vFarmFrame[page].workloadStatPage08.countQueDepth_gt_64 & UINT64_C(0x00FFFFFFFFFFFFFF));
     
 
     #endif
@@ -3033,14 +3033,14 @@ eReturnValues CSCSI_Farm_Log::print_Workload_Statistics_Page_08(JSONNODE *master
                 temp << "Workload Information Continued From Farm Log copy " << std::dec << page;
             }
             json_set_name(pageInfo, temp.str().c_str());
-            set_json_int_With_Status(pageInfo, "Count of Queue Depth =1 at 30s intervals for last 3 SMART Summary Frames", vFarmFrame[page].workloadStatPage08.countQueDepth1, m_showStatusBits);
-            set_json_int_With_Status(pageInfo, "Count of Queue Depth =2 at 30s intervals for last 3 SMART Summary Frames", vFarmFrame[page].workloadStatPage08.countQueDepth2, m_showStatusBits);
-            set_json_int_With_Status(pageInfo, "Count of Queue Depth 2-4 at 30s intervals for last 3 SMART Summary Frames", vFarmFrame[page].workloadStatPage08.countQueDepth3_4, m_showStatusBits);
-            set_json_int_With_Status(pageInfo, "Count of Queue Depth 5-8 at 30s intervals for last 3 SMART Summary Frames", vFarmFrame[page].workloadStatPage08.countQueDepth5_8, m_showStatusBits);
-            set_json_int_With_Status(pageInfo, "Count of Queue Depth 9-16 at 30s intervals for last 3 SMART Summary Frames", vFarmFrame[page].workloadStatPage08.countQueDepth9_16, m_showStatusBits);
-            set_json_int_With_Status(pageInfo, "Count of Queue Depth 17-32 at 30s intervals for last 3 SMART Summary Frames", vFarmFrame[page].workloadStatPage08.countQueDepth17_32, m_showStatusBits);
-            set_json_int_With_Status(pageInfo, "Count of Queue Depth 33-64 at 30s intervals for last 3 SMART Summary Frames", vFarmFrame[page].workloadStatPage08.countQueDepth33_64, m_showStatusBits);
-            set_json_int_With_Status(pageInfo, "Count of Queue Depth > 64  at 30s intervals for last 3 SMART Summary Frames", vFarmFrame[page].workloadStatPage08.countQueDepth_gt_64, m_showStatusBits);
+            set_json_int_With_Status(pageInfo, "Count of Queue Depth =1 at 30s", vFarmFrame[page].workloadStatPage08.countQueDepth1, m_showStatusBits);
+            set_json_int_With_Status(pageInfo, "Count of Queue Depth =2 at 30s", vFarmFrame[page].workloadStatPage08.countQueDepth2, m_showStatusBits);
+            set_json_int_With_Status(pageInfo, "Count of Queue Depth 2-4 at 30s", vFarmFrame[page].workloadStatPage08.countQueDepth3_4, m_showStatusBits);
+            set_json_int_With_Status(pageInfo, "Count of Queue Depth 5-8 at 30s", vFarmFrame[page].workloadStatPage08.countQueDepth5_8, m_showStatusBits);
+            set_json_int_With_Status(pageInfo, "Count of Queue Depth 9-16 at 30s", vFarmFrame[page].workloadStatPage08.countQueDepth9_16, m_showStatusBits);
+            set_json_int_With_Status(pageInfo, "Count of Queue Depth 17-32 at 30s", vFarmFrame[page].workloadStatPage08.countQueDepth17_32, m_showStatusBits);
+            set_json_int_With_Status(pageInfo, "Count of Queue Depth 33-64 at 30s", vFarmFrame[page].workloadStatPage08.countQueDepth33_64, m_showStatusBits);
+            set_json_int_With_Status(pageInfo, "Count of Queue Depth > 64  at 30s", vFarmFrame[page].workloadStatPage08.countQueDepth_gt_64, m_showStatusBits);
             json_push_back(masterData, pageInfo);
         }
     }
@@ -3618,10 +3618,11 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 }
                 else
                 {
-                    std::ostringstream asymmetryStr;
-                    asymmetryStr << std::dec << M_DoubleWordInt0(vFarmFrame[page].currentH2STAsymmetryByHead.headValue[loopCount]);
+                    //std::ostringstream asymmetryStr;
+                    //asymmetryStr << std::dec << M_DoubleWordInt0(vFarmFrame[page].currentH2STAsymmetryByHead.headValue[loopCount]);
                     //set_json_string_With_Status(headPage, header.str().c_str(), asymmetryStr.str(), vFarmFrame[page].currentH2STAsymmetryByHead.headValue[loopCount], m_showStatusBits);  //!< Current H2SAT asymmetry, averaged across Test Zone
-                    set_json_int_With_Status(headPage, header.str().c_str(),  vFarmFrame[page].currentH2STAsymmetryByHead.headValue[loopCount], m_showStatusBits);  //!< Current H2SAT asymmetry, averaged across Test Zone
+                    //set_json_int_Check_Status(headPage, header.str().c_str(), (vFarmFrame[page].currentH2STAsymmetryByHead.headValue[loopCount] * 0.10),  vFarmFrame[page].currentH2STAsymmetryByHead.headValue[loopCount], m_showStatusBits);  //!< Current H2SAT asymmetry, averaged across Test Zone
+                    set_json_float_With_Status(headPage, header.str().c_str(), (vFarmFrame[page].currentH2STAsymmetryByHead.headValue[loopCount] * 0.10), vFarmFrame[page].currentH2STAsymmetryByHead.headValue[loopCount], m_showStatusBits);  //!< Current H2SAT asymmetry, averaged across Test Zone
                 }
             }
             break;
@@ -3932,8 +3933,6 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 else
                 {
                     double number = static_cast<double>(M_WordInt0(vFarmFrame[page].appliedFlyHeightByHeadOuter.headValue[loopCount]) * 0.001);
-                    //temp << std::fixed << std::setprecision(3) << static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].appliedFlyHeightByHeadOuter.headValue[loopCount])) * .001);   //!< Applied fly height clearance delta per head in thousandths of one Angstrom: Outer by Head
-                    //set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].appliedFlyHeightByHeadOuter.headValue[loopCount], m_showStatusBits);
                     set_json_float_With_Status(headPage, header.str().c_str(), number, vFarmFrame[page].appliedFlyHeightByHeadOuter.headValue[loopCount], m_showStatusBits);
                 }
             }
@@ -3953,8 +3952,6 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 else
                 {
                     double number = static_cast<double>(M_WordInt0(vFarmFrame[page].appliedFlyHeightByHeadInner.headValue[loopCount]) * 0.001);
-                    //temp << std::fixed << std::setprecision(2) << static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].appliedFlyHeightByHeadInner.headValue[loopCount])) * .001);   //!< Applied fly height clearance delta per head in thousandths of one Angstrom: Inner by Head
-                    //set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].appliedFlyHeightByHeadInner.headValue[loopCount], m_showStatusBits);
                     set_json_float_With_Status(headPage, header.str().c_str(), number, vFarmFrame[page].appliedFlyHeightByHeadInner.headValue[loopCount], m_showStatusBits);
                 }
             }
@@ -3974,8 +3971,6 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 else
                 {
                     double number = static_cast<double>(M_WordInt0(vFarmFrame[page].appliedFlyHeightByHeadMiddle.headValue[loopCount]) * 0.001);
-                    //temp << std::fixed << std::setprecision(2) << static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].appliedFlyHeightByHeadMiddle.headValue[loopCount])) * .001);   //!< Applied fly height clearance delta per head in thousandths of one Angstrom:middle by Head
-                    //set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].appliedFlyHeightByHeadMiddle.headValue[loopCount], m_showStatusBits);
                     set_json_float_With_Status(headPage, header.str().c_str(), number, vFarmFrame[page].appliedFlyHeightByHeadMiddle.headValue[loopCount], m_showStatusBits);
                 }
             }
@@ -4033,16 +4028,14 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                     loopCount, vFarmFrame[page].fafhRelativeApmlitude.headValue[loopCount], static_cast<double>(M_DoubleWordInt0(check_Status_Strip_Status(vFarmFrame[page].fafhRelativeApmlitude.headValue[loopCount]))) * .1);  //!< Disc Slip in micro-inches 
 #endif
                 std::ostringstream header, temp;
-                header << "FAFH HF-LF Relative Amplitude by Head " << std::dec << loopCount;     // Head count
+                header << "FAFH Relative Amplitude by Head " << std::dec << loopCount;     // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Float(headPage, "fafh", "hf-lf relative", loopCount, "amplitude", FAFH_HF_LF_RELATIVE_APMLITUDE, static_cast<double>(M_DoubleWordInt0(check_Status_Strip_Status(vFarmFrame[page].fafhRelativeApmlitude.headValue[loopCount]))) * .1);
+                    prePython_Head_Float(headPage, "fafh", "relative", loopCount, "amplitude", FAFH_HF_LF_RELATIVE_APMLITUDE, static_cast<double>(M_DoubleWordInt0(check_Status_Strip_Status(vFarmFrame[page].fafhRelativeApmlitude.headValue[loopCount]))) * .1);
                 }
                 else
                 {
                     double number = static_cast<double>(M_WordInt0(vFarmFrame[page].fafhRelativeApmlitude.headValue[loopCount]) * 0.1);
-                    //temp << std::setw(4) << std::setfill('0') << std::fixed << std::setprecision(2) << (static_cast<double>(M_DoubleWordInt0(check_Status_Strip_Status(vFarmFrame[page].fafhRelativeApmlitude.headValue[loopCount]))) * .1);
-                    //set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].fafhRelativeApmlitude.headValue[loopCount], m_showStatusBits);
                     set_json_float_With_Status(headPage, header.str().c_str(), number, vFarmFrame[page].fafhRelativeApmlitude.headValue[loopCount], m_showStatusBits);
                 }
             }
@@ -4071,13 +4064,10 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 header << "FAFH Bit Error Rate 0 by Head " << std::dec << loopCount;     // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    //double number = whole + (decimal * .0001);
                     prePython_Head_Float(headPage, "fafh", "reserved tracks diameter 0", loopCount, "bit-error-rate", FAFH_BIT_ERROR_RATE_0, number);
                 }
                 else
                 {
-                    //temp << std::dec << whole << "." << std::setw(4) << std::setfill('0') << std::fixed << std::setprecision(0) << decimal;
-                    //set_json_string_With_Status(headPage, header.str().c_str(), temp.str().c_str(), vFarmFrame[page].fafh_bit_error_rate_0.headValue[loopCount], m_showStatusBits);
                     set_json_float_With_Status(headPage, header.str().c_str(), number, vFarmFrame[page].fafh_bit_error_rate_0.headValue[loopCount], m_showStatusBits);
                 }
             }
@@ -4157,13 +4147,13 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
 #if defined _DEBUG
-                printf("\tFAFH Low Frequency 0 by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fafhLowFrequency_0.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));  
+                printf("\tFAFH LF Passive Clearance 0 by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fafhLowFrequency_0.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));  
 #endif
                 std::ostringstream header, temp;
-                header << "FAFH Low Frequency 0 by Head " << std::dec << loopCount;     // Head count
+                header << "FAFH LF Passive Clearance 0 by Head " << std::dec << loopCount;     // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Float(headPage, "fafh", "low frequency diameter 0", loopCount, "counts", FAFH_LOW_FREQUENCY_0, static_cast<float>(M_WordInt0(vFarmFrame[page].fafhLowFrequency_0.headValue[loopCount])) * .001F);
+                    prePython_Head_Float(headPage, "fafh", "lf passive clearance 0", loopCount, "counts", FAFH_LOW_FREQUENCY_0, static_cast<float>(M_WordInt0(vFarmFrame[page].fafhLowFrequency_0.headValue[loopCount])) * .001F);
                 }
                 else
                 {
@@ -4180,13 +4170,13 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
 #if defined _DEBUG
-                printf("\tFAFH Low Frequency 1 by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fafhLowFrequency_1.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));  
+                printf("\tFAFH LF Passive Clearance 1 by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fafhLowFrequency_1.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));  
 #endif
                 std::ostringstream header, temp;
-                header << "FAFH Low Frequency 1 by Head " << std::dec << loopCount;     // Head count
+                header << "FAFH LF Passive Clearance 1 by Head " << std::dec << loopCount;     // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Float(headPage, "fafh", "low frequency diameter 1", loopCount, "counts", FAFH_LOW_FREQUENCY_1, static_cast<float>(M_WordInt0(vFarmFrame[page].fafhLowFrequency_1.headValue[loopCount])) * .001F);
+                    prePython_Head_Float(headPage, "fafh", "lf passive clearance 1", loopCount, "counts", FAFH_LOW_FREQUENCY_1, static_cast<float>(M_WordInt0(vFarmFrame[page].fafhLowFrequency_1.headValue[loopCount])) * .001F);
                 }
                 else
                 {
@@ -4203,13 +4193,13 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
 #if defined _DEBUG
-                printf("\tFAFH Low Frequency 2 by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fafhLowFrequency_2.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));  
+                printf("\tFAFH LF Passive Clearance 2 by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fafhLowFrequency_2.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));  
 #endif
                 std::ostringstream header, temp;
-                header << "FAFH Low Frequency 2 by Head " << std::dec << loopCount;     // Head count
+                header << "FAFH LF Passive Clearance 2 by Head " << std::dec << loopCount;     // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Float(headPage, "fafh", "low frequency diameter 2", loopCount, "counts", FAFH_LOW_FREQUENCY_2, static_cast<float>(M_WordInt0(vFarmFrame[page].fafhLowFrequency_2.headValue[loopCount])) * .001F);
+                    prePython_Head_Float(headPage, "fafh", "lf passive clearance 2", loopCount, "counts", FAFH_LOW_FREQUENCY_2, static_cast<float>(M_WordInt0(vFarmFrame[page].fafhLowFrequency_2.headValue[loopCount])) * .001F);
                 }
                 else
                 {
@@ -4226,13 +4216,13 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
 #if defined _DEBUG
-                printf("\tFAFH High Frequency 0 by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fafhHighFrequency_0.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));  
+                printf("\tFAFH HF Passive Clearance 0 by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fafhHighFrequency_0.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));  
 #endif
                 std::ostringstream header, temp;
-                header << "FAFH High Frequency 0 by Head " << std::dec << loopCount;     // Head count
+                header << "FAFH HF Passive Clearance 0 by Head " << std::dec << loopCount;     // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Float(headPage, "fafh", "high frequency diameter 0", loopCount, "counts", FAFH_HIGH_FREQUENCY_0, static_cast<float>(M_WordInt0(vFarmFrame[page].fafhHighFrequency_0.headValue[loopCount])) * .001F);
+                    prePython_Head_Float(headPage, "fafh", "hf passive clearance 0", loopCount, "counts", FAFH_HIGH_FREQUENCY_0, static_cast<float>(M_WordInt0(vFarmFrame[page].fafhHighFrequency_0.headValue[loopCount])) * .001F);
                 }
                 else
                 {
@@ -4249,13 +4239,13 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
 #if defined _DEBUG
-                printf("\tFAFH High Frequency 1 by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fafhHighFrequency_1.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));  
+                printf("\tFAFH HF Passive Clearance 1 by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fafhHighFrequency_1.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));  
 #endif
                 std::ostringstream header, temp;
-                header << "FAFH High Frequency 1 by Head " << std::dec << loopCount;     // Head count
+                header << "FAFH HF Passive Clearance 1 by Head " << std::dec << loopCount;     // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Float(headPage, "fafh", "high frequency diameter 1", loopCount, "counts", FAFH_HIGH_FREQUENCY_1, static_cast<float>(M_WordInt0(vFarmFrame[page].fafhHighFrequency_1.headValue[loopCount])) * .001F);
+                    prePython_Head_Float(headPage, "fafh", "hf passive clearance 1", loopCount, "counts", FAFH_HIGH_FREQUENCY_1, static_cast<float>(M_WordInt0(vFarmFrame[page].fafhHighFrequency_1.headValue[loopCount])) * .001F);
                 }
                 else
                 {
@@ -4272,13 +4262,13 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
 #if defined _DEBUG
-                printf("\tFAFH High Frequency 2 by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fafhHighFrequency_2.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));  
+                printf("\tFAFH HF Passive Clearance 2 by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fafhHighFrequency_2.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));  
 #endif
                 std::ostringstream header, temp;
-                header << "FAFH High Frequency 2 by Head " << std::dec << loopCount;     // Head count
+                header << "FAFH HF Passive Clearance 2 by Head " << std::dec << loopCount;     // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Float(headPage, "fafh", "high frequency diameter 2", loopCount, "counts", FAFH_HIGH_FREQUENCY_2, static_cast<float>(M_WordInt0(vFarmFrame[page].fafhHighFrequency_2.headValue[loopCount])) * .001F);
+                    prePython_Head_Float(headPage, "fafh", "hf passive clearance 2", loopCount, "counts", FAFH_HIGH_FREQUENCY_2, static_cast<float>(M_WordInt0(vFarmFrame[page].fafhHighFrequency_2.headValue[loopCount])) * .001F);
                 }
                 else
                 {
