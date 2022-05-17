@@ -61,6 +61,7 @@ typedef struct _sDriveInfo
     uint64_t        depopulationHeadMask;                       //!< Depopulation Head Mask(started in 4.7)
     uint64_t        headFlightHoursAct1;                        //!< Head Flight Hours, Actuator1
     uint64_t        headLoadEventsAct1;                         //!< Head Load Events, Actuator 1
+    uint64_t        HAMRProtectStatus;
 }sDriveInfo;
 
 typedef struct _sErrorStat
