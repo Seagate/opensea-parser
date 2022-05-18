@@ -273,7 +273,7 @@ namespace opensea_parser {
 //!   \return void
 //
 //-----------------------------------------------------------------------------
-	inline void set_json_int_Check_Status(JSONNODE* nowNode, const std::string& myStr, int value, uint64_t fullValue, bool showStatusBits)
+	inline void set_json_int_Check_Status(JSONNODE* nowNode, const std::string& myStr, long value, uint64_t fullValue, bool showStatusBits)
 	{
 		if (showStatusBits)
 		{
