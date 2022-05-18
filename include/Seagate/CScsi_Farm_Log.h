@@ -58,7 +58,7 @@ namespace opensea_parser {
 		
         
         bool strip_Active_Status(uint64_t *value);
-        bool swap_Bytes_sFarmHeader(sScsiFarmHeader *fh);
+        bool swap_Bytes_sFarmHeader(sScsiFarmHeader *fh, uint8_t* pData);
         bool swap_Bytes_sDriveInfo(sScsiDriveInfo *di);
         bool swap_Bytes_sDrive_Info_Page_06(sGeneralDriveInfoPage06 *gd);
         bool swap_Bytes_sWorkLoadStat(sScsiWorkLoadStat *wl);
