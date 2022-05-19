@@ -393,7 +393,7 @@ bool CSCSI_Farm_Log::set_Head_Header(std::string &headerName, eLogPageTypes inde
     case TOTAL_LASER_FIELD_ADJUST_ITERATIONS:
         headerName = "Number of total Laser Field Adjust iterations performed";
         break;
-    case TOTAL_READER_WRITEER_OFFSET_ITERATIONS_PERFORMED:
+    case TOTAL_READER_WRITER_OFFSET_ITERATIONS_PERFORMED:
         headerName = "Number of total Reader Writer Offset iterations performed";
         break;
     case PRE_LFA_ZONE_0:
@@ -448,7 +448,7 @@ bool CSCSI_Farm_Log::set_Head_Header(std::string &headerName, eLogPageTypes inde
         headerName = "Micro Jog Offset Zone 0";
         break;
     case MICRO_JOG_OFFSET_ZONE_1:
-        headerName = "Micro Jog Offset Zone 14";
+        headerName = "Micro Jog Offset Zone 1";
         break;
     case MICRO_JOG_OFFSET_ZONE_2:
         headerName = "Micro Jog Offset Zone 2";
@@ -1465,7 +1465,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     delete pHeadInfo;
                 }
                 break;
-                case TOTAL_READER_WRITEER_OFFSET_ITERATIONS_PERFORMED:
+                case TOTAL_READER_WRITER_OFFSET_ITERATIONS_PERFORMED:
                 {
                     sHeadInformation* pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
@@ -3808,6 +3808,130 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 }
             }
             break;
+        case TOTAL_LASER_FIELD_ADJUST_ITERATIONS:
+        {
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
+#if defined _DEBUG
+                printf("\tFine Laser Calibrations per head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].totalLaserFieldAdjustIterations.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));
+#endif
+                std::ostringstream header;
+                header << "Fine Laser Calibrations per head " << std::dec << loopCount; // Head count
+                if (g_dataformat == PREPYTHON_DATA)
+                {
+                    prePython_Head_Int(headPage, "laser", "fine calibrations", loopCount, "counts", TOTAL_LASER_FIELD_ADJUST_ITERATIONS, vFarmFrame[page].totalLaserFieldAdjustIterations.headValue[loopCount]);
+                }
+                else
+                {
+                    set_json_64_bit_With_Status(headPage, header.str().c_str(), vFarmFrame[page].totalLaserFieldAdjustIterations.headValue[loopCount], false, m_showStatusBits);
+                }
+            }
+        }
+        break;
+        case TOTAL_READER_WRITER_OFFSET_ITERATIONS_PERFORMED:
+        {
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
+#if defined _DEBUG
+                printf("\tReader Writer offset Iterations per head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].totalReaderWriteerOffsetIterationsPerformed.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));
+#endif
+                std::ostringstream header;
+                header << "Reader Writer offset Iterations per head " << std::dec << loopCount; // Head count
+                if (g_dataformat == PREPYTHON_DATA)
+                {
+                    prePython_Head_Int(headPage, "reader_writer", "offset iterations", loopCount, "counts", TOTAL_READER_WRITER_OFFSET_ITERATIONS_PERFORMED, vFarmFrame[page].totalReaderWriteerOffsetIterationsPerformed.headValue[loopCount]);
+                }
+                else
+                {
+                    set_json_64_bit_With_Status(headPage, header.str().c_str(), vFarmFrame[page].totalReaderWriteerOffsetIterationsPerformed.headValue[loopCount], false, m_showStatusBits);
+                }
+            }
+        }
+        break;
+        case PRE_LFA_ZONE_0:
+        {
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
+#if defined _DEBUG
+                printf("\tPre LFA Optimal BER Zone 0 per head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].pre_lfaZone_0.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));
+#endif
+                std::ostringstream header;
+                header << "Pre LFA Optimal BER Zone 0 per head " << std::dec << loopCount; // Head count
+                int16_t number = static_cast<int16_t>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].pre_lfaZone_0.headValue[loopCount])), 16) * 1000);
+                if (g_dataformat == PREPYTHON_DATA)
+                {
+                    prePython_Head_Int(headPage, "lfa", "pre optimal zone 0", loopCount, "ber", PRE_LFA_ZONE_0, number);
+                }
+                else
+                {
+                    set_json_int_Check_Status(headPage, header.str().c_str(), number, vFarmFrame[page].pre_lfaZone_0.headValue[loopCount], m_showStatusBits);
+                }
+            }
+        }
+        break;
+        case PRE_LFA_ZONE_1:
+        {
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
+#if defined _DEBUG
+                printf("\tPre LFA Optimal BER Zone 1 per head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].pre_lfaZone_1.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));
+#endif
+                std::ostringstream header;
+                header << "Pre LFA Optimal BER Zone 1 per head " << std::dec << loopCount; // Head count
+                int16_t number = static_cast<int16_t>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].pre_lfaZone_1.headValue[loopCount])), 16) * 1000);
+                if (g_dataformat == PREPYTHON_DATA)
+                {
+                    prePython_Head_Int(headPage, "lfa", "pre optimal zone 1", loopCount, "ber", PRE_LFA_ZONE_1, number);
+                }
+                else
+                {
+                    set_json_int_Check_Status(headPage, header.str().c_str(),number, vFarmFrame[page].pre_lfaZone_1.headValue[loopCount], m_showStatusBits);
+                }
+            }
+        }
+        break;
+        case PRE_LFA_ZONE_2:
+        {
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
+#if defined _DEBUG
+                printf("\tPre LFA Optimal BER Zone 2 per head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].pre_lfaZone_2.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));
+#endif
+                std::ostringstream header;
+                header << "Pre LFA Optimal BER Zone 2 per head " << std::dec << loopCount; // Head count
+                int16_t number = static_cast<int16_t>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].pre_lfaZone_2.headValue[loopCount])), 16) * 1000);
+                if (g_dataformat == PREPYTHON_DATA)
+                {
+                    prePython_Head_Int(headPage, "lfa", "pre optimal zone 2", loopCount, "ber", PRE_LFA_ZONE_2, number);
+                }
+                else
+                {
+                    set_json_int_Check_Status(headPage, header.str().c_str(), number, vFarmFrame[page].pre_lfaZone_2.headValue[loopCount], m_showStatusBits);
+                }
+            }
+        }
+        break;
+        case ZERO_PERCENT_SHIFT:
+        {
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
+#if defined _DEBUG
+                printf("\tZero Percent Shift Zone 0 per head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].zeroPercentShift.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));
+#endif
+                std::ostringstream header;
+                header << "Zero Percent Shift Zone 0  per head " << std::dec << loopCount; // Head count
+                int16_t number = static_cast<int16_t>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].zeroPercentShift.headValue[loopCount])), 16) * 1000);
+                if (g_dataformat == PREPYTHON_DATA)
+                {
+                    prePython_Head_Int(headPage, "zero_percent_shift", "zone 0", loopCount, "counts", ZERO_PERCENT_SHIFT, number);
+                }
+                else
+                {
+                    set_json_int_Check_Status(headPage, header.str().c_str(), number, vFarmFrame[page].zeroPercentShift.headValue[loopCount], m_showStatusBits);
+                }
+            }
+        }
+        break;
         case CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_0:
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
@@ -3876,7 +4000,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 double number = static_cast<double>(M_Word0(vFarmFrame[page].currentH2STIterationsByHeadZone0.headValue[loopCount]) * 0.10F);
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Float(headPage, "h2sat", "iterations to converge (current),zone:0", loopCount, "counts", CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_0, number);
+                    prePython_Head_Float(headPage, "h2sat", "iterations to converge zone 0", loopCount, "counts", CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_0, number);
                 }
                 else
                 {
@@ -3895,7 +4019,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 double number = static_cast<double>(M_Word0(vFarmFrame[page].currentH2STIterationsByHeadZone1.headValue[loopCount]) * 0.10);
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Float(headPage, "h2sat", "iterations to converge (current),zone:1", loopCount, "counts", CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_1, number);
+                    prePython_Head_Float(headPage, "h2sat", "iterations to converge zone 1", loopCount, "counts", CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_1, number);
                 }
                 else
                 {
@@ -3914,7 +4038,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 header << "Current H2SAT iterations to converge Test Zone 2 by Head " << std::dec << loopCount; // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Float(headPage, "h2sat", "iterations to converge (current),zone:2", loopCount, "counts", CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_2, static_cast<float>(M_Word0(vFarmFrame[page].currentH2STIterationsByHeadZone2.headValue[loopCount]) * .10F));
+                    prePython_Head_Float(headPage, "h2sat", "iterations to converge zone 2", loopCount, "counts", CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_2, static_cast<float>(M_Word0(vFarmFrame[page].currentH2STIterationsByHeadZone2.headValue[loopCount]) * .10F));
                 }
                 else
                 {
@@ -3923,6 +4047,207 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 }
             }
             break;
+        case LASER_OPERATING_ZONE_0:
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
+#if defined _DEBUG
+                printf("\tLaser Operating Current Zone 0 by Head %" PRIu32" :      %" PRIu64" \n", loopCount, vFarmFrame[page].laser_operatingZone_0.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));  //!< Current H2SAT iterations to cnverge by Head, by Test Zone 2
+#endif
+                std::ostringstream header;
+                header << "Laser Operating Current Zone 0 by Head " << std::dec << loopCount; // Head count
+                if (g_dataformat == PREPYTHON_DATA)
+                {
+                    prePython_Head_Int(headPage, "laser", "operating current zone 0", loopCount, "count", LASER_OPERATING_ZONE_0, M_DoubleWord0(vFarmFrame[page].laser_operatingZone_0.headValue[loopCount]));
+                }
+                else
+                {
+                    set_json_64_bit_With_Status(headPage, header.str().c_str(), M_DoubleWord0(vFarmFrame[page].laser_operatingZone_0.headValue[loopCount]), false, m_showStatusBits);
+                }
+            }
+            break;
+        case LASER_OPERATING_ZONE_1:
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
+#if defined _DEBUG
+                printf("\tLaser Operating Current Zone 1 by Head %" PRIu32" :  %" PRIu64" \n", loopCount, vFarmFrame[page].laser_operatingZone_1.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));  //!< Current H2SAT iterations to cnverge by Head, by Test Zone 2
+#endif
+                std::ostringstream header;
+                header << "Laser Operating Current Zone 1 by Head " << std::dec << loopCount; // Head count
+                if (g_dataformat == PREPYTHON_DATA)
+                {
+                    prePython_Head_Int(headPage, "laser", "operating current zone 1", loopCount, "count", LASER_OPERATING_ZONE_1, M_DoubleWord0(vFarmFrame[page].laser_operatingZone_1.headValue[loopCount]));
+                }
+                else
+                {
+                    set_json_64_bit_With_Status(headPage, header.str().c_str(), M_DoubleWord0(vFarmFrame[page].laser_operatingZone_1.headValue[loopCount]), false, m_showStatusBits);
+                }
+            }
+            break;
+        case LASER_OPERATING_ZONE_2:
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
+#if defined _DEBUG
+                printf("\tLaser Operating Current Zone 2 by Head %" PRIu32" :      %" PRIu64" \n", loopCount, vFarmFrame[page].laserOperatingZone_2.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));  //!< Current H2SAT iterations to cnverge by Head, by Test Zone 2
+#endif
+                std::ostringstream header;
+                header << "Laser Operating Current Zone 2 by Head " << std::dec << loopCount; // Head count
+                if (g_dataformat == PREPYTHON_DATA)
+                {
+                    prePython_Head_Int(headPage, "laser", "operating current zone 2", loopCount, "count", LASER_OPERATING_ZONE_2, M_DoubleWord0(vFarmFrame[page].laserOperatingZone_2.headValue[loopCount]));
+                }
+                else
+                {
+                    set_json_64_bit_With_Status(headPage, header.str().c_str(), M_DoubleWord0(vFarmFrame[page].laserOperatingZone_2.headValue[loopCount]), false, m_showStatusBits);
+                }
+            }
+            break;
+        case POST_LFA_OPTIMAL_BER_ZONE_0:
+        {
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
+#if defined _DEBUG
+                printf("\tPost LFA Optimal BER Zone 0 per head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].postLFAOptimalBERZone_0.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));
+#endif
+                std::ostringstream header;
+                header << "Post LFA Optimal BER Zone 0 per head " << std::dec << loopCount; // Head count
+                int16_t number = static_cast<int16_t>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].postLFAOptimalBERZone_0.headValue[loopCount])), 16) * 1000);
+                if (g_dataformat == PREPYTHON_DATA)
+                {
+                    prePython_Head_Int(headPage, "lfa", "post optimal zone 0", loopCount, "ber", POST_LFA_OPTIMAL_BER_ZONE_0, number);
+                }
+                else
+                {
+                    set_json_int_Check_Status(headPage, header.str().c_str(), number, vFarmFrame[page].postLFAOptimalBERZone_0.headValue[loopCount], m_showStatusBits);
+                }
+            }
+        }
+        break;
+        case POST_LFA_OPTIMAL_BER_ZONE_1:
+        {
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
+#if defined _DEBUG
+                printf("\tPost LFA Optimal BER Zone 1 per head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].postLFAOptimalBERZone_1.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));
+#endif
+                std::ostringstream header;
+                header << "Post LFA Optimal BER Zone 1 per head " << std::dec << loopCount; // Head count
+                int16_t number = static_cast<int16_t>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].postLFAOptimalBERZone_1.headValue[loopCount])), 16) * 1000);
+                if (g_dataformat == PREPYTHON_DATA)
+                {
+                    prePython_Head_Int(headPage, "lfa", "post optimal zone 1", loopCount, "ber", POST_LFA_OPTIMAL_BER_ZONE_1, number);
+                }
+                else
+                {
+                    set_json_int_Check_Status(headPage, header.str().c_str(), number, vFarmFrame[page].postLFAOptimalBERZone_1.headValue[loopCount], m_showStatusBits);
+                }
+            }
+        }
+        break;
+        case POST_LFA_OPTIMAL_BER_ZONE_2:
+        {
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
+#if defined _DEBUG
+                printf("\tPost LFA Optimal BER Zone 2 per head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].postLFAOptimalBERZone_2.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));
+#endif
+                std::ostringstream header;
+                header << "Post LFA Optimal BER Zone 2 per head " << std::dec << loopCount; // Head count
+                int16_t number = static_cast<int16_t>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].postLFAOptimalBERZone_2.headValue[loopCount])), 16) * 1000);
+                if (g_dataformat == PREPYTHON_DATA)
+                {
+                    prePython_Head_Int(headPage, "lfa", "post optimal zone 2", loopCount, "ber", POST_LFA_OPTIMAL_BER_ZONE_2, number);
+                }
+                else
+                {
+                    set_json_int_Check_Status(headPage, header.str().c_str(), number, vFarmFrame[page].postLFAOptimalBERZone_2.headValue[loopCount], m_showStatusBits);
+                }
+            }
+        }
+        break;
+        case MICRO_JOG_OFFSET_ZONE_0:
+        {
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
+#if defined _DEBUG
+                printf("\tMicro Jog offset Zone 0 per head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].microJogOffsetZone_0.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));
+#endif
+                std::ostringstream header;
+                header << "Micro Jog offset Zone 0 per head " << std::dec << loopCount; // Head count
+                int16_t number = static_cast<int16_t>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].microJogOffsetZone_0.headValue[loopCount])), 16));
+                if (g_dataformat == PREPYTHON_DATA)
+                {
+                    prePython_Head_Int(headPage, "micro_jog", "zone 0", loopCount, "offset", MICRO_JOG_OFFSET_ZONE_0, number);
+                }
+                else
+                {
+                    set_json_int_Check_Status(headPage, header.str().c_str(), number, vFarmFrame[page].microJogOffsetZone_0.headValue[loopCount], m_showStatusBits);
+                }
+            }
+        }
+        break;
+        case MICRO_JOG_OFFSET_ZONE_1:
+        {
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
+#if defined _DEBUG
+                printf("\tMicro Jog offset Zone 1 per head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].microJogOffsetZone_1.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));
+#endif
+                std::ostringstream header;
+                header << "Micro Jog offset Zone 1 per head " << std::dec << loopCount; // Head count
+                int16_t number = static_cast<int16_t>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].microJogOffsetZone_1.headValue[loopCount])), 16));
+                if (g_dataformat == PREPYTHON_DATA)
+                {
+                    prePython_Head_Int(headPage, "micro_jog", "zone 1", loopCount, "offset", MICRO_JOG_OFFSET_ZONE_1, number);
+                }
+                else
+                {
+                    set_json_int_Check_Status(headPage, header.str().c_str(), number, vFarmFrame[page].microJogOffsetZone_1.headValue[loopCount], m_showStatusBits);
+                }
+            }
+        }
+        break;
+        case MICRO_JOG_OFFSET_ZONE_2:
+        {
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
+#if defined _DEBUG
+                printf("\tMicro Jog offset Zone 2 per head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].microJogOffsetZone_2.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));
+#endif
+                std::ostringstream header;
+                header << "Micro Jog offset Zone 2 per head " << std::dec << loopCount; // Head count
+                int16_t number = static_cast<int16_t>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].microJogOffsetZone_2.headValue[loopCount])), 16));
+                if (g_dataformat == PREPYTHON_DATA)
+                {
+                    prePython_Head_Int(headPage, "micro_jog", "zone 2", loopCount, "offset", MICRO_JOG_OFFSET_ZONE_2, number);
+                }
+                else
+                {
+                    set_json_int_Check_Status(headPage, header.str().c_str(), number, vFarmFrame[page].microJogOffsetZone_2.headValue[loopCount], m_showStatusBits);
+                }
+            }
+        }
+        break;
+        case ZERO_PERCENT_SHIFT_ZONE_1:
+        {
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
+#if defined _DEBUG
+                printf("\tZero Percent Shift Zone 1 per head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].zeroPercentShiftZone_1.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));
+#endif
+                std::ostringstream header;
+                header << "Zero Percent Shift Zone 1  per head " << std::dec << loopCount; // Head count
+                int16_t number = static_cast<int16_t>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].zeroPercentShiftZone_1.headValue[loopCount])), 16) * 1000);
+                if (g_dataformat == PREPYTHON_DATA)
+                {
+                    prePython_Head_Int(headPage, "zero_percent_shift", "zone 1", loopCount, "counts", ZERO_PERCENT_SHIFT_ZONE_1, number);
+                }
+                else
+                {
+                    set_json_int_Check_Status(headPage, header.str().c_str(),number, vFarmFrame[page].zeroPercentShiftZone_1.headValue[loopCount], m_showStatusBits);
+                }
+            }
+        }
+        break;
         case APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_OUTER:
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
@@ -4261,6 +4586,26 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
         }
         break;
         case ZERO_PERCENT_SHIFT_ZONE_2:
+        {
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
+#if defined _DEBUG
+                printf("\tZero Percent shift Zone 2 by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fafhHighFrequency_2.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));
+#endif
+                std::ostringstream temp;
+                temp.str(""); temp.clear();
+                temp << "Zero Percent shift Zone 2 by Head " << std::dec << loopCount; // Head count
+                int16_t number = static_cast<int16_t>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].zeroPercentShiftZone_2.headValue[loopCount])), 16) * 1000);
+                if (g_dataformat == PREPYTHON_DATA)
+                {
+                    prePython_Head_Int(headPage, "zero_perent_shift", "Zone 2", loopCount, "percent", ZERO_PERCENT_SHIFT_ZONE_2, number);
+                }
+                else
+                {
+                    set_json_int_Check_Status(headPage, temp.str().c_str(),number, vFarmFrame[page].zeroPercentShiftZone_2.headValue[loopCount], m_showStatusBits);
+                }
+            }
+        }
         case LUN_0_ACTUATOR:
         case LUN_0_FLASH_LED:
         case LUN_REALLOCATION_0:
@@ -4842,6 +5187,12 @@ void CSCSI_Farm_Log::print_All_Pages(JSONNODE *masterData)
                 case DOS_WRITE_COUNT_THRESHOLD_PER_HEAD:
                 case CUM_LIFETIME_UNRECOVERALBE_READ_REPET_PER_HEAD:
                 case CUM_LIFETIME_UNRECOVERABLE_READ_UNIQUE_PER_HEAD:
+                case TOTAL_LASER_FIELD_ADJUST_ITERATIONS:
+                case TOTAL_READER_WRITER_OFFSET_ITERATIONS_PERFORMED:
+                case PRE_LFA_ZONE_0:
+                case PRE_LFA_ZONE_1:
+                case PRE_LFA_ZONE_2:
+                case ZERO_PERCENT_SHIFT:
                 case CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_0:
                 case CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_1:
                 case CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_2:
@@ -4862,7 +5213,6 @@ void CSCSI_Farm_Log::print_All_Pages(JSONNODE *masterData)
                 case APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_INNER:
                 case APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_MIDDLE:
                 case SECOND_MR_HEAD_RESISTANCE:
-
                     print_Head_Information(vFarmFrame.at(index).vFramesFound.at(pramCode), headPage, index);   
                     break;
                 case FAFH_MEASUREMENT_STATUS:            // FAFH Measurement Status, bitwise OR across all diameters per head
