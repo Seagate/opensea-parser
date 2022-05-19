@@ -1286,10 +1286,10 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
     uint32_t loopCount = 0;
     std::string myHeader;
     JSONNODE *headInfo = json_new(JSON_NODE);
-
-#if defined _DEBUG
     int16_t whole = 0;
     double remander = 0;
+#if defined _DEBUG
+    
     if (vFarmFrame[page].reliPage.copyNumber == FACTORYCOPY)
     {
         printf("\n Head Information From Farm Log copy FACTORY");
@@ -1518,19 +1518,19 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         temp.str("");temp.clear();
-        temp << "Number of Servo No Timing Mark Detect for Head " << std::dec << loopCount;// Head count
+        temp << "Servo No Timing Mark Detect for Head " << std::dec << loopCount;// Head count
         set_json_64_bit_With_Status(headInfo, temp.str(), vFarmFrame[page].reliPage.numberOfTMD[loopCount], false, m_showStatusBits);                          //!< [24] Number of TMD over last 3 SMART Summary Frames by Head9,10
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         temp.str("");temp.clear();
-        temp << "Number of Velocity Observer by Head " << std::dec << loopCount;// Head count
+        temp << "Velocity Observer by Head " << std::dec << loopCount;// Head count
         set_json_64_bit_With_Status(headInfo, temp.str(), vFarmFrame[page].reliPage.velocityObserver[loopCount], false, m_showStatusBits);                     //!< [24] Velocity Observer over last 3 SMART Summary Frames by Head9,10
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         temp.str("");temp.clear();
-        temp << "Number of Servo Velocity No Timing Mark Detect by Head " << std::dec << loopCount;// Head count
+        temp << "Servo Velocity No Timing Mark Detect by Head " << std::dec << loopCount;// Head count
         set_json_64_bit_With_Status(headInfo, temp.str(), vFarmFrame[page].reliPage.numberOfVelocityObserver[loopCount], false, m_showStatusBits);             //!< [24] Number of Velocity Observer over last 3 SMART Summary Frames by Head9,10
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
@@ -1613,8 +1613,6 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
         temp.str("");temp.clear();
         temp << "Current H2SAT asymmetry by Head " << std::dec << loopCount;// Head count
         set_json_float_With_Status(headInfo, temp.str(), static_cast<double>(M_WordInt0(vFarmFrame[page].reliPage.currentH2SATasymmetry[loopCount])) * 0.1F, vFarmFrame[page].reliPage.currentH2SATasymmetry[loopCount], m_showStatusBits);
-        //temp << std::fixed << std::setprecision(1) << std::setfill('0') << static_cast<float>(M_Word0(check_Status_Strip_Status(vFarmFrame[page].reliPage.currentH2SATasymmetry[loopCount])))  * 0.1F;
-        //set_json_string_With_Status(headInfo, myHeader, temp.str(), vFarmFrame[page].reliPage.currentH2SATasymmetry[loopCount], m_showStatusBits);             //!< [24] Qword[24] Current H2SAT asymmetry by Head, averaged across Test Zones
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
@@ -1650,10 +1648,6 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
     {
         temp.str("");temp.clear();
         temp << "Write Power On (hrs) by Head " << std::dec << loopCount;// Head count
-        //myHeader.assign(temp.str());
-        //temp.str("");temp.clear();
-        //temp << std::fixed << std::setprecision(4) << std::setfill('0') << ROUNDF(static_cast<double>(M_DoubleWord0(vFarmFrame[page].reliPage.writePOH[loopCount])) / 3600, 1000);
-        //set_json_string_With_Status(headInfo, myHeader, temp.str(), vFarmFrame[page].reliPage.writePOH[loopCount], m_showStatusBits); 
         set_json_float_With_Status(headInfo, temp.str().c_str(), static_cast<double>(M_DoubleWord0(vFarmFrame[page].reliPage.writePOH[loopCount])) / 3600, vFarmFrame[page].reliPage.writePOH[loopCount], m_showStatusBits);
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
@@ -1743,38 +1737,38 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         temp.str(""); temp.clear();
-        temp << "FAFH LF Passive Clearance 0 by Head " << std::dec << loopCount;// Head count
+        temp << "FAFH LF Passive Clearance ID by Head " << std::dec << loopCount;// Head count
         set_json_int_Check_Status(headInfo, temp.str().c_str(), M_DoubleWord0(vFarmFrame[page].reliPage.FAFHLowFrequency[loopCount].outer), vFarmFrame[page].reliPage.FAFHLowFrequency[loopCount].outer, m_showStatusBits);
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         temp.str("");temp.clear();
-        temp << "FAFH LF Passive Clearance 1 by Head " << std::dec << loopCount;// Head count
+        temp << "FAFH LF Passive Clearance MD by Head " << std::dec << loopCount;// Head count
         set_json_int_Check_Status(headInfo, temp.str().c_str(), M_DoubleWord0(vFarmFrame[page].reliPage.FAFHLowFrequency[loopCount].inner), vFarmFrame[page].reliPage.FAFHLowFrequency[loopCount].inner, m_showStatusBits);
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         temp.str("");temp.clear();
-        temp << "FAFH LF Passive Clearance 2 by Head " << std::dec << loopCount;// Head count
+        temp << "FAFH LF Passive Clearance OD by Head " << std::dec << loopCount;// Head count
         set_json_int_Check_Status(headInfo, temp.str().c_str(), M_DoubleWord0(vFarmFrame[page].reliPage.FAFHLowFrequency[loopCount].middle), vFarmFrame[page].reliPage.FAFHLowFrequency[loopCount].middle, m_showStatusBits);                //!< [24][3] FAFH Low Frequency Passive Clearance in ADC counts
     }
 
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         temp.str("");temp.clear();
-        temp << "FAFH HF Passive Clearance 0 by Head " << std::dec << loopCount;// Head count
+        temp << "FAFH HF Passive Clearance ID by Head " << std::dec << loopCount;// Head count
         set_json_int_Check_Status(headInfo, temp.str().c_str(), M_DoubleWord0(vFarmFrame[page].reliPage.FAFHHighFrequency[loopCount].outer), vFarmFrame[page].reliPage.FAFHHighFrequency[loopCount].outer, m_showStatusBits);                 //!< [24][3] FAFH High Frequency Passive Clearance in ADC counts
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         temp.str("");temp.clear();
-        temp << "FAFH HF Passive Clearance 1 by Head " << std::dec << loopCount;// Head count
+        temp << "FAFH HF Passive Clearance MD by Head " << std::dec << loopCount;// Head count
         set_json_int_Check_Status(headInfo, temp.str().c_str(), M_DoubleWord0(vFarmFrame[page].reliPage.FAFHHighFrequency[loopCount].inner), vFarmFrame[page].reliPage.FAFHHighFrequency[loopCount].inner, m_showStatusBits);               //!< [24][3] FAFH High Frequency Passive Clearance in ADC counts
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         temp.str("");temp.clear();
-        temp << "FAFH HF Passive Clearance 2 by Head " << std::dec << loopCount;// Head count
+        temp << "FAFH HF Passive Clearance OD by Head " << std::dec << loopCount;// Head count
         set_json_int_Check_Status(headInfo, temp.str().c_str(), M_DoubleWord0(vFarmFrame[page].reliPage.FAFHHighFrequency[loopCount].middle), vFarmFrame[page].reliPage.FAFHHighFrequency[loopCount].middle, m_showStatusBits);                 //!< [24][3] FAFH High Frequency Passive Clearance in ADC counts
     }
     //4.19
