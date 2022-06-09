@@ -1287,8 +1287,8 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
     std::string myHeader;
     JSONNODE *headInfo = json_new(JSON_NODE);
     int16_t whole = 0;
-    double remander = 0;
 #if defined _DEBUG
+    double remander = 0;
     
     if (vFarmFrame[page].reliPage.copyNumber == FACTORYCOPY)
     {
@@ -1612,7 +1612,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
     {
         temp.str("");temp.clear();
         temp << "Current H2SAT asymmetry by Head " << std::dec << loopCount;// Head count
-        set_json_float_With_Status(headInfo, temp.str(), static_cast<double>(M_WordInt0(vFarmFrame[page].reliPage.currentH2SATasymmetry[loopCount])) * 0.1F, vFarmFrame[page].reliPage.currentH2SATasymmetry[loopCount], m_showStatusBits);
+        set_json_float_With_Status(headInfo, temp.str(), static_cast<double>(M_WordInt0(vFarmFrame[page].reliPage.currentH2SATasymmetry[loopCount])) * 0.1, vFarmFrame[page].reliPage.currentH2SATasymmetry[loopCount], m_showStatusBits);
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
