@@ -794,7 +794,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				else if (lpStruct->subPage >= FARM_TIME_SERIES_0 && lpStruct->subPage <= FARM_TEMP_TRIGGER_LOG_PAGE)   // FARM log when Temperature exceeds 70 c
 				{
 					CSCSI_Farm_Log* pCFarm;
-					pCFarm = new CSCSI_Farm_Log(bufferData, lpStruct->pageLength + 4, true);  // issue with the log bufer size
+					pCFarm = new CSCSI_Farm_Log(bufferData, lpStruct->pageLength + 4, false);  // issue with the log bufer size
 					if (pCFarm->get_Log_Status() == SUCCESS)
 					{
 						retStatus = pCFarm->get_Log_Status();

@@ -1062,9 +1062,9 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
     uint64_t signature = m_pHeader->farmHeader.signature & UINT64_C(0x00FFFFFFFFFFFFFF);
     m_MajorRev = M_DoubleWord0(m_pHeader->farmHeader.majorRev);
     m_MinorRev = M_DoubleWord0(m_pHeader->farmHeader.minorRev);
-    if ((signature != FARMSIGNATURE && signature != FACTORYCOPY) || signature == UINT64_C(0x00FFFFFFFFFFFFFF))
+    if ((signature != FARMSIGNATURE && signature != FACTORYCOPY) || signature == FARMEMPTYSIGNATURE)
     {
-        if (signature == UINT64_C(0x00FFFFFFFFFFFFFF))
+        if (signature == FARMEMPTYSIGNATURE)
             return SUCCESS;
         else
             return VALIDATION_FAILURE;
@@ -5424,6 +5424,13 @@ void CSCSI_Farm_Log::print_Page_One_Node(JSONNODE *masterData)
         JSONNODE *pageInfo = json_new(JSON_NODE);
         json_set_name(pageInfo,"FARM Log");
         print_All_Pages(pageInfo);
+        json_push_back(masterData, pageInfo);
+    }
+    else
+    {
+        JSONNODE* pageInfo = json_new(JSON_NODE);
+        json_set_name(pageInfo, "FARM Log");
+        json_push_back(pageInfo, json_new_a("Empty FARM Log", "data has not yet been gathered"));
         json_push_back(masterData, pageInfo);
     }
 }
