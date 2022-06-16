@@ -76,6 +76,7 @@ CScsiLog::CScsiLog(const std::string fileName, JSONNODE *masterData)
     , m_LogSize(0)
     , m_name("SCSI Log")
     , m_ScsiStatus(IN_PROGRESS)
+	, m_Page()
 
 {
     CLog *cCLog;
@@ -170,7 +171,27 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				{
 					cSupport = new CScsiSupportedLog(&bufferData[4], m_LogSize, lpStruct->pageLength, true);
 				}
-				retStatus = cSupport->parse_Supported_Log_Pages_Log(masterData);
+				retStatus = cSupport->get_Log_Status();
+				if (retStatus == IN_PROGRESS)
+				{
+					try
+					{
+						retStatus = cSupport->parse_Supported_Log_Pages_Log(masterData);
+					}
+					catch (...)
+					{
+						retStatus = cSupport->get_Log_Status();
+						delete(cSupport);
+						if (retStatus == SUCCESS || retStatus == IN_PROGRESS)
+						{
+							return PARSE_FAILURE;
+						}
+						else
+						{
+							return retStatus;
+						}
+					}
+				}
 				delete(cSupport);
 			}
 			break;
@@ -185,7 +206,23 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				retStatus = cWriteError->get_Log_Status();
 				if (retStatus == IN_PROGRESS)
 				{
-					retStatus = cWriteError->parse_Error_Counter_Log(masterData);
+					try
+					{
+						retStatus = cWriteError->parse_Error_Counter_Log(masterData);
+					}
+					catch (...)
+					{
+						retStatus = cWriteError->get_Log_Status();
+						delete(cWriteError);
+						if (retStatus == SUCCESS || retStatus == IN_PROGRESS)
+						{
+							return PARSE_FAILURE;
+						}
+						else
+						{
+							return retStatus;
+						}
+					}
 				}
 				delete(cWriteError);
 			}
@@ -201,7 +238,23 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				retStatus = cReadError->get_Log_Status();
 				if (retStatus == IN_PROGRESS)
 				{
-					retStatus = cReadError->parse_Error_Counter_Log(masterData);
+					try
+					{
+						retStatus = cReadError->parse_Error_Counter_Log(masterData);
+					}
+					catch (...)
+					{
+						retStatus = cReadError->get_Log_Status();
+						delete(cReadError);
+						if (retStatus == SUCCESS || retStatus == IN_PROGRESS)
+						{
+							return PARSE_FAILURE;
+						}
+						else
+						{
+							return retStatus;
+						}
+					}
 				}
 				delete(cReadError);
 			}
@@ -217,7 +270,23 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				retStatus = cVerifyError->get_Log_Status();
 				if (retStatus == IN_PROGRESS)
 				{
-					retStatus = cVerifyError->parse_Error_Counter_Log(masterData);
+					try
+					{
+						retStatus = cVerifyError->parse_Error_Counter_Log(masterData);
+					}
+					catch (...)
+					{
+						retStatus = cVerifyError->get_Log_Status();
+						delete(cVerifyError);
+						if (retStatus == SUCCESS || retStatus == IN_PROGRESS)
+						{
+							return PARSE_FAILURE;
+						}
+						else
+						{
+							return retStatus;
+						}
+					}	
 				}
 				delete(cVerifyError);
 			}
@@ -233,7 +302,23 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				retStatus = cNonMedium->get_Log_Status();
 				if (retStatus == IN_PROGRESS)
 				{
-					retStatus = cNonMedium->parse_Non_Medium_Error_Count_Log(masterData);
+					try
+					{
+						retStatus = cNonMedium->parse_Non_Medium_Error_Count_Log(masterData);
+					}
+					catch (...)
+					{
+						retStatus = cNonMedium->get_Log_Status();
+						delete(cNonMedium);
+						if (retStatus == SUCCESS || retStatus == IN_PROGRESS)
+						{
+							return PARSE_FAILURE;
+						}
+						else
+						{
+							return retStatus;
+						}
+					}
 				}
 				delete(cNonMedium);
 			}
@@ -250,7 +335,23 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				retStatus = cFormat->get_Log_Status();
 				if (retStatus == IN_PROGRESS)
 				{
-					retStatus = cFormat->parse_Format_Status_Log(masterData);
+					try
+					{
+						retStatus = cFormat->parse_Format_Status_Log(masterData);
+					}
+					catch (...)
+					{
+						retStatus = cFormat->get_Log_Status();
+						delete(cFormat);
+						if (retStatus == SUCCESS || retStatus == IN_PROGRESS)
+						{
+							return PARSE_FAILURE;
+						}
+						else
+						{
+							return retStatus;
+						}
+					}
 				}
 				delete(cFormat);
 			}
@@ -266,7 +367,23 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				retStatus = cLBA->get_Log_Status();
 				if (retStatus == IN_PROGRESS)
 				{
-					retStatus = cLBA->parse_LBA_Provision_Log(masterData);
+					try
+					{
+						retStatus = cLBA->parse_LBA_Provision_Log(masterData);
+					}
+					catch (...)
+					{
+						retStatus = cLBA->get_Log_Status();
+						delete(cLBA);
+						if (retStatus == SUCCESS || retStatus == IN_PROGRESS)
+						{
+							return PARSE_FAILURE;
+						}
+						else
+						{
+							return retStatus;
+						}
+					}
 				}
 				delete(cLBA);
 			}
@@ -306,7 +423,23 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				retStatus = cApplicationClient->get_Log_Status();
 				if (retStatus == IN_PROGRESS)
 				{
-					retStatus = cApplicationClient->parse_Application_Client_Log(masterData);
+					try
+					{
+						retStatus = cApplicationClient->parse_Application_Client_Log(masterData);
+					}
+					catch (...)
+					{
+						retStatus = cApplicationClient->get_Log_Status();
+						delete(cApplicationClient);
+						if (retStatus == SUCCESS || retStatus == IN_PROGRESS)
+						{
+							return PARSE_FAILURE;
+						}
+						else
+						{
+							return retStatus;
+						}
+					}
 				}
 				delete(cApplicationClient);
 			}
@@ -334,7 +467,23 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
                 retStatus = cSSD->get_Solid_State_Drive_Log_Status();
                 if (retStatus == IN_PROGRESS)
                 {
-                    retStatus = cSSD->parse_Solid_State_Drive_Log(masterData);
+					try
+					{
+						retStatus = cSSD->parse_Solid_State_Drive_Log(masterData);
+					}
+					catch (...)
+					{
+						retStatus = cSSD->get_Solid_State_Drive_Log_Status();
+						delete(cSSD);
+						if (retStatus == SUCCESS || retStatus == IN_PROGRESS)
+						{
+							return PARSE_FAILURE;
+						}
+						else
+						{
+							return retStatus;
+						}
+					}   
                 }
                 delete(cSSD);
             }
@@ -350,7 +499,23 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
                 retStatus = cZDS->get_Zoned_Device_Statistics_Log_Status();
                 if (retStatus == IN_PROGRESS)
                 {
-                    retStatus = cZDS->parse_Zoned_Device_Statistics_Log(masterData);
+					try
+					{
+						retStatus = cZDS->parse_Zoned_Device_Statistics_Log(masterData);
+					}
+					catch (...)
+					{
+						retStatus = cZDS->get_Zoned_Device_Statistics_Log_Status();
+						delete(cZDS);
+						if (retStatus == SUCCESS || retStatus == IN_PROGRESS)
+						{
+							return PARSE_FAILURE;
+						}
+						else
+						{
+							return retStatus;
+						}
+					}  
                 }
                 delete(cZDS);
             }
@@ -364,7 +529,23 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 					retStatus = cScan->get_Log_Status();
 					if (retStatus == IN_PROGRESS)
 					{
-						retStatus = cScan->parse_Background_Scan_Log(masterData);
+						try
+						{
+							retStatus = cScan->parse_Background_Scan_Log(masterData);
+						}
+						catch (...)
+						{
+							retStatus = cScan->get_Log_Status();
+							delete(cScan);
+							if (retStatus == SUCCESS || retStatus == IN_PROGRESS)
+							{
+								return PARSE_FAILURE;
+							}
+							else
+							{
+								return retStatus;
+							}
+						}	
 					}
 					delete(cScan);
 				}
@@ -375,7 +556,23 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 					retStatus = cPlist->get_Log_Status();
 					if (retStatus == IN_PROGRESS)
 					{
-						retStatus = cPlist->parse_Plist_Log(masterData);
+						try
+						{
+							retStatus = cPlist->parse_Plist_Log(masterData);
+						}
+						catch (...)
+						{
+							retStatus = cPlist->get_Log_Status();
+							delete(cPlist);
+							if (retStatus == SUCCESS || retStatus == IN_PROGRESS)
+							{
+								return PARSE_FAILURE;
+							}
+							else
+							{
+								return retStatus;
+							}
+						}
 					}
 					delete(cPlist);
 				}
@@ -386,7 +583,23 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 					retStatus = cOperation->get_Log_Status();
 					if (retStatus == IN_PROGRESS)
 					{
-						retStatus = cOperation->parse_Background_Operationss_Log(masterData);
+						try
+						{
+							retStatus = cOperation->parse_Background_Operationss_Log(masterData);
+						}
+						catch (...)
+						{
+							retStatus = cOperation->get_Log_Status();
+							delete(cOperation);
+							if (retStatus == SUCCESS || retStatus == IN_PROGRESS)
+							{
+								return PARSE_FAILURE;
+							}
+							else
+							{
+								return retStatus;
+							}
+						}
 					}
 					delete(cOperation);
 				}
@@ -401,8 +614,29 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				}
 				CScsiProtocolPortLog * cPSP;
 				cPSP = new CScsiProtocolPortLog(&bufferData[4], m_LogSize);
-				cPSP->set_PSP_Page_Length_NoSwap(lpStruct->pageLength);
-				retStatus = cPSP->parse_Protocol_Port_Log(masterData);
+				//uint16_t l_pageLength = *(reinterpret_cast<uint16_t*>(&bufferData[2]));
+				retStatus = cPSP->get_Log_Status();
+				if (retStatus == IN_PROGRESS)
+				{
+					try
+					{
+						cPSP->set_PSP_Page_Length_NoSwap(lpStruct->pageLength);  //TODO: noswap vs swap
+						retStatus = cPSP->parse_Protocol_Port_Log(masterData);
+					}
+					catch (...)
+					{
+						retStatus = cPSP->get_Log_Status();
+						delete(cPSP);
+						if (retStatus == SUCCESS || retStatus == IN_PROGRESS)
+						{
+							return PARSE_FAILURE;
+						}
+						else
+						{
+							return retStatus;
+						}
+					}
+				}
 				delete (cPSP);
 			}
 			break;
@@ -414,7 +648,27 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				}
 				CScsiPowerConditiontLog *cPower;
 				cPower = new CScsiPowerConditiontLog(&bufferData[4], m_LogSize, lpStruct->pageLength);
-				retStatus = cPower->parse_Power_Condition_Transitions_Log(masterData);
+				retStatus = cPower->get_Log_Status();
+				if (retStatus == IN_PROGRESS)
+				{
+					try
+					{
+						retStatus = cPower->parse_Power_Condition_Transitions_Log(masterData);
+					}
+					catch (...)
+					{
+						retStatus = cPower->get_Log_Status();
+						delete(cPower);
+						if (retStatus == SUCCESS || retStatus == IN_PROGRESS)
+						{
+							return PARSE_FAILURE;
+						}
+						else
+						{
+							return retStatus;
+						}
+					}
+				}
 				delete(cPower);
 			}
 			break;
@@ -429,7 +683,23 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				retStatus = cInfo->get_Log_Status();
 				if (retStatus == IN_PROGRESS)
 				{
-					retStatus = cInfo->get_Informational_Exceptions(masterData);
+					try
+					{
+						retStatus = cInfo->get_Informational_Exceptions(masterData);
+					}
+					catch (...)
+					{
+						retStatus = cInfo->get_Log_Status();
+						delete(cInfo);
+						if (retStatus == SUCCESS || retStatus == IN_PROGRESS)
+						{
+							return PARSE_FAILURE;
+						}
+						else
+						{
+							return retStatus;
+						}
+					}
 				}
 				delete(cInfo);
 			}
@@ -442,23 +712,116 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				}
 				CScsiCacheLog *cCache;
 				cCache = new CScsiCacheLog(&bufferData[4], m_LogSize, lpStruct->pageLength);
-				retStatus = cCache->parse_Cache_Statistics_Log(masterData);
+				if (cCache->get_Log_Status() == SUCCESS)
+				{
+					try
+					{
+						retStatus = cCache->parse_Cache_Statistics_Log(masterData);
+					}
+					catch (...)
+					{
+						retStatus = cCache->get_Log_Status();
+						delete(cCache);
+						if (retStatus == SUCCESS || retStatus == IN_PROGRESS)
+						{
+							return PARSE_FAILURE;
+						}
+						else
+						{
+							return retStatus;
+						}
+					}
+				}
 				delete (cCache);
 			}
 			break;
 			case SEAGATE_SPECIFIC_LOG:
 			{
-				CSCSI_Farm_Log *pCFarm;
-				pCFarm = new CSCSI_Farm_Log(bufferData, m_LogSize, false);
-				if (pCFarm->get_Log_Status() == SUCCESS)
+				if (lpStruct->subPage == FARM_LOG_PAGE)   // Farm Log
 				{
-					retStatus = pCFarm->parse_Farm_Log();
-					if (retStatus == SUCCESS)
+					CSCSI_Farm_Log* pCFarm;
+					pCFarm = new CSCSI_Farm_Log(bufferData, lpStruct->pageLength + 4, false);
+					if (pCFarm->get_Log_Status() == SUCCESS)
 					{
-						pCFarm->print_All_Pages(masterData);
+						try
+						{
+							pCFarm->print_Page_One_Node(masterData);
+							retStatus = pCFarm->get_Log_Status();
+						}
+						catch (...)
+						{
+							retStatus = pCFarm->get_Log_Status();
+							delete(pCFarm);
+							if (retStatus == SUCCESS || retStatus == IN_PROGRESS)
+							{
+								return PARSE_FAILURE;
+							}
+							else
+							{
+								return retStatus;
+							}
+						}
 					}
+					delete(pCFarm);
 				}
-				delete(pCFarm);
+				else if (lpStruct->subPage == FARM_FACTORY_LOG_PAGE)   // Farm Log
+				{
+					CSCSI_Farm_Log* pCFarm;
+					pCFarm = new CSCSI_Farm_Log(bufferData, lpStruct->pageLength + 4, false);
+					if (pCFarm->get_Log_Status() == SUCCESS)
+					{
+						try
+						{
+							pCFarm->print_Page_One_Node(masterData);
+							retStatus = pCFarm->get_Log_Status();
+						}
+						catch (...)
+						{
+							retStatus = pCFarm->get_Log_Status();
+							delete(pCFarm);
+							if (retStatus == SUCCESS || retStatus == IN_PROGRESS)
+							{
+								return PARSE_FAILURE;
+							}
+							else
+							{
+								return retStatus;
+							}
+						}
+					}
+					delete(pCFarm);
+				}
+				else if (lpStruct->subPage >= FARM_TIME_SERIES_0 && lpStruct->subPage <= FARM_TEMP_TRIGGER_LOG_PAGE)   // FARM log when Temperature exceeds 70 c
+				{
+					CSCSI_Farm_Log* pCFarm;
+					pCFarm = new CSCSI_Farm_Log(bufferData, lpStruct->pageLength + 4, true);  // issue with the log bufer size
+					if (pCFarm->get_Log_Status() == SUCCESS)
+					{
+						retStatus = pCFarm->get_Log_Status();
+						if (retStatus == SUCCESS)
+						{
+							try
+							{
+								pCFarm->print_Page_One_Node(masterData);
+								retStatus = pCFarm->get_Log_Status();
+							}
+							catch (...)
+							{
+								retStatus = pCFarm->get_Log_Status();
+								delete(pCFarm);
+								if (retStatus == SUCCESS || retStatus == IN_PROGRESS)
+								{
+									return PARSE_FAILURE;
+								}
+								else
+								{
+									return retStatus;
+								}
+							}
+						}
+					}
+					delete(pCFarm);   // SAS Log Page 0x3D subpage 0x10 - 0xC7
+				}
 			}
 			break;
 			case FACTORY_LOG:
@@ -472,7 +835,23 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				retStatus = cFactory->get_Log_Status();
 				if (retStatus == IN_PROGRESS)
 				{
-					retStatus = cFactory->parse_Factory_Log(masterData);
+					try
+					{
+						retStatus = cFactory->parse_Factory_Log(masterData);
+					}
+					catch (...)
+					{
+						retStatus = cFactory->get_Log_Status();
+						delete(cFactory);
+						if (retStatus == SUCCESS || retStatus == IN_PROGRESS)
+						{
+							return PARSE_FAILURE;
+						}
+						else
+						{
+							return retStatus;
+						}
+					}
 				}
 				delete(cFactory);
 			}
