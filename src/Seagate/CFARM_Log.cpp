@@ -219,7 +219,7 @@ bool CFARMLog::is_Device_Scsi()
     {
         if (M_GETBITRANGE(bufferData[0], 5, 0) == 0x3D )
         {
-            if (bufferData[1] == 03 || bufferData[1] == 04)
+            if (bufferData[1] == 03 || bufferData[1] == 04 || (bufferData[1] >= FARM_TIME_SERIES_0 && bufferData[1] <= FARM_TEMP_TRIGGER_LOG_PAGE))
             {
                 return true;
             }
