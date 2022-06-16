@@ -31,6 +31,34 @@ namespace opensea_parser {
 #define FARMLOGPAGE 0x3D
 #define FARMSUBPAGE 0x03
 #define FARMSUBPAGEFACTORY 0x04
+
+#define FARM_LOG_PAGE                   0x03
+#define FARM_FACTORY_LOG_PAGE           0x04
+#define FARM_TIME_SERIES_0              0x10
+#define FARM_TIME_SERIES_1              0x11
+#define FARM_TIME_SERIES_2              0x12
+#define FARM_TIME_SERIES_3              0x13
+#define FARM_TIME_SERIES_4              0x14
+#define FARM_TIME_SERIES_5              0x15
+#define FARM_TIME_SERIES_6              0x16
+#define FARM_TIME_SERIES_7              0x17
+#define FARM_TIME_SERIES_8              0x18
+#define FARM_TIME_SERIES_9              0x19
+#define FARM_TIME_SERIES_10             0x1A
+#define FARM_TIME_SERIES_11             0x1B
+#define FARM_TIME_SERIES_12             0x1C
+#define FARM_TIME_SERIES_13             0x1D
+#define FARM_TIME_SERIES_14             0x1E
+#define FARM_TIME_SERIES_15             0x1F
+#define FARM_LONG_TERM_SAVES_0          0xC0
+#define FARM_LONG_TERM_SAVES_1          0xC1
+#define FARM_GLIST_ENTRIES              0xC2
+#define FARM_FIRST_UNRECOVERABLE        0xC3
+#define FARM_TENTH_UNRECOVERABLE        0xC4
+#define FARM_FIRST_CTO                  0xC5
+#define FARM_LAST_FRAME                 0xC6
+#define FARM_TEMP_TRIGGER_LOG_PAGE      0xC7
+
     class CSCSI_Farm_Log : public CFarmCommon
     {
     protected:
