@@ -22,6 +22,7 @@
 #define MAJORVERSION3           3
 #define MAJORVERSION4           4
 #define FACTORYCOPY             0x00464143544f5259
+#define FARMEMPTYSIGNATURE      0x00FFFFFFFFFFFFFF
 #define DATE_YEAR_DATE_SIZE     2
 #define FLASH_EVENTS            8
 #define REALLOCATIONEVENTS      15
