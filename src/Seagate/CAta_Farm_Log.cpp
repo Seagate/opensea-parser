@@ -473,11 +473,11 @@ eReturnValues CATA_Farm_Log::print_Work_Load(JSONNODE *masterData, uint32_t page
 #if defined _DEBUG
     if (vFarmFrame[page].workLoadPage.copyNumber == FACTORYCOPY)
     {
-        printf("\nWork Load From Farm Log copy FACTORY \n");
+        printf("\nWorkload From Farm Log copy FACTORY \n");
     }
     else
     {
-        printf("\nWork Load From Farm Log copy %d \n", page);
+        printf("\nWorkload From Farm Log copy %d \n", page);
     }
     printf("\tRated Workload Percentage(debug):               %" PRIu64" \n", vFarmFrame[page].workLoadPage.workloadPercentage & UINT64_C(0x00FFFFFFFFFFFFFF));         //!< rated Workload Percentage
     printf("\tTotal Number of Other Commands(debug):           %" PRIu64" \n", vFarmFrame[page].workLoadPage.totalNumberofOtherCMDS & UINT64_C(0x00FFFFFFFFFFFFFF));     //!< Total Number Of Other Commands
@@ -563,7 +563,7 @@ eReturnValues CATA_Farm_Log::print_Work_Load(JSONNODE *masterData, uint32_t page
     set_json_64_bit_With_Status(pageInfo, "Write commands from 0-3.125% of LBA space", vFarmFrame[page].workLoadPage.numberOfWriteCmds1, false, m_showStatusBits);        //!< Number of Write commands from 0-3.125% of LBA space for last 3 SMART Summary Frames(added 4.4)
     set_json_64_bit_With_Status(pageInfo, "Write commands from 3.125-25% of LBA space", vFarmFrame[page].workLoadPage.numberOfWriteCmds2, false, m_showStatusBits);       //!< Number of Write commands from 3.125-25% of LBA space for last 3 SMART Summary Frames(added 4.4)
     set_json_64_bit_With_Status(pageInfo, "Write commands from 25-50% of LBA space", vFarmFrame[page].workLoadPage.numberOfWriteCmds3, false, m_showStatusBits);          //!< Number of Write commands from 25-50% of LBA space for last 3 SMART Summary Frames(added 4.4)
-    set_json_64_bit_With_Status(pageInfo, "Number of Write commands from 50-100% of LBA space", vFarmFrame[page].workLoadPage.numberOfWriteCmds4, false, m_showStatusBits);         //!< Number of Write commands from 50-100% of LBA space for last 3 SMART Summary Frames(added 4.4)
+    set_json_64_bit_With_Status(pageInfo, "Write commands from 50-100% of LBA space", vFarmFrame[page].workLoadPage.numberOfWriteCmds4, false, m_showStatusBits);         //!< Number of Write commands from 50-100% of LBA space for last 3 SMART Summary Frames(added 4.4)
     //4.21
 
     set_json_64_bit_With_Status(pageInfo, "Read Commands of transfer length <=16KB", vFarmFrame[page].workLoadPage.numReadTransferSmallATA, false, m_showStatusBits);
@@ -969,7 +969,7 @@ eReturnValues CATA_Farm_Log::print_Enviroment_Information(JSONNODE *masterData, 
     temp << std::fixed << std::setprecision(2) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.curentTemp)*1.00);
     set_json_string_With_Status(pageInfo, "Current Temperature (Celsius)", temp.str().c_str(), vFarmFrame[page].environmentPage.curentTemp, m_showStatusBits);                                //!< Current Temperature in Celsius
     temp.str("");temp.clear();
-    temp << std::fixed << std::setprecision(2) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.highestTemp)*1.00);
+    temp << std::fixed << std::setprecision(2) << std::setfill('0') << static_cast<float>(M_Byte0(vFarmFrame[page].environmentPage.highestTemp)*1.00);
     set_json_string_With_Status(pageInfo, "Highest Temperature", temp.str().c_str(), vFarmFrame[page].environmentPage.highestTemp, m_showStatusBits);                             //!< Highest Temperature in Celsius
     temp.str("");temp.clear();
     temp << std::fixed << std::setprecision(2) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.lowestTemp)*1.00);
@@ -1065,40 +1065,40 @@ eReturnValues CATA_Farm_Log::print_Enviroment_Information(JSONNODE *masterData, 
     {
         temp.str("");temp.clear();
         temp << std::fixed << std::setprecision(2) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.currLFVibeAct0));
-        set_json_string_With_Status(pageInfo, "Current Low Frequency Vibe Score - Actuator 0:", temp.str().c_str(), vFarmFrame[page].environmentPage.currLFVibeAct0, m_showStatusBits);                   
+        set_json_string_With_Status(pageInfo, "Current Low Frequency Vibe Score - Actuator 0", temp.str().c_str(), vFarmFrame[page].environmentPage.currLFVibeAct0, m_showStatusBits);                   
         temp.str("");temp.clear();
         temp << std::fixed << std::setprecision(2) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.currMFVibeAct0));
-        set_json_string_With_Status(pageInfo, "Current Mid Frequency Vibe Score - Actuator 0:", temp.str().c_str(), vFarmFrame[page].environmentPage.currMFVibeAct0, m_showStatusBits);
+        set_json_string_With_Status(pageInfo, "Current Mid Frequency Vibe Score - Actuator 0", temp.str().c_str(), vFarmFrame[page].environmentPage.currMFVibeAct0, m_showStatusBits);
         temp.str("");temp.clear();
         temp << std::fixed << std::setprecision(2) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.currHFVibeAct0));
-        set_json_string_With_Status(pageInfo, "Current High Frequency Vibe Score - Actuator 0:", temp.str().c_str(), vFarmFrame[page].environmentPage.currHFVibeAct0, m_showStatusBits);
+        set_json_string_With_Status(pageInfo, "Current High Frequency Vibe Score - Actuator 0", temp.str().c_str(), vFarmFrame[page].environmentPage.currHFVibeAct0, m_showStatusBits);
         temp.str("");temp.clear();
         temp << std::fixed << std::setprecision(2) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.worstLFVibeAct0));
-        set_json_string_With_Status(pageInfo, "Worst Low Frequency Vibe Score - Actuator 0:", temp.str().c_str(), vFarmFrame[page].environmentPage.worstLFVibeAct0, m_showStatusBits);
+        set_json_string_With_Status(pageInfo, "Worst Low Frequency Vibe Score - Actuator 0", temp.str().c_str(), vFarmFrame[page].environmentPage.worstLFVibeAct0, m_showStatusBits);
         temp.str("");temp.clear();
         temp << std::fixed << std::setprecision(2) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.worstMFVibeAct0));
-        set_json_string_With_Status(pageInfo, "Worst Mid Frequency Vibe Score - Actuator 0:", temp.str().c_str(), vFarmFrame[page].environmentPage.worstMFVibeAct0, m_showStatusBits);
+        set_json_string_With_Status(pageInfo, "Worst Mid Frequency Vibe Score - Actuator 0", temp.str().c_str(), vFarmFrame[page].environmentPage.worstMFVibeAct0, m_showStatusBits);
         temp.str("");temp.clear();
         temp << std::fixed << std::setprecision(2) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.worstHFVibeAct0));
-        set_json_string_With_Status(pageInfo, "Worst High Frequency Vibe Score - Actuator 0:", temp.str().c_str(), vFarmFrame[page].environmentPage.worstHFVibeAct0, m_showStatusBits);
+        set_json_string_With_Status(pageInfo, "Worst High Frequency Vibe Score - Actuator 0", temp.str().c_str(), vFarmFrame[page].environmentPage.worstHFVibeAct0, m_showStatusBits);
         temp.str("");temp.clear();
         temp << std::fixed << std::setprecision(2) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.currLFVibeAct1));
-        set_json_string_With_Status(pageInfo, "Current Low Frequency Vibe Score - Actuator 1:", temp.str().c_str(), vFarmFrame[page].environmentPage.currLFVibeAct1, m_showStatusBits);
+        set_json_string_With_Status(pageInfo, "Current Low Frequency Vibe Score - Actuator 1", temp.str().c_str(), vFarmFrame[page].environmentPage.currLFVibeAct1, m_showStatusBits);
         temp.str("");temp.clear();
         temp << std::fixed << std::setprecision(2) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.currMFVibeAct1));
-        set_json_string_With_Status(pageInfo, "Current Mid Frequency Vibe Score - Actuator 1:", temp.str().c_str(), vFarmFrame[page].environmentPage.currMFVibeAct1, m_showStatusBits);
+        set_json_string_With_Status(pageInfo, "Current Mid Frequency Vibe Score - Actuator 1", temp.str().c_str(), vFarmFrame[page].environmentPage.currMFVibeAct1, m_showStatusBits);
         temp.str("");temp.clear();
         temp << std::fixed << std::setprecision(2) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.currHFVibeAct1));
-        set_json_string_With_Status(pageInfo, "Current High Frequency Vibe Score - Actuator 1:", temp.str().c_str(), vFarmFrame[page].environmentPage.currHFVibeAct1, m_showStatusBits);
+        set_json_string_With_Status(pageInfo, "Current High Frequency Vibe Score - Actuator 1", temp.str().c_str(), vFarmFrame[page].environmentPage.currHFVibeAct1, m_showStatusBits);
         temp.str("");temp.clear();
         temp << std::fixed << std::setprecision(2) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.worstLFVibeAct1));
-        set_json_string_With_Status(pageInfo, "Worst Low Frequency Vibe Score - Actuator 1:", temp.str().c_str(), vFarmFrame[page].environmentPage.worstLFVibeAct1, m_showStatusBits);
+        set_json_string_With_Status(pageInfo, "Worst Low Frequency Vibe Score - Actuator 1", temp.str().c_str(), vFarmFrame[page].environmentPage.worstLFVibeAct1, m_showStatusBits);
         temp.str("");temp.clear();
         temp << std::fixed << std::setprecision(2) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.worstMFVibeAct1));
-        set_json_string_With_Status(pageInfo, "Worst Mid Frequency Vibe Score - Actuator 1:", temp.str().c_str(), vFarmFrame[page].environmentPage.worstMFVibeAct1, m_showStatusBits);
+        set_json_string_With_Status(pageInfo, "Worst Mid Frequency Vibe Score - Actuator 1", temp.str().c_str(), vFarmFrame[page].environmentPage.worstMFVibeAct1, m_showStatusBits);
         temp.str("");temp.clear();
         temp << std::fixed << std::setprecision(2) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.worstHFVibeAct1));
-        set_json_string_With_Status(pageInfo, "Worst High Frequency Vibe Score - Actuator 1:", temp.str().c_str(), vFarmFrame[page].environmentPage.worstHFVibeAct1, m_showStatusBits);
+        set_json_string_With_Status(pageInfo, "Worst High Frequency Vibe Score - Actuator 1", temp.str().c_str(), vFarmFrame[page].environmentPage.worstHFVibeAct1, m_showStatusBits);
     }
 
     json_push_back(masterData, pageInfo);
@@ -1612,7 +1612,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
     {
         temp.str("");temp.clear();
         temp << "Current H2SAT asymmetry by Head " << std::dec << loopCount;// Head count
-        set_json_float_With_Status(headInfo, temp.str(), static_cast<double>(M_WordInt0(vFarmFrame[page].reliPage.currentH2SATasymmetry[loopCount])) * 0.1, vFarmFrame[page].reliPage.currentH2SATasymmetry[loopCount], m_showStatusBits);
+        set_json_float_With_Status(headInfo, temp.str(), static_cast<double>(M_WordInt0(vFarmFrame[page].reliPage.currentH2SATasymmetry[loopCount])) * 0.1F, vFarmFrame[page].reliPage.currentH2SATasymmetry[loopCount], m_showStatusBits);
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
