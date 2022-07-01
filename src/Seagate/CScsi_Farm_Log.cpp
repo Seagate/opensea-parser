@@ -46,6 +46,7 @@ CSCSI_Farm_Log::CSCSI_Farm_Log()
 	, m_alreadySet(false)          
 	, m_showStatusBits(false)
     , m_fromScsiLogPages(false)
+    , m_farmSubPage(0)
 {                                                  
 	m_status = IN_PROGRESS;
 
@@ -66,7 +67,7 @@ CSCSI_Farm_Log::CSCSI_Farm_Log()
 //
 //---------------------------------------------------------------------------
 
-CSCSI_Farm_Log::CSCSI_Farm_Log(uint8_t* bufferData, size_t bufferSize, bool fromLogPage)
+CSCSI_Farm_Log::CSCSI_Farm_Log(uint8_t* bufferData, size_t bufferSize, uint8_t subPage, bool fromLogPage)
     : m_totalPages()
     , m_logSize(static_cast<uint16_t>(bufferSize))
     , m_pageSize(0)
@@ -84,6 +85,7 @@ CSCSI_Farm_Log::CSCSI_Farm_Log(uint8_t* bufferData, size_t bufferSize, bool from
     , m_alreadySet(false)
     , m_showStatusBits(false)
     , m_fromScsiLogPages(fromLogPage)
+    , m_farmSubPage(subPage)
 {
     m_status = IN_PROGRESS;
     if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
@@ -131,7 +133,7 @@ CSCSI_Farm_Log::CSCSI_Farm_Log(uint8_t* bufferData, size_t bufferSize, bool from
 //
 //---------------------------------------------------------------------------
 
-CSCSI_Farm_Log::CSCSI_Farm_Log( uint8_t *bufferData, size_t bufferSize, bool fromLogPage, bool showStatus)
+CSCSI_Farm_Log::CSCSI_Farm_Log( uint8_t *bufferData, size_t bufferSize, uint8_t subPage, bool fromLogPage, bool showStatus)
 	: m_totalPages()                                       
 	, m_logSize(static_cast<uint16_t>(bufferSize))
 	, m_pageSize(0)                                      
@@ -149,6 +151,7 @@ CSCSI_Farm_Log::CSCSI_Farm_Log( uint8_t *bufferData, size_t bufferSize, bool fro
 	, m_alreadySet(false)          
 	, m_showStatusBits(showStatus)
     , m_fromScsiLogPages(fromLogPage)
+    , m_farmSubPage(subPage)
 {
     m_status = IN_PROGRESS;
     if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
@@ -1963,7 +1966,7 @@ eReturnValues CSCSI_Farm_Log::print_Header(JSONNODE *masterData)
         JSONNODE* label = json_new(JSON_NODE);
         json_set_name(label, "labels");
         std::ostringstream temp;
-        temp << "scsi-log-page:0x" << std::hex << std::nouppercase << FARMLOGPAGE << "," << std::hex << std::nouppercase << m_logParam->subpage << ":0x" << std::hex << std::nouppercase << FARM_HEADER_PARAMETER;
+        temp << "scsi-log-page:0x" << std::hex << std::nouppercase << FARMLOGPAGE << "," << std::hex << std::nouppercase << static_cast<uint16_t>(m_farmSubPage) << ":0x" << std::hex << std::nouppercase << FARM_HEADER_PARAMETER;
         json_push_back(label, json_new_a("metric_source", temp.str().c_str()));
         json_push_back(label, json_new_a("location", "FARM header"));
 
@@ -2092,7 +2095,7 @@ eReturnValues CSCSI_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint
         JSONNODE* label = json_new(JSON_NODE);
         json_set_name(label, "labels");
         std::ostringstream temp;
-        temp << "scsi-log-page:0x" << std::hex << std::nouppercase << FARMLOGPAGE << "," << std::hex << std::nouppercase << m_logParam->subpage << ":0x" << std::hex << std::nouppercase << GENERAL_DRIVE_INFORMATION_PARAMETER;
+        temp << "scsi-log-page:0x" << std::hex << std::nouppercase << FARMLOGPAGE << "," << std::hex << std::nouppercase << static_cast<uint16_t>(m_farmSubPage) << ":0x" << std::hex << std::nouppercase << GENERAL_DRIVE_INFORMATION_PARAMETER;
         json_push_back(label, json_new_a("metric_source", temp.str().c_str()));
         json_push_back(label, json_new_a("serial_number", vFarmFrame[page].identStringInfo.serialNumber.c_str()));
         json_push_back(label, json_new_a("world_wide_name", vFarmFrame[page].identStringInfo.worldWideName.c_str()));
@@ -2304,7 +2307,7 @@ eReturnValues CSCSI_Farm_Log::print_General_Drive_Information_Continued(JSONNODE
         temp << std::fixed << std::setprecision(3) << (static_cast<float>(M_Word0(vFarmFrame[page].gDPage06.servoSpinUpTime)) * .001F) << " seconds";
         json_push_back(label, json_new_a("last servo spin up time", temp.str().c_str()));			//!< time to ready of the last power cycle
         temp.str("");temp.clear();
-        temp << "scsi-log-page:0x" << std::hex << FARMLOGPAGE << "," << std::hex << m_logParam->subpage << ":0x" << std::hex << GENERAL_DRIVE_INFORMATION_06;
+        temp << "scsi-log-page:0x" << std::hex << FARMLOGPAGE << "," << std::hex << static_cast<uint16_t>(m_farmSubPage) << ":0x" << std::hex << GENERAL_DRIVE_INFORMATION_06;
         json_push_back(label, json_new_a("metric_source", temp.str().c_str()));
         json_push_back(masterData, label);
         json_push_back(masterData, json_new_i("value", 0));
@@ -2920,7 +2923,7 @@ eReturnValues CSCSI_Farm_Log::print_Enviroment_Statistics_Page_07(JSONNODE *mast
 
         json_push_back(label, json_new_a("units", "count"));
         std::ostringstream temp;
-        temp << "scsi-log-page:0x" << std::hex << std::nouppercase << FARMLOGPAGE << "," << std::hex << std::nouppercase << m_logParam->subpage << ":0x" << std::hex << std::nouppercase << ENVIRONMENT_STATISTICS_PAMATER_07;
+        temp << "scsi-log-page:0x" << std::hex << std::nouppercase << FARMLOGPAGE << "," << std::hex << std::nouppercase << static_cast<uint16_t>(m_farmSubPage) << ":0x" << std::hex << std::nouppercase << ENVIRONMENT_STATISTICS_PAMATER_07;
         json_push_back(label, json_new_a("metric_source", temp.str().c_str()));
         json_push_back(masterData, label);
         json_push_back(masterData, json_new_i("value", 0));
@@ -4910,7 +4913,7 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_FLED_Info(JSONNODE *LUNFLED, ui
             json_push_back(data, json_new_a("name", "LUN_flash_LED"));
             JSONNODE* label = json_new(JSON_NODE);
             json_set_name(label, "labels");
-            temp << "scsi-log-page:0x" << std::hex << std::nouppercase << FARMLOGPAGE << "," << std::hex << std::nouppercase << m_logParam->subpage << ":0x" << std::hex << std::nouppercase << actNum;
+            temp << "scsi-log-page:0x" << std::hex << std::nouppercase << FARMLOGPAGE << "," << std::hex << std::nouppercase << static_cast<uint16_t>(m_farmSubPage) << ":0x" << std::hex << std::nouppercase << actNum;
             json_push_back(label, json_new_a("metric_source", temp.str().c_str()));
             json_push_back(label, json_new_a("stat_type", "flash LED event"));
             temp.str("");temp.clear();
@@ -5505,7 +5508,7 @@ void CSCSI_Farm_Log::farm_PrePython_Str(JSONNODE* masterData, const char* name, 
     JSONNODE* label = json_new(JSON_NODE);
     json_set_name(label, "labels");
     std::ostringstream temp;
-    temp << "scsi-log-page:0x" << std::hex << std::nouppercase << FARMLOGPAGE << "," << std::hex << std::nouppercase << m_logParam->subpage << ":0x" << std::hex << std::nouppercase << pageNum;
+    temp << "scsi-log-page:0x" << std::hex << std::nouppercase << FARMLOGPAGE << "," << std::hex << std::nouppercase << static_cast<uint16_t>(m_farmSubPage) << ":0x" << std::hex << std::nouppercase << pageNum;
     json_push_back(label, json_new_a("metric_source", temp.str().c_str()));
     json_push_back(label, json_new_a("stat_type", statType));
     json_push_back(label, json_new_a("location", location));
@@ -5537,7 +5540,7 @@ void CSCSI_Farm_Log::farm_PrePython_Int(JSONNODE* masterData, const char* name, 
     JSONNODE* label = json_new(JSON_NODE);
     json_set_name(label, "labels");
     std::ostringstream temp;
-    temp << "scsi-log-page:0x" << std::hex << std::nouppercase << FARMLOGPAGE << "," << std::hex << std::nouppercase << m_logParam->subpage << ":0x" << std::hex << std::nouppercase << pageNum;
+    temp << "scsi-log-page:0x" << std::hex << std::nouppercase << FARMLOGPAGE << "," << std::hex << std::nouppercase << static_cast<uint16_t>(m_farmSubPage) << ":0x" << std::hex << std::nouppercase << pageNum;
     json_push_back(label, json_new_a("metric_source", temp.str().c_str()));
     json_push_back(label, json_new_a("stat_type", statType));
     json_push_back(label, json_new_a("location", header));
@@ -5570,7 +5573,7 @@ void CSCSI_Farm_Log::farm_PrePython_Float(JSONNODE* masterData, const char* name
     JSONNODE* label = json_new(JSON_NODE);
     json_set_name(label, "labels");
     std::ostringstream temp;
-    temp << "scsi-log-page:0x" << std::hex << std::nouppercase << FARMLOGPAGE << "," << std::hex << std::nouppercase << m_logParam->subpage << ":0x" << std::hex << std::nouppercase << pageNum;
+    temp << "scsi-log-page:0x" << std::hex << std::nouppercase << FARMLOGPAGE << "," << std::hex << std::nouppercase << static_cast<uint16_t>(m_farmSubPage) << ":0x" << std::hex << std::nouppercase << pageNum;
     json_push_back(label, json_new_a("metric_source", temp.str().c_str()));
     json_push_back(label, json_new_a("stat_type", statType));
     json_push_back(label, json_new_a("location", header));
@@ -5602,7 +5605,7 @@ void CSCSI_Farm_Log::prePython_Head_Float(JSONNODE* masterData, const char* name
     JSONNODE* label = json_new(JSON_NODE);
     json_set_name(label, "labels");
     std::ostringstream temp;
-    temp << "scsi-log-page:0x" << std::hex << std::nouppercase << FARMLOGPAGE << "," << std::hex << std::nouppercase << m_logParam->subpage << ":0x" << std::hex << std::nouppercase << pageNum;
+    temp << "scsi-log-page:0x" << std::hex << std::nouppercase << FARMLOGPAGE << "," << std::hex << std::nouppercase << static_cast<uint16_t>(m_farmSubPage) << ":0x" << std::hex << std::nouppercase << pageNum;
     json_push_back(label, json_new_a("metric_source", temp.str().c_str()));
     if (statType != NULL)
     {
@@ -5639,7 +5642,7 @@ void CSCSI_Farm_Log::prePython_Head_Int(JSONNODE* masterData, const char* name, 
     JSONNODE* label = json_new(JSON_NODE);
     json_set_name(label, "labels");
     std::ostringstream temp;
-    temp << "scsi-log-page:0x" << std::hex << std::nouppercase << FARMLOGPAGE << "," << std::hex << std::nouppercase << m_logParam->subpage << ":0x" << std::hex << std::nouppercase << pageNum;
+    temp << "scsi-log-page:0x" << std::hex << std::nouppercase << FARMLOGPAGE << "," << std::hex << std::nouppercase << static_cast<uint16_t>(m_farmSubPage) << ":0x" << std::hex << std::nouppercase << pageNum;
     json_push_back(label, json_new_a("metric_source", temp.str().c_str()));
     if (statType != NULL)
     {
