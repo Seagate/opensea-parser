@@ -2787,7 +2787,7 @@ eReturnValues CSCSI_Farm_Log::print_Enviroment_Information(JSONNODE *masterData,
             double average = static_cast<double>(M_WordInt0(vFarmFrame[page].environmentPage.average12v) / 1000) + \
                 static_cast<double>(M_WordInt0(vFarmFrame[page].environmentPage.average12v) % 1000);
             farm_PrePython_Float(masterData, "power_12v", "average", "environment", "volts", ENVIRONMENTAL_STATISTICS_PARAMETER, average);
-            if (m_MinorRev <= 9)
+            if (m_MinorRev >= 9)
             {
                 min = static_cast<double>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.min12v)) / 1000) + \
                     static_cast<double>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.min12v)) % 1000);
@@ -2799,7 +2799,7 @@ eReturnValues CSCSI_Farm_Log::print_Enviroment_Information(JSONNODE *masterData,
             average = static_cast<double>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.average5v)) / 1000) + \
                 static_cast<double>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.average5v)) % 1000);
             farm_PrePython_Float(masterData, "power_5v", "average", "environment", "volts", ENVIRONMENTAL_STATISTICS_PARAMETER, average);
-            if (m_MinorRev <= 9)
+            if (m_MinorRev >= 9)
             {
                 min = static_cast<double>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.min5v)) / 1000) + \
                     static_cast<double>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.min5v)) % 1000);
@@ -3748,7 +3748,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
 #endif
                 std::ostringstream header;
                 header << "Write Power On (hrs) by Head " << std::dec << loopCount; // Head count
-                double number = static_cast<double>(M_DoubleWord0(vFarmFrame[page].writePowerOnHours.headValue[loopCount]) / 3600);
+                double number = static_cast<double>(M_DoubleWord0(vFarmFrame[page].writePowerOnHours.headValue[loopCount]) / 3600.0);
                 if (g_dataformat == PREPYTHON_DATA)
                 {
                     prePython_Head_Float(headPage, "head_write_power_on", NULL, loopCount, "hours", WRITE_POWERON_HOURS_FROM_MOST_RECENT_SMART, number );   
