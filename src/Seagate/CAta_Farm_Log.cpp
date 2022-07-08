@@ -531,11 +531,11 @@ eReturnValues CATA_Farm_Log::print_Work_Load(JSONNODE *masterData, uint32_t page
 
     if (vFarmFrame[page].workLoadPage.copyNumber == FACTORYCOPY)
     {
-        temp << "Work Load From Farm Log copy FACTORY";
+        temp << "Workload From Farm Log copy FACTORY";
     }
     else
     {
-        temp << "Work Load From Farm Log copy " << std::dec << page;
+        temp << "Workload From Farm Log copy " << std::dec << page;
     }
     json_set_name(pageInfo, temp.str().c_str());
 
@@ -1242,6 +1242,7 @@ eReturnValues CATA_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint32
         set_json_string_With_Status(pageInfo, "Idle Time (hours), Actuator 0", myStr, vFarmFrame[page].reliPage.idleTime, m_showStatusBits);                                 
         set_json_64_bit_With_Status(pageInfo, "Number of LBAs Corrected by Parity Sector, Actuator 0", vFarmFrame[page].reliPage.numberLBACorrectedByParitySector, false, m_showStatusBits);
         set_json_64_bit_With_Status(pageInfo, "Primary Super Parity Coverage Percentage, Actuator 0", vFarmFrame[page].reliPage.SuperParityCovPercent, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Primary Super Parity Coverage Percentage SMR/SWR, Actuator 0", vFarmFrame[page].reliPage.superParityCoveragePercentageAct0, false, m_showStatusBits);           //!< Primary Super Parity Coverage Percentage SMR/SWR, Actuator 0
 
         // information for Actuator 1
         set_json_64_bit_With_Status(pageInfo, "Timestamp of last IDD test in Hours(POH), Actuator 1", vFarmFrame[page].reliPage.lastIDDTimeAct1, false, m_showStatusBits);
@@ -1261,7 +1262,8 @@ eReturnValues CATA_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint32
         set_json_64_bit_With_Status(pageInfo, "Max RV Absolute Mean, Actuator 1", vFarmFrame[page].reliPage.rvAbsMeanMaxAct1, false, m_showStatusBits);
         set_json_64_bit_With_Status(pageInfo, "Idle Time (hours), Actuator 1", vFarmFrame[page].reliPage.idleTimeAct1, false, m_showStatusBits);
         set_json_64_bit_With_Status(pageInfo, "Number of LBAs Corrected by Parity Sector, Actuator 1", vFarmFrame[page].reliPage.parityCorrLBAAct1, false, m_showStatusBits);   
-        set_json_64_bit_With_Status(pageInfo, "Primary Super Parity Coverage Percentage, Actuator 1", vFarmFrame[page].reliPage.superParityCoveragePercentageAct1, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Primary Super Parity Coverage Percentage, Actuator 1", vFarmFrame[page].reliPage.superParityCovPercentAct1, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Primary Super Parity Coverage Percentage SMR/SWR, Actuator 1", vFarmFrame[page].reliPage.superParityCoveragePercentageAct1, false, m_showStatusBits);
     }
     json_push_back(masterData, pageInfo);
     return SUCCESS;
