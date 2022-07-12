@@ -248,7 +248,10 @@ eReturnValues CATA_Farm_Log::print_Header(JSONNODE *masterData)
     json_push_back(pageInfo, json_new_i("Heads Supported", static_cast<uint32_t>(check_Status_Strip_Status(header->headsSupported))));
     json_push_back(pageInfo, json_new_i("Number of Copies", static_cast<uint32_t>(check_Status_Strip_Status(header->copies))));
     json_push_back(pageInfo, json_new_i("Reason for Frame Capture", static_cast<uint32_t>(check_Status_Strip_Status(header->reasonForFrameCapture))));
-    get_SMART_Save_Flages(pageInfo, M_Byte0(header->reasonForFrameCapture));
+    std::string reason;
+    Get_FARM_Reason_For_Capture(&reason, M_Byte0(header->reasonForFrameCapture));
+    json_push_back(pageInfo, json_new_a("Reason Meaning", reason.c_str()));
+
 
     json_push_back(masterData, pageInfo);
 
@@ -756,6 +759,7 @@ eReturnValues CATA_Farm_Log::print_Error_Information(JSONNODE *masterData, uint3
 
     if (m_MajorRev >= MAJORVERSION3 && m_MinorRev >= 2 && m_MinorRev <= 4)
     {
+        // get read write retry events
         for (loopCount = 0; loopCount <= 7; ++loopCount)
         {
             JSONNODE *rwrInfo = json_new(JSON_NODE);
@@ -817,34 +821,57 @@ eReturnValues CATA_Farm_Log::print_Error_Information(JSONNODE *masterData, uint3
         set_json_64_bit_With_Status(pageInfo, "Index of last entry in FLED Info array below, in case the array wraps, Actuator 1", vFarmFrame[page].errorPage.lastIDXFLEDInfoAct1, false, m_showStatusBits);
         for (loopCount = 0; loopCount < FLASH_EVENTS; ++loopCount)
         {
-            JSONNODE *eventInfo = json_new(JSON_NODE);
+            JSONNODE *eventInfoact1 = json_new(JSON_NODE);
             temp.str("");temp.clear();
-            temp << "Actuator 1,Flash , " << std::dec << loopCount;
-            json_set_name(eventInfo, temp.str().c_str());
-            set_json_64_bit_With_Status(eventInfo, "Flash LED Events", vFarmFrame[page].errorPage.last8FLEDEventsAct1[loopCount], false, m_showStatusBits);      //!< Cumulative Lifetime Unrecoverable Read Repeating by head
-            set_json_64_bit_With_Status(eventInfo, "Read/Write Retry events", vFarmFrame[page].errorPage.last8ReadWriteRetryEvts[loopCount], false, m_showStatusBits);   //!
-            json_push_back(pageInfo, eventInfo);
+            temp << "Flash LED Event " << std::dec << loopCount << " Actuator 1";
+            json_set_name(eventInfoact1, temp.str().c_str());
+
+            set_json_64_bit_With_Status(eventInfoact1, "Event Information", vFarmFrame[page].errorPage.last8FLEDEventsAct1[loopCount], true, m_showStatusBits);              //!> Info on the last 8 Flash LED(assert) Events, wrapping array, Actuator 1
+
+            temp.str(""); temp.clear();
+            temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << M_Word2(check_Status_Strip_Status(vFarmFrame[page].errorPage.last8FLEDEventsAct1[loopCount]));
+            json_push_back(eventInfoact1, json_new_a("Flash LED Code Actuator 1", temp.str().c_str()));
+            get_Assert_Code_Meaning(timeStr, M_Word2(check_Status_Strip_Status(vFarmFrame[page].errorPage.last8FLEDEventsAct1[loopCount])));
+            json_push_back(eventInfoact1, json_new_a("Flash LED Code Meaning", timeStr.c_str()));
+            temp.str(""); temp.clear();
+            temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(8) << M_DoubleWord0(check_Status_Strip_Status(vFarmFrame[page].errorPage.last8FLEDEventsAct1[loopCount]));
+            json_push_back(eventInfoact1, json_new_a("Flash LED Address Actuator 1", temp.str().c_str()));
+
+            temp.str(""); temp.clear();
+            temp << "TimeStamp Actuator 1 Event(hours) " << std::dec << loopCount;
+            std::ostringstream temp1;
+            temp1 << std::setprecision(3) << std::setfill('0') << static_cast<double>(M_DoubleWord0(check_Status_Strip_Status(vFarmFrame[page].errorPage.last8FLEDEvtsAct1[loopCount])) / 3600000) * .001;
+            set_json_string_With_Status(eventInfoact1, temp.str().c_str(), temp1.str().c_str(), vFarmFrame[page].errorPage.last8FLEDEvtsAct1[loopCount], m_showStatusBits);        //!< Universal Timestamp (us) of last 8 Flash LED (assert) Events, wrapping array, Actuator 1
+
+            temp.str(""); temp.clear();
+            temp << "Power Cycle Actuator 1 Event " << std::dec << loopCount;
+            set_json_64_bit_With_Status(eventInfoact1, temp.str().c_str(), vFarmFrame[page].errorPage.last8FLEDEvtsPowerCycleAct1[loopCount], false, m_showStatusBits);            //!< Power Cycle of the last 8 Flash LED (assert) Events, wrapping array, Actuator 1
+            temp.str(""); temp.clear();
+
+            json_push_back(pageInfo, eventInfoact1);
         }
-        for (loopCount = 0; loopCount < REALLOCATIONEVENTS; loopCount++)
+        for (loopCount = 0; loopCount <= 7; ++loopCount)
         {
-            JSONNODE *eventInfo = json_new(JSON_NODE);
-            temp.str("");temp.clear();
-            temp << "Actuator 1,Reallocated sector , " << std::dec << loopCount;
-            json_set_name(eventInfo, temp.str().c_str());
-            set_json_64_bit_With_Status(eventInfo, "Reallocated sectors by cause, Actuator 1", vFarmFrame[page].errorPage.reallocSectorsByCauseAct1[loopCount], false, m_showStatusBits);      //!< Cumulative Lifetime Unrecoverable Read Repeating by head
-            json_push_back(pageInfo, eventInfo);
+            JSONNODE* rwrInfo = json_new(JSON_NODE);
+            temp.str(""); temp.clear();
+            temp << "Read Write Retry " << std::dec << loopCount << " Actuator 1";
+            json_set_name(rwrInfo, temp.str().c_str());
+
+            set_json_64_bit_With_Status(rwrInfo, "Error Type Actuator 1", M_Byte6(check_Status_Strip_Status(vFarmFrame[page].errorPage.last8ReadWriteRetryEvts[loopCount])), false, m_showStatusBits);
+            set_json_64_bit_With_Status(rwrInfo, "Log Entry Actuator 1", M_Word2(check_Status_Strip_Status(vFarmFrame[page].errorPage.last8ReadWriteRetryEvts[loopCount])), false, m_showStatusBits);
+            set_json_64_bit_With_Status(rwrInfo, "Zone Group Actuator 1", M_Word1(check_Status_Strip_Status(vFarmFrame[page].errorPage.last8ReadWriteRetryEvts[loopCount])), false, m_showStatusBits);
+            set_json_64_bit_With_Status(rwrInfo, "Head Actuator 1", M_Byte1(check_Status_Strip_Status(vFarmFrame[page].errorPage.last8ReadWriteRetryEvts[loopCount])), false, m_showStatusBits);
+            set_json_64_bit_With_Status(rwrInfo, "Count Actuator 1", M_Byte0(check_Status_Strip_Status(vFarmFrame[page].errorPage.last8ReadWriteRetryEvts[loopCount])), false, m_showStatusBits);
+
+            json_push_back(pageInfo, rwrInfo);
+        }
+        for (loopCount = 0; loopCount < REALLOCATIONEVENTS; ++loopCount)
+        {
+            get_Reallocation_Cause_Meanings(myStr, static_cast<uint16_t>(loopCount));
+            myStr = "Actuator 1 " + myStr;
+            set_json_64_bit_With_Status(pageInfo, myStr, vFarmFrame[page].errorPage.reallocSectorsByCauseAct1[loopCount], false, m_showStatusBits);
         }
 
-        for (loopCount = 0; loopCount < FLASH_EVENTS; ++loopCount)
-        {
-            JSONNODE *eventInfo = json_new(JSON_NODE);
-            temp.str("");temp.clear();
-            temp << "Actuator 1,Reallocated sector , " << std::dec << loopCount;
-            json_set_name(eventInfo, temp.str().c_str());
-            set_json_64_bit_With_Status(eventInfo, "Universal Timestamp (us) of last 8 Flash LED (assert) Events, wrapping array, Actuator 1", vFarmFrame[page].errorPage.last8FLEDEvtsAct1[loopCount], false, m_showStatusBits);      //!< Cumulative Lifetime Unrecoverable Read Repeating by head
-            set_json_64_bit_With_Status(eventInfo, "Power Cycle of the last 8 Flash LED (assert) Events, wrapping array, Actuator 1", vFarmFrame[page].errorPage.last8FLEDEvtsPowerCycleAct1[loopCount], false, m_showStatusBits);      //!< Cumulative Lifetime Unrecoverable Read Repeating by head
-            json_push_back(pageInfo, eventInfo);
-        }
     }
 
     json_push_back(masterData, pageInfo);
@@ -1239,10 +1266,10 @@ eReturnValues CATA_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint32
         // information for Actuator 0
         set_json_64_bit_With_Status(pageInfo, "RV Absolute Mean, Actuator 0", vFarmFrame[page].reliPage.RVAbsoluteMean, false, m_showStatusBits);
         set_json_64_bit_With_Status(pageInfo, "Max RV Absolute Mean, Actuator 0", vFarmFrame[page].reliPage.RVAbsoluteMean, false, m_showStatusBits);
-        set_json_string_With_Status(pageInfo, "Idle Time (hours), Actuator 0", myStr, vFarmFrame[page].reliPage.idleTime, m_showStatusBits);                                 
+        set_json_64_bit_With_Status(pageInfo, "Idle Time (hours), Actuator 0", vFarmFrame[page].reliPage.idleTime,false, m_showStatusBits);
         set_json_64_bit_With_Status(pageInfo, "Number of LBAs Corrected by Parity Sector, Actuator 0", vFarmFrame[page].reliPage.numberLBACorrectedByParitySector, false, m_showStatusBits);
         set_json_64_bit_With_Status(pageInfo, "Primary Super Parity Coverage Percentage, Actuator 0", vFarmFrame[page].reliPage.SuperParityCovPercent, false, m_showStatusBits);
-        set_json_64_bit_With_Status(pageInfo, "Primary Super Parity Coverage Percentage SMR/SWR, Actuator 0", vFarmFrame[page].reliPage.superParityCoveragePercentageAct0, false, m_showStatusBits);           //!< Primary Super Parity Coverage Percentage SMR/SWR, Actuator 0
+        set_json_64_bit_With_Status(pageInfo, "Primary Super Parity Coverage Percentage SMR SWR, Actuator 0", vFarmFrame[page].reliPage.superParityCoveragePercentageAct0, false, m_showStatusBits);           //!< Primary Super Parity Coverage Percentage SMR/SWR, Actuator 0
 
         // information for Actuator 1
         set_json_64_bit_With_Status(pageInfo, "Timestamp of last IDD test in Hours(POH), Actuator 1", vFarmFrame[page].reliPage.lastIDDTimeAct1, false, m_showStatusBits);
@@ -1263,7 +1290,7 @@ eReturnValues CATA_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint32
         set_json_64_bit_With_Status(pageInfo, "Idle Time (hours), Actuator 1", vFarmFrame[page].reliPage.idleTimeAct1, false, m_showStatusBits);
         set_json_64_bit_With_Status(pageInfo, "Number of LBAs Corrected by Parity Sector, Actuator 1", vFarmFrame[page].reliPage.parityCorrLBAAct1, false, m_showStatusBits);   
         set_json_64_bit_With_Status(pageInfo, "Primary Super Parity Coverage Percentage, Actuator 1", vFarmFrame[page].reliPage.superParityCovPercentAct1, false, m_showStatusBits);
-        set_json_64_bit_With_Status(pageInfo, "Primary Super Parity Coverage Percentage SMR/SWR, Actuator 1", vFarmFrame[page].reliPage.superParityCoveragePercentageAct1, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Primary Super Parity Coverage Percentage SMR SWR, Actuator 1", vFarmFrame[page].reliPage.superParityCoveragePercentageAct1, false, m_showStatusBits);
     }
     json_push_back(masterData, pageInfo);
     return SUCCESS;
