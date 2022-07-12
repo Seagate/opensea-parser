@@ -100,6 +100,24 @@
 #define SERIAL_PORT_DUMP_MODE                  0xF5
 
 
+// Frame Type Identification  0x0 - 0xF
+#define CURREN_FRAME                            0x00
+#define TIME_SERIES_FRAME                       0x01
+#define LONG_TERM_FRAME                         0x02
+#define GLIST_DISC_ENTRIES_FRAME                0x03
+#define FIRST_UNRECOVERED_READ_ERROR_FRAME      0x04
+#define TENTH_UNRECOVERED_READ_ERROR_FRAME      0x05
+#define FIRST_FATAL_CTO_FRAME                   0x06
+#define BEFORE_CFW_UPDATE_FRAME                 0x07
+#define TEMP_EXCEDED_FRAME                      0x08
+#define RESERVED_FRAME                          0x09
+#define FACTORY_COPY_FRAME                      0x0A
+#define FARM_LOG_DISC_COPY_FRAME                0x0B  //sata only
+#define IDD_FARM_LOG_DISC_FRAME                 0x0C  //sata only
+#define FARM_DRAM_COPY_FARME                    0x0D  //sata only
+#define FARM_DRAM_COPY_DIAG_FRAME               0x0E  
+#define FARM_UDS_COPY_FRAME                     0x0F
+
 typedef enum _eReallocationCauses
 {
     HOST_READ_GENERIC,
