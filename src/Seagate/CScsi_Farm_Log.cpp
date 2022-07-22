@@ -2600,9 +2600,9 @@ eReturnValues CSCSI_Farm_Log::print_Error_Information(JSONNODE *masterData, uint
 
         set_json_64_bit_With_Status(pageInfo, "Unrecoverable Read Errors", vFarmFrame[page].errorPage.errorStat.totalReadECC, false, m_showStatusBits);							//!< Number of Unrecoverable Read Errors
         set_json_64_bit_With_Status(pageInfo, "Unrecoverable Write Errors", vFarmFrame[page].errorPage.errorStat.totalWriteECC, false, m_showStatusBits);							//!< Number of Unrecoverable Write Errors
-        set_json_64_bit_With_Status(pageInfo, "Number of Reallocated Sectors", vFarmFrame[page].errorPage.errorStat.totalReallocations, false, m_showStatusBits);					//!< Number of Reallocated Sectors
+        set_json_64_bit_With_Status(pageInfo, "Reallocated Sectors", vFarmFrame[page].errorPage.errorStat.totalReallocations, false, m_showStatusBits);					//!< Number of Reallocated Sectors
         set_json_64_bit_With_Status(pageInfo, "Number of Mechanical Start Failures", vFarmFrame[page].errorPage.errorStat.totalMechanicalFails, false, m_showStatusBits);			//!< Number of Mechanical Start Failures
-        set_json_64_bit_With_Status(pageInfo, "Number of Reallocated Candidate Sectors", vFarmFrame[page].errorPage.errorStat.totalReallocatedCanidates, false, m_showStatusBits); //!< Number of Reallocated Candidate Sectors
+        set_json_64_bit_With_Status(pageInfo, "Reallocated Candidate Sectors", vFarmFrame[page].errorPage.errorStat.totalReallocatedCanidates, false, m_showStatusBits); //!< Number of Reallocated Candidate Sectors
         set_json_64_bit_With_Status(pageInfo, "Number of IOEDC Errors (Raw)", vFarmFrame[page].errorPage.errorStat.attrIOEDCErrors, false, m_showStatusBits);						//!< Number of IOEDC Errors (SMART Attribute 184 Raw)
         set_json_64_bit_With_Status(pageInfo, "Total Flash LED (Assert) Events", vFarmFrame[page].errorPage.errorStat.totalFlashLED, false, m_showStatusBits);						//!< Total Flash LED (Assert) Events
         set_json_64_bit_With_Status(pageInfo, "SMART Trip FRU code", vFarmFrame[page].errorPage.errorStat.FRUCode, false, m_showStatusBits);		//!< FRU code if smart trip from most recent SMART Frame
@@ -3314,11 +3314,13 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
         case DISC_SLIP_IN_MICRO_INCHES_BY_HEAD:
         {
             std::ostringstream header;
-            header << "Disc Slip in micro-inches"; 
+             
            //JSONNODE* myArray = json_new(JSON_ARRAY);
             //json_set_name(myArray, "Disc Slip in micro-inches");
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
+                header.str(""); header.clear();
+                header << "Disc Slip in micro-inches by Head " << std::dec << loopCount;
                 uint64_t dsHead = check_Status_Strip_Status(vFarmFrame[page].discSlipPerHead.headValue[loopCount]);
                 int16_t whole = M_WordInt2(dsHead);							                      // get 5:4 whole part of the float
                 double decimal = static_cast<double>(M_DoubleWordInt0(dsHead));                   // get 3:0 for the Deciaml Part of the float
@@ -3549,7 +3551,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tNumber of TMD for Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].numberOfTMDByHead.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));  //!< Number of TMD over last 3 SMART Summary Frame
 #endif
                 std::ostringstream header;
-                header << "Number of Servo No Timing Mark Detect for Head " << std::dec << loopCount; // Head count
+                header << "Servo No Timing Mark Detect for Head " << std::dec << loopCount; // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
                     prePython_Head_Int(headPage, "head_tmd", NULL, loopCount, "counts", NUMBER_OF_TMD_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD, M_DoubleWord0(vFarmFrame[page].numberOfTMDByHead.headValue[loopCount]));
@@ -3567,7 +3569,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tVelocity Observer by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].velocityObserverByHead.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));  //!< Velocity Observer over last 3 SMART Summary Frame
 #endif
                 std::ostringstream header;
-                header << "Number of Velocity Observer by Head " << std::dec << loopCount; // Head count
+                header << "Velocity Observer by Head " << std::dec << loopCount; // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
                     prePython_Head_Int(headPage, "velocity_observer", "stat head", loopCount, "counts", VELOCITY_OBSERVER_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD, M_DoubleWord0(vFarmFrame[page].velocityObserverByHead.headValue[loopCount]));
@@ -3585,7 +3587,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tNumber of Velocity Observer by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].numberOfVelocityObservedByHead.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));  //!< Number of Velocity Observer over last 3 SMART Summary Frame
 #endif
                 std::ostringstream header;
-                header << "Number of Servo Velocity No Timing Mark Detect by Head " << std::dec << loopCount; // Head count
+                header << "Servo Velocity No Timing Mark Detect by Head " << std::dec << loopCount; // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
                     prePython_Head_Int(headPage, "number_of_velocity_observer", "stat head", loopCount, "counts", NUMBER_OF_VELOCITY_OBSERVER_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD, M_DoubleWord0(vFarmFrame[page].numberOfVelocityObservedByHead.headValue[loopCount]));
@@ -3657,7 +3659,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tNumber of Reallocated Sectors by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].ResidentGlistEntries.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));
 #endif
                 std::ostringstream header;
-                header << "Number of Reallocated Sectors by Head " << std::dec << loopCount; // Head count
+                header << "Reallocated Sectors by Head " << std::dec << loopCount; // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
                     prePython_Head_Int(headPage, "head_reallocated", "sectors", loopCount, "counts", NUMBER_OF_RESIDENT_GLIST_ENTRIES, M_DoubleWord0(vFarmFrame[page].ResidentGlistEntries.headValue[loopCount]));
@@ -3672,10 +3674,10 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
 #if defined _DEBUG
-                printf("\tNumber of Reallocation Candidate Sectors by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].ResidentPlistEntries.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));
+                printf("\tReallocated Candidate Sectors by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].ResidentPlistEntries.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));
 #endif
                 std::ostringstream header;
-                header << "Number of Reallocation Candidate Sectors by Head " << std::dec << loopCount; // Head count
+                header << "Reallocated Candidate Sectors by Head " << std::dec << loopCount; // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
                     prePython_Head_Int(headPage, "head_reallocated", "candidate sectors", loopCount, "counts", NUMBER_OF_PENDING_ENTRIES, M_DoubleWord0(vFarmFrame[page].ResidentPlistEntries.headValue[loopCount]));
@@ -3781,10 +3783,10 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
 #if defined _DEBUG
-                printf("\tCumlative Lifetime Unrecoverable Read Repeat per head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].cumECCReadRepeat.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));
+                printf("\tCum Lifetime Unrecoverable Read Repeat %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].cumECCReadRepeat.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));
 #endif
                 std::ostringstream header;
-                header << "Cumlative Lifetime Unrecoverable Read Repeat " << std::dec << loopCount; // Head count
+                header << "Cum Lifetime Unrecoverable Read Repeating " << std::dec << loopCount; // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
                     prePython_Head_Int(headPage, "unrecoverable_read", "lifetime repeat", loopCount, "counts", CUM_LIFETIME_UNRECOVERALBE_READ_REPET_PER_HEAD, vFarmFrame[page].cumECCReadRepeat.headValue[loopCount]);
@@ -3802,7 +3804,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 printf("\tCumlative Lifetime Unrecoverable Read Unique per head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].cumECCReadUnique.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));
 #endif
                 std::ostringstream header;
-                header << "Cumlative Lifetime Unrecoverable Read Unique " << std::dec << loopCount; // Head count
+                header << "Cum Lifetime Unrecoverable Read Unique " << std::dec << loopCount; // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
                     prePython_Head_Int(headPage, "unrecoverable_read", "lifetime unique", loopCount, "counts", CUM_LIFETIME_UNRECOVERABLE_READ_UNIQUE_PER_HEAD, vFarmFrame[page].cumECCReadUnique.headValue[loopCount]);
@@ -4390,10 +4392,10 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                     number = static_cast<double>(whole) - (decimal * .0001);
                 }
 #if defined _DEBUG
-                printf("\tFAFH Bit Error Rate 0 by Head %" PRIu32":     raw 0x%" PRIx64"  calculated %" PRIi16".%03.0f (debug)\n", loopCount, vFarmFrame[page].fafh_bit_error_rate_0.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF), whole,decimal);
+                printf("\tFAFH Bit Error Rate outer by Head %" PRIu32":     raw 0x%" PRIx64"  calculated %" PRIi16".%03.0f (debug)\n", loopCount, vFarmFrame[page].fafh_bit_error_rate_0.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF), whole,decimal);
 #endif
                 std::ostringstream header;
-                header << "FAFH Bit Error Rate 0 by Head " << std::dec << loopCount;     // Head count
+                header << "FAFH Bit Error Rate outer by Head " << std::dec << loopCount;     // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
                     prePython_Head_Float(headPage, "fafh", "reserved tracks diameter 0", loopCount, "bit-error-rate", FAFH_BIT_ERROR_RATE_0, number);
@@ -4422,10 +4424,10 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                     number = static_cast<double>(whole) - (decimal * .0001);
                 }
 #if defined _DEBUG
-                printf("\tFAFH Bit Error Rate 1 by Head %" PRIu32":     raw 0x%" PRIx64"  calculated %" PRIi16".%03.0f (debug)\n", loopCount, vFarmFrame[page].fafh_bit_error_rate_1.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF), whole, decimal);
+                printf("\tFAFH Bit Error Rate inner by Head %" PRIu32":     raw 0x%" PRIx64"  calculated %" PRIi16".%03.0f (debug)\n", loopCount, vFarmFrame[page].fafh_bit_error_rate_1.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF), whole, decimal);
 #endif
                 std::ostringstream header;
-                header << "FAFH Bit Error Rate 1 by Head " << std::dec << loopCount;     // Head count
+                header << "FAFH Bit Error Rate inner by Head " << std::dec << loopCount;     // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
                     prePython_Head_Float(headPage, "fafh", "reserved tracks diameter 1", loopCount, "bit-error-rate", FAFH_BIT_ERROR_RATE_1, number);
@@ -4454,10 +4456,10 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                     number = static_cast<double>(whole) - (decimal * .0001);
                 }
 #if defined _DEBUG
-                printf("\tFAFH Bit Error Rate 2 by Head %" PRIu32":     raw 0x%" PRIx64"  calculated %" PRIi16".%03.0f (debug)\n", loopCount, vFarmFrame[page].fafh_bit_error_rate_2.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF), whole, decimal);
+                printf("\tFAFH Bit Error Rate middle by Head %" PRIu32":     raw 0x%" PRIx64"  calculated %" PRIi16".%03.0f (debug)\n", loopCount, vFarmFrame[page].fafh_bit_error_rate_2.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF), whole, decimal);
 #endif
                 std::ostringstream header;
-                header << "FAFH Bit Error Rate 2 by Head " << std::dec << loopCount;     // Head count
+                header << "FAFH Bit Error Rate middle by Head " << std::dec << loopCount;     // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
                     prePython_Head_Float(headPage, "fafh", "reserved tracks diameter 2", loopCount, "bit-error-rate", FAFH_BIT_ERROR_RATE_2, number);

@@ -665,14 +665,14 @@ eReturnValues CATA_Farm_Log::print_Error_Information(JSONNODE *masterData, uint3
     printf("\tCum Lifetime Unrecoverable Read errors due to ERC:          %" PRIu64" \n", vFarmFrame[page].errorPage.cumLifeTimeECCReadDueErrorRecovery & UINT64_C(0x00FFFFFFFFFFFFFF));
     for (loopCount = 0; loopCount < MAX_HEAD_COUNT; ++loopCount)
     {
-        printf("\tCum Lifetime Unrecoverable Read Repeating by head %" PRIu32":        %" PRIu64" \n", loopCount, vFarmFrame[page].errorPage.cumLifeUnRecoveralbeReadByhead[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));      //!< Cumulative Lifetime Unrecoverable Read Repeating by head
-        printf("\tCum Lifetime Unrecoverable Read Unique by head %" PRIu32":           %" PRIu64" \n", loopCount, vFarmFrame[page].errorPage.cumLiveUnRecoveralbeReadUnique[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));   //!< Cumulative Lifetime Unrecoverable Read Unique by head
+        printf("\tCum Lifetime Unrecoverable Read Repeating by Head %" PRIu32":        %" PRIu64" \n", loopCount, vFarmFrame[page].errorPage.cumLifeUnRecoveralbeReadByhead[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));      //!< Cumulative Lifetime Unrecoverable Read Repeating by head
+        printf("\tCum Lifetime Unrecoverable Read Unique by Head %" PRIu32":           %" PRIu64" \n", loopCount, vFarmFrame[page].errorPage.cumLiveUnRecoveralbeReadUnique[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));   //!< Cumulative Lifetime Unrecoverable Read Unique by head
     }
     //verion 4.21
     if (m_MajorRev >= 4 && m_MinorRev > 20)
     {
-        printf("\tNumber of Reallocated Sectors, Actuator 1 %" PRIu32":        %" PRIu64" \n", loopCount, vFarmFrame[page].errorPage.reallocSectorsAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));
-        printf("\tNumber of Reallocation Candidate Sectors , Actuator 1 %" PRIu32":           %" PRIu64" \n", loopCount, vFarmFrame[page].errorPage.reallocCandidatesAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));
+        printf("\tReallocated Sectors, Actuator 1 %" PRIu32":        %" PRIu64" \n", loopCount, vFarmFrame[page].errorPage.reallocSectorsAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));
+        printf("\tReallocation Candidate Sectors , Actuator 1 %" PRIu32":           %" PRIu64" \n", loopCount, vFarmFrame[page].errorPage.reallocCandidatesAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));
         printf("\tTotal Flash LED (Assert) Events, Actuator 1 %" PRIu32":        %" PRIu64" \n", loopCount, vFarmFrame[page].errorPage.totalFlashLEDEvents & UINT64_C(0x00FFFFFFFFFFFFFF));
         printf("\tIndex of last entry in FLED Info array below, in case the array wraps, Actuator 1 %" PRIu32":           %" PRIu64" \n", loopCount, vFarmFrame[page].errorPage.lastIDXFLEDInfoAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));
         for (loopCount = 0; loopCount < FLASH_EVENTS; ++loopCount)
@@ -807,7 +807,7 @@ eReturnValues CATA_Farm_Log::print_Error_Information(JSONNODE *masterData, uint3
     {
         JSONNODE *eventInfo = json_new(JSON_NODE);
         temp.str("");temp.clear();
-        temp << "Cum Lifetime Unrecoverable by head " << std::dec << loopCount;
+        temp << "Cum Lifetime Unrecoverable by Head " << std::dec << loopCount;
         json_set_name(eventInfo, temp.str().c_str());
         set_json_64_bit_With_Status(eventInfo, "Cum Lifetime Unrecoverable Read Repeating", vFarmFrame[page].errorPage.cumLifeUnRecoveralbeReadByhead[loopCount], false, m_showStatusBits);      //!< Cumulative Lifetime Unrecoverable Read Repeating by head
         set_json_64_bit_With_Status(eventInfo, "Cum Lifetime Unrecoverable Read Unique", vFarmFrame[page].errorPage.cumLiveUnRecoveralbeReadUnique[loopCount], false, m_showStatusBits);   //!< Cumulative Lifetime Unrecoverable Read Unique by head
@@ -1776,38 +1776,38 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         temp.str(""); temp.clear();
-        temp << "FAFH LF Passive Clearance ID by Head " << std::dec << loopCount;// Head count
+        temp << "FAFH LF Passive Clearance OD by Head " << std::dec << loopCount;// Head count
         set_json_int_Check_Status(headInfo, temp.str().c_str(), M_DoubleWord0(vFarmFrame[page].reliPage.FAFHLowFrequency[loopCount].outer), vFarmFrame[page].reliPage.FAFHLowFrequency[loopCount].outer, m_showStatusBits);
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         temp.str("");temp.clear();
-        temp << "FAFH LF Passive Clearance MD by Head " << std::dec << loopCount;// Head count
+        temp << "FAFH LF Passive Clearance ID by Head " << std::dec << loopCount;// Head count
         set_json_int_Check_Status(headInfo, temp.str().c_str(), M_DoubleWord0(vFarmFrame[page].reliPage.FAFHLowFrequency[loopCount].inner), vFarmFrame[page].reliPage.FAFHLowFrequency[loopCount].inner, m_showStatusBits);
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         temp.str("");temp.clear();
-        temp << "FAFH LF Passive Clearance OD by Head " << std::dec << loopCount;// Head count
+        temp << "FAFH LF Passive Clearance MD by Head " << std::dec << loopCount;// Head count
         set_json_int_Check_Status(headInfo, temp.str().c_str(), M_DoubleWord0(vFarmFrame[page].reliPage.FAFHLowFrequency[loopCount].middle), vFarmFrame[page].reliPage.FAFHLowFrequency[loopCount].middle, m_showStatusBits);                //!< [24][3] FAFH Low Frequency Passive Clearance in ADC counts
     }
 
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         temp.str("");temp.clear();
-        temp << "FAFH HF Passive Clearance ID by Head " << std::dec << loopCount;// Head count
+        temp << "FAFH HF Passive Clearance OD by Head " << std::dec << loopCount;// Head count
         set_json_int_Check_Status(headInfo, temp.str().c_str(), M_DoubleWord0(vFarmFrame[page].reliPage.FAFHHighFrequency[loopCount].outer), vFarmFrame[page].reliPage.FAFHHighFrequency[loopCount].outer, m_showStatusBits);                 //!< [24][3] FAFH High Frequency Passive Clearance in ADC counts
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         temp.str("");temp.clear();
-        temp << "FAFH HF Passive Clearance MD by Head " << std::dec << loopCount;// Head count
+        temp << "FAFH HF Passive Clearance ID by Head " << std::dec << loopCount;// Head count
         set_json_int_Check_Status(headInfo, temp.str().c_str(), M_DoubleWord0(vFarmFrame[page].reliPage.FAFHHighFrequency[loopCount].inner), vFarmFrame[page].reliPage.FAFHHighFrequency[loopCount].inner, m_showStatusBits);               //!< [24][3] FAFH High Frequency Passive Clearance in ADC counts
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         temp.str("");temp.clear();
-        temp << "FAFH HF Passive Clearance OD by Head " << std::dec << loopCount;// Head count
+        temp << "FAFH HF Passive Clearance MD by Head " << std::dec << loopCount;// Head count
         set_json_int_Check_Status(headInfo, temp.str().c_str(), M_DoubleWord0(vFarmFrame[page].reliPage.FAFHHighFrequency[loopCount].middle), vFarmFrame[page].reliPage.FAFHHighFrequency[loopCount].middle, m_showStatusBits);                 //!< [24][3] FAFH High Frequency Passive Clearance in ADC counts
     }
     //4.19
@@ -1815,14 +1815,14 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
         for (loopCount = 0; loopCount < m_heads; ++loopCount)
         {
             temp.str("");temp.clear();
-            temp << "Total Laser Field iterations performed per head " << std::dec << loopCount;// Head count
+            temp << "Total Laser Field iterations performed for Head " << std::dec << loopCount;// Head count
             set_json_64_bit_With_Status(headInfo, temp.str().c_str(), vFarmFrame[page].reliPage.numberOfLFAIterations[loopCount], false, m_showStatusBits);
         }
 
         for (loopCount = 0; loopCount < m_heads; ++loopCount)
         {
             temp.str("");temp.clear();
-            temp << "Laser Operating Current by outer head Diameter " << std::dec << loopCount;// Head count
+            temp << "Laser Operating Current inner Diameter by Head " << std::dec << loopCount;// Head count
             myHeader.assign(temp.str());
             temp.str("");temp.clear();
             temp << std::fixed << std::setprecision(1) << std::setfill('0') << static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].reliPage.laserOperCurrent[loopCount].inner)));
@@ -1831,7 +1831,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
         for (loopCount = 0; loopCount < m_heads; ++loopCount)
         {
             temp.str("");temp.clear();
-            temp << "Laser Operating Current by inner head Diameter " << std::dec << loopCount;// Head count
+            temp << "Laser Operating Current middle Diameter by Head " << std::dec << loopCount;// Head count
             myHeader.assign(temp.str());
             temp.str("");temp.clear();
             temp << std::fixed << std::setprecision(1) << std::setfill('0') << static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].reliPage.laserOperCurrent[loopCount].middle)));
@@ -1840,7 +1840,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
         for (loopCount = 0; loopCount < m_heads; ++loopCount)
         {
             temp.str("");temp.clear();
-            temp << "Laser Operating Current by middle head Diameter " << std::dec << loopCount;// Head count
+            temp << "Laser Operating Current outer Diameter by Head " << std::dec << loopCount;// Head count
             myHeader.assign(temp.str());
             temp.str("");temp.clear();
             temp << std::fixed << std::setprecision(1) << std::setfill('0') << static_cast<float> (M_Word0(check_Status_Strip_Status(vFarmFrame[page].reliPage.laserOperCurrent[loopCount].outer)));
@@ -1849,7 +1849,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
         for (loopCount = 0; loopCount < m_heads; ++loopCount)
         {
             temp.str("");temp.clear();
-            temp << "Post LFA Optimal BER by outer head Diameter " << std::dec << loopCount;// Head count
+            temp << "Post LFA Optimal BER inner Diameter by Head " << std::dec << loopCount;// Head count
             myHeader.assign(temp.str());
             temp.str("");temp.clear();
             temp << std::fixed << std::setprecision(1) << std::setfill('0') << static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].reliPage.postLFABER[loopCount].inner)));
@@ -1858,7 +1858,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
         for (loopCount = 0; loopCount < m_heads; ++loopCount)
         {
             temp.str("");temp.clear();
-            temp << "Post LFA Optimal BER by inner head Diameter " << std::dec << loopCount;// Head count
+            temp << "Post LFA Optimal BER middle Diameter by Head " << std::dec << loopCount;// Head count
             myHeader.assign(temp.str());
             temp.str("");temp.clear();
             temp << std::fixed << std::setprecision(1) << std::setfill('0') << static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].reliPage.postLFABER[loopCount].middle)));
@@ -1867,7 +1867,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
         for (loopCount = 0; loopCount < m_heads; ++loopCount)
         {
             temp.str("");temp.clear();
-            temp << "Post LFA Optimal BER by middle head Diameter " << std::dec << loopCount;// Head count
+            temp << "Post LFA Optimal BER outer Diameter by Head " << std::dec << loopCount;// Head count
             myHeader.assign(temp.str());
             temp.str("");temp.clear();
             temp << std::fixed << std::setprecision(1) << std::setfill('0') << static_cast<float> (M_Word0(check_Status_Strip_Status(vFarmFrame[page].reliPage.postLFABER[loopCount].outer)));
@@ -1876,7 +1876,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
         for (loopCount = 0; loopCount < m_heads; ++loopCount)
         {
             temp.str("");temp.clear();
-            temp << "Number of Reader Writer Offset Iterations by Head " << std::dec << loopCount; // Head count
+            temp << "Reader Writer Offset Iterations by Head " << std::dec << loopCount; // Head count
             set_json_int_With_Status(headInfo, temp.str().c_str(), vFarmFrame[page].reliPage.numOfReaderWriterOffset[loopCount], m_showStatusBits);
         }
         for (loopCount = 0; loopCount < m_heads; ++loopCount)
