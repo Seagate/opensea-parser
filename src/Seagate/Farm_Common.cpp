@@ -116,8 +116,8 @@ void CFarmCommon::create_Serial_Number(std::string& serialNumberStr, uint32_t se
 //---------------------------------------------------------------------------
 void CFarmCommon::create_Model_Number_String(std::string& modelStr, uint64_t *productID, bool sas = false)
 {
-#define MAXSIZE  4
-	uint32_t modelParts[MAXSIZE] = { 0,0,0,0 };
+#define MAXSIZE  5
+	uint32_t modelParts[MAXSIZE] = { 0,0,0,0,0 };
 	// loop for and get the information from the lower bits
 	for (uint8_t i = 0; i < MAXSIZE; i++)
 	{
@@ -628,8 +628,8 @@ void CFarmCommon::Get_FARM_Reason_For_Capture(std::string* reason, uint8_t flag)
 {
 	switch (flag)
 	{
-	case CURREN_FRAME:
-		*reason = "FARM log copy";
+	case CURRENT_FRAME:
+		*reason = "Current FARM log";
 		break;
 	case TIME_SERIES_FRAME:
 		*reason = "time series frame";
