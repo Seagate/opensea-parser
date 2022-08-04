@@ -1297,7 +1297,10 @@ eReturnValues CATA_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint32
         set_json_64_bit_With_Status(pageInfo, "Number of Valid Parity Sectors, Actuator 1", vFarmFrame[page].reliPage.validParitySectAct1, false, m_showStatusBits);
         set_json_64_bit_With_Status(pageInfo, "RV Absolute Mean, Actuator 1", vFarmFrame[page].reliPage.rvAbsMeanAct1, false, m_showStatusBits);
         set_json_64_bit_With_Status(pageInfo, "Max RV Absolute Mean, Actuator 1", vFarmFrame[page].reliPage.rvAbsMeanMaxAct1, false, m_showStatusBits);
-        set_json_64_bit_With_Status(pageInfo, "Idle Time (hours), Actuator 1", vFarmFrame[page].reliPage.idleTimeAct1, false, m_showStatusBits);
+        temp.str(""); temp.clear();
+        temp << std::fixed << std::setprecision(6) << std::setfill('0') << static_cast<double>(check_Status_Strip_Status(vFarmFrame[page].reliPage.idleTimeAct1)) / 3600;
+        set_json_string_With_Status(pageInfo, "Idle Time (hours), Actuator 1", temp.str(),vFarmFrame[page].reliPage.idleTimeAct1, m_showStatusBits);
+        //set_json_64_bit_With_Status(pageInfo, "Idle Time (hours), Actuator 1", vFarmFrame[page].reliPage.idleTimeAct1, false, m_showStatusBits);
         set_json_64_bit_With_Status(pageInfo, "Number of LBAs Corrected by Parity Sector, Actuator 1", vFarmFrame[page].reliPage.parityCorrLBAAct1, false, m_showStatusBits);   
         set_json_64_bit_With_Status(pageInfo, "Primary Super Parity Coverage Percentage, Actuator 1", vFarmFrame[page].reliPage.superParityCovPercentAct1, false, m_showStatusBits);
         set_json_64_bit_With_Status(pageInfo, "Primary Super Parity Coverage Percentage SMR SWR, Actuator 1", vFarmFrame[page].reliPage.superParityCoveragePercentageAct1, false, m_showStatusBits);
