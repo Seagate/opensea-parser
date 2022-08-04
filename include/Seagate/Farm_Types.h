@@ -101,7 +101,7 @@
 
 
 // Frame Type Identification  0x0 - 0xF
-#define CURREN_FRAME                            0x00
+#define CURRENT_FRAME                           0x00
 #define TIME_SERIES_FRAME                       0x01
 #define LONG_TERM_FRAME                         0x02
 #define GLIST_DISC_ENTRIES_FRAME                0x03
