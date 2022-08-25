@@ -3325,7 +3325,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 int16_t whole = M_WordInt2(dsHead);							                      // get 5:4 whole part of the float
                 double decimal = static_cast<double>(M_DoubleWordInt0(dsHead));                   // get 3:0 for the Deciaml Part of the float
                 double number = 0.0;
-                if (whole > 0)
+                if (whole >= 0)
                 {
                     number = static_cast<double>(whole) + (decimal * .0001);
                 }
@@ -3358,7 +3358,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 int16_t whole = M_WordInt2(beHead);							// get 5:4 whole part of the float
                 double decimal = static_cast<double>(M_DoubleWordInt0(beHead));                     // get 3:0 for the Deciaml Part of the float
                 double number = 0.0;
-                if (whole > 0)
+                if (whole >= 0)
                 {
                     number = static_cast<double>(whole) + (decimal * .0001);
                 }
@@ -3608,7 +3608,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 header << "Current H2SAT percentage of codewords at iteration level by Head " << std::dec << loopCount; // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Int(headPage, "h2sat", "codeword at iteration level (current)", loopCount, "counts", CURRENT_H2SAT_PERCENTAGE_OF_CODEWORDS_AT_ITERATION_LEVEL_BY_HEAD_AVERAGED_ACROSS_TEST_ZONES, M_DoubleWord0(vFarmFrame[page].currentH2SATPercentagedbyHead.headValue[loopCount]));
+                    prePython_Head_Int(headPage, "h2sat", "codeword at iteration level", loopCount, "counts", CURRENT_H2SAT_PERCENTAGE_OF_CODEWORDS_AT_ITERATION_LEVEL_BY_HEAD_AVERAGED_ACROSS_TEST_ZONES, M_DoubleWord0(vFarmFrame[page].currentH2SATPercentagedbyHead.headValue[loopCount]));
                 }
                 else
                 {
@@ -3950,7 +3950,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 double number = static_cast<double>(M_Word0(vFarmFrame[page].currentH2STTrimmedbyHeadZone0.headValue[loopCount]) * 0.10F);
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Float(headPage, "h2sat", "trimmed mean (current),zone:0", loopCount, "mean-bits-in-error", CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_0, ROUNDF(number,1000));
+                    prePython_Head_Float(headPage, "h2sat", "trimmed mean zone 0", loopCount, "mean-bits-in-error", CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_0, ROUNDF(number,1000));
                 }
                 else
                 {
@@ -3969,7 +3969,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 double number = static_cast<double>(M_Word0(vFarmFrame[page].currentH2STTrimmedbyHeadZone1.headValue[loopCount]) * 0.10F);
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Float(headPage, "h2sat", "trimmed mean (current),zone:1", loopCount, "mean-bits-in-error", CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_1, number);
+                    prePython_Head_Float(headPage, "h2sat", "trimmed mean zone 1", loopCount, "mean-bits-in-error", CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_1, number);
                 }
                 else
                 {
@@ -3988,7 +3988,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 double number = static_cast<double>(M_Word0(vFarmFrame[page].currentH2STTrimmedbyHeadZone2.headValue[loopCount]) * 0.10F);
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Float(headPage, "h2sat", "trimmed mean (current),zone:2", loopCount, "mean-bits-in-error", CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_2, number);
+                    prePython_Head_Float(headPage, "h2sat", "trimmed mean zone 2", loopCount, "mean-bits-in-error", CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_2, number);
                 }
                 else
                 {
@@ -4366,7 +4366,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 double number = static_cast<double>(M_WordInt0(vFarmFrame[page].fafhRelativeApmlitude.headValue[loopCount]) * 0.1);
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Float(headPage, "fafh", "relative", loopCount, "amplitude", FAFH_HF_LF_RELATIVE_APMLITUDE, number);
+                    prePython_Head_Float(headPage, "fafh", "hf-lf relative", loopCount, "amplitude", FAFH_HF_LF_RELATIVE_APMLITUDE, number);
                 }
                 else
                 {  
@@ -4383,7 +4383,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 int16_t whole = M_WordInt2(dsHead);							// get 5:4 whole part of the float
                 double decimal = static_cast<double>(M_DoubleWordInt0(dsHead)) ;  // get 3:0 for the decimal  Part of the float
                 double number = 0.0;
-                if (whole > 0)
+                if (whole >= 0)
                 {
                     number = static_cast<double>(whole) + (decimal * .0001);
                 }
@@ -4415,7 +4415,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 int16_t whole = M_WordInt2(dsHead);							// get 5:4 whole part of the float
                 double decimal = static_cast<double>(M_DoubleWordInt0(dsHead));  // get 3:0 for the Deciaml Part of the float
                 double number = 0.0;
-                if (whole > 0)
+                if (whole >= 0)
                 {
                     number = static_cast<double>(whole) + (decimal * .0001);
                 }
@@ -4447,7 +4447,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 int16_t whole = M_WordInt2(dsHead);							// get 5:4 whole part of the float
                 double decimal = static_cast<double>(M_DoubleWordInt0(dsHead));  // get 3:0 for the Deciaml Part of the float
                 double number = 0.0;
-                if (whole > 0)
+                if (whole >= 0)
                 {
                     number = static_cast<double>(whole) + (decimal * .0001);
                 }
@@ -4482,7 +4482,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 header << "FAFH LF Passive Clearance OD by Head " << std::dec << loopCount;     // Head count
                 if (g_dataformat == PREPYTHON_DATA)
                 {
-                    prePython_Head_Int(headPage, "fafh", "lf passive clearance 0", loopCount, "counts", FAFH_LOW_FREQUENCY_0, M_Word0(vFarmFrame[page].fafhLowFrequency_0.headValue[loopCount]));
+                    prePython_Head_Int(headPage, "fafh", "lf passive clearance 0", loopCount, "counts", FAFH_LOW_FREQUENCY_0, M_Word0(check_Status_Strip_Status(vFarmFrame[page].fafhLowFrequency_0.headValue[loopCount])));
                 }
                 else
                 {
