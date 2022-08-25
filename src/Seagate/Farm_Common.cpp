@@ -629,7 +629,7 @@ void CFarmCommon::Get_FARM_Reason_For_Capture(std::string* reason, uint8_t flag)
 	switch (flag)
 	{
 	case CURRENT_FRAME:
-		*reason = "Current FARM log";
+		*reason = "current FARM log";
 		break;
 	case TIME_SERIES_FRAME:
 		*reason = "time series frame";
