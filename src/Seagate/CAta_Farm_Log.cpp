@@ -1463,7 +1463,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
         whole = M_WordInt2(dsHead);							                      // get 5:4 whole part of the float
         double decimal = static_cast<double>(M_DoubleWordInt0(dsHead));                   // get 3:0 for the Deciaml Part of the float
         double number = 0.0;
-        if (whole > 0)
+        if (whole >= 0)
         {
             number = static_cast<double>(whole) + (decimal * .0001);
         }
@@ -1482,7 +1482,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
         whole = M_WordInt2(dsHead);							                      // get 5:4 whole part of the float
         double decimal = static_cast<double>(M_DoubleWordInt0(dsHead));                   // get 3:0 for the Deciaml Part of the float
         double number = 0.0;
-        if (whole > 0)
+        if (whole >= 0)
         {
             number = static_cast<double>(whole) + (decimal * .0001);
         }
@@ -1728,7 +1728,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
         whole = M_WordInt2(dsHead);							// get 5:4 whole part of the float
         double decimal = static_cast<double>(M_DoubleWordInt0(dsHead));  // get 3:0 for the Deciaml Part of the float
         double number = 0.0;
-        if (whole > 0)
+        if (whole >= 0)
         {
             number = static_cast<double>(whole) + (decimal * .0001);
         }
@@ -1746,7 +1746,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
         whole = M_WordInt2(dsHead);							// get 5:4 whole part of the float
         double decimal = static_cast<double>(M_DoubleWordInt0(dsHead));  // get 3:0 for the Deciaml Part of the float
         double number = 0.0;
-        if (whole > 0)
+        if (whole >= 0)
         {
             number = static_cast<double>(whole) + (decimal * .0001);
         }
@@ -1764,7 +1764,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
         whole = M_WordInt2(dsHead);							// get 5:4 whole part of the float
         double decimal = static_cast<double>(M_DoubleWordInt0(dsHead));  // get 3:0 for the Deciaml Part of the float
         double number = 0.0;
-        if (whole > 0)
+        if (whole >= 0)
         {
             number = static_cast<double>(whole) + (decimal * .0001);
         }
