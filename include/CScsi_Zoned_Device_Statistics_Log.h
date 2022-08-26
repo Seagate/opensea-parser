@@ -2,7 +2,7 @@
 //
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2021 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -43,7 +43,7 @@ namespace opensea_parser {
         uint64_t					m_ZDSValue;				//<! Parameter ZDS Value
         sZDSParams				    *m_ZDSParam;			//<! ZDS param structure 
 
-        bool get_ZDS_Parameter_Code_Description(uint16_t paramCode, std::string *zdsString);
+        bool get_ZDS_Parameter_Code_Description( std::string *zdsString);
         void process_Zoned_Device_Statistics_Data(JSONNODE *zdsData);
         eReturnValues get_Zoned_Device_Statistics_Data(JSONNODE *masterData);
     public:

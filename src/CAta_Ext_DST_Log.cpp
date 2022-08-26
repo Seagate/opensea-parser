@@ -3,7 +3,7 @@
 //
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2021 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -32,28 +32,28 @@ CAta_Ext_DST_Log::CAta_Ext_DST_Log(const std::string &fileName, JSONNODE *master
     , m_logSize(0)
     , m_status(IN_PROGRESS)
 {
-	CLog *cCLog;
-	cCLog = new CLog(fileName);
-	if (cCLog->get_Log_Status() == SUCCESS)
-	{
-		if (cCLog->get_Buffer() != NULL)
-		{
-			m_logSize = cCLog->get_Size();
-			pData = new uint8_t[m_logSize];								// new a buffer to the point				
-#ifndef _WIN64 
-			memcpy(pData, cCLog->get_Buffer(), m_logSize);
+    CLog *cCLog;
+    cCLog = new CLog(fileName);
+    if (cCLog->get_Log_Status() == SUCCESS)
+    {
+        if (cCLog->get_Buffer() != NULL)
+        {
+            m_logSize = cCLog->get_Size();
+            pData = new uint8_t[m_logSize];								// new a buffer to the point				
+#ifndef __STDC_SECURE_LIB__ 
+            memcpy(pData, cCLog->get_Buffer(), m_logSize);
 #else
-			memcpy_s(pData, m_logSize, cCLog->get_Buffer(), m_logSize);// copy the buffer data to the class member pBuf
+            memcpy_s(pData, m_logSize, cCLog->get_Buffer(), m_logSize);// copy the buffer data to the class member pBuf
 #endif
-			sLogPageStruct *idCheck;
-			idCheck = (sLogPageStruct *)&pData[0];
-			byte_Swap_16(&idCheck->pageLength);
-			if (IsScsiLogPage(idCheck->pageLength, idCheck->pageCode) == false)
-			{
-				byte_Swap_16(&idCheck->pageLength);  // now that we know it's not scsi we need to flip the bytes back
-				m_status = parse_Ext_Self_Test_Log( masterData);
-			}
-            delete [] pData;
+            sLogPageStruct *idCheck;
+            idCheck = reinterpret_cast<sLogPageStruct*>(&pData[0]);
+            byte_Swap_16(&idCheck->pageLength);
+            if (IsScsiLogPage(idCheck->pageLength, idCheck->pageCode) == false)
+            {
+                byte_Swap_16(&idCheck->pageLength);  // now that we know it's not scsi we need to flip the bytes back
+                m_status = parse_Ext_Self_Test_Log(masterData);
+            }
+            delete[] pData;
         }
     }
     else
@@ -61,7 +61,7 @@ CAta_Ext_DST_Log::CAta_Ext_DST_Log(const std::string &fileName, JSONNODE *master
         m_status = IN_PROGRESS;
         m_logSize = 0;
     }
-	delete (cCLog);
+    delete (cCLog);
 }
 //-----------------------------------------------------------------------------
 //
@@ -79,9 +79,9 @@ CAta_Ext_DST_Log::CAta_Ext_DST_Log(uint8_t *pBufferData, JSONNODE *masterData)
     :m_name("Ext DST Log")                                         //!< name of the class
     , m_status(IN_PROGRESS)
 {
-	pData = pBufferData;
+    pData = pBufferData;
     m_logSize = 0;
-    m_status = parse_Ext_Self_Test_Log( masterData);
+    m_status = parse_Ext_Self_Test_Log(masterData);
     pData = NULL;
 }
 //-----------------------------------------------------------------------------
@@ -115,9 +115,8 @@ CAta_Ext_DST_Log::~CAta_Ext_DST_Log()
 //!   \return eReturnValues success
 //
 //---------------------------------------------------------------------------
-void CAta_Ext_DST_Log::Get_Status_Meaning(std::string &meaning,uint8_t status)
+void CAta_Ext_DST_Log::Get_Status_Meaning(std::string &meaning, uint8_t status)
 {
-    meaning.resize(BASIC);
     if (status == 0x00)
     {
         meaning = "Self Test completed without error.";
@@ -164,7 +163,7 @@ void CAta_Ext_DST_Log::Get_Status_Meaning(std::string &meaning,uint8_t status)
     }
     else
     {
-        meaning ="Reserved";
+        meaning = "Reserved";
     }
 }
 //-----------------------------------------------------------------------------
@@ -181,7 +180,7 @@ void CAta_Ext_DST_Log::Get_Status_Meaning(std::string &meaning,uint8_t status)
 //!   \return eReturnValues success
 //
 //---------------------------------------------------------------------------
-eReturnValues CAta_Ext_DST_Log::parse_Ext_Self_Test_Log( JSONNODE *masterData)
+eReturnValues CAta_Ext_DST_Log::parse_Ext_Self_Test_Log(JSONNODE *masterData)
 {
     std::string myStr = "Start of Ext DST";
     JSONNODE *DstJson = json_new(JSON_NODE);
@@ -193,38 +192,36 @@ eReturnValues CAta_Ext_DST_Log::parse_Ext_Self_Test_Log( JSONNODE *masterData)
     uint64_t LBA = 0;
 
     json_set_name(DstJson, "DST Log");
-	uint16_t index = ((uint16_t)pData[3] << 8) | ((uint16_t)pData[2] << 0);
+    uint16_t index = M_BytesTo2ByteValue(pData[3], pData[2]);
 	json_push_back(DstJson, json_new_i("Self Test Index", static_cast<uint32_t>(index)));
     DSTIndex += 4;
     for (int i = 1; i <= 19; i++)
     {
-
-        
         StatusByte = pData[DSTIndex + 1];
-        timeStamp = ((uint16_t)pData[DSTIndex + 3] << 8) | ((uint16_t)pData[DSTIndex + 2] << 0);
-        compTime = ((uint16_t)pData[DSTIndex + 13] << 8) | ((uint16_t)pData[DSTIndex + 12] << 0);
+        timeStamp = M_BytesTo2ByteValue(pData[DSTIndex + 3], pData[DSTIndex + 2]);
+        compTime = M_BytesTo2ByteValue(pData[DSTIndex + 13], pData[DSTIndex + 12]);
         checkPointByte = pData[DSTIndex + 4];
-        LBA = ((uint64_t)pData[DSTIndex + 10] << 40) |
-            ((uint64_t)pData[DSTIndex + 9] << 32) |
-            ((uint64_t)pData[DSTIndex + 8] << 24) |
-            ((uint64_t)pData[DSTIndex + 7] << 16) |
-            ((uint64_t)pData[DSTIndex + 6] << 8) |
-            ((uint64_t)pData[DSTIndex + 5] << 0);
-        
+        LBA = M_BytesTo8ByteValue(0,0, pData[DSTIndex + 10], pData[DSTIndex + 9], pData[DSTIndex + 8], pData[DSTIndex + 7], pData[DSTIndex + 6], pData[DSTIndex + 5]);
         JSONNODE *runInfo = json_new(JSON_NODE);
-        snprintf((char*)myStr.c_str(), BASIC, "Run %3d ", i);
-        json_set_name(runInfo, (char*)myStr.c_str());
-        snprintf((char*)myStr.c_str(), BASIC, "%u", timeStamp);
-        json_push_back(runInfo, json_new_a("Timestamp", (char*)myStr.c_str()));
-        snprintf((char*)myStr.c_str(), BASIC, "0x%02x", int(StatusByte));
-        json_push_back(runInfo, json_new_a("Status Byte", (char*)myStr.c_str()));
-        Get_Status_Meaning(myStr,StatusByte);
-        json_push_back(runInfo, json_new_a("Status Meaning",(char*)myStr.c_str()));
 
-        snprintf((char*)myStr.c_str(), BASIC, "0x%02x", checkPointByte);
-        json_push_back(runInfo, json_new_a("CheckPoint Byte", (char*)myStr.c_str()));
-        snprintf((char*)myStr.c_str(), BASIC, "%u", compTime);
-        json_push_back(runInfo, json_new_a("Completion Time", (char*)myStr.c_str()));
+        std::ostringstream temp;
+        temp << "Run " << std::dec << std::setw(3) << i;
+        json_set_name(runInfo, temp.str().c_str());
+        temp.str("");temp.clear();
+        temp << std::dec << timeStamp;
+        json_push_back(runInfo, json_new_a("Timestamp", temp.str().c_str()));
+        temp.str("");temp.clear();
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(StatusByte);
+        json_push_back(runInfo, json_new_a("Status Byte", temp.str().c_str()));
+        Get_Status_Meaning(myStr,StatusByte);
+        json_push_back(runInfo, json_new_a("Status Meaning", myStr.c_str()));
+
+        temp.str("");temp.clear();
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(checkPointByte);
+        json_push_back(runInfo, json_new_a("CheckPoint Byte", temp.str().c_str()));
+        temp.str("");temp.clear();
+        temp << std::dec << compTime;
+        json_push_back(runInfo, json_new_a("Completion Time", temp.str().c_str()));
         set_json_64bit(runInfo, "LBA", LBA, false);
 
         DSTIndex += 26;

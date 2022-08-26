@@ -3,7 +3,7 @@
 //
 // Do NOT modify or remove this copyright and license
 //
-//Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates
+//Copyright (c) 2014 - 2021 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -37,12 +37,12 @@ typedef struct _sDriveInfo
     uint64_t        rotationRate;                               //!< Rotational Rate of Device (ID Word 217)
     uint64_t        firmware;                                   //!< firmware 
     uint64_t        firmwareRev;                                //!< firmware Rev
-    uint64_t        security;									//!< ATA Security State (ID Word 128)
-    uint64_t        featuresSupported;							//!< ATA Features Supported (ID Word 78)
-    uint64_t        featuresEnabled;							//!< ATA Features Enabled (ID Word 79)
+    uint64_t        security;                                   //!< ATA Security State (ID Word 128)
+    uint64_t        featuresSupported;                          //!< ATA Features Supported (ID Word 78)
+    uint64_t        featuresEnabled;                            //!< ATA Features Enabled (ID Word 79)
     uint64_t        poh;                                        //!< Power-on Hours
-    uint64_t        spoh;										//!< Spindle Power-on Hours
-    uint64_t        headFlightHours;							//!< Head Flight Hours
+    uint64_t        spoh;                                       //!< Spindle Power-on Hours
+    uint64_t        headFlightHours;                            //!< Head Flight Hours
     uint64_t        headLoadEvents;                             //!< Head Load Events
     uint64_t        powerCycleCount;                            //!< Power Cycle Count
     uint64_t        resetCount;                                 //!< Hardware Reset Count
@@ -51,14 +51,17 @@ typedef struct _sDriveInfo
     uint64_t        timeAvailable;                              //!< Time Available to Save User Data to Media Over Last Power Cycle (in 100us)
     uint64_t        timeStamp1;                                 //!< Timestamp of most recent SMART Summary Frame in Power-On Hours Milliseconds
     uint64_t        timeStamp2;                                 //!< Timestamp of last SMART Summary Frame in Power-On Hours Milliseconds
-    uint64_t        timeToReady;								//!< time to ready of the last power cycle
-    uint64_t        timeHeld;									//!< time drive is held in staggered spin during the last power on sequence
+    uint64_t        timeToReady;                                //!< time to ready of the last power cycle
+    uint64_t        timeHeld;                                   //!< time drive is held in staggered spin during the last power on sequence
     uint64_t        modelNumber[10];                            //!< lower 32 Model Number (started support in 2.14 )
     uint64_t        driveRecordingType;                         //!< 0 for SMR and 1 for CMR (started support in 2.15 )
     uint64_t        depopped;                                   //!< has the drive been depopped  1= depopped and 0 = not depopped(started support in 2.15 )
     uint64_t        maxNumberForReasign;                        //!< Max Number of Available Sectors for Reassignment – Value in disc sectors(started in 3.3 )
     uint64_t        dateOfAssembly;                             //!< Date of Assembly in ASCII “YYWW” where YY is the year and WW is the calendar week(started in 4.2)
     uint64_t        depopulationHeadMask;                       //!< Depopulation Head Mask(started in 4.7)
+    uint64_t        headFlightHoursAct1;                        //!< Head Flight Hours, Actuator1
+    uint64_t        headLoadEventsAct1;                         //!< Head Load Events, Actuator 1
+    uint64_t        HAMRProtectStatus;
 }sDriveInfo;
 
 typedef struct _sErrorStat
@@ -93,6 +96,16 @@ typedef struct _sErrorStat
     uint64_t         cumLifeTimeECCReadDueErrorRecovery;        //<! Cumulative Lifetime Unrecoverable Read errors due to Error Recovery Control 
     uint64_t         cumLifeUnRecoveralbeReadByhead[24];        //<! Cumulative Lifetime Unrecoverable Read Repeating by head
     uint64_t         cumLiveUnRecoveralbeReadUnique[24];        //<! Cumulative Lifetime Unrecoverable Read Unique by head
+//version 4.21
+    uint64_t         reallocSectorsAct1;                        //!< Number of Reallocated sectors, Actuator 1
+    uint64_t         reallocCandidatesAct1;                        //!< Number of Reallocation Candidate Sectors, Actuator 1
+    uint64_t         totalFlashLEDEvents;                       //!< Total Flash LED (Assert) Events, Actuator 1 
+    uint64_t         lastIDXFLEDInfoAct1;                       //!< Index of last entry in FLED Info array below, in case the array wraps, Actuator 1
+    uint64_t         last8FLEDEventsAct1[8];                    //!< Info on the last 8 Flash LED (assert) Events, wrapping array, Actuator 1
+    uint64_t         last8ReadWriteRetryEvts[8];                //!< Info on the last 8 Read/Write Retry events, wrapping array, Actuator 1
+    uint64_t         reallocSectorsByCauseAct1[15];             //!< Reallocated sectors by cause, Actuator 1
+    uint64_t         last8FLEDEvtsAct1[8];                      //!< Universal Timestamp (us) of last 8 Flash LED (assert) Events, wrapping array, Actuator 1
+    uint64_t         last8FLEDEvtsPowerCycleAct1[8];            //!< Power Cycle of the last 8 Flash LED (assert) Events, wrapping array, Actuator 1
 }sErrorStat;
 
 typedef struct _sEnvironementStat
@@ -129,6 +142,19 @@ typedef struct _sEnvironementStat
     uint64_t         powerAvg5v;                                //!< 5V Power Average(mw) - Average of the three summary frames (4.3)
     uint64_t         powerMin5v;                                //!< 5V Power Min(mw) - Lowest of last 3 SMART summary frames (4.3)
     uint64_t         powerMax5v;                                //!< 5V Power Max(mw) - Highest of last 3 SMART summary frames (4.3)
+    //v4.21
+    uint64_t         currLFVibeAct0;                            //!< Current Low Frequency Vibe Score - Actuator 0 
+    uint64_t         currMFVibeAct0;                            //!< Current Mid Frequency Vibe Score - Actuator 0
+    uint64_t         currHFVibeAct0;                            //!< Current High Frequency Vibe Score - Actuator 0
+    uint64_t         worstLFVibeAct0;                           //!< Worst Low Frequency Vibe Score - Actuator 0
+    uint64_t         worstMFVibeAct0;                           //!< Worst Mid Frequency Vibe Score - Actuator 0
+    uint64_t         worstHFVibeAct0;                           //!< Worst High Frequency Vibe Score - Actuator 0
+    uint64_t         currLFVibeAct1;                            //!< Current Low Frequency Vibe Score - Acutator 1
+    uint64_t         currMFVibeAct1;                            //!< Current Mid Frequency Vibe Score - Actuator 1
+    uint64_t         currHFVibeAct1;                            //!< Current High Frequency Vibe Score - Actuator 1
+    uint64_t         worstLFVibeAct1;                           //!< Worst Low Frequency Vibe Score - Actuator 1
+    uint64_t         worstMFVibeAct1;                           //!< Worst Mid Frequency Vibe Score - Actuator 1
+    uint64_t         worstHFVibeAct1;                           //!< Worst High Frequency Vibe Score - Actuator 1
 }sEnvironementStat;
 
 typedef struct _sHeadInfo
@@ -142,11 +168,21 @@ typedef struct _sHeadInfo
 
 typedef struct _sflyHeight
 {
+    int64_t        outer;
     int64_t        inner;
     int64_t        middle;
-    int64_t        outer;
-    _sflyHeight() : inner(0), middle(0), outer(0) {};
+    
+    _sflyHeight() :outer(0), inner(0), middle(0) {};
 }sflyHeight;
+
+typedef struct _H2SAT
+{
+    int64_t        zone0;
+    int64_t        zone1;
+    int64_t        zone2;
+
+    _H2SAT() : zone0(0), zone1(0), zone2(0) {};
+}H2SAT;
 
 typedef struct _sAtaReliabilityStat
 {
@@ -188,8 +224,8 @@ typedef struct _sAtaReliabilityStat
     int64_t         numberOfTMD[MAX_HEAD_COUNT];                 //!< [24] Number of TMD over last 3 SMART Summary Frames by Head
     int64_t         velocityObserver[MAX_HEAD_COUNT];            //!< [24] Velocity Observer over last 3 SMART Summary Frames by Head
     int64_t         numberOfVelocityObserver[MAX_HEAD_COUNT];    //!< [24] Number of Velocity Observer over last 3 SMART Summary Frames by Head
-    sflyHeight      currentH2SAT[MAX_HEAD_COUNT];                //!< [24] Current H2SAT trimmed mean bits in error by Head, by Test Zone 
-    sflyHeight      currentH2SATIterations[MAX_HEAD_COUNT];      //!< [24] Qword[24][3] Current H2SAT iterations to converge by Head, by Test Zone 
+    H2SAT           currentH2SAT[MAX_HEAD_COUNT];                //!< [24] Current H2SAT trimmed mean bits in error by Head, by Test Zone 
+    H2SAT           currentH2SATIterations[MAX_HEAD_COUNT];      //!< [24] Qword[24][3] Current H2SAT iterations to converge by Head, by Test Zone 
     int64_t         currentH2SATPercentage[MAX_HEAD_COUNT];      //!< [24] Qword[24] Current H2SAT percentage of codewords at iteration level by Head, averaged
     int64_t         currentH2SATamplitude[MAX_HEAD_COUNT];       //!< [24] Qword[24] Current H2SAT amplitude by Head, averaged across Test Zones 
     int64_t         currentH2SATasymmetry[MAX_HEAD_COUNT];       //!< [24] Qword[24] Current H2SAT asymmetry by Head, averaged across Test Zones
@@ -213,6 +249,35 @@ typedef struct _sAtaReliabilityStat
     sflyHeight      FAFHLowFrequency[MAX_HEAD_COUNT];            //<! [24][3] FAFH Low Frequency Passive Clearance in ADC counts (added in 4.5)
     sflyHeight      FAFHHighFrequency[MAX_HEAD_COUNT];           //<! [24][3] FAFH High Frequency Passive Clearance in ADC counts (added in 4.5)
     uint64_t        numberLBACorrectedByParitySector;            //<! Number of LBAs Corrected by Parity Sector
+    //4.21
+    uint64_t        SuperParityCovPercent;                       //!< Primary Super Parity Coverage Percentae, Actuator 0
+    uint64_t        numberOfLFAIterations[MAX_HEAD_COUNT];       //!< Number of total Laser Field Adjust iterations performed per head
+    sflyHeight      laserOperCurrent[MAX_HEAD_COUNT];            //!< Laser Operating Current by head Diameter 0: Outer Diameter 1: Inner Diameter 2: Middle
+    sflyHeight      postLFABER[MAX_HEAD_COUNT];                  //!< Post LFA Optimal BER by head Diameter 0: Outer Diameter 1: Inner Diameter 2: Middle
+    uint64_t        lastIDDTimeAct1;                             //!< Timestamp of last IDD test in Hours(POH), Actuator 1
+    uint64_t        cmdLastIDDTestAct1;                          //!< Sub Command of last IDD Test, Actuator 1
+    uint64_t        reallocSectorReclamAct1;                     //!< Number of Reallocated Sector Reclamations, Actuator 1
+    uint64_t        servoStatusAct1;                             //!< Servo Status (follows standard DST error code definitions), Actuator 1
+    uint64_t        slippedSectorsBefIDDAct1;                    //!< Number of Slipped Sectors Before IDD Scan, Actuator 1
+    uint64_t        slippedSectorsAftIDDAct1;                    //!< Number of Slipped Sectors After IDD Scan, Actuator 1
+    uint64_t        resReallocSectorsBefIDDAct1;                 //!< Number of Resident Reallocated Sectors Before IDD Scan, Actuator 1
+    uint64_t        resReallocSectorsAftIDDAct1;                 //!< Number of Resident Reallocated Sectors After IDD Scan, Actuator 1
+    uint64_t        scrubbedSectorsBefIDDAct1;                   //!< Number of Successfully Scrubbed Sectors Before IDD Scan, Actuator 1
+    uint64_t        scrubbedSectorsAftIDDAct1;                   //!< Number of Successfully Scrubbed Sectors After IDD Scan, Actuator 1
+    uint64_t        DOSScansAct1;                                //!< Number of DOS Scans Performed, Actuator 1
+    uint64_t        correctedLBAsAct1;                           //!< Number of LBAs Corrected by ISP, Acuator 1
+    uint64_t        validParitySectAct1;                         //!< Number of Valid Parity Sectors, Actuator 1
+    uint64_t        rvAbsMeanAct1;                               //!< RV Absolute Mean, value from most recent SMART Summary Frame in rad/s^2, Actuator 1
+    uint64_t        rvAbsMeanMaxAct1;                            //!< Max RV Absolute Mean, value from most recent SMART Summary Frame in rad/s^2, Actuator 1
+    uint64_t        idleTimeAct1;                                //!< Idle Time, value from most recent SMART Summary Frame in seconds, Actuator 1                  
+    uint64_t        parityCorrLBAAct1;                           //!< Number of LBAs Corrected by Parity Sector, Actuator 1
+    uint64_t        superParityCovPercentAct1;                   //!< Primary Super Parity Coverage Percentage, Actuator 1 
+    uint64_t        numOfReaderWriterOffset[MAX_HEAD_COUNT];     //!< Qword[24]	Number of Reader Writer offset Iterations by head
+    H2SAT           microJogOffset[MAX_HEAD_COUNT];              //!< Qword[24][3]	Micro Jog Offset by head
+    H2SAT           preLFABitErrorRate[MAX_HEAD_COUNT];          //!< Qword[24][3]	Pre LFA Bit Error Rate
+    H2SAT           zeroPercentShiftErrorRate[MAX_HEAD_COUNT];   //!< Qword[24][3]	Zero Percent Shift Bit Error Rate
+    uint64_t        superParityCoveragePercentageAct0;           //!< Primary Super Parity Coverage Percentage SMR/SWR, Actuator 0
+    uint64_t        superParityCoveragePercentageAct1;           //!< Primary Super Parity Coverage Percentage SMR/SWR, Actuator 1
 }sAtaReliabilityStat;
 
 typedef struct _sFarmFrame

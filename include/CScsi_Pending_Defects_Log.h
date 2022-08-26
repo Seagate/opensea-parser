@@ -2,7 +2,7 @@
 //
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2021 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -52,17 +52,21 @@ namespace opensea_parser {
 		size_t						m_bufferLength;			    //<! length of the buffer from reading in the log
 		sPendindDefectCount			*m_PListCountParam;			//<! Parameters to the Plist count
 		sDefect						*m_PlistDefect;				//<! structure to the Pending defect
+		uint32_t					m_count;					//<! the total count of pending defects found
 
-		void get_Supported_And_Subpage_Description(std::string *description);
 		void process_PList_Data(JSONNODE *pendingData);
 		void process_PList_Count(JSONNODE *pendingCount);
 		eReturnValues get_Plist_Data(JSONNODE *masterData);
+
 	public:
 		CScsiPendingDefectsLog();
 		CScsiPendingDefectsLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength);
 		virtual ~CScsiPendingDefectsLog();
 		virtual eReturnValues get_Log_Status() { return m_PlistStatus; };
-		virtual eReturnValues parse_Supported_Log_Pages_Log(JSONNODE *masterData) { return get_Plist_Data(masterData); };
+		virtual eReturnValues parse_Plist_Log(JSONNODE *masterData) 
+		{ 
+			return get_Plist_Data(masterData);
+		};
 
 	};
 #endif

@@ -2,7 +2,7 @@
 // CAta_NCQ_Command_Error_Log.cpp
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2021 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -58,13 +58,13 @@ CAta_NCQ_Command_Error_Log::CAta_NCQ_Command_Error_Log(const std::string & fileN
 		{
 			size_t logSize = cCLog->get_Size();
 			pBuf = new uint8_t[logSize];								// new a buffer to the point				
-#ifndef _WIN64
+#ifndef __STDC_SECURE_LIB__
 			memcpy(pBuf, cCLog->get_Buffer(), logSize);
 #else
 			memcpy_s(pBuf, logSize, cCLog->get_Buffer(), logSize);// copy the buffer data to the class member pBuf
 #endif
 			sLogPageStruct *idCheck;
-			idCheck = (sLogPageStruct *)&pBuf[0];
+			idCheck = reinterpret_cast<sLogPageStruct*>(&pBuf[0]);
 			byte_Swap_16(&idCheck->pageLength);
 			if (IsScsiLogPage(idCheck->pageLength, idCheck->pageCode) == false)
 			{
@@ -152,8 +152,6 @@ CAta_NCQ_Command_Error_Log::~CAta_NCQ_Command_Error_Log()
 //---------------------------------------------------------------------------
 bool CAta_NCQ_Command_Error_Log::get_Bit_Name_Info(JSONNODE *NCQInfo)
 {
-    std::string myStr = " ";
-    myStr.resize(BASIC);
     bool validNCQ = true;
     bool idleCmd = false;
     uint8_t ncqTag = M_GETBITRANGE(ncqError->NCQbit, 4, 0);
@@ -190,7 +188,7 @@ bool CAta_NCQ_Command_Error_Log::get_Bit_Name_Info(JSONNODE *NCQInfo)
 //---------------------------------------------------------------------------
 bool CAta_NCQ_Command_Error_Log::create_LBA()
 {
-    m_LBA = ((uint64_t)ncqError->lba6 << 40) | ((uint64_t)ncqError->lba5 << 32) | ((uint64_t)ncqError->lba4 << 24) | ((uint64_t)ncqError->lba3 << 16) | ((uint64_t)ncqError->lba2 << 8) | ((uint64_t)ncqError->lba1);
+    m_LBA = M_BytesTo8ByteValue(0, 0, ncqError->lba6, ncqError->lba5, ncqError->lba4, ncqError->lba3, ncqError->lba2, ncqError->lba1);
     return true;
 }
 //-----------------------------------------------------------------------------
@@ -211,7 +209,7 @@ eReturnValues CAta_NCQ_Command_Error_Log::get_NCQ_Command_Error_Log(JSONNODE *ma
 {
     JSONNODE *NCQInfo = json_new(JSON_NODE);
     json_set_name(NCQInfo, "NCQ Command Error Log");
-    ncqError = (sNCQError *)&pBuf[0];
+    ncqError = reinterpret_cast<sNCQError*>(&pBuf[0]);
     get_Bit_Name_Info(NCQInfo);
     create_LBA();
     json_push_back(NCQInfo, json_new_i("Status", static_cast<uint32_t>(ncqError->status)));

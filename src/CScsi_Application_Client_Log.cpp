@@ -2,7 +2,7 @@
 // CScsi_Application_Client_Log.cpp  Definition of Application Client Log where clients store information
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2021 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -13,6 +13,8 @@
 // \file CScsi_Application_Client_Log.cpp  Definition of Application Client Log where clients store information
 //
 #include "CScsi_Application_Client_Log.h"
+#include <sstream>
+#include <iomanip>
 
 using namespace opensea_parser;
 //-----------------------------------------------------------------------------
@@ -115,56 +117,56 @@ CScsiApplicationLog::~CScsiApplicationLog()
 //---------------------------------------------------------------------------
 void CScsiApplicationLog::process_Client_Data(JSONNODE *appData)
 {
-	std::string myStr = "";
-	myStr.resize(BASIC);
 #if defined _DEBUG
 	printf("Application Client Description \n");
 #endif
 	byte_Swap_16(&m_App->paramCode);
 	//get_Cache_Parameter_Code_Description(&myStr);
-	snprintf((char*)myStr.c_str(), BASIC, "Application Client Log 0x%04" PRIx16"", m_App->paramCode);
+    std::ostringstream temp;
+    temp << "Application Client Log 0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << m_App->paramCode;
 	JSONNODE *appInfo = json_new(JSON_NODE);
-	json_set_name(appInfo, (char*)myStr.c_str());
+	json_set_name(appInfo, temp.str().c_str());
     
-    snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_App->paramCode);
-    json_push_back(appInfo, json_new_a("Application Client Parameter Code", (char*)myStr.c_str()));
+    temp.str("");temp.clear();
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << m_App->paramCode;
+    json_push_back(appInfo, json_new_a("Application Client Parameter Code", temp.str().c_str()));
 
-    snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_App->paramControlByte);
-    json_push_back(appInfo, json_new_a("Application Client Control Byte ", (char*)myStr.c_str()));
-    snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_App->paramLength);
-    json_push_back(appInfo, json_new_a("Application Client Length ", (char*)myStr.c_str()));
+    temp.str("");temp.clear();
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_App->paramControlByte);
+    json_push_back(appInfo, json_new_a("Application Client Control Byte ", temp.str().c_str()));
+    temp.str("");temp.clear();
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_App->paramLength);
+    json_push_back(appInfo, json_new_a("Application Client Length ", temp.str().c_str()));
     
     // format to show the buffer data.
     if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
         uint32_t lineNumber = 0;
-        char *innerMsg = (char*)calloc(128, sizeof(char));
-        char* innerStr = (char*)calloc(60, sizeof(char));
         uint32_t offset = 0;
 
 
         for (uint32_t outer = 0; outer < APP_CLIENT_DATA_LEN - 1; )
         {
-            snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIX32 "", lineNumber);
-            sprintf(innerMsg, "%02" PRIX8 "", m_App->data[offset]);
+            temp.str("");temp.clear();
+            temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << lineNumber;
+
+            std::ostringstream innerMsg;
+            innerMsg << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_App->data[offset]);
             // inner loop for creating a single ling of the buffer data
             for (uint32_t inner = 1; inner < 16 && offset < APP_CLIENT_DATA_LEN - 1; inner++)
             {
-                sprintf(innerStr, "%02" PRIX8"", m_App->data[offset]);
+                innerMsg << std::hex << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_App->data[offset]);
                 if (inner % 4 == 0)
                 {
-                    strncat(innerMsg, " ", 1);
+                    innerMsg << " ";
                 }
-                strncat(innerMsg, innerStr, 2);
                 offset++;
             }
             // push the line to the json node
-            json_push_back(appInfo, json_new_a((char*)myStr.c_str(), innerMsg));
+            json_push_back(appInfo, json_new_a(temp.str().c_str(), innerMsg.str().c_str()));
             outer = offset;
             lineNumber = outer;
         }
-        safe_Free(innerMsg);  //free the string
-        safe_Free(innerStr);  // free the string
     }
 	json_push_back(appData, appInfo);
 }
@@ -191,7 +193,7 @@ eReturnValues CScsiApplicationLog::get_Client_Data(JSONNODE *masterData)
 		json_set_name(pageInfo, "Application Client Log - Fh");
         uint16_t l_NumberOfPartitions = 0;
 
-		for (size_t offset = 0; ((offset < m_PageLength) && (l_NumberOfPartitions <= MAX_PARTITION));)
+		for (uint32_t offset = 0; ((offset < m_PageLength) && (l_NumberOfPartitions <= MAX_PARTITION));)
 		{
 			if (offset+sizeof(sApplicationParams) < m_bufferLength && offset < UINT16_MAX)
 			{

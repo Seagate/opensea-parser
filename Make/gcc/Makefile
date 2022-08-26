@@ -14,7 +14,7 @@ NAME=opensea-parser
 #Change the Major version when major interface changes are made.
 MAJOR=0
 #Change the Minor version when new features are added. 
-MINOR=0
+MINOR=1
 #Change the patch version when only bug fixes are made.
 PATCH=14
 
@@ -31,9 +31,11 @@ VERSION=$(MAJOR).$(MINOR).$(PATCH)
 SRC_DIR=../../src/
 INC_DIR=-I../../include -I../../include/Seagate -I../../../opensea-common/include -I../../../libjson
 CXX ?= g++
-CXXFLAGS ?= -Wall
+CXXFLAGS ?= -Wall -Wextra -Werror=old-style-cast -Wshadow -Wmaybe-uninitialized -Wvla -Wfloat-equal \
+    -Wlogical-op -Wdouble-promotion -Wformat-security
 CXXFLAGS += -c -fPIC -std=c++98 -I.
 ARCHIVE ?= ar
+LFLAGS ?= -Wall-Wl,--whole-archive ../../../opensea-common/Make/gcc/lib/$(FILE_OUTPUT_DIR)/libopensea-common.a -Wl,--no-whole-archive
 LIB_SRC_FILES = \
     $(SRC_DIR)Opensea_Parser_Helper.cpp\
     $(SRC_DIR)CLog.cpp\
@@ -57,6 +59,8 @@ LIB_SRC_FILES = \
     $(SRC_DIR)CScsi_Informational_Exeptions_Log.cpp\
     $(SRC_DIR)CScsi_Logical_Block_Provisioning_Log.cpp\
     $(SRC_DIR)CScsi_Non_Medium_Error_Count_Log.cpp\
+    $(SRC_DIR)CScsi_Page_19h_Cache_Memory_Statistics_Log.cpp\
+    $(SRC_DIR)CScsi_Page_19h_Command_Duration_Limits_Log.cpp\
     $(SRC_DIR)CScsi_Pending_Defects_Log.cpp\
     $(SRC_DIR)CScsi_Power_Condition_Transitions_Log.cpp\
     $(SRC_DIR)CScsi_Protocol_Specific_Port_Log.cpp\
@@ -82,7 +86,37 @@ FILE_OUTPUT_DIR=lib
 
 #-include $(DEPFILES)
 
-.PHONY: all 
+#Add more warnings for the GCC versions that support them
+#gcc 5.5 and up : -Wlogical-not-parentheses
+#    6.5 and up : -Wnull-dereference -Wduplicated-cond -Wshift-overflow=2
+ifeq ($(UNAME),Linux)
+	GCC_VERSION_STRING = $(shell $(CC) -dumpversion)
+	GCC_VER = $(subst ., ,$(GCC_VERSION_STRING))
+	GCC_MAJOR = $(word 1,$(GCC_VER))
+	GCC_MINOR = $(word 2,$(GCC_VER))
+	GCC_SUBMINOR = $(word 3,$(GCC_VER))
+	ifeq ($(GCC_MINOR),)
+		GCC_MINOR = 0
+	endif 
+	ifeq ($(GCC_SUBMINOR),)
+		GCC_SUBMINOR = 0
+	endif
+	ifeq ($(shell test $(GCC_MAJOR) -gt 4; echo $$?),0)
+		ifeq ($(shell test $(GCC_MINOR) -gt 4; echo $$?),0)
+			CXXFLAGS += -Wlogical-not-parentheses
+		endif
+	endif
+	ifeq ($(shell test $(GCC_MAJOR) -gt 5; echo $$?),0)
+		ifeq ($(shell test $(GCC_MINOR) -gt 4; echo $$?),0)
+			CXXFLAGS += -Wnull-dereference -Wduplicated-cond -Wshift-overflow=2
+		endif
+	endif
+endif
+
+.PHONY: all
+ 
+python: PROJECT_DEFINES += -DPREPYTHON
+python: all 
 
 all: clean mkoutputdir $(LIBS) done
 
@@ -94,6 +128,8 @@ $(LIBS): $(LIB_OBJ_FILES)
 	$(ARCHIVE) cq $(FILE_OUTPUT_DIR)/$@ $(LIB_OBJ_FILES)
 # Removing the line below since we don't need a shared object for this right now...a static library is enough for the common stuff
 	$(CXX) $(LXXFLAGS) $(LIB_OBJ_FILES) -o lib$(NAME).so.$(VERSION)
+	cd $(FILE_OUTPUT_DIR) && ln -s lib$(NAME).so* lib$(NAME).so
+
 clean: banner
 	rm -f $(SRC_DIR)*.o
 	rm -f $(SRC_DIR)Seagate/*.o

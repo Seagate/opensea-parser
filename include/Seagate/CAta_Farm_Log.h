@@ -3,7 +3,7 @@
 //
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2021 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -23,13 +23,14 @@
 #include "Farm_Helper.h"
 #include "Farm_Common.h"
 #include "Ata_Farm_Types.h"
+#include <sstream>
 
 namespace opensea_parser {
 
 #ifndef ATAFARM
 #define ATAFARM
 
-    class CATA_Farm_Log 
+    class CATA_Farm_Log : public CFarmCommon
     {
         protected:
 
@@ -48,8 +49,7 @@ namespace opensea_parser {
             uint8_t                     *pBuf;                              //!< pointer to the buffer data that is the binary of FARM LOG
             uint32_t                    m_MajorRev;                         //!< holds the Major Revision number
             uint32_t                    m_MinorRev;                         //!< holds the minor revision number
-            CFarmCommon         _common;
-
+ 
             eReturnValues print_Header(JSONNODE *masterData);
             eReturnValues print_Drive_Information(JSONNODE *masterData, uint32_t page);
             eReturnValues print_Work_Load(JSONNODE *masterData, uint32_t page);
@@ -57,154 +57,13 @@ namespace opensea_parser {
             eReturnValues print_Enviroment_Information(JSONNODE *masterData, uint32_t page);
             eReturnValues print_Reli_Information(JSONNODE *masterData, uint32_t page);
             eReturnValues print_Head_Information(JSONNODE *masterData, uint32_t page);
-			//-----------------------------------------------------------------------------
-			//
-			//! \fn Create_Serial_Number()
-			//
-			//! \brief
-			//!   Description:  takes the two uint64 bit seiral number values and create a string serial number
-			//
-			//  Entry:
-			//! \param serialNumber - string for holding the serial number of the drive ( putting it all together)
-			//! \param idInfo  =  pointer to the drive info structure that holds the infromation needed
-			//
-			//  Exit:
-			//!   \return serialNumber = the string serialNumber
-			//
-			//---------------------------------------------------------------------------
-			inline void create_Serial_Number(std::string &serialNumber, const sDriveInfo * const idInfo)
-			{
-				uint64_t sn = 0;
-				sn = (idInfo->serialNumber & 0x00FFFFFFFFFFFFFFLL) | ((idInfo->serialNumber2 & 0x00FFFFFFFFFFFFFFLL) << 32);
-				serialNumber.resize(SERIAL_NUMBER_LEN);
-				memset((char*)serialNumber.c_str(), 0, SERIAL_NUMBER_LEN);
-				strncpy((char *)serialNumber.c_str(), (char*)&sn, SERIAL_NUMBER_LEN);
-				byte_Swap_String((char *)serialNumber.c_str());
-			}
-			//-----------------------------------------------------------------------------
-			//
-			//! \fn Create_World_Wide_Name()
-			//
-			//! \brief
-			//!   Description:  takes the two uint64 bit world wide name values and create a string world wide name 
-			//
-			//  Entry:
-			//! \param worldwideName - string to hold the world wide name ... putting it all together
-			//! \param idInfo  =  pointer to the drive info structure that holds the infromation needed
-			//
-			//  Exit:
-			//!   \return wordWideName = the string wordWideName
-			//
-			//---------------------------------------------------------------------------
-			inline void create_World_Wide_Name(std::string &worldWideName, const sDriveInfo * const idInfo)
-			{
-				uint64_t wwn = 0;
-				uint64_t wwn1 = idInfo->worldWideName2 & 0x00FFFFFFFFFFFFFFLL;
-				uint64_t wwn2 = idInfo->worldWideName & 0x00FFFFFFFFFFFFFFLL;
-				word_Swap_64(&wwn1);
-				word_Swap_64(&wwn2);
-				wwn = (wwn2) | ((wwn1) >> 32);
-				worldWideName.resize(WORLD_WIDE_NAME_LEN);
-				memset((char *)worldWideName.c_str(), 0, WORLD_WIDE_NAME_LEN);
-				snprintf((char *)worldWideName.c_str(), WORLD_WIDE_NAME_LEN, "0x%" PRIX64"", wwn);
-			}
-			//-----------------------------------------------------------------------------
-			//
-			//! \fn Create_Firmware_String()
-			//
-			//! \brief
-			//!   Description:  takes the two uint64 bit firmware Rev values and create a string firmware Rev 
-			//
-			//  Entry:
-			//! \param firmwareRev - string for holding the firmware rev
-			//! \param idInfo  =  pointer to the drive info structure that holds the infromation needed
-			//
-			//  Exit:
-			//!   \return firmwareRev = the string firmwareRev
-			//
-			//---------------------------------------------------------------------------
-			inline void create_Firmware_String(std::string &firmwareRev, const sDriveInfo * const idInfo)
-			{
-				uint64_t firm = 0;
-				firm = (idInfo->firmware & 0x00FFFFFFFFFFFFFFLL);
-				firmwareRev.resize(FIRMWARE_REV_LEN);
-				memset((char *)firmwareRev.c_str(), 0, FIRMWARE_REV_LEN);
-				strncpy((char *)firmwareRev.c_str(), (char*)&firm, FIRMWARE_REV_LEN);
-				byte_Swap_String((char *)firmwareRev.c_str());
-			}
-            //-----------------------------------------------------------------------------
-            //
-            //! \fn Create_Model_Number_String()
-            //
-            //! \brief
-            //!   Description:  takes the 10 uint64 bit Model number field values and create a string 
-            //
-            //  Entry:
-            //! \param modelNumber - string for holding the Model number
-            //! \param idInfo  =  pointer to the drive info structure that holds the infromation needed
-            //
-            //  Exit:
-            //!   \return modelNumber = the string Model number
-            //
-            //---------------------------------------------------------------------------
-            inline void create_Model_Number_String(std::string &modelNumber, const sDriveInfo * const idInfo)
-            {
-                #define MAXSIZE  10
-                uint64_t model[MAXSIZE] = { 0,0,0,0,0,0,0,0,0,0 };
-                // loop for string the 0xc0 off
-                for (uint8_t i = 0; i < MAXSIZE; i++)
-                {
-                    model[i] = idInfo->modelNumber[i] & 0x00FFFFFFFFFFFFFFLL;
-                }
-                // temp string for coping the hex to text, have to resize for c98 issues
-                std::string tempStr = "";
-                tempStr.resize(BASIC);
-                modelNumber.resize(BASIC);
-                // memset them to 0
-                memset((char *)modelNumber.c_str(), 0, BASIC);
-                memset((char *)tempStr.c_str(), 0, BASIC);
-                // loop to copy the info into the modeleNumber string
-                for (uint8_t n = 0; n < MAXSIZE; n++)
-                {
-                    model[n] = idInfo->modelNumber[n] & 0x00FFFFFFFFFFFFFFLL;
-                    strncpy((char *)tempStr.c_str(), (char*)&model[n], 10);
-                    byte_Swap_String((char *)tempStr.c_str());
-                    strncat((char *)modelNumber.c_str(), (char*)tempStr.c_str(), sizeof(tempStr));
-                }
-                remove_Trailing_Whitespace((char *)modelNumber.c_str());
-            }
-			//-----------------------------------------------------------------------------
-			//
-			//! \fn Create_Device_Interface_String()
-			//
-			//! \brief
-			//!   Description:  takes the two uint64 bit Devie interface string values and create a string device interface  
-			//
-			//  Entry:
-			//! \param dInterface - pointer to the Devie interface v, where once constructed, will hold the Devie interface of the drive
-			//! \param idInfo  =  pointer to the drive info structure that holds the infromation needed
-			//
-			//  Exit:
-			//!   \return dInterface = the string dInterface
-			//
-			//---------------------------------------------------------------------------
-			inline void create_Device_Interface_String(std::string &dInterface, const sDriveInfo * const idInfo)
-			{
-				uint64_t dFace = 0;
-				dFace = (idInfo->deviceInterface & 0x00FFFFFFFFFFFFFFLL);
-				byte_Swap_64(&dFace);
-				dFace = (dFace >> 32);
-				dInterface.resize(DEVICE_INTERFACE_LEN);
-				memset((char *)dInterface.c_str(), 0, DEVICE_INTERFACE_LEN);
-				strncpy((char *)dInterface.c_str(), (char*)&dFace, DEVICE_INTERFACE_LEN);
-			}
 
         public:
             CATA_Farm_Log();
             CATA_Farm_Log( uint8_t *bufferData, size_t bufferSize, bool showStatus);
             virtual ~CATA_Farm_Log();
             eReturnValues parse_Farm_Log();
-            void get_Reallocated_Sector_By_Cause(std::string *description, uint64_t readWriteRetry);
+            //void get_Reallocated_Sector_By_Cause(std::string *description, uint64_t readWriteRetry);
             void print_All_Pages(JSONNODE *masterData);
             void print_Page(JSONNODE *masterData, uint32_t page);
             void print_Page_Without_Drive_Info(JSONNODE *masterData, uint32_t page);

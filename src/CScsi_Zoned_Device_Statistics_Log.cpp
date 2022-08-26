@@ -1,8 +1,8 @@
 //
-// CScsi_Zoned_Device_Statistics_Log.cpp  Definition of Error Counter for READ WRITE VERIFY ERRORS
+// CScsi_Zoned_Device_Statistics_Log.cpp  
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2021 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -113,80 +113,82 @@ CScsiZonedDeviceStatisticsLog::~CScsiZonedDeviceStatisticsLog()
 //!   \return void
 //
 //---------------------------------------------------------------------------
-bool CScsiZonedDeviceStatisticsLog::get_ZDS_Parameter_Code_Description(uint16_t paramCode, std::string *zdsString)
+bool CScsiZonedDeviceStatisticsLog::get_ZDS_Parameter_Code_Description(std::string *zdsString)
 {
     bool descriptionFound = false;
     switch (m_ZDSParam->paramCode)
     {
     case 0x0000:
     {
-        snprintf((char*)zdsString->c_str(), BASIC, "Maximum Open Zones");
+        zdsString->assign("maximum open zones");
         descriptionFound = true;
         break;
     }
     case 0x0001:
     {
-        snprintf((char*)zdsString->c_str(), BASIC, "Maximum Explicitly Open Zones");
+        zdsString->assign("maximum explicitly open zones");
         descriptionFound = true;
         break;
     }
     case 0x0002:
     {
-        snprintf((char*)zdsString->c_str(), BASIC, "Maximum Implicitly Open Zones");
+        zdsString->assign("maximum implicitly open zones");
         descriptionFound = true;
         break;
     }
     case 0x0003:
     {
-        snprintf((char*)zdsString->c_str(), BASIC, "Minimum Empty Zones");
+        zdsString->assign("minimum empty zones");
         descriptionFound = true;
         break;
     }
     case 0x0004:
     {
-        snprintf((char*)zdsString->c_str(), BASIC, "Maximum Non-sequential Zones");
+        zdsString->assign("maximum non-sequential zones");
         descriptionFound = true;
         break;
     }
     case 0x0005:
     {
-        snprintf((char*)zdsString->c_str(), BASIC, "Zones Emptied");
+        zdsString->assign("zones emptied");
         descriptionFound = true;
         break;
     }
     case 0x0006:
     {
-        snprintf((char*)zdsString->c_str(), BASIC, "Suboptimal Write Commands");
+        zdsString->assign("suboptimal write commands");
         descriptionFound = true;
         break;
     }
     case 0x0007:
     {
-        snprintf((char*)zdsString->c_str(), BASIC, "Commands Exceeding Optimal Limit");
+        zdsString->assign("commands exceeding optimal limit");
         descriptionFound = true;
         break;
     }
     case 0x0008:
     {
-        snprintf((char*)zdsString->c_str(), BASIC, "Failed Explicit Opens");
+        zdsString->assign("failed explicit opens");
         descriptionFound = true;
         break;
     }
     case 0x0009:
     {
-        snprintf((char*)zdsString->c_str(), BASIC, "Read Rule Violations");
+        zdsString->assign("read rule violations");
         descriptionFound = true;
         break;
     }
     case 0x000A:
     {
-        snprintf((char*)zdsString->c_str(), BASIC, "Write Rule Violations");
+        zdsString->assign("write rule violations");
         descriptionFound = true;
         break;
     }
     default:
     {
-        snprintf((char*)zdsString->c_str(), BASIC, "Vendor Specific 0x%04" PRIx16"", m_ZDSParam->paramCode);
+        std::ostringstream temp;
+        temp << "Vendor Specific 0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) <<  m_ZDSParam->paramCode;
+        zdsString->assign(temp.str());
         break;
     }
     }
@@ -208,32 +210,30 @@ bool CScsiZonedDeviceStatisticsLog::get_ZDS_Parameter_Code_Description(uint16_t 
 //---------------------------------------------------------------------------
 void CScsiZonedDeviceStatisticsLog::process_Zoned_Device_Statistics_Data(JSONNODE *zdsData)
 {
-    bool descriptionFound = false;
-    std::string myStr = "";
-    myStr.resize(BASIC);
-    std::string myHeader = "";
-    myHeader.resize(BASIC);
-
+    std::string myHeader;
     if (m_ZDSValue != 0)
     {
 #if defined _DEBUG
         printf("Zoned Device Statistics Log  \n");
 #endif
         byte_Swap_16(&m_ZDSParam->paramCode);
-        descriptionFound = get_ZDS_Parameter_Code_Description(m_ZDSParam->paramCode, &myHeader);
+        bool descriptionFound = get_ZDS_Parameter_Code_Description( &myHeader);
 
         JSONNODE *zdsInfo = json_new(JSON_NODE);
-        json_set_name(zdsInfo, (char*)myHeader.c_str());
+        json_set_name(zdsInfo, myHeader.c_str());
 
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_ZDSParam->paramCode);
-        json_push_back(zdsInfo, json_new_a("Zoned Device Statistics Param Code", (char*)myStr.c_str()));
+        std::ostringstream temp;
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << m_ZDSParam->paramCode;
+        json_push_back(zdsInfo, json_new_a("Zoned Device Statistics Param Code", temp.str().c_str()));
 
         if (!descriptionFound)
         {
-            snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_ZDSParam->paramControlByte);
-            json_push_back(zdsInfo, json_new_a("Zoned Device Statistics Param Control Byte ", (char*)myStr.c_str()));
-            snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_ZDSParam->paramLength);
-            json_push_back(zdsInfo, json_new_a("Zoned Device Statistics Param Length ", (char*)myStr.c_str()));
+            temp.str("");temp.clear();
+            temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_ZDSParam->paramControlByte);
+            json_push_back(zdsInfo, json_new_a("Zoned Device Statistics Param Control Byte ", temp.str().c_str()));
+            temp.str("");temp.clear();
+            temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_ZDSParam->paramLength);
+            json_push_back(zdsInfo, json_new_a("Zoned Device Statistics Param Length ", temp.str().c_str()));
         }
 
         if (m_ZDSParam->paramLength == 8 || m_ZDSValue > UINT32_MAX)
@@ -248,8 +248,9 @@ void CScsiZonedDeviceStatisticsLog::process_Zoned_Device_Statistics_Data(JSONNOD
             }
             else
             {
-                snprintf((char*)myStr.c_str(), BASIC, "%" PRIu32"", static_cast<uint32_t>(m_ZDSValue));
-                json_push_back(zdsInfo, json_new_a("Zoned Device Statistics Param Value", (char*)myStr.c_str()));
+                temp.str("");temp.clear();
+                temp << std::dec << m_ZDSValue;
+                json_push_back(zdsInfo, json_new_a("Zoned Device Statistics Param Value", temp.str().c_str()));
             }
         }
 
@@ -272,10 +273,6 @@ void CScsiZonedDeviceStatisticsLog::process_Zoned_Device_Statistics_Data(JSONNOD
 //---------------------------------------------------------------------------
 eReturnValues CScsiZonedDeviceStatisticsLog::get_Zoned_Device_Statistics_Data(JSONNODE *masterData)
 {
-    std::string myStr = "";
-    myStr.resize(BASIC);
-    std::string headerStr = "";
-    headerStr.resize(BASIC);
     eReturnValues retStatus = IN_PROGRESS;
     if (pData != NULL)
     {
@@ -286,7 +283,7 @@ eReturnValues CScsiZonedDeviceStatisticsLog::get_Zoned_Device_Statistics_Data(JS
         {
             if (offset < m_bufferLength && offset < UINT16_MAX)
             {
-                m_ZDSParam = (sZDSParams *)&pData[offset];
+                m_ZDSParam = reinterpret_cast<sZDSParams*>(&pData[offset]);
                 offset += sizeof(sZDSParams);
                 switch (m_ZDSParam->paramLength)
                 {
@@ -350,7 +347,6 @@ eReturnValues CScsiZonedDeviceStatisticsLog::get_Zoned_Device_Statistics_Data(JS
                 {
                     json_push_back(masterData, pageInfo);
                     return BAD_PARAMETER;
-                    break;
                 }
                 }
                 process_Zoned_Device_Statistics_Data(pageInfo);

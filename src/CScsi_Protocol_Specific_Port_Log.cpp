@@ -2,7 +2,7 @@
 // CScsi_Protocol_Specific_Port_Log.h   Definition of Protocol-Specific Port log page for SAS
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2021 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -60,13 +60,16 @@ CScsiProtocolPortLog::CScsiProtocolPortLog(uint8_t *buffer, size_t bufferSize)
 	, m_PSPStatus(IN_PROGRESS)
 	, m_PageLength(0)
 	, m_bufferLength(bufferSize)
+	, m_List(NULL)
+	, m_Descriptor(NULL)
+	, m_Event(NULL)
 {
 	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
 		printf("%s \n", m_PSPName.c_str());
 	}
     pData = new uint8_t[bufferSize];								// new a buffer to the point				
-#ifndef _WIN64
+#ifndef __STDC_SECURE_LIB__
     memcpy(pData, buffer, bufferSize);
 #else
     memcpy_s(pData, bufferSize, buffer, bufferSize);           // copy the buffer data to the class member pBuf
@@ -120,24 +123,26 @@ CScsiProtocolPortLog::~CScsiProtocolPortLog()
 //---------------------------------------------------------------------------
 void CScsiProtocolPortLog::process_Events_Data(JSONNODE *eventData)
 {
-	std::string myStr = "";
-	myStr.resize(BASIC);
 #if defined _DEBUG
 	printf("Phy Event Description \n");
 #endif
-	snprintf((char*)myStr.c_str(), BASIC, "Phy Event Description %" PRId8"",m_Event->eventSource);
+    std::ostringstream temp;
+    temp << "Phy Event Description " << std::dec << static_cast<uint16_t>(m_Event->eventSource);
 	JSONNODE *eventInfo = json_new(JSON_NODE);
-	json_set_name(eventInfo, (char*)myStr.c_str());
+	json_set_name(eventInfo, temp.str().c_str());
 
-	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Event->eventSource);
-	json_push_back(eventInfo, json_new_a("Phy Event Source", (char*)myStr.c_str()));
+    temp.str("");temp.clear();
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Event->eventSource);
+	json_push_back(eventInfo, json_new_a("Phy Event Source", temp.str().c_str()));
 
     byte_Swap_32(&m_Event->event);              // need to byte swap on SAS 
     byte_Swap_32(&m_Event->threshold);          // need to byte swap on SAS 
-	snprintf((char*)myStr.c_str(), BASIC, "0x%08" PRIx32"", m_Event->event);
-	json_push_back(eventInfo, json_new_a("Phy Event", (char*)myStr.c_str()));
-	snprintf((char*)myStr.c_str(), BASIC, "0x%08" PRIx32"", m_Event->threshold);
-	json_push_back(eventInfo, json_new_a("Peak Value Detector Threshold", (char*)myStr.c_str()));
+    temp.str("");temp.clear();
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(8) << m_Event->event;
+	json_push_back(eventInfo, json_new_a("Phy Event", temp.str().c_str()));
+    temp.str("");temp.clear();
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(8) << m_Event->threshold;
+	json_push_back(eventInfo, json_new_a("Peak Value Detector Threshold", temp.str().c_str()));
 
 	json_push_back(eventData, eventInfo);
 }
@@ -162,22 +167,22 @@ void CScsiProtocolPortLog::get_Device_Type_Field(std::string *description, uint8
 	{
 		case 0x01:
 		{
-			snprintf((char*)description->c_str(), BASIC, "1 = End device");
+			description->assign("1 = End device");
 			break;
 		}
 		case 0x02:
 		{
-			snprintf((char*)description->c_str(), BASIC, "2 = Expander device");
+            description->assign("2 = Expander device");
 			break;
 		}
 		case 0x03:
 		{
-			snprintf((char*)description->c_str(), BASIC, "3 = Expander device compliant with a previous version of the SAS standard");
+            description->assign("3 = Expander device compliant with a previous version of the SAS standard");
 			break;
 		}
 		default:
 		{
-			snprintf((char*)description->c_str(), BASIC, "Reserved");
+            description->assign("Reserved");
 			break;
 		}
 
@@ -204,55 +209,366 @@ void CScsiProtocolPortLog::get_Reason_Field(std::string *reason, uint8_t code)
 	{
 		case 0x01:
 		{
-			snprintf((char*)reason->c_str(), BASIC, "Unknown reason");
+			reason->assign("Unknown reason");
 			break;
 		}
 		case 0x02:
 		{
-			snprintf((char*)reason->c_str(), BASIC, "Power on");
+            reason->assign("Power on");
 			break;
 		}
 		case 0x03:
 		{
-			snprintf((char*)reason->c_str(), BASIC, "Hard reset"); 
+            reason->assign("Hard reset");
 			break;
 		}
 		case 0x04:
 		{
-			snprintf((char*)reason->c_str(), BASIC, "SMP PHY CONTROL function LINK RESET phy operation"); 
+            reason->assign("SMP PHY CONTROL function LINK RESET phy operation");
 				break;
 		}
 		case 0x05:
 		{
-			snprintf((char*)reason->c_str(), BASIC, "After the multiplexing sequence complete"); 
+            reason->assign("After the multiplexing sequence complete");
 				break;
 		}
 		case 0x06:
 		{
-			snprintf((char*)reason->c_str(), BASIC, "I_T nexus loss timer"); 
+            reason->assign("I_T nexus loss timer");
 				break;
 		}
 		case 0x07:
 		{
-			snprintf((char*)reason->c_str(), BASIC, "Break Timeout Timer expired");
+            reason->assign("Break Timeout Timer expired");
 				break;
 		}
 		case 0x08:
 		{
-			snprintf((char*)reason->c_str(), BASIC, "Phy test function stopped"); 
+            reason->assign("Phy test function stopped");
 				break;
 		}
 		case 0x09:
 		{
-			snprintf((char*)reason->c_str(), BASIC, "Expander device reduced functionality"); 
+            reason->assign("Expander device reduced functionality");
 				break;
 		}
 		default:
 		{
-			snprintf((char*)reason->c_str(), BASIC, "Reserved");
+            reason->assign("Reserved");
 			break;
 		}
 
+	}
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn process_Event_Description
+//
+//! \brief
+//!   Description: parser out the data for phy event source 
+//
+//  Entry:
+//! \param source - string to give the event a name
+//! \param event - code holds event description
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void CScsiProtocolPortLog::process_Event_Description(std::string* source, uint8_t event)
+{
+	switch (event)
+	{
+	case 0x00:
+	{
+		*source = "no event";
+		break;
+	}
+	case 0x01:
+	{
+		*source = "invalid dwords";
+		break;
+	}
+	case 0x02:
+	{
+		*source = "running disparity errors";
+		break;
+	}
+	case 0x03:
+	{
+		*source = "loss of dword sync";
+		break;
+	}
+	case 0x04:
+	{
+		*source = "phy reset problems";
+		break;
+	}
+	case 0x05:
+	{
+		*source = "elasticity buffer overflows";
+		break;
+	}
+	case 0x06:
+	{
+		*source = "received errors";
+		break;
+	}
+	case 0x07:
+		*source = "invalid SPL packets";
+		break;
+	case 0x08:
+		*source = "loss of SPL packet sync";
+		break;
+	case 0x09:
+	case 0x0a:
+	case 0x0b:
+	case 0x0c:
+	case 0x0d:
+	case 0x0e:
+	case 0x0f:
+	case 0x10:
+	case 0x11:
+	case 0x12:
+	case 0x13:
+	case 0x14:
+	case 0x15:
+	case 0x16:
+	case 0x17:
+	case 0x18:
+	case 0x19:
+	case 0x1a:
+	case 0x1b:
+	case 0x1c:
+	case 0x1d:
+	case 0x1e:
+	case 0x1f:
+	{
+		*source = "reserved for phy layer-based phy events";
+		break;
+	}
+	case 0x20:
+	{
+		*source = "received address frame errors";
+		break;
+	}
+	case 0x21:
+	{
+		*source = "transmitted abandon-class open_rejects";
+		break;
+	}
+	case 0x22:
+	{
+		*source = "received abandon-class open_rejects";
+		break;
+	}
+	case 0x23:
+	{
+		*source = "transmitted retry-class open_rejects";
+		break;
+	}
+	case 0x24:
+	{
+		*source = "received retry-class open_rejects";
+		break;
+	}
+	case 0x25:
+	{
+		*source = "received (waiting on partial) apis";
+		break;
+	}
+	case 0x26:
+	{
+		*source = "received (waiting on connection) apis";
+		break;
+	}
+	case 0x27:
+	{
+		*source = "transmitted breaks";
+		break;
+	}
+	case 0x28:
+	{
+		*source = "received breaks";
+		break;
+	}
+	case 0x29:
+	{
+		*source = "break timeouts";
+		break;
+	}
+	case 0x2a:
+	{
+		*source = "connections";
+		break;
+	}
+	case 0x2b:
+	{
+		*source = "peak transmitted pathway blocks";
+		break;
+	}
+	case 0x2c:
+	{
+		*source = "peak transmitted arbitration wait time";
+		break;
+	}
+	case 0x2d:
+	{
+		*source = "peak arbitration time";
+		break;
+	}
+	case 0x2e:
+	{
+		if (g_dataformat == PREPYTHON_DATA)
+		{
+			*source = "peak connection time";
+		}
+		else
+		{
+			*source = "peak connection time pvd the peak duration, in microseconds, of any connection in which the phy was involved";
+		}
+		break;
+	}
+	case 0x2f:
+		*source = "persistent connections";
+		break;
+	case 0x30:
+	case 0x31:
+	case 0x32:
+	case 0x33:
+	case 0x34:
+	case 0x35:
+	case 0x36:
+	case 0x37:
+	case 0x38:
+	case 0x39:
+	case 0x3a:
+	case 0x3b:
+	case 0x3c:
+	case 0x3d:
+	case 0x3e:
+	case 0x3f:
+	{
+		*source = "reserved for sas arbitration-related phy information";
+		break;
+	}
+	case 0x40:
+	{
+		*source = "transmitted ssp frames";
+		break;
+	}
+	case 0x41:
+	{
+		*source = "received ssp frames";
+		break;
+	}
+	case 0x42:
+	{
+		*source = "transmitted ssp frame errors";
+		break;
+	}
+	case 0x43:
+	{
+		*source = "received ssp frame errors";
+		break;
+	}
+	case 0x44:
+	{
+		*source = "transmitted credit_blockeds";
+		break;
+	}
+	case 0x45:
+	{
+		*source = "received credit_blockeds";
+		break;
+	}
+	case 0x46:
+	case 0x47:
+	case 0x48:
+	case 0x49:
+	case 0x4a:
+	case 0x4b:
+	case 0x4c:
+	case 0x4d:
+	case 0x4e:
+	case 0x4f:
+	{
+		*source = "reserved for ssp-related phy events";
+		break;
+	}
+	case 0x50:
+	{
+		*source = "transmitted sata frames";
+		break;
+	}
+	case 0x51:
+	{
+		*source = "received sata frames";
+		break;
+	}
+	case 0x52:
+	{
+		*source = "sata flow control buffer overflows";
+		break;
+	}
+	case 0x53:
+	case 0x54:
+	case 0x55:
+	case 0x56:
+	case 0x57:
+	case 0x58:
+	case 0x59:
+	case 0x5a:
+	case 0x5b:
+	case 0x5c:
+	case 0x5d:
+	case 0x5e:
+	case 0x5f:
+	{
+		*source = "reserved for stp and sata-related phy events";
+		break;
+	}
+	case 0x60:
+	{
+		*source = "transmitted smp frames";
+		break;
+	}
+	case 0x61:
+	{
+		*source = "received smp frames";
+		break;
+	}
+	case 0x62:
+	{
+		*source = "reserved for smp-related phy events";
+		break;
+	}
+	case 0x63:
+	{
+		*source = "received smp frame errors";
+		break;
+	}
+	case 0x64:
+	case 0x65:
+	case 0x66:
+	case 0x67:
+	case 0x68:
+	case 0x69:
+	case 0x6a:
+	case 0x6b:
+	case 0x6c:
+	case 0x6d:
+	case 0x6e:
+	case 0x6f:
+	{
+		*source = "reserved for smp-related phy events";
+		break;
+	}
+	default:
+	{
+		*source = "vendor specific";
+		break;
+	}
 	}
 }
 //-----------------------------------------------------------------------------
@@ -276,22 +592,27 @@ void CScsiProtocolPortLog::get_Negotiated_Logical_Link_Rate(std::string *rate, u
 	{
 		case 0x09:
 		{
-			snprintf((char*)rate->c_str(), BASIC, "1.5 GBs");
+			rate->assign("1.5 GBs");
 			break;
 		}
 		case 0x0a:
 		{
-			snprintf((char*)rate->c_str(), BASIC, "3.5  to 6 GBs");
+            rate->assign("3.5  to 6 GBs");
 			break;
 		}
 		case 0x0b:
 		{
-			snprintf((char*)rate->c_str(), BASIC, "6 - 12 GBs");
+            rate->assign("6 - 12 GBs");
+			break;
+		}
+		case 0x0c:
+		{
+            rate->assign("22.5 GBs");
 			break;
 		}
 		default:
 		{
-			snprintf((char*)rate->c_str(), BASIC, "Same as the NEGOTIATED LOGICAL LINK RATE field");
+            rate->assign("Same as the NEGOTIATED LOGICAL LINK RATE field");
 			break;
 		}
 	}
@@ -312,60 +633,70 @@ void CScsiProtocolPortLog::get_Negotiated_Logical_Link_Rate(std::string *rate, u
 //---------------------------------------------------------------------------
 void CScsiProtocolPortLog::process_Descriptor_Information(JSONNODE *descData)
 {
-	std::string myStr = "";
-	myStr.resize(BASIC);
+	std::string myStr;
 #if defined _DEBUG
 	printf("Descriptor Information \n");
 #endif
-
-	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Descriptor->phyIdent);
-	json_push_back(descData, json_new_a("PHY Identifier", (char*)myStr.c_str()));
-	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Descriptor->phyLength);
-	json_push_back(descData, json_new_a("SAS Phy Descriptor Length", (char*)myStr.c_str()));
-
-	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Descriptor->attached);
-	json_push_back(descData, json_new_a("Attached Device Type and Reason", (char*)myStr.c_str()));
+    std::ostringstream temp;
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Descriptor->phyIdent);
+	json_push_back(descData, json_new_a("PHY Identifier", temp.str().c_str()));
+    temp.str("");temp.clear();
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Descriptor->phyLength);
+	json_push_back(descData, json_new_a("SAS Phy Descriptor Length", temp.str().c_str()));
+    temp.str("");temp.clear();
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Descriptor->attached);
+	json_push_back(descData, json_new_a("Attached Device Type and Reason", temp.str().c_str()));
+    temp.str("");temp.clear();
 	get_Device_Type_Field(&myStr,M_GETBITRANGE(m_Descriptor->attached, 6, 4));
-	json_push_back(descData, json_new_a("Attached Device Type Meaning", (char*)myStr.c_str()));
+	json_push_back(descData, json_new_a("Attached Device Type Meaning", myStr.c_str()));
 	get_Reason_Field(&myStr, M_GETBITRANGE(m_Descriptor->attached, 3, 0));
-	json_push_back(descData, json_new_a("Attached Reason Meaning", (char*)myStr.c_str()));
-
-	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Descriptor->reason);
-	json_push_back(descData, json_new_a("Attached Rate", (char*)myStr.c_str()));
+	json_push_back(descData, json_new_a("Attached Reason Meaning", myStr.c_str()));
+    temp.str("");temp.clear();
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Descriptor->reason);
+	json_push_back(descData, json_new_a("Attached Rate", temp.str().c_str()));
 	get_Negotiated_Logical_Link_Rate(&myStr, M_GETBITRANGE(m_Descriptor->reason, 3, 0));
-	json_push_back(descData, json_new_a("Attached Rate Meaning", (char*)myStr.c_str()));
-	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Descriptor->initiatorPort);
-	json_push_back(descData, json_new_a("Attached Initiator Port", (char*)myStr.c_str()));
-	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Descriptor->targetPort);
-	json_push_back(descData, json_new_a("Attached Target Port", (char*)myStr.c_str()));
+	json_push_back(descData, json_new_a("Attached Rate Meaning", myStr.c_str()));
+    temp.str("");temp.clear();
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Descriptor->initiatorPort);
+	json_push_back(descData, json_new_a("Attached Initiator Port", temp.str().c_str()));
+    temp.str("");temp.clear();
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Descriptor->targetPort);
+	json_push_back(descData, json_new_a("Attached Target Port", temp.str().c_str()));
 
 	byte_Swap_64(&m_Descriptor->address);						// need to byte swap on SAS 64 bit
 	byte_Swap_64(&m_Descriptor->attachedAddress);				// need to byte swap on SAS 64 bit
-    snprintf((char*)myStr.c_str(), BASIC, "0x%014" PRIx64"", m_Descriptor->address);
-    json_push_back(descData, json_new_a("World Wide Name", (char*)myStr.c_str()));
-    snprintf((char*)myStr.c_str(), BASIC, "0x%014" PRIx64"", m_Descriptor->attachedAddress);
-    json_push_back(descData, json_new_a("Attached Address", (char*)myStr.c_str()));
-
-	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Descriptor->attachedPhyIdent);
-	json_push_back(descData, json_new_a("Attached Phy Identifier", (char*)myStr.c_str()));
+    temp.str("");temp.clear();
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(14) << m_Descriptor->address;
+    json_push_back(descData, json_new_a("World Wide Name", temp.str().c_str()));
+    temp.str("");temp.clear();
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(14) << m_Descriptor->attachedAddress;
+    json_push_back(descData, json_new_a("Attached Address", temp.str().c_str()));
+    temp.str("");temp.clear();
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Descriptor->attachedPhyIdent);
+	json_push_back(descData, json_new_a("Attached Phy Identifier", temp.str().c_str()));
 
 	byte_Swap_32(&m_Descriptor->invalidDwordCount);				// need to byte swap on SAS 
 	byte_Swap_32(&m_Descriptor->disparityErrorCount);			// need to byte swap on SAS 
 	byte_Swap_32(&m_Descriptor->synchronization);				// need to byte swap on SAS 
 	byte_Swap_32(&m_Descriptor->phyResetProblem);				// need to byte swap on SAS 
-	snprintf((char*)myStr.c_str(), BASIC, "0x%08" PRIx32"", m_Descriptor->invalidDwordCount);
-	json_push_back(descData, json_new_a("Invalid Dword Count", (char*)myStr.c_str()));
-	snprintf((char*)myStr.c_str(), BASIC, "0x%08" PRIx32"", m_Descriptor->disparityErrorCount);
-	json_push_back(descData, json_new_a("Running Dispariity Error Count", (char*)myStr.c_str()));
-	snprintf((char*)myStr.c_str(), BASIC, "0x%08" PRIx32"", m_Descriptor->synchronization);
-	json_push_back(descData, json_new_a("Loss Of DWORD Synchronization", (char*)myStr.c_str()));
-	snprintf((char*)myStr.c_str(), BASIC, "0x%08" PRIx32"", m_Descriptor->phyResetProblem);
-	json_push_back(descData, json_new_a("Phy Reset Problem", (char*)myStr.c_str()));
-
-	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Descriptor->phyEventLength);
-	json_push_back(descData, json_new_a("Phy Event Descriptor Length", (char*)myStr.c_str()));
-	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Descriptor->numberOfEvents);
-	json_push_back(descData, json_new_a("Number of Pyh Events", (char*)myStr.c_str()));
+    temp.str("");temp.clear();
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(8) << m_Descriptor->invalidDwordCount;
+	json_push_back(descData, json_new_a("Invalid Dword Count", temp.str().c_str()));
+    temp.str("");temp.clear();
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(8) << m_Descriptor->disparityErrorCount;
+	json_push_back(descData, json_new_a("Running Dispariity Error Count", temp.str().c_str()));
+    temp.str("");temp.clear();
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(8) << m_Descriptor->synchronization;
+	json_push_back(descData, json_new_a("Loss Of DWORD Synchronization", temp.str().c_str()));
+    temp.str("");temp.clear();
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(8) << m_Descriptor->phyResetProblem;
+	json_push_back(descData, json_new_a("Phy Reset Problem", temp.str().c_str()));
+    temp.str("");temp.clear();
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Descriptor->phyEventLength);
+	json_push_back(descData, json_new_a("Phy Event Descriptor Length", temp.str().c_str()));
+	temp.str(""); temp.clear();
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Descriptor->numberOfEvents);
+	json_push_back(descData, json_new_a("Number of Pyh Events", temp.str().c_str()));
 
 }
 //-----------------------------------------------------------------------------
@@ -384,22 +715,24 @@ void CScsiProtocolPortLog::process_Descriptor_Information(JSONNODE *descData)
 //---------------------------------------------------------------------------
 void CScsiProtocolPortLog::process_List_Information(JSONNODE *listData)
 {
-	std::string myStr = "";
-	myStr.resize(BASIC);
 #if defined _DEBUG
 	printf("List Information \n");
 #endif
-	
-	snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_List->paramCode);
-	json_push_back(listData, json_new_a("Relative Target Port Identifier", (char*)myStr.c_str()));
-	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_List->paramControlByte);
-	json_push_back(listData, json_new_a("Relative Target Port Control Byte", (char*)myStr.c_str()));
-	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_List->paramLength);
-	json_push_back(listData, json_new_a("Relative Target Port Length", (char*)myStr.c_str()));
-	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_List->ident);
-	json_push_back(listData, json_new_a("Port Identifier", (char*)myStr.c_str()));
-	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_List->genCode);
-	json_push_back(listData, json_new_a("Generation Code", (char*)myStr.c_str()));
+    std::ostringstream temp;
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << m_List->paramCode;
+	json_push_back(listData, json_new_a("Relative Target Port Identifier", temp.str().c_str()));
+    temp.str("");temp.clear();
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_List->paramControlByte);
+	json_push_back(listData, json_new_a("Relative Target Port Control Byte", temp.str().c_str()));
+    temp.str("");temp.clear();
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_List->paramLength);
+	json_push_back(listData, json_new_a("Relative Target Port Length", temp.str().c_str()));
+    temp.str("");temp.clear();
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_List->ident);
+	json_push_back(listData, json_new_a("Port Identifier", temp.str().c_str()));
+    temp.str("");temp.clear();
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_List->genCode);
+	json_push_back(listData, json_new_a("Generation Code", temp.str().c_str()));
 	json_push_back(listData, json_new_i("Number of Phys", m_List->numberOfPhys));
 }
 //-----------------------------------------------------------------------------
@@ -418,8 +751,6 @@ void CScsiProtocolPortLog::process_List_Information(JSONNODE *listData)
 //---------------------------------------------------------------------------
 eReturnValues CScsiProtocolPortLog::get_Data(JSONNODE *masterData)
 {
-	std::string myStr = "";
-	myStr.resize(BASIC);
 	eReturnValues retStatus = IN_PROGRESS;
 
 	if (pData != NULL)
@@ -429,23 +760,25 @@ eReturnValues CScsiProtocolPortLog::get_Data(JSONNODE *masterData)
 
 		for (size_t offset = 0; (offset < m_PageLength && offset < UINT16_MAX);)
 		{
-			m_List = (sRelativeTargetPort *)&pData[offset];
+			m_List = reinterpret_cast<sRelativeTargetPort *>(&pData[offset]);
 			// process the List header information
 			byte_Swap_16(&m_List->paramCode);
-			snprintf((char*)myStr.c_str(), BASIC, "Relative Target Port Information %" PRId16"", m_List->paramCode);
+            std::ostringstream temp;
+            temp << "Relative Target Port Information " << std::dec << m_List->paramCode;
 			JSONNODE *listInfo = json_new(JSON_NODE);
-			json_set_name(listInfo, (char*)myStr.c_str());
+			json_set_name(listInfo, temp.str().c_str());
 			process_List_Information(listInfo);
 			offset += sizeof(sRelativeTargetPort);
-			m_Descriptor = (sSASPHYLogDescriptorList *)&pData[offset];
+			m_Descriptor = reinterpret_cast<sSASPHYLogDescriptorList *>(&pData[offset]);
 
 			if((offset + m_Descriptor->phyLength) <= m_bufferLength)
 			{
 				offset += sizeof(sSASPHYLogDescriptorList);
 				// process the descriptor information
-				snprintf((char*)myStr.c_str(), BASIC, "Descriptor Information %" PRId8"", m_Descriptor->phyIdent);
+                temp.str("");temp.clear();
+                temp << "Descriptor Information " << std::dec << static_cast<uint16_t>(m_Descriptor->phyIdent);
 				JSONNODE *descInfo = json_new(JSON_NODE);
-				json_set_name(descInfo, (char*)myStr.c_str());
+				json_set_name(descInfo, temp.str().c_str());
 				process_Descriptor_Information(descInfo);
 
 				for (uint32_t events = 1; events <= m_Descriptor->numberOfEvents; events++)
@@ -453,7 +786,7 @@ eReturnValues CScsiProtocolPortLog::get_Data(JSONNODE *masterData)
 					// check the length to the end of the buffer
 					if ((offset + m_Descriptor->phyEventLength) <= m_bufferLength)
 					{
-						m_Event = (sPhyEventDescriptor *)&pData[offset];
+						m_Event = reinterpret_cast<sPhyEventDescriptor *>(&pData[offset]);
 						offset += m_Descriptor->phyEventLength;
 						//process events
 						process_Events_Data(descInfo);

@@ -3,7 +3,7 @@
 //
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2021 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -76,7 +76,7 @@ namespace opensea_parser {
 		uint8_t						m_SubPage;					//<! passed in- this is subpage that tell us what log to parse as.
         sSelfTest					*m_DST;						//<! single dst results
 
-		eReturnValues parse_Self_Test_Log(uint8_t * buffer, size_t bufferSize, JSONNODE *masterJson);
+		eReturnValues get_Self_Test_Log(uint8_t * buffer, size_t bufferSize, JSONNODE *masterJson);
 		void print_Self_Test_Log(JSONNODE *dstNode, uint16_t run);
 		void get_Self_Test_Results_String(std::string & meaning, uint8_t result);
 		void byte_Swap_Self_Test();
@@ -85,7 +85,10 @@ namespace opensea_parser {
 		CScsi_DST_Results(uint8_t *bufferData, size_t bufferSize, JSONNODE *masterJson);
 		virtual ~CScsi_DST_Results();
 		virtual eReturnValues get_Log_Status() { return m_DSTStatus; };
-
+		virtual eReturnValues parse_Self_Test_Log(uint8_t* buffer, size_t bufferSize, JSONNODE* masterJson)
+		{
+			return get_Self_Test_Log(buffer, bufferSize, masterJson);
+		};
 	};
 #endif
 }

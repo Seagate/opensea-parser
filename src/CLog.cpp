@@ -1,6 +1,6 @@
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2021 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -56,7 +56,7 @@ CLog::CLog(const std::string &fileName)
 	, m_bufferData()
     , m_logStatus(IN_PROGRESS)
 {
-    get_CLog(fileName);
+    get_CLog();
 }
 
 CLog::CLog(const uint8_t * pBuf, uint32_t logSize)
@@ -103,14 +103,14 @@ CLog::~CLog()
 //!   \return eReturnValues
 //
 //---------------------------------------------------------------------------
-void CLog::get_CLog(const std::string & fileName)
+void CLog::get_CLog()
 {
     m_logStatus = IN_PROGRESS;
     std::ifstream fb(m_fileName.c_str(), std::ios::in | std::ios::binary);
     if (fb.is_open())
     {
         fb.seekg(0, std::ios::end);
-        m_size = (size_t)fb.tellg();
+        m_size = static_cast<size_t>(fb.tellg());
         fb.seekg(0, std::ios::beg);			//set back to beginning of the file now that we know the size
         fb.close();
     }
@@ -118,7 +118,7 @@ void CLog::get_CLog(const std::string & fileName)
     {
         m_logStatus = FILE_OPEN_ERROR;
     }
-    m_bufferData = (char  *)calloc(m_size, sizeof(char));
+    m_bufferData = static_cast<char*>(calloc(m_size, sizeof(char)));
 
     if (m_size != 0 && m_logStatus != FILE_OPEN_ERROR)
     {
@@ -145,10 +145,10 @@ void CLog::get_CLog(const uint8_t * pBuf, uint32_t logSize)
 
 	if (pBuf != NULL)
 	{
-		m_bufferData = (char  *)calloc(logSize, sizeof(char));
+		m_bufferData = static_cast<char*>(calloc(logSize, sizeof(char)));
 		if (m_bufferData)
 		{
-#ifndef _WIN64 
+#ifndef __STDC_SECURE_LIB__ 
             memcpy(m_bufferData, pBuf, logSize);
 #else
 			memcpy_s(m_bufferData, logSize, pBuf, logSize);
@@ -197,5 +197,56 @@ eReturnValues CLog::read_In_Buffer()
 
     return SUCCESS;
 }
+//-----------------------------------------------------------------------------
+//
+//! \fn read_In_Log()
+//
+//! \brief
+//!   Description: it will open the file and reads in the log not as a binary file
+//
+//  Entry:
+//
+//  Exit:
+//!   \return eReturnValues
+//
+//---------------------------------------------------------------------------
+void CLog::read_In_Log()
+{
+    m_logStatus = IN_PROGRESS;
 
+    //open the file and see what the size is first
+    std::ifstream fb(m_fileName.c_str(), std::ios::in);
+    if (fb.is_open())
+    {
+        fb.seekg(0, std::ios::end);
+        m_size = static_cast<size_t>(fb.tellg());
+        fb.seekg(0, std::ios::beg);			//set back to beginning of the file now that we know the size
+        fb.close();
+    }
+    else
+    {
+        m_logStatus = FILE_OPEN_ERROR;
+    }
+    //set the size of the buffer
+    m_bufferData = static_cast<char*>(calloc(m_size, sizeof(char)));
 
+    // now we need to read in the buffer 
+    if (m_size != 0 && m_logStatus != FILE_OPEN_ERROR)
+    {
+        char* pData = &m_bufferData[0];
+        std::fstream logFile(m_fileName.c_str(), std::ios::in );
+        if (logFile.is_open())
+        {
+            logFile.read(pData, m_size);
+            logFile.close();
+            m_logStatus = SUCCESS;
+        }
+        else
+        {
+            m_logStatus = FILE_OPEN_ERROR;
+            //return FILE_OPEN_ERROR;
+        }
+    }
+
+    //return SUCCESS;
+}

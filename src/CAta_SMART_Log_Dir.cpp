@@ -3,7 +3,7 @@
 //
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2021 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -69,7 +69,7 @@ CAta_SMART_Log_Dir::CAta_SMART_Log_Dir(const std::string &fileName)
         {
             size_t bufferSize = cCLog->get_Size();
             pData = new uint8_t[cCLog->get_Size()];								// new a buffer to the point				
-#ifndef _WIN64
+#ifndef __STDC_SECURE_LIB__
             memcpy(pData, cCLog->get_Buffer(), bufferSize);
 #else
             memcpy_s(pData, bufferSize, cCLog->get_Buffer(), bufferSize);// copy the buffer data to the class member pBuf
@@ -171,7 +171,7 @@ eReturnValues CAta_SMART_Log_Dir::parse_SMART_Log_Dir()
         {
             sLogDetailStructure logDetails;
             logDetails.numberOfPages = logSize;
-            logDetails.logAddress = offset / 2;
+            logDetails.logAddress = static_cast<uint8_t>(offset / UINT16_C(2));
 
             if (!m_hasHostSpecific && is_Host_Specific_Log(logDetails.logAddress))
             {
@@ -217,11 +217,6 @@ bool CAta_SMART_Log_Dir::is_Vendor_Specific_Log(uint8_t logAddress)
 //---------------------------------------------------------------------------
 eReturnValues CAta_SMART_Log_Dir::print_SMART_Log_Dir(JSONNODE *masterData)
 {
-    std::string myStr = "";
-    myStr.resize(BASIC);
-    std::string printStr;
-    printStr.resize(BASIC);
-
     JSONNODE *dirInfo = json_new(JSON_NODE);
     json_set_name(dirInfo, "SMART Log Directory");
 
@@ -241,18 +236,19 @@ eReturnValues CAta_SMART_Log_Dir::print_SMART_Log_Dir(JSONNODE *masterData)
     }
 
     std::vector<sLogDetailStructure>::iterator logItr = m_logDetailList.begin();
-    for (; logItr != m_logDetailList.end(); logItr++)
+    for (; logItr != m_logDetailList.end(); ++logItr)
     {
         sLogDetailStructure logDetail = *logItr;
-        snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", logDetail.logAddress);
-        snprintf((char*)printStr.c_str(), BASIC, "%" PRIu16"", logDetail.numberOfPages);
+        std::ostringstream temp, temp2;
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(logDetail.logAddress);
+        temp2 << std::dec << logDetail.numberOfPages;
 
         if (is_Host_Specific_Log(logDetail.logAddress) && hostInfo != NULL)
-            json_push_back(hostInfo, json_new_a((char*)myStr.c_str(), (char*)printStr.c_str()));
+            json_push_back(hostInfo, json_new_a(temp.str().c_str(), temp2.str().c_str()));
         else if (is_Vendor_Specific_Log(logDetail.logAddress) && vendorInfo != NULL)
-            json_push_back(vendorInfo, json_new_a((char*)myStr.c_str(), (char*)printStr.c_str()));
+            json_push_back(vendorInfo, json_new_a(temp.str().c_str(), temp2.str().c_str()));
         else
-            json_push_back(dirInfo, json_new_a((char*)myStr.c_str(), (char*)printStr.c_str()));
+            json_push_back(dirInfo, json_new_a(temp.str().c_str(), temp2.str().c_str()));
     }
 
     if (hostInfo != NULL)

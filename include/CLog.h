@@ -3,7 +3,7 @@
 //
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2021 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -40,13 +40,16 @@ namespace opensea_parser {
         CLog(const std::string & fileName);
 		CLog(const uint8_t * pBuf, uint32_t logSize);
         virtual ~CLog();
-        void get_CLog(const std::string & fileName);
+        //void get_CLog(const std::string & fileName);
+        void get_CLog();
 		void get_CLog(const uint8_t * pBuf, uint32_t logSize);
         inline eReturnValues read_In_Buffer();
+        void read_In_Log();
         inline std::string get_Name() const { return m_name; }
         inline std::string get_File_Name() const { return m_fileName; }
         inline size_t get_Size() const { return m_size; }
         inline uint8_t *get_Buffer(){ return reinterpret_cast<uint8_t *>(m_bufferData); };
+        char * get_log() { return m_bufferData; };
         inline eReturnValues get_Log_Status(){ return m_logStatus; };
         inline void set_Log_Status(eReturnValues status){ m_logStatus = status; };
 	};

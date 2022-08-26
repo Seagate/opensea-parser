@@ -2,7 +2,7 @@
 // CScsi_Format_Status_Log.cpp  Format Status log page reports information about the most recent successful format operation
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2021 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -37,6 +37,7 @@ CScsiFormatStatusLog::CScsiFormatStatusLog()
     , m_bufferLength()
     , m_Value(0)
     , m_Format()
+    , m_FormatDataOutParamValue()
 {
     if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
@@ -66,6 +67,7 @@ CScsiFormatStatusLog::CScsiFormatStatusLog(uint8_t * buffer, size_t bufferSize, 
     , m_bufferLength(bufferSize)
     , m_Value(0)
     , m_Format()
+    , m_FormatDataOutParamValue()
 {
     if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
@@ -120,32 +122,34 @@ void CScsiFormatStatusLog::get_Format_Parameter_Code_Description(std::string *va
     {
     case 0x0000:
     {
-        snprintf((char*)valueData->c_str(), BASIC, "Format Data Out count");
+        valueData->assign("Format Data Out count");
         break;
     }
     case 0x0001:
     {
-        snprintf((char*)valueData->c_str(), BASIC, "Grown Defects During Certification count");
+        valueData->assign("Grown Defects During Certification count");
         break;
     }
     case 0x0002:
     {
-        snprintf((char*)valueData->c_str(), BASIC, "Total Blocks Reassigned During Format count");
+        valueData->assign("Total Blocks Reassigned During Format count");
         break;
     }
     case 0x0003:
     {
-        snprintf((char*)valueData->c_str(), BASIC, "Total New Blocks Reassigned count");
+        valueData->assign("Total New Blocks Reassigned count");
         break;
     }
     case 0x0004:
     {
-        snprintf((char*)valueData->c_str(), BASIC, "Power On Minutes Since Format count");
+        valueData->assign("Power On Minutes Since Format count");
         break;
     }
     default:
     {
-        snprintf((char*)valueData->c_str(), BASIC, "Vendor Specific 0x%04" PRIx16"", m_Format->paramCode);
+        std::ostringstream temp;
+        temp << "Vendor Specific 0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << m_Format->paramCode;
+        valueData->assign(temp.str());
         break;
     }
     }
@@ -166,10 +170,7 @@ void CScsiFormatStatusLog::get_Format_Parameter_Code_Description(std::string *va
 //---------------------------------------------------------------------------
 void CScsiFormatStatusLog::process_Format_Status_Data(JSONNODE *formatData)
 {
-    std::string myStr = "";
-    myStr.resize(BASIC);
-    std::string myHeader = "";
-    myHeader.resize(BASIC);
+    std::string myHeader;
 
 #if defined _DEBUG
     printf("Format Status Log\n");
@@ -177,14 +178,17 @@ void CScsiFormatStatusLog::process_Format_Status_Data(JSONNODE *formatData)
 
     get_Format_Parameter_Code_Description(&myHeader);
     JSONNODE *formatInfo = json_new(JSON_NODE);
-    json_set_name(formatInfo, (char*)myHeader.c_str());
+    json_set_name(formatInfo, myHeader.c_str());
 
-    snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_Format->paramCode);
-    json_push_back(formatInfo, json_new_a("Parameter Code", (char*)myStr.c_str()));
-    snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Format->paramControlByte);
-    json_push_back(formatInfo, json_new_a("Control Byte ", (char*)myStr.c_str()));
-    snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Format->paramLength);
-    json_push_back(formatInfo, json_new_a("Length ", (char*)myStr.c_str()));
+    std::ostringstream temp;
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << m_Format->paramCode;
+    json_push_back(formatInfo, json_new_a("Parameter Code", temp.str().c_str()));
+    temp.str("");temp.clear();
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Format->paramControlByte);
+    json_push_back(formatInfo, json_new_a("Control Byte ", temp.str().c_str()));
+    temp.str("");temp.clear();
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Format->paramLength);
+    json_push_back(formatInfo, json_new_a("Length ", temp.str().c_str()));
     if (m_Format->paramLength == 8 || m_Value > UINT32_MAX)
     {
         set_json_64bit(formatInfo, "Value", m_Value, true);
@@ -197,9 +201,9 @@ void CScsiFormatStatusLog::process_Format_Status_Data(JSONNODE *formatData)
         }
         else
         {
-            std::string printStr;
-            snprintf((char*)printStr.c_str(), BASIC, "0x%08" PRIx64"", m_Value);
-            json_push_back(formatInfo, json_new_a("Value", (char*)printStr.c_str()));
+            temp.str("");temp.clear();
+            temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(8) << m_Value;
+            json_push_back(formatInfo, json_new_a("Value", temp.str().c_str()));
         }
     }
     json_push_back(formatData, formatInfo);
@@ -220,53 +224,49 @@ void CScsiFormatStatusLog::process_Format_Status_Data(JSONNODE *formatData)
 //---------------------------------------------------------------------------
 void CScsiFormatStatusLog::process_Format_Status_Data_Variable_Length(JSONNODE * formatData)
 {
-    std::string myStr = "";
-    myStr.resize(BASIC);
-    std::string myHeader = "";
-    myHeader.resize(BASIC);
+    std::string myHeader;
 
 #if defined _DEBUG
     printf("Format Status Log  \n");
 #endif
     get_Format_Parameter_Code_Description(&myHeader);
     JSONNODE *formatInfo = json_new(JSON_NODE);
-    json_set_name(formatInfo, (char*)myHeader.c_str());
+    json_set_name(formatInfo, myHeader.c_str());
 
-    snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_Format->paramCode);
-    json_push_back(formatInfo, json_new_a("Format Status Parameter Code", (char*)myStr.c_str()));
-    snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Format->paramControlByte);
-    json_push_back(formatInfo, json_new_a("Format Status Control Byte ", (char*)myStr.c_str()));
-    snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Format->paramLength);
-    json_push_back(formatInfo, json_new_a("Format Status Length ", (char*)myStr.c_str()));
+    std::ostringstream temp;
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << m_Format->paramCode;
+    json_push_back(formatInfo, json_new_a("Format Status Parameter Code", temp.str().c_str()));
+    temp.str("");temp.clear();
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Format->paramControlByte);
+    json_push_back(formatInfo, json_new_a("Format Status Control Byte ", temp.str().c_str()));
+    temp.str("");temp.clear();
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Format->paramLength);
+    json_push_back(formatInfo, json_new_a("Format Status Length ", temp.str().c_str()));
 
     uint8_t lineNumber = 0;
-    char *innerMsg = (char*)calloc(128, sizeof(char));
-    char* innerStr = (char*)calloc(60, sizeof(char));
     uint8_t offset = 0;
-
     for (uint8_t outer = 0; outer < m_Format->paramLength - 1; )
     {
-        snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIX32 "", lineNumber);
-        sprintf(innerMsg, "%02" PRIX8 "", m_FormatDataOutParamValue[offset++]);
+        temp.str("");temp.clear();
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(lineNumber);
+
+        std::ostringstream innerMsg;
+        innerMsg << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_FormatDataOutParamValue[offset++]);
         // inner loop for creating a single ling of the buffer data
         for (uint8_t inner = 1; inner < 16 && offset < m_Format->paramLength - 1; inner++)
         {
-            sprintf(innerStr, "%02" PRIX8"", m_FormatDataOutParamValue[offset]);
+            innerMsg << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_FormatDataOutParamValue[offset]);
             if (inner % 4 == 0)
             {
-                strncat(innerMsg, " ", 1);
+                innerMsg << " ";
             }
-            strncat(innerMsg, innerStr, 2);
             offset++;
         }
         // push the line to the json node
-        json_push_back(formatInfo, json_new_a((char*)myStr.c_str(), innerMsg));
+        json_push_back(formatInfo, json_new_a(temp.str().c_str(), innerMsg.str().c_str()));
         outer = offset;
         lineNumber = outer;
     }
-    safe_Free(innerMsg);  //free the string
-    safe_Free(innerStr);  // free the string
-
     json_push_back(formatData, formatInfo);
 }
 //-----------------------------------------------------------------------------
@@ -285,24 +285,21 @@ void CScsiFormatStatusLog::process_Format_Status_Data_Variable_Length(JSONNODE *
 //---------------------------------------------------------------------------
 eReturnValues CScsiFormatStatusLog::get_Format_Status_Data(JSONNODE *masterData)
 {
-    std::string headerStr = "";
-    headerStr.resize(BASIC);
     eReturnValues retStatus = IN_PROGRESS;
 
     if (pData != NULL)
     {
-        snprintf((char*)headerStr.c_str(), BASIC, "Format Status Log 08h");
         JSONNODE *pageInfo = json_new(JSON_NODE);
-        json_set_name(pageInfo, (char*)headerStr.c_str());
+        json_set_name(pageInfo, "Format Status Log 08h");
 
         for (size_t offset = 0; offset < m_PageLength; )
         {
             if (offset < m_bufferLength && offset < UINT16_MAX)
             {
-                m_Format = (sFormatParams *)&pData[offset];
+                m_Format = reinterpret_cast<sFormatParams*>(&pData[offset]);
                 offset += sizeof(sFormatParams);
                 byte_Swap_16(&m_Format->paramCode);
-                if (m_Format->paramCode == 0x0000 && (m_Format->paramLength > 8))
+                if (m_Format->paramCode == UINT8_C(0x0000) && (m_Format->paramLength > 8))
                 {
                     if ((offset + m_Format->paramLength) < m_bufferLength)
                     {
@@ -380,7 +377,6 @@ eReturnValues CScsiFormatStatusLog::get_Format_Status_Data(JSONNODE *masterData)
                     {
                         //json_push_back(masterData, pageInfo);
                         return BAD_PARAMETER;
-                        break;
                     }
                     }
                     process_Format_Status_Data(pageInfo);

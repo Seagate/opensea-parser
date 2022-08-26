@@ -2,7 +2,7 @@
 // CScsi_Power_Condition_Transitions_Log.h  Definition of Power Condition Transistions Log Page for SAS
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2021 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -69,7 +69,7 @@ CScsiPowerConditiontLog::CScsiPowerConditiontLog(uint8_t * buffer, size_t buffer
 		printf("%s \n", m_PowerName.c_str());
 	}
     pData = new uint8_t[pageLength];								// new a buffer to the point				
-#ifndef _WIN64
+#ifndef __STDC_SECURE_LIB__
     memcpy(pData, buffer, pageLength);
 #else
     memcpy_s(pData, pageLength, buffer, pageLength);// copy the buffer data to the class member pBuf
@@ -129,43 +129,43 @@ bool CScsiPowerConditiontLog::get_Power_Mode_Type(std::string *power, uint16_t c
 	{
 		case ACTIVE:
 		{
-			snprintf((char*)power->c_str(), BASIC, "Accumulated transitions to active");
+			power->assign("Accumulated transitions to active");
             typeFound = true;
 			break;
 		}
 		case IDLE_A:
 		{
-			snprintf((char*)power->c_str(), BASIC, "Accumulated transitions to idle_a");
+            power->assign("Accumulated transitions to idle_a");
             typeFound = true;
 			break;
 		}
 		case IDLE_B:
 		{
-			snprintf((char*)power->c_str(), BASIC, "Accumulated transitions to idle_b");
+            power->assign("Accumulated transitions to idle_b");
             typeFound = true;
 			break;
 		}
 		case IDLE_C:
 		{
-			snprintf((char*)power->c_str(), BASIC, "Accumulated transitions to idle_c");
+            power->assign("Accumulated transitions to idle_c");
             typeFound = true;
 			break;
 		}
 		case STANDZ:
 		{
-			snprintf((char*)power->c_str(), BASIC, "Accumulated transitions to standby_z");
+            power->assign("Accumulated transitions to standby_z");
             typeFound = true;
 			break;
 		}
 		case STANDY:
 		{
-			snprintf((char*)power->c_str(), BASIC, "Accumulated transitions to standby_y");
+            power->assign("Accumulated transitions to standby_y");
             typeFound = true;
 			break;
 		}
 		default:
 		{
-			snprintf((char*)power->c_str(), BASIC, "Vendor Specific Power Mode Transition Type");
+            power->assign("Vendor Specific Power Mode Transition Type");
 			break;
 		}
 	}
@@ -189,7 +189,6 @@ void CScsiPowerConditiontLog::process_List_Information(JSONNODE *powerData)
 {
     bool typeFound = false;
 	std::string myStr = "";
-	myStr.resize(BASIC);
 #if defined _DEBUG
 	printf("Power Condition Transitions Log Page\n");
 #endif
@@ -200,15 +199,18 @@ void CScsiPowerConditiontLog::process_List_Information(JSONNODE *powerData)
     if (m_PowerParam->paramValue != 0)
     {
         JSONNODE *powerInfo = json_new(JSON_NODE);
-        json_set_name(powerInfo, (char*)myStr.c_str());
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_PowerParam->paramCode);
-        json_push_back(powerInfo, json_new_a("Power Condition Type", (char*)myStr.c_str()));
+        json_set_name(powerInfo, myStr.c_str());
+        std::ostringstream temp;
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << m_PowerParam->paramCode;
+        json_push_back(powerInfo, json_new_a("Power Condition Type", temp.str().c_str()));
         if (!typeFound)
         {
-            snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_PowerParam->paramControlByte);
-            json_push_back(powerInfo, json_new_a("Control Byte", (char*)myStr.c_str()));
-            snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_PowerParam->paramLength);
-            json_push_back(powerInfo, json_new_a("Length", (char*)myStr.c_str()));
+            temp.str("");temp.clear();
+            temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_PowerParam->paramControlByte);
+            json_push_back(powerInfo, json_new_a("Control Byte", temp.str().c_str()));
+            temp.str("");temp.clear();
+            temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_PowerParam->paramLength);
+            json_push_back(powerInfo, json_new_a("Length", temp.str().c_str()));
         }
         json_push_back(powerInfo, json_new_i("Power Value", m_PowerParam->paramValue));
         json_push_back(powerData, powerInfo);
@@ -240,7 +242,7 @@ eReturnValues CScsiPowerConditiontLog::get_Data(JSONNODE *masterData)
 		{
 			if (offset < m_bufferLength && offset < UINT16_MAX)
 			{
-				m_PowerParam = (sPowerParams *)&pData[offset];
+				m_PowerParam = reinterpret_cast<sPowerParams*>(&pData[offset]);
 				// process the power information
 				process_List_Information(pageInfo);			
 			}

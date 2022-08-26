@@ -3,7 +3,7 @@
 //
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2021 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -39,7 +39,7 @@ namespace opensea_parser {
         CFARMLog();
         CFARMLog(const std::string & fileName,bool showStatus);
 		CFARMLog(const std::string & fileName);
-		CFARMLog(uint8_t *bufferData, size_t bufferSize, bool showStatus);
+		CFARMLog(uint8_t *farmbufferData, size_t bufferSize, bool showStatus);
         virtual ~CFARMLog();
 		eReturnValues get_FARM_Status() { return m_status; };
         eReturnValues parse_Device_Farm_Log( JSONNODE *masterData);

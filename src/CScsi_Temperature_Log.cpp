@@ -2,7 +2,7 @@
 // CScsi_Temperature_Log.cpp  Implementation of CScsi Temperature Log class
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2021 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -70,7 +70,7 @@ CScsiTemperatureLog::CScsiTemperatureLog(uint8_t * buffer, size_t bufferSize)
 	if (buffer != NULL)
 	{
 		pData = buffer;
-		m_Page = (sTempLogPageStruct *)buffer;				// set a buffer to the point to the log page info
+		m_Page = reinterpret_cast<sTempLogPageStruct *>(buffer);				// set a buffer to the point to the log page info
 		m_TempStatus = SUCCESS;
 	}
 	else
@@ -114,22 +114,24 @@ CScsiTemperatureLog::~CScsiTemperatureLog()
 //---------------------------------------------------------------------------
 void CScsiTemperatureLog::get_Temp(JSONNODE *tempData)
 {
-	std::string myStr = "";
-	myStr.resize(BASIC);
 #if defined _DEBUG
 	printf("Temperature Log Page \n");
 	printf("\tParameter Code =   0x%04" PRIx16"  \n", m_Page->paramCode);
 #endif
-	snprintf((char*)myStr.c_str(), BASIC, "Parameter Code 0x%04" PRIx16"", m_Page->paramCode);
+    std::ostringstream temp;
+    temp << "Parameter Code 0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << m_Page->paramCode;
 	JSONNODE *paramInfo = json_new(JSON_NODE);
-	json_set_name(paramInfo, (char*)myStr.c_str());
+	json_set_name(paramInfo, temp.str().c_str());
 
-	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Page->paramLength);
-	json_push_back(paramInfo, json_new_a("Parameter Length", (char*)myStr.c_str()));
-	snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", m_Page->paramControlByte);
-	json_push_back(paramInfo, json_new_a("Control Byte", (char*)myStr.c_str()));
-	snprintf((char*)myStr.c_str(), BASIC, "%" PRIu8"", m_Page->temp);
-	json_push_back(paramInfo, json_new_a("Temperature", (char*)myStr.c_str()));
+    temp.str("");temp.clear();
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Page->paramLength);
+	json_push_back(paramInfo, json_new_a("Parameter Length", temp.str().c_str()));
+    temp.str("");temp.clear();
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Page->paramControlByte);
+	json_push_back(paramInfo, json_new_a("Control Byte", temp.str().c_str()));
+    temp.str("");temp.clear();
+    temp << std::dec << static_cast<uint16_t>(m_Page->temp);
+	json_push_back(paramInfo, json_new_a("Temperature", temp.str().c_str()));
 
 	json_push_back(tempData, paramInfo);
 }
@@ -161,7 +163,7 @@ eReturnValues CScsiTemperatureLog::get_Data(JSONNODE *masterData)
 			byte_Swap_16(&m_Page->paramCode);
 			get_Temp(pageInfo);
 			// Check to make sure we still have engough data to increment the m_Page
-			if ((param + (2* tempSize) + sizeof(sLogPageStruct)) > m_pDataSize && param + tempSize < m_PageLength || param > UINT32_MAX)
+			if (((param + (2* tempSize) + sizeof(sLogPageStruct)) > m_pDataSize && param + tempSize < m_PageLength) || param > UINT32_MAX)
 			{
 				json_push_back(masterData, pageInfo);
 				return BAD_PARAMETER;

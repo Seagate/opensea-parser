@@ -2,7 +2,7 @@
 //
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2021 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -85,7 +85,9 @@ namespace opensea_parser {
 		eReturnValues get_Data(JSONNODE *masterData);
 		void get_Device_Type_Field(std::string *description, uint8_t code);
 		void get_Reason_Field(std::string *reason, uint8_t code);
-		void get_Negotiated_Logical_Link_Rate(std::string *rate, uint8_t code);
+		void process_Event_Description(std::string* source, uint8_t event);
+		void get_Negotiated_Logical_Link_Rate(std::string* reason, uint8_t code);
+
 		void process_Events_Data(JSONNODE *eventData);
 		void process_Descriptor_Information(JSONNODE *descData);
 		void process_List_Information(JSONNODE *listData);
@@ -95,6 +97,7 @@ namespace opensea_parser {
 		virtual ~CScsiProtocolPortLog();
 		virtual eReturnValues get_Log_Status() { return m_PSPStatus; };
 		virtual void set_PSP_Page_Length(uint16_t page) { m_PageLength = page; byte_Swap_16(&m_PageLength); };
+        virtual void set_PSP_Page_Length_NoSwap(uint16_t page) { m_PageLength = page; };
 		virtual eReturnValues parse_Protocol_Port_Log(JSONNODE *masterData) { return get_Data(masterData); };
 	};
 #endif

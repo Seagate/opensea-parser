@@ -2,7 +2,7 @@
 //
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2021 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -45,7 +45,7 @@ namespace opensea_parser {
 		sOperationParams			*m_Operation;				//<! operation structure 
 
 		void get_Background_Operations_status(std::string *status);
-		void process_Background_Operations_Data(JSONNODE *operationData);
+		void process_Background_Operations_Data(JSONNODE *operationData,uint32_t offset);
 		eReturnValues get_Background_Operations_Data(JSONNODE *masterData);
 	public:
 		CScsiOperationLog();

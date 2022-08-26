@@ -1,6 +1,6 @@
 // Do NOT modify or remove this copyright and license
 //
-//Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates
+//Copyright (c) 2014 - 2021 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -9,6 +9,8 @@
 // ******************************************************************************************
 
 #include "CAta_Identify_Log.h"
+#include <sstream>
+#include <iomanip>
 
 #define ATA_SERIAL_NUMBER_LEN       20
 #define ATA_MODEL_NUMBER_LEN        40
@@ -29,7 +31,7 @@ using namespace opensea_parser;
 //
 //
 //---------------------------------------------------------------------------
-inline std::string& ltrim(std::string& s, const char* t = " \t\r\f\v")
+inline std::string ltrim(std::string& s, const char* t = " \t\r\f\v")
 {
     s.erase(0, s.find_first_not_of(t));
     return s;
@@ -46,7 +48,7 @@ inline std::string& ltrim(std::string& s, const char* t = " \t\r\f\v")
 //
 //
 //---------------------------------------------------------------------------
-inline std::string& rtrim(std::string& s, const char* t = " \t\r\f\v")
+inline std::string rtrim(std::string& s, const char* t = " \t\r\f\v")
 {
     s.erase(s.find_last_not_of(t) + 1);
     return s;
@@ -65,7 +67,7 @@ inline std::string& rtrim(std::string& s, const char* t = " \t\r\f\v")
 //!   \return bool - false or true
 //
 //---------------------------------------------------------------------------
-inline bool check_For_Active_Status(uint64_t *value)
+inline bool check_For_Active_Status(const uint64_t *value)
 {
     if (*value & BIT63)
     {
@@ -77,7 +79,9 @@ inline bool check_For_Active_Status(uint64_t *value)
 // *****************************************************************************
 CAta_Identify_log::CAta_Identify_log()
     : m_name("ATA Identify Log")
+    , pData(NULL)
     , m_status(IN_PROGRESS)
+    , m_sDriveInfo()
 {
     //m_sDriveInfo = {};
 }
@@ -99,9 +103,10 @@ CAta_Identify_log::CAta_Identify_log()
 //---------------------------------------------------------------------------
 CAta_Identify_log::CAta_Identify_log(uint8_t *buffer)
     : m_name("ATA Identify Log")
+    , pData(buffer)
     , m_status(IN_PROGRESS)
+    , m_sDriveInfo()
 {
-    pData = buffer;
     if (pData != NULL)
     {
         parse_Device_Info();
@@ -129,7 +134,9 @@ CAta_Identify_log::CAta_Identify_log(uint8_t *buffer)
 //---------------------------------------------------------------------------
 CAta_Identify_log::CAta_Identify_log(const std::string & fileName)
     : m_name("ATA Identify Log")
+    , pData(NULL)
     , m_status(IN_PROGRESS)
+    , m_sDriveInfo()
 {
     CLog *cCLog;
     cCLog = new CLog(fileName);
@@ -139,13 +146,13 @@ CAta_Identify_log::CAta_Identify_log(const std::string & fileName)
         {
             size_t bufferSize = cCLog->get_Size();
             pData = new uint8_t[cCLog->get_Size()];								// new a buffer to the point				
-#ifndef _WIN64
+#ifndef __STDC_SECURE_LIB__
             memcpy(pData, cCLog->get_Buffer(), bufferSize);
 #else
             memcpy_s(pData, bufferSize, cCLog->get_Buffer(), bufferSize);// copy the buffer data to the class member pBuf
 #endif
             sLogPageStruct *idCheck;
-            idCheck = (sLogPageStruct *)&pData[0];
+            idCheck = reinterpret_cast<sLogPageStruct*>(&pData[0]);
             byte_Swap_16(&idCheck->pageLength);
             if (IsScsiLogPage(idCheck->pageLength, idCheck->pageCode) == false)
             {
@@ -202,11 +209,11 @@ CAta_Identify_log::~CAta_Identify_log()
 
 void CAta_Identify_log::create_Serial_Number(uint16_t offset)
 {
-    m_sDriveInfo.serialNumber.resize(ATA_SERIAL_NUMBER_LEN);
-    strncpy((char*)m_sDriveInfo.serialNumber.c_str(), (char*)&pData[512 + offset], ATA_SERIAL_NUMBER_LEN);
-    byte_Swap_String((char*)m_sDriveInfo.serialNumber.c_str());
+
+    m_sDriveInfo.serialNumber.assign(reinterpret_cast<const char*>(&pData[512 + offset]), ATA_SERIAL_NUMBER_LEN);
+    byte_swap_std_string(m_sDriveInfo.serialNumber);
     ltrim(m_sDriveInfo.serialNumber);
-    m_sDriveInfo.serialNumber.resize(ATA_SERIAL_NUMBER_LEN);
+    m_sDriveInfo.serialNumber.resize(ATA_SERIAL_NUMBER_LEN);//don't know why this was here, but assuming there is a reason - TJE   
 }
 
 //-----------------------------------------------------------------------------
@@ -224,9 +231,8 @@ void CAta_Identify_log::create_Serial_Number(uint16_t offset)
 //---------------------------------------------------------------------------
 void CAta_Identify_log::create_Firmware_String(uint16_t offset)
 {
-    m_sDriveInfo.firmware.resize(ATA_FIRMWARE_REV_LEN);
-    strncpy((char*)m_sDriveInfo.firmware.c_str(), (char*)&pData[512 + offset], ATA_FIRMWARE_REV_LEN);
-    byte_Swap_String((char*)m_sDriveInfo.firmware.c_str());
+    m_sDriveInfo.firmware.assign(reinterpret_cast<const char*>(&pData[512 + offset]), ATA_FIRMWARE_REV_LEN);
+    byte_swap_std_string(m_sDriveInfo.firmware);
     rtrim(m_sDriveInfo.firmware);
     m_sDriveInfo.firmware.resize(ATA_FIRMWARE_REV_LEN);
 }
@@ -245,9 +251,8 @@ void CAta_Identify_log::create_Firmware_String(uint16_t offset)
 //---------------------------------------------------------------------------
 void CAta_Identify_log::create_Model_Number(uint16_t offset)
 {
-    m_sDriveInfo.modelNumber.resize(ATA_MODEL_NUMBER_LEN);
-    strncpy((char*)m_sDriveInfo.modelNumber.c_str(), (char*)&pData[512 + offset], ATA_MODEL_NUMBER_LEN);
-    byte_Swap_String((char*)m_sDriveInfo.modelNumber.c_str());
+    m_sDriveInfo.modelNumber.assign(reinterpret_cast<const char*>(&pData[512 + offset]), ATA_MODEL_NUMBER_LEN);
+    byte_swap_std_string(m_sDriveInfo.modelNumber);
     rtrim(m_sDriveInfo.modelNumber);
     m_sDriveInfo.modelNumber.resize(ATA_MODEL_NUMBER_LEN);
 }
@@ -272,11 +277,19 @@ void CAta_Identify_log::create_WWN_Info()
     m_sDriveInfo.ieeeOUI.resize(WORLD_WIDE_NAME_LEN);
     m_sDriveInfo.uniqueID.resize(WORLD_WIDE_NAME_LEN);
     uint64_t wwn = M_WordsTo8ByteValue(identWordPtr[108], identWordPtr[109], identWordPtr[110], identWordPtr[111]);
-    snprintf((char*)m_sDriveInfo.worldWideName.c_str(), WORLD_WIDE_NAME_LEN, "%" PRIX64"", wwn);
-    uint64_t ieeeOUI = (uint64_t)((wwn & 0x0FFFFFF000000000ULL) >> 36);
-    uint64_t uniqueID = (uint64_t)(wwn & 0x0000000FFFFFFFFFULL);
-    snprintf((char*)m_sDriveInfo.ieeeOUI.c_str(), WORLD_WIDE_NAME_LEN, "0x%06" PRIX64"", ieeeOUI);
-    snprintf((char*)(m_sDriveInfo.uniqueID.c_str()), WORLD_WIDE_NAME_LEN, "0x%09" PRIX64"", uniqueID);
+    std::ostringstream temp;
+    temp << std::hex << std::uppercase << wwn;
+    m_sDriveInfo.worldWideName.assign(temp.str());
+    uint64_t ieeeOUI = static_cast<uint64_t>((wwn & UINT64_C(0x0FFFFFF000000000)) >> 36);
+    uint64_t uniqueID = static_cast<uint64_t>(wwn & UINT64_C(0x0000000FFFFFFFFF));
+
+    temp.str("");temp.clear();
+    temp << "0x" << std::hex << std::uppercase << std::uppercase << std::setfill('0') << std::setw(6) << ieeeOUI;
+    m_sDriveInfo.ieeeOUI.assign(temp.str());
+
+    temp.str("");temp.clear();
+    temp << "0x" << std::hex << std::uppercase << std::uppercase << std::setfill('0') << std::setw(9) << uniqueID;
+    m_sDriveInfo.uniqueID.assign(temp.str());
     m_sDriveInfo.worldWideName.resize(WORLD_WIDE_NAME_LEN);
     m_sDriveInfo.ieeeOUI.resize(WORLD_WIDE_NAME_LEN);
     m_sDriveInfo.uniqueID.resize(WORLD_WIDE_NAME_LEN);
@@ -331,9 +344,9 @@ eReturnValues CAta_Identify_log::parse_Device_Info()
     {
         m_sDriveInfo.smartFeatureEnabled = true;
     }
-    if (((uint32_t)(identWordPtr[117] << 8) & identWordPtr[118]) > 0)
+    if ((static_cast<uint32_t>(identWordPtr[117] << 8) & identWordPtr[118]) > 0)
     {
-        m_sDriveInfo.ataReportedLogicalSectorSize = (uint32_t)(identWordPtr[117] << 8) & identWordPtr[118];
+        m_sDriveInfo.ataReportedLogicalSectorSize = static_cast<uint32_t>(identWordPtr[117] << 8) & identWordPtr[118];
     }
     if ((identWordPtr[206] & BIT0) > 0)
     {
@@ -367,8 +380,7 @@ eReturnValues CAta_Identify_log::parse_Device_Info()
     }
     else
     {
-        m_sDriveInfo.worldWideName.resize(WORLD_WIDE_NAME_LEN);
-        strncpy((char*)m_sDriveInfo.worldWideName.c_str(), "Not Supported", strlen("Not Supported"));
+        m_sDriveInfo.worldWideName.assign("Not Supported");
     }
 
     //maxLBA
@@ -384,7 +396,7 @@ eReturnValues CAta_Identify_log::parse_Device_Info()
         //word 117 is only valid when word 106 bit 12 is set
         if ((identWordPtr[106] & BIT12) == BIT12)
         {
-            m_sDriveInfo.sSizes.logicalSectorSize = identWordPtr[117] | ((uint32_t)identWordPtr[118] << 16);
+            m_sDriveInfo.sSizes.logicalSectorSize =  M_WordsTo4ByteValue(identWordPtr[118], identWordPtr[117]);
             m_sDriveInfo.sSizes.logicalSectorSize *= 2;                                              //convert to words to bytes
         }
         else                                                                                //means that logical sector size is 512bytes
@@ -397,11 +409,10 @@ eReturnValues CAta_Identify_log::parse_Device_Info()
         }
         else                                                                                //multiple logical sectors per physical sector
         {
-
-            uint8_t logicalPerPhysical = 1;
             m_sDriveInfo.sSizes.sectorSizeExponent = identWordPtr[106] & 0x000F;                     //get the number of logical blocks per physical blocks
             if (m_sDriveInfo.sSizes.sectorSizeExponent != 0)
             {
+                uint8_t logicalPerPhysical = 1;
                 uint8_t shiftCounter = 0;
                 while (shiftCounter < m_sDriveInfo.sSizes.sectorSizeExponent)
                 {
@@ -416,15 +427,16 @@ eReturnValues CAta_Identify_log::parse_Device_Info()
 
     }
 
-    m_sDriveInfo.sCapInfo.capUnit = (double)(m_sDriveInfo.maxLBA48 * m_sDriveInfo.sSizes.logicalSectorSize);
+    m_sDriveInfo.sCapInfo.capUnit = static_cast<double>(m_sDriveInfo.maxLBA48 * m_sDriveInfo.sSizes.logicalSectorSize);
     m_sDriveInfo.sCapInfo.capacityUnit.resize(3);
-    char * capUnit = (char*)&m_sDriveInfo.sCapInfo.capacityUnit.c_str()[0];
-    capacity_Unit_Convert((double *)&m_sDriveInfo.sCapInfo.capUnit, &capUnit);
-
+    char capUnitBuf[5] = { 0 };
+    char * capUnit = &capUnitBuf[0];
+    capacity_Unit_Convert(&m_sDriveInfo.sCapInfo.capUnit, &capUnit);
+    m_sDriveInfo.sCapInfo.capacityUnit.assign(capUnit);
 
     //sata speeds
-    m_sDriveInfo.sataGenSupported = (uint8_t)(identWordPtr[76] & 0x000F) >> 1;                         //we only care about the lower bits right now
-    m_sDriveInfo.sataNegotiated = (uint8_t)(identWordPtr[77] & 0x000F) >> 1;                           //coded value
+    m_sDriveInfo.sataGenSupported = static_cast<uint8_t>((identWordPtr[76] & 0x000F) >> 1);                         //we only care about the lower bits right now
+    m_sDriveInfo.sataNegotiated = static_cast<uint8_t>((identWordPtr[77] & 0x000F) >> 1);                           //coded value
     //ATA spec supported
 
     m_sDriveInfo.ataSpecBits = identWordPtr[80];
@@ -469,25 +481,26 @@ eReturnValues CAta_Identify_log::parse_Device_Info()
     uint8_t page = 2; //nothing in first pages
 
     //fill in data for page 2
-    m_sDriveInfo.IDDevCap = ((uint64_t)                         0 << 56) | ((uint64_t)IDptr[page * 512 + 14] << 48) | ((uint64_t)IDptr[page * 512 + 13] << 40) | ((uint64_t)IDptr[page * 512 + 12] << 32) | ((uint64_t)IDptr[page * 512 + 11] << 24) | ((uint64_t)IDptr[page * 512 + 10] << 16) | ((uint64_t)IDptr[page * 512 + 9] << 8) | ((uint64_t)IDptr[page * 512 + 8]);
-    m_sDriveInfo.IDPhySecSize = ((uint64_t)IDptr[page * 512 + 23] << 56) | ((uint64_t)IDptr[page * 512 + 22] << 48) | ((uint64_t)IDptr[page * 512 + 21] << 40) | ((uint64_t)IDptr[page * 512 + 20] << 32) | ((uint64_t)IDptr[page * 512 + 19] << 24) | ((uint64_t)IDptr[page * 512 + 18] << 16) | ((uint64_t)IDptr[page * 512 + 17] << 8) | ((uint64_t)IDptr[page * 512 + 16]);
-    m_sDriveInfo.IDLogSecSize = ((uint64_t)IDptr[page * 512 + 31] << 56) | ((uint64_t)IDptr[page * 512 + 30] << 48) | ((uint64_t)IDptr[page * 512 + 29] << 40) | ((uint64_t)IDptr[page * 512 + 28] << 32) | ((uint64_t)IDptr[page * 512 + 27] << 24) | ((uint64_t)IDptr[page * 512 + 26] << 16) | ((uint64_t)IDptr[page * 512 + 25] << 8) | ((uint64_t)IDptr[page * 512 + 24]);
-    m_sDriveInfo.IDBufSize =    ((uint64_t)IDptr[page * 512 + 39] << 56) | ((uint64_t)IDptr[page * 512 + 38] << 48) | ((uint64_t)IDptr[page * 512 + 37] << 40) | ((uint64_t)IDptr[page * 512 + 36] << 32) | ((uint64_t)IDptr[page * 512 + 35] << 24) | ((uint64_t)IDptr[page * 512 + 34] << 16) | ((uint64_t)IDptr[page * 512 + 33] << 8) | ((uint64_t)IDptr[page * 512 + 32]);
+    m_sDriveInfo.IDDevCap = M_BytesTo8ByteValue(0, IDptr[page * 512 + 14], IDptr[page * 512 + 13], IDptr[page * 512 + 12], IDptr[page * 512 + 11], IDptr[page * 512 + 10], IDptr[page * 512 + 9], IDptr[page * 512 + 8]);
+
+    m_sDriveInfo.IDPhySecSize = M_BytesTo8ByteValue(IDptr[page * 512 + 23], IDptr[page * 512 + 22], IDptr[page * 512 + 21], IDptr[page * 512 + 20], IDptr[page * 512 + 19], IDptr[page * 512 + 18], IDptr[page * 512 + 17], IDptr[page * 512 + 16]);
+    m_sDriveInfo.IDLogSecSize = M_BytesTo8ByteValue(IDptr[page * 512 + 31], IDptr[page * 512 + 30], IDptr[page * 512 + 29], IDptr[page * 512 + 28], IDptr[page * 512 + 27], IDptr[page * 512 + 26], IDptr[page * 512 + 25], IDptr[page * 512 + 24]);
+    m_sDriveInfo.IDBufSize =    M_BytesTo8ByteValue(IDptr[page * 512 + 39], IDptr[page * 512 + 38], IDptr[page * 512 + 37], IDptr[page * 512 + 36], IDptr[page * 512 + 35], IDptr[page * 512 + 34], IDptr[page * 512 + 33], IDptr[page * 512 + 32]);
 
     //fill in data for page 3
     page = 3;
-    m_sDriveInfo.IDCapabilities = ((uint64_t)IDptr[page * 512 + 15] << 56) | ((uint64_t)IDptr[page * 512 + 14] << 48) | ((uint64_t)IDptr[page * 512 + 13] << 40) | ((uint64_t)IDptr[page * 512 + 12] << 32) | ((uint64_t)IDptr[page * 512 + 11] << 24) | ((uint64_t)IDptr[page * 512 + 10] << 16) | ((uint64_t)IDptr[page * 512 + 9] << 8) | ((uint64_t)IDptr[page * 512 + 8]);
-    m_sDriveInfo.IDMicrocode =    ((uint64_t)IDptr[page * 512 + 23] << 56) | ((uint64_t)IDptr[page * 512 + 22] << 48) | ((uint64_t)IDptr[page * 512 + 21] << 40) | ((uint64_t)IDptr[page * 512 + 20] << 32) | ((uint64_t)IDptr[page * 512 + 19] << 24) | ((uint64_t)IDptr[page * 512 + 18] << 16) | ((uint64_t)IDptr[page * 512 + 17] << 8) | ((uint64_t)IDptr[page * 512 + 16]);
-    m_sDriveInfo.IDMediaRotRate = ((uint64_t)IDptr[page * 512 + 31] << 56) | ((uint64_t)IDptr[page * 512 + 30] << 48) | ((uint64_t)IDptr[page * 512 + 29] << 40) | ((uint64_t)IDptr[page * 512 + 28] << 32) | ((uint64_t)IDptr[page * 512 + 27] << 24) | ((uint64_t)IDptr[page * 512 + 26] << 16) | ((uint64_t)IDptr[page * 512 + 25] << 8) | ((uint64_t)IDptr[page * 512 + 24]);
-    m_sDriveInfo.IDFormFactor =   ((uint64_t)IDptr[page * 512 + 39] << 56) | ((uint64_t)IDptr[page * 512 + 38] << 48) | ((uint64_t)IDptr[page * 512 + 37] << 40) | ((uint64_t)IDptr[page * 512 + 36] << 32) | ((uint64_t)IDptr[page * 512 + 35] << 24) | ((uint64_t)IDptr[page * 512 + 34] << 16) | ((uint64_t)IDptr[page * 512 + 33] << 8) | ((uint64_t)IDptr[page * 512 + 32]);
-    m_sDriveInfo.IDWRVSecCount2 = ((uint64_t)IDptr[page * 512 + 47] << 56) | ((uint64_t)IDptr[page * 512 + 46] << 48) | ((uint64_t)IDptr[page * 512 + 45] << 40) | ((uint64_t)IDptr[page * 512 + 44] << 32) | ((uint64_t)IDptr[page * 512 + 43] << 24) | ((uint64_t)IDptr[page * 512 + 42] << 16) | ((uint64_t)IDptr[page * 512 + 41] << 8) | ((uint64_t)IDptr[page * 512 + 40]);
-    m_sDriveInfo.IDWRVSecCount3 = ((uint64_t)IDptr[page * 512 + 55] << 56) | ((uint64_t)IDptr[page * 512 + 54] << 48) | ((uint64_t)IDptr[page * 512 + 53] << 40) | ((uint64_t)IDptr[page * 512 + 52] << 32) | ((uint64_t)IDptr[page * 512 + 51] << 24) | ((uint64_t)IDptr[page * 512 + 50] << 16) | ((uint64_t)IDptr[page * 512 + 49] << 8) | ((uint64_t)IDptr[page * 512 + 48]);
-    m_sDriveInfo.IDWWN =          ((uint64_t)IDptr[page * 512 + 71] << 56) | ((uint64_t)IDptr[page * 512 + 70] << 48) | ((uint64_t)IDptr[page * 512 + 69] << 40) | ((uint64_t)IDptr[page * 512 + 68] << 32) | ((uint64_t)IDptr[page * 512 + 67] << 24) | ((uint64_t)IDptr[page * 512 + 66] << 16) | ((uint64_t)IDptr[page * 512 + 65] << 8) | ((uint64_t)IDptr[page * 512 + 64]);
+    m_sDriveInfo.IDCapabilities = M_BytesTo8ByteValue(IDptr[page * 512 + 15], IDptr[page * 512 + 14], IDptr[page * 512 + 13], IDptr[page * 512 + 12], IDptr[page * 512 + 11], IDptr[page * 512 + 10], IDptr[page * 512 + 9], IDptr[page * 512 + 8]);
+    m_sDriveInfo.IDMicrocode =    M_BytesTo8ByteValue(IDptr[page * 512 + 23], IDptr[page * 512 + 22], IDptr[page * 512 + 21], IDptr[page * 512 + 20], IDptr[page * 512 + 19], IDptr[page * 512 + 18], IDptr[page * 512 + 17], IDptr[page * 512 + 16]);
+    m_sDriveInfo.IDMediaRotRate = M_BytesTo8ByteValue(IDptr[page * 512 + 31], IDptr[page * 512 + 30], IDptr[page * 512 + 29], IDptr[page * 512 + 28], IDptr[page * 512 + 27], IDptr[page * 512 + 26], IDptr[page * 512 + 25], IDptr[page * 512 + 24]);
+    m_sDriveInfo.IDFormFactor =   M_BytesTo8ByteValue(IDptr[page * 512 + 39], IDptr[page * 512 + 38], IDptr[page * 512 + 37], IDptr[page * 512 + 36], IDptr[page * 512 + 35], IDptr[page * 512 + 34], IDptr[page * 512 + 33], IDptr[page * 512 + 32]);
+    m_sDriveInfo.IDWRVSecCount2 = M_BytesTo8ByteValue(IDptr[page * 512 + 47], IDptr[page * 512 + 46], IDptr[page * 512 + 45], IDptr[page * 512 + 44], IDptr[page * 512 + 43], IDptr[page * 512 + 42], IDptr[page * 512 + 41], IDptr[page * 512 + 40]);
+    m_sDriveInfo.IDWRVSecCount3 = M_BytesTo8ByteValue(IDptr[page * 512 + 55], IDptr[page * 512 + 54], IDptr[page * 512 + 53], IDptr[page * 512 + 52], IDptr[page * 512 + 51], IDptr[page * 512 + 50], IDptr[page * 512 + 49], IDptr[page * 512 + 48]);
+    m_sDriveInfo.IDWWN =          M_BytesTo8ByteValue(IDptr[page * 512 + 71], IDptr[page * 512 + 70], IDptr[page * 512 + 69], IDptr[page * 512 + 68], IDptr[page * 512 + 67], IDptr[page * 512 + 66], IDptr[page * 512 + 65], IDptr[page * 512 + 64]);
     
     //fill in data for page 6
     //data in page 6    
     page = 6;
-    m_sDriveInfo.IDSecurityStatus = ((uint64_t)IDptr[page * 512 + 23] << 56) | ((uint64_t)IDptr[page * 512 + 22] << 48) | ((uint64_t)IDptr[page * 512 + 21] << 40) | ((uint64_t)IDptr[page * 512 + 20] << 32) | ((uint64_t)IDptr[page * 512 + 19] << 24) | ((uint64_t)IDptr[page * 512 + 18] << 16) | ((uint64_t)IDptr[page * 512 + 17] << 8) | ((uint64_t)IDptr[page * 512 + 16]);
+    m_sDriveInfo.IDSecurityStatus = M_BytesTo8ByteValue(IDptr[page * 512 + 23], IDptr[page * 512 + 22], IDptr[page * 512 + 21], IDptr[page * 512 + 20], IDptr[page * 512 + 19], IDptr[page * 512 + 18], IDptr[page * 512 + 17], IDptr[page * 512 + 16]);
 
     // Device Capabilities:
     if (m_sDriveInfo.IDCapabilities & BIT45) //bit 45
@@ -692,115 +705,121 @@ eReturnValues CAta_Identify_log::parse_Device_Info()
 //---------------------------------------------------------------------------
 eReturnValues CAta_Identify_log::print_Identify_Information(JSONNODE *masterData)
 {
-    std::string myStr = "Print Idenify Info";
-    myStr.resize(BASIC);
-
     JSONNODE *identifyInfo = json_new(JSON_NODE);
     json_set_name(identifyInfo, "Identify Device Information");
 
     //print the strings
-    json_push_back(identifyInfo, json_new_a("Model Number", (char*)m_sDriveInfo.modelNumber.c_str()));
+    json_push_back(identifyInfo, json_new_a("Model Number", m_sDriveInfo.modelNumber.c_str()));
 
-    json_push_back(identifyInfo, json_new_a("Serial Number", (char*)m_sDriveInfo.serialNumber.c_str()));
+    json_push_back(identifyInfo, json_new_a("Serial Number", m_sDriveInfo.serialNumber.c_str()));
 
-    json_push_back(identifyInfo, json_new_a("Firmware Revision", (char*)m_sDriveInfo.firmware.c_str()));
+    json_push_back(identifyInfo, json_new_a("Firmware Revision", m_sDriveInfo.firmware.c_str()));
     // world wide name
 
-    json_push_back(identifyInfo, json_new_a("World Wide Name", (char*)m_sDriveInfo.worldWideName.c_str()));
+    json_push_back(identifyInfo, json_new_a("World Wide Name", m_sDriveInfo.worldWideName.c_str()));
     JSONNODE *IEEEinfo = json_new(JSON_NODE);
     json_set_name(IEEEinfo, "IEEE Registered");
-    json_push_back(IEEEinfo, json_new_a("IEEE Company ID", (char*)m_sDriveInfo.ieeeOUI.c_str()));
-    json_push_back(IEEEinfo, json_new_a("Vendor Specific ID", (char*)m_sDriveInfo.uniqueID.c_str()));
+    json_push_back(IEEEinfo, json_new_a("IEEE Company ID", m_sDriveInfo.ieeeOUI.c_str()));
+    json_push_back(IEEEinfo, json_new_a("Vendor Specific ID", m_sDriveInfo.uniqueID.c_str()));
     json_push_back(identifyInfo, IEEEinfo);
 
     //maxLBA
-    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu32"", m_sDriveInfo.maxLBA28);
-    json_push_back(identifyInfo, json_new_a("MaxLBA (28bit)", (char*)myStr.c_str()));
-    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu64"", m_sDriveInfo.maxLBA48);
-    json_push_back(identifyInfo, json_new_a("MaxLBA (48bit)", (char*)myStr.c_str()));
+    std::ostringstream temp;
+    temp << std::dec << m_sDriveInfo.maxLBA28;
+    json_push_back(identifyInfo, json_new_a("MaxLBA (28bit)", temp.str().c_str()));
+    temp.str("");temp.clear();
+    temp << std::dec << m_sDriveInfo.maxLBA48;
+    json_push_back(identifyInfo, json_new_a("MaxLBA (48bit)", temp.str().c_str()));
+    temp.str("");temp.clear();
     // sector sizes
     JSONNODE *sectorSize = json_new(JSON_NODE);
     json_set_name(sectorSize, "Sector Sizes");
     if (m_sDriveInfo.sSizes.sectorSizeReported)
     {
-        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu32"", m_sDriveInfo.sSizes.logicalSectorSize);
-        json_push_back(sectorSize, json_new_a("Logical", (char*)myStr.c_str()));
-        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu8"", m_sDriveInfo.sSizes.sectorSizeExponent);
-        json_push_back(sectorSize, json_new_a("Sector Size Exponent", (char*)myStr.c_str()));
-        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu32" ", m_sDriveInfo.sSizes.physicalSectorSize);
-        json_push_back(sectorSize, json_new_a("Physical", (char*)myStr.c_str()));
-        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16"", m_sDriveInfo.logicalSectorAlignment);
-        json_push_back(sectorSize, json_new_a("Logical Sector alignment", (char*)myStr.c_str()));
+        temp.str("");temp.clear();
+        temp << std::dec << m_sDriveInfo.sSizes.logicalSectorSize;
+        json_push_back(sectorSize, json_new_a("Logical", temp.str().c_str()));
+        temp.str("");temp.clear();
+        temp << std::dec << m_sDriveInfo.sSizes.sectorSizeExponent;
+        json_push_back(sectorSize, json_new_a("Sector Size Exponent", temp.str().c_str()));
+        temp.str("");temp.clear();
+        temp << std::dec << m_sDriveInfo.sSizes.physicalSectorSize;
+        json_push_back(sectorSize, json_new_a("Physical", temp.str().c_str()));
+        temp.str("");temp.clear();
+        temp << std::dec << m_sDriveInfo.logicalSectorAlignment;
+        json_push_back(sectorSize, json_new_a("Logical Sector alignment", temp.str().c_str()));
     }
     else
     {
-        snprintf((char*)myStr.c_str(), BASIC, "512 byte assumed");
-        json_push_back(sectorSize, json_new_a("Sector Size", (char*)myStr.c_str()));
+        json_push_back(sectorSize, json_new_a("Sector Size", "512 byte assumed"));
     }
     json_push_back(identifyInfo, sectorSize);
 
-
     // capacity
-    snprintf((char*)myStr.c_str(), BASIC, "%0.02f %s ", m_sDriveInfo.sCapInfo.capUnit, (char*)m_sDriveInfo.sCapInfo.capacityUnit.c_str());
-    json_push_back(identifyInfo, json_new_a("Identify Log Device Capacity", (char*)myStr.c_str()));
+    temp.str("");temp.clear();
+    temp << std::fixed << std::setprecision(2) << std::setfill('0') << m_sDriveInfo.sCapInfo.capUnit << " " << m_sDriveInfo.sCapInfo.capacityUnit;
+    json_push_back(identifyInfo, json_new_a("Identify Log Device Capacity", temp.str().c_str()));
     // Spec 
+    temp.str("");temp.clear();
     switch (m_sDriveInfo.ataSpecCounter)
     {
     case 15:
-        snprintf((char*)myStr.c_str(), BASIC, "ACS-8");
+        temp << "ACS-8";
         break;
     case 14:
-        snprintf((char*)myStr.c_str(), BASIC, "ACS-7");
+        temp <<  "ACS-7";
         break;
     case 13:
-        snprintf((char*)myStr.c_str(), BASIC, "ACS-6");
+        temp <<  "ACS-6";
         break;
     case 12:
-        snprintf((char*)myStr.c_str(), BASIC, "ACS-5");
+        temp <<  "ACS-5";
         break;
     case 11:
-        snprintf((char*)myStr.c_str(), BASIC, "ACS-4");
+        temp <<  "ACS-4";
         break;
     case 10:
-        snprintf((char*)myStr.c_str(), BASIC, "ACS-3");
+        temp <<  "ACS-3";
         break;
     case 9:
-        snprintf((char*)myStr.c_str(), BASIC, "ACS-2");
+        temp <<  "ACS-2";
         break;
     case 8:
-        snprintf((char*)myStr.c_str(), BASIC, "ATA8 - ACS");
+        temp <<  "ATA8 - ACS";
         break;
     case 7:
-        snprintf((char*)myStr.c_str(), BASIC, "ATA/ATAPI-7");
+        temp <<  "ATA/ATAPI-7";
         break;
     case 6:
-        snprintf((char*)myStr.c_str(), BASIC, "ATA/ATAPI-6");
+        temp <<  "ATA/ATAPI-6";
         break;
     case 5:
-        snprintf((char*)myStr.c_str(), BASIC, "ATA/ATAPI-5");
+        temp <<  "ATA/ATAPI-5";
         break;
     case 4:
-        snprintf((char*)myStr.c_str(), BASIC, "ATA/ATAPI-4");
+        temp <<  "ATA/ATAPI-4";
         break;
     case 3:
-        snprintf((char*)myStr.c_str(), BASIC, "ATA-3");
+        temp <<  "ATA-3";
         break;
     case 2:
-        snprintf((char*)myStr.c_str(), BASIC, "ATA-2");
+        temp <<  "ATA-2";
         break;
     case 1:
-        snprintf((char*)myStr.c_str(), BASIC, "ATA-1");
+        temp <<  "ATA-1";
         break;
     default:
-        snprintf((char*)myStr.c_str(), BASIC, " Unknown / Not Reported ");
+        temp <<  " Unknown / Not Reported ";
         break;
     }
-    json_push_back(identifyInfo, json_new_a("ATA Spec Supported", (char*)myStr.c_str()));
+    json_push_back(identifyInfo, json_new_a("ATA Spec Supported", temp.str().c_str()));
     //minor spec version number
-    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16"", m_sDriveInfo.minorSpecVersionNumber);
-    json_push_back(identifyInfo, json_new_a("ATA Spec Minor Version Number", (char*)myStr.c_str()));
+    temp.str("");temp.clear();
+    temp << std::dec << m_sDriveInfo.minorSpecVersionNumber;
+    json_push_back(identifyInfo, json_new_a("ATA Spec Minor Version Number", temp.str().c_str()));
 
     //Transport
+    temp.str("");temp.clear();
     if (m_sDriveInfo.sTrans.transportReported)
     {
         switch (m_sDriveInfo.sTrans.transportType)
@@ -809,13 +828,13 @@ eReturnValues CAta_Identify_log::print_Identify_Information(JSONNODE *masterData
             switch (m_sDriveInfo.sTrans.transportCounter)
             {
             case 1:
-                snprintf((char*)myStr.c_str(), BASIC, "ATA/ATAPI-7");
+                temp << "ATA/ATAPI-7";
                 break;
             case 0:
-                snprintf((char*)myStr.c_str(), BASIC, "ATA8-APT");
+                temp << "ATA8-APT";
                 break;
             default:
-                snprintf((char*)myStr.c_str(), BASIC, "Reserved");
+                temp << "Reserved";
                 break;
             }
             break;
@@ -823,77 +842,79 @@ eReturnValues CAta_Identify_log::print_Identify_Information(JSONNODE *masterData
             switch (m_sDriveInfo.sTrans.transportCounter)
             {
             case 8:
-                snprintf((char*)myStr.c_str(), BASIC, "SATA 3.3");
+                temp << "SATA 3.3";
                 break;
             case 7:
-                snprintf((char*)myStr.c_str(), BASIC, "SATA 3.2");
+                temp << "SATA 3.2";
                 break;
             case 6:
-                snprintf((char*)myStr.c_str(), BASIC, "SATA 3.1");
+                temp << "SATA 3.1";
                 break;
             case 5:
-                snprintf((char*)myStr.c_str(), BASIC, "SATA 3.0");
+                temp << "SATA 3.0";
                 break;
             case 4:
-                snprintf((char*)myStr.c_str(), BASIC, "SATA 2.6");
+                temp << "SATA 2.6";
                 break;
             case 3:
-                snprintf((char*)myStr.c_str(), BASIC, "SATA 2.5");
+                temp << "SATA 2.5";
                 break;
             case 2:
-                snprintf((char*)myStr.c_str(), BASIC, "SATA II - Extensions");
+                temp << "SATA II - Extensions";
                 break;
             case 1:
-                snprintf((char*)myStr.c_str(), BASIC, "SATA 1.0a");
+                temp << "SATA 1.0a";
                 break;
             case 0:
-                snprintf((char*)myStr.c_str(), BASIC, "ATA8-AST");
+                temp << "ATA8-AST";
                 break;
             default:
-                snprintf((char*)myStr.c_str(), BASIC, "Reserved");
+                temp << "Reserved";
             }
 
             break;
         default://unknown/undefined, just dump the bits
-            snprintf((char*)myStr.c_str(), BASIC, "Unknown Transport");
+            temp << "Unknown Transport";
             break;
         }
     }
     else
     {
-        snprintf((char*)myStr.c_str(), BASIC, "Not Reported");
+        temp << "Not Reported";
     }
-    json_push_back(identifyInfo, json_new_a("Transport Supported", (char*)myStr.c_str()));
+    json_push_back(identifyInfo, json_new_a("Transport Supported", temp.str().c_str()));
 
-    snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16"", m_sDriveInfo.sTrans.transportMinorVersion);
-    json_push_back(identifyInfo, json_new_a("Transport Minor Version", (char*)myStr.c_str()));
+    temp.str("");temp.clear();
+    temp << std::dec << m_sDriveInfo.sTrans.transportMinorVersion;
+    json_push_back(identifyInfo, json_new_a("Transport Minor Version", temp.str().c_str()));
 
     // Form Factor
+    temp.str("");temp.clear();
     switch (m_sDriveInfo.formFactor)
     {
     case 0:
-        snprintf((char*)myStr.c_str(), BASIC, "Not Reported");
+        temp << "Not Reported";
         break;
     case 1:
-        snprintf((char*)myStr.c_str(), BASIC, "5.25 inch");
+        temp << "5.25 inch";
         break;
     case 2:
-        snprintf((char*)myStr.c_str(), BASIC, "3.5 inch");
+        temp << "3.5 inch";
         break;
     case 3:
-        snprintf((char*)myStr.c_str(), BASIC, "2.5 inch");
+        temp << "2.5 inch";
         break;
     case 4:
-        snprintf((char*)myStr.c_str(), BASIC, "1.8 inch");
+        temp << "1.8 inch";
         break;
     case 5:
-        snprintf((char*)myStr.c_str(), BASIC, "Less than 1.8 inch");
+        temp << "Less than 1.8 inch";
         break;
     default:
-        snprintf((char*)myStr.c_str(), BASIC, "Reserved");
+        temp << "Reserved";
         break;
     }
-    json_push_back(identifyInfo, json_new_a("Form Factor", (char*)myStr.c_str()));
+    json_push_back(identifyInfo, json_new_a("Form Factor", temp.str().c_str()));
 
     // Drives Capablilities 
     JSONNODE *driveCap = json_new(JSON_NODE);
@@ -983,8 +1004,9 @@ eReturnValues CAta_Identify_log::print_Identify_Information(JSONNODE *masterData
         JSONNODE *secruity = json_new(JSON_NODE);
         json_set_name(secruity, "Device Security");
 
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04x", m_sDriveInfo.SecurityID);
-        json_push_back(secruity, json_new_a("Security Status Bit:", (char*)myStr.c_str()));
+        temp.str("");temp.clear();
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << m_sDriveInfo.SecurityID;
+        json_push_back(secruity, json_new_a("Security Status Bit:", temp.str().c_str()));
 
         opensea_parser::set_Json_Bool(secruity, "Security Supported", m_sDriveInfo.sSecurityInfo.supported);
 
@@ -1028,7 +1050,7 @@ CAta_Identify_Log_00::CAta_Identify_Log_00(uint8_t *Buffer)
     pData = Buffer;
     if (pData != NULL)
     {
-        m_pLog0 = (sLogPage00 *)pData;
+        m_pLog0 = reinterpret_cast<sLogPage00 *>(pData);
         m_status = SUCCESS;
     }
     else
@@ -1100,17 +1122,15 @@ bool CAta_Identify_Log_00::is_Page_Supported(uint8_t pageNumber)
 //!   \return string the interface type
 //
 //---------------------------------------------------------------------------
-eReturnValues CAta_Identify_Log_00::get_Log_Page00(uint8_t *pData, JSONNODE *masterData)
+eReturnValues CAta_Identify_Log_00::get_Log_Page00(JSONNODE *masterData)
 {
 #define LOG_PAGE_00   0x0000
     uint16_t pageNumber = 0;
     uint16_t revision = 0;
     eReturnValues retStatus = IN_PROGRESS;
-    std::string myStr = "";
-    myStr.resize(BASIC);
 
-    pageNumber = (uint16_t)M_Word1(m_pLog0->header);
-    revision = (uint16_t)(M_Word0(m_pLog0->header));
+    pageNumber = M_Word1(m_pLog0->header);
+    revision = M_Word0(m_pLog0->header);
     if (pageNumber == LOG_PAGE_00)
     {
         JSONNODE *pageInfo = json_new(JSON_NODE);
@@ -1119,20 +1139,22 @@ eReturnValues CAta_Identify_Log_00::get_Log_Page00(uint8_t *pData, JSONNODE *mas
         printf("Log Page 00h \n");
         printf("\tHeader =   0x%016" PRIx64"  \n", m_pLog0->header);
 #endif
-
-        snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", m_pLog0->header);
-        json_push_back(pageInfo, json_new_a("Page Header", (char*)myStr.c_str()));
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", pageNumber);
-        json_push_back(pageInfo, json_new_a("Page Number", (char*)myStr.c_str()));
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", revision);
-        json_push_back(pageInfo, json_new_a("Revision Number", (char*)myStr.c_str()));
+        std::ostringstream temp;
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(16) << m_pLog0->header;
+        json_push_back(pageInfo, json_new_a("Page Header", temp.str().c_str()));
+        temp.str("");temp.clear();
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << pageNumber;
+        json_push_back(pageInfo, json_new_a("Page Number", temp.str().c_str()));
+        temp.str("");temp.clear();
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << revision;
+        json_push_back(pageInfo, json_new_a("Revision Number", temp.str().c_str()));
         // get the pages supported
-        for (uint8_t pageNumber = 0; pageNumber <= MAX_NUMBER_OF_ENTRIES; pageNumber++)
+        for (uint8_t pageNumber_1 = 0; pageNumber_1 <= MAX_NUMBER_OF_ENTRIES; pageNumber_1++)
         {
-            snprintf((char*)myStr.c_str(), BASIC, "Page Number 0x%02" PRIx8"", pageNumber);
-            opensea_parser::set_Json_Bool(pageInfo, (char*)myStr.c_str(), is_Page_Supported(pageNumber));
+            temp.str("");temp.clear();
+            temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(pageNumber_1);//cast is to make sure it doesn't try interpretting a uint8 as a char instead of a decimal - TJE
+            opensea_parser::set_Json_Bool(pageInfo, temp.str().c_str(), is_Page_Supported(pageNumber_1));
         }
-
 
         json_push_back(masterData, pageInfo);
         retStatus = SUCCESS;
@@ -1206,62 +1228,62 @@ CAta_Identify_Log_02::~CAta_Identify_Log_02()
 //---------------------------------------------------------------------------
 bool CAta_Identify_Log_02::get_Device_Capacity(JSONNODE *capData)
 {
-    std::string myStr = "";
-    //myStr.resize(BASIC);
 #if defined _DEBUG
     printf("Device Capacity \n");
     printf("\tDevice Capacity =   0x%016" PRIx64"  \n", pCapacity->deviceCapacity);
 #endif
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", pCapacity->deviceCapacity);
-    json_push_back(capData, json_new_a("Device Capacity Header", (char*)myStr.c_str()));
+    std::ostringstream temp;
+    temp << "0x" << std::hex << std::uppercase <<std::setfill('0') << std::setw(16) << pCapacity->deviceCapacity;
+    json_push_back(capData, json_new_a("Device Capacity Header", temp.str().c_str()));
     if (check_For_Active_Status(&pCapacity->deviceCapacity))
     {
         uint64_t myUint48 = pCapacity->deviceCapacity &  MAX_48_BIT_LBA;
-        double capacity = (double)myUint48;
+        double capacity = static_cast<double>(myUint48);
         uint8_t unitCounter = 0;
         while ((capacity / 1024.0) >= 1 && (unitCounter + 1) < 8)
         {
             capacity = capacity / 1024.00;
             unitCounter += 1;
         }
+        temp.str("");temp.clear();
         switch (unitCounter)
         {
         case 0:
-            snprintf((char*)myStr.c_str(), BASIC, "%" PRIu64" B", myUint48);
+            temp << std::dec << myUint48 << "B";
             break;
         case 1:
-            snprintf((char*)myStr.c_str(), BASIC, "%" PRIu64" KiB", myUint48);
+            temp << std::dec << myUint48 << "KiB";
             break;
         case 2:
-            snprintf((char*)myStr.c_str(), BASIC, "%" PRIx64" MiB", myUint48);
+            temp << std::dec << myUint48 << "MiB";
             break;
         case 3:
-            snprintf((char*)myStr.c_str(), BASIC, "%" PRIu64" GiB", myUint48);
+            temp << std::dec << myUint48 << "GiB";
             break;
         case 4:
-            snprintf((char*)myStr.c_str(), BASIC, "%" PRIu64" TiB", myUint48);
+            temp << std::dec << myUint48 << "TiB";
             break;
         case 5:
-            snprintf((char*)myStr.c_str(), BASIC, "%" PRIu64" PiB", myUint48);
+            temp << std::dec << myUint48 << "PiB";
             break;
         case 6:
-            snprintf((char*)myStr.c_str(), BASIC, "%" PRIu64" EiB", myUint48);
+            temp << std::dec << myUint48 << "EiB";
             break;
         case 7:
-            snprintf((char*)myStr.c_str(), BASIC, "%" PRIu64" ZiB", myUint48);
+            temp << std::dec << myUint48 << "ZiB";
             break;
         case 8:
-            snprintf((char*)myStr.c_str(), BASIC, "%" PRIu64" YiB", myUint48);
+            temp << std::dec << myUint48 << "YiB";
             break;
         default:
-            snprintf((char*)myStr.c_str(), BASIC, "unknown size");
+            temp << "unknown size";
             break;
         }
 #if defined _DEBUG
         printf("\tDevice Capacity =   %" PRIu64"  \n", myUint48);
-        printf("\tCapacity =   %s \n", (char*)myStr.c_str());
+        printf("\tCapacity =   %s \n", temp.str().c_str());
 #endif
-        json_push_back(capData, json_new_a("Capacity", (char*)myStr.c_str()));
+        json_push_back(capData, json_new_a("Capacity", temp.str().c_str()));
 
     }
     else
@@ -1273,14 +1295,13 @@ bool CAta_Identify_Log_02::get_Device_Capacity(JSONNODE *capData)
 
 bool CAta_Identify_Log_02::get_Sector_Size(JSONNODE *sectorData)
 {
-    std::string myStr = "";
-    myStr.resize(BASIC);
 #if defined _DEBUG
     printf("Physical / Logical sector size \n");
     printf("\tSector Size =   0x%016" PRIx64"  \n", pCapacity->sectorSize);
 #endif
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", pCapacity->sectorSize);
-    json_push_back(sectorData, json_new_a("Pysical and Logical Sector Size", (char*)myStr.c_str()));
+    std::ostringstream temp;
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(16) << pCapacity->sectorSize;
+    json_push_back(sectorData, json_new_a("Pysical and Logical Sector Size", temp.str().c_str()));
     if (check_For_Active_Status(&pCapacity->deviceCapacity))
     {
         if (pCapacity->sectorSize & BIT62)
@@ -1313,8 +1334,9 @@ bool CAta_Identify_Log_02::get_Sector_Size(JSONNODE *sectorData)
             opensea_parser::set_Json_Bool(sectorData, "Long Physical Sector Alignment Error reporting is enabled", false);
         }
         uint16_t sectorOffset = M_Word0(pCapacity->sectorSize);
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", sectorOffset);
-        json_push_back(sectorData, json_new_a("Logical Sector Offset", (char*)myStr.c_str()));
+        temp.str("");temp.clear();
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << sectorOffset;
+        json_push_back(sectorData, json_new_a("Logical Sector Offset", temp.str().c_str()));
     }
 
     return true;
@@ -1333,18 +1355,15 @@ bool CAta_Identify_Log_02::get_Sector_Size(JSONNODE *sectorData)
 //!   \return string the interface type
 //
 //---------------------------------------------------------------------------
-eReturnValues CAta_Identify_Log_02::get_Log_Page02(uint8_t *pData, JSONNODE *masterData)
+eReturnValues CAta_Identify_Log_02::get_Log_Page02(uint8_t *lp2pData, JSONNODE *masterData)
 {
 #define LOG_PAGE_02   0x0002
     eReturnValues retStatus = IN_PROGRESS;
-    std::string myStr = "";
-    //myStr.resize(BASIC);
     sLogPage02 logPage02;
     pCapacity = &logPage02;
-    memset(pCapacity, 0, sizeof(sLogPage02));
-    pCapacity = (sLogPage02 *)&pData[0];
-    uint16_t pageNumber = (uint16_t)(M_Word1(pCapacity->header));
-    uint16_t revision = (uint16_t)(M_Word0(pCapacity->header));
+    pCapacity = reinterpret_cast<sLogPage02*>(&lp2pData[0]);
+    uint16_t pageNumber = M_Word1(pCapacity->header);
+    uint16_t revision = M_Word0(pCapacity->header);
     if (pageNumber == LOG_PAGE_02)
     {
         JSONNODE *pageInfo = json_new(JSON_NODE);
@@ -1353,12 +1372,15 @@ eReturnValues CAta_Identify_Log_02::get_Log_Page02(uint8_t *pData, JSONNODE *mas
         printf("Log Page 02h \n");
         printf("\tHeader =   0x%016" PRIx64"  \n", pCapacity->header);
 #endif
-        snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", pCapacity->header);
-        json_push_back(pageInfo, json_new_a("Page Header", (char*)myStr.c_str()));
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", pageNumber);
-        json_push_back(pageInfo, json_new_a("Page Number", (char*)myStr.c_str()));
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", revision);
-        json_push_back(pageInfo, json_new_a("Revision Number", (char*)myStr.c_str()));
+        std::ostringstream temp;
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(16) << pCapacity->header;
+        json_push_back(pageInfo, json_new_a("Page Header", temp.str().c_str()));
+        temp.str("");temp.clear();
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << pageNumber;
+        json_push_back(pageInfo, json_new_a("Page Number", temp.str().c_str()));
+        temp.str("");temp.clear();
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << revision;
+        json_push_back(pageInfo, json_new_a("Revision Number", temp.str().c_str()));
 
         get_Device_Capacity(pageInfo);
         get_Sector_Size(pageInfo);
@@ -1663,14 +1685,13 @@ bool CAta_Identify_Log_03::set_DownLoad_MicroCode(uint64_t *value)
 //---------------------------------------------------------------------------
 bool CAta_Identify_Log_03::get_Supported_Capabilities(JSONNODE *currentData)
 {
-    std::string myStr = "";
-    myStr.resize(BASIC);
 #if defined _DEBUG
     printf("Current Settings \n");
     printf("\tCurrent Settings =   0x%016" PRIx64"  \n", m_pCap->supportedCapabilities);
 #endif
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", m_pCap->supportedCapabilities);
-    json_push_back(currentData, json_new_a("Supported Capabilities", (char*)myStr.c_str()));
+    std::ostringstream temp;
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(16) << m_pCap->supportedCapabilities;
+    json_push_back(currentData, json_new_a("Supported Capabilities", temp.str().c_str()));
     if (set_Supported_Capabilities(&m_pCap->supportedCapabilities))
     {
         JSONNODE *currentSettings = json_new(JSON_NODE);
@@ -1737,14 +1758,13 @@ bool CAta_Identify_Log_03::get_Supported_Capabilities(JSONNODE *currentData)
 //---------------------------------------------------------------------------
 bool CAta_Identify_Log_03::get_DownLoad_MicroCode(JSONNODE *DM)
 {
-    std::string myStr = "";
-    //myStr.resize(BASIC);
 #if defined _DEBUG
     printf("Download Microcode \n");
     printf("\tDownload Microcode =   0x%016" PRIx64"  \n", m_pCap->download);
 #endif
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", m_pCap->download);
-    json_push_back(DM, json_new_a("Download Microcode ", (char*)myStr.c_str()));
+    std::ostringstream temp;
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(16) << m_pCap->download;
+    json_push_back(DM, json_new_a("Download Microcode ", temp.str().c_str()));
     if (set_DownLoad_MicroCode(&m_pCap->download))
     {
         JSONNODE *download = json_new(JSON_NODE);
@@ -1752,10 +1772,12 @@ bool CAta_Identify_Log_03::get_DownLoad_MicroCode(JSONNODE *DM)
         opensea_parser::set_Json_Bool(download, "DM Offsets Deferred Supported", m_sDownloadMicrocode.dmDefferedSupported);
         opensea_parser::set_Json_Bool(download, "DM Immediate Supported", m_sDownloadMicrocode.dmImmedaiateSupported);
         opensea_parser::set_Json_Bool(download, "DM Offsets Immediate Supported", m_sDownloadMicrocode.dmOffsetsImmediateSupported);
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_sDownloadMicrocode.dmMaxTransferSize);
-        json_push_back(download, json_new_a("Dm Maximum Transfer Size", (char*)myStr.c_str()));
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_sDownloadMicrocode.dmMinTranserSize);
-        json_push_back(download, json_new_a("Dm Minimum Transfer Size", (char*)myStr.c_str()));
+        temp.str("");temp.clear();
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << m_sDownloadMicrocode.dmMaxTransferSize;
+        json_push_back(download, json_new_a("Dm Maximum Transfer Size", temp.str().c_str()));
+        temp.str("");temp.clear();
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << m_sDownloadMicrocode.dmMinTranserSize;
+        json_push_back(download, json_new_a("Dm Minimum Transfer Size", temp.str().c_str()));
 
         json_push_back(DM, download);
     }
@@ -1784,17 +1806,16 @@ bool CAta_Identify_Log_03::get_Media_Rotation_Rate(JSONNODE *MRR)
 #define NOT_REPORTED        0x0000
 #define NON_ROTATING_MEDIA  0x0001
 #define RESERVED_RATE       0xFFFF
-    std::string myStr = "";
-    //myStr.resize(BASIC);
 #if defined _DEBUG
     printf("Media Rotation Rate \n");
     printf("\tMedia Rotation Rate =   0x%016" PRIx64"  \n", m_pCap->rotationRate);
 #endif
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", m_pCap->rotationRate);
-    json_push_back(MRR, json_new_a("Media Rotation Rate", (char*)myStr.c_str()));
+    std::ostringstream temp;
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(16) << m_pCap->rotationRate;
+    json_push_back(MRR, json_new_a("Media Rotation Rate", temp.str().c_str()));
     if (check_For_Active_Status(&m_pCap->rotationRate))
     {
-        uint16_t rate = (uint16_t)(M_Word0(m_pCap->rotationRate));
+        uint16_t rate = M_Word0(m_pCap->rotationRate);
 
         if (rate == NOT_REPORTED)
         {
@@ -1810,8 +1831,9 @@ bool CAta_Identify_Log_03::get_Media_Rotation_Rate(JSONNODE *MRR)
         }
         else
         {
-            snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16"", rate);
-            json_push_back(MRR, json_new_a("Nominal Media Rotation Rate", (char*)myStr.c_str()));
+            temp.str("");temp.clear();
+            temp << std::dec << rate;
+            json_push_back(MRR, json_new_a("Nominal Media Rotation Rate", temp.str().c_str()));
         }
     }
     else
@@ -1836,14 +1858,13 @@ bool CAta_Identify_Log_03::get_Media_Rotation_Rate(JSONNODE *MRR)
 //---------------------------------------------------------------------------
 bool CAta_Identify_Log_03::get_Form_Factor(JSONNODE *ff)
 {
-    std::string myStr = "";
-    myStr.resize(BASIC);
 #if defined _DEBUG
     printf("Form Factor \n");
     printf("\tForm Factor =   0x%016" PRIx64"  \n", m_pCap->formFactor);
 #endif
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", m_pCap->formFactor);
-    json_push_back(ff, json_new_a("Form Factor", (char*)myStr.c_str()));
+    std::ostringstream temp;
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(16) << m_pCap->formFactor;
+    json_push_back(ff, json_new_a("Form Factor", temp.str().c_str()));
     if (check_For_Active_Status(&m_pCap->formFactor))
     {
 
@@ -1874,8 +1895,9 @@ bool CAta_Identify_Log_03::get_Form_Factor(JSONNODE *ff)
         }
         else
         {
-            snprintf((char*)myStr.c_str(), BASIC, "%" PRIu8"", form);
-            json_push_back(ff, json_new_a("Nominal Form Factor", (char*)myStr.c_str()));
+            temp.str("");temp.clear();
+            temp << std::dec << static_cast<uint16_t>(form);
+            json_push_back(ff, json_new_a("Nominal Form Factor", temp.str().c_str()));
         }
     }
     else
@@ -1900,20 +1922,20 @@ bool CAta_Identify_Log_03::get_Form_Factor(JSONNODE *ff)
 //---------------------------------------------------------------------------
 bool CAta_Identify_Log_03::get_Write_Read_Verify_Mode3(JSONNODE *mode3)
 {
-    std::string myStr = "";
-    //myStr.resize(BASIC);
 #if defined _DEBUG
     printf("Write Read Verify Mode 3 \n");
     printf("\tWrite Read Verify =   0x%016" PRIx64"  \n", m_pCap->mode3);
 #endif
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", m_pCap->mode3);
-    json_push_back(mode3, json_new_a("Write Read Verify Mode 3", (char*)myStr.c_str()));
+    std::ostringstream temp;
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(16) << m_pCap->mode3;
+    json_push_back(mode3, json_new_a("Write Read Verify Mode 3", temp.str().c_str()));
     if (check_For_Active_Status(&m_pCap->mode3))
     {
         JSONNODE *wrv = json_new(JSON_NODE);
         json_set_name(wrv, "Write Read Verify sector count Mode 3");
-        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu32"", M_DoubleWord0(m_pCap->mode3));
-        json_push_back(wrv, json_new_a("WRV Mode 3 count", (char*)myStr.c_str()));
+        temp.str("");temp.clear();
+        temp << std::dec << M_DoubleWord0(m_pCap->mode3);
+        json_push_back(wrv, json_new_a("WRV Mode 3 count", temp.str().c_str()));
 
         json_push_back(mode3, wrv);
     }
@@ -1939,20 +1961,20 @@ bool CAta_Identify_Log_03::get_Write_Read_Verify_Mode3(JSONNODE *mode3)
 //---------------------------------------------------------------------------
 bool CAta_Identify_Log_03::get_Write_Read_Verify_Mode2(JSONNODE *mode2)
 {
-    std::string myStr = "";
-    //myStr.resize(BASIC);
 #if defined _DEBUG
     printf("Write Read Verify Mode 2 \n");
     printf("\tWrite Read Verify =   0x%016" PRIx64"  \n", m_pCap->mode2);
 #endif
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", m_pCap->mode2);
-    json_push_back(mode2, json_new_a("Write Read Verify Mode 2", (char*)myStr.c_str()));
+    std::ostringstream temp;
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(16) << m_pCap->mode2;
+    json_push_back(mode2, json_new_a("Write Read Verify Mode 2", temp.str().c_str()));
     if (check_For_Active_Status(&m_pCap->mode2))
     {
         JSONNODE *wrv = json_new(JSON_NODE);
         json_set_name(wrv, "Write Read Verify sector count Mode 2");
-        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu32"", M_DoubleWord0(m_pCap->mode2));
-        json_push_back(wrv, json_new_a("WRV Mode 2 count", (char*)myStr.c_str()));
+        temp.str("");temp.clear();
+        temp << std::dec << M_DoubleWord0(m_pCap->mode2);
+        json_push_back(wrv, json_new_a("WRV Mode 2 count", temp.str().c_str()));
 
         json_push_back(mode2, wrv);
     }
@@ -1978,8 +2000,6 @@ bool CAta_Identify_Log_03::get_Write_Read_Verify_Mode2(JSONNODE *mode2)
 //---------------------------------------------------------------------------
 bool CAta_Identify_Log_03::world_Wide_Name(JSONNODE *WWN)
 {
-    std::string myStr = "";
-    myStr.resize(BASIC);
 #if defined _DEBUG
     printf("World Wide Name \n");
     printf("\tWorld Wide Name =   0x%04" PRIx16"  \n", m_pCap->wwn);
@@ -1987,14 +2007,15 @@ bool CAta_Identify_Log_03::world_Wide_Name(JSONNODE *WWN)
 #endif
     if (check_For_Active_Status(&m_pCap->wwnStatus))
     {
-        uint64_t wwnReal = 0;
-        wwnReal = (((uint64_t)m_pCap->wwn) << 48) + ((uint64_t)m_pCap->wwn1 << 32) + ((uint64_t)m_pCap->wwn2 << 16) + (uint64_t)m_pCap->wwn3;
-        snprintf((char*)myStr.c_str(), WORLD_WIDE_NAME_LEN, "%" PRIX64"", wwnReal);
-        ltrim(myStr);
-        rtrim(myStr);
+        uint64_t wwnReal = M_WordsTo8ByteValue(m_pCap->wwn, m_pCap->wwn1, m_pCap->wwn2, m_pCap->wwn3);
+        std::ostringstream temp;
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(16) << wwnReal;
+        std::string wwnStr = temp.str();
+        ltrim(wwnStr);
+        rtrim(wwnStr);
         // world wide name
 
-        json_push_back(WWN, json_new_a("World Wide Name", (char*)myStr.c_str()));
+        json_push_back(WWN, json_new_a("World Wide Name", wwnStr.c_str()));
     }
     else
     {
@@ -2018,14 +2039,13 @@ bool CAta_Identify_Log_03::world_Wide_Name(JSONNODE *WWN)
 //---------------------------------------------------------------------------
 bool CAta_Identify_Log_03::get_Data_Set_Managment(JSONNODE *setManagement)
 {
-    std::string myStr = "";
-    //myStr.resize(BASIC);
 #if defined _DEBUG
     printf("Data Set Management \n");
     printf("\tData Set Management =   0x%016" PRIx64"  \n", m_pCap->dataSet);
 #endif
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", m_pCap->dataSet);
-    json_push_back(setManagement, json_new_a("Data Set Management Value", (char*)myStr.c_str()));
+    std::ostringstream temp;
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(16) << m_pCap->dataSet;
+    json_push_back(setManagement, json_new_a("Data Set Management Value", temp.str().c_str()));
     if (check_For_Active_Status(&m_pCap->dataSet))
     {
         if (m_pCap->dataSet & BIT0)
@@ -2059,31 +2079,36 @@ bool CAta_Identify_Log_03::get_Data_Set_Managment(JSONNODE *setManagement)
 //---------------------------------------------------------------------------
 bool CAta_Identify_Log_03::get_Utilization_Unit_Time(JSONNODE *unitTime)
 {
-    std::string myStr = "";
-    myStr.resize(BASIC);
 #if defined _DEBUG
     printf("Utilization Per Unit Time \n");
     printf("\tUtilization Per Unit Time =   0x%016" PRIx64"  \n", m_pCap->utilization);
     printf("\tUtilization Per Unit Time2 =   0x%016" PRIx64"  \n", m_pCap->utilTime2);
 #endif
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", m_pCap->utilTime2);
-    json_push_back(unitTime, json_new_a("Utilization Per Unit Time", (char*)myStr.c_str()));
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", m_pCap->utilTime2);
-    json_push_back(unitTime, json_new_a("Utilization Per Unit Time2", (char*)myStr.c_str()));
+    std::ostringstream temp;
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(16) << m_pCap->utilization;
+    json_push_back(unitTime, json_new_a("Utilization Per Unit Time", temp.str().c_str()));
+    temp.str("");temp.clear();
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(16) << m_pCap->utilTime2;
+    json_push_back(unitTime, json_new_a("Utilization Per Unit Time2", temp.str().c_str()));
     if (check_For_Active_Status(&m_pCap->utilization))
     {
         JSONNODE *data = json_new(JSON_NODE);
         json_set_name(data, "Utilization Per Unit Time");
-        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu8"", M_Byte2(m_pCap->utilization));
-        json_push_back(data, json_new_a("Utiliztion Type field", (char*)myStr.c_str()));
-        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu8"", M_Byte1(m_pCap->utilization));
-        json_push_back(data, json_new_a("Utiliztion Unites Field", (char*)myStr.c_str()));
-        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu8"", M_Byte0(m_pCap->utilization));
-        json_push_back(data, json_new_a("Utiliztion Interval Field", (char*)myStr.c_str()));
-        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu32"", M_DoubleWord1(m_pCap->utilTime2));
-        json_push_back(data, json_new_a("Utiliztion B Field", (char*)myStr.c_str()));
-        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu32"", M_DoubleWord0(m_pCap->utilTime2));
-        json_push_back(data, json_new_a("Utiliztion A Field", (char*)myStr.c_str()));
+        temp.str("");temp.clear();
+        temp << std::dec << static_cast<uint16_t>(M_Byte2(m_pCap->utilization));
+        json_push_back(data, json_new_a("Utiliztion Type field", temp.str().c_str()));
+        temp.str("");temp.clear();
+        temp << std::dec << static_cast<uint16_t>(M_Byte1(m_pCap->utilization));
+        json_push_back(data, json_new_a("Utiliztion Unites Field", temp.str().c_str()));
+        temp.str("");temp.clear();
+        temp << std::dec << static_cast<uint16_t>(M_Byte0(m_pCap->utilization));
+        json_push_back(data, json_new_a("Utiliztion Interval Field", temp.str().c_str()));
+        temp.str("");temp.clear();
+        temp << std::dec << M_DoubleWord1(m_pCap->utilTime2);
+        json_push_back(data, json_new_a("Utiliztion B Field", temp.str().c_str()));
+        temp.str("");temp.clear();
+        temp << std::dec << M_DoubleWord0(m_pCap->utilTime2);
+        json_push_back(data, json_new_a("Utiliztion A Field", temp.str().c_str()));
 
         json_push_back(unitTime, data);
     }
@@ -2109,15 +2134,13 @@ bool CAta_Identify_Log_03::get_Utilization_Unit_Time(JSONNODE *unitTime)
 //---------------------------------------------------------------------------
 bool CAta_Identify_Log_03::get_Utilization_Usage_Rate_Support(JSONNODE *rate)
 {
-    std::string myStr = "";
-    //myStr.resize(BASIC);
 #if defined _DEBUG
     printf("Utilization Usage Rate Support \n");
     printf("\tUtilization Usage Rate Support =   0x%016" PRIx64"  \n", m_pCap->utilRate);
 #endif
-
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", m_pCap->utilRate);
-    json_push_back(rate, json_new_a("Utilization Usage Rate Support", (char*)myStr.c_str()));
+    std::ostringstream temp;
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(16) << m_pCap->utilRate;
+    json_push_back(rate, json_new_a("Utilization Usage Rate Support", temp.str().c_str()));
 
     if (check_For_Active_Status(&m_pCap->utilRate))
     {
@@ -2179,15 +2202,13 @@ bool CAta_Identify_Log_03::get_Utilization_Usage_Rate_Support(JSONNODE *rate)
 //---------------------------------------------------------------------------
 bool CAta_Identify_Log_03::get_Zoned_Capabilities(JSONNODE *zoned)
 {
-    std::string myStr = "";
-    myStr.resize(BASIC);
 #if defined _DEBUG
     printf("Zoned Capabilities \n");
     printf("\tZoned Capabilities =   0x%016" PRIx64"  \n", m_pCap->zoned);
 #endif
-
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", m_pCap->zoned);
-    json_push_back(zoned, json_new_a("Zoned Capabilities", (char*)myStr.c_str()));
+    std::ostringstream temp;
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(16) << m_pCap->zoned;
+    json_push_back(zoned, json_new_a("Zoned Capabilities", temp.str().c_str()));
 
     if (check_For_Active_Status(&m_pCap->zoned))
     {
@@ -2234,15 +2255,13 @@ bool CAta_Identify_Log_03::get_Zoned_Capabilities(JSONNODE *zoned)
 //---------------------------------------------------------------------------
 bool CAta_Identify_Log_03::get_Supported_ZAC_Capabilities(JSONNODE *zac)
 {
-    std::string myStr = "";
-    myStr.resize(BASIC);
 #if defined _DEBUG
     printf("Supported ZAC Capabilitiest \n");
     printf("\tSupported ZAC Capabilities=   0x%016" PRIx64"  \n", m_pCap->ZAC);
 #endif
-
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", m_pCap->ZAC);
-    json_push_back(zac, json_new_a("Supported ZAC Capabilities", (char*)myStr.c_str()));
+    std::ostringstream temp;
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(16) << m_pCap->ZAC;
+    json_push_back(zac, json_new_a("Supported ZAC Capabilities", temp.str().c_str()));
 
     if (check_For_Active_Status(&m_pCap->ZAC))
     {
@@ -2312,14 +2331,13 @@ bool CAta_Identify_Log_03::get_Supported_ZAC_Capabilities(JSONNODE *zac)
 //---------------------------------------------------------------------------
 bool CAta_Identify_Log_03::get_Background_Operations_Capabilities(JSONNODE *bgOperation)
 {
-    std::string myStr = "";
-    myStr.resize(BASIC);
 #if defined _DEBUG
     printf("Advanced Background Operations Capabilities \n");
     printf("\tAdvanced Background Operations Capabilities =   0x%016" PRIx64"  \n", m_pCap->backgroundOpsCapabilities);
 #endif
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", m_pCap->backgroundOpsCapabilities);
-    json_push_back(bgOperation, json_new_a("Advanced Background Operations Capabilities", (char*)myStr.c_str()));
+    std::ostringstream temp;
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(16) << m_pCap->backgroundOpsCapabilities;
+    json_push_back(bgOperation, json_new_a("Advanced Background Operations Capabilities", temp.str().c_str()));
     if (check_For_Active_Status(&m_pCap->backgroundOpsCapabilities))
     {
         JSONNODE *data = json_new(JSON_NODE);
@@ -2340,10 +2358,13 @@ bool CAta_Identify_Log_03::get_Background_Operations_Capabilities(JSONNODE *bgOp
         {
             opensea_parser::set_Json_Bool(data, "ABO IR Mode Supported", false);
         }
-        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu32"", ((uint32_t)M_Word2(m_pCap->backgroundOpsCapabilities) << 16) + (uint32_t)M_Word1(m_pCap->backgroundOpsCapabilities));
-        json_push_back(data, json_new_a("ABO Minimum Fraction field", (char*)myStr.c_str()));
-        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16"", M_Word0(m_pCap->backgroundOpsCapabilities));
-        json_push_back(data, json_new_a("ABO Minimum Supported Timelimit field", (char*)myStr.c_str()));
+        temp.str("");temp.clear();
+        temp << std::dec << M_WordsTo4ByteValue(M_Word2(m_pCap->backgroundOpsCapabilities), M_Word1(m_pCap->backgroundOpsCapabilities));
+        json_push_back(data, json_new_a("ABO Minimum Fraction field", temp.str().c_str()));
+
+        temp.str("");temp.clear();
+        temp << std::dec << M_Word0(m_pCap->backgroundOpsCapabilities);
+        json_push_back(data, json_new_a("ABO Minimum Supported Timelimit field", temp.str().c_str()));
         json_push_back(bgOperation, data);
     }
     else
@@ -2368,23 +2389,23 @@ bool CAta_Identify_Log_03::get_Background_Operations_Capabilities(JSONNODE *bgOp
 //---------------------------------------------------------------------------
 bool CAta_Identify_Log_03::get_Background_Operations_Recommendations(JSONNODE *recommendations)
 {
-    std::string myStr = "";
-    //myStr.resize(BASIC);
 #if defined _DEBUG
     printf("Advanced Background Operations Recommendations \n");
     printf("\tAdvanced Background Operations Recommendations =   0x%016" PRIx64"  \n", m_pCap->backgroundOpsRecommendations);
 #endif
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", m_pCap->backgroundOpsRecommendations);
-    json_push_back(recommendations, json_new_a("Advanced Background Operations Recommendations", (char*)myStr.c_str()));
+    std::ostringstream temp;
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(16) << m_pCap->backgroundOpsRecommendations;
+    json_push_back(recommendations, json_new_a("Advanced Background Operations Recommendations", temp.str().c_str()));
     if (check_For_Active_Status(&m_pCap->backgroundOpsRecommendations))
     {
         JSONNODE *data = json_new(JSON_NODE);
         json_set_name(data, "Advanced Background Operations Recommendations");
-
-        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16"", M_Word1(m_pCap->backgroundOpsRecommendations));
-        json_push_back(data, json_new_a("Device Maintenance Polling Time field", (char*)myStr.c_str()));
-        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu16"", M_Word0(m_pCap->backgroundOpsRecommendations));
-        json_push_back(data, json_new_a("ABO Recommended Abo Start Interval field", (char*)myStr.c_str()));
+        temp.str("");temp.clear();
+        temp << std::dec << M_Word1(m_pCap->backgroundOpsRecommendations);
+        json_push_back(data, json_new_a("Device Maintenance Polling Time field", temp.str().c_str()));
+        temp.str("");temp.clear();
+        temp << std::dec << M_Word0(m_pCap->backgroundOpsRecommendations);
+        json_push_back(data, json_new_a("ABO Recommended Abo Start Interval field", temp.str().c_str()));
         json_push_back(recommendations, data);
     }
     else
@@ -2409,21 +2430,20 @@ bool CAta_Identify_Log_03::get_Background_Operations_Recommendations(JSONNODE *r
 //---------------------------------------------------------------------------
 bool CAta_Identify_Log_03::get_Queue_Depth(JSONNODE *qd)
 {
-    std::string myStr = "";
-    myStr.resize(BASIC);
 #if defined _DEBUG
     printf("Queue Depth \n");
     printf("\tQueue Depth =   0x%016" PRIx64"  \n", m_pCap->queueDepth);
 #endif
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", m_pCap->queueDepth);
-    json_push_back(qd, json_new_a("Queue Depth", (char*)myStr.c_str()));
+    std::ostringstream temp;
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(16) << m_pCap->queueDepth;
+    json_push_back(qd, json_new_a("Queue Depth", temp.str().c_str()));
     if (check_For_Active_Status(&m_pCap->queueDepth))
     {
         JSONNODE *data = json_new(JSON_NODE);
         json_set_name(data, "Queue Depth");
-
-        snprintf((char*)myStr.c_str(), BASIC, "%" PRIu8"", M_Byte0(m_pCap->queueDepth));
-        json_push_back(data, json_new_a("Queue Depth", (char*)myStr.c_str()));
+        temp.str("");temp.clear();
+        temp << std::dec << M_Byte0(m_pCap->queueDepth);
+        json_push_back(data, json_new_a("Queue Depth", temp.str().c_str()));
 
         json_push_back(qd, data);
     }
@@ -2518,14 +2538,13 @@ bool CAta_Identify_Log_03::set_SCT_Capabilities(uint64_t *value)
 //---------------------------------------------------------------------------
 bool CAta_Identify_Log_03::get_SCT_Capabilities(JSONNODE *sct)
 {
-    std::string myStr = "";
-    myStr.resize(BASIC);
 #if defined _DEBUG
     printf("Supported SCT Capabilities \n");
     printf("\tSupported SCT Capabilities =   0x%016" PRIx64"  \n", m_pCap->sctCapabilities);
 #endif
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", m_pCap->sctCapabilities);
-    json_push_back(sct, json_new_a("Supported SCT Capabilities", (char*)myStr.c_str()));
+    std::ostringstream temp;
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(16) << m_pCap->sctCapabilities;
+    json_push_back(sct, json_new_a("Supported SCT Capabilities", temp.str().c_str()));
     if (set_Supported_Capabilities(&m_pCap->sctCapabilities))
     {
         JSONNODE *data = json_new(JSON_NODE);
@@ -2565,14 +2584,13 @@ bool CAta_Identify_Log_03::get_SCT_Capabilities(JSONNODE *sct)
 //---------------------------------------------------------------------------
 bool CAta_Identify_Log_03::get_Depop_Capabilities(JSONNODE *depop)
 {
-    std::string myStr = "";
-    //myStr.resize(BASIC);
 #if defined _DEBUG
     printf("Depopulation Capabilities \n");
     printf("\tDepopulation Capabilities =   0x%016" PRIx64"  \n", m_pCap->depopCapabilities);
 #endif
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", m_pCap->depopCapabilities);
-    json_push_back(depop, json_new_a("Depopulation Capabilities", (char*)myStr.c_str()));
+    std::ostringstream temp;
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(16) << m_pCap->depopCapabilities;
+    json_push_back(depop, json_new_a("Depopulation Capabilities", temp.str().c_str()));
     if (check_For_Active_Status(&m_pCap->depopCapabilities))
     {
         JSONNODE *data = json_new(JSON_NODE);
@@ -2617,20 +2635,20 @@ bool CAta_Identify_Log_03::get_Depop_Capabilities(JSONNODE *depop)
 //---------------------------------------------------------------------------
 bool CAta_Identify_Log_03::get_Depopulation_Execution_Time(JSONNODE *depop)
 {
-    std::string myStr = "";
-    myStr.resize(BASIC);
 #if defined _DEBUG
     printf("Depopulation Execution Times \n");
     printf("\tDepopulation Execution Time =   0x%016" PRIx64"  \n", m_pCap->depopExTime);
 #endif
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", m_pCap->depopExTime);
-    json_push_back(depop, json_new_a("Depopulation Execution Time", (char*)myStr.c_str()));
+    std::ostringstream temp;
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(16) << m_pCap->depopExTime;
+    json_push_back(depop, json_new_a("Depopulation Execution Time", temp.str().c_str()));
     if (check_For_Active_Status(&m_pCap->depopExTime))
     {
         JSONNODE *data = json_new(JSON_NODE);
         json_set_name(data, "Depopulation Execution Time");
-        snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", (uint64_t)(m_pCap->depopExTime & 0x00FFFFFFFFFFFFFFULL));
-        json_push_back(depop, json_new_a("Depopulation Time", (char*)myStr.c_str()));
+        temp.str("");temp.clear();
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(16) << (m_pCap->depopExTime & UINT64_C(0x00FFFFFFFFFFFFFF));
+        json_push_back(depop, json_new_a("Depopulation Time", temp.str().c_str()));
         json_push_back(depop, data);
     }
     else
@@ -2653,18 +2671,15 @@ bool CAta_Identify_Log_03::get_Depopulation_Execution_Time(JSONNODE *depop)
 //!   \return string the interface type
 //
 //---------------------------------------------------------------------------
-eReturnValues CAta_Identify_Log_03::get_Log_Page03(uint8_t *pData, JSONNODE *masterData)
+eReturnValues CAta_Identify_Log_03::get_Log_Page03(uint8_t *lp3pData, JSONNODE *masterData)
 {
 #define LOG_PAGE_03   0x0003
     eReturnValues retStatus = IN_PROGRESS;
-    std::string myStr = "";
-    //myStr.resize(BASIC);
     sLogPage03 logPage03;
     m_pCap = &logPage03;
-    memset(m_pCap, 0, sizeof(logPage03));
-    m_pCap = (sLogPage03 *)&pData[0];
-    uint16_t pageNumber = (uint16_t)(M_Word1(m_pCap->header));
-    uint16_t revision = (uint16_t)(M_Word0(m_pCap->header));
+    m_pCap = reinterpret_cast<sLogPage03 *>(&lp3pData[0]);
+    uint16_t pageNumber = M_Word1(m_pCap->header);
+    uint16_t revision = M_Word0(m_pCap->header);
     if (pageNumber == LOG_PAGE_03)
     {
         JSONNODE *pageInfo = json_new(JSON_NODE);
@@ -2673,14 +2688,16 @@ eReturnValues CAta_Identify_Log_03::get_Log_Page03(uint8_t *pData, JSONNODE *mas
         printf("Log Page 03h \n");
         printf("\tHeader =   0x%016" PRIx64"  \n", m_pCap->header);
 #endif
+        std::ostringstream temp;
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(16) << m_pCap->header;
+        json_push_back(pageInfo, json_new_a("Page Header", temp.str().c_str()));
 
-        snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", m_pCap->header);
-        json_push_back(pageInfo, json_new_a("Page Header", (char*)myStr.c_str()));
-
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", pageNumber);
-        json_push_back(pageInfo, json_new_a("Page Number", (char*)myStr.c_str()));
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", revision);
-        json_push_back(pageInfo, json_new_a("Revision Number", (char*)myStr.c_str()));
+        temp.str("");temp.clear();
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << pageNumber;
+        json_push_back(pageInfo, json_new_a("Page Number", temp.str().c_str()));
+        temp.str("");temp.clear();
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << revision;
+        json_push_back(pageInfo, json_new_a("Revision Number", temp.str().c_str()));
         get_Supported_Capabilities(pageInfo);
         get_DownLoad_MicroCode(pageInfo);
         get_Media_Rotation_Rate(pageInfo);
@@ -2853,15 +2870,14 @@ bool CAta_Identify_Log_04::set_Current_Settings(uint64_t *value)
 //---------------------------------------------------------------------------
 bool CAta_Identify_Log_04::get_Current_Settings(JSONNODE *currentData)
 {
-    std::string myStr = "";
-    //myStr.resize(BASIC);
 #if defined _DEBUG
     printf("Current Settings \n");
     printf("\tCurrent Settings =   0x%016" PRId64"  \n", pLog->currentSettings);
 #endif
 
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", pLog->currentSettings);
-    json_push_back(currentData, json_new_a("Current Settings", (char*)myStr.c_str()));
+    std::ostringstream temp;
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(16) << pLog->currentSettings;
+    json_push_back(currentData, json_new_a("Current Settings", temp.str().c_str()));
     if (set_Current_Settings(&pLog->currentSettings))
     {
         JSONNODE *currentSettings = json_new(JSON_NODE);
@@ -2931,43 +2947,43 @@ bool CAta_Identify_Log_04::set_Feature_Settings(uint64_t *value)
 //---------------------------------------------------------------------------
 bool CAta_Identify_Log_04::get_Feature_Settings(JSONNODE *featureData)
 {
-    std::string myStr = "";
-    //myStr.resize(BASIC);
 #if defined _DEBUG
     printf("Feature Settings \n");
     printf("\tFeature Settings =   0x%016" PRIx64"  \n", pLog->featureSettings);
 #endif
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", pLog->featureSettings);
-    json_push_back(featureData, json_new_a("Feature Settings", (char*)myStr.c_str()));
+    std::ostringstream temp;
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(16) << pLog->featureSettings;
+    json_push_back(featureData, json_new_a("Feature Settings", temp.str().c_str()));
 
     if (set_Feature_Settings(&pLog->featureSettings))
     {
         JSONNODE *featSettings = json_new(JSON_NODE);
         json_set_name(featSettings, "Feature Settings breakdown");
 
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_FS.wrvMode);
-        json_push_back(featSettings, json_new_a("Write Read Verify", (char*)myStr.c_str()));
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_FS.apmLevel);
-        json_push_back(featSettings, json_new_a("APM Level", (char*)myStr.c_str()));
+        temp.str("");temp.clear();
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << m_FS.wrvMode;
+        json_push_back(featSettings, json_new_a("Write Read Verify", temp.str().c_str()));
+        temp.str("");temp.clear();
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << m_FS.apmLevel;
+        json_push_back(featSettings, json_new_a("APM Level", temp.str().c_str()));
+
+        temp.str("");temp.clear();
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << m_FS.powerScource;
         if (m_FS.powerScource & BIT1)
         {
-            snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_FS.powerScource);
-            json_push_back(featSettings, json_new_a("Power Source Battery", (char*)myStr.c_str()));
+            json_push_back(featSettings, json_new_a("Power Source Battery", temp.str().c_str()));
         }
         else if (m_FS.powerScource & BIT2)
         {
-            snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_FS.powerScource);
-            json_push_back(featSettings, json_new_a("Power Source NOT Battery", (char*)myStr.c_str()));
+            json_push_back(featSettings, json_new_a("Power Source NOT Battery", temp.str().c_str()));
         }
         else if (m_FS.powerScource & BIT1 && m_FS.powerScource & BIT2)
         {
-            snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_FS.powerScource);
-            json_push_back(featSettings, json_new_a("Power Source Reserved", (char*)myStr.c_str()));
+            json_push_back(featSettings, json_new_a("Power Source Reserved", temp.str().c_str()));
         }
         else
         {
-            snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", m_FS.powerScource);
-            json_push_back(featSettings, json_new_a("Power Source Unknown", (char*)myStr.c_str()));
+            json_push_back(featSettings, json_new_a("Power Source Unknown", temp.str().c_str()));
         }
 
         json_push_back(featureData, featSettings);
@@ -2994,18 +3010,18 @@ bool CAta_Identify_Log_04::get_Feature_Settings(JSONNODE *featureData)
 //---------------------------------------------------------------------------
 bool CAta_Identify_Log_04::get_DMS_Times(JSONNODE *dmaData)
 {
-    std::string myStr = "";
-    //myStr.resize(BASIC);
 #if defined _DEBUG
     printf("DMA Host Interface Sector Times \n");
     printf("\tDMA Host Interface Sector Times =   0x%016" PRIx64"  \n", pLog->DMAHostInterfaceSectorTimes);
 #endif
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", pLog->DMAHostInterfaceSectorTimes);
-    json_push_back(dmaData, json_new_a("DMA Host Interface Sector Times", (char*)myStr.c_str()));
+    std::ostringstream temp;
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(16) << pLog->DMAHostInterfaceSectorTimes;
+    json_push_back(dmaData, json_new_a("DMA Host Interface Sector Times", temp.str().c_str()));
     if (set_Feature_Settings(&pLog->DMAHostInterfaceSectorTimes))
     {
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", (uint16_t)(M_Word0(pLog->DMAHostInterfaceSectorTimes)));
-        json_push_back(dmaData, json_new_a("DMA Sector Time ", (char*)myStr.c_str()));
+        temp.str("");temp.clear();
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << M_Word0(pLog->DMAHostInterfaceSectorTimes);
+        json_push_back(dmaData, json_new_a("DMA Sector Time ", temp.str().c_str()));
     }
     else
     {
@@ -3029,18 +3045,18 @@ bool CAta_Identify_Log_04::get_DMS_Times(JSONNODE *dmaData)
 //---------------------------------------------------------------------------
 bool CAta_Identify_Log_04::get_PIO_Times(JSONNODE *pioData)
 {
-    std::string myStr = "";
-    //myStr.resize(BASIC);
 #if defined _DEBUG
     printf("PIO Host Interface Sector Times \n");
     printf("\tPIO Host Interface Sector Times =   0x%016" PRIx64"  \n", pLog->PioHostInterfaceSectorTImes);
 #endif
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", pLog->PioHostInterfaceSectorTImes);
-    json_push_back(pioData, json_new_a("PIO Host Interface Sector Times", (char*)myStr.c_str()));
+    std::ostringstream temp;
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(16) << pLog->PioHostInterfaceSectorTImes;
+    json_push_back(pioData, json_new_a("PIO Host Interface Sector Times", temp.str().c_str()));
     if (set_Feature_Settings(&pLog->PioHostInterfaceSectorTImes))
     {
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", (uint16_t)(M_Word0(pLog->PioHostInterfaceSectorTImes)));
-        json_push_back(pioData, json_new_a("PIO Sector Time ", (char*)myStr.c_str()));
+        temp.str("");temp.clear();
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << M_Word0(pLog->PioHostInterfaceSectorTImes);
+        json_push_back(pioData, json_new_a("PIO Sector Time ", temp.str().c_str()));
     }
     else
     {
@@ -3064,18 +3080,18 @@ bool CAta_Identify_Log_04::get_PIO_Times(JSONNODE *pioData)
 //---------------------------------------------------------------------------
 bool CAta_Identify_Log_04::get_Streaming_Min_Request_Times(JSONNODE *streamMinData)
 {
-    std::string myStr = "";
-    //myStr.resize(BASIC);
 #if defined _DEBUG
     printf("Streaming Minimum request Times \n");
     printf("\tStreaming Minimum request Times =   0x%016" PRIx64"  \n", pLog->streamingMinRequestSize);
 #endif
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", pLog->streamingMinRequestSize);
-    json_push_back(streamMinData, json_new_a("Streaming Minimum request Times", (char*)myStr.c_str()));
+    std::ostringstream temp;
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(16) << pLog->streamingMinRequestSize;
+    json_push_back(streamMinData, json_new_a("Streaming Minimum request Times", temp.str().c_str()));
     if (set_Feature_Settings(&pLog->streamingMinRequestSize))
     {
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", (uint16_t)(M_Word0(pLog->streamingMinRequestSize)));
-        json_push_back(streamMinData, json_new_a("Steaming Min Request Size", (char*)myStr.c_str()));
+        temp.str("");
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << M_Word0(pLog->streamingMinRequestSize);
+        json_push_back(streamMinData, json_new_a("Steaming Min Request Size", temp.str().c_str()));
     }
     else
     {
@@ -3099,18 +3115,18 @@ bool CAta_Identify_Log_04::get_Streaming_Min_Request_Times(JSONNODE *streamMinDa
 //---------------------------------------------------------------------------
 bool CAta_Identify_Log_04::get_Streaming_Access_Latency(JSONNODE *accessData)
 {
-    std::string myStr = "";
-    //myStr.resize(BASIC);
 #if defined _DEBUG
     printf("Streaming Access Latency \n");
     printf("\tStreaming Access Latency =   0x%016" PRIx64"  \n", pLog->streamingAccessLatency);
 #endif
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", pLog->streamingAccessLatency);
-    json_push_back(accessData, json_new_a("Streaming Access Latency", (char*)myStr.c_str()));
+    std::ostringstream temp;
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(16) << pLog->streamingAccessLatency;
+    json_push_back(accessData, json_new_a("Streaming Access Latency", temp.str().c_str()));
     if (set_Feature_Settings(&pLog->streamingAccessLatency))
     {
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", (uint16_t)(M_Word0(pLog->streamingAccessLatency)));
-        json_push_back(accessData, json_new_a("Steaming Access Latency data", (char*)myStr.c_str()));
+        temp.str("");temp.clear();
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << M_Word0(pLog->streamingAccessLatency);
+        json_push_back(accessData, json_new_a("Steaming Access Latency data", temp.str().c_str()));
     }
     else
     {
@@ -3134,20 +3150,20 @@ bool CAta_Identify_Log_04::get_Streaming_Access_Latency(JSONNODE *accessData)
 //---------------------------------------------------------------------------
 bool CAta_Identify_Log_04::get_Streaming_Performance_Granularity(JSONNODE *performanceData)
 {
-    std::string myStr = "";
-    //myStr.resize(BASIC);
 #if defined _DEBUG
     printf("Streaming Performance Granularity \n");
     printf("\tStreaming Performance Granularity =   0x%016" PRIx64"  \n", pLog->streamingPerformanceGranularity);
 #endif
 
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", pLog->streamingPerformanceGranularity);
-    json_push_back(performanceData, json_new_a("Streaming Performance Granularity", (char*)myStr.c_str()));
+    std::ostringstream temp;
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(16) << pLog->streamingPerformanceGranularity;
+    json_push_back(performanceData, json_new_a("Streaming Performance Granularity", temp.str().c_str()));
 
     if (set_Feature_Settings(&pLog->streamingPerformanceGranularity))
     {
-        snprintf((char*)myStr.c_str(), BASIC, "0x%08" PRIx32"", (uint32_t)(M_DoubleWord0(pLog->streamingPerformanceGranularity)));
-        json_push_back(performanceData, json_new_a("Steaming Granularity", (char*)myStr.c_str()));
+        temp.str("");temp.clear();
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(8) << M_DoubleWord0(pLog->streamingPerformanceGranularity);
+        json_push_back(performanceData, json_new_a("Steaming Granularity", temp.str().c_str()));
     }
     else
     {
@@ -3172,18 +3188,19 @@ bool CAta_Identify_Log_04::get_Streaming_Performance_Granularity(JSONNODE *perfo
 //---------------------------------------------------------------------------
 bool CAta_Identify_Log_04::get_Free_Fall_Control(JSONNODE *freeFallData)
 {
-    std::string myStr = "";
-    //myStr.resize(BASIC);
 #if defined _DEBUG
     printf("Free Fall control sensitivity  \n");
     printf("\tFree Fall control sensitivity  =   0x%016" PRIx64"  \n", pLog->freeFallControlSensitivity);
 #endif
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", pLog->freeFallControlSensitivity);
-    json_push_back(freeFallData, json_new_a("Free Fall control sensitivity ", (char*)myStr.c_str()));
+    std::ostringstream temp;
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(16) << pLog->freeFallControlSensitivity;
+    json_push_back(freeFallData, json_new_a("Free Fall control sensitivity ", temp.str().c_str()));
     if (set_Feature_Settings(&pLog->freeFallControlSensitivity))
     {
-        snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx8"", (uint32_t)(M_Byte0(pLog->freeFallControlSensitivity)));
-        json_push_back(freeFallData, json_new_a("Free Fall control sensitivity settings", (char*)myStr.c_str()));
+        temp.str("");
+        temp.clear();
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(M_Byte0(pLog->freeFallControlSensitivity));
+        json_push_back(freeFallData, json_new_a("Free Fall control sensitivity settings", temp.str().c_str()));
     }
     else
     {
@@ -3207,22 +3224,25 @@ bool CAta_Identify_Log_04::get_Free_Fall_Control(JSONNODE *freeFallData)
 //---------------------------------------------------------------------------
 bool CAta_Identify_Log_04::get_Device_Maintenance_Schedule(JSONNODE *maintenaceData)
 {
-    std::string myStr = "";
-    //myStr.resize(BASIC);
+    std::string myStr;
 #if defined _DEBUG
     printf("Device Maintenance Schedule \n");
     printf("\tDevice Maintenance Schedule =   0x%016" PRIx64"  \n", pLog->deviceMaintenaceSchedule);
 #endif
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", pLog->deviceMaintenaceSchedule);
-    json_push_back(maintenaceData, json_new_a("Device Maintenace Schedule", (char*)myStr.c_str()));
+    std::ostringstream temp;
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(16) << pLog->deviceMaintenaceSchedule;
+    json_push_back(maintenaceData, json_new_a("Device Maintenace Schedule", temp.str().c_str()));
     if (set_Feature_Settings(&pLog->deviceMaintenaceSchedule))
     {
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", (uint16_t)(M_Word0(pLog->deviceMaintenaceSchedule)));
-        json_push_back(maintenaceData, json_new_a("Minimum Inactive Time", (char*)myStr.c_str()));
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", (uint16_t)(M_Word1(pLog->deviceMaintenaceSchedule)));
-        json_push_back(maintenaceData, json_new_a("Time to Preformance Degradation", (char*)myStr.c_str()));
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", (uint16_t)(M_Word2(pLog->deviceMaintenaceSchedule)));
-        json_push_back(maintenaceData, json_new_a("Time Scheduled for Device Maintenance", (char*)myStr.c_str()));
+        temp.str("");temp.clear();
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << M_Word0(pLog->deviceMaintenaceSchedule);
+        json_push_back(maintenaceData, json_new_a("Minimum Inactive Time", temp.str().c_str()));
+        temp.str("");temp.clear();
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << M_Word1(pLog->deviceMaintenaceSchedule);
+        json_push_back(maintenaceData, json_new_a("Time to Preformance Degradation", temp.str().c_str()));
+        temp.str("");temp.clear();
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << M_Word2(pLog->deviceMaintenaceSchedule);
+        json_push_back(maintenaceData, json_new_a("Time Scheduled for Device Maintenance", temp.str().c_str()));
 
         JSONNODE *deviceMaintenace = json_new(JSON_NODE);
         json_set_name(deviceMaintenace, "Device Maintenace Meaning");
@@ -3275,7 +3295,7 @@ bool CAta_Identify_Log_04::get_Device_Maintenance_Schedule(JSONNODE *maintenaceD
         {
             myStr = "unknown";
         }
-        json_push_back(deviceMaintenace, json_new_a("MC Level", (char*)myStr.c_str()));
+        json_push_back(deviceMaintenace, json_new_a("MC Level", myStr.c_str()));
 
         json_push_back(maintenaceData, deviceMaintenace);
     }
@@ -3299,18 +3319,16 @@ bool CAta_Identify_Log_04::get_Device_Maintenance_Schedule(JSONNODE *maintenaceD
 //!   \return string the interface type
 //
 //---------------------------------------------------------------------------
-eReturnValues CAta_Identify_Log_04::get_Log_Page04(uint8_t *pData, JSONNODE *masterData)
+eReturnValues CAta_Identify_Log_04::get_Log_Page04(uint8_t *lp4pData, JSONNODE *masterData)
 {
 #define LOG_PAGE_04   0x0004
     eReturnValues retStatus = IN_PROGRESS;
-    std::string myStr = "";
-    //myStr.resize(BASIC);
     sLogPage04 logPage;
     pLog = &logPage;
     memset(pLog, 0, sizeof(sLogPage04));
-    pLog = (sLogPage04 *)&pData[0];
-    uint16_t pageNumber = (uint16_t)(M_Word1(pLog->header));
-    uint16_t revision = (uint16_t)(M_Word0(pLog->header));
+    pLog = reinterpret_cast<sLogPage04 *>(&lp4pData[0]);
+    uint16_t pageNumber = M_Word1(pLog->header);
+    uint16_t revision = M_Word0(pLog->header);
     if (pageNumber == LOG_PAGE_04)
     {
         JSONNODE *pageInfo = json_new(JSON_NODE);
@@ -3319,12 +3337,15 @@ eReturnValues CAta_Identify_Log_04::get_Log_Page04(uint8_t *pData, JSONNODE *mas
         printf("Log Page 04h \n");
         printf("\tHeader =   0x%016" PRIx64"  \n", pLog->header);
 #endif
-        snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", pLog->header);
-        json_push_back(pageInfo, json_new_a("Page Header", (char*)myStr.c_str()));
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", pageNumber);
-        json_push_back(pageInfo, json_new_a("Page Number", (char*)myStr.c_str()));
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", revision);
-        json_push_back(pageInfo, json_new_a("Revision Number", (char*)myStr.c_str()));
+        std::ostringstream temp;
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(16) << pLog->header;
+        json_push_back(pageInfo, json_new_a("Page Header", temp.str().c_str()));
+        temp.str("");temp.clear();
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << pageNumber;
+        json_push_back(pageInfo, json_new_a("Page Number", temp.str().c_str()));
+        temp.str("");temp.clear();
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << revision;
+        json_push_back(pageInfo, json_new_a("Revision Number", temp.str().c_str()));
 
         get_Current_Settings(pageInfo);
         get_Feature_Settings(pageInfo);
@@ -3412,9 +3433,8 @@ bool CAta_Identify_Log_05::create_Serial_Number()
 {
     if (m_pLog->serialNumber != NULL)
     {
-        m_pPrintable->serialStr.resize(LOG5_SERIAL_NUMBER);
-        strncpy((char*)m_pPrintable->serialStr.c_str(), (char*)&m_pLog->serialNumber, LOG5_SERIAL_NUMBER);
-        byte_Swap_String((char*)m_pPrintable->serialStr.c_str());
+        m_pPrintable->serialStr.assign(reinterpret_cast<const char*>(&m_pLog->serialNumber), LOG5_SERIAL_NUMBER);
+        byte_swap_std_string(m_pPrintable->serialStr);
         m_pPrintable->serialStr.resize(LOG5_SERIAL_NUMBER);
         ltrim(m_pPrintable->serialStr);
     }
@@ -3442,9 +3462,8 @@ bool CAta_Identify_Log_05::create_Firmware_Rev()
 {
     if (m_pLog->firmwareRev != NULL)
     {
-        m_pPrintable->firmwareStr.resize(LOG5_FIRMWARE_REV);
-        strncpy((char*)m_pPrintable->firmwareStr.c_str(), (char*)&m_pLog->firmwareRev, LOG5_FIRMWARE_REV);
-        byte_Swap_String((char*)m_pPrintable->firmwareStr.c_str());
+        m_pPrintable->firmwareStr.assign(reinterpret_cast<const char*>(&m_pLog->firmwareRev), LOG5_FIRMWARE_REV);
+        byte_swap_std_string(m_pPrintable->firmwareStr);
         m_pPrintable->firmwareStr.resize(LOG5_FIRMWARE_REV);
         ltrim(m_pPrintable->firmwareStr);
         rtrim(m_pPrintable->firmwareStr);
@@ -3473,9 +3492,8 @@ bool CAta_Identify_Log_05::create_Model_Number()
 {
     if (m_pLog->modelNumber != NULL)
     {
-        m_pPrintable->modelNumberStr.resize(LOG5_MODEL_NUMBER);
-        strncpy((char*)m_pPrintable->modelNumberStr.c_str(), (char*)&m_pLog->modelNumber, LOG5_MODEL_NUMBER);
-        byte_Swap_String((char*)m_pPrintable->modelNumberStr.c_str());
+        m_pPrintable->modelNumberStr.assign(reinterpret_cast<const char*>(&m_pLog->modelNumber), LOG5_MODEL_NUMBER);
+        byte_swap_std_string(m_pPrintable->modelNumberStr);
         m_pPrintable->modelNumberStr.resize(LOG5_MODEL_NUMBER);
         ltrim(m_pPrintable->modelNumberStr);
         rtrim(m_pPrintable->modelNumberStr);
@@ -3503,9 +3521,8 @@ bool CAta_Identify_Log_05::create_Product_string()
 {
     if (m_pLog->productInformation != NULL)
     {
-        m_pPrintable->productStr.resize(LOG5_PRODUCT_INFO);
-        strncpy((char*)m_pPrintable->productStr.c_str(), (char*)&m_pLog->productInformation, LOG5_PRODUCT_INFO);
-        byte_Swap_String((char*)m_pPrintable->productStr.c_str());
+        m_pPrintable->productStr.assign(reinterpret_cast<const char*>(&m_pLog->productInformation), LOG5_PRODUCT_INFO);
+        byte_swap_std_string(m_pPrintable->productStr);
         m_pPrintable->productStr.resize(LOG5_PRODUCT_INFO);
         ltrim(m_pPrintable->productStr);
         rtrim(m_pPrintable->productStr);
@@ -3531,8 +3548,6 @@ bool CAta_Identify_Log_05::create_Product_string()
 //---------------------------------------------------------------------------
 bool CAta_Identify_Log_05::get_printables(JSONNODE *pageInfo)
 {
-    std::string myStr = "";
-    //myStr.resize(BASIC);
 #if defined _DEBUG
     printf("Device String Page \n");
 
@@ -3560,19 +3575,19 @@ bool CAta_Identify_Log_05::get_printables(JSONNODE *pageInfo)
 
         if (m_pPrintable->serialStr != "")
         {
-            json_push_back(deviceInfo, json_new_a("Serial Number", (char*)m_pPrintable->serialStr.c_str()));
+            json_push_back(deviceInfo, json_new_a("Serial Number", m_pPrintable->serialStr.c_str()));
         }
         if (m_pPrintable->firmwareStr != "")
         {
-            json_push_back(deviceInfo, json_new_a("Firmware Revision", (char*)m_pPrintable->firmwareStr.c_str()));
+            json_push_back(deviceInfo, json_new_a("Firmware Revision", m_pPrintable->firmwareStr.c_str()));
         }
         if (m_pPrintable->modelNumberStr != "")
         {
-            json_push_back(deviceInfo, json_new_a("Model Number", (char*)m_pPrintable->modelNumberStr.c_str()));
+            json_push_back(deviceInfo, json_new_a("Model Number", m_pPrintable->modelNumberStr.c_str()));
         }
         if (m_pPrintable->productStr != "")
         {
-            json_push_back(deviceInfo, json_new_a("Product Identifier", (char*)m_pPrintable->productStr.c_str()));
+            json_push_back(deviceInfo, json_new_a("Product Identifier", m_pPrintable->productStr.c_str()));
         }
 
         json_push_back(pageInfo, deviceInfo);
@@ -3593,20 +3608,18 @@ bool CAta_Identify_Log_05::get_printables(JSONNODE *pageInfo)
 //!   \return string the interface type
 //
 //---------------------------------------------------------------------------
-eReturnValues CAta_Identify_Log_05::get_Log_Page05(uint8_t *pData, JSONNODE *masterData)
+eReturnValues CAta_Identify_Log_05::get_Log_Page05(uint8_t *lp5pData, JSONNODE *masterData)
 {
 #define LOG_PAGE_05   0x0005
     eReturnValues retStatus = IN_PROGRESS;
-    std::string myStr = "";
-    myStr.resize(BASIC);
     sLogPage05 logPage;
     m_pLog = &logPage;
     memset(m_pLog, 0, sizeof(sLogPage05));
-    m_pLog = (sLogPage05 *)&pData[0];
+    m_pLog = reinterpret_cast<sLogPage05*>(&lp5pData[0]);
     sPrintablePage05 printLog;
     m_pPrintable = &printLog;
-    uint16_t pageNumber = (uint16_t)(M_Word1(m_pLog->header));
-    uint16_t revision = (uint16_t)(M_Word0(m_pLog->header));
+    uint16_t pageNumber = M_Word1(m_pLog->header);
+    uint16_t revision = M_Word0(m_pLog->header);
     if (pageNumber == LOG_PAGE_05)
     {
         JSONNODE *pageInfo = json_new(JSON_NODE);
@@ -3615,12 +3628,15 @@ eReturnValues CAta_Identify_Log_05::get_Log_Page05(uint8_t *pData, JSONNODE *mas
         printf("Log Page 05h \n");
         printf("\tHeader =   0x%016" PRIx64"  \n", m_pLog->header);
 #endif
-        snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", m_pLog->header);
-        json_push_back(pageInfo, json_new_a("Page Header", (char*)myStr.c_str()));
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", pageNumber);
-        json_push_back(pageInfo, json_new_a("Page Number", (char*)myStr.c_str()));
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", revision);
-        json_push_back(pageInfo, json_new_a("Revision Number", (char*)myStr.c_str()));
+        std::ostringstream temp;
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(16) << m_pLog->header;
+        json_push_back(pageInfo, json_new_a("Page Header", temp.str().c_str()));
+        temp.str("");temp.clear();
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << pageNumber;
+        json_push_back(pageInfo, json_new_a("Page Number", temp.str().c_str()));
+        temp.str("");temp.clear();
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << revision;
+        json_push_back(pageInfo, json_new_a("Revision Number", temp.str().c_str()));
 
         get_printables(pageInfo);
 
@@ -3755,14 +3771,13 @@ bool CAta_Identify_Log_06::set_Security_Settings(uint64_t *value)
 //---------------------------------------------------------------------------
 bool CAta_Identify_Log_06::get_Security_Settings(JSONNODE *si)
 {
-    std::string myStr = "";
-    //myStr.resize(BASIC);
 #if defined _DEBUG
     printf("Security Settings \n");
     printf("\tSecurity Settings =   0x%016" PRIx64"  \n", m_pLog->securitySetting);
 #endif
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", m_pLog->securitySetting);
-    json_push_back(si, json_new_a("Security Settings", (char*)myStr.c_str()));
+    std::ostringstream temp;
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(16) << m_pLog->securitySetting;
+    json_push_back(si, json_new_a("Security Settings", temp.str().c_str()));
 
     if (set_Security_Settings(&m_pLog->securitySetting))
     {
@@ -3803,19 +3818,19 @@ bool CAta_Identify_Log_06::get_Security_Settings(JSONNODE *si)
 //---------------------------------------------------------------------------
 bool CAta_Identify_Log_06::get_Master_Password_Identifier(JSONNODE *mpIdent)
 {
-    std::string myStr = "";
-    //myStr.resize(BASIC);
 #if defined _DEBUG
     printf("Master Password Identifier \n");
     printf("\tMaster Password Identifier =   0x%016" PRIx64"  \n", m_pLog->masterPassword);
 #endif
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", m_pLog->masterPassword);
-    json_push_back(mpIdent, json_new_a("Master Password Identifier", (char*)myStr.c_str()));
+    std::ostringstream temp;
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(16) << m_pLog->masterPassword;
+    json_push_back(mpIdent, json_new_a("Master Password Identifier", temp.str().c_str()));
     if (check_For_Active_Status(&m_pLog->masterPassword))
     {
-        uint16_t master = (uint16_t)(M_Word0(m_pLog->masterPassword));
-        snprintf((char*)myStr.c_str(), BASIC, "0x%02" PRIx16"", master);
-        json_push_back(mpIdent, json_new_a("Master Password Identifier field", (char*)myStr.c_str()));
+        uint16_t master = M_Word0(m_pLog->masterPassword);
+        temp.str("");temp.clear();
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(master);
+        json_push_back(mpIdent, json_new_a("Master Password Identifier field", temp.str().c_str()));
         if (master & BIT0)
         {
             opensea_parser::set_Json_Bool(mpIdent, "Master Password Capability is Maximum", true);
@@ -3843,14 +3858,13 @@ bool CAta_Identify_Log_06::get_Master_Password_Identifier(JSONNODE *mpIdent)
 //---------------------------------------------------------------------------
 bool CAta_Identify_Log_06::get_Time_for_Enhanced_Erase(JSONNODE *enhanced)
 {
-    std::string myStr = "";
-    // myStr.resize(BASIC);
 #if defined _DEBUG
     printf("Time for Enhanced Erase \n");
     printf("\tTime for Enhanced Erase =   0x%016" PRIx64"  \n", m_pLog->timeEnhancedErase);
 #endif
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", m_pLog->timeEnhancedErase);
-    json_push_back(enhanced, json_new_a("Time for Enhanced Erase", (char*)myStr.c_str()));
+    std::ostringstream temp;
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(16) << m_pLog->timeEnhancedErase;
+    json_push_back(enhanced, json_new_a("Time for Enhanced Erase", temp.str().c_str()));
     if (check_For_Active_Status(&m_pLog->timeEnhancedErase))
     {
         if (m_pLog->timeEnhancedErase & BIT15)
@@ -3861,8 +3875,9 @@ bool CAta_Identify_Log_06::get_Time_for_Enhanced_Erase(JSONNODE *enhanced)
         {
             opensea_parser::set_Json_Bool(enhanced, "Enhanced Security Erased Time format bit", false);
         }
-        snprintf((char*)myStr.c_str(), BASIC, "%" PRId16"", ((uint16_t)(M_Word0(m_pLog->timeEnhancedErase)) & 0x0FFF) * 2);
-        json_push_back(enhanced, json_new_a("Time for Enhanced Erase in Minutes", (char*)myStr.c_str()));
+        temp.str("");temp.clear();
+        temp << std::dec << (static_cast<uint16_t>(M_Word0(m_pLog->timeEnhancedErase)) & 0x0FFF) * 2;
+        json_push_back(enhanced, json_new_a("Time for Enhanced Erase in Minutes", temp.str().c_str()));
     }
     return true;
 }
@@ -3882,14 +3897,13 @@ bool CAta_Identify_Log_06::get_Time_for_Enhanced_Erase(JSONNODE *enhanced)
 //---------------------------------------------------------------------------
 bool CAta_Identify_Log_06::get_Time_for_Normal_Erase(JSONNODE *normal)
 {
-    std::string myStr = "";
-    //myStr.resize(BASIC);
 #if defined _DEBUG
     printf("Time for Normal Erase \n");
     printf("\tTime for Normal Erase =   0x%016" PRIx64"  \n", m_pLog->timeNormalErase);
 #endif
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", m_pLog->timeNormalErase);
-    json_push_back(normal, json_new_a("Time for Normal Erase", (char*)myStr.c_str()));
+    std::ostringstream temp;
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(16) << m_pLog->timeNormalErase;
+    json_push_back(normal, json_new_a("Time for Normal Erase", temp.str().c_str()));
     if (check_For_Active_Status(&m_pLog->timeNormalErase))
     {
         if (m_pLog->timeNormalErase & BIT15)
@@ -3900,8 +3914,9 @@ bool CAta_Identify_Log_06::get_Time_for_Normal_Erase(JSONNODE *normal)
         {
             opensea_parser::set_Json_Bool(normal, "Normal Security Time format bit", false);
         }
-        snprintf((char*)myStr.c_str(), BASIC, "%" PRId16"", ((uint16_t)(M_Word0(m_pLog->timeNormalErase)) & 0x0FFF) * 2);
-        json_push_back(normal, json_new_a("Time for Normal Erase in Minutes", (char*)myStr.c_str()));
+        temp.str("");temp.clear();
+        temp << std::dec << (static_cast<uint16_t>(M_Word0(m_pLog->timeNormalErase)) & 0x0FFF) * 2;
+        json_push_back(normal, json_new_a("Time for Normal Erase in Minutes", temp.str().c_str()));
     }
     return true;
 }
@@ -3921,14 +3936,13 @@ bool CAta_Identify_Log_06::get_Time_for_Normal_Erase(JSONNODE *normal)
 //---------------------------------------------------------------------------
 bool CAta_Identify_Log_06::get_Trusted_Computing_Feature_Set(JSONNODE *tdc)
 {
-    std::string myStr = "";
-    //myStr.resize(BASIC);
 #if defined _DEBUG
     printf("Trusted Computing Feature Set \n");
     printf("\tTrusted Computing Feature Set =   0x%016" PRIx64"  \n", m_pLog->tcfeatures);
 #endif
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", m_pLog->tcfeatures);
-    json_push_back(tdc, json_new_a("Trusted Computing Feature Set", (char*)myStr.c_str()));
+    std::ostringstream temp;
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(16) << m_pLog->tcfeatures;
+    json_push_back(tdc, json_new_a("Trusted Computing Feature Set", temp.str().c_str()));
     if (check_For_Active_Status(&m_pLog->tcfeatures))
     {
         if (m_pLog->tcfeatures & BIT0)
@@ -4012,14 +4026,13 @@ bool CAta_Identify_Log_06::set_Security_Capabilities()
 //---------------------------------------------------------------------------
 bool CAta_Identify_Log_06::get_Security_Capabilities(JSONNODE *sCap)
 {
-    std::string myStr = "";
-    //myStr.resize(BASIC);
 #if defined _DEBUG
     printf("Trusted Computing Feature Set \n");
     printf("\tTrusted Computing Feature Set =   0x%016" PRIx64"  \n", m_pLog->tcfeatures);
 #endif
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", m_pLog->tcfeatures);
-    json_push_back(sCap, json_new_a("Trusted Computing Feature Se", (char*)myStr.c_str()));
+    std::ostringstream temp;
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(16) << m_pLog->tcfeatures;
+    json_push_back(sCap, json_new_a("Trusted Computing Feature Set", temp.str().c_str()));
     if (set_Security_Capabilities())
     {
         JSONNODE *securityBits = json_new(JSON_NODE);
@@ -4049,19 +4062,17 @@ bool CAta_Identify_Log_06::get_Security_Capabilities(JSONNODE *sCap)
 //!   \return string the interface type
 //
 //---------------------------------------------------------------------------
-eReturnValues CAta_Identify_Log_06::get_Log_Page06(uint8_t *pData, JSONNODE *masterData)
+eReturnValues CAta_Identify_Log_06::get_Log_Page06(uint8_t *lp6pData, JSONNODE *masterData)
 {
 #define LOG_PAGE_06   0x0006
     eReturnValues retStatus = IN_PROGRESS;
-    std::string myStr = "";
-    //myStr.resize(BASIC);
     sLogPage06 logPage;
     m_pLog = &logPage;
     memset(m_pLog, 0, sizeof(sLogPage06));
-    m_pLog = (sLogPage06 *)&pData[0];
+    m_pLog = reinterpret_cast<sLogPage06 *>(&lp6pData[0]);
 
-    uint16_t pageNumber = (uint16_t)(M_Word1(m_pLog->header));
-    uint16_t revision = (uint16_t)(M_Word0(m_pLog->header));
+    uint16_t pageNumber = M_Word1(m_pLog->header);
+    uint16_t revision = M_Word0(m_pLog->header);
     if (pageNumber == LOG_PAGE_06)
     {
         JSONNODE *pageInfo = json_new(JSON_NODE);
@@ -4070,13 +4081,16 @@ eReturnValues CAta_Identify_Log_06::get_Log_Page06(uint8_t *pData, JSONNODE *mas
         printf("Log Page 06h \n");
         printf("\tHeader =   0x%016" PRIx64"  \n", m_pLog->header);
 #endif
-        snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", m_pLog->header);
-        json_push_back(pageInfo, json_new_a("Page Header", (char*)myStr.c_str()));
+        std::ostringstream temp;
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(16) << m_pLog->header;
+        json_push_back(pageInfo, json_new_a("Page Header", temp.str().c_str()));
 
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", pageNumber);
-        json_push_back(pageInfo, json_new_a("Page Number", (char*)myStr.c_str()));
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", revision);
-        json_push_back(pageInfo, json_new_a("Revision Number", (char*)myStr.c_str()));
+        temp.str("");temp.clear();
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << pageNumber;
+        json_push_back(pageInfo, json_new_a("Page Number", temp.str().c_str()));
+        temp.str("");temp.clear();
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << revision;
+        json_push_back(pageInfo, json_new_a("Revision Number", temp.str().c_str()));
         get_Master_Password_Identifier(pageInfo);
         get_Security_Settings(pageInfo);
         get_Time_for_Enhanced_Erase(pageInfo);
@@ -4155,19 +4169,17 @@ CAta_Identify_Log_07::~CAta_Identify_Log_07()
 //!   \return string the interface type
 //
 //---------------------------------------------------------------------------
-eReturnValues CAta_Identify_Log_07::get_Log_Page07(uint8_t *pData, JSONNODE *masterData)
+eReturnValues CAta_Identify_Log_07::get_Log_Page07(uint8_t *lp7pData, JSONNODE *masterData)
 {
 #define LOG_PAGE_07   0x0007
     eReturnValues retStatus = IN_PROGRESS;
-    std::string myStr = "";
-    //myStr.resize(BASIC);
     sLogPage07 logPage;
     m_pLog = &logPage;
     memset(m_pLog, 0, sizeof(sLogPage07));
-    m_pLog = (sLogPage07 *)&pData[0];
+    m_pLog = reinterpret_cast<sLogPage07 *>(&lp7pData[0]);
 
-    uint16_t pageNumber = (uint16_t)(M_Word1(m_pLog->header));
-    uint16_t revision = (uint16_t)(M_Word0(m_pLog->header));
+    uint16_t pageNumber = M_Word1(m_pLog->header);
+    uint16_t revision = M_Word0(m_pLog->header);
     if (pageNumber == LOG_PAGE_07)
     {
         JSONNODE *pageInfo = json_new(JSON_NODE);
@@ -4176,12 +4188,15 @@ eReturnValues CAta_Identify_Log_07::get_Log_Page07(uint8_t *pData, JSONNODE *mas
         printf("Log Page 07h \n");
         printf("\tHeader =   0x%016" PRIx64"  \n", m_pLog->header);
 #endif
-        snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", m_pLog->header);
-        json_push_back(pageInfo, json_new_a("Page Header", (char*)myStr.c_str()));
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", pageNumber);
-        json_push_back(pageInfo, json_new_a("Page Number", (char*)myStr.c_str()));
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", revision);
-        json_push_back(pageInfo, json_new_a("Revision Number", (char*)myStr.c_str()));
+        std::ostringstream temp;
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(16) << m_pLog->header;
+        json_push_back(pageInfo, json_new_a("Page Header", temp.str().c_str()));
+        temp.str("");temp.clear();
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << pageNumber;
+        json_push_back(pageInfo, json_new_a("Page Number", temp.str().c_str()));
+        temp.str("");temp.clear();
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << revision;
+        json_push_back(pageInfo, json_new_a("Revision Number", temp.str().c_str()));
 
 
         json_push_back(masterData, pageInfo);
@@ -4395,15 +4410,14 @@ bool CAta_Identify_Log_08::set_Sata_Capabilities()
 //---------------------------------------------------------------------------
 bool CAta_Identify_Log_08::get_Sata_Capabilities(JSONNODE *cap)
 {
-    std::string myStr = "";
-    //myStr.resize(BASIC);
 #if defined _DEBUG
     printf("SATA Capabilities\n");
     printf("\tSATA Capabilities =   0x%016" PRIx64"  \n", m_pLog->sataCapabilities);
 #endif
 
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", m_pLog->sataCapabilities);
-    json_push_back(cap, json_new_a("SATA Capabilities QWord", (char*)myStr.c_str()));
+    std::ostringstream temp;
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(16) << m_pLog->sataCapabilities;
+    json_push_back(cap, json_new_a("SATA Capabilities QWord", temp.str().c_str()));
 
     if (set_Sata_Capabilities())
     {
@@ -4549,14 +4563,13 @@ bool CAta_Identify_Log_08::set_Current_Sata()
 //---------------------------------------------------------------------------
 bool CAta_Identify_Log_08::get_Current_Sata(JSONNODE *current)
 {
-    std::string myStr = "";
-    //myStr.resize(BASIC);
 #if defined _DEBUG
     printf("Current SATA Settings\n");
     printf("\tCurrent SATA Settingss =   0x%016" PRIx64"  \n", m_pLog->currentSata);
 #endif
-    snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", m_pLog->currentSata);
-    json_push_back(current, json_new_a("Current SATA Settings QWord", (char*)myStr.c_str()));
+    std::ostringstream temp;
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(16) << m_pLog->currentSata;
+    json_push_back(current, json_new_a("Current SATA Settings QWord", temp.str().c_str()));
     if (set_Current_Sata())
     {
         JSONNODE *currentSettings = json_new(JSON_NODE);
@@ -4648,16 +4661,16 @@ void CAta_Identify_Log_08::get_Supported_Hardware(JSONNODE *supported)
 //---------------------------------------------------------------------------
 void CAta_Identify_Log_08::get_Device_Sleep_Timing_Variables(JSONNODE *sleep)
 {
-    std::string myStr = "";
-    //myStr.resize(BASIC);
     if (m_pLog->deviceSleepTiming &BIT63)
     {
         opensea_parser::set_Json_Bool(sleep, "DEVSLP Timing Variables Supported", true);
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRId16"", (uint16_t)M_GETBITRANGE(m_pLog->deviceSleepTiming, 15, 8));
-        json_push_back(sleep, json_new_a("DEVSLEEP Exit Timeout Field (DETO)", (char*)myStr.c_str()));
+        std::ostringstream temp;
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << M_GETBITRANGE(m_pLog->deviceSleepTiming, 15, 8);
+        json_push_back(sleep, json_new_a("DEVSLEEP Exit Timeout Field (DETO)", temp.str().c_str()));
 
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRId16"", (uint16_t)M_GETBITRANGE(m_pLog->deviceSleepTiming, 4, 0));
-        json_push_back(sleep, json_new_a("Minimum DEVSLP Assertion Time Field (MDAT)", (char*)myStr.c_str()));
+        temp.str("");temp.clear();
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(16) << M_GETBITRANGE(m_pLog->deviceSleepTiming, 4, 0);
+        json_push_back(sleep, json_new_a("Minimum DEVSLP Assertion Time Field (MDAT)", temp.str().c_str()));
 
     }
     else
@@ -4680,19 +4693,17 @@ void CAta_Identify_Log_08::get_Device_Sleep_Timing_Variables(JSONNODE *sleep)
 //!   \return string the interface type
 //
 //---------------------------------------------------------------------------
-eReturnValues CAta_Identify_Log_08::get_Log_Page08(uint8_t *pData, JSONNODE *masterData)
+eReturnValues CAta_Identify_Log_08::get_Log_Page08(uint8_t *lp8pData, JSONNODE *masterData)
 {
 #define LOG_PAGE_08   0x0008
     eReturnValues retStatus = IN_PROGRESS;
-    std::string myStr = "";
-    //myStr.resize(BASIC);
     sLogPage08 logPage;
     m_pLog = &logPage;
     memset(m_pLog, 0, sizeof(sLogPage08));
-    m_pLog = (sLogPage08 *)&pData[0];
+    m_pLog = reinterpret_cast<sLogPage08 *>(&lp8pData[0]);
 
-    uint16_t pageNumber = (uint16_t)(M_Word1(m_pLog->header));
-    uint16_t revision = (uint16_t)(M_Word0(m_pLog->header));
+    uint16_t pageNumber = M_Word1(m_pLog->header);
+    uint16_t revision = M_Word0(m_pLog->header);
     if (pageNumber == LOG_PAGE_08)
     {
         JSONNODE *pageInfo = json_new(JSON_NODE);
@@ -4701,13 +4712,15 @@ eReturnValues CAta_Identify_Log_08::get_Log_Page08(uint8_t *pData, JSONNODE *mas
         printf("Log Page 08h \n");
         printf("\tHeader =   0x%016" PRIx64"  \n", m_pLog->header);
 #endif
-        snprintf((char*)myStr.c_str(), BASIC, "0x%016" PRIx64"", m_pLog->header);
-        json_push_back(pageInfo, json_new_a("Page Header", (char*)myStr.c_str()));
-
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", pageNumber);
-        json_push_back(pageInfo, json_new_a("Page Number", (char*)myStr.c_str()));
-        snprintf((char*)myStr.c_str(), BASIC, "0x%04" PRIx16"", revision);
-        json_push_back(pageInfo, json_new_a("Revision Number", (char*)myStr.c_str()));
+        std::ostringstream temp;
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(16) << m_pLog->header;
+        json_push_back(pageInfo, json_new_a("Page Header", temp.str().c_str()));
+        temp.str("");temp.clear();
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << pageNumber;
+        json_push_back(pageInfo, json_new_a("Page Number", temp.str().c_str()));
+        temp.str("");temp.clear();
+        temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << revision;
+        json_push_back(pageInfo, json_new_a("Revision Number", temp.str().c_str()));
 
         get_Sata_Capabilities(pageInfo);
         get_Current_Sata(pageInfo);
@@ -4779,13 +4792,13 @@ CAta_Identify_Log_30::CAta_Identify_Log_30(const std::string & fileName)
         {
             size_t bufferSize = cCLog->get_Size();
             pData = new uint8_t[cCLog->get_Size()];								// new a buffer to the point				
-#ifndef _WIN64
+#ifndef __STDC_SECURE_LIB__
             memcpy(pData, cCLog->get_Buffer(), bufferSize);
 #else
             memcpy_s(pData, bufferSize, cCLog->get_Buffer(), bufferSize);// copy the buffer data to the class member pBuf
 #endif
             sLogPageStruct *idCheck;
-            idCheck = (sLogPageStruct *)&pData[0];
+            idCheck = reinterpret_cast<sLogPageStruct*>(&pData[0]);
             byte_Swap_16(&idCheck->pageLength);
             if (IsScsiLogPage(idCheck->pageLength, idCheck->pageCode) == false)
             {
@@ -4843,7 +4856,7 @@ CAta_Identify_Log_30::~CAta_Identify_Log_30()
 //
 //---------------------------------------------------------------------------
 
-eReturnValues CAta_Identify_Log_30::get_Interface_Type()
+/*eReturnValues CAta_Identify_Log_30::get_Interface_Type()
 {
     std::string interfaceType("unknow");
     uint16_t interfaceOffset = 0x0180 + 512;
@@ -4870,14 +4883,14 @@ eReturnValues CAta_Identify_Log_30::get_Interface_Type()
     }
 
     return SUCCESS;
-}
+}*/
 
 eReturnValues CAta_Identify_Log_30::parse_Identify_Log_30(JSONNODE *masterData)
 {
     // Parse the log page 00.
     CAta_Identify_Log_00 *cLogPage00;
     cLogPage00 = new CAta_Identify_Log_00(&pData[0x000]);
-    cLogPage00->get_Log_Page00(&pData[0x000], masterData);
+    cLogPage00->get_Log_Page00(masterData);
 
     // Parse the Log page 01h
     if (cLogPage00->is_Page_Supported(1))
@@ -4943,7 +4956,7 @@ eReturnValues CAta_Identify_Log_30::parse_Identify_Log_30(JSONNODE *masterData)
         cLogPage08->get_Log_Page08(&pData[0x1000], masterData);
         delete (cLogPage08);
     }
-    get_Interface_Type();
+    //get_Interface_Type();
 
     delete (cLogPage00);
     return SUCCESS;

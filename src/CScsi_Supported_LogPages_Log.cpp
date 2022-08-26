@@ -2,7 +2,7 @@
 // CScsi_Supported_LogPages_Log.cpp Definition for parsing the supported log pages 
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2020 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2021 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -129,11 +129,11 @@ void CScsiSupportedLog::get_Supported_And_Subpage_Description(std::string *descr
             {
                 if (m_ShowSubPage && m_SubPage == 0xFF)
                 {
-                    snprintf((char*)description->c_str(), BASIC, "Supported Log Pages and Subpages");
+                    description->assign("Supported Log Pages and Subpages");
                 }
                 else
                 {
-                    snprintf((char*)description->c_str(), BASIC, "Supported Log Pages");
+                    description->assign("Supported Log Pages");
                 }
                 m_ShowSupportedPagesOnce = false;
             }
@@ -141,119 +141,121 @@ void CScsiSupportedLog::get_Supported_And_Subpage_Description(std::string *descr
 		}
 		case WRITE_ERROR_COUNTER:
 		{
-			snprintf((char*)description->c_str(), BASIC, "Write Error Counter");
+            description->assign("Write Error Counter");
 			break;
 		}
 		case READ_ERROR_COUNTER:
 		{
-			snprintf((char*)description->c_str(), BASIC, "Read Error Counter");
+            description->assign("Read Error Counter");
 			break;
 		}
 		case VERIFY_ERROR_COUNTER:
 		{
-			snprintf((char*)description->c_str(), BASIC, "Verify Error Counter");
+            description->assign("Verify Error Counter");
 			break;
 		}
 		case NON_MEDIUM_ERROR:
 		{
-			snprintf((char*)description->c_str(), BASIC, "Non-Medium Error");
+            description->assign("Non-Medium Error");
 			break;
 		}
 		case FORMAT_STATUS:
 		{
-			snprintf((char*)description->c_str(), BASIC, "Format Status");
+            description->assign("Format Status");
 			break;
 		}
 		case LOGICAL_BLOCK_PROVISIONING:
 		{
-			snprintf((char*)description->c_str(), BASIC, "Logical Block Provisioning");
+            description->assign("Logical Block Provisioning");
 			break;
 		}
 		case ENVIRONMENTAL:
 		{
 			if (m_ShowSubPage && m_SubPage == 0x00)
 			{
-				snprintf((char*)description->c_str(), BASIC, "Temperature");
+                description->assign("Temperature");
 			}
 			else if (m_ShowSubPage && m_SubPage == 0x01)
 			{
-				snprintf((char*)description->c_str(), BASIC, "Environmental Reporting");
+                description->assign("Environmental Reporting");
 			}
 			else if (m_ShowSubPage && m_SubPage == 0x02)
 			{
-				snprintf((char*)description->c_str(), BASIC, "Environmental Limits");
+                description->assign("Environmental Limits");
 			}
 			else
 			{
-				snprintf((char*)description->c_str(), BASIC, "Environmental");
+                description->assign("Environmental");
 			}
 			break;
 		}
 		case START_STOP_CYCLE_COUNTER:
 		{
-			snprintf((char*)description->c_str(), BASIC, "Start-Stop Cycle Counter");
+            description->assign("Start-Stop Cycle Counter");
 			break;
 		}
 		case APPLICATION_CLIENT:
 		{
-			snprintf((char*)description->c_str(), BASIC, "Application Client");
+            description->assign("Application Client");
 			break;
 		}
 		case SELF_TEST_RESULTS:
 		{
-			snprintf((char*)description->c_str(), BASIC, "Self-Test Results");
+            description->assign("Self-Test Results");
 			break;
 		}
 		case SOLID_STATE_MEDIA:
 		{
-			snprintf((char*)description->c_str(), BASIC, "Solid State Media");
+            description->assign("Solid State Media");
 			break;
 		}
         case ZONED_DEVICE_STATISTICS:
         {
-            snprintf((char*)description->c_str(), BASIC, "Zoned Device Statistics");
+            description->assign("Zoned Device Statistics");
             break;
         }
 		case BACKGROUND_SCAN:
 		{
 			if (m_ShowSubPage && m_SubPage == 0x02)
 			{
-				snprintf((char*)description->c_str(), BASIC, "Background Operation");
+                description->assign("Background Operation");
 			}
 			else
 			{
-				snprintf((char*)description->c_str(), BASIC, "Background Scan");
+                description->assign("Background Scan");
 			}
 			break;
 		}
 		case PROTOCOL_SPECIFIC_PORT:
 		{
-			snprintf((char*)description->c_str(), BASIC, "SAS Protocol Log Page");
+            description->assign("SAS Protocol Log Page");
 			break;
 		}
 		case POWER_CONDITION_TRANSITIONS:
 		{
-			snprintf((char*)description->c_str(), BASIC, "Protocol Specific Port");
+            description->assign("Protocol Specific Port");
 			break;
 		}
 		case INFORMATIONAL_EXCEPTIONS:
 		{
-			snprintf((char*)description->c_str(), BASIC, "Informational Exceptions");
+            description->assign("Informational Exceptions");
 			break;
 		}
 		case CACHE_STATISTICS:
 		{
-			snprintf((char*)description->c_str(), BASIC, "Cache Statistics");
+            description->assign("Cache Statistics");
 			break;
 		}
 		case FACTORY_LOG:
 		{
-			snprintf((char*)description->c_str(), BASIC, "Factory Log");
+            description->assign("Factory Log");
 			break;
 		}
 		default:
 		{
-			snprintf((char*)description->c_str(), BASIC, "Unknown 0x%02" PRIx8"", m_Page);
+            std::ostringstream temp;
+            temp << "Unknown 0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Page);
+            description->assign(temp.str());
 			break;
 		}
 	}
@@ -274,24 +276,18 @@ void CScsiSupportedLog::get_Supported_And_Subpage_Description(std::string *descr
 //---------------------------------------------------------------------------
 void CScsiSupportedLog::process_Supported_Data(JSONNODE *SupportData)
 {
-	std::string myStr = "";
-	myStr.resize(BASIC);
-	std::string myHeader = "";
-	myHeader.resize(BASIC);
+	std::string myStr;
 #if defined _DEBUG
 	printf("Supported Log Pages \n");
 #endif
-
+    std::ostringstream temp;
+    temp << "Page 0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Page);
     if (m_ShowSubPage)
     {
-        snprintf((char*)myHeader.c_str(), BASIC, "Page 0x%02" PRIx8" SubPage 0x%02" PRIx8"", m_Page, m_SubPage);
-    }
-    else
-    {
-        snprintf((char*)myHeader.c_str(), BASIC, "Page 0x%02" PRIx8"", m_Page);
+         temp << " SubPage 0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_SubPage);
     }
     get_Supported_And_Subpage_Description(&myStr);
-	json_push_back(SupportData, json_new_a((char*)myHeader.c_str(), (char*)myStr.c_str()));
+	json_push_back(SupportData, json_new_a(temp.str().c_str(), myStr.c_str()));
 }
 //-----------------------------------------------------------------------------
 //
@@ -309,24 +305,21 @@ void CScsiSupportedLog::process_Supported_Data(JSONNODE *SupportData)
 //---------------------------------------------------------------------------
 eReturnValues CScsiSupportedLog::get_Supported_Log_Data(JSONNODE *masterData)
 {
-	std::string myStr = "";
-	myStr.resize(BASIC);
 	eReturnValues retStatus = IN_PROGRESS;
 	if (pData != NULL)
 	{
-		myStr = "Supported Logs";
 		JSONNODE *pageInfo = json_new(JSON_NODE);
-		json_set_name(pageInfo, (char*)myStr.c_str());
+		json_set_name(pageInfo, "Supported Logs");
 
-		for (size_t offset = 0; offset < (size_t) m_PageLength; )
+		for (size_t offset = 0; offset < static_cast<size_t>(m_PageLength); )
 		{
 			if (offset < m_bufferLength )
 			{
-				m_Page = (uint8_t)pData[offset];
+				m_Page = static_cast<uint8_t>(pData[offset]);
 				offset++;
 				if (m_ShowSubPage && (offset +1 ) < m_bufferLength)
 				{
-					m_SubPage = (uint8_t)pData[offset];
+					m_SubPage = static_cast<uint8_t>(pData[offset]);
 					offset++;
 				}
                 if ((m_Page != 0 || m_SubPage != 0) )
