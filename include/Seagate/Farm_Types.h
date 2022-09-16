@@ -27,6 +27,13 @@
 #define FLASH_EVENTS            8
 #define REALLOCATIONEVENTS      15
 #define PRINTABLE_MODEL_NUMBER  12
+// FARM Combine definitions ascii check values
+#define FARM_CURRENT            0x4641524d20202020                      //!< "FARM    "
+#define FARM_FACTORY            0x464143544f525920                      //!< "FACTORY "
+#define FARM_TIME               0x4641524d54494d45                      //<! "FARMTIME"
+#define FARM_STICKY             0x4641524d5354434b                      //<! "FARMSTCK"
+#define FARM_WLDTR              0x574f524b4c445443                      //<! "WORKLDTR"
+#define FARM_SAVE               0x4641524d53415645                      //<! "FARMSAVE"
 
 #define ASSERT_UNKNOWN                         0x00
 #define MICROPROCESSOR_FAILED                  0x08
@@ -282,4 +289,14 @@ typedef struct _sWorkLoadStat
         cntQueueDepthmorethan64(0), numDithEvtAct1(0), numRandWLDitherHoldOffAct1(0), numSequentialWLDitherHoldOffAct1(0), hotWriteStatistics(0) {};
 }sWorkLoadStat;
 
+typedef struct _sComboDataSet
+{
+    uint64_t        dataSetType;                                //!< 
+    uint32_t        location;                                   //!<
+    uint32_t        dataSize;                                   //!<
+    uint64_t        startTime;                                  //!<
+    uint64_t        endTime;                                    //!<
+
+    _sComboDataSet() : dataSetType(0), location(0), dataSize(0), startTime(0), endTime(0) {};
+}sComboDataSet;
 #pragma pack(pop)

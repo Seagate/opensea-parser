@@ -17,7 +17,7 @@
 using namespace opensea_parser;
 //-----------------------------------------------------------------------------
 //
-//! \fn CATA_Farm_Log::CATA_Farm_Log()
+//! \fn CFARMLog::CFARMLog()
 //
 //! \brief
 //!   Description: Class constructor
@@ -29,10 +29,11 @@ using namespace opensea_parser;
 //
 //---------------------------------------------------------------------------
 CFARMLog::CFARMLog()
-	:bufferData()
+	:CFarm_Combine()
 	, m_LogSize(0)
 	, m_status(IN_PROGRESS)
 	, m_isScsi(false)
+	, m_isCombo(false)
 	, m_shwoStatus(false)
     , m_bufferdelete(false)
 {
@@ -46,7 +47,6 @@ CFARMLog::CFARMLog()
 //!   Description: Class constructor
 //
 //  Entry:
- 
 //! \parma fileName = the name of the file that need to be read in for getting the data
 //! \param showStatus = if true then show the status bits
 //
@@ -54,11 +54,12 @@ CFARMLog::CFARMLog()
 //!   \return 
 //
 //---------------------------------------------------------------------------
-CFARMLog::CFARMLog(const std::string & fileName,bool showStatus)
-	:bufferData()
+CFARMLog::CFARMLog(const std::string& fileName, bool showStatus)
+	:CFarm_Combine(showStatus)
 	, m_LogSize(0)
 	, m_status(IN_PROGRESS)
 	, m_isScsi(false)
+	, m_isCombo(false)
 	, m_shwoStatus(showStatus)
     , m_bufferdelete(true)
 {
@@ -75,7 +76,9 @@ CFARMLog::CFARMLog(const std::string & fileName,bool showStatus)
 #else
 			memcpy_s(bufferData, m_LogSize, cCLog->get_Buffer(), m_LogSize);// copy the buffer data to the class member pBuf
 #endif
-			m_isScsi = is_Device_Scsi();
+			setCombine(bufferData, m_LogSize);
+			m_isCombo = getIsCombo();
+			m_isScsi = getIsScsi();
 
 			m_status = IN_PROGRESS;
 		}
@@ -106,11 +109,12 @@ CFARMLog::CFARMLog(const std::string & fileName,bool showStatus)
 //
 //---------------------------------------------------------------------------
 CFARMLog::CFARMLog(const std::string & fileName)
-	:bufferData()
+	:CFarm_Combine()
 	, m_LogSize(0)
 	, m_status(IN_PROGRESS)
 	, m_isScsi(false)
 	, m_shwoStatus(false)
+	, m_isCombo(false)
     , m_bufferdelete(true)
 {
 	CLog *cCLog;
@@ -126,7 +130,8 @@ CFARMLog::CFARMLog(const std::string & fileName)
 #else
 			memcpy_s(bufferData, m_LogSize, cCLog->get_Buffer(), m_LogSize);// copy the buffer data to the class member pBuf
 #endif
-			m_isScsi = is_Device_Scsi();
+			m_isCombo = getIsCombo();
+			m_isScsi = getIsScsi();
 
 			m_status = IN_PROGRESS;
 		}
@@ -163,12 +168,14 @@ CFARMLog::CFARMLog(uint8_t *farmbufferData, size_t bufferSize, bool showStatus)
 	, m_LogSize(bufferSize)
 	, m_status(IN_PROGRESS)
 	, m_isScsi(false)
+	, m_isCombo(false)
 	, m_shwoStatus(showStatus)
     , m_bufferdelete(false)
 {
 	if (farmbufferData != NULL)
 	{
-		m_isScsi = is_Device_Scsi();
+		m_isCombo = getIsCombo();
+		m_isScsi = getIsScsi();
 		m_status = IN_PROGRESS;
 }
 	else
@@ -179,7 +186,7 @@ CFARMLog::CFARMLog(uint8_t *farmbufferData, size_t bufferSize, bool showStatus)
 }
 //-----------------------------------------------------------------------------
 //
-//! \fn CATA_Farm_Log::CATA_Farm_Log()
+//! \fn CFARMLog::CFARMLog()
 //
 //! \brief
 //!   Description: Class Deconstructor
@@ -202,34 +209,6 @@ CFARMLog::~CFARMLog()
 }
 //-----------------------------------------------------------------------------
 //
-//! \fn is_Device_Scsi()
-//
-//! \brief
-//!   Description:  check the first part of the buffer to see if it's a scsi log 
-//
-//  Entry:
-//
-//  Exit:
-//!   \return bool = True or False
-//
-//---------------------------------------------------------------------------
-bool CFARMLog::is_Device_Scsi()
-{
-    if (bufferData != NULL)
-    {
-        if (M_GETBITRANGE(bufferData[0], 5, 0) == 0x3D )
-        {
-            if (bufferData[1] == 03 || bufferData[1] == 04 || (bufferData[1] >= FARM_TIME_SERIES_0 && bufferData[1] <= FARM_TEMP_TRIGGER_LOG_PAGE))
-            {
-                return true;
-            }
-        }
-    }
-            return false;
-}
-
-//-----------------------------------------------------------------------------
-//
 //! \fn ParseFarmLog()
 //
 //! \brief
@@ -244,46 +223,54 @@ bool CFARMLog::is_Device_Scsi()
 //---------------------------------------------------------------------------
 eReturnValues CFARMLog::parse_Device_Farm_Log(JSONNODE *masterJson)
 {
-    eReturnValues retStatus = MEMORY_FAILURE;
-    if (m_isScsi)
+	eReturnValues retStatus = SUCCESS; // MEMORY_FAILURE;
+    if (m_isCombo)
     {
-		uint8_t subpage = bufferData[1];
-        CSCSI_Farm_Log *pCFarm;
-        pCFarm = new CSCSI_Farm_Log(bufferData, m_LogSize, subpage, m_shwoStatus);
-        if (pCFarm->get_Log_Status() == SUCCESS)
-        {
-            pCFarm->print_All_Pages(masterJson);
-            retStatus = SUCCESS;
-        }
-        else
-        {
-            retStatus = pCFarm->get_Log_Status() ;
-        }
-        delete( pCFarm);
+		combo_Parsing( masterJson);
+		retStatus = get_Combo_Status();
     }
     else
     {
-        CATA_Farm_Log *pCFarm;
-        pCFarm = new CATA_Farm_Log(bufferData, m_LogSize, m_shwoStatus);
-        if (pCFarm->get_Log_Status() == IN_PROGRESS)
-        {
-			try
+		if (m_isScsi)
+		{
+			uint8_t subpage = bufferData[1];
+			CSCSI_Farm_Log* pCFarm;
+			pCFarm = new CSCSI_Farm_Log(bufferData, m_LogSize, subpage, m_shwoStatus);
+			if (pCFarm->get_Log_Status() == SUCCESS)
 			{
-				retStatus = pCFarm->parse_Farm_Log();
-				if (retStatus == IN_PROGRESS)
+				pCFarm->print_All_Pages(masterJson);
+				retStatus = SUCCESS;
+			}
+			else
+			{
+				retStatus = pCFarm->get_Log_Status();
+			}
+			delete(pCFarm);
+		}
+		else
+		{
+			CATA_Farm_Log* pCFarm;
+			pCFarm = new CATA_Farm_Log(bufferData, m_LogSize, m_shwoStatus);
+			if (pCFarm->get_Log_Status() == IN_PROGRESS)
+			{
+				try
 				{
-					pCFarm->print_All_Pages(masterJson);
-					retStatus = SUCCESS;
+					retStatus = pCFarm->parse_Farm_Log();
+					if (retStatus == IN_PROGRESS)
+					{
+						pCFarm->print_All_Pages(masterJson);
+						retStatus = SUCCESS;
+					}
 				}
+				catch (...)
+				{
+					delete (pCFarm);
+					return MEMORY_FAILURE;
+				}
+
 			}
-			catch (...)
-			{
-				delete (pCFarm);
-				return MEMORY_FAILURE;
-			}
-            
-        }
-        delete (pCFarm);
+			delete (pCFarm);
+		}
     }
     return retStatus;
 }

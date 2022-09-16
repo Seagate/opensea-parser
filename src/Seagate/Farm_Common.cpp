@@ -53,10 +53,35 @@ CFarmCommon::~CFarmCommon()
 }
 //-----------------------------------------------------------------------------
 //
-//! \fn create_Serial_Number()
+//! \fn create_Flat_SN()
 //
 //! \brief
 //!   Description:  takes the two uint64 bit seiral number values and create a string serial number
+//
+//  Entry:
+//! \param serialNumberStr - pointer to the serial number, where once constructed, will hold the serial number of the drive
+//! \param serialNumber  =  first part of the serial number.
+//! \param serialNumber2  =  second part of the serial number.
+//
+//  Exit:
+//!   \return serialNumber = the string serialNumber
+//
+//---------------------------------------------------------------------------
+void CFarmCommon::create_Flat_SN(std::string& serialNumberStr, uint64_t* serialNumber, uint64_t* serialNumber2)
+{
+	serialNumberStr.clear();
+	//byte_Swap_64(serialNumber);
+	serialNumberStr.assign(reinterpret_cast<const char*>(serialNumber), SERIAL_NUMBER_LEN);
+	//byte_Swap_64(serialNumber2);
+	serialNumberStr.append(reinterpret_cast<const char*>(serialNumber2), SERIAL_NUMBER_LEN);
+	remove_trailing_whitespace_std_string(serialNumberStr);
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn create_Serial_Number()
+//
+//! \brief
+//!   Description:  takes the two uint32 bit seiral number values and create a string serial number
 //
 //  Entry:
 //! \param serialNumberStr - pointer to the serial number, where once constructed, will hold the serial number of the drive
@@ -138,6 +163,27 @@ void CFarmCommon::create_Model_Number_String(std::string& modelStr, uint64_t *pr
 }
 //-----------------------------------------------------------------------------
 //
+//! \fn create_Model_Number_String_Flat()
+//
+//! \brief
+//!   Description:  fill in the model number of the drive 
+//
+//  Entry:
+//! \param modelStr - pointer to the  model number of the drive
+//! \param productID  =  pointer to the drive info structure that holds the infromation needed
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void CFarmCommon::create_Model_Number_String_Flat(std::string& modelStr, uint64_t* productID)
+{
+	//byte_Swap_64(productID);
+	modelStr.append(reinterpret_cast<const char*>(productID), sizeof(uint64_t));
+	remove_trailing_whitespace_std_string(modelStr);
+}
+//-----------------------------------------------------------------------------
+//
 //! \fn create_Device_Interface_String()
 //
 //! \brief
@@ -162,6 +208,26 @@ void CFarmCommon::create_Device_Interface_String(std::string& dInterfaceStr, uin
 	}
 	dInterfaceStr = "0000";
 	dInterfaceStr.assign(reinterpret_cast<const char*>(&dFace), DEVICE_INTERFACE_LEN);
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn create_Device_Interface_String_Flat()
+//
+//! \brief
+//!   Description:  takes the two uint64 bit Devie interface string values and create a string device interface  
+//
+//  Entry:
+//! \param dInterfaceStr - pointer to the Devie interface v, where once constructed, will hold the Devie interface of the drive
+//! \param deviceInterface  =  pointer to the drive info structure that holds the infromation needed
+//
+//  Exit:
+//!   \return dInterface = the string dInterface
+//
+//---------------------------------------------------------------------------
+void CFarmCommon::create_Device_Interface_String_Flat(std::string& dInterfaceStr, uint32_t* deviceInterface)
+{
+	dInterfaceStr.assign(reinterpret_cast<const char*>(deviceInterface), DEVICE_INTERFACE_LEN);
+	remove_trailing_whitespace_std_string(dInterfaceStr);
 }
 //-----------------------------------------------------------------------------
 //
@@ -231,6 +297,30 @@ void CFarmCommon::create_Firmware_String(std::string& firmwareRevStr, uint32_t f
 	{
 		byte_swap_std_string(firmwareRevStr);
 	}
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn create_Firmware_String_Flat()
+//
+//! \brief
+//!   Description:  takes the two uint64 bit firmware Rev values and create a string firmware Rev 
+//
+//  Entry:
+//! \param firmwareRevStr - pointer to the firmware Rev, where once constructed, will hold the firmware Rev of the drive
+//! \param firmware  =  pointer to the drive info structure that holds the infromation needed
+//! \param firmware2  =  pointer to the drive info structure that holds the infromation needed
+//
+//  Exit:
+//!   \return firmwareRev = the string firmwareRev
+//
+//---------------------------------------------------------------------------
+void CFarmCommon::create_Firmware_String_Flat(std::string& firmwareRevStr, uint32_t *firmware, uint32_t *firmware2)
+{
+	//byte_Swap_32(firmware);
+	firmwareRevStr.assign(reinterpret_cast<const char*>(firmware), sizeof(uint32_t));
+	//byte_Swap_32(firmware2);
+	firmwareRevStr.append(reinterpret_cast<const char*>(firmware2), sizeof(uint32_t));
+	remove_trailing_whitespace_std_string(firmwareRevStr);
 }
 //-----------------------------------------------------------------------------
 //
