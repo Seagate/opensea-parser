@@ -36,6 +36,7 @@ namespace opensea_parser {
 #define STX_COMBO   0x5f434f4d42494e45
 #define FARMSAS     0x53415320
 #define FARMSATA    0x53415441
+#define MAXLOGSIZE  0x2680
 
     class CFarm_Combine : public CFarmCommon
     {
@@ -58,16 +59,16 @@ namespace opensea_parser {
         void get_FARM_Type(std::string* reason, uint64_t dataType);
         void get_Header_Info(sStringIdentifyData* headerInfo);
         void get_Data_Set(uint16_t DataSetNumber);
-        void parse_FARM_Logs(uint64_t offset, size_t logSize, uint64_t dataType, JSONNODE* farmJson);
+        void parse_FARM_Logs(size_t offset, size_t logSize, uint64_t dataType, JSONNODE* farmJson);
         
 
     public:
         CFarm_Combine();
         CFarm_Combine(bool showStatus);
-        CFarm_Combine(uint8_t* bufferData, size_t bufferSize, bool showStatus);
+        CFarm_Combine(uint8_t* buffer, size_t bufferSize, bool showStatus);
         virtual ~CFarm_Combine();
         eReturnValues get_Combo_Status() { return m_status; };
-        void setCombine(uint8_t* bufferData, size_t bufferSize);
+        void setCombine(uint8_t* buffer, size_t bufferSize);
         bool getIsScsi() {  return m_combine_isScsi; };
         bool getIsCombo() {  return  m_isComboLog; };
         void combo_Parsing(JSONNODE* masterJson);

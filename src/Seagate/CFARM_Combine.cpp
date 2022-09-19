@@ -78,8 +78,8 @@ CFarm_Combine::CFarm_Combine(bool showStatus)
 //!   \return 
 //
 //---------------------------------------------------------------------------
-CFarm_Combine::CFarm_Combine(uint8_t* bufferData, size_t bufferSize, bool showStatus)
-	:bufferData(bufferData)
+CFarm_Combine::CFarm_Combine(uint8_t* buffer, size_t bufferSize, bool showStatus)
+	:bufferData(buffer)
 	, m_LogSize(bufferSize)
 	, m_status(IN_PROGRESS)
 	, m_isScsi(false)
@@ -110,9 +110,9 @@ CFarm_Combine::~CFarm_Combine()
 		//delete[] bufferData;
 	}
 }
-void CFarm_Combine::setCombine(uint8_t* bufferData, size_t bufferSize)
+void CFarm_Combine::setCombine(uint8_t* buffer, size_t bufferSize)
 {
-	setBuffer(bufferData); 
+	setBuffer(buffer); 
 	setLogSize(bufferSize); 
 	is_Combo_Log();
 	combine_Device_Scsi();
@@ -324,8 +324,9 @@ void CFarm_Combine::get_Header_Info(sStringIdentifyData* headerInfo)
 //---------------------------------------------------------------------------
 void CFarm_Combine::get_Data_Set(uint16_t DataSetNumber)
 {
+#define DATAOFFSET  0x100
 	vdataSetInfo.reserve(DataSetNumber);
-	uint32_t offset = 0x100;
+	uint32_t offset = DATAOFFSET;
 	for (uint16_t i = 0; i < DataSetNumber; i++)
 	{
 
@@ -351,53 +352,72 @@ void CFarm_Combine::get_Data_Set(uint16_t DataSetNumber)
 //  Exit:
 //
 //---------------------------------------------------------------------------
-void CFarm_Combine::parse_FARM_Logs(uint64_t offset, size_t logSize, uint64_t dataType, JSONNODE* farmJson)
+void CFarm_Combine::parse_FARM_Logs(size_t offset, size_t logSize, uint64_t dataType, JSONNODE* farmJson)
 {
-	if (m_combine_isScsi)
+	size_t page = 0;
+	for (size_t counter = 0; counter <= logSize;)
 	{
-		uint8_t subpage = bufferData[offset + 1];
-		std::ostringstream temp;
-		temp << "Subpage 0x" << std::setw(2) << std::setfill('0') << std::hex << std::uppercase << static_cast<uint16_t> (subpage);
-		JSONNODE* farmInfo = json_new(JSON_NODE);
-		json_set_name(farmInfo, temp.str().c_str());
+		if (m_combine_isScsi)
+		{
+			uint8_t subpage = bufferData[offset + 1];
+			std::ostringstream temp;
+			temp << "Subpage 0x" << std::setw(2) << std::setfill('0') << std::hex << std::uppercase << static_cast<uint16_t> (subpage);
+			JSONNODE* farmInfo = json_new(JSON_NODE);
+			json_set_name(farmInfo, temp.str().c_str());
 
-		CSCSI_Farm_Log* pCFarm;
-		pCFarm = new CSCSI_Farm_Log(&bufferData[offset], logSize, subpage, m_shwoStatus);
-		if (pCFarm->get_Log_Status() == SUCCESS)
-		{
-			pCFarm->print_All_Pages(farmInfo);
-			m_status = SUCCESS;
-		}
-		else
-		{
-			m_status = pCFarm->get_Log_Status();
-		}
-		delete(pCFarm);
-		json_push_back(farmJson, farmInfo);
-	}
-	else
-	{
-		CATA_Farm_Log* pCFarm;
-		pCFarm = new CATA_Farm_Log(&bufferData[offset], logSize, m_shwoStatus);
-		if (pCFarm->get_Log_Status() == IN_PROGRESS)
-		{
-			try
+			CSCSI_Farm_Log* pCFarm;
+			pCFarm = new CSCSI_Farm_Log(&bufferData[offset], logSize, subpage, m_shwoStatus);
+			if (pCFarm->get_Log_Status() == SUCCESS)
 			{
-				m_status = pCFarm->parse_Farm_Log();
-				if (m_status == IN_PROGRESS)
+				page = static_cast<size_t>(pCFarm->get_LogSize()) + 4;      // need add in the param length back in
+				if (page > MAXLOGSIZE)
 				{
-					pCFarm->print_All_Pages(farmJson);
+					m_status = INVALID_LENGTH;
+				}
+				else
+				{
+					pCFarm->print_All_Pages(farmInfo);
 					m_status = SUCCESS;
 				}
 			}
-			catch (...)
+			else
 			{
-				delete (pCFarm);
-				m_status = MEMORY_FAILURE;
+				m_status = pCFarm->get_Log_Status();
 			}
-
+			delete(pCFarm);
+			json_push_back(farmJson, farmInfo);
 		}
-		delete (pCFarm);
+		else
+		{
+			CATA_Farm_Log* pCFarm;
+			pCFarm = new CATA_Farm_Log(&bufferData[offset], logSize, m_shwoStatus);
+			if (pCFarm->get_Log_Status() == IN_PROGRESS)
+			{
+				try
+				{
+					m_status = pCFarm->parse_Farm_Log();
+					if (m_status == IN_PROGRESS)
+					{
+						pCFarm->print_All_Pages(farmJson);
+						m_status = SUCCESS;
+					}
+				}
+				catch (...)
+				{
+					delete (pCFarm);
+					m_status = MEMORY_FAILURE;
+				}
+
+			}
+			delete (pCFarm);
+		}
+		counter += page;
+		// check do to buffer padding of zero's
+		if (counter + page > logSize || m_status != SUCCESS)
+		{
+			break;
+		}
+		offset += page;
 	}
 }
 //-----------------------------------------------------------------------------
@@ -416,26 +436,26 @@ void CFarm_Combine::parse_FARM_Logs(uint64_t offset, size_t logSize, uint64_t da
 //---------------------------------------------------------------------------
 void CFarm_Combine::combo_Parsing(JSONNODE* masterJson)
 {
-	uint64_t offset = 0;
 	sStringIdentifyData* headerInfo = new sStringIdentifyData();
 	get_Header_Info(headerInfo);
 
 	uint16_t dataSets = M_BytesTo2ByteValue(bufferData[253], bufferData[252]);
 	get_Data_Set(dataSets);
 
-	
-	for (std::vector<sComboDataSet>::iterator dataItr = vdataSetInfo.begin(); dataItr != vdataSetInfo.end(); ++dataItr)
+	if (dataSets > 1)
 	{
-		if (dataItr->dataSetType != FARM_WLDTR)
+		for (std::vector<sComboDataSet>::iterator dataItr = vdataSetInfo.begin(); dataItr != vdataSetInfo.end(); ++dataItr)
 		{
-			JSONNODE* farmInfo = json_new(JSON_NODE);
-			std::string typeStr;
-			get_FARM_Type(&typeStr, dataItr->dataSetType);
-			json_set_name(farmInfo, typeStr.c_str());
-			parse_FARM_Logs(dataItr->location,dataItr->dataSize, dataItr->dataSetType, farmInfo);
-			json_push_back(masterJson, farmInfo);
+			if (dataItr->dataSetType != FARM_WLDTR)
+			{
+				JSONNODE* farmInfo = json_new(JSON_NODE);
+				std::string typeStr;
+				get_FARM_Type(&typeStr, dataItr->dataSetType);
+				json_set_name(farmInfo, typeStr.c_str());
+				parse_FARM_Logs(dataItr->location, dataItr->dataSize, dataItr->dataSetType, farmInfo);
+				json_push_back(masterJson, farmInfo);
+			}
 		}
-	}
-	
 
+	}
 }
