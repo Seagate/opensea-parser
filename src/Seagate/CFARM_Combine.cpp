@@ -14,7 +14,7 @@
 //
 // \brief Defines the function calls and structures for parsing Seagate combine FARM logs SAS and SATA
 
-#include "CFarm_Combine.h"
+#include "CFARM_Combine.h"
 
 using namespace opensea_parser;
 //-----------------------------------------------------------------------------
