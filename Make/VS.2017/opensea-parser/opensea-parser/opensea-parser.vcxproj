@@ -580,6 +580,7 @@
     <ClInclude Include="..\..\..\..\include\Opensea_Parser_Version.h" />
     <ClInclude Include="..\..\..\..\include\Seagate\Ata_Farm_Types.h" />
     <ClInclude Include="..\..\..\..\include\Seagate\CAta_Farm_Log.h" />
+    <ClInclude Include="..\..\..\..\include\Seagate\CFARM_Combine.h" />
     <ClInclude Include="..\..\..\..\include\Seagate\CFARM_Log.h" />
     <ClInclude Include="..\..\..\..\include\Seagate\CScsi_Farm_Log.h" />
     <ClInclude Include="..\..\..\..\include\Seagate\Farm_Common.h" />
@@ -621,6 +622,7 @@
     <ClCompile Include="..\..\..\..\src\CScsi_Zoned_Device_Statistics_Log.cpp" />
     <ClCompile Include="..\..\..\..\src\Opensea_Parser_Helper.cpp" />
     <ClCompile Include="..\..\..\..\src\Seagate\CAta_Farm_Log.cpp" />
+    <ClCompile Include="..\..\..\..\src\Seagate\CFARM_Combine.cpp" />
     <ClCompile Include="..\..\..\..\src\Seagate\CFARM_Log.cpp" />
     <ClCompile Include="..\..\..\..\src\Seagate\CScsi_Farm_Log.cpp" />
     <ClCompile Include="..\..\..\..\src\Seagate\Farm_Common.cpp" />

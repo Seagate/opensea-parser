@@ -73,7 +73,7 @@ LIB_SRC_FILES = \
     $(SRC_DIR)/Seagate/CFARM_Log.cpp\
     $(SRC_DIR)/Seagate/CAta_Farm_Log.cpp\
     $(SRC_DIR)/Seagate/CScsi_Farm_Log.cpp\
-    $(SRC_DIR)/Seagate/CFarm_Combine.cpp\
+    $(SRC_DIR)/Seagate/CFARM_Combine.cpp\
 
 PROJECT_DEFINES += #-D_DEBUG
 

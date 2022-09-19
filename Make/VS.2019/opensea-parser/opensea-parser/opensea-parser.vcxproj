@@ -602,7 +602,7 @@
     <ClCompile Include="..\..\..\..\src\CScsi_Zoned_Device_Statistics_Log.cpp" />
     <ClCompile Include="..\..\..\..\src\Opensea_Parser_Helper.cpp" />
     <ClCompile Include="..\..\..\..\src\Seagate\CAta_Farm_Log.cpp" />
-    <ClCompile Include="..\..\..\..\src\Seagate\CFarm_Combine.cpp" />
+    <ClCompile Include="..\..\..\..\src\Seagate\CFARM_Combine.cpp" />
     <ClCompile Include="..\..\..\..\src\Seagate\CFARM_Log.cpp" />
     <ClCompile Include="..\..\..\..\src\Seagate\CScsi_Farm_Log.cpp" />
     <ClCompile Include="..\..\..\..\src\Seagate\Farm_Common.cpp" />

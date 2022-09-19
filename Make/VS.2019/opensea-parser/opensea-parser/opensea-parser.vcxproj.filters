@@ -257,7 +257,7 @@
     <ClCompile Include="..\..\..\..\src\CScsi_Page_19h_Command_Duration_Limits_Log.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\src\Seagate\CFarm_Combine.cpp">
+    <ClCompile Include="..\..\..\..\src\Seagate\CFARM_Combine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
