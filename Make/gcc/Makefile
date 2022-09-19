@@ -16,7 +16,7 @@ MAJOR=0
 #Change the Minor version when new features are added. 
 MINOR=1
 #Change the patch version when only bug fixes are made.
-PATCH=14
+PATCH=15
 
 UNAME := $(shell uname -s)
 OS=$(shell uname)
@@ -73,6 +73,7 @@ LIB_SRC_FILES = \
     $(SRC_DIR)/Seagate/CFARM_Log.cpp\
     $(SRC_DIR)/Seagate/CAta_Farm_Log.cpp\
     $(SRC_DIR)/Seagate/CScsi_Farm_Log.cpp\
+    $(SRC_DIR)/Seagate/CFarm_Combine.cpp\
 
 PROJECT_DEFINES += #-D_DEBUG
 
