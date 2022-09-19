@@ -58,7 +58,7 @@ namespace opensea_parser {
         void get_FARM_Type(std::string* reason, uint64_t dataType);
         void get_Header_Info(sStringIdentifyData* headerInfo);
         void get_Data_Set(uint16_t DataSetNumber);
-        void parse_FARM_Logs(uint64_t offset, size_t logSize, uint64_t dataType, JSONNODE* masterJson);
+        void parse_FARM_Logs(uint64_t offset, size_t logSize, uint64_t dataType, JSONNODE* farmJson);
         
 
     public:
