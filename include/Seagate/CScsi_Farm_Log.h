@@ -139,6 +139,8 @@ namespace opensea_parser {
         void print_Page_One_Node(JSONNODE *masterData);
         void print_Page_Without_Drive_Info(JSONNODE *masterData, uint32_t page);
         virtual eReturnValues get_Log_Status(){ return m_status; };
+
+        uint32_t get_LogSize() { return m_logSize;};                                  //<! return the page size for the combine farm log
     };
 #endif // !SCSIFARM
 }
