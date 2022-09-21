@@ -124,6 +124,7 @@
 #define FARM_DRAM_COPY_FARME                    0x0D  //sata only
 #define FARM_DRAM_COPY_DIAG_FRAME               0x0E  
 #define FARM_UDS_COPY_FRAME                     0x0F
+#define FARM_EMPTY_FRAME                        0xff
 
 typedef enum _eReallocationCauses
 {

@@ -38,6 +38,7 @@ CFarm_Combine::CFarm_Combine()
 	, m_combine_isScsi(false)
 	, m_isComboLog(false)
 	, m_shwoStatus(false)
+	, m_version(0)
 {
 
 }
@@ -62,6 +63,7 @@ CFarm_Combine::CFarm_Combine(bool showStatus)
 	, m_combine_isScsi(false)
 	, m_isComboLog(false)
 	, m_shwoStatus(showStatus)
+	, m_version(0)
 {
 
 }
@@ -86,6 +88,7 @@ CFarm_Combine::CFarm_Combine(uint8_t* buffer, size_t bufferSize, bool showStatus
 	, m_combine_isScsi(false)
 	, m_isComboLog(false)
 	, m_shwoStatus(showStatus)
+	, m_version(0)
 {
 	is_Combo_Log();
 	combine_Device_Scsi();
@@ -224,7 +227,7 @@ void CFarm_Combine::get_FARM_Type(std::string* reason, uint64_t dataType)
 	}
 	else if (dataType == FARM_SAVE)
 	{
-		*reason = "Saved FARM Log";
+		*reason = "Long Term Saved FARM Log";
 	}
 	else if (dataType == FARM_FACTORY)
 	{
@@ -245,6 +248,80 @@ void CFarm_Combine::get_FARM_Type(std::string* reason, uint64_t dataType)
 }
 //-----------------------------------------------------------------------------
 //
+//! \fn is_Subpage_Neeeded()
+//
+//! \brief
+//!   Description: Check the dataType to see if we need to create a subpage for the Json data
+//
+//  Entry:
+//! \param dataType - pointer to the dataType in sComboDataSet structure
+//
+//
+//  Exit:
+//!   \return bool - true if we need a subpage in the JSON
+//
+//---------------------------------------------------------------------------
+bool CFarm_Combine::is_Subpage_Neeeded(uint64_t* dataType)
+{
+	if (*dataType == FARM_TIME)						// FARM TimeSeries Frame
+	{
+		return true;
+	}
+	if (*dataType == FARM_STICKY)					// FARM Sticky Frame
+	{
+		return true;
+	}
+	if (*dataType == FARM_SAVE)						// Farm Saved Frame
+	{
+		return true;
+	}
+	return false;
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn get_Sticky_Frame_Type()
+//
+//! \brief
+//!   Description: get the sticky frame names 
+//
+//  Entry:
+//! \param reason - pointer to the string 
+//! \param frame - the frame number  (note we have to add 3 to get the right names)
+//
+//
+//  Exit:
+//!   \return none
+//
+//---------------------------------------------------------------------------
+void CFarm_Combine::get_Sticky_Frame_Type(std::string* reason, uint8_t frame)
+{
+	switch (frame+3)
+	{
+	case GLIST_DISC_ENTRIES_FRAME:
+		*reason = "1000 g-list disc entries frame";
+		break;
+	case FIRST_UNRECOVERED_READ_ERROR_FRAME:
+		*reason = "1st unrecovered read error";
+		break;
+	case TENTH_UNRECOVERED_READ_ERROR_FRAME:
+		*reason = "10th unrecovered read error";
+		break;
+	case FIRST_FATAL_CTO_FRAME:
+		*reason = "1st fatal command time out";
+		break;
+	case BEFORE_CFW_UPDATE_FRAME:
+		*reason = "last frame prior to most recent CFW or SFW update";
+		break;
+	case TEMP_EXCEDED_FRAME:
+		*reason = "temperature exceeds 70 degress celsius";
+		break;
+	default:
+		*reason = "Unknown Frame Type";
+		break;
+	}
+}
+//-----------------------------------------------------------------------------
+//
 //! \fn get_Header_Info()
 //
 //! \brief
@@ -256,6 +333,7 @@ void CFarm_Combine::get_FARM_Type(std::string* reason, uint64_t dataType)
 //
 //
 //  Exit:
+//!   \return void
 //
 //---------------------------------------------------------------------------
 void CFarm_Combine::get_Header_Info(sStringIdentifyData* headerInfo)
@@ -269,7 +347,7 @@ void CFarm_Combine::get_Header_Info(sStringIdentifyData* headerInfo)
 
 	uint64_t offset = MODELNUMBER_OFFSET;							//!< init the offset to MODELNUMBER_OFFSET for later
 
-	uint64_t comboVer = M_BytesTo8ByteValue(bufferData[VERSION_OFFSET + 7], bufferData[VERSION_OFFSET + 6], bufferData[VERSION_OFFSET + 5], bufferData[VERSION_OFFSET + 4], bufferData[VERSION_OFFSET + 3], bufferData[VERSION_OFFSET + 2], bufferData[VERSION_OFFSET + 1], bufferData[VERSION_OFFSET]);
+	m_version = M_BytesTo8ByteValue(bufferData[VERSION_OFFSET], bufferData[VERSION_OFFSET + 1], bufferData[VERSION_OFFSET + 2], bufferData[VERSION_OFFSET + 3], bufferData[VERSION_OFFSET + 4], bufferData[VERSION_OFFSET + 5], bufferData[VERSION_OFFSET + 6], bufferData[VERSION_OFFSET + 7]);
 	uint32_t devInt = M_BytesTo4ByteValue(bufferData[DEVICE_OFFSET + 3], bufferData[DEVICE_OFFSET + 2], bufferData[DEVICE_OFFSET + 1], bufferData[DEVICE_OFFSET]);
 	create_Device_Interface_String_Flat(headerInfo->deviceInterface, &devInt);
 	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
@@ -320,6 +398,7 @@ void CFarm_Combine::get_Header_Info(sStringIdentifyData* headerInfo)
 //
 //
 //  Exit:
+//!   \return void
 //
 //---------------------------------------------------------------------------
 void CFarm_Combine::get_Data_Set(uint16_t DataSetNumber)
@@ -350,11 +429,14 @@ void CFarm_Combine::get_Data_Set(uint16_t DataSetNumber)
 //
 //
 //  Exit:
+//!   \return void
 //
 //---------------------------------------------------------------------------
 void CFarm_Combine::parse_FARM_Logs(size_t offset, size_t logSize, uint64_t dataType, JSONNODE* farmJson)
 {
 	size_t page = 0;
+	uint8_t ataPageCount = 0;
+	uint16_t ataTimeCount = 0;
 	for (size_t counter = 0; counter <= logSize;)
 	{
 		if (m_combine_isScsi)
@@ -370,7 +452,7 @@ void CFarm_Combine::parse_FARM_Logs(size_t offset, size_t logSize, uint64_t data
 			if (pCFarm->get_Log_Status() == SUCCESS)
 			{
 				page = static_cast<size_t>(pCFarm->get_LogSize()) + 4;      // need add in the param length back in
-				if (page > MAXLOGSIZE)
+				if (page > MAXFARMLOGSIZE)
 				{
 					m_status = INVALID_LENGTH;
 				}
@@ -389,17 +471,68 @@ void CFarm_Combine::parse_FARM_Logs(size_t offset, size_t logSize, uint64_t data
 		}
 		else
 		{
+
 			CATA_Farm_Log* pCFarm;
 			pCFarm = new CATA_Farm_Log(&bufferData[offset], logSize, m_shwoStatus);
 			if (pCFarm->get_Log_Status() == IN_PROGRESS)
 			{
 				try
 				{
+					bool subFrame = is_Subpage_Neeeded(&dataType);  // check to see if the subpage is needed
+
+					JSONNODE* farmInfo;
+					if (!subFrame)
+					{
+						farmInfo = farmJson;
+					}
+					else
+					{
+						uint8_t farmType = pCFarm->get_FrameReason();
+						std::string reason;
+						if (dataType == FARM_STICKY)
+						{
+							get_Sticky_Frame_Type(&reason, ataPageCount);
+							ataPageCount++;
+						}
+						else if (dataType == FARM_TIME)
+						{
+							get_FARM_Type(&reason, FARM_TIME);
+							std::ostringstream temp;
+							temp << " " << std::dec << static_cast<uint16_t> (ataTimeCount);
+							reason.append(temp.str().c_str());
+							ataTimeCount++;
+						}
+						else
+						{
+							Get_FARM_Reason_For_Capture(&reason, farmType);			// set the reason for capture
+						}
+						farmInfo = json_new(JSON_NODE);
+						json_set_name(farmInfo, reason.c_str());
+					}
+					
 					m_status = pCFarm->parse_Farm_Log();
 					if (m_status == IN_PROGRESS)
 					{
-						pCFarm->print_All_Pages(farmJson);
-						m_status = SUCCESS;
+						page = static_cast<size_t>(pCFarm->get_LogSize());
+						if (page == EMPTYLOGSIZE)
+						{
+							page = ATALOGSIZE;
+							pCFarm->print_All_Pages(farmInfo);
+							m_status = SUCCESS;
+						}
+						else if (page > MAXFARMATALOGSIZ)
+						{
+							m_status = INVALID_LENGTH;
+						}
+						else
+						{
+							pCFarm->print_All_Pages(farmInfo);
+							m_status = SUCCESS;
+						}
+					}
+					if (subFrame)
+					{
+						json_push_back(farmJson, farmInfo);
 					}
 				}
 				catch (...)
@@ -410,6 +543,7 @@ void CFarm_Combine::parse_FARM_Logs(size_t offset, size_t logSize, uint64_t data
 
 			}
 			delete (pCFarm);
+			
 		}
 		counter += page;
 		// check do to buffer padding of zero's
@@ -438,6 +572,17 @@ void CFarm_Combine::combo_Parsing(JSONNODE* masterJson)
 {
 	sStringIdentifyData* headerInfo = new sStringIdentifyData();
 	get_Header_Info(headerInfo);
+
+	JSONNODE* label = json_new(JSON_NODE);
+	json_set_name(label, "FARM Combined Labels");
+	json_push_back(label, json_new_a("serial_number", headerInfo->serialNumber.c_str()));
+	json_push_back(label, json_new_a("firmware_rev", headerInfo->firmwareRev.c_str()));
+	json_push_back(label, json_new_a("Drive Interface",headerInfo->deviceInterface.c_str()));
+	json_push_back(label, json_new_a("Model Number", headerInfo->modelNumber.c_str()));
+	std::string verStr;
+	create_Version_Number(verStr,&m_version);
+	json_push_back(label, json_new_a("FARM Combined version", verStr.c_str()));
+	json_push_back(masterJson, label);
 
 	uint16_t dataSets = M_BytesTo2ByteValue(bufferData[253], bufferData[252]);
 	get_Data_Set(dataSets);

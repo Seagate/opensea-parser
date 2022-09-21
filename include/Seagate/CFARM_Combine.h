@@ -36,7 +36,10 @@ namespace opensea_parser {
 #define STX_COMBO   0x5f434f4d42494e45
 #define FARMSAS     0x53415320
 #define FARMSATA    0x53415441
-#define MAXLOGSIZE  0x2680
+#define MAXFARMLOGSIZE  0x2680
+#define MAXFARMATALOGSIZ 0x18200
+#define ATALOGSIZE   0x18000
+#define EMPTYLOGSIZE 0xffffffff
 
     class CFarm_Combine : public CFarmCommon
     {
@@ -48,6 +51,7 @@ namespace opensea_parser {
         bool                        m_combine_isScsi;                    //!< true if the combine log is a scsi log
         bool                        m_isComboLog;                        //!< true if the log is a combine log
         bool						m_shwoStatus;						 //!< if true then we will show all the status bits for each entry
+        uint64_t                    m_version;                           //!< version number of the FARM Combined log
         std::vector<sComboDataSet>  vdataSetInfo;                        //!< vector holding the header data for each FARM Log
 
 
@@ -59,7 +63,10 @@ namespace opensea_parser {
         void get_FARM_Type(std::string* reason, uint64_t dataType);
         void get_Header_Info(sStringIdentifyData* headerInfo);
         void get_Data_Set(uint16_t DataSetNumber);
+        bool is_Subpage_Neeeded(uint64_t* dataType);
+        void get_Sticky_Frame_Type(std::string* reason, uint8_t frame);
         void parse_FARM_Logs(size_t offset, size_t logSize, uint64_t dataType, JSONNODE* farmJson);
+       
         
 
     public:

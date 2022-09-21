@@ -39,6 +39,7 @@ namespace opensea_parser {
 			void create_Device_Interface_String_Flat(std::string& dInterfaceStr, uint32_t *deviceInterface);
 			void create_Model_Number_String(std::string& modelStr, uint64_t* productID, bool sas);
 			void create_Model_Number_String_Flat(std::string& modelStr, uint64_t* productID);
+			void create_Version_Number(std::string &version, uint64_t* versionID);
 			void get_Reallocation_Cause_Meanings(std::string &meaning, uint16_t code);
 			void get_Assert_Code_Meaning(std::string &meaning, uint16_t code);
 			void create_Year_Assembled_String(std::string &dateStr, uint16_t date, bool isSAS);

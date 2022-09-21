@@ -41,6 +41,7 @@ CATA_Farm_Log::CATA_Farm_Log()
     , pBuf()
     , m_MajorRev(0)
     , m_MinorRev(0)
+    , m_FrameReason(0)
 {
 
 }
@@ -72,6 +73,7 @@ CATA_Farm_Log::CATA_Farm_Log(uint8_t *bufferData, size_t bufferSize, bool showSt
     , pBuf()
     , m_MajorRev(0)
     , m_MinorRev(0)
+    , m_FrameReason(0)
 {
     pBuf = new uint8_t[bufferSize];                             // new a buffer to the point                
 #ifndef __STDC_SECURE_LIB__
@@ -98,6 +100,7 @@ CATA_Farm_Log::CATA_Farm_Log(uint8_t *bufferData, size_t bufferSize, bool showSt
             m_status = IN_PROGRESS;
             m_MajorRev = M_DoubleWord0(m_pHeader->majorRev);
             m_MinorRev = M_DoubleWord0(m_pHeader->minorRev);
+            m_FrameReason = M_Byte0(m_pHeader->reasonForFrameCapture);
         }
     }
     else
@@ -198,6 +201,10 @@ eReturnValues CATA_Farm_Log::parse_Farm_Log()
             offset += m_pageSize;                                                  // add another page size. I think there is only on header
             vFarmFrame.push_back(*pFarmFrame);                                   // push the data to the vector
         }
+        retStatus = IN_PROGRESS;
+    }
+    if (signature == FARMEMPTYSIGNATURE)                                     // checking for an empty log aka all FFFF's
+    {
         retStatus = IN_PROGRESS;
     }
     delete (pFarmFrame);
@@ -1956,17 +1963,24 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
 //---------------------------------------------------------------------------
 void CATA_Farm_Log::print_All_Pages(JSONNODE *masterData)
 {
-    print_Header(masterData);
-    for (uint32_t index = 0; index < vFarmFrame.size(); ++index)
+    if ((m_pHeader->signature & UINT64_C(0x00FFFFFFFFFFFFFF)) == FARMEMPTYSIGNATURE)
     {
-// #if defined _DEBUG
-        print_Drive_Information(masterData, index);
-        print_Work_Load(masterData, index);
-// #endif
-        print_Error_Information(masterData, index);
-        print_Enviroment_Information(masterData, index);
-        print_Reli_Information(masterData, index);
-        print_Head_Information(masterData, index);
+        json_push_back(masterData, json_new_a("Empty FARM Log", "data has not yet been gathered"));
+    }
+    else
+    {
+        print_Header(masterData);
+        for (uint32_t index = 0; index < vFarmFrame.size(); ++index)
+        {
+                // #if defined _DEBUG
+                print_Drive_Information(masterData, index);
+                print_Work_Load(masterData, index);
+                // #endif
+                print_Error_Information(masterData, index);
+                print_Enviroment_Information(masterData, index);
+                print_Reli_Information(masterData, index);
+                print_Head_Information(masterData, index);
+        }
     }
 }
 //----------------------------------------------------------------------------
@@ -2038,9 +2052,16 @@ void CATA_Farm_Log::print_Page_One_Node(JSONNODE * masterData)
 {
     if (vFarmFrame.size() > 0)
     {
-        JSONNODE *pageInfo = json_new(JSON_NODE);
-        json_set_name(pageInfo, "FARM Log");
-        print_All_Pages(pageInfo);
-        json_push_back(masterData, pageInfo);
+        JSONNODE* pageInfo = json_new(JSON_NODE);
+        if ((m_pHeader->signature & UINT64_C(0x00FFFFFFFFFFFFFF)) == FARMEMPTYSIGNATURE)
+        {
+            json_push_back(masterData, json_new_a("Empty FARM Log", "data has not yet been gathered"));
+        }
+        else
+        {
+            json_set_name(pageInfo, "FARM Log");
+            print_All_Pages(pageInfo);
+            json_push_back(masterData, pageInfo);
+        }
     }
 }

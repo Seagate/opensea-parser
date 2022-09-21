@@ -316,11 +316,33 @@ void CFarmCommon::create_Firmware_String(std::string& firmwareRevStr, uint32_t f
 //---------------------------------------------------------------------------
 void CFarmCommon::create_Firmware_String_Flat(std::string& firmwareRevStr, uint32_t *firmware, uint32_t *firmware2)
 {
-	//byte_Swap_32(firmware);
 	firmwareRevStr.assign(reinterpret_cast<const char*>(firmware), sizeof(uint32_t));
-	//byte_Swap_32(firmware2);
 	firmwareRevStr.append(reinterpret_cast<const char*>(firmware2), sizeof(uint32_t));
 	remove_trailing_whitespace_std_string(firmwareRevStr);
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn create_Version_Number()
+//
+//! \brief
+//!   Description:  create the version number for the hex information
+//
+//  Entry:
+//! \param version - pointer to the version string that the function will create
+//! \param versionID  =  hex information for the vesion ID number
+//
+//  Exit:
+//!   \return none
+//
+//---------------------------------------------------------------------------
+void CFarmCommon::create_Version_Number(std::string &version, uint64_t* versionID)
+{
+	uint8_t minor = M_Byte0(*versionID);
+	uint8_t major = M_Byte1(*versionID);
+	version = "0000000";
+	std::ostringstream temp;
+	temp << "" << std::dec << std::setw(1) << static_cast<uint16_t>(major) << "."  << static_cast<uint16_t>(minor);
+	version.assign(temp.str());
 }
 //-----------------------------------------------------------------------------
 //
@@ -765,6 +787,9 @@ void CFarmCommon::Get_FARM_Reason_For_Capture(std::string* reason, uint8_t flag)
 		break;
 	case FARM_UDS_COPY_FRAME:
 		*reason = "FARM log via UDS";
+		break;
+	case FARM_EMPTY_FRAME:
+		*reason = "Empty FARM Log";
 		break;
 	default:
 		*reason = "unknown";
