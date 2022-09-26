@@ -203,7 +203,7 @@ eReturnValues CATA_Farm_Log::parse_Farm_Log()
         }
         retStatus = IN_PROGRESS;
     }
-    if (signature == FARMEMPTYSIGNATURE)                                     // checking for an empty log aka all FFFF's
+    if (signature == FARMEMPTYSIGNATURE || signature == FARMPADDINGSIGNATURE)                                     // checking for an empty log aka all FFFF's
     {
         retStatus = IN_PROGRESS;
     }
@@ -1963,7 +1963,8 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
 //---------------------------------------------------------------------------
 void CATA_Farm_Log::print_All_Pages(JSONNODE *masterData)
 {
-    if ((m_pHeader->signature & UINT64_C(0x00FFFFFFFFFFFFFF)) == FARMEMPTYSIGNATURE)
+    if ((m_pHeader->signature & UINT64_C(0x00FFFFFFFFFFFFFF)) == FARMEMPTYSIGNATURE || \
+        (m_pHeader->signature & UINT64_C(0x00FFFFFFFFFFFFFF)) == FARMPADDINGSIGNATURE)
     {
         json_push_back(masterData, json_new_a("Empty FARM Log", "data has not yet been gathered"));
     }
@@ -2053,7 +2054,8 @@ void CATA_Farm_Log::print_Page_One_Node(JSONNODE * masterData)
     if (vFarmFrame.size() > 0)
     {
         JSONNODE* pageInfo = json_new(JSON_NODE);
-        if ((m_pHeader->signature & UINT64_C(0x00FFFFFFFFFFFFFF)) == FARMEMPTYSIGNATURE)
+        if ((m_pHeader->signature & UINT64_C(0x00FFFFFFFFFFFFFF)) == FARMEMPTYSIGNATURE || \
+            (m_pHeader->signature & UINT64_C(0x00FFFFFFFFFFFFFF)) == FARMPADDINGSIGNATURE)
         {
             json_push_back(masterData, json_new_a("Empty FARM Log", "data has not yet been gathered"));
         }
