@@ -1065,9 +1065,9 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
     uint64_t signature = m_pHeader->farmHeader.signature & UINT64_C(0x00FFFFFFFFFFFFFF);
     m_MajorRev = M_DoubleWord0(m_pHeader->farmHeader.majorRev);
     m_MinorRev = M_DoubleWord0(m_pHeader->farmHeader.minorRev);
-    if ((signature != FARMSIGNATURE && signature != FACTORYCOPY) || signature == FARMEMPTYSIGNATURE)
+    if ((signature != FARMSIGNATURE && signature != FACTORYCOPY) || signature == FARMEMPTYSIGNATURE || signature == FARMPADDINGSIGNATURE)
     {
-        if (signature == FARMEMPTYSIGNATURE)
+        if (signature == FARMEMPTYSIGNATURE || signature == FARMPADDINGSIGNATURE)
             return SUCCESS;
         else
             return VALIDATION_FAILURE;
