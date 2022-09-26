@@ -39,6 +39,7 @@ CFarm_Combine::CFarm_Combine()
 	, m_isComboLog(false)
 	, m_shwoStatus(false)
 	, m_version(0)
+	, m_maxLogSize(0)
 {
 
 }
@@ -64,6 +65,7 @@ CFarm_Combine::CFarm_Combine(bool showStatus)
 	, m_isComboLog(false)
 	, m_shwoStatus(showStatus)
 	, m_version(0)
+	, m_maxLogSize(0)
 {
 
 }
@@ -89,6 +91,7 @@ CFarm_Combine::CFarm_Combine(uint8_t* buffer, size_t bufferSize, bool showStatus
 	, m_isComboLog(false)
 	, m_shwoStatus(showStatus)
 	, m_version(0)
+	, m_maxLogSize(0)
 {
 	is_Combo_Log();
 	combine_Device_Scsi();
@@ -435,8 +438,6 @@ void CFarm_Combine::get_Data_Set(uint16_t DataSetNumber)
 void CFarm_Combine::parse_FARM_Logs(size_t offset, size_t logSize, uint64_t dataType, JSONNODE* farmJson)
 {
 	size_t page = 0;
-	uint8_t ataPageCount = 0;
-	uint16_t ataTimeCount = 0;
 	for (size_t counter = 0; counter <= logSize;)
 	{
 		if (m_combine_isScsi)
@@ -452,7 +453,7 @@ void CFarm_Combine::parse_FARM_Logs(size_t offset, size_t logSize, uint64_t data
 			if (pCFarm->get_Log_Status() == SUCCESS)
 			{
 				page = static_cast<size_t>(pCFarm->get_LogSize()) + 4;      // need add in the param length back in
-				if (page > MAXFARMLOGSIZE)
+				if (page > m_maxLogSize)
 				{
 					m_status = INVALID_LENGTH;
 				}
@@ -487,25 +488,7 @@ void CFarm_Combine::parse_FARM_Logs(size_t offset, size_t logSize, uint64_t data
 					}
 					else
 					{
-						uint8_t farmType = pCFarm->get_FrameReason();
 						std::string reason;
-						if (dataType == FARM_STICKY)
-						{
-							get_Sticky_Frame_Type(&reason, ataPageCount);
-							ataPageCount++;
-						}
-						else if (dataType == FARM_TIME)
-						{
-							get_FARM_Type(&reason, FARM_TIME);
-							std::ostringstream temp;
-							temp << " " << std::dec << static_cast<uint16_t> (ataTimeCount);
-							reason.append(temp.str().c_str());
-							ataTimeCount++;
-						}
-						else
-						{
-							Get_FARM_Reason_For_Capture(&reason, farmType);			// set the reason for capture
-						}
 						farmInfo = json_new(JSON_NODE);
 						json_set_name(farmInfo, reason.c_str());
 					}
@@ -514,13 +497,13 @@ void CFarm_Combine::parse_FARM_Logs(size_t offset, size_t logSize, uint64_t data
 					if (m_status == IN_PROGRESS)
 					{
 						page = static_cast<size_t>(pCFarm->get_LogSize());
-						if (page == EMPTYLOGSIZE)
+						if (page == EMPTYLOGSIZE || page == PADDINGSIZE)
 						{
-							page = ATALOGSIZE;
+							page = m_maxLogSize;
 							pCFarm->print_All_Pages(farmInfo);
 							m_status = SUCCESS;
 						}
-						else if (page > MAXFARMATALOGSIZ)
+						else if (page > m_maxLogSize)
 						{
 							m_status = INVALID_LENGTH;
 						}
@@ -554,6 +537,81 @@ void CFarm_Combine::parse_FARM_Logs(size_t offset, size_t logSize, uint64_t data
 		offset += page;
 	}
 }
+
+//-----------------------------------------------------------------------------
+//
+//! \fn print_Combine_Log_Header()
+//
+//! \brief
+//!   Description:  print out the header information sn, firmware rev, interface, model and version number
+//
+//  Entry:
+//! \param sStringIdentifyData - structue from the identifydata for the drive
+//! \param labelJson - json node to add the data to
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void CFarm_Combine::print_Combine_Log_Header(sStringIdentifyData* headerInfo, JSONNODE* header)
+{
+	JSONNODE* label = json_new(JSON_NODE);
+	json_set_name(label, "FARM Combined Labels");
+	json_push_back(label, json_new_a("serial_number", headerInfo->serialNumber.c_str()));
+	json_push_back(label, json_new_a("firmware_rev", headerInfo->firmwareRev.c_str()));
+	json_push_back(label, json_new_a("Drive Interface", headerInfo->deviceInterface.c_str()));
+	json_push_back(label, json_new_a("Model Number", headerInfo->modelNumber.c_str()));
+	std::string verStr;
+	create_Version_Number(verStr, &m_version);
+	json_push_back(label, json_new_a("FARM Combined version", verStr.c_str()));
+	json_push_back(header, label);
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn print_Header_Debug()
+//
+//! \brief
+//!   Description:  print out the header information on where everything is located
+//
+//  Entry:
+//! \param labelJson - json node to add the data to
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void CFarm_Combine::print_Header_Debug( JSONNODE* labelJson)
+{
+#if defined _DEBUG
+	std::ostringstream temp;
+	std::string dataStr = "Debug Combo Data Set";
+	JSONNODE* label = json_new(JSON_ARRAY);
+	json_set_name(label, dataStr.c_str());
+
+	for (std::vector<sComboDataSet>::iterator dataItr = vdataSetInfo.begin(); dataItr != vdataSetInfo.end(); ++dataItr)
+	{
+		JSONNODE* dblabel = json_new(JSON_NODE);
+		temp.str(""); temp.clear();
+		temp << "0x" << std::hex << std::nouppercase << dataItr->dataSetType;
+		json_push_back(dblabel, json_new_a("Type", temp.str().c_str()));
+		temp.str(""); temp.clear();
+		temp << "0x" << std::hex << std::nouppercase << dataItr->dataSize;
+		json_push_back(dblabel, json_new_a("Size", temp.str().c_str()));
+		temp.str(""); temp.clear();
+		temp << "0x" << std::hex << std::nouppercase << dataItr->startTime;
+		json_push_back(dblabel, json_new_a("start time", temp.str().c_str()));
+		temp.str(""); temp.clear();
+		temp << "0x" << std::hex << std::nouppercase << dataItr->endTime;
+		json_push_back(dblabel, json_new_a("end time", temp.str().c_str()));
+		temp.str(""); temp.clear();
+		temp << "0x" << std::hex << std::nouppercase << dataItr->location;
+		json_push_back(dblabel, json_new_a("location", temp.str().c_str()));
+		json_push_back(label, dblabel);
+	}
+
+	json_push_back(labelJson, label);
+#endif
+}
 //-----------------------------------------------------------------------------
 //
 //! \fn combo_Parsing()
@@ -570,22 +628,19 @@ void CFarm_Combine::parse_FARM_Logs(size_t offset, size_t logSize, uint64_t data
 //---------------------------------------------------------------------------
 void CFarm_Combine::combo_Parsing(JSONNODE* masterJson)
 {
+	// get the drives identify data from the log
 	sStringIdentifyData* headerInfo = new sStringIdentifyData();
 	get_Header_Info(headerInfo);
-
-	JSONNODE* label = json_new(JSON_NODE);
-	json_set_name(label, "FARM Combined Labels");
-	json_push_back(label, json_new_a("serial_number", headerInfo->serialNumber.c_str()));
-	json_push_back(label, json_new_a("firmware_rev", headerInfo->firmwareRev.c_str()));
-	json_push_back(label, json_new_a("Drive Interface",headerInfo->deviceInterface.c_str()));
-	json_push_back(label, json_new_a("Model Number", headerInfo->modelNumber.c_str()));
-	std::string verStr;
-	create_Version_Number(verStr,&m_version);
-	json_push_back(label, json_new_a("FARM Combined version", verStr.c_str()));
-	json_push_back(masterJson, label);
-
+	print_Combine_Log_Header(headerInfo, masterJson);
+	
+	// get the number of data sets in the log
 	uint16_t dataSets = M_BytesTo2ByteValue(bufferData[253], bufferData[252]);
 	get_Data_Set(dataSets);
+	//set the max logs size from the data set info 
+	m_maxLogSize = vdataSetInfo.at(0).dataSize;
+
+	// if debug then print the header information - location, time, size.
+	print_Header_Debug(masterJson);	
 
 	if (dataSets > 1)
 	{
@@ -593,12 +648,24 @@ void CFarm_Combine::combo_Parsing(JSONNODE* masterJson)
 		{
 			if (dataItr->dataSetType != FARM_WLDTR)
 			{
-				JSONNODE* farmInfo = json_new(JSON_NODE);
-				std::string typeStr;
-				get_FARM_Type(&typeStr, dataItr->dataSetType);
-				json_set_name(farmInfo, typeStr.c_str());
-				parse_FARM_Logs(dataItr->location, dataItr->dataSize, dataItr->dataSetType, farmInfo);
-				json_push_back(masterJson, farmInfo);
+				if (dataItr->dataSetType == FARM_TIME || dataItr->dataSetType == FARM_SAVE || dataItr->dataSetType == FARM_STICKY)
+				{
+					JSONNODE* farmInfo = json_new(JSON_ARRAY);
+					std::string typeStr;
+					get_FARM_Type(&typeStr, dataItr->dataSetType);
+					json_set_name(farmInfo, typeStr.c_str());
+					parse_FARM_Logs(dataItr->location, dataItr->dataSize, dataItr->dataSetType, farmInfo);
+					json_push_back(masterJson, farmInfo);
+				}
+				else
+				{
+					JSONNODE* farmInfo = json_new(JSON_NODE);
+					std::string typeStr;
+					get_FARM_Type(&typeStr, dataItr->dataSetType);
+					json_set_name(farmInfo, typeStr.c_str());
+					parse_FARM_Logs(dataItr->location, dataItr->dataSize, dataItr->dataSetType, farmInfo);
+					json_push_back(masterJson, farmInfo);
+				}
 			}
 		}
 
