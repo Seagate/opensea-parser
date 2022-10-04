@@ -1228,7 +1228,7 @@ eReturnValues CATA_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint32
         printf("\tMax RV Absolute Mean, value from most recent SMART Summary Frame in rad/s^2, Actuator %" PRIu64" \n", vFarmFrame[page].reliPage.rvAbsMeanMaxAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));             //!< Number of LBAs Corrected by Parity Sector
         printf("\tIdle Time, value from most recent SMART Summary Frame in seconds, Actuator 1%" PRIu64" \n", vFarmFrame[page].reliPage.idleTimeAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));               //!< Number of LBAs Corrected by Parity Sector
         printf("\tNumber of LBAs Corrected by Parity Sector, Actuator 1%" PRIu64" \n", vFarmFrame[page].reliPage.parityCorrLBAAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));                 //!< Number of LBAs Corrected by Parity Sector
-        printf("\tPrimary Super Parity Coverage Percentage, Actuator 1%" PRIu64" \n", vFarmFrame[page].reliPage.superParityCovPercentAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));          //!< Number of LBAs Corrected by Parity Sector
+        printf("\tPrimary Super Parity Coverage Percentage, Actuator 1%" PRIu64" \n", vFarmFrame[page].reliPage.superParityCovPercentAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));        
     }
 
 
@@ -1733,7 +1733,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
     {
         uint64_t dsHead = check_Status_Strip_Status(vFarmFrame[page].reliPage.FAFHBitErrorRate[loopCount].inner);                   //!< [24][3] FAFH Bit Error Rate, write then read BER on reserved tracks
         whole = M_WordInt2(dsHead);							// get 5:4 whole part of the float
-        double decimal = static_cast<double>(M_DoubleWordInt0(dsHead));  // get 3:0 for the Deciaml Part of the float
+        double decimal = static_cast<double>(M_DoubleWordInt0(dsHead));  // get 3:0 for the Decimal Part of the float
         double number = 0.0;
         if (whole >= 0)
         {

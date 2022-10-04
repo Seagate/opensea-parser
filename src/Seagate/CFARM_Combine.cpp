@@ -116,6 +116,19 @@ CFarm_Combine::~CFarm_Combine()
 		//delete[] bufferData;
 	}
 }
+//-----------------------------------------------------------------------------
+//
+//! \fn setCombine()
+//
+//! \brief
+//!   Description:  setup the combine class by settting the buffer, logsize, checking if combo file, checking if sas
+//
+//  Entry:
+//
+//  Exit:
+//!   \return bool = True or False
+//
+//---------------------------------------------------------------------------
 void CFarm_Combine::setCombine(uint8_t* buffer, size_t bufferSize)
 {
 	setBuffer(buffer); 
@@ -205,7 +218,7 @@ void CFarm_Combine::is_Combo_Log()
 }
 //-----------------------------------------------------------------------------
 //
-//! \fn get_FARM_Reason_For_Capture()
+//! \fn get_FARM_Type()
 //
 //! \brief
 //!   Description:  From the farm log Reason the FARM log was capture 
@@ -626,8 +639,9 @@ void CFarm_Combine::print_Header_Debug( JSONNODE* labelJson)
 //!   \return SUCCESS or FAILURE
 //
 //---------------------------------------------------------------------------
-void CFarm_Combine::combo_Parsing(JSONNODE* masterJson)
+eReturnValues CFarm_Combine::combo_Parsing(JSONNODE* masterJson)
 {
+	eReturnValues retStatus = IN_PROGRESS;
 	// get the drives identify data from the log
 	sStringIdentifyData* headerInfo = new sStringIdentifyData();
 	get_Header_Info(headerInfo);
@@ -667,7 +681,16 @@ void CFarm_Combine::combo_Parsing(JSONNODE* masterJson)
 					json_push_back(masterJson, farmInfo);
 				}
 			}
+			else
+			{
+				CFARMWLM* cWLM;
+				cWLM = new CFARMWLM(&bufferData[dataItr->location], masterJson, PARSER_INTERFACE_TYPE_SATA);
+				retStatus = cWLM->get_WLM_Status();
+
+				delete(cWLM);
+			}
 		}
 
 	}
+	return retStatus;
 }

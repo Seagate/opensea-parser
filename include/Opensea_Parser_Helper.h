@@ -91,6 +91,15 @@ namespace opensea_parser {
 
 #define COMMAND_DURATION_LIMITS_LOG 0x19
 
+	typedef enum _eParserInterfaceTypes
+	{
+		PARSER_INTERFACE_UNKNOWN = 0,
+		PARSER_INTERFACE_TYPE_SCSI = 1,
+		PARSER_INTERFACE_TYPE_FC = 2,
+		PARSER_INTERFACE_TYPE_SAS = 4,
+		PARSER_INTERFACE_TYPE_SATA = 8,
+	}eInterfaceTypes;
+
     // output file types
 	typedef enum _eOpensea_print_Types
     {

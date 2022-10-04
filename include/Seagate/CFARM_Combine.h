@@ -24,6 +24,7 @@
 #include "Farm_Common.h"
 #include "CAta_Farm_Log.h"
 #include "CScsi_Farm_Log.h"
+#include "CFARM_WLM_Log.h"
 #include <sstream>
 
 namespace opensea_parser {
@@ -62,6 +63,7 @@ namespace opensea_parser {
         void combine_Device_Scsi();
         void is_Device_Scsi();
         void is_Combo_Log();
+
         void get_FARM_Type(std::string* reason, uint64_t dataType);
         void get_Header_Info(sStringIdentifyData* headerInfo);
         void get_Data_Set(uint16_t DataSetNumber);
@@ -82,7 +84,7 @@ namespace opensea_parser {
         void setCombine(uint8_t* buffer, size_t bufferSize);
         bool getIsScsi() {  return m_combine_isScsi; };
         bool getIsCombo() {  return  m_isComboLog; };
-        void combo_Parsing(JSONNODE* masterJson);
+        eReturnValues combo_Parsing(JSONNODE* masterJson);
     };
 #endif
 }
