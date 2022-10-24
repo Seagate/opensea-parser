@@ -26,8 +26,12 @@
 
 namespace opensea_parser {
 
+#define TRACESIZE       0x80000
 #define FARMWLM         0x3c485457      // FARM Frame Header Signature
 #define FARMFOOTWLM     0x08465457      // FARM Frame Footer Signature
+#define FARMFOOTWLMSWAP 0x57544608      // FARM Frame Footer byteSwapped
+#define WLM3            0x0003
+#define WLM6            0x0006
 
     class CFARMWLM
     {
@@ -40,6 +44,7 @@ namespace opensea_parser {
         } logPageType;
 
 #pragma pack(push, 1)
+ 
         typedef struct _sWLMDataHeader
         {
             uint32_t                signature;                                      //<! signature for the farm wlm
@@ -57,8 +62,10 @@ namespace opensea_parser {
             uint32_t                markers;                                        //<! number of one second markers in the trace frame
             uint32_t                reserved;
             uint32_t                reserved2;
-        }sWLMDataHeader;
 
+            _sWLMDataHeader() : signature(0), farmeNumber(0), rev(0), startTimestamp(0), endTimestamp(0), \
+             preFrameOffset(0), cycleCount(0), frameSize (0), duration(0), readOps(0), writeOps(0), markers(0) {};
+        }sWLMDataHeader;
 
         typedef struct _sWLM_Trace
         {
@@ -72,47 +79,37 @@ namespace opensea_parser {
 
         }sWLM_Trace;
 
-        typedef struct _sWLMFrame
-        {
-            uint16_t                    version;                                     //<! what version of the param to use
-            uint16_t                    paramCode;                                  //<! what parma code of the frame it is
-            sWLM_Trace                  sataTrace;                                  //<! trace infromation
-
-        }sWLMFrame;
-
 #pragma pack(pop)
 
-        std::vector <sWLMFrame > vFrame;
-        std::vector <sWLMFrame > vBlankFrame;
+        std::vector <sWLM_Trace > vFrame;
+        std::vector <sWLM_Trace > vBlankFrame;
 
         uint8_t                     *pData;                                         //<! pointer data structure
         std::string                 m_name;                                         //<! name of the class
-        uint64_t                    m_logSize;                                      //<! log size in bytes
-        bool                        m_FARMWLM;                                      //<! flag for FARM wlm log
+        uint32_t                    m_logSize;                                      //<! log size in bytes
         uint16_t                    m_version;                                      //<! version of the frame to use
         eReturnValues               m_WLMstatus;                                    //<! holds the status so 
         sWLMDataHeader              m_DataHeader;                                   //<! Data Header sturcture
         sWLMDataHeader              *m_DataHeaderPTR;
-        uint8_t                     m_InterfaceType;                                //0 - Unknown, 1 - SCSI, 2 - FibreChannel, 4 - SAS, 8 - SATA
-        logPageType                 m_logPageType;                                  //<! Page has header or not
 
+
+        
         eReturnValues parse_WLM_Summary(JSONNODE *masterData);
         eReturnValues print_Empty_WLM_Log(JSONNODE *wlmJson);
-        eReturnValues print_Summary_Log(JSONNODE *wlm);
-        eReturnValues print_WLM_SATA_Trace(JSONNODE *wlmSata, uint32_t page);
-        bool is_FARM(uint32_t signature);
-        bool get_Version();
+        eReturnValues print_Summary_Log(size_t* offset, JSONNODE *wlm);
 
-        bool print_Standby_Percetage(uint8_t standby, JSONNODE *wlmJson);
-        bool print_Minimn_Link_Rate_Port(uint8_t link, JSONNODE *wlmJson);
-        eReturnValues print_Log(uint32_t page, JSONNODE *wlmJson);
+        bool is_FARM(uint32_t signature);
+        bool validate_WLM();
+        bool get_WLM_Header_Data(size_t offset);
+        uint16_t get_transferSize(uint8_t tLen,size_t* offset);
+        bool get_Trace_Data(size_t* offset, JSONNODE* wlmJson);
+
 
     public:
         CFARMWLM();
-        CFARMWLM( uint8_t *BufferData, JSONNODE *masterData, uint8_t interfaceType = PARSER_INTERFACE_TYPE_SATA);
+        CFARMWLM( uint8_t *BufferData, uint32_t dataSize, JSONNODE *masterData);
         ~CFARMWLM();
 
-        eReturnValues print_WLM_Log(JSONNODE *masterData);
         eReturnValues get_WLM_Status()
         {
             if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)

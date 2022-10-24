@@ -34,13 +34,9 @@ CFARMWLM::CFARMWLM()
     :pData(NULL)
     , m_name("WLM Log")
     , m_logSize(0)
-    , m_FARMWLM(false)
-    , m_version(0)
     , m_WLMstatus(IN_PROGRESS)
     , m_DataHeader()
     , m_DataHeaderPTR(NULL)
-    , m_InterfaceType(PARSER_INTERFACE_TYPE_SATA)
-    , m_logPageType(LOG_PAGE_WITH_HEADER)
 {
 
 }
@@ -61,39 +57,33 @@ CFARMWLM::CFARMWLM()
 //!  \return NONE
 //
 //---------------------------------------------------------------------------
-CFARMWLM::CFARMWLM( uint8_t *bufferData, JSONNODE *masterData, uint8_t interfaceType)
+CFARMWLM::CFARMWLM( uint8_t *bufferData, uint32_t dataSize, JSONNODE *masterData)
     :pData(bufferData)
     , m_name("WLM Log")
-    , m_logSize(0)
-    , m_FARMWLM(false)
-    , m_version(0)
+    , m_logSize(dataSize)
     , m_WLMstatus(IN_PROGRESS)
     , m_DataHeader()
     , m_DataHeaderPTR(NULL)
-    , m_InterfaceType(interfaceType)
-    , m_logPageType(LOG_PAGE_WITH_HEADER)
 {
     if (bufferData != NULL)                           // if the buffer is null then exit something did not go right
     {
-
         m_DataHeaderPTR = &m_DataHeader;
-        memcpy(&m_DataHeader, reinterpret_cast<sWLMDataHeader*>(pData), sizeof(sWLMDataHeader));
-
-        byte_Swap_32(&m_DataHeader.signature);
-
-        m_FARMWLM = (m_DataHeader.signature);
-        m_logSize = m_DataHeader.frameSize;
-        if (get_Version()) // init the data for getting the log
+        if (validate_WLM())
         {
             try
             {
                 m_WLMstatus = parse_WLM_Summary(masterData);
-                m_WLMstatus = print_WLM_Log(masterData);
             }
             catch (...)
             {
                 m_WLMstatus = PARSING_EXCEPTION_FAILURE;
             }
+
+        }
+        else
+        {
+            print_Empty_WLM_Log(masterData);
+            m_WLMstatus = VALIDATION_FAILURE;
         }
     }
     else
@@ -132,26 +122,6 @@ CFARMWLM::~CFARMWLM()
     }
     //  _CrtDumpMemoryLeaks();
 }
-
-//-----------------------------------------------------------------------------
-//
-//   get_Version()
-//
-//! \brief
-//!   Description:  get the ascii value of the string to find out the version of the logs
-//
-//  Entry:
-//
-//  Exit:
-//!   \return bool 
-//
-//---------------------------------------------------------------------------
-bool CFARMWLM::get_Version()
-{
-    m_version = m_DataHeader.rev;
-    return true;
-}
-
 //-----------------------------------------------------------------------------
 //
 //   is_FARM()
@@ -177,130 +147,167 @@ bool CFARMWLM::is_FARM(uint32_t signature)
 
 //-----------------------------------------------------------------------------
 //
-//   print_Standby_Percetage
+//   validate_WLM()
 //
 //! \brief
-//!   Description:  his field value indicates the percentage of the IDLE TIME that \n
-//!   the device is in STANDBY mode (i.e., HDDs = media is not spinning; SSDs = full  \n
-//!   power reduction mode) for this parameter interval.This is an encoded value \n
-//!  (round to the nearest encoded range
+//!   Description:  Check the header and footer singatures for validation
 //
 //  Entry:
-//! \param page - the page number in the vector
-//! \param wlmJson - the json node that we are working with
 //
 //  Exit:
-//!   \return SUCCESS
+//!   \return bool 
 //
 //---------------------------------------------------------------------------
-bool CFARMWLM::print_Standby_Percetage(uint8_t standby, JSONNODE *wlmJson)
+bool CFARMWLM::validate_WLM()
 {
-    std::string myStr;
-    switch (M_GETBITRANGE(standby, 7, 4))
-    {
-    case 0:
-        myStr.assign("no standby");
-        break;
-    case 0x1:
-        myStr.assign("0 to 9 % standby");
-        break;
-    case 0x2:
-        myStr.assign("10 to 19 % standby");
-        break;
-    case 0x3:
-        myStr.assign("20 to 29 % standby");
-        break;
-    case 0x4:
-        myStr.assign("30 to 39 % standby");
-        break;
-    case 0x5:
-        myStr.assign("40 to 49 % standby");
-        break;
-    case 0x6:
-        myStr.assign("50 to 59 % standby");
-        break;
-    case 0x7:
-        myStr.assign("60 to 69 % standby");
-        break;
-    case 0x8:
-        myStr.assign("70 to 79 % standby");
-        break;
-    case 0x9:
-        myStr.assign("80 to 89 % standby");
-        break;
-    case 0xa:
-        myStr.assign("90 to 100 % standby");
-        break;
-    case 0xb:
-        myStr.assign("full standby");
-        break;
-    default:
-        myStr.assign("reserved");
+#define BYTES 8
+
+    size_t offset = 0;
+    uint32_t endSignature = 0;
+    
+    // get Header information Then get the ending signature
+    if (get_WLM_Header_Data(offset))
+    { 
+        // go to the end of the frame and get the ending singature.   TRACESIZE and back 8 bytes to get the ending signature
+        offset = TRACESIZE - BYTES;   
+        // get the ending signature
+        endSignature = M_BytesTo4ByteValue(pData[offset], pData[offset + 1], pData[offset + 2], pData[offset + 3]);
     }
-    json_push_back(wlmJson, json_new_a("standby percentage", myStr.c_str()));
-    return true;
+    else
+    {
+        m_WLMstatus = VALIDATION_FAILURE;
+        return false;
+    }
+
+    // check the signatures if good return true
+    if (m_DataHeader.signature == FARMWLM && endSignature == FARMFOOTWLM && (m_DataHeader.rev == WLM3 || m_DataHeader.rev == WLM6))
+    {
+        return true;
+    }
+    else
+    {
+        m_WLMstatus = VALIDATION_FAILURE;
+    }
+    // doesn't look right pass false back
+    return false;
 }
 //-----------------------------------------------------------------------------
 //
-//   print_Standby_Percetage
+//   get_WLM_Header_Data()
 //
 //! \brief
-//!   Description:  This field value reports the lowest link rate for port 0 during this parameter interval as follows:
-//!   �	0000 = unknown
-//!   �	0001 = 1.5 Gb / s
-//!   �	0010 = 3.0 Gb / s
-//!   �	0011 = 6.0 Gb / s
-//!   �	0100 to 1111 = reserved
+//!   Description:  get WLM version 6 Header information 
 //
 //  Entry:
-//! \param page - the page number in the vector
-//! \param wlmJson - the json node that we are working with
+//! \param  offset: the begining offset for getting the data 
 //
 //  Exit:
-//!   \return SUCCESS
+//!   \return bool 
 //
 //---------------------------------------------------------------------------
-bool CFARMWLM::print_Minimn_Link_Rate_Port(uint8_t link, JSONNODE *wlmJson)
+bool CFARMWLM::get_WLM_Header_Data(size_t offset)
 {
-    std::string myStr;
-    //uint8_t link = vFrame.at(page).sataParamVersion3.methodPort;
-    uint8_t port0 = M_GETBITRANGE(link, 3, 0);
-    uint8_t port1 = M_GETBITRANGE(link, 7, 4);
-    if (port0 & BIT0)
+    // get the signature of the WLM trace
+    m_DataHeader.signature = M_BytesTo4ByteValue(pData[offset], pData[offset + 1], pData[offset + 2], pData[offset + 3]);
+    offset += sizeof(m_DataHeader.signature);
+    m_DataHeader.farmeNumber = M_BytesTo2ByteValue(pData[offset + 1], pData[offset]);
+    offset += sizeof(m_DataHeader.farmeNumber);
+    m_DataHeader.rev = M_BytesTo2ByteValue(pData[offset + 1], pData[offset]);
+    offset += sizeof(m_DataHeader.rev);
+
+    m_DataHeader.startTimestamp = M_BytesTo8ByteValue(pData[offset + 7], pData[offset + 6], pData[offset + 5], pData[offset + 4], pData[offset + 3], pData[offset + 2], pData[offset + 1], pData[offset]);
+    offset += sizeof(m_DataHeader.startTimestamp);
+    m_DataHeader.endTimestamp = M_BytesTo8ByteValue(pData[offset + 7], pData[offset + 6], pData[offset + 5], pData[offset + 4], pData[offset + 3], pData[offset + 2], pData[offset + 1], pData[offset]);
+    offset += sizeof(m_DataHeader.endTimestamp);
+
+    m_DataHeader.preFrameOffset = M_BytesTo4ByteValue(pData[offset + 3], pData[offset + 2], pData[offset + 1], pData[offset]);
+    offset += sizeof(m_DataHeader.preFrameOffset);
+    m_DataHeader.cycleCount = M_BytesTo2ByteValue(pData[offset + 1], pData[offset]);
+    offset += sizeof(m_DataHeader.cycleCount) + sizeof(m_DataHeader.pad1);
+
+    m_DataHeader.frameSize = M_BytesTo4ByteValue(pData[offset + 3], pData[offset + 2], pData[offset + 1], pData[offset]);
+    if (m_DataHeader.frameSize >= TRACESIZE || m_DataHeader.frameSize <= 1)
     {
-        myStr.assign("1.5 GBs");
+        return false;
     }
-    else if (port0 & BIT1)
-    {
-        myStr.assign("3.0 GBs");
-    }
-    else if (port0 & BIT2)
-    {
-        myStr.assign("6.0 GBs");
-    }
-    else
-    {
-        myStr.assign("unknown");
-    }
-    json_push_back(wlmJson, json_new_a("minimum link rate port 0", myStr.c_str()));
-    if (port1 & BIT0)
-    {
-        myStr.assign("1.5 GBs");
-    }
-    else if (port1 & BIT1)
-    {
-        myStr.assign("3.0 GBs");
-    }
-    else if (port1 & BIT2)
-    {
-        myStr.assign("6.0 GBs");
-    }
-    else
-    {
-        myStr.assign("unknown");
-    }
-    json_push_back(wlmJson, json_new_a("minimum link rate port 1", myStr.c_str()));
+    offset += sizeof(m_DataHeader.frameSize);
+    m_DataHeader.duration = M_BytesTo4ByteValue(pData[offset + 3], pData[offset + 2], pData[offset + 1], pData[offset]);
+    offset += sizeof(m_DataHeader.duration);
+    m_DataHeader.readOps = M_BytesTo4ByteValue(pData[offset + 3], pData[offset + 2], pData[offset + 1], pData[offset]);
+    offset += sizeof(m_DataHeader.readOps);
+    m_DataHeader.writeOps = M_BytesTo4ByteValue(pData[offset + 3], pData[offset + 2], pData[offset + 1], pData[offset]);
+    offset += sizeof(m_DataHeader.writeOps);
+    m_DataHeader.markers = M_BytesTo4ByteValue(pData[offset + 3], pData[offset + 2], pData[offset + 1], pData[offset]);
+    offset += sizeof(m_DataHeader.markers);
     return true;
+
+
+    
+}
+//-----------------------------------------------------------------------------
+//
+//   get_transferSize()
+//
+//! \brief
+//!   Description:  get the size of the transfer
+//
+//  Entry:
+//! \param tlength - the tlen from the codeByte
+//
+//  Exit:
+//!   \return uint8_t 
+//
+//---------------------------------------------------------------------------
+uint16_t CFARMWLM::get_transferSize(uint8_t tLen, size_t* offset)
+{
+    uint16_t len = 0;
+    if (tLen == 0)
+    {
+        len = 1;
+    }
+    else if (tLen == 1)
+    {
+        len = 2;
+    }
+    else if (tLen == 2)
+    {
+        len = 4;
+    }
+    else if (tLen == 3)
+    {
+        len = 8;
+    }
+    else if (tLen == 4)
+    {
+        len = 16;
+    }
+    else if (tLen == 5)
+    {
+        len = 32;
+    }
+    else if (tLen == 6)
+    {
+        len = 128;
+    }
+    else if (tLen == 7)
+    {
+        len = 256;
+    }
+    else if (tLen == 9)
+    {
+        len = pData[*offset];
+        *offset += 1;
+    }
+    else if (tLen == 0xA)
+    {
+        len = M_BytesTo2ByteValue(pData[*offset +1],pData[*offset]);
+        *offset += 2;
+    }
+    else
+    {
+        len = 0;
+    }
+    return len;
 }
 //-----------------------------------------------------------------------------
 //
@@ -319,24 +326,22 @@ bool CFARMWLM::print_Minimn_Link_Rate_Port(uint8_t link, JSONNODE *wlmJson)
 eReturnValues CFARMWLM::print_Empty_WLM_Log(JSONNODE *wlm)
 {
     std::string emptyStr;
-#if defined( _AMAZON_NONE_PRINT)
     emptyStr = "None";
-#else
-    emptyStr = " -1 ";
-#endif
-#ifdef _DEBUG
-    printf("\tPower on Hours:                     %s \n", "-1");
-    printf("\tTotal Number of Other Commands:           %s \n", emptyStr.c_str());
-    printf("\tTotal Number of LBAs Read:                %s \n", emptyStr.c_str());
-    printf("\tTotal Number of LBAs Written:             %s \n", emptyStr.c_str());
-    printf("\tTotal Number of Write Commands:           %s \n", emptyStr.c_str());
-    printf("\tTotal Number of Read Commands:            %s \n", emptyStr.c_str());
-    printf("\tUnrecoverable Read Errors:                %s \n", emptyStr.c_str());
-    printf("\tUnrecoverable Write Errors:               %s \n", emptyStr.c_str());
-    printf("\tTotal Number of Random Read Cmds:         %s \n", emptyStr.c_str());
-    printf("\tTotal Number of Random Write Cmds:        %s \n", emptyStr.c_str());
-    printf("\t# of Task Management Operations:          %s \n", emptyStr.c_str());
-#endif
+
+    if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+    {
+        printf("\tPower on Hours:                     %s \n", "-1");
+        printf("\tTotal Number of Other Commands:           %s \n", emptyStr.c_str());
+        printf("\tTotal Number of LBAs Read:                %s \n", emptyStr.c_str());
+        printf("\tTotal Number of LBAs Written:             %s \n", emptyStr.c_str());
+        printf("\tTotal Number of Write Commands:           %s \n", emptyStr.c_str());
+        printf("\tTotal Number of Read Commands:            %s \n", emptyStr.c_str());
+        printf("\tUnrecoverable Read Errors:                %s \n", emptyStr.c_str());
+        printf("\tUnrecoverable Write Errors:               %s \n", emptyStr.c_str());
+        printf("\tTotal Number of Random Read Cmds:         %s \n", emptyStr.c_str());
+        printf("\tTotal Number of Random Write Cmds:        %s \n", emptyStr.c_str());
+        printf("\t# of Task Management Operations:          %s \n", emptyStr.c_str());
+    }
 
     JSONNODE* wlmJson = json_new(JSON_NODE);
     json_set_name(wlmJson, "WLS Summary");
@@ -371,84 +376,195 @@ eReturnValues CFARMWLM::print_Empty_WLM_Log(JSONNODE *wlm)
 //!   \return SUCCESS
 //
 //---------------------------------------------------------------------------
-eReturnValues CFARMWLM::print_Summary_Log(JSONNODE *wlm)
+eReturnValues CFARMWLM::print_Summary_Log(size_t* offset, JSONNODE *wlm)
 {
+#define LBAOFFSET 0x3c
+#define HEADERSIZE 8
+    eReturnValues retStatus = SUCCESS;
+    if (get_WLM_Header_Data(*offset ))
+    {
 
-#ifdef _DEBUG
-    printf("Workload Trace Header\n");
-    printf("\tFrame Number:                             %" PRIu16" \n", m_DataHeader.farmeNumber);
-    printf("\tStart Timestamp:                          %" PRIu64" \n", m_DataHeader.startTimestamp);
-    printf("\tEnd Timestamp:                            %" PRIu64" \n", m_DataHeader.endTimestamp);
-    printf("\tRead Operations:                          %" PRIu32" \n", m_DataHeader.readOps);
-    printf("\tWrite Operations:                         %" PRIu32" \n", m_DataHeader.writeOps);
-    printf("\tFrame Size:                               %" PRIu32" \n", m_DataHeader.frameSize);
-    printf("\tCycle Count:                              %" PRIu16" \n", m_DataHeader.cycleCount);
-    printf("\tOne Second Markers:                       %" PRIu32" \n", m_DataHeader.markers);
+        if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+        {
+            printf("Workload Trace Header\n");
+            printf("\tFrame Number:                             %" PRIu16" \n", m_DataHeader.farmeNumber);
+            printf("\tStart Timestamp:                          %" PRIu64" \n", m_DataHeader.startTimestamp);
+            printf("\tEnd Timestamp:                            %" PRIu64" \n", m_DataHeader.endTimestamp);
+            printf("\tRead Operations:                          %" PRIu32" \n", m_DataHeader.readOps);
+            printf("\tWrite Operations:                         %" PRIu32" \n", m_DataHeader.writeOps);
+            printf("\tFrame Size:                               %" PRIu32" \n", m_DataHeader.frameSize);
+            printf("\tCycle Count:                              %" PRIu16" \n", m_DataHeader.cycleCount);
+            printf("\tOne Second Markers:                       %" PRIu32" \n", m_DataHeader.markers);
 
-#endif
+        }
    
-    JSONNODE* wlmJson = json_new(JSON_NODE);
-    json_set_name(wlmJson, "Workload Frame Header");
-    std::ostringstream temp;
-    temp << std::dec << m_DataHeader.farmeNumber;
-    json_push_back(wlmJson, json_new_a("Frame Number", temp.str().c_str()));
+        JSONNODE* wlmJson = json_new(JSON_NODE);
+        std::ostringstream temp;
+        temp << "Workload Frame Number " << std::dec << m_DataHeader.farmeNumber;
+        json_set_name(wlmJson, temp.str().c_str());
 
-    temp.str(""); temp.clear();
-    temp << std::dec << m_DataHeader.rev;
-    json_push_back(wlmJson, json_new_a("version", temp.str().c_str()));
-    opensea_parser::set_json_64bit(wlmJson, "Start Timestamp", m_DataHeader.startTimestamp, false);
-    opensea_parser::set_json_64bit(wlmJson, "End Timestamp", m_DataHeader.endTimestamp, false);
-    opensea_parser::set_json_64bit(wlmJson, "Read Operations", m_DataHeader.readOps, false);
-    opensea_parser::set_json_64bit(wlmJson, "Write Operations", m_DataHeader.writeOps, false);
-    opensea_parser::set_json_64bit(wlmJson, "Frame Size", m_DataHeader.frameSize, false);
-    opensea_parser::set_json_64bit(wlmJson, "Cycle Count", m_DataHeader.cycleCount, false);
-    opensea_parser::set_json_64bit(wlmJson, "One Second Markers", m_DataHeader.markers, false);
+        temp.str(""); temp.clear();
+        temp << std::dec << m_DataHeader.rev;
+        json_push_back(wlmJson, json_new_a("version", temp.str().c_str()));
+        opensea_parser::set_json_64bit(wlmJson, "Start Timestamp", m_DataHeader.startTimestamp, false);
+        opensea_parser::set_json_64bit(wlmJson, "End Timestamp", m_DataHeader.endTimestamp, false);
+        opensea_parser::set_json_64bit(wlmJson, "Read Operations", m_DataHeader.readOps, false);
+        opensea_parser::set_json_64bit(wlmJson, "Write Operations", m_DataHeader.writeOps, false);
+        opensea_parser::set_json_64bit(wlmJson, "Frame Size", m_DataHeader.frameSize, false);
+        opensea_parser::set_json_64bit(wlmJson, "Cycle Count", m_DataHeader.cycleCount, false);
+        opensea_parser::set_json_64bit(wlmJson, "One Second Markers", m_DataHeader.markers, false);
 
-    json_push_back(wlm, wlmJson);
-    return SUCCESS;
+        *offset += LBAOFFSET;
+        if (!get_Trace_Data(offset, wlmJson))
+        {
+            retStatus = PARSE_FAILURE;
+        }
+
+        json_push_back(wlm, wlmJson);
+    }
+    else
+    {
+        retStatus = PARSE_FAILURE;
+    }
+    return retStatus;
 }
 //-----------------------------------------------------------------------------
 //
-//   CWLMLog::print_WLM_SATA_Trace()
+//  get_Trace_Data()
 //
 //! \brief
-//!   Description:  Take the data and print the parameters
+//!   Description:  
 //
 //  Entry:
-//! \param POH - pointer to the buffer of data
+//! \param ptr - 
 //
 //  Exit:
 //!   \return SUCCESS
 //
 //---------------------------------------------------------------------------
-eReturnValues CFARMWLM::print_WLM_SATA_Trace(JSONNODE *wlmSata, uint32_t page)
+bool CFARMWLM::get_Trace_Data(size_t* offset, JSONNODE* wlmJson)
 {
-    JSONNODE* wlmJson = json_new(JSON_NODE);
-    json_set_name(wlmJson, "WLM Sata Trace");
-#ifdef _DEBUG
-    printf("\tLBA:                                               0x%" PRIx32" \n", vFrame.at(page).sataTrace.LBA);
-    printf("\tTransfer lenghts:                                  %" PRIu32" \n", vFrame.at(page).sataTrace.transLength);
-    printf("\tSteaming Event:                                    0x%" PRIx32" \n", vFrame.at(page).sataTrace.streamEvent);
-    printf("\tOne Second Marker:                                 %" PRIu32" \n", vFrame.at(page).sataTrace.markers);
+    uint64_t lba = 0;
+    uint16_t tranSize = 0;
+    size_t frameOffset = 0x3c;
 
-#endif
-    std::ostringstream temp;
-    temp << "0x" << std::hex << static_cast<uint64_t>(vFrame.at(page).sataTrace.LBA);
-    json_push_back(wlmJson, json_new_a("LBA", temp.str().c_str()));
-    json_push_back(wlmJson, json_new_i("LBA", vFrame.at(page).sataTrace.LBA));
+    
+    JSONNODE* tData = json_new(JSON_ARRAY);
+    json_set_name(tData, ("Trace Data"));
 
-    json_push_back(wlmJson, json_new_i("Transfer Length", vFrame.at(page).sataTrace.transLength ));
-    temp.str("");
-    temp.clear();
-    temp << "0x" << std::hex << vFrame.at(page).sataTrace.streamEvent;
-    json_push_back(wlmJson, json_new_a("Steaming Events", temp.str().c_str()));
-   
-    json_push_back(wlmJson, json_new_i( "One Second Marker", vFrame.at(page).sataTrace.markers));
-   
-    json_push_back(wlmSata, wlmJson);
-    return SUCCESS;
+    while (frameOffset <= m_DataHeader.frameSize)
+    {
+        size_t startOffset = *offset;
+        uint8_t encodeByte = pData[*offset];
+        uint8_t tLength = M_GETBITRANGE(encodeByte, 7, 4);
+        uint8_t LDes = M_GETBITRANGE(encodeByte, 2, 0);
+        if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+        {
+            printf("LDes  0x %" PRIx8" \n", LDes);
+            printf("offset %llu \n", *offset);
+            printf("encodeByte  0x %" PRIx8" \n", encodeByte);
+            printf("tLength  0x %" PRIx8" \n", tLength);
+        }
+        *offset += 1;
+
+        // if tLength is 0x08 the transfer size is the same as the previous operation, so don't change it
+        if (tLength != 0x08)
+        {
+            tranSize = get_transferSize(tLength, offset);
+        }
+
+        if (LDes == 0)
+        {
+            if (tLength == 0xe)
+            {
+                lba = M_BytesTo8ByteValue(0, 0, 0, pData[*offset + 4], pData[*offset + 3], pData[*offset + 2], pData[*offset + 1], pData[*offset]);
+                *offset += 5;
+            }
+            else if (tLength == 0xd)
+            {
+                lba = M_BytesTo8ByteValue(0, 0, 0, pData[*offset + 4], pData[*offset + 3], pData[*offset + 2], pData[*offset + 1], pData[*offset]);
+                *offset += 5;
+            }
+            else if (tLength == 8)
+            {
+                lba += tranSize;
+            }
+            else
+            {
+                lba = M_BytesTo8ByteValue(0, 0, 0, pData[*offset + 4], pData[*offset + 3], pData[*offset + 2], pData[*offset + 1], pData[*offset]);
+                *offset += 5;
+            }
+        }
+        else if (LDes == 1)
+        {
+            lba += M_BytesTo8ByteValue(0, 0, 0, 0, 0, 0, 0, pData[*offset]);
+            *offset += 1;
+        }
+        else if (LDes == 2)
+        {
+            lba += M_BytesTo8ByteValue(0, 0, 0, 0, 0, 0, pData[*offset + 1], pData[*offset]);
+            *offset += 2;
+        }
+        else if (LDes == 3)
+        {
+            lba += M_BytesTo8ByteValue(0, 0, 0, 0, 0, pData[*offset + 2], pData[*offset + 1], pData[*offset]);
+            *offset += 3;
+        }
+        else if (LDes == 4)
+        {
+            *offset += 1; // ???
+        }
+        else if (LDes == 5)
+        {
+            lba -= M_BytesTo8ByteValue(0, 0, 0, 0, 0, 0, 0, pData[*offset]);
+            *offset += 1;
+        }
+        else if (LDes == 6)
+        {
+            lba -= M_BytesTo8ByteValue(0, 0, 0, 0, 0, 0, pData[*offset + 1], pData[*offset]);
+            *offset += 2;
+        }
+        else if (LDes == 7)
+        {
+            lba -= M_BytesTo8ByteValue(0, 0, 0, 0, 0, pData[*offset + 2], pData[*offset + 1], pData[*offset]);
+            *offset += 3;
+        }
+        else
+        {
+            // push what we have and then return false
+            printf(">>>>  Lost \n");
+            json_push_back(wlmJson, tData);
+            return false;
+        }
+        if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+        {
+            printf("LBA  0x %" PRIx64" \n", lba);
+            printf("Transfer length %" PRIu16" \n", tranSize);
+        }
+        std::ostringstream temp;
+        if (encodeByte & BIT3)
+        {
+            temp << "write" << "," << tranSize << "," "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(16) << lba;
+            json_push_back(tData, json_new_a( "write", temp.str().c_str()));
+        }
+        else
+        {
+            if (encodeByte == 0xf0)
+            {
+                json_push_back(tData, json_new_a("Maker", "One Second Marker"));
+            }
+            else
+            {
+                
+                temp << "read" << "," << tranSize << "," "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(16) << lba;
+                json_push_back(tData, json_new_a("read", temp.str().c_str()));
+            }
+        }
+        frameOffset += *offset - startOffset;
+    }
+    json_push_back(wlmJson, tData);
+    return true;
 }
-
 //-----------------------------------------------------------------------------
 //
 //  parse_WLM_Summary()
@@ -465,99 +581,25 @@ eReturnValues CFARMWLM::print_WLM_SATA_Trace(JSONNODE *wlmSata, uint32_t page)
 //---------------------------------------------------------------------------
 eReturnValues CFARMWLM::parse_WLM_Summary(JSONNODE *masterData)
 {
-    sWLMFrame workFrame;
-    sWLMFrame *pWF = &workFrame;
-    uint32_t offset = 0;
     // _CrtDumpMemoryLeaks();
-    
-    offset = sizeof(sWLMDataHeader);
-        
-    while (offset < m_logSize)
+    eReturnValues retStatus = SUCCESS;
+    size_t offset = 0;
+    uint32_t traceLine = 0;
+    size_t traceSize = TRACESIZE;
+   
+    offset = 0;
+    while (offset  < m_logSize)
     {
-         if (m_DataHeader.signature == FARMWLM && m_version == 0x03)
+        retStatus = print_Summary_Log(&offset, masterData);
+        if (retStatus != SUCCESS)
         {
-
-            sWLM_Trace* data;
-            data = reinterpret_cast<sWLM_Trace*>(&pData[offset]);
-            memcpy(&workFrame.sataTrace, data, sizeof(sWLM_Trace));
-            workFrame.version = m_version;
-            vFrame.push_back(*pWF);
-            offset += sizeof(sWLM_Trace);
+            return retStatus;
         }
-        else
-        {
-            print_Empty_WLM_Log(masterData);
-            return FAILURE;
-        }
-
+        traceLine += TRACESIZE;
+        offset = traceLine;
     }
  
-    return SUCCESS;
-}
-
-//-----------------------------------------------------------------------------
-//
-//   CFARMWLM::print_Log()
-//
-//! \brief
-//!   Description:  parses the work load management log from the CDF file
-//
-//  Entry:
-//! \param pData - pointer to the buffer of data
-//
-//  Exit:
-//!   \return SUCCESS
-//
-//---------------------------------------------------------------------------
-eReturnValues CFARMWLM::print_Log(uint32_t page, JSONNODE *wlm)
-{
-
-    eReturnValues retStatus = IN_PROGRESS;
-
-    if (vFrame.at(page).version == 3 )
-    { 
-        retStatus = print_WLM_SATA_Trace(wlm, page);
-    }
-    else
-    {
-        retStatus = print_Empty_WLM_Log(wlm);
-    }
-
-    return retStatus;
-
-}
-//-----------------------------------------------------------------------------
-//
-//   CFARMWLM::print_WLM_Log()
-//
-//! \brief
-//!   Description: print out the WLM Log
-//
-//  Entry:
-//! \param pData - pointer to the buffer of data
-//
-//  Exit:
-//!   \return SUCCESS
-//
-//---------------------------------------------------------------------------
-eReturnValues CFARMWLM::print_WLM_Log(JSONNODE *masterData)
-{
-    eReturnValues retStatus = IN_PROGRESS;
-    if (vFrame.at(0).version == 3)
-    {
-        retStatus = print_Summary_Log(masterData);
-    }
-    if (retStatus == SUCCESS)
-    {
-        JSONNODE* wlmJson = json_new(JSON_ARRAY);
-        json_set_name(wlmJson, "Workload Frame");
-        for (uint32_t index = 0; index < vFrame.size(); ++index)
-        {
-            retStatus = print_Log(index, wlmJson);
-            
-        }
-        json_push_back(masterData, wlmJson);
-    }
     return retStatus;
 }
+
 
