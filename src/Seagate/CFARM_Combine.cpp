@@ -684,7 +684,7 @@ eReturnValues CFarm_Combine::combo_Parsing(JSONNODE* masterJson)
 			else
 			{
 				CFARMWLM* cWLM;
-				cWLM = new CFARMWLM(&bufferData[dataItr->location], masterJson, PARSER_INTERFACE_TYPE_SATA);
+				cWLM = new CFARMWLM(&bufferData[dataItr->location], dataItr->dataSize, masterJson);
 				retStatus = cWLM->get_WLM_Status();
 
 				delete(cWLM);
