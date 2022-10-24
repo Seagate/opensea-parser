@@ -699,26 +699,26 @@ void CFarmCommon::Get_NVC_Status(JSONNODE* NVC_Node, uint64_t status)
 {
 	if (status != 0)
 	{
-		JSONNODE* myArray = json_new(JSON_ARRAY);
-		json_set_name(myArray, ("NVC Status Events"));
+		JSONNODE* StatusEventsArray = json_new(JSON_ARRAY);
+		json_set_name(StatusEventsArray, ("NVC Status Events"));
 		if (status & BIT8)
-			json_push_back(myArray, json_new_a("NVC Status Events", "flash burn started"));
+			json_push_back(StatusEventsArray, json_new_a("NVC Status Events", "flash burn started"));
 		if (status & BIT9)
-			json_push_back(myArray, json_new_a("NVC Status Events", "flash burn finished"));
+			json_push_back(StatusEventsArray, json_new_a("NVC Status Events", "flash burn finished"));
 		if (status & BIT10)
-			json_push_back(myArray, json_new_a("NVC Status Events", "validate flash erase pattern skipped"));
+			json_push_back(StatusEventsArray, json_new_a("NVC Status Events", "validate flash erase pattern skipped"));
 		if (status & BIT19)
-			json_push_back(myArray, json_new_a("NVC Status Events", "servo r5 in WFE"));
+			json_push_back(StatusEventsArray, json_new_a("NVC Status Events", "servo r5 in WFE"));
 		if (status & BIT20)
-			json_push_back(myArray, json_new_a("NVC Status Events", "servo m0 in WFI"));
+			json_push_back(StatusEventsArray, json_new_a("NVC Status Events", "servo m0 in WFI"));
 		if (status & BIT21)
-			json_push_back(myArray, json_new_a("NVC Status Events", "servo r5 halt timeout"));
+			json_push_back(StatusEventsArray, json_new_a("NVC Status Events", "servo r5 halt timeout"));
 		if (status & BIT22)
-			json_push_back(myArray, json_new_a("NVC Status Events", "servo m0 halt timeout"));
+			json_push_back(StatusEventsArray, json_new_a("NVC Status Events", "servo m0 halt timeout"));
 		if (status & BIT23)
-			json_push_back(myArray, json_new_a("NVC Status Events", "AUX LLP stream timeout"));
+			json_push_back(StatusEventsArray, json_new_a("NVC Status Events", "AUX LLP stream timeout"));
 
-		json_push_back(NVC_Node, myArray);
+		json_push_back(NVC_Node, StatusEventsArray);
 	}
 }
 //-----------------------------------------------------------------------------
