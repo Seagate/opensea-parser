@@ -402,7 +402,7 @@ eReturnValues CFARMWLM::print_Summary_Log(size_t* offset, JSONNODE *wlm)
         std::ostringstream temp;
         temp << "Workload Frame Number " << std::dec << m_DataHeader.farmeNumber;
         json_set_name(wlmJson, temp.str().c_str());
-
+        opensea_parser::set_json_64bit(wlmJson, "Workload Frame Number", m_DataHeader.farmeNumber, false);
         temp.str(""); temp.clear();
         temp << std::dec << m_DataHeader.rev;
         json_push_back(wlmJson, json_new_a("version", temp.str().c_str()));
@@ -446,6 +446,7 @@ bool CFARMWLM::get_Trace_Data(size_t* offset, JSONNODE* wlmJson)
 {
     uint64_t lba = 0;
     uint16_t tranSize = 0;
+    uint16_t savedTranSize = 0;
     size_t frameOffset = 0x3c;
 
     
@@ -470,6 +471,7 @@ bool CFARMWLM::get_Trace_Data(size_t* offset, JSONNODE* wlmJson)
         // if tLength is 0x08 the transfer size is the same as the previous operation, so don't change it
         if (tLength != 0x08)
         {
+            savedTranSize = tranSize;
             tranSize = get_transferSize(tLength, offset);
         }
 
@@ -487,7 +489,13 @@ bool CFARMWLM::get_Trace_Data(size_t* offset, JSONNODE* wlmJson)
             }
             else if (tLength == 8)
             {
-                lba += tranSize;
+                //lba += tranSize;
+                lba = M_BytesTo8ByteValue(0, 0, 0, pData[*offset + 4], pData[*offset + 3], pData[*offset + 2], pData[*offset + 1], pData[*offset]);
+                *offset += 5;
+            }
+            else if (tLength == 0x0f)
+            {
+                lba = 0;
             }
             else
             {
@@ -512,7 +520,8 @@ bool CFARMWLM::get_Trace_Data(size_t* offset, JSONNODE* wlmJson)
         }
         else if (LDes == 4)
         {
-            *offset += 1; // ???
+            lba += tranSize;
+            //*offset += 1; // ???
         }
         else if (LDes == 5)
         {
@@ -544,7 +553,7 @@ bool CFARMWLM::get_Trace_Data(size_t* offset, JSONNODE* wlmJson)
         std::ostringstream temp;
         if (encodeByte & BIT3)
         {
-            temp << "write" << "," << tranSize << "," "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(16) << lba;
+            temp << "write" << "," << tranSize << "," "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(10) << lba;
             json_push_back(tData, json_new_a( "write", temp.str().c_str()));
         }
         else
@@ -555,9 +564,23 @@ bool CFARMWLM::get_Trace_Data(size_t* offset, JSONNODE* wlmJson)
             }
             else
             {
-                
-                temp << "read" << "," << tranSize << "," "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(16) << lba;
-                json_push_back(tData, json_new_a("read", temp.str().c_str()));
+                if (tLength == 0x0D)
+                {
+                    temp << "Streaming Start" << "," << tranSize << "," "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(10) << lba;
+                    json_push_back(tData, json_new_a("read", temp.str().c_str()));
+                    tranSize = savedTranSize;
+                }
+                else if (tLength == 0x0E)
+                {
+                    temp << "Streaming End" << "," << tranSize << "," "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(10) << lba;
+                    json_push_back(tData, json_new_a("read", temp.str().c_str()));
+                    tranSize = savedTranSize;
+                }
+                else
+                {
+                    temp << "read" << "," << tranSize << "," "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(10) << lba;
+                    json_push_back(tData, json_new_a("read", temp.str().c_str()));
+                }
             }
         }
         frameOffset += *offset - startOffset;

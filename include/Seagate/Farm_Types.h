@@ -35,6 +35,8 @@
 #define FARM_STICKY             0x4641524d5354434b                      //<! "FARMSTCK"
 #define FARM_WLDTR              0x574f524b4c445443                      //<! "WORKLDTR"
 #define FARM_SAVE               0x4641524d53415645                      //<! "FARMSAVE"
+#define FARM_LONG_SAVE          0x4641524d4c4f4e47                      //<! "FARMLONG"
+
 
 #define ASSERT_UNKNOWN                         0x00
 #define MICROPROCESSOR_FAILED                  0x08

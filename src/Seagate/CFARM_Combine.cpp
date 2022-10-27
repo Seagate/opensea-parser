@@ -241,9 +241,13 @@ void CFarm_Combine::get_FARM_Type(std::string* reason, uint64_t dataType)
 	{
 		*reason = "Time Series FARM Log";
 	}
-	else if (dataType == FARM_SAVE)
+	else if (dataType == FARM_LONG_SAVE)
 	{
 		*reason = "Long Term Saved FARM Log";
+	}
+	else if (dataType == FARM_SAVE)
+	{
+		*reason = "Host Saved FARM Disc Log";
 	}
 	else if (dataType == FARM_FACTORY)
 	{
@@ -255,7 +259,7 @@ void CFarm_Combine::get_FARM_Type(std::string* reason, uint64_t dataType)
 	}
 	else if (dataType == FARM_WLDTR)
 	{
-		*reason = "FARM Work Load Log";
+		*reason = "FARM WorkLoad Trace Log";
 	}
 	else
 	{
@@ -660,35 +664,37 @@ eReturnValues CFarm_Combine::combo_Parsing(JSONNODE* masterJson)
 	{
 		for (std::vector<sComboDataSet>::iterator dataItr = vdataSetInfo.begin(); dataItr != vdataSetInfo.end(); ++dataItr)
 		{
-			if (dataItr->dataSetType != FARM_WLDTR)
+			if (dataItr->dataSetType == FARM_TIME || dataItr->dataSetType == FARM_SAVE || dataItr->dataSetType == FARM_STICKY)
 			{
-				if (dataItr->dataSetType == FARM_TIME || dataItr->dataSetType == FARM_SAVE || dataItr->dataSetType == FARM_STICKY)
-				{
-					JSONNODE* farmInfo = json_new(JSON_ARRAY);
-					std::string typeStr;
-					get_FARM_Type(&typeStr, dataItr->dataSetType);
-					json_set_name(farmInfo, typeStr.c_str());
-					parse_FARM_Logs(dataItr->location, dataItr->dataSize, dataItr->dataSetType, farmInfo);
-					json_push_back(masterJson, farmInfo);
-				}
-				else
-				{
-					JSONNODE* farmInfo = json_new(JSON_NODE);
-					std::string typeStr;
-					get_FARM_Type(&typeStr, dataItr->dataSetType);
-					json_set_name(farmInfo, typeStr.c_str());
-					parse_FARM_Logs(dataItr->location, dataItr->dataSize, dataItr->dataSetType, farmInfo);
-					json_push_back(masterJson, farmInfo);
-				}
+				JSONNODE* farmInfo = json_new(JSON_ARRAY);
+				std::string typeStr;
+				get_FARM_Type(&typeStr, dataItr->dataSetType);
+				json_set_name(farmInfo, typeStr.c_str());
+				parse_FARM_Logs(dataItr->location, dataItr->dataSize, dataItr->dataSetType, farmInfo);
+				json_push_back(masterJson, farmInfo);
+			}
+			else if (dataItr->dataSetType == FARM_WLDTR)
+			{
+				JSONNODE* farmInfo = json_new(JSON_ARRAY);
+				std::string typeStr;
+				get_FARM_Type(&typeStr, dataItr->dataSetType);
+				json_set_name(farmInfo, typeStr.c_str());
+				CFARMWLM* cWLM;
+				cWLM = new CFARMWLM(&bufferData[dataItr->location], dataItr->dataSize, farmInfo);
+				retStatus = cWLM->get_WLM_Status();
+				json_push_back(masterJson, farmInfo);
+				delete(cWLM);
 			}
 			else
 			{
-				CFARMWLM* cWLM;
-				cWLM = new CFARMWLM(&bufferData[dataItr->location], dataItr->dataSize, masterJson);
-				retStatus = cWLM->get_WLM_Status();
-
-				delete(cWLM);
+				JSONNODE* farmInfo = json_new(JSON_NODE);
+				std::string typeStr;
+				get_FARM_Type(&typeStr, dataItr->dataSetType);
+				json_set_name(farmInfo, typeStr.c_str());
+				parse_FARM_Logs(dataItr->location, dataItr->dataSize, dataItr->dataSetType, farmInfo);
+				json_push_back(masterJson, farmInfo);
 			}
+
 		}
 
 	}
