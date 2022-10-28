@@ -574,39 +574,48 @@ bool CFARMWLM::get_Trace_Data(size_t* offset, JSONNODE* wlmJson)
             printf("LBA  0x %" PRIx64" \n", lba);
             printf("Transfer length %" PRIu16" \n", tranSize);
         }
+        JSONNODE* tCmd = json_new(JSON_NODE);
+        json_set_name(tCmd, ("Trace Command"));
         std::ostringstream temp;
         if (encodeByte & BIT3)
         {
-            temp << "write" << "," << tranSize << "," "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(10) << lba;
-            json_push_back(tData, json_new_a( "write", temp.str().c_str()));
+            temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(10) << lba;
+            json_push_back(tCmd, json_new_a("Command", "Write"));
+            json_push_back(tCmd, json_new_i("Transfer size", tranSize));
+            json_push_back(tCmd, json_new_a("LBA", temp.str().c_str()));
         }
         else
         {
             if (encodeByte == 0xf0)
             {
-                json_push_back(tData, json_new_a("Maker", "One Second Marker"));
+                json_push_back(tCmd, json_new_a("Command", "One Second Marker"));
             }
             else
             {
                 if (tLength == 0x0D)
                 {
-                    temp << "Streaming Start" << "," << tranSize << "," "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(10) << lba;
-                    json_push_back(tData, json_new_a("read", temp.str().c_str()));
+                    temp <<  "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(10) << lba;
+                    json_push_back(tCmd, json_new_a("Command", "Streaming Start"));
+                    json_push_back(tCmd, json_new_a("LBA", temp.str().c_str()));
                     tranSize = savedTranSize;
                 }
                 else if (tLength == 0x0E)
                 {
-                    temp << "Streaming End" << "," << tranSize << "," "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(10) << lba;
-                    json_push_back(tData, json_new_a("read", temp.str().c_str()));
+                    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(10) << lba;
+                    json_push_back(tCmd, json_new_a("Command", "Streaming End"));
+                    json_push_back(tCmd, json_new_a("LBA", temp.str().c_str()));
                     tranSize = savedTranSize;
                 }
                 else
                 {
-                    temp << "read" << "," << tranSize << "," "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(10) << lba;
-                    json_push_back(tData, json_new_a("read", temp.str().c_str()));
+                    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(10) << lba;
+                    json_push_back(tCmd, json_new_a("Command", "Read"));
+                    json_push_back(tCmd, json_new_i("Transfer size", tranSize));
+                    json_push_back(tCmd, json_new_a("LBA", temp.str().c_str()));
                 }
             }
         }
+        json_push_back(tData,tCmd);
         frameOffset += *offset - startOffset;
         if (check_For_Footer_Signature(offset))
         {
