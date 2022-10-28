@@ -100,6 +100,7 @@ namespace opensea_parser {
 
         bool is_FARM(uint32_t signature);
         bool validate_WLM();
+        bool check_For_Footer_Signature(size_t *offset);
         bool get_WLM_Header_Data(size_t offset);
         uint16_t get_transferSize(uint8_t tLen,size_t* offset);
         bool get_Trace_Data(size_t* offset, JSONNODE* wlmJson);

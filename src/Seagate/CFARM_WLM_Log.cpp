@@ -193,6 +193,30 @@ bool CFARMWLM::validate_WLM()
 }
 //-----------------------------------------------------------------------------
 //
+//   check_For_Footer_Signature()
+//
+//! \brief
+//!   Description:  Check for the footer signature
+//
+//  Entry:
+//! \param: offset  - the offset in the buffer where we will check for the signature
+//
+//  Exit:
+//!   \return bool 
+//
+//---------------------------------------------------------------------------
+bool CFARMWLM::check_For_Footer_Signature(size_t* offset)
+{
+    
+    uint32_t footer = M_BytesTo4ByteValue(pData[*offset], pData[*offset + 1], pData[*offset + 2], pData[*offset + 3]);
+    if (footer == FARMFOOTWLM || footer == FARMFOOTWLMSWAP)
+    {
+        return true;
+    }
+    return false;
+}
+//-----------------------------------------------------------------------------
+//
 //   get_WLM_Header_Data()
 //
 //! \brief
@@ -584,6 +608,10 @@ bool CFARMWLM::get_Trace_Data(size_t* offset, JSONNODE* wlmJson)
             }
         }
         frameOffset += *offset - startOffset;
+        if (check_For_Footer_Signature(offset))
+        {
+            break;
+        }
     }
     json_push_back(wlmJson, tData);
     return true;
