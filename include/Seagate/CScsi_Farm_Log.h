@@ -75,9 +75,9 @@ namespace opensea_parser {
 		uint32_t					m_MinorRev;										  //!< minor rev saved off to pick up the changes in the spec
         uint8_t                     *pBuf;                                            //!< pointer to the buffer data that is the binary of FARM LOG
         eReturnValues               m_status;                                         //!< status of the class	
-		sScsiLogParameter			*m_logParam;                                      //!< pointer to the log page param for all of the log
-        sScsiPageParameter          *m_pageParam;                                     //!< pointer to the page parameters 
-        sScsiFarmHeader				*m_pHeader;										  //!< Member pointer to the header of the farm log
+        sLogPageStruct              *m_logParam;                                      //!< pointer to the log page param for all of the log
+        sLogParams                  *m_pageParam;                                     //!< pointer to the page parameters 
+        sScsiFarmHeader             *m_pHeader;										  //!< Member pointer to the header of the farm log
         sScsiDriveInfo              *m_pDriveInfo;                                    //!< Drive information pointer with header information
         bool                        m_alreadySet;                                     //!< set true one it's already set..  (APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_OUTER)
 		bool						m_showStatusBits;								  //!< show the status bits of each entry
@@ -88,7 +88,7 @@ namespace opensea_parser {
         
         bool strip_Active_Status(uint64_t *value);
         bool swap_Bytes_sFarmHeader(sScsiFarmHeader *fh, uint8_t* pData);
-        bool swap_Bytes_sDriveInfo(sScsiDriveInfo *di);
+        bool Get_sDriveInfo(sScsiDriveInfo *di, uint64_t offset);
         bool swap_Bytes_sDrive_Info_Page_06(sGeneralDriveInfoPage06 *gd);
         bool swap_Bytes_sWorkLoadStat(sScsiWorkLoadStat *wl);
         bool swap_Bytes_sErrorStat(sScsiErrorFrame * es);
@@ -97,14 +97,13 @@ namespace opensea_parser {
         bool swap_Bytes_WorkloadPage08(sScsiWorkloadStatPage08 *ep);
         bool swap_Bytes_sScsiReliabilityStat(sScsiReliablility *ss);
         bool swap_Bytes_sLUNStruct(sLUNStruct *LUN);
-        bool swap_Bytes_Flash_LED(sActuatorFLEDInfo *fled);
-        bool swap_Bytes_Reallocation_Data(sActReallocationData *real);
+        bool Get_Flash_LED(sActuatorFLEDInfo *fled, uint64_t offset);
+        bool Get_Reallocation_Data(sActReallocationData *real, uint64_t offset);
         bool get_Head_Info(sHeadInformation *phead, uint8_t *buffer);
         bool set_Head_Header(std::string &headerName, eLogPageTypes index);
         void get_LUN_Info(sLUNStruct *pLUN, uint8_t *buffer);
 		
 		eReturnValues init_Header_Data();
-        //eReturnValues init_buffer_Header_Data();
         eReturnValues print_Header(JSONNODE *masterData);
         eReturnValues print_Drive_Information(JSONNODE *masterData, uint32_t page);
         eReturnValues print_General_Drive_Information_Continued(JSONNODE *masterData, uint32_t page);
