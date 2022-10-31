@@ -645,7 +645,6 @@ eReturnValues CFARMWLM::parse_WLM_Summary(JSONNODE *masterData)
     eReturnValues retStatus = SUCCESS;
     size_t offset = 0;
     uint32_t traceLine = 0;
-    size_t traceSize = TRACESIZE;
    
     offset = 0;
     while (offset  < m_logSize)
