@@ -93,7 +93,7 @@ namespace opensea_parser {
         bool swap_Bytes_sWorkLoadStat(sScsiWorkLoadStat *wl);
         bool swap_Bytes_sErrorStat(sScsiErrorFrame * es);
         bool swap_Bytes_sEnvironmentStat(sScsiEnvironmentStat *es);
-        bool swap_Bytes_EnvironmentPage07(sScsiEnvStatPage07 *ep);
+        bool Get_EnvironmentPage07(sScsiEnvStatPage07 *ep,uint64_t offset);
         bool swap_Bytes_WorkloadPage08(sScsiWorkloadStatPage08 *ep);
         bool swap_Bytes_sScsiReliabilityStat(sScsiReliablility *ss);
         bool swap_Bytes_sLUNStruct(sLUNStruct *LUN);

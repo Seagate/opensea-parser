@@ -543,6 +543,7 @@ bool CSCSI_Farm_Log::set_Head_Header(std::string &headerName, eLogPageTypes inde
 //---------------------------------------------------------------------------
 bool CSCSI_Farm_Log::Get_sDriveInfo(sScsiDriveInfo *di, uint64_t offset)
 {
+#define SIZEPARAM   8
     di->pPageHeader.paramCode = M_BytesTo2ByteValue(pBuf[offset], pBuf[offset + 1]);
     offset += 2;
     di->pPageHeader.paramControlByte =pBuf[offset];
@@ -550,63 +551,63 @@ bool CSCSI_Farm_Log::Get_sDriveInfo(sScsiDriveInfo *di, uint64_t offset)
     di->pPageHeader.paramLength = pBuf[offset];
     offset++;
     di->pageNumber = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-    offset += 8;
+    offset += SIZEPARAM;
     di->copyNumber = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-    offset += 8;
+    offset += SIZEPARAM;
     di->serialNumber = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-    offset += 8;
+    offset += SIZEPARAM;
     di->serialNumber2 = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-    offset += 8;
+    offset += SIZEPARAM;
     di->worldWideName = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-    offset += 8;
+    offset += SIZEPARAM;
     di->worldWideName2 = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-    offset += 8;
+    offset += SIZEPARAM;
     di->deviceInterface = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-    offset += 8;
+    offset += SIZEPARAM;
     di->deviceCapacity = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-    offset += 8;
+    offset += SIZEPARAM;
     di->psecSize = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-    offset += 8;
+    offset += SIZEPARAM;
     di->lsecSize = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-    offset += 8;
+    offset += SIZEPARAM;
     di->deviceBufferSize = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-    offset += 8;
+    offset += SIZEPARAM;
     di->heads = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-    offset += 8;
+    offset += SIZEPARAM;
     di->factor = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-    offset += 8;
+    offset += SIZEPARAM;
     di->rotationRate = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-    offset += 8;
+    offset += SIZEPARAM;
     di->firmware = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-    offset += 8;
+    offset += SIZEPARAM;
     di->firmwareRev = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-    offset += 8;
-    offset += 8;  //reserved
-    offset += 8;  //reserved1
-    offset += 8;  //reserved2
+    offset += SIZEPARAM;
+    offset += SIZEPARAM;  //reserved
+    offset += SIZEPARAM;  //reserved1
+    offset += SIZEPARAM;  //reserved2
     di->poh = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-    offset += 8;
-    offset += 8;  //reserved3
-    offset += 8;  //reserved4
+    offset += SIZEPARAM;
+    offset += SIZEPARAM;  //reserved3
+    offset += SIZEPARAM;  //reserved4
     di->headLoadEvents = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-    offset += 8;
+    offset += SIZEPARAM;
     di->powerCycleCount = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-    offset += 8;
+    offset += SIZEPARAM;
     di->resetCount = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-    offset += 8;
-    offset += 8;  //reserved6
+    offset += SIZEPARAM;
+    offset += SIZEPARAM;  //reserved6
     di->NVC_StatusATPowerOn = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-    offset += 8;   
+    offset += SIZEPARAM;   
     di->timeAvailable = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-    offset += 8;
+    offset += SIZEPARAM;
     di->firstTimeStamp = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-    offset += 8;
+    offset += SIZEPARAM;
     di->lastTimeStamp = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-    offset += 8;
+    offset += SIZEPARAM;
     if (di->pPageHeader.paramLength > 0xf0)
     {
         di->dateOfAssembly = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-        offset += 8;
+        offset += SIZEPARAM;
     }
     return true;
 }
@@ -799,16 +800,31 @@ bool CSCSI_Farm_Log::swap_Bytes_sEnvironmentStat(sScsiEnvironmentStat *es)
 //!   \return bool
 //
 //---------------------------------------------------------------------------
-bool CSCSI_Farm_Log::swap_Bytes_EnvironmentPage07(sScsiEnvStatPage07 *ep)
+bool CSCSI_Farm_Log::Get_EnvironmentPage07(sScsiEnvStatPage07 *ep, uint64_t offset)
 {
-    byte_Swap_64(&ep->pageNumber);
-    byte_Swap_64(&ep->copyNumber);
-    byte_Swap_64(&ep->average12v);
-    byte_Swap_64(&ep->average5v);
-    byte_Swap_64(&ep->max12v);
-    byte_Swap_64(&ep->max5v);
-    byte_Swap_64(&ep->min12v);
-    byte_Swap_64(&ep->min5v);
+#define SIZEPARAM   8
+    ep->pPageHeader.paramCode = M_BytesTo2ByteValue(pBuf[offset], pBuf[offset + 1]);
+    offset += 2;
+    ep->pPageHeader.paramControlByte = pBuf[offset];
+    offset++;
+    ep->pPageHeader.paramLength = pBuf[offset];
+    offset++;
+    ep->pageNumber = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    ep->copyNumber = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    ep->average12v = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    ep->min12v = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    ep->max12v = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    ep->average5v = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    ep->min5v = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    ep->max5v = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+
     return true;
 }
 
@@ -994,7 +1010,12 @@ bool CSCSI_Farm_Log::swap_Bytes_sLUNStruct(sLUNStruct *LUN)
 bool CSCSI_Farm_Log::Get_Flash_LED(sActuatorFLEDInfo *fled, uint64_t offset)
 {
 #define SIZEPARAM   8
-    offset += (sizeof(sLogParams));
+    fled->pageHeader.paramCode = M_BytesTo2ByteValue(pBuf[offset], pBuf[offset + 1]);
+    offset += 2;
+    fled->pageHeader.paramControlByte = pBuf[offset];
+    offset++;
+    fled->pageHeader.paramLength = pBuf[offset];
+    offset++;
     fled->pageNumber = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
     offset += SIZEPARAM;
     fled->copyNumber = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
@@ -1280,11 +1301,11 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                 break;
                 case  ENVIRONMENT_STATISTICS_PAMATER_07:
                 {
-                    sScsiEnvStatPage07 *pEnvStat;
-                    pEnvStat = reinterpret_cast<sScsiEnvStatPage07 *>(&pBuf[offset]);
-                    memcpy(reinterpret_cast<sScsiEnvStatPage07 *>(&pFarmFrame->envStatPage07), pEnvStat, pEnvStat->pPageHeader.paramLength + PARAMSIZE);
-                    swap_Bytes_EnvironmentPage07(&pFarmFrame->envStatPage07);
-                    offset += (pEnvStat->pPageHeader.paramLength + sizeof(sLogParams));
+                    //sScsiEnvStatPage07 *pEnvStat;
+                    //pEnvStat = reinterpret_cast<sScsiEnvStatPage07 *>(&pBuf[offset]);
+                    //memcpy(reinterpret_cast<sScsiEnvStatPage07 *>(&pFarmFrame->envStatPage07), pEnvStat, pEnvStat->pPageHeader.paramLength + PARAMSIZE);
+                    Get_EnvironmentPage07(&pFarmFrame->envStatPage07,offset);
+                    offset += (pFarmFrame->envStatPage07.pPageHeader.paramLength + sizeof(sLogParams));
                 }
                 break;
                 case  WORKLOAD_STATISTICS_PAMATER_08:
