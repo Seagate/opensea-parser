@@ -230,22 +230,23 @@ eReturnValues CSCSI_Farm_Log::init_Header_Data()
         
         if (m_fromScsiLogPages == true)
         {
-            m_pHeader->pPageHeader = *reinterpret_cast<sScsiPageParameter*>(&pBuf[0]);
+            m_pHeader->pPageHeader = *reinterpret_cast<sLogParams*>(&pBuf[0]);
             swap_Bytes_sFarmHeader(m_pHeader, &pBuf[4]);											// swap all the bytes for the header
         }
         else
         {
-            m_logParam = reinterpret_cast<sScsiLogParameter*>(&pBuf[0]);
-            m_logSize = m_logParam->length;									    // set the class log size 
+            m_logParam = reinterpret_cast<sLogPageStruct*>(&pBuf[0]);
+            m_logSize = m_logParam->pageLength;									    // set the class log size 
             byte_Swap_16(&m_logSize);
             
-            m_pHeader->pPageHeader = *reinterpret_cast<sScsiPageParameter*>(&pBuf[4]);
+            m_pHeader->pPageHeader = *reinterpret_cast<sLogParams*>(&pBuf[4]);
             swap_Bytes_sFarmHeader(m_pHeader, &pBuf[8]);											// swap all the bytes for the header
         }
 		
 		m_totalPages = M_DoubleWord0(m_pHeader->farmHeader.pagesSupported);			// get the total pages
 		m_pageSize = M_DoubleWord0(m_pHeader->farmHeader.pageSize);					// get the page size
-		if (check_For_Active_Status(&m_pHeader->farmHeader.headsSupported))			// the the number of heads if supported
+        uint64_t heads = m_pHeader->farmHeader.headsSupported;                      // get the number of heads, but don't se m_heads yet
+		if (check_For_Active_Status(&heads))			                            // the the number of heads if supported
 		{
 			if ((m_pHeader->farmHeader.headsSupported & UINT64_C(0x00FFFFFFFFFFFFFF)) > 0)
 			{
@@ -527,47 +528,85 @@ bool CSCSI_Farm_Log::set_Head_Header(std::string &headerName, eLogPageTypes inde
 }
 //-----------------------------------------------------------------------------
 //
-//! \fn swap_Bytes_sDriveInfo()
+//! \fn Get_sDriveInfo()
 //
 //! \brief
 //!   Description:  takes the uint64 bit drive information values byte swaps the data   
 //
 //  Entry:
 //! \param di  =  pointer to the drive info structure that holds the information needed, we will need to swap the data
+//! \param offset - pointer to the the offset of the buffer
 //
 //  Exit:
 //!   \return bool
 //
 //---------------------------------------------------------------------------
-bool CSCSI_Farm_Log::swap_Bytes_sDriveInfo(sScsiDriveInfo *di)
+bool CSCSI_Farm_Log::Get_sDriveInfo(sScsiDriveInfo *di, uint64_t offset)
 {
-    byte_Swap_64(&di->copyNumber);
-    byte_Swap_64(&di->deviceBufferSize);
-    byte_Swap_64(&di->deviceCapacity);
-    byte_Swap_64(&di->deviceInterface);
-    byte_Swap_64(&di->factor);
-    byte_Swap_64(&di->firmware);
-    byte_Swap_64(&di->firmwareRev);
-    byte_Swap_64(&di->headLoadEvents);
-    byte_Swap_64(&di->heads);
-    byte_Swap_64(&di->lsecSize);
-    byte_Swap_64(&di->NVC_StatusATPowerOn);
-    byte_Swap_64(&di->pageNumber);
-    byte_Swap_64(&di->poh);
-    byte_Swap_64(&di->powerCycleCount);
-    byte_Swap_64(&di->psecSize);
-    byte_Swap_64(&di->resetCount);
-    byte_Swap_64(&di->rotationRate);
-    byte_Swap_64(&di->serialNumber);
-    byte_Swap_64(&di->serialNumber2);
-    byte_Swap_64(&di->timeAvailable);
-    byte_Swap_64(&di->firstTimeStamp);
-    byte_Swap_64(&di->lastTimeStamp);
-    byte_Swap_64(&di->worldWideName);
-    byte_Swap_64(&di->worldWideName2);
-    if (di->pPageHeader.plen > 0xf0)
+    di->pPageHeader.paramCode = M_BytesTo2ByteValue(pBuf[offset], pBuf[offset + 1]);
+    offset += 2;
+    di->pPageHeader.paramControlByte =pBuf[offset];
+    offset++;
+    di->pPageHeader.paramLength = pBuf[offset];
+    offset++;
+    di->pageNumber = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += 8;
+    di->copyNumber = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += 8;
+    di->serialNumber = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += 8;
+    di->serialNumber2 = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += 8;
+    di->worldWideName = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += 8;
+    di->worldWideName2 = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += 8;
+    di->deviceInterface = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += 8;
+    di->deviceCapacity = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += 8;
+    di->psecSize = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += 8;
+    di->lsecSize = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += 8;
+    di->deviceBufferSize = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += 8;
+    di->heads = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += 8;
+    di->factor = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += 8;
+    di->rotationRate = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += 8;
+    di->firmware = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += 8;
+    di->firmwareRev = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += 8;
+    offset += 8;  //reserved
+    offset += 8;  //reserved1
+    offset += 8;  //reserved2
+    di->poh = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += 8;
+    offset += 8;  //reserved3
+    offset += 8;  //reserved4
+    di->headLoadEvents = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += 8;
+    di->powerCycleCount = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += 8;
+    di->resetCount = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += 8;
+    offset += 8;  //reserved6
+    di->NVC_StatusATPowerOn = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += 8;   
+    di->timeAvailable = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += 8;
+    di->firstTimeStamp = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += 8;
+    di->lastTimeStamp = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += 8;
+    if (di->pPageHeader.paramLength > 0xf0)
     {
-        byte_Swap_64(&di->dateOfAssembly);
+        di->dateOfAssembly = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += 8;
     }
     return true;
 }
@@ -631,7 +670,7 @@ bool CSCSI_Farm_Log::swap_Bytes_sWorkLoadStat(sScsiWorkLoadStat *wl)
     byte_Swap_64(&wl->workLoad.totalWriteCommands);
     byte_Swap_64(&wl->workLoad.workloadPercentage);
     // found a log where the length of the workload log does not match the spec. Need to check for the 0x50 length
-    if (wl->PageHeader.plen > 0x50)
+    if (wl->PageHeader.paramLength > 0x50)
     {
         byte_Swap_64(&wl->workLoad.totalReadCmdsFromFrames1);
         byte_Swap_64(&wl->workLoad.totalReadCmdsFromFrames2);
@@ -677,7 +716,7 @@ bool CSCSI_Farm_Log::swap_Bytes_sErrorStat(sScsiErrorFrame * es)
         byte_Swap_64(&es->errorStat.totalReallocations);
         byte_Swap_64(&es->errorStat.attrIOEDCErrors);
         byte_Swap_64(&es->errorStat.copyNumber);
-        byte_Swap_16(&es->errorStat.pPageHeader.pramCode);
+        byte_Swap_16(&es->errorStat.pPageHeader.paramCode);
         byte_Swap_64(&es->errorStat.pageNumber);
         byte_Swap_64(&es->errorStat.totalFlashLED);
         byte_Swap_64(&es->errorStat.totalMechanicalFails);
@@ -691,7 +730,7 @@ bool CSCSI_Farm_Log::swap_Bytes_sErrorStat(sScsiErrorFrame * es)
         byte_Swap_64(&es->errorV4.totalWriteECC);
         byte_Swap_64(&es->errorV4.attrIOEDCErrors);
         byte_Swap_64(&es->errorV4.copyNumber);
-        byte_Swap_16(&es->errorV4.pPageHeader.pramCode);
+        byte_Swap_16(&es->errorV4.pPageHeader.paramCode);
         byte_Swap_64(&es->errorV4.pageNumber);
         byte_Swap_64(&es->errorV4.totalMechanicalFails); 
         byte_Swap_64(&es->errorV4.FRUCode);
@@ -732,9 +771,9 @@ bool CSCSI_Farm_Log::swap_Bytes_sEnvironmentStat(sScsiEnvironmentStat *es)
     byte_Swap_64(&es->lowestTemp);
     byte_Swap_64(&es->maxTemp);
     byte_Swap_64(&es->minTemp);
-    byte_Swap_16(&es->pPageHeader.pramCode);
+    byte_Swap_16(&es->pPageHeader.paramCode);
     byte_Swap_64(&es->pageNumber);
-    if (es->pPageHeader.plen > 0xa0)
+    if (es->pPageHeader.paramLength > 0xa0)
     {
         byte_Swap_64(&es->average12v);
         byte_Swap_64(&es->average5v);
@@ -833,7 +872,7 @@ bool CSCSI_Farm_Log::swap_Bytes_sScsiReliabilityStat(sScsiReliablility *ss)
         byte_Swap_64(&ss->reli.heliumPressuretThreshold);
         byte_Swap_64(&ss->reli.idleTime);
         byte_Swap_64(&ss->reli.lastIDDTest);
-        byte_Swap_16(&ss->reli.pPageHeader.pramCode);
+        byte_Swap_16(&ss->reli.pPageHeader.paramCode);
         byte_Swap_64(&ss->reli.maxRVAbsoluteMean);
         byte_Swap_64(&ss->reli.microActuatorLockOut);
         byte_Swap_64(&ss->reli.numberDOSScans);
@@ -848,7 +887,7 @@ bool CSCSI_Farm_Log::swap_Bytes_sScsiReliabilityStat(sScsiReliablility *ss)
     }
     else
     {
-        byte_Swap_16(&ss->reli4.pPageHeader.pramCode);
+        byte_Swap_16(&ss->reli4.pPageHeader.paramCode);
         byte_Swap_64(&ss->reli4.pageNumber);
         byte_Swap_64(&ss->reli4.copyNumber);
         byte_Swap_64(&ss->reli4.numberRAWops);
@@ -939,46 +978,91 @@ bool CSCSI_Farm_Log::swap_Bytes_sLUNStruct(sLUNStruct *LUN)
 }
 //-----------------------------------------------------------------------------
 //
-//! \fn swap_Bytes_Flash_LED()
+//! \fn Get_Flash_LED()
 //
 //! \brief
 //!   Description:  takes the pointer to the structure an does a byte swap on all the data for the Flash LED Structure
 //
 //  Entry:
 //! \param fled  =  pointer to the LUN Structure
+//! \param offset = the number of address locations to the buffer
 //
 //  Exit:
 //!   \return bool
 //
 //---------------------------------------------------------------------------
-bool CSCSI_Farm_Log::swap_Bytes_Flash_LED(sActuatorFLEDInfo *fled)
+bool CSCSI_Farm_Log::Get_Flash_LED(sActuatorFLEDInfo *fled, uint64_t offset)
 {
-    byte_Swap_64(&fled->actID);
-    byte_Swap_64(&fled->copyNumber);
+#define SIZEPARAM   8
+    offset += (sizeof(sLogParams));
+    fled->pageNumber = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    fled->copyNumber = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    fled->actID = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    fled->totalFLEDEvents = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    fled->index = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
     
-    byte_Swap_64(&fled->totalFLEDEvents);
-    byte_Swap_64(&fled->index);
-    byte_Swap_64(&fled->pageNumber);
+
     for (uint16_t i = 0; i < FLASH_EVENTS; i++)
     {
-        byte_Swap_64(&fled->powerCycleOfLED[i]);
-        byte_Swap_64(&fled->timestampForLED[i]);
-        byte_Swap_64(&fled->flashLEDArray[i]);
+        fled->powerCycleOfLED[i] = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+    }
+    for (uint16_t j = 0; j < FLASH_EVENTS; j++)
+    {
+        fled->timestampForLED[j] = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+    }
+    for(uint16_t k = 0; k < FLASH_EVENTS; k++)
+    {
+        fled->flashLEDArray[k] = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
     }
     return true;
 }
-bool CSCSI_Farm_Log::swap_Bytes_Reallocation_Data(sActReallocationData *real)
+//-----------------------------------------------------------------------------
+//
+//! \fn Get_Reallocation_Data()
+//
+//! \brief
+//!   Description:  takes the pointer to the structure an does a byte swap on all the data for the reallocation data
+//
+//  Entry:
+//! \param fled  =  pointer to the reallocation Data
+//! \param offset = the number of address locations to the buffer
+//
+//  Exit:
+//!   \return bool
+//
+//---------------------------------------------------------------------------
+bool CSCSI_Farm_Log::Get_Reallocation_Data(sActReallocationData *real, uint64_t offset)
 {
-    byte_Swap_64(&real->pageNumber);
-    byte_Swap_64(&real->copyNumber);
-    byte_Swap_64(&real->actID);
-
-    byte_Swap_64(&real->numberReallocatedSectors);
-    byte_Swap_64(&real->numberReallocatedCandidates);
+#define SIZEPARAM   8
+    real->pageHeader.paramCode = M_BytesTo2ByteValue(pBuf[offset], pBuf[offset + 1]);
+    offset += 2;
+    real->pageHeader.paramControlByte = pBuf[offset];
+    offset++;
+    real->pageHeader.paramLength = pBuf[offset];
+    offset++;
+    real->pageNumber = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    real->copyNumber = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    real->actID = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    real->numberReallocatedSectors = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    real->numberReallocatedCandidates = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
     
     for (uint16_t i = 0; i < REALLOCATIONEVENTS; i++)
     {
-        byte_Swap_64(&real->reallocatedCauses[i]);
+        real->reallocatedCauses[i] = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
     }
     return true;
 }
@@ -1000,7 +1084,7 @@ bool CSCSI_Farm_Log::swap_Bytes_Reallocation_Data(sActReallocationData *real)
 bool CSCSI_Farm_Log::get_Head_Info(sHeadInformation *phead, uint8_t *buffer)
 {
     memcpy(phead->headValue, reinterpret_cast<sHeadInformation *>(&buffer[4]), (sizeof(uint64_t) * static_cast<size_t>(m_heads)));
-    memcpy(&phead->pageHeader, reinterpret_cast<sScsiPageParameter *>(&buffer[0]), sizeof(sScsiPageParameter));
+    memcpy(&phead->pageHeader, reinterpret_cast<sLogPageStruct *>(&buffer[0]), sizeof(sLogPageStruct));
     for (uint64_t index = 0; index < m_heads; index++)
     {
         byte_Swap_64(&phead->headValue[index] );
@@ -1025,7 +1109,7 @@ bool CSCSI_Farm_Log::get_Head_Info(sHeadInformation *phead, uint8_t *buffer)
 void CSCSI_Farm_Log::get_LUN_Info(sLUNStruct *pLUN, uint8_t *buffer)
 {
     memcpy(pLUN, reinterpret_cast<sLUNStruct *>(&buffer[4]), sizeof(sLUNStruct));
-    memcpy(&pLUN->pageHeader, reinterpret_cast<sScsiPageParameter *>(&buffer[0]), sizeof(sScsiPageParameter));
+    memcpy(&pLUN->pageHeader, reinterpret_cast<sLogPageStruct *>(&buffer[0]), sizeof(sLogPageStruct));
     swap_Bytes_sLUNStruct(pLUN);
 }
 //-----------------------------------------------------------------------------
@@ -1084,41 +1168,41 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
 
             while (offset < m_logSize)
             {
-                m_pageParam = reinterpret_cast<sScsiPageParameter *>(&pBuf[offset]);										 // get the page params, so we know what the param code is. 
-                byte_Swap_16(&m_pageParam->pramCode);
-                if (!headerAlreadyFound || (m_pageParam->pramCode != 0x0000 && m_pageParam->pramCode < 0x008F))
+                m_pageParam = reinterpret_cast<sLogParams*>(&pBuf[offset]);										 // get the page params, so we know what the param code is. 
+                byte_Swap_16(&m_pageParam->paramCode);
+                if (!headerAlreadyFound || (m_pageParam->paramCode != 0x0000 && m_pageParam->paramCode < 0x008F))
                 {
-                    pFarmFrame->vFramesFound.push_back(static_cast<eLogPageTypes>(m_pageParam->pramCode));                // collect all the log page types in a vector to pump them out at the end
+                    pFarmFrame->vFramesFound.push_back(static_cast<eLogPageTypes>(m_pageParam->paramCode));                // collect all the log page types in a vector to pump them out at the end
                 }
-                switch (m_pageParam->pramCode)
+                switch (m_pageParam->paramCode)
                 {
                     
                 case FARM_HEADER_PARAMETER:
                     {
                         if (headerAlreadyFound == false)                                    // check to see if we have already found the header
                         {
-                            memcpy(reinterpret_cast<sScsiFarmHeader *>(&pFarmFrame->farmHeader), m_pHeader, m_pageParam->plen + PARAMSIZE);
-                            offset += (m_pageParam->plen + sizeof(sScsiPageParameter));
+                            memcpy(reinterpret_cast<sScsiFarmHeader *>(&pFarmFrame->farmHeader), m_pHeader, m_pageParam->paramLength + PARAMSIZE);
+                            offset += (m_pageParam->paramLength + sizeof(sLogParams));
                             headerAlreadyFound = true;                                      // set the header to true so we will not look at the data a second time
                         }
                         else
                         {
-                            offset += (sizeof(sScsiPageParameter));
+                            offset += (sizeof(sLogParams));
                         }
                     }
                     break; 
  
                 case  GENERAL_DRIVE_INFORMATION_PARAMETER:
                     {
-                        m_pDriveInfo = reinterpret_cast<sScsiDriveInfo *>(&pBuf[offset ]);
-                        swap_Bytes_sDriveInfo(m_pDriveInfo);// get the id drive information at the time.
-                        memcpy(&pFarmFrame->driveInfo,m_pDriveInfo, m_pDriveInfo->pPageHeader.plen);
+                        m_pDriveInfo = new sScsiDriveInfo();        // reinterpret_cast<sScsiDriveInfo*>(&pBuf[offset]);
+                        Get_sDriveInfo(m_pDriveInfo, offset);       // get the id drive information at the time.
+                        memcpy(&pFarmFrame->driveInfo,m_pDriveInfo, m_pDriveInfo->pPageHeader.paramLength);
                         
                         create_Serial_Number(pFarmFrame->identStringInfo.serialNumber, M_DoubleWord0(m_pDriveInfo->serialNumber), M_DoubleWord0(m_pDriveInfo->serialNumber2), m_MajorRev,true );		// create the serial number
                         create_World_Wide_Name(pFarmFrame->identStringInfo.worldWideName, m_pDriveInfo->worldWideName, m_pDriveInfo->worldWideName2,true);						                        // create the wwwn
                         create_Firmware_String(pFarmFrame->identStringInfo.firmwareRev, M_DoubleWord0(m_pDriveInfo->firmware), M_DoubleWord0(m_pDriveInfo->firmwareRev),true);							// create the firmware string
                         create_Device_Interface_String(pFarmFrame->identStringInfo.deviceInterface, M_DoubleWord0(m_pDriveInfo->deviceInterface),true);				// get / create the device interface string
-                        offset += (m_pageParam->plen + sizeof(sScsiPageParameter));
+                        offset += (m_pageParam->paramLength + sizeof(sLogParams));
                     }
                     break;
                    
@@ -1127,9 +1211,9 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                       
                         sScsiWorkLoadStat *pworkLoad = NULL; 										// get the work load information
                         pworkLoad = reinterpret_cast<sScsiWorkLoadStat *>(&pBuf[offset ]);
-                        memcpy(reinterpret_cast<sScsiWorkLoadStat *>(&pFarmFrame->workLoadPage), pworkLoad, pworkLoad->PageHeader.plen + PARAMSIZE);
+                        memcpy(reinterpret_cast<sScsiWorkLoadStat *>(&pFarmFrame->workLoadPage), pworkLoad, pworkLoad->PageHeader.paramLength + PARAMSIZE);
                         swap_Bytes_sWorkLoadStat(&pFarmFrame->workLoadPage);
-                        offset += (pworkLoad->PageHeader.plen + sizeof(sScsiPageParameter));
+                        offset += (pworkLoad->PageHeader.paramLength + sizeof(sLogParams));
                     }
                     break;
                    
@@ -1139,17 +1223,17 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     {
                         sScsiErrorStat *pError;                                                     // get the error status
                         pError = reinterpret_cast<sScsiErrorStat *>(&pBuf[offset]);
-                        memcpy(reinterpret_cast<sScsiErrorStat *>(&pFarmFrame->errorPage.errorStat), pError, pError->pPageHeader.plen);
+                        memcpy(reinterpret_cast<sScsiErrorStat *>(&pFarmFrame->errorPage.errorStat), pError, pError->pPageHeader.paramLength);
                         swap_Bytes_sErrorStat(&pFarmFrame->errorPage);
-                        offset += (pError->pPageHeader.plen + sizeof(sScsiPageParameter));
+                        offset += (pError->pPageHeader.paramLength + sizeof(sLogParams));
                     }
                     else
                     {
                         sScsiErrorVersion4 *pError;                                                     // get the error status
                         pError = reinterpret_cast<sScsiErrorVersion4 *>(&pBuf[offset]);
-                        memcpy(reinterpret_cast<sScsiErrorVersion4 *>(&pFarmFrame->errorPage.errorV4), pError, pError->pPageHeader.plen + PARAMSIZE);
+                        memcpy(reinterpret_cast<sScsiErrorVersion4 *>(&pFarmFrame->errorPage.errorV4), pError, pError->pPageHeader.paramLength + PARAMSIZE);
                         swap_Bytes_sErrorStat(&pFarmFrame->errorPage);
-                        offset += (pError->pPageHeader.plen + sizeof(sScsiPageParameter));
+                        offset += (pError->pPageHeader.paramLength + sizeof(sLogParams));
                     }
                 }
                 break;
@@ -1158,9 +1242,9 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                 {
                     sScsiEnvironmentStat *pEnvironment;                            // get the envirmonent information 
                     pEnvironment = reinterpret_cast<sScsiEnvironmentStat *>(&pBuf[offset]);
-                    memcpy(reinterpret_cast<sScsiEnvironmentStat *>(&pFarmFrame->environmentPage), pEnvironment, pEnvironment->pPageHeader.plen + PARAMSIZE);
+                    memcpy(reinterpret_cast<sScsiEnvironmentStat *>(&pFarmFrame->environmentPage), pEnvironment, pEnvironment->pPageHeader.paramLength + PARAMSIZE);
                     swap_Bytes_sEnvironmentStat(&pFarmFrame->environmentPage);
-                    offset += (pEnvironment->pPageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pEnvironment->pPageHeader.paramLength + sizeof(sLogParams));
                 }
                 break;
                    
@@ -1170,17 +1254,17 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     {
                         sScsiReliabilityStat *pReli;                                              // get the Reliabliity stat
                         pReli = reinterpret_cast<sScsiReliabilityStat *>(&pBuf[offset]);
-                        memcpy(reinterpret_cast<sScsiReliabilityStat *>(&pFarmFrame->reliPage.reli), pReli, pReli->pPageHeader.plen + PARAMSIZE);
+                        memcpy(reinterpret_cast<sScsiReliabilityStat *>(&pFarmFrame->reliPage.reli), pReli, pReli->pPageHeader.paramLength + PARAMSIZE);
                         swap_Bytes_sScsiReliabilityStat(&pFarmFrame->reliPage);
-                        offset += (pReli->pPageHeader.plen + sizeof(sScsiPageParameter));
+                        offset += (pReli->pPageHeader.paramLength + sizeof(sLogParams));
                     }
                     else
                     {
                         sScsiReliStatVersion4 *pReli;                                              // get the Reliabliity stat
                         pReli = reinterpret_cast<sScsiReliStatVersion4 *>(&pBuf[offset]);
-                        memcpy(reinterpret_cast<sScsiReliStatVersion4 *>(&pFarmFrame->reliPage.reli4), pReli, pReli->pPageHeader.plen + PARAMSIZE);
+                        memcpy(reinterpret_cast<sScsiReliStatVersion4 *>(&pFarmFrame->reliPage.reli4), pReli, pReli->pPageHeader.paramLength + PARAMSIZE);
                         swap_Bytes_sScsiReliabilityStat(&pFarmFrame->reliPage);
-                        offset += (pReli->pPageHeader.plen + sizeof(sScsiPageParameter));
+                        offset += (pReli->pPageHeader.paramLength + sizeof(sLogParams));
                     }
                 }
                 break; 
@@ -1188,28 +1272,28 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                 {
                     sGeneralDriveInfoPage06 *pDriveInfo;                                              
                     pDriveInfo = reinterpret_cast<sGeneralDriveInfoPage06 *>(&pBuf[offset]);
-                    memcpy(reinterpret_cast<sGeneralDriveInfoPage06 *>(&pFarmFrame->gDPage06), pDriveInfo, pDriveInfo->pPageHeader.plen + PARAMSIZE);
+                    memcpy(reinterpret_cast<sGeneralDriveInfoPage06 *>(&pFarmFrame->gDPage06), pDriveInfo, pDriveInfo->pPageHeader.paramLength + PARAMSIZE);
                     swap_Bytes_sDrive_Info_Page_06(&pFarmFrame->gDPage06);
                     create_Model_Number_String(pFarmFrame->identStringInfo.modelNumber, pDriveInfo->productID,true);
-                    offset += (pDriveInfo->pPageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pDriveInfo->pPageHeader.paramLength + sizeof(sLogParams));
                 }
                 break;
                 case  ENVIRONMENT_STATISTICS_PAMATER_07:
                 {
                     sScsiEnvStatPage07 *pEnvStat;
                     pEnvStat = reinterpret_cast<sScsiEnvStatPage07 *>(&pBuf[offset]);
-                    memcpy(reinterpret_cast<sScsiEnvStatPage07 *>(&pFarmFrame->envStatPage07), pEnvStat, pEnvStat->pPageHeader.plen + PARAMSIZE);
+                    memcpy(reinterpret_cast<sScsiEnvStatPage07 *>(&pFarmFrame->envStatPage07), pEnvStat, pEnvStat->pPageHeader.paramLength + PARAMSIZE);
                     swap_Bytes_EnvironmentPage07(&pFarmFrame->envStatPage07);
-                    offset += (pEnvStat->pPageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pEnvStat->pPageHeader.paramLength + sizeof(sLogParams));
                 }
                 break;
                 case  WORKLOAD_STATISTICS_PAMATER_08:
                 {
                     sScsiWorkloadStatPage08 *pWorkloadStat;
                     pWorkloadStat = reinterpret_cast<sScsiWorkloadStatPage08 *>(&pBuf[offset]);
-                    memcpy(reinterpret_cast<sScsiWorkloadStatPage08 *>(&pFarmFrame->workloadStatPage08), pWorkloadStat, pWorkloadStat->pPageHeader.plen + PARAMSIZE);
+                    memcpy(reinterpret_cast<sScsiWorkloadStatPage08 *>(&pFarmFrame->workloadStatPage08), pWorkloadStat, pWorkloadStat->pPageHeader.paramLength + PARAMSIZE);
                     swap_Bytes_WorkloadPage08(&pFarmFrame->workloadStatPage08);
-                    offset += (pWorkloadStat->pPageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pWorkloadStat->pPageHeader.paramLength + sizeof(sLogParams));
                 }
                 break;
                 case  RESERVED_FOR_FUTURE_STATISTICS_4:
@@ -1223,7 +1307,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     sHeadInformation *pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->discSlipPerHead, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;
                 }
                 break;
@@ -1232,7 +1316,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     sHeadInformation *pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->discSlipPerHead, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;  
                 }
                 break;
@@ -1241,7 +1325,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     sHeadInformation *pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->bitErrorRateByHead, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;  
                 }
                 break;
@@ -1250,7 +1334,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     sHeadInformation *pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->dosWriteRefreshCountByHead, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;  
                 }
                 break;
@@ -1259,7 +1343,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     sHeadInformation *pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->dvgaSkipWriteDetectByHead, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter)); 
+                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;  
                 }
                 break;
@@ -1268,7 +1352,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     sHeadInformation *pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->rvgaSkipWriteDetectByHead, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter)); 
+                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;  
                 }
                 break;        
@@ -1277,7 +1361,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     sHeadInformation *pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->fvgaSkipWriteDetectByHead, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;  
                 }
                 break;
@@ -1286,7 +1370,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     sHeadInformation *pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->skipWriteDectedThresholdExceededByHead, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;  
                 }
                 break;
@@ -1295,7 +1379,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     sHeadInformation *pHeadInfo = new sHeadInformation(); 
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->acffSine1xValueByHead, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;  
                 }
                 break;
@@ -1304,7 +1388,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     sHeadInformation *pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->acffCosine1xValueByHead, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;  
                 }
                 break;
@@ -1313,7 +1397,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     sHeadInformation *pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->pztCalibrationValueByHead, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;  
                 }
                 break;
@@ -1322,7 +1406,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     sHeadInformation *pHeadInfo = new sHeadInformation(); 
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->mrHeadResistanceByHead, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;  
                 }
                 break;
@@ -1331,7 +1415,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     sHeadInformation *pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->numberOfTMDByHead, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;  
                 }
                 break;
@@ -1340,7 +1424,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     sHeadInformation *pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->velocityObserverByHead, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;  
                 }
                 break;
@@ -1349,7 +1433,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     sHeadInformation *pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->numberOfVelocityObservedByHead, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;  
                 }
                 break;
@@ -1358,7 +1442,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     sHeadInformation *pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->currentH2SATPercentagedbyHead, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;  
                 }
                 break;
@@ -1367,7 +1451,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     sHeadInformation *pHeadInfo = new sHeadInformation(); 
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->currentH2STAmplituedByHead, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;  
                 }
                 break;
@@ -1376,7 +1460,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     sHeadInformation *pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->currentH2STAsymmetryByHead, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;  
                 }
                 break;
@@ -1385,7 +1469,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     sHeadInformation *pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->ResidentGlistEntries, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;  
                 }
                 break;
@@ -1394,7 +1478,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     sHeadInformation *pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->ResidentPlistEntries, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter)); 
+                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;  
                 }
                 break;
@@ -1403,7 +1487,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     sHeadInformation *pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->DOSOoughtToScan, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;  
                 }
                 break;
@@ -1412,7 +1496,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     sHeadInformation *pHeadInfo = new sHeadInformation(); 
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->DOSNeedToScan, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;  
                 }
                 break;
@@ -1421,7 +1505,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     sHeadInformation *pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->DOSWriteFaultScan, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;  
                 }
                 break;
@@ -1430,7 +1514,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     sHeadInformation *pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->writePowerOnHours, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;  
                 }
                 break;
@@ -1439,7 +1523,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                         sHeadInformation *pHeadInfo = new sHeadInformation();
                         get_Head_Info(pHeadInfo, &pBuf[offset]);
                         memcpy(&pFarmFrame->dosWriteCount, pHeadInfo, sizeof(*pHeadInfo));
-                        offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                        offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                         delete pHeadInfo; 
                 }
                 break;
@@ -1448,7 +1532,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     sHeadInformation *pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->cumECCReadRepeat, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;
                 }
                 break;
@@ -1457,7 +1541,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     sHeadInformation *pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->cumECCReadUnique, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;
                 }
                 break;
@@ -1466,7 +1550,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     sHeadInformation* pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->totalLaserFieldAdjustIterations, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;
                 }
                 break;
@@ -1475,7 +1559,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     sHeadInformation* pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->totalReaderWriteerOffsetIterationsPerformed, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;
                 }
                 break;
@@ -1484,7 +1568,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     sHeadInformation* pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->pre_lfaZone_0, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;
                 }
                 break;
@@ -1493,7 +1577,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     sHeadInformation* pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->pre_lfaZone_1, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;
                 }
                 break;
@@ -1502,7 +1586,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     sHeadInformation* pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->pre_lfaZone_2, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;
                 }
                 break;
@@ -1511,7 +1595,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     sHeadInformation* pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->zeroPercentShift, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;
                 }
                 break;
@@ -1520,7 +1604,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     sHeadInformation *pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->currentH2STTrimmedbyHeadZone0, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;  
                 }
                 break;
@@ -1529,7 +1613,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     sHeadInformation *pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->currentH2STTrimmedbyHeadZone1, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;  
                 }
                 break;
@@ -1538,7 +1622,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     sHeadInformation *pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->currentH2STTrimmedbyHeadZone2, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter)); 
+                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;  
                 }
                 break;
@@ -1547,7 +1631,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     sHeadInformation *pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->currentH2STIterationsByHeadZone0, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;  
                 }
                 break;
@@ -1556,7 +1640,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     sHeadInformation *pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->currentH2STIterationsByHeadZone1, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;  
                 }
                 break;
@@ -1565,7 +1649,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     sHeadInformation *pHeadInfo = new sHeadInformation(); 
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->currentH2STIterationsByHeadZone2, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;  
                 }
                 break;
@@ -1574,7 +1658,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     sHeadInformation* pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->laser_operatingZone_0, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;
                 }
                 break;
@@ -1583,7 +1667,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     sHeadInformation* pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->laser_operatingZone_1, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;
                 }
                 break;
@@ -1592,7 +1676,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     sHeadInformation* pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->laserOperatingZone_2, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;
                 }
                 break;
@@ -1601,7 +1685,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     sHeadInformation* pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->postLFAOptimalBERZone_0, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;
                 }
                 break;
@@ -1610,7 +1694,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     sHeadInformation* pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->postLFAOptimalBERZone_1, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;
                 }
                 break;
@@ -1619,7 +1703,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     sHeadInformation* pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->postLFAOptimalBERZone_2, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;
                 }
                 break;
@@ -1628,7 +1712,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     sHeadInformation* pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->microJogOffsetZone_0, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;
                 }
                 break;
@@ -1637,7 +1721,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     sHeadInformation* pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->microJogOffsetZone_1, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;
                 }
                 break;
@@ -1646,7 +1730,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     sHeadInformation* pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->microJogOffsetZone_2, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;
                 }
                 break;
@@ -1655,7 +1739,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     sHeadInformation* pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->zeroPercentShiftZone_1, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;
                 }
                 break;
@@ -1664,7 +1748,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     sHeadInformation *pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->appliedFlyHeightByHeadOuter, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;  
                 }
                 break;
@@ -1673,7 +1757,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     sHeadInformation *pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->appliedFlyHeightByHeadInner, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;
                 }
                 break;
@@ -1682,7 +1766,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     sHeadInformation *pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->appliedFlyHeightByHeadMiddle, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo; 
                 }
                 break; 
@@ -1691,7 +1775,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     sHeadInformation *pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->secondMRHeadResistanceByHead, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;
                 }
                 break;
@@ -1700,7 +1784,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     sHeadInformation *pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->fafhMeasurementStatus, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;
                 }
                 break;
@@ -1709,7 +1793,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     sHeadInformation *pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->fafhRelativeApmlitude, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;
                 }
                 break;
@@ -1718,7 +1802,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     sHeadInformation *pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->fafh_bit_error_rate_0, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;
                 }
                 break;
@@ -1727,7 +1811,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     sHeadInformation *pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->fafh_bit_error_rate_1, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;
                 }
                 break;
@@ -1736,7 +1820,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     sHeadInformation *pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->fafh_bit_error_rate_2, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;
                 }
                 break;
@@ -1745,7 +1829,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     sHeadInformation *pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->fafhLowFrequency_0, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;
                 }
                 break;
@@ -1754,7 +1838,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     sHeadInformation *pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->fafhLowFrequency_1, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;
                 }
                 break;
@@ -1763,7 +1847,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     sHeadInformation *pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->fafhLowFrequency_2, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;
                 }
                 break;
@@ -1772,7 +1856,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     sHeadInformation *pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->fafhHighFrequency_0, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;
                 }
                 break;
@@ -1781,7 +1865,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     sHeadInformation *pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->fafhHighFrequency_1, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;
                 }
                 break;
@@ -1790,7 +1874,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     sHeadInformation *pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->fafhHighFrequency_2, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;
                 }
                 break;
@@ -1799,7 +1883,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     sHeadInformation* pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->zeroPercentShiftZone_2, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;
                 }
                     break;
@@ -1807,9 +1891,9 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                 {
                     sLUNStruct *pLUNInfo;
                     pLUNInfo = reinterpret_cast<sLUNStruct *>(&pBuf[offset]);
-                    memcpy(&pFarmFrame->vLUN50,pLUNInfo, static_cast<size_t>(pLUNInfo->pageHeader.plen) + 4);
+                    memcpy(&pFarmFrame->vLUN50,pLUNInfo, static_cast<size_t>(pLUNInfo->pageHeader.paramLength) + 4);
                     swap_Bytes_sLUNStruct(&pFarmFrame->vLUN50);
-                    offset += (pLUNInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pLUNInfo->pageHeader.paramLength + sizeof(sLogParams));
 
                 }
                 break;
@@ -1817,100 +1901,88 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                 {
                     sActuatorFLEDInfo *pFLEDInfo;
                     pFLEDInfo = reinterpret_cast<sActuatorFLEDInfo *>(&pBuf[offset]);
-                    memcpy(&pFarmFrame->fled51, pFLEDInfo, static_cast<size_t>(pFLEDInfo->pageHeader.plen) + 4);
-                    swap_Bytes_Flash_LED(&pFarmFrame->fled51);
-                    offset += (pFLEDInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    memcpy(&pFarmFrame->fled51, pFLEDInfo, static_cast<size_t>(pFLEDInfo->pageHeader.paramLength) + 4);
+                    Get_Flash_LED(&pFarmFrame->fled51, offset);
+                    offset += (pFLEDInfo->pageHeader.paramLength + sizeof(sLogParams));
 
                 }
                 break;
                 case LUN_REALLOCATION_0:
                 {
-                    sActReallocationData *pReall;
-                    pReall = reinterpret_cast<sActReallocationData *>(&pBuf[offset]);
-                    memcpy(&pFarmFrame->reall52, pReall, static_cast<size_t>(pReall->pageHeader.plen) + 4);
-                    swap_Bytes_Reallocation_Data(&pFarmFrame->reall52);
-                    offset += (pReall->pageHeader.plen + sizeof(sScsiPageParameter));
+                    Get_Reallocation_Data(&pFarmFrame->reall52, offset);
+                    offset += (pFarmFrame->reall52.pageHeader.paramLength + sizeof(sLogParams));
                 }
                 break;
                 case LUN_1_ACTUATOR:
                 {
                     sLUNStruct *pLUNInfo;
                     pLUNInfo = reinterpret_cast<sLUNStruct *>(&pBuf[offset]);
-                    memcpy(&pFarmFrame->vLUN60, pLUNInfo, static_cast<size_t>(pLUNInfo->pageHeader.plen) + 4);
+                    memcpy(&pFarmFrame->vLUN60, pLUNInfo, static_cast<size_t>(pLUNInfo->pageHeader.paramLength) + 4);
                     swap_Bytes_sLUNStruct(&pFarmFrame->vLUN60);
-                    offset += (pLUNInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pLUNInfo->pageHeader.paramLength + sizeof(sLogParams));
                 }
                 break;
                 case LUN_1_FLASH_LED:
                 {
                     sActuatorFLEDInfo *pFLEDInfo;
                     pFLEDInfo = reinterpret_cast<sActuatorFLEDInfo *>(&pBuf[offset]);
-                    memcpy(&pFarmFrame->fled61, pFLEDInfo, static_cast<size_t>(pFLEDInfo->pageHeader.plen) + 4);
-                    swap_Bytes_Flash_LED(&pFarmFrame->fled61);
-                    offset += (pFLEDInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    memcpy(&pFarmFrame->fled61, pFLEDInfo, static_cast<size_t>(pFLEDInfo->pageHeader.paramLength) + 4);
+                    Get_Flash_LED(&pFarmFrame->fled61,offset);
+                    offset += (pFLEDInfo->pageHeader.paramLength + sizeof(sLogParams));
                 }
                 break;
                 case LUN_REALLOCATION_1:
                 {
-                    sActReallocationData *pReall;
-                    pReall = reinterpret_cast<sActReallocationData *>(&pBuf[offset]);
-                    memcpy(&pFarmFrame->reall62, pReall, static_cast<size_t>(pReall->pageHeader.plen) + 4);
-                    swap_Bytes_Reallocation_Data(&pFarmFrame->reall62);
-                    offset += (pReall->pageHeader.plen + sizeof(sScsiPageParameter));
+                    Get_Reallocation_Data(&pFarmFrame->reall62, offset);
+                    offset += (pFarmFrame->reall62.pageHeader.paramLength + sizeof(sLogParams));
                 }
                 break;
                 case LUN_2_ACTUATOR:
                 {
                     sLUNStruct *pLUNInfo;
                     pLUNInfo = reinterpret_cast<sLUNStruct *>(&pBuf[offset]);
-                    memcpy(&pFarmFrame->vLUN70, pLUNInfo, static_cast<size_t>(pLUNInfo->pageHeader.plen) + 4);
+                    memcpy(&pFarmFrame->vLUN70, pLUNInfo, static_cast<size_t>(pLUNInfo->pageHeader.paramLength) + 4);
                     swap_Bytes_sLUNStruct(&pFarmFrame->vLUN70);
-                    offset += (pLUNInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pLUNInfo->pageHeader.paramLength + sizeof(sLogParams));
                 }
                 break;
                 case LUN_2_FLASH_LED:
                 {
                     sActuatorFLEDInfo *pFLEDInfo;
                     pFLEDInfo = reinterpret_cast<sActuatorFLEDInfo *>(&pBuf[offset]);
-                    memcpy(&pFarmFrame->fled71, pFLEDInfo, static_cast<size_t>(pFLEDInfo->pageHeader.plen) + 4);
-                    swap_Bytes_Flash_LED(&pFarmFrame->fled71);
-                    offset += (pFLEDInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    memcpy(&pFarmFrame->fled71, pFLEDInfo, static_cast<size_t>(pFLEDInfo->pageHeader.paramLength) + 4);
+                    Get_Flash_LED(&pFarmFrame->fled71,offset);
+                    offset += (pFLEDInfo->pageHeader.paramLength + sizeof(sLogParams));
                 }
                 break;
                 case LUN_REALLOCATION_2:
                 {
-                    sActReallocationData *pReall;
-                    pReall = reinterpret_cast<sActReallocationData *>(&pBuf[offset]);
-                    memcpy(&pFarmFrame->reall72, pReall, static_cast<size_t>(pReall->pageHeader.plen) + 4);
-                    swap_Bytes_Reallocation_Data(&pFarmFrame->reall72);
-                    offset += (pReall->pageHeader.plen + sizeof(sScsiPageParameter));
+                    Get_Reallocation_Data(&pFarmFrame->reall72, offset);
+                    offset += (pFarmFrame->reall72.pageHeader.paramLength + sizeof(sLogParams));
                 }
                 break;
                 case LUN_3_ACTUATOR:
                 {
                     sLUNStruct *pLUNInfo;
                     pLUNInfo = reinterpret_cast<sLUNStruct *>(&pBuf[offset]);
-                    memcpy(&pFarmFrame->vLUN80, pLUNInfo, static_cast<size_t>(pLUNInfo->pageHeader.plen) + 4);
+                    memcpy(&pFarmFrame->vLUN80, pLUNInfo, static_cast<size_t>(pLUNInfo->pageHeader.paramLength) + 4);
                     swap_Bytes_sLUNStruct(&pFarmFrame->vLUN80);
-                    offset += (pLUNInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    offset += (pLUNInfo->pageHeader.paramLength + sizeof(sLogParams));
                 }
                 break;
                 case LUN_3_FLASH_LED:
                 {
                     sActuatorFLEDInfo *pFLEDInfo;
                     pFLEDInfo = reinterpret_cast<sActuatorFLEDInfo *>(&pBuf[offset]);
-                    memcpy(&pFarmFrame->fled81, pFLEDInfo, static_cast<size_t>(pFLEDInfo->pageHeader.plen) + 4);
-                    swap_Bytes_Flash_LED(&pFarmFrame->fled81);
-                    offset += (pFLEDInfo->pageHeader.plen + sizeof(sScsiPageParameter));
+                    memcpy(&pFarmFrame->fled81, pFLEDInfo, static_cast<size_t>(pFLEDInfo->pageHeader.paramLength) + 4);
+                    Get_Flash_LED(&pFarmFrame->fled81,offset);
+                    offset += (pFLEDInfo->pageHeader.paramLength + sizeof(sLogParams));
                 }
                 break;
                 case LUN_REALLOCATION_3:
                 {
-                    sActReallocationData *pReall;
-                    pReall = reinterpret_cast<sActReallocationData *>(&pBuf[offset]);
-                    memcpy(&pFarmFrame->reall82, pReall, static_cast<size_t>(pReall->pageHeader.plen) + 4);
-                    swap_Bytes_Reallocation_Data(&pFarmFrame->reall82);
-                    offset += (pReall->pageHeader.plen + sizeof(sScsiPageParameter));
+                    Get_Reallocation_Data(&pFarmFrame->reall82, offset);
+                    offset += (pFarmFrame->reall82.pageHeader.paramLength + sizeof(sLogParams));
                 }
                 break;
                 default:
@@ -2434,7 +2506,7 @@ eReturnValues CSCSI_Farm_Log::print_WorkLoad(JSONNODE *masterData, uint32_t page
         farm_PrePython_Int(masterData, "write", "logical sectors written", "workload", "sectors", WORKLOAD_STATISTICS_PARAMETER, check_Status_Strip_Status(vFarmFrame[page].workLoadPage.workLoad.logicalSecWritten));
         farm_PrePython_Int(masterData, "read", "logical sectors read", "workload", "sectors", WORKLOAD_STATISTICS_PARAMETER, static_cast<int64_t>(check_Status_Strip_Status(vFarmFrame[page].workLoadPage.workLoad.logicalSecRead)));
 
-        if (vFarmFrame[page].workLoadPage.PageHeader.plen > 0x50)
+        if (vFarmFrame[page].workLoadPage.PageHeader.paramLength > 0x50)
         {
 
             // found a log where the length of the workload log does not match the spec. Need to check for the 0x50 length
@@ -2491,7 +2563,7 @@ eReturnValues CSCSI_Farm_Log::print_WorkLoad(JSONNODE *masterData, uint32_t page
         temp << std::dec << (vFarmFrame[page].workLoadPage.workLoad.logicalSecRead & UINT64_C(0x00FFFFFFFFFFFFFF));
         set_json_string_With_Status(pageInfo, "Logical Sectors Read", temp.str().c_str(), vFarmFrame[page].workLoadPage.workLoad.logicalSecRead, m_showStatusBits);						//!< Logical Sectors Read
         // found a log where the length of the workload log does not match the spec. Need to check for the 0x50 length
-        if (vFarmFrame[page].workLoadPage.PageHeader.plen > 0x50)
+        if (vFarmFrame[page].workLoadPage.PageHeader.paramLength > 0x50)
         {
             set_json_64_bit_With_Status(pageInfo, "Number of Read commands from 0-3.125% of LBA space", check_Status_Strip_Status(vFarmFrame[page].workLoadPage.workLoad.totalReadCmdsFromFrames1), false, m_showStatusBits);		//!< Number of Read commands from 0-3.125% of LBA space for last 3 SMART Summary Frames
             set_json_64_bit_With_Status(pageInfo, "Number of Read commands from 3.125-25% of LBA space", check_Status_Strip_Status(vFarmFrame[page].workLoadPage.workLoad.totalReadCmdsFromFrames2), false, m_showStatusBits);		//!< Number of Read commands from 3.125-25% of LBA space for last 3 SMART Summary Frames
