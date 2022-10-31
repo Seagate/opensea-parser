@@ -625,21 +625,41 @@ bool CSCSI_Farm_Log::Get_sDriveInfo(sScsiDriveInfo *di, uint64_t offset)
 //!   \return bool
 //
 //---------------------------------------------------------------------------
-bool CSCSI_Farm_Log::swap_Bytes_sDrive_Info_Page_06(sGeneralDriveInfoPage06 *gd)
+bool CSCSI_Farm_Log::Get_sDrive_Info_Page_06(sGeneralDriveInfoPage06 *gd, uint64_t offset)
 {
-    byte_Swap_64(&gd->pageNumber);
-    byte_Swap_64(&gd->copyNumber);
-    byte_Swap_64(&gd->Depop);
-    byte_Swap_64(&gd->productID[0]);
-    byte_Swap_64(&gd->productID[1]);
-    byte_Swap_64(&gd->productID[2]);
-    byte_Swap_64(&gd->productID[3]);
-    byte_Swap_64(&gd->driveType);
-    byte_Swap_64(&gd->isDepopped);
-    byte_Swap_64(&gd->maxNumAvaliableSectors);
-    byte_Swap_64(&gd->timeToReady);
-    byte_Swap_64(&gd->holdTime);
-    byte_Swap_64(&gd->servoSpinUpTime);
+#define SIZEPARAM   8
+    gd->pPageHeader.paramCode = M_BytesTo2ByteValue(pBuf[offset], pBuf[offset + 1]);
+    offset += 2;
+    gd->pPageHeader.paramControlByte = pBuf[offset];
+    offset++;
+    gd->pPageHeader.paramLength = pBuf[offset];
+    offset++;
+    gd->pageNumber = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    gd->copyNumber = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    gd->Depop = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    gd->productID[0] = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    gd->productID[1] = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    gd->productID[2] = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    gd->productID[3] = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    gd->driveType = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    gd->isDepopped = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    gd->maxNumAvaliableSectors = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    gd->timeToReady = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    gd->holdTime = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    gd->servoSpinUpTime = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
     
     return true;
 }
@@ -842,18 +862,36 @@ bool CSCSI_Farm_Log::Get_EnvironmentPage07(sScsiEnvStatPage07 *ep, uint64_t offs
 //!   \return bool
 //
 //---------------------------------------------------------------------------
-bool CSCSI_Farm_Log::swap_Bytes_WorkloadPage08(sScsiWorkloadStatPage08 *ep)
+bool CSCSI_Farm_Log::Get_WorkloadPage08(sScsiWorkloadStatPage08 *ep, uint64_t offset)
 {
-    byte_Swap_64(&ep->pageNumber);
-    byte_Swap_64(&ep->copyNumber);
-    byte_Swap_64(&ep->countQueDepth1);
-    byte_Swap_64(&ep->countQueDepth2);
-    byte_Swap_64(&ep->countQueDepth3_4);
-    byte_Swap_64(&ep->countQueDepth5_8);
-    byte_Swap_64(&ep->countQueDepth9_16);
-    byte_Swap_64(&ep->countQueDepth17_32);
-    byte_Swap_64(&ep->countQueDepth33_64);
-    byte_Swap_64(&ep->countQueDepth_gt_64);
+#define SIZEPARAM   8
+    ep->pPageHeader.paramCode = M_BytesTo2ByteValue(pBuf[offset], pBuf[offset + 1]);
+    offset += 2;
+    ep->pPageHeader.paramControlByte = pBuf[offset];
+    offset++;
+    ep->pPageHeader.paramLength = pBuf[offset];
+    offset++;
+    ep->pageNumber = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    ep->copyNumber = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    ep->countQueDepth1 = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    ep->countQueDepth2 = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    ep->countQueDepth3_4 = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    ep->countQueDepth5_8 = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    ep->countQueDepth9_16 = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    ep->countQueDepth17_32 = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    ep->countQueDepth33_64 = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    ep->countQueDepth_gt_64 = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+
     return true;
 }
 
@@ -1291,30 +1329,21 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                 break; 
                 case  GENERAL_DRIVE_INFORMATION_06:
                 {
-                    sGeneralDriveInfoPage06 *pDriveInfo;                                              
-                    pDriveInfo = reinterpret_cast<sGeneralDriveInfoPage06 *>(&pBuf[offset]);
-                    memcpy(reinterpret_cast<sGeneralDriveInfoPage06 *>(&pFarmFrame->gDPage06), pDriveInfo, pDriveInfo->pPageHeader.paramLength + PARAMSIZE);
-                    swap_Bytes_sDrive_Info_Page_06(&pFarmFrame->gDPage06);
-                    create_Model_Number_String(pFarmFrame->identStringInfo.modelNumber, pDriveInfo->productID,true);
-                    offset += (pDriveInfo->pPageHeader.paramLength + sizeof(sLogParams));
+                    Get_sDrive_Info_Page_06(&pFarmFrame->gDPage06,offset);
+                    create_Model_Number_String(pFarmFrame->identStringInfo.modelNumber, pFarmFrame->gDPage06.productID,true);
+                    offset += (pFarmFrame->gDPage06.pPageHeader.paramLength + sizeof(sLogParams));
                 }
                 break;
                 case  ENVIRONMENT_STATISTICS_PAMATER_07:
                 {
-                    //sScsiEnvStatPage07 *pEnvStat;
-                    //pEnvStat = reinterpret_cast<sScsiEnvStatPage07 *>(&pBuf[offset]);
-                    //memcpy(reinterpret_cast<sScsiEnvStatPage07 *>(&pFarmFrame->envStatPage07), pEnvStat, pEnvStat->pPageHeader.paramLength + PARAMSIZE);
                     Get_EnvironmentPage07(&pFarmFrame->envStatPage07,offset);
                     offset += (pFarmFrame->envStatPage07.pPageHeader.paramLength + sizeof(sLogParams));
                 }
                 break;
                 case  WORKLOAD_STATISTICS_PAMATER_08:
                 {
-                    sScsiWorkloadStatPage08 *pWorkloadStat;
-                    pWorkloadStat = reinterpret_cast<sScsiWorkloadStatPage08 *>(&pBuf[offset]);
-                    memcpy(reinterpret_cast<sScsiWorkloadStatPage08 *>(&pFarmFrame->workloadStatPage08), pWorkloadStat, pWorkloadStat->pPageHeader.paramLength + PARAMSIZE);
-                    swap_Bytes_WorkloadPage08(&pFarmFrame->workloadStatPage08);
-                    offset += (pWorkloadStat->pPageHeader.paramLength + sizeof(sLogParams));
+                    Get_WorkloadPage08(&pFarmFrame->workloadStatPage08,offset);
+                    offset += (pFarmFrame->workloadStatPage08.pPageHeader.paramLength + sizeof(sLogParams));
                 }
                 break;
                 case  RESERVED_FOR_FUTURE_STATISTICS_4:

@@ -89,12 +89,12 @@ namespace opensea_parser {
         bool strip_Active_Status(uint64_t *value);
         bool swap_Bytes_sFarmHeader(sScsiFarmHeader *fh, uint8_t* pData);
         bool Get_sDriveInfo(sScsiDriveInfo *di, uint64_t offset);
-        bool swap_Bytes_sDrive_Info_Page_06(sGeneralDriveInfoPage06 *gd);
+        bool Get_sDrive_Info_Page_06(sGeneralDriveInfoPage06 *gd,uint64_t offset);
         bool swap_Bytes_sWorkLoadStat(sScsiWorkLoadStat *wl);
         bool swap_Bytes_sErrorStat(sScsiErrorFrame * es);
         bool swap_Bytes_sEnvironmentStat(sScsiEnvironmentStat *es);
         bool Get_EnvironmentPage07(sScsiEnvStatPage07 *ep,uint64_t offset);
-        bool swap_Bytes_WorkloadPage08(sScsiWorkloadStatPage08 *ep);
+        bool Get_WorkloadPage08(sScsiWorkloadStatPage08 *ep,uint64_t offset);
         bool swap_Bytes_sScsiReliabilityStat(sScsiReliablility *ss);
         bool swap_Bytes_sLUNStruct(sLUNStruct *LUN);
         bool Get_Flash_LED(sActuatorFLEDInfo *fled, uint64_t offset);
