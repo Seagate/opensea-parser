@@ -90,9 +90,9 @@ namespace opensea_parser {
         bool swap_Bytes_sFarmHeader(sScsiFarmHeader *fh, uint8_t* pData);
         bool Get_sDriveInfo(sScsiDriveInfo *di, uint64_t offset);
         bool Get_sDrive_Info_Page_06(sGeneralDriveInfoPage06 *gd,uint64_t offset);
-        bool swap_Bytes_sWorkLoadStat(sScsiWorkLoadStat *wl);
+        bool Get_sWorkLoadStat(sScsiWorkLoadStat *wl, uint64_t offset);
         bool swap_Bytes_sErrorStat(sScsiErrorFrame * es);
-        bool swap_Bytes_sEnvironmentStat(sScsiEnvironmentStat *es);
+        bool Get_sEnvironmentStat(sScsiEnvironmentStat *es,uint64_t offset);
         bool Get_EnvironmentPage07(sScsiEnvStatPage07 *ep,uint64_t offset);
         bool Get_WorkloadPage08(sScsiWorkloadStatPage08 *ep,uint64_t offset);
         bool swap_Bytes_sScsiReliabilityStat(sScsiReliablility *ss);

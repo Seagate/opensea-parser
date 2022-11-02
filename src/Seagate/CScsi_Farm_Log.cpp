@@ -613,7 +613,7 @@ bool CSCSI_Farm_Log::Get_sDriveInfo(sScsiDriveInfo *di, uint64_t offset)
 }
 //-----------------------------------------------------------------------------
 //
-//! \fn swap_Bytes_sDrive_Info_Page_06()
+//! \fn Get_sDrive_Info_Page_06()
 //
 //! \brief
 //!   Description:  takes the uint64 bit drive information values byte swaps the data  
@@ -666,7 +666,7 @@ bool CSCSI_Farm_Log::Get_sDrive_Info_Page_06(sGeneralDriveInfoPage06 *gd, uint64
 
 //-----------------------------------------------------------------------------
 //
-//! \fn create_Device_Interface_String()
+//! \fn Get_sWorkLoadStat()
 //
 //! \brief
 //!   Description:  takes the two uint64 bit work load stat and swaps all the bytes 
@@ -678,38 +678,75 @@ bool CSCSI_Farm_Log::Get_sDrive_Info_Page_06(sGeneralDriveInfoPage06 *gd, uint64
 //!   \return true when done
 //
 //---------------------------------------------------------------------------
-bool CSCSI_Farm_Log::swap_Bytes_sWorkLoadStat(sScsiWorkLoadStat *wl)
+bool CSCSI_Farm_Log::Get_sWorkLoadStat(sScsiWorkLoadStat *wl, uint64_t offset)
 {
-    byte_Swap_64(&wl->workLoad.copyNumber);
-    byte_Swap_64(&wl->workLoad.logicalSecRead);
-    byte_Swap_64(&wl->workLoad.logicalSecWritten);
-    byte_Swap_64(&wl->workLoad.pageNumber);
-    byte_Swap_64(&wl->workLoad.totalNumberofOtherCMDS);
-    byte_Swap_64(&wl->workLoad.totalRandomReads);
-    byte_Swap_64(&wl->workLoad.totalRandomWrites);
-    byte_Swap_64(&wl->workLoad.totalReadCommands);
-    byte_Swap_64(&wl->workLoad.totalWriteCommands);
-    byte_Swap_64(&wl->workLoad.workloadPercentage);
+#define SIZEPARAM   8
+    wl->PageHeader.paramCode = M_BytesTo2ByteValue(pBuf[offset], pBuf[offset + 1]);
+    offset += 2;
+    wl->PageHeader.paramControlByte = pBuf[offset];
+    offset++;
+    wl->PageHeader.paramLength = pBuf[offset];
+    offset++;
+    wl->workLoad.pageNumber = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    wl->workLoad.copyNumber = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    wl->workLoad.workloadPercentage = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    wl->workLoad.totalReadCommands = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    wl->workLoad.totalWriteCommands = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    wl->workLoad.totalRandomReads = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    wl->workLoad.totalRandomWrites = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    wl->workLoad.totalNumberofOtherCMDS = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    wl->workLoad.logicalSecWritten = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    wl->workLoad.logicalSecRead = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+
+
+
     // found a log where the length of the workload log does not match the spec. Need to check for the 0x50 length
     if (wl->PageHeader.paramLength > 0x50)
     {
-        byte_Swap_64(&wl->workLoad.totalReadCmdsFromFrames1);
-        byte_Swap_64(&wl->workLoad.totalReadCmdsFromFrames2);
-        byte_Swap_64(&wl->workLoad.totalReadCmdsFromFrames3);
-        byte_Swap_64(&wl->workLoad.totalReadCmdsFromFrames4);
-        byte_Swap_64(&wl->workLoad.totalWriteCmdsFromFrames1);
-        byte_Swap_64(&wl->workLoad.totalWriteCmdsFromFrames2);
-        byte_Swap_64(&wl->workLoad.totalWriteCmdsFromFrames3);
-        byte_Swap_64(&wl->workLoad.totalWriteCmdsFromFrames4);
+        wl->workLoad.totalReadCmdsFromFrames1 = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+        wl->workLoad.totalReadCmdsFromFrames2 = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+        wl->workLoad.totalReadCmdsFromFrames3 = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+        wl->workLoad.totalReadCmdsFromFrames4 = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+        wl->workLoad.totalWriteCmdsFromFrames1 = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+        wl->workLoad.totalWriteCmdsFromFrames2 = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+        wl->workLoad.totalWriteCmdsFromFrames3 = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+        wl->workLoad.totalWriteCmdsFromFrames4 = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
 
-        byte_Swap_64(&wl->workLoad.numReadTransferSmall);
-        byte_Swap_64(&wl->workLoad.numReadTransferMid1);
-        byte_Swap_64(&wl->workLoad.numReadTransferMid2);
-        byte_Swap_64(&wl->workLoad.numReadTransferLarge);
-        byte_Swap_64(&wl->workLoad.numWriteTransferSmall);
-        byte_Swap_64(&wl->workLoad.numWriteTransferMid1);
-        byte_Swap_64(&wl->workLoad.numWriteTransferMid2);
-        byte_Swap_64(&wl->workLoad.numWriteTransferLarge);
+        wl->workLoad.numReadTransferSmall = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+        wl->workLoad.numReadTransferMid1 = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+        wl->workLoad.numReadTransferMid2 = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+        wl->workLoad.numReadTransferLarge = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+
+        wl->workLoad.numWriteTransferSmall = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+        wl->workLoad.numWriteTransferMid1 = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+        wl->workLoad.numWriteTransferMid2 = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+        wl->workLoad.numWriteTransferLarge = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
 
     }
     return true;
@@ -781,27 +818,50 @@ bool CSCSI_Farm_Log::swap_Bytes_sErrorStat(sScsiErrorFrame * es)
 //!   \return bool
 //
 //---------------------------------------------------------------------------
-bool CSCSI_Farm_Log::swap_Bytes_sEnvironmentStat(sScsiEnvironmentStat *es)
+bool CSCSI_Farm_Log::Get_sEnvironmentStat(sScsiEnvironmentStat *es, uint64_t offset)
 {
-    byte_Swap_64(&es->copyNumber);
-    byte_Swap_64(&es->curentTemp);
-    byte_Swap_64(&es->currentMotorPower);
-    byte_Swap_64(&es->highestTemp);
-    byte_Swap_64(&es->humidity);
-    byte_Swap_64(&es->humidityRatio);
-    byte_Swap_64(&es->lowestTemp);
-    byte_Swap_64(&es->maxTemp);
-    byte_Swap_64(&es->minTemp);
-    byte_Swap_16(&es->pPageHeader.paramCode);
-    byte_Swap_64(&es->pageNumber);
+#define SIZEPARAM   8
+    es->pPageHeader.paramCode = M_BytesTo2ByteValue(pBuf[offset], pBuf[offset + 1]);
+    offset += 2;
+    es->pPageHeader.paramControlByte = pBuf[offset];
+    offset++;
+    es->pPageHeader.paramLength = pBuf[offset];
+    offset++;
+    es->pageNumber = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    es->copyNumber = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    es->curentTemp = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    es->highestTemp = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    es->lowestTemp = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += (SIZEPARAM*9);
+    es->maxTemp = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    es->minTemp = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += (SIZEPARAM*3);
+    es->humidity = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    es->humidityRatio = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    es->currentMotorPower = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+
     if (es->pPageHeader.paramLength > 0xa0)
     {
-        byte_Swap_64(&es->average12v);
-        byte_Swap_64(&es->average5v);
-        byte_Swap_64(&es->max12v);
-        byte_Swap_64(&es->max5v);
-        byte_Swap_64(&es->min12v);
-        byte_Swap_64(&es->min5v);
+        es->average12v = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+        es->min12v = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+        es->max12v = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+        es->average5v = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+        es->min5v = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+        es->max5v = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
     }
     return true;
 }
@@ -1268,11 +1328,11 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                 case  WORKLOAD_STATISTICS_PARAMETER:
                     {
                       
-                        sScsiWorkLoadStat *pworkLoad = NULL; 										// get the work load information
-                        pworkLoad = reinterpret_cast<sScsiWorkLoadStat *>(&pBuf[offset ]);
-                        memcpy(reinterpret_cast<sScsiWorkLoadStat *>(&pFarmFrame->workLoadPage), pworkLoad, pworkLoad->PageHeader.paramLength + PARAMSIZE);
-                        swap_Bytes_sWorkLoadStat(&pFarmFrame->workLoadPage);
-                        offset += (pworkLoad->PageHeader.paramLength + sizeof(sLogParams));
+                        //sScsiWorkLoadStat *pworkLoad = NULL; 										// get the work load information
+                        //pworkLoad = reinterpret_cast<sScsiWorkLoadStat *>(&pBuf[offset ]);
+                        //memcpy(reinterpret_cast<sScsiWorkLoadStat *>(&pFarmFrame->workLoadPage), pworkLoad, pworkLoad->PageHeader.paramLength + PARAMSIZE);
+                        Get_sWorkLoadStat(&pFarmFrame->workLoadPage,offset);
+                        offset += (pFarmFrame->workLoadPage.PageHeader.paramLength + sizeof(sLogParams));
                     }
                     break;
                    
@@ -1299,11 +1359,11 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     
                 case ENVIRONMENTAL_STATISTICS_PARAMETER:     
                 {
-                    sScsiEnvironmentStat *pEnvironment;                            // get the envirmonent information 
-                    pEnvironment = reinterpret_cast<sScsiEnvironmentStat *>(&pBuf[offset]);
-                    memcpy(reinterpret_cast<sScsiEnvironmentStat *>(&pFarmFrame->environmentPage), pEnvironment, pEnvironment->pPageHeader.paramLength + PARAMSIZE);
-                    swap_Bytes_sEnvironmentStat(&pFarmFrame->environmentPage);
-                    offset += (pEnvironment->pPageHeader.paramLength + sizeof(sLogParams));
+                    //sScsiEnvironmentStat *pEnvironment;                            // get the envirmonent information 
+                    //pEnvironment = reinterpret_cast<sScsiEnvironmentStat *>(&pBuf[offset]);
+                    //memcpy(reinterpret_cast<sScsiEnvironmentStat *>(&pFarmFrame->environmentPage), pEnvironment, pEnvironment->pPageHeader.paramLength + PARAMSIZE);
+                    Get_sEnvironmentStat(&pFarmFrame->environmentPage,offset);
+                    offset += (pFarmFrame->environmentPage.pPageHeader.paramLength + sizeof(sLogParams));
                 }
                 break;
                    
