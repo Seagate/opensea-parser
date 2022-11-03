@@ -59,6 +59,8 @@ namespace opensea_parser {
 #define FARM_LAST_FRAME                 0xC6
 #define FARM_TEMP_TRIGGER_LOG_PAGE      0xC7
 
+#define SIZEPARAM   8
+
     class CSCSI_Farm_Log : public CFarmCommon
     {
     protected:
@@ -91,17 +93,16 @@ namespace opensea_parser {
         bool Get_sDriveInfo(sScsiDriveInfo *di, uint64_t offset);
         bool Get_sDrive_Info_Page_06(sGeneralDriveInfoPage06 *gd,uint64_t offset);
         bool Get_sWorkLoadStat(sScsiWorkLoadStat *wl, uint64_t offset);
-        bool swap_Bytes_sErrorStat(sScsiErrorFrame * es);
+        bool Get_sErrorStat(sScsiErrorFrame *es, uint64_t offset);
         bool Get_sEnvironmentStat(sScsiEnvironmentStat *es,uint64_t offset);
         bool Get_EnvironmentPage07(sScsiEnvStatPage07 *ep,uint64_t offset);
         bool Get_WorkloadPage08(sScsiWorkloadStatPage08 *ep,uint64_t offset);
-        bool swap_Bytes_sScsiReliabilityStat(sScsiReliablility *ss);
-        bool swap_Bytes_sLUNStruct(sLUNStruct *LUN);
+        bool Get_sScsiReliabilityStat(sScsiReliablility *ss,uint64_t offset);
+        bool Get_sLUNStruct(sLUNStruct *LUN,uint64_t offset);
         bool Get_Flash_LED(sActuatorFLEDInfo *fled, uint64_t offset);
         bool Get_Reallocation_Data(sActReallocationData *real, uint64_t offset);
         bool get_Head_Info(sHeadInformation *phead, uint8_t *buffer);
         bool set_Head_Header(std::string &headerName, eLogPageTypes index);
-        void get_LUN_Info(sLUNStruct *pLUN, uint8_t *buffer);
 		
 		eReturnValues init_Header_Data();
         eReturnValues print_Header(JSONNODE *masterData);
