@@ -543,7 +543,6 @@ bool CSCSI_Farm_Log::set_Head_Header(std::string &headerName, eLogPageTypes inde
 //---------------------------------------------------------------------------
 bool CSCSI_Farm_Log::Get_sDriveInfo(sScsiDriveInfo *di, uint64_t offset)
 {
-#define SIZEPARAM   8
     di->pPageHeader.paramCode = M_BytesTo2ByteValue(pBuf[offset], pBuf[offset + 1]);
     offset += 2;
     di->pPageHeader.paramControlByte =pBuf[offset];
@@ -627,7 +626,6 @@ bool CSCSI_Farm_Log::Get_sDriveInfo(sScsiDriveInfo *di, uint64_t offset)
 //---------------------------------------------------------------------------
 bool CSCSI_Farm_Log::Get_sDrive_Info_Page_06(sGeneralDriveInfoPage06 *gd, uint64_t offset)
 {
-#define SIZEPARAM   8
     gd->pPageHeader.paramCode = M_BytesTo2ByteValue(pBuf[offset], pBuf[offset + 1]);
     offset += 2;
     gd->pPageHeader.paramControlByte = pBuf[offset];
@@ -678,9 +676,8 @@ bool CSCSI_Farm_Log::Get_sDrive_Info_Page_06(sGeneralDriveInfoPage06 *gd, uint64
 //!   \return true when done
 //
 //---------------------------------------------------------------------------
-bool CSCSI_Farm_Log::Get_sWorkLoadStat(sScsiWorkLoadStat *wl, uint64_t offset)
+bool CSCSI_Farm_Log::Get_sWorkLoadStat(sScsiWorkLoadStat *wl, uint64_t offset)  
 {
-#define SIZEPARAM   8
     wl->PageHeader.paramCode = M_BytesTo2ByteValue(pBuf[offset], pBuf[offset + 1]);
     offset += 2;
     wl->PageHeader.paramControlByte = pBuf[offset];
@@ -765,41 +762,80 @@ bool CSCSI_Farm_Log::Get_sWorkLoadStat(sScsiWorkLoadStat *wl, uint64_t offset)
 //!   \return bool
 //
 //---------------------------------------------------------------------------
-bool CSCSI_Farm_Log::swap_Bytes_sErrorStat(sScsiErrorFrame * es)
+bool CSCSI_Farm_Log::Get_sErrorStat(sScsiErrorFrame * es, uint64_t offset)
 {
+
     if (m_MajorRev < 4)
     {
-        byte_Swap_64(&es->errorStat.totalReadECC);
-        byte_Swap_64(&es->errorStat.totalWriteECC);
-        byte_Swap_64(&es->errorStat.totalReallocations);
-        byte_Swap_64(&es->errorStat.attrIOEDCErrors);
-        byte_Swap_64(&es->errorStat.copyNumber);
-        byte_Swap_16(&es->errorStat.pPageHeader.paramCode);
-        byte_Swap_64(&es->errorStat.pageNumber);
-        byte_Swap_64(&es->errorStat.totalFlashLED);
-        byte_Swap_64(&es->errorStat.totalMechanicalFails);
-        byte_Swap_64(&es->errorStat.totalReallocatedCanidates);
-        byte_Swap_64(&es->errorStat.FRUCode);
-        byte_Swap_64(&es->errorStat.parity);
+        es->errorStat.pPageHeader.paramCode = M_BytesTo2ByteValue(pBuf[offset], pBuf[offset + 1]);
+        offset += 2;
+        es->errorStat.pPageHeader.paramControlByte = pBuf[offset];
+        offset++;
+        es->errorStat.pPageHeader.paramLength = pBuf[offset];
+        offset++;
+        es->errorStat.pageNumber = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+        es->errorStat.copyNumber = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+        es->errorStat.totalReadECC = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+        es->errorStat.totalWriteECC = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+        es->errorStat.totalReallocations = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += (SIZEPARAM * 2); //one reserved
+        es->errorStat.totalMechanicalFails = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+        es->errorStat.totalReallocatedCanidates = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += (SIZEPARAM * 6); // 5 reseved
+        es->errorStat.attrIOEDCErrors = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += (SIZEPARAM * 4); //3 reseved
+        es->errorStat.totalFlashLED = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += (SIZEPARAM * 3);
+        es->errorStat.FRUCode = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+        es->errorStat.parity = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+
     }
     else
     {
-        byte_Swap_64(&es->errorV4.totalReadECC);
-        byte_Swap_64(&es->errorV4.totalWriteECC);
-        byte_Swap_64(&es->errorV4.attrIOEDCErrors);
-        byte_Swap_64(&es->errorV4.copyNumber);
-        byte_Swap_16(&es->errorV4.pPageHeader.paramCode);
-        byte_Swap_64(&es->errorV4.pageNumber);
-        byte_Swap_64(&es->errorV4.totalMechanicalFails); 
-        byte_Swap_64(&es->errorV4.FRUCode);
-        byte_Swap_64(&es->errorV4.portAInvalidDwordCount);
-        byte_Swap_64(&es->errorV4.portBInvalidDwordCount);
-        byte_Swap_64(&es->errorV4.portADisparityErrorCount);
-        byte_Swap_64(&es->errorV4.portBDisparityErrorCount);
-        byte_Swap_64(&es->errorV4.portALossDwordSync);
-        byte_Swap_64(&es->errorV4.portBLossDwordSync);
-        byte_Swap_64(&es->errorV4.portAPhyResetProblem);
-        byte_Swap_64(&es->errorV4.portBPhyResetProblem);
+        es->errorV4.pPageHeader.paramCode = M_BytesTo2ByteValue(pBuf[offset], pBuf[offset + 1]);
+        offset += 2;
+        es->errorV4.pPageHeader.paramControlByte = pBuf[offset];
+        offset++;
+        es->errorV4.pPageHeader.paramLength = pBuf[offset];
+        offset++;
+        es->errorV4.pageNumber = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+        es->errorV4.copyNumber = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+        es->errorV4.totalReadECC = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+        es->errorV4.totalWriteECC = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += (SIZEPARAM * 3); // 2 reserved
+        es->errorV4.totalMechanicalFails = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += (SIZEPARAM * 7);  // 6 reserved
+        es->errorV4.attrIOEDCErrors = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += (SIZEPARAM * 7); // 6 reserved
+        es->errorV4.FRUCode = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+        es->errorV4.portAInvalidDwordCount = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+        es->errorV4.portBInvalidDwordCount = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+        es->errorV4.portADisparityErrorCount = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+        es->errorV4.portBDisparityErrorCount = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+        es->errorV4.portALossDwordSync = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+        es->errorV4.portBLossDwordSync = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+        es->errorV4.portAPhyResetProblem = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+        es->errorV4.portBPhyResetProblem = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+
     }
     return true;
 }
@@ -882,7 +918,6 @@ bool CSCSI_Farm_Log::Get_sEnvironmentStat(sScsiEnvironmentStat *es, uint64_t off
 //---------------------------------------------------------------------------
 bool CSCSI_Farm_Log::Get_EnvironmentPage07(sScsiEnvStatPage07 *ep, uint64_t offset)
 {
-#define SIZEPARAM   8
     ep->pPageHeader.paramCode = M_BytesTo2ByteValue(pBuf[offset], pBuf[offset + 1]);
     offset += 2;
     ep->pPageHeader.paramControlByte = pBuf[offset];
@@ -924,7 +959,6 @@ bool CSCSI_Farm_Log::Get_EnvironmentPage07(sScsiEnvStatPage07 *ep, uint64_t offs
 //---------------------------------------------------------------------------
 bool CSCSI_Farm_Log::Get_WorkloadPage08(sScsiWorkloadStatPage08 *ep, uint64_t offset)
 {
-#define SIZEPARAM   8
     ep->pPageHeader.paramCode = M_BytesTo2ByteValue(pBuf[offset], pBuf[offset + 1]);
     offset += 2;
     ep->pPageHeader.paramControlByte = pBuf[offset];
@@ -971,44 +1005,82 @@ bool CSCSI_Farm_Log::Get_WorkloadPage08(sScsiWorkloadStatPage08 *ep, uint64_t of
 //!   \return bool
 //
 //---------------------------------------------------------------------------
-bool CSCSI_Farm_Log::swap_Bytes_sScsiReliabilityStat(sScsiReliablility *ss)
+bool CSCSI_Farm_Log::Get_sScsiReliabilityStat(sScsiReliablility *ss, uint64_t offset)
 {
     if (m_MajorRev < 4)
     {
-        byte_Swap_64(&ss->reli.altsAfterIDD);
-        byte_Swap_64(&ss->reli.altsBeforeIDD);
-        byte_Swap_64(&ss->reli.cmdLastIDDTest);
-        byte_Swap_64(&ss->reli.copyNumber);
-        byte_Swap_64(&ss->reli.diskSlipRecalPerformed);
-        byte_Swap_64(&ss->reli.gListAfterIDD);
-        byte_Swap_64(&ss->reli.gListBeforIDD);
-        byte_Swap_64(&ss->reli.gListReclamed);
-        byte_Swap_64(&ss->reli.heliumPressuretThreshold);
-        byte_Swap_64(&ss->reli.idleTime);
-        byte_Swap_64(&ss->reli.lastIDDTest);
-        byte_Swap_16(&ss->reli.pPageHeader.paramCode);
-        byte_Swap_64(&ss->reli.maxRVAbsoluteMean);
-        byte_Swap_64(&ss->reli.microActuatorLockOut);
-        byte_Swap_64(&ss->reli.numberDOSScans);
-        byte_Swap_64(&ss->reli.numberLBACorrect);
-        byte_Swap_64(&ss->reli.numberRAWops);
-        byte_Swap_64(&ss->reli.numberValidParitySec);
-        byte_Swap_64(&ss->reli.pageNumber);
-        byte_Swap_64(&ss->reli.rvAbsoluteMean);
-        byte_Swap_64(&ss->reli.scrubsAfterIDD);
-        byte_Swap_64(&ss->reli.scrubsBeforeIDD);
-        byte_Swap_64(&ss->reli.servoStatus);
+
+        ss->reli.pPageHeader.paramCode = M_BytesTo2ByteValue(pBuf[offset], pBuf[offset + 1]);
+        offset += 2;
+        ss->reli.pPageHeader.paramControlByte = pBuf[offset];
+        offset++;
+        ss->reli.pPageHeader.paramLength = pBuf[offset];
+        offset++;
+        ss->reli.pageNumber = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+        ss->reli.copyNumber = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+        ss->reli.lastIDDTest = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+        ss->reli.cmdLastIDDTest = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+        ss->reli.gListReclamed = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+        ss->reli.servoStatus = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+        ss->reli.altsBeforeIDD = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+        ss->reli.altsAfterIDD = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+        ss->reli.scrubsBeforeIDD = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+        ss->reli.scrubsAfterIDD = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+        ss->reli.numberDOSScans = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+        ss->reli.numberLBACorrect = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+        ss->reli.numberValidParitySec = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+        ss->reli.numberRAWops = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += (SIZEPARAM * 7); //6 reserved
+        ss->reli.microActuatorLockOut = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+        ss->reli.diskSlipRecalPerformed = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+        ss->reli.heliumPressuretThreshold = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+        ss->reli.rvAbsoluteMean = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+        ss->reli.maxRVAbsoluteMean = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+        ss->reli.idleTime = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+
     }
     else
     {
-        byte_Swap_16(&ss->reli4.pPageHeader.paramCode);
-        byte_Swap_64(&ss->reli4.pageNumber);
-        byte_Swap_64(&ss->reli4.copyNumber);
-        byte_Swap_64(&ss->reli4.numberRAWops);
-        byte_Swap_64(&ss->reli4.cumECCDueToERC);
-        byte_Swap_64(&ss->reli4.microActuatorLockOut);
-        byte_Swap_64(&ss->reli4.diskSlipRecalPerformed);
-        byte_Swap_64(&ss->reli4.heliumPressuretThreshold);
+        ss->reli4.pPageHeader.paramCode = M_BytesTo2ByteValue(pBuf[offset], pBuf[offset + 1]);
+        offset += 2;
+        ss->reli4.pPageHeader.paramControlByte = pBuf[offset];
+        offset++;
+        ss->reli4.pPageHeader.paramLength = pBuf[offset];
+        offset++;
+        ss->reli4.pageNumber = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+        ss->reli4.copyNumber = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += (SIZEPARAM * 14);
+        ss->reli4.numberRAWops = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+        ss->reli4.cumECCDueToERC = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += (SIZEPARAM * 7);
+        ss->reli4.microActuatorLockOut = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+        ss->reli4.diskSlipRecalPerformed = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+        ss->reli4.heliumPressuretThreshold = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+
     }
     return true;
 }
@@ -1055,39 +1127,75 @@ bool CSCSI_Farm_Log::swap_Bytes_sFarmHeader(sScsiFarmHeader *fh, uint8_t* pData)
 //!   \return bool
 //
 //---------------------------------------------------------------------------
-bool CSCSI_Farm_Log::swap_Bytes_sLUNStruct(sLUNStruct *LUN)
+bool CSCSI_Farm_Log::Get_sLUNStruct(sLUNStruct *LUN,uint64_t offset)
 {
-    byte_Swap_64(&LUN->pageNumber);
-    byte_Swap_64(&LUN->copyNumber);
-    byte_Swap_64(&LUN->LUNID);
-    byte_Swap_64(&LUN->headLoadEvents);
-    byte_Swap_64(&LUN->reallocatedSectors);
-    byte_Swap_64(&LUN->reallocatedCandidates);
-    byte_Swap_64(&LUN->timeStampOfIDD);
-    byte_Swap_64(&LUN->subCmdOfIDD);
-    byte_Swap_64(&LUN->reclamedGlist);
-    byte_Swap_64(&LUN->servoStatus);
-    byte_Swap_64(&LUN->slippedSectorsBeforeIDD);
-    byte_Swap_64(&LUN->slippedSectorsAfterIDD);
-    byte_Swap_64(&LUN->residentReallocatedBeforeIDD);
-    byte_Swap_64(&LUN->residentReallocatedAfterIDD);
-    byte_Swap_64(&LUN->successScrubbedBeforeIDD);
-    byte_Swap_64(&LUN->successScrubbedAfterIDD);
-    byte_Swap_64(&LUN->dosScansPerformed);
-    byte_Swap_64(&LUN->correctedLBAbyISP);
-    byte_Swap_64(&LUN->paritySectors);
-    byte_Swap_64(&LUN->RVabsolue);
-    byte_Swap_64(&LUN->maxRVabsolue);
-    byte_Swap_64(&LUN->idleTime);
-    byte_Swap_64(&LUN->lbasCorrectedByParity);                      //!< total valid parity sectors
-    byte_Swap_64(&LUN->currentLowFrequencyVibe);                    //!< Current Low Frequency Vibe Score
-    byte_Swap_64(&LUN->currentMidFrequencyVibe);                    //!< Current Mid Frequency Vibe Score
-    byte_Swap_64(&LUN->currentHighFrequencyVibe);                   //!< Current High Frequency Vibe Score
-    byte_Swap_64(&LUN->worstLowFrequencyVibe);                      //!< Worst Low Frequency Vibe Score
-    byte_Swap_64(&LUN->worstMidFrequencyVibe);                      //!< Worst Mid Frequency Vibe Score
-    byte_Swap_64(&LUN->worstHighFrequencyVibe);                     //!< Worst High Frequency Vibe Score
-    byte_Swap_64(&LUN->primarySPCovPercentage);                     //!< Primary Super Parity Coverage Percentage
-    byte_Swap_64(&LUN->primarySPCovPercentageSMR);                  //!< Primary Super Parity Coverage Percentage SMR
+    LUN->pageHeader.paramCode = M_BytesTo2ByteValue(pBuf[offset], pBuf[offset + 1]);
+    offset += 2;
+    LUN->pageHeader.paramControlByte = pBuf[offset];
+    offset++;
+    LUN->pageHeader.paramLength = pBuf[offset];
+    offset++;
+    LUN->pageNumber = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    LUN->copyNumber = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    LUN->LUNID = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    LUN->headLoadEvents = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    LUN->reallocatedSectors = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    LUN->reallocatedCandidates = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    LUN->timeStampOfIDD = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    LUN->subCmdOfIDD = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    LUN->reclamedGlist = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    LUN->servoStatus = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    LUN->slippedSectorsBeforeIDD = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    LUN->slippedSectorsAfterIDD = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    LUN->residentReallocatedBeforeIDD = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    LUN->residentReallocatedAfterIDD = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    LUN->successScrubbedBeforeIDD = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    LUN->successScrubbedAfterIDD = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    LUN->dosScansPerformed = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    LUN->correctedLBAbyISP = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    LUN->paritySectors = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    LUN->RVabsolue = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    LUN->maxRVabsolue = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    LUN->lbasCorrectedByParity = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    LUN->currentLowFrequencyVibe = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    LUN->currentMidFrequencyVibe = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    LUN->currentHighFrequencyVibe = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    LUN->worstLowFrequencyVibe = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    LUN->worstMidFrequencyVibe = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    LUN->worstHighFrequencyVibe = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    LUN->primarySPCovPercentage = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    LUN->primarySPCovPercentageSMR = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+
     return true;
 }
 //-----------------------------------------------------------------------------
@@ -1107,7 +1215,6 @@ bool CSCSI_Farm_Log::swap_Bytes_sLUNStruct(sLUNStruct *LUN)
 //---------------------------------------------------------------------------
 bool CSCSI_Farm_Log::Get_Flash_LED(sActuatorFLEDInfo *fled, uint64_t offset)
 {
-#define SIZEPARAM   8
     fled->pageHeader.paramCode = M_BytesTo2ByteValue(pBuf[offset], pBuf[offset + 1]);
     offset += 2;
     fled->pageHeader.paramControlByte = pBuf[offset];
@@ -1160,7 +1267,6 @@ bool CSCSI_Farm_Log::Get_Flash_LED(sActuatorFLEDInfo *fled, uint64_t offset)
 //---------------------------------------------------------------------------
 bool CSCSI_Farm_Log::Get_Reallocation_Data(sActReallocationData *real, uint64_t offset)
 {
-#define SIZEPARAM   8
     real->pageHeader.paramCode = M_BytesTo2ByteValue(pBuf[offset], pBuf[offset + 1]);
     offset += 2;
     real->pageHeader.paramControlByte = pBuf[offset];
@@ -1209,27 +1315,6 @@ bool CSCSI_Farm_Log::get_Head_Info(sHeadInformation *phead, uint8_t *buffer)
         byte_Swap_64(&phead->headValue[index] );
     }
     return true;
-}
-//-----------------------------------------------------------------------------
-//
-//! \fn get_Head_Info()
-//
-//! \brief
-//!   Description:  takes the pointer to the structure an does a byte swap on all the data for the reliability stat
-//
-//  Entry:
-//! \param pLUN  =  pointer to the LUN structure
-//! \param buffer = the pointer to the buffer data
-//
-//  Exit:
-//!   \return bool
-//
-//---------------------------------------------------------------------------
-void CSCSI_Farm_Log::get_LUN_Info(sLUNStruct *pLUN, uint8_t *buffer)
-{
-    memcpy(pLUN, reinterpret_cast<sLUNStruct *>(&buffer[4]), sizeof(sLUNStruct));
-    memcpy(&pLUN->pageHeader, reinterpret_cast<sLogPageStruct *>(&buffer[0]), sizeof(sLogPageStruct));
-    swap_Bytes_sLUNStruct(pLUN);
 }
 //-----------------------------------------------------------------------------
 //
@@ -1326,11 +1411,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     break;
                    
                 case  WORKLOAD_STATISTICS_PARAMETER:
-                    {
-                      
-                        //sScsiWorkLoadStat *pworkLoad = NULL; 										// get the work load information
-                        //pworkLoad = reinterpret_cast<sScsiWorkLoadStat *>(&pBuf[offset ]);
-                        //memcpy(reinterpret_cast<sScsiWorkLoadStat *>(&pFarmFrame->workLoadPage), pworkLoad, pworkLoad->PageHeader.paramLength + PARAMSIZE);
+                    {                    
                         Get_sWorkLoadStat(&pFarmFrame->workLoadPage,offset);
                         offset += (pFarmFrame->workLoadPage.PageHeader.paramLength + sizeof(sLogParams));
                     }
@@ -1340,28 +1421,19 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                 {
                     if (m_MajorRev < 4)
                     {
-                        sScsiErrorStat *pError;                                                     // get the error status
-                        pError = reinterpret_cast<sScsiErrorStat *>(&pBuf[offset]);
-                        memcpy(reinterpret_cast<sScsiErrorStat *>(&pFarmFrame->errorPage.errorStat), pError, pError->pPageHeader.paramLength);
-                        swap_Bytes_sErrorStat(&pFarmFrame->errorPage);
-                        offset += (pError->pPageHeader.paramLength + sizeof(sLogParams));
+                        Get_sErrorStat(&pFarmFrame->errorPage,offset);
+                        offset += (pFarmFrame->errorPage.errorStat.pPageHeader.paramLength + sizeof(sLogParams));
                     }
                     else
                     {
-                        sScsiErrorVersion4 *pError;                                                     // get the error status
-                        pError = reinterpret_cast<sScsiErrorVersion4 *>(&pBuf[offset]);
-                        memcpy(reinterpret_cast<sScsiErrorVersion4 *>(&pFarmFrame->errorPage.errorV4), pError, pError->pPageHeader.paramLength + PARAMSIZE);
-                        swap_Bytes_sErrorStat(&pFarmFrame->errorPage);
-                        offset += (pError->pPageHeader.paramLength + sizeof(sLogParams));
+                        Get_sErrorStat(&pFarmFrame->errorPage,offset);
+                        offset += (pFarmFrame->errorPage.errorV4.pPageHeader.paramLength + sizeof(sLogParams));
                     }
                 }
                 break;
                     
                 case ENVIRONMENTAL_STATISTICS_PARAMETER:     
                 {
-                    //sScsiEnvironmentStat *pEnvironment;                            // get the envirmonent information 
-                    //pEnvironment = reinterpret_cast<sScsiEnvironmentStat *>(&pBuf[offset]);
-                    //memcpy(reinterpret_cast<sScsiEnvironmentStat *>(&pFarmFrame->environmentPage), pEnvironment, pEnvironment->pPageHeader.paramLength + PARAMSIZE);
                     Get_sEnvironmentStat(&pFarmFrame->environmentPage,offset);
                     offset += (pFarmFrame->environmentPage.pPageHeader.paramLength + sizeof(sLogParams));
                 }
@@ -1371,19 +1443,13 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                 {
                     if (m_MajorRev < 4)
                     {
-                        sScsiReliabilityStat *pReli;                                              // get the Reliabliity stat
-                        pReli = reinterpret_cast<sScsiReliabilityStat *>(&pBuf[offset]);
-                        memcpy(reinterpret_cast<sScsiReliabilityStat *>(&pFarmFrame->reliPage.reli), pReli, pReli->pPageHeader.paramLength + PARAMSIZE);
-                        swap_Bytes_sScsiReliabilityStat(&pFarmFrame->reliPage);
-                        offset += (pReli->pPageHeader.paramLength + sizeof(sLogParams));
+                        Get_sScsiReliabilityStat(&pFarmFrame->reliPage,offset);
+                        offset += (pFarmFrame->reliPage.reli.pPageHeader.paramLength + sizeof(sLogParams));
                     }
                     else
                     {
-                        sScsiReliStatVersion4 *pReli;                                              // get the Reliabliity stat
-                        pReli = reinterpret_cast<sScsiReliStatVersion4 *>(&pBuf[offset]);
-                        memcpy(reinterpret_cast<sScsiReliStatVersion4 *>(&pFarmFrame->reliPage.reli4), pReli, pReli->pPageHeader.paramLength + PARAMSIZE);
-                        swap_Bytes_sScsiReliabilityStat(&pFarmFrame->reliPage);
-                        offset += (pReli->pPageHeader.paramLength + sizeof(sLogParams));
+                        Get_sScsiReliabilityStat(&pFarmFrame->reliPage, offset);
+                        offset += (pFarmFrame->reliPage.reli4.pPageHeader.paramLength + sizeof(sLogParams));
                     }
                 }
                 break; 
@@ -1999,21 +2065,15 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     break;
                 case LUN_0_ACTUATOR:
                 {
-                    sLUNStruct *pLUNInfo;
-                    pLUNInfo = reinterpret_cast<sLUNStruct *>(&pBuf[offset]);
-                    memcpy(&pFarmFrame->vLUN50,pLUNInfo, static_cast<size_t>(pLUNInfo->pageHeader.paramLength) + 4);
-                    swap_Bytes_sLUNStruct(&pFarmFrame->vLUN50);
-                    offset += (pLUNInfo->pageHeader.paramLength + sizeof(sLogParams));
+                    Get_sLUNStruct(&pFarmFrame->vLUN50,offset);
+                    offset += (pFarmFrame->vLUN50.pageHeader.paramLength + sizeof(sLogParams));
 
                 }
                 break;
                 case LUN_0_FLASH_LED:
                 {
-                    sActuatorFLEDInfo *pFLEDInfo;
-                    pFLEDInfo = reinterpret_cast<sActuatorFLEDInfo *>(&pBuf[offset]);
-                    memcpy(&pFarmFrame->fled51, pFLEDInfo, static_cast<size_t>(pFLEDInfo->pageHeader.paramLength) + 4);
                     Get_Flash_LED(&pFarmFrame->fled51, offset);
-                    offset += (pFLEDInfo->pageHeader.paramLength + sizeof(sLogParams));
+                    offset += (pFarmFrame->fled51.pageHeader.paramLength + sizeof(sLogParams));
 
                 }
                 break;
@@ -2025,20 +2085,14 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                 break;
                 case LUN_1_ACTUATOR:
                 {
-                    sLUNStruct *pLUNInfo;
-                    pLUNInfo = reinterpret_cast<sLUNStruct *>(&pBuf[offset]);
-                    memcpy(&pFarmFrame->vLUN60, pLUNInfo, static_cast<size_t>(pLUNInfo->pageHeader.paramLength) + 4);
-                    swap_Bytes_sLUNStruct(&pFarmFrame->vLUN60);
-                    offset += (pLUNInfo->pageHeader.paramLength + sizeof(sLogParams));
+                    Get_sLUNStruct(&pFarmFrame->vLUN60,offset);
+                    offset += (pFarmFrame->vLUN60.pageHeader.paramLength + sizeof(sLogParams));
                 }
                 break;
                 case LUN_1_FLASH_LED:
                 {
-                    sActuatorFLEDInfo *pFLEDInfo;
-                    pFLEDInfo = reinterpret_cast<sActuatorFLEDInfo *>(&pBuf[offset]);
-                    memcpy(&pFarmFrame->fled61, pFLEDInfo, static_cast<size_t>(pFLEDInfo->pageHeader.paramLength) + 4);
                     Get_Flash_LED(&pFarmFrame->fled61,offset);
-                    offset += (pFLEDInfo->pageHeader.paramLength + sizeof(sLogParams));
+                    offset += (pFarmFrame->fled61.pageHeader.paramLength + sizeof(sLogParams));
                 }
                 break;
                 case LUN_REALLOCATION_1:
@@ -2049,20 +2103,14 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                 break;
                 case LUN_2_ACTUATOR:
                 {
-                    sLUNStruct *pLUNInfo;
-                    pLUNInfo = reinterpret_cast<sLUNStruct *>(&pBuf[offset]);
-                    memcpy(&pFarmFrame->vLUN70, pLUNInfo, static_cast<size_t>(pLUNInfo->pageHeader.paramLength) + 4);
-                    swap_Bytes_sLUNStruct(&pFarmFrame->vLUN70);
-                    offset += (pLUNInfo->pageHeader.paramLength + sizeof(sLogParams));
+                    Get_sLUNStruct(&pFarmFrame->vLUN70,offset);
+                    offset += (pFarmFrame->vLUN70.pageHeader.paramLength + sizeof(sLogParams));
                 }
                 break;
                 case LUN_2_FLASH_LED:
                 {
-                    sActuatorFLEDInfo *pFLEDInfo;
-                    pFLEDInfo = reinterpret_cast<sActuatorFLEDInfo *>(&pBuf[offset]);
-                    memcpy(&pFarmFrame->fled71, pFLEDInfo, static_cast<size_t>(pFLEDInfo->pageHeader.paramLength) + 4);
                     Get_Flash_LED(&pFarmFrame->fled71,offset);
-                    offset += (pFLEDInfo->pageHeader.paramLength + sizeof(sLogParams));
+                    offset += (pFarmFrame->fled71.pageHeader.paramLength + sizeof(sLogParams));
                 }
                 break;
                 case LUN_REALLOCATION_2:
@@ -2073,20 +2121,14 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                 break;
                 case LUN_3_ACTUATOR:
                 {
-                    sLUNStruct *pLUNInfo;
-                    pLUNInfo = reinterpret_cast<sLUNStruct *>(&pBuf[offset]);
-                    memcpy(&pFarmFrame->vLUN80, pLUNInfo, static_cast<size_t>(pLUNInfo->pageHeader.paramLength) + 4);
-                    swap_Bytes_sLUNStruct(&pFarmFrame->vLUN80);
-                    offset += (pLUNInfo->pageHeader.paramLength + sizeof(sLogParams));
+                    Get_sLUNStruct(&pFarmFrame->vLUN80,offset);
+                    offset += (pFarmFrame->vLUN80.pageHeader.paramLength + sizeof(sLogParams));
                 }
                 break;
                 case LUN_3_FLASH_LED:
                 {
-                    sActuatorFLEDInfo *pFLEDInfo;
-                    pFLEDInfo = reinterpret_cast<sActuatorFLEDInfo *>(&pBuf[offset]);
-                    memcpy(&pFarmFrame->fled81, pFLEDInfo, static_cast<size_t>(pFLEDInfo->pageHeader.paramLength) + 4);
                     Get_Flash_LED(&pFarmFrame->fled81,offset);
-                    offset += (pFLEDInfo->pageHeader.paramLength + sizeof(sLogParams));
+                    offset += (pFarmFrame->fled81.pageHeader.paramLength + sizeof(sLogParams));
                 }
                 break;
                 case LUN_REALLOCATION_3:
