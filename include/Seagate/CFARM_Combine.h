@@ -35,7 +35,8 @@ namespace opensea_parser {
 #define STXFARM     0x5354585f
 #define STX_FARM    0x5354585f4641524d
 #define STX_COMBO   0x5f434f4d42494e45
-#define FARMSAS     0x53415320
+#define FARMSASCOMBO   0x53415320  
+#define FARMSAS     0x53415300
 #define FARMSATA    0x53415441
 //#define MAXFARMLOGSIZE  0x2680
 //#define MAXFARMATALOGSIZ 0x18200

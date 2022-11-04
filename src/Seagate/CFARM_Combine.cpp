@@ -154,13 +154,29 @@ void CFarm_Combine::setCombine(uint8_t* buffer, size_t bufferSize)
 void CFarm_Combine::combine_Device_Scsi()
 {
 	uint32_t device = M_BytesTo4ByteValue(bufferData[0x18], bufferData[0x19], bufferData[0x1a], bufferData[0x1b]);
-	if (device == FARMSAS)
+	if (device == FARMSAS || device == FARMSASCOMBO)
 	{
 		m_combine_isScsi = true;
 	}
 	else
 	{
-		m_combine_isScsi = false;
+		device = M_BytesTo4ByteValue(bufferData[0x81], bufferData[0x82], bufferData[0x83], bufferData[0x84]);
+		if (M_GETBITRANGE(bufferData[0], 5, 0) == 0x3D)
+		{
+			if (bufferData[1] == 03 || bufferData[1] == 04 || (bufferData[1] >= FARM_TIME_SERIES_0 && bufferData[1] <= FARM_TEMP_TRIGGER_LOG_PAGE))
+			{
+				m_combine_isScsi = true;
+			}
+		}
+		// check for sas log page being addded
+		else if (device == FARMSAS || device == FARMSASCOMBO)
+		{
+			m_combine_isScsi = true;
+		}
+		else
+		{
+			m_combine_isScsi = false;
+		}
 	}
 }
 //-----------------------------------------------------------------------------
