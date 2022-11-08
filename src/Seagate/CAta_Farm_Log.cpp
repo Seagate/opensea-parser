@@ -1826,7 +1826,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
         {
             temp.str("");temp.clear();
             temp << "Total Laser Field iterations performed for Head " << std::dec << loopCount;// Head count
-            set_json_64_bit_With_Status(headInfo, temp.str().c_str(), vFarmFrame[page].reliPage.numberOfLFAIterations[loopCount], false, m_showStatusBits);
+            set_json_int_Check_Status(headInfo, temp.str().c_str(), static_cast<long>(vFarmFrame[page].reliPage.numberOfLFAIterations[loopCount]), vFarmFrame[page].reliPage.numberOfLFAIterations[loopCount], m_showStatusBits);
         }
 
         for (loopCount = 0; loopCount < m_heads; ++loopCount)
@@ -1834,54 +1834,50 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
             temp.str("");temp.clear();
             temp << "Laser Operating Current inner Diameter by Head " << std::dec << loopCount;// Head count
             myHeader.assign(temp.str());
-            temp.str("");temp.clear();
-            temp << std::fixed << std::setprecision(1) << std::setfill('0') << static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].reliPage.laserOperCurrent[loopCount].inner)));
-            set_json_string_With_Status(headInfo, myHeader, temp.str(), vFarmFrame[page].reliPage.laserOperCurrent[loopCount].inner, m_showStatusBits);
+            set_json_float_With_Status(headInfo, myHeader,  static_cast<double>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].reliPage.laserOperCurrent[loopCount].inner))), vFarmFrame[page].reliPage.laserOperCurrent[loopCount].inner, m_showStatusBits);
         }
         for (loopCount = 0; loopCount < m_heads; ++loopCount)
         {
             temp.str("");temp.clear();
             temp << "Laser Operating Current middle Diameter by Head " << std::dec << loopCount;// Head count
             myHeader.assign(temp.str());
-            temp.str("");temp.clear();
-            temp << std::fixed << std::setprecision(1) << std::setfill('0') << static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].reliPage.laserOperCurrent[loopCount].middle)));
-            set_json_string_With_Status(headInfo, myHeader, temp.str(), vFarmFrame[page].reliPage.laserOperCurrent[loopCount].middle, m_showStatusBits);
+            //temp.str("");temp.clear();
+            //temp << std::fixed << std::setprecision(1) << std::setfill('0') << static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].reliPage.laserOperCurrent[loopCount].middle)));
+            set_json_float_With_Status(headInfo, myHeader, static_cast<double>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].reliPage.laserOperCurrent[loopCount].middle))), vFarmFrame[page].reliPage.laserOperCurrent[loopCount].middle, m_showStatusBits);
         }
         for (loopCount = 0; loopCount < m_heads; ++loopCount)
         {
             temp.str("");temp.clear();
             temp << "Laser Operating Current outer Diameter by Head " << std::dec << loopCount;// Head count
             myHeader.assign(temp.str());
-            temp.str("");temp.clear();
-            temp << std::fixed << std::setprecision(1) << std::setfill('0') << static_cast<float> (M_Word0(check_Status_Strip_Status(vFarmFrame[page].reliPage.laserOperCurrent[loopCount].outer)));
-            set_json_string_With_Status(headInfo, myHeader, temp.str(), vFarmFrame[page].reliPage.laserOperCurrent[loopCount].outer, m_showStatusBits);
+            //temp.str("");temp.clear();
+            //temp << std::fixed << std::setprecision(1) << std::setfill('0') << static_cast<float> (M_Word0(check_Status_Strip_Status(vFarmFrame[page].reliPage.laserOperCurrent[loopCount].outer)));
+            set_json_float_With_Status(headInfo, myHeader, static_cast<double> (M_Word0(check_Status_Strip_Status(vFarmFrame[page].reliPage.laserOperCurrent[loopCount].outer))), vFarmFrame[page].reliPage.laserOperCurrent[loopCount].outer, m_showStatusBits);
         }
         for (loopCount = 0; loopCount < m_heads; ++loopCount)
         {
             temp.str("");temp.clear();
             temp << "Post LFA Optimal BER inner Diameter by Head " << std::dec << loopCount;// Head count
             myHeader.assign(temp.str());
-            temp.str("");temp.clear();
-            temp << std::fixed << std::setprecision(1) << std::setfill('0') << static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].reliPage.postLFABER[loopCount].inner)));
-            set_json_string_With_Status(headInfo, myHeader, temp.str(), vFarmFrame[page].reliPage.postLFABER[loopCount].inner, m_showStatusBits);
+            //temp.str("");temp.clear();
+            //temp << std::fixed << std::setprecision(1) << std::setfill('0') << static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].reliPage.postLFABER[loopCount].inner)));
+            set_json_float_With_Status(headInfo, myHeader, static_cast<double>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].reliPage.postLFABER[loopCount].inner))), vFarmFrame[page].reliPage.postLFABER[loopCount].inner, m_showStatusBits);
         }
         for (loopCount = 0; loopCount < m_heads; ++loopCount)
         {
             temp.str("");temp.clear();
             temp << "Post LFA Optimal BER middle Diameter by Head " << std::dec << loopCount;// Head count
             myHeader.assign(temp.str());
-            temp.str("");temp.clear();
-            temp << std::fixed << std::setprecision(1) << std::setfill('0') << static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].reliPage.postLFABER[loopCount].middle)));
-            set_json_string_With_Status(headInfo, myHeader, temp.str(), vFarmFrame[page].reliPage.postLFABER[loopCount].middle, m_showStatusBits);
+            set_json_float_With_Status(headInfo, myHeader, static_cast<double>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].reliPage.postLFABER[loopCount].middle))), vFarmFrame[page].reliPage.postLFABER[loopCount].middle, m_showStatusBits);
         }
         for (loopCount = 0; loopCount < m_heads; ++loopCount)
         {
             temp.str("");temp.clear();
             temp << "Post LFA Optimal BER outer Diameter by Head " << std::dec << loopCount;// Head count
             myHeader.assign(temp.str());
-            temp.str("");temp.clear();
-            temp << std::fixed << std::setprecision(1) << std::setfill('0') << static_cast<float> (M_Word0(check_Status_Strip_Status(vFarmFrame[page].reliPage.postLFABER[loopCount].outer)));
-            set_json_string_With_Status(headInfo, myHeader, temp.str(), vFarmFrame[page].reliPage.postLFABER[loopCount].outer, m_showStatusBits);
+            //temp.str("");temp.clear();
+            //temp << std::fixed << std::setprecision(1) << std::setfill('0') << static_cast<float> (M_Word0(check_Status_Strip_Status(vFarmFrame[page].reliPage.postLFABER[loopCount].outer)));
+            set_json_float_With_Status(headInfo, myHeader, static_cast<double> (M_Word0(check_Status_Strip_Status(vFarmFrame[page].reliPage.postLFABER[loopCount].outer))), vFarmFrame[page].reliPage.postLFABER[loopCount].outer, m_showStatusBits);
         }
         for (loopCount = 0; loopCount < m_heads; ++loopCount)
         {
