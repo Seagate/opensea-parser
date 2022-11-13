@@ -400,10 +400,14 @@ eReturnValues CATA_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint3
     set_json_64_bit_With_Status(pageInfo, "Time drive is held in staggered spin (sec)", vFarmFrame[page].driveInfo.timeHeld, false, m_showStatusBits);                //!< time drive is held in staggered spin during the last power on sequence in milliseconds
 
     myStr << "Drive Recording Type";
-    std::string type = "CMR";
-    if (vFarmFrame[page].driveInfo.driveRecordingType & BIT0)
+    std::string type = "not supported";
+    if (check_For_Active_Status(&vFarmFrame[page].driveInfo.driveRecordingType))
     {
-        type = "SMR";
+        type = "CMR";
+        if (vFarmFrame[page].driveInfo.driveRecordingType & BIT0)
+        {
+            type = "SMR";
+        }
     }
 
     set_json_string_With_Status(pageInfo, myStr.str().c_str(), type, vFarmFrame[page].driveInfo.driveRecordingType, m_showStatusBits);

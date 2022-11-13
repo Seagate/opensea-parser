@@ -2506,10 +2506,14 @@ eReturnValues CSCSI_Farm_Log::print_General_Drive_Information_Continued(JSONNODE
 
         json_push_back(label, json_new_a("units", "counts"));
         json_push_back(label, json_new_i("depopulation_head_mask", M_DoubleWordInt0(vFarmFrame[page].gDPage06.Depop)));                                   //!< Depopulation Head Mask
-        std::string type = "cmr";
-        if (vFarmFrame[page].gDPage06.driveType & BIT0)
+        std::string type = "not supported";
+        if (check_For_Active_Status(&vFarmFrame[page].gDPage06.driveType))
         {
-            type = "smr";
+            type = "cmr";
+            if (vFarmFrame[page].gDPage06.driveType & BIT0)
+            {
+                type = "smr";
+            }
         }
         json_push_back(label, json_new_a("drive_recording_type", type.c_str()));
 
@@ -2559,10 +2563,14 @@ eReturnValues CSCSI_Farm_Log::print_General_Drive_Information_Continued(JSONNODE
 
         set_json_64_bit_With_Status(pageInfo, "Depopulation Head Mask", vFarmFrame[page].gDPage06.Depop, false, m_showStatusBits);                                   //!< Depopulation Head Mask
 
-        std::string type = "CMR";
-        if (vFarmFrame[page].gDPage06.driveType & BIT0)
+        std::string type = "not supported";
+        if (check_For_Active_Status(&vFarmFrame[page].gDPage06.driveType))
         {
-            type = "SMR";
+            type = "CMR";
+            if (vFarmFrame[page].gDPage06.driveType & BIT0)
+            {
+                type = "SMR";
+            }
         }
 
         set_json_string_With_Status(pageInfo, "Drive Recording Type", type, vFarmFrame[page].gDPage06.driveType, m_showStatusBits);
