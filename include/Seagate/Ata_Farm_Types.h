@@ -42,8 +42,8 @@ typedef struct _sDriveInfo
     uint64_t        featuresEnabled;                            //!< ATA Features Enabled (ID Word 79)
     uint64_t        poh;                                        //!< Power-on Hours
     uint64_t        spoh;                                       //!< Spindle Power-on Hours
-    uint64_t        headFlightHours;                            //!< Head Flight Hours
-    uint64_t        headLoadEvents;                             //!< Head Load Events
+    uint64_t        headFlightHoursAct0;                        //!< Head Flight Hours, actuator 0
+    uint64_t        headLoadEventsAct0;                         //!< Head Load Events, actuator 0
     uint64_t        powerCycleCount;                            //!< Power Cycle Count
     uint64_t        resetCount;                                 //!< Hardware Reset Count
     uint64_t        spinUpTime;                                 //!< SMART Spin-Up time in milliseconds

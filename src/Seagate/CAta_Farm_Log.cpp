@@ -311,8 +311,8 @@ eReturnValues CATA_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint3
     printf("\tATA Security State (ID Word 128)(debug):         0x%04" PRIX64" \n", (vFarmFrame[page].driveInfo.security & UINT64_C(0x00FFFFFFFFFFFFFF)));                              //!< ATA Security State (ID Word 128)
     printf("\tPower on Hours(debug):                           %" PRIu64" \n", (vFarmFrame[page].driveInfo.poh & UINT64_C(0x00FFFFFFFFFFFFFF)));                                       //!< Power-on Hour
     printf("\tSpindle Power on hours(debug):                   %" PRIu64" \n", (vFarmFrame[page].driveInfo.spoh & UINT64_C(0x00FFFFFFFFFFFFFF)));                                      //!< Spindle Power-on Hours
-    printf("\tHead Flight Hours(debug):                        %" PRIu64" \n", (vFarmFrame[page].driveInfo.headFlightHours & UINT64_C(0x00FFFFFFFFFFFFFF)));                           //!< Head Flight Hours
-    printf("\tHead Load Events(debug):                         %" PRIu64" \n", (vFarmFrame[page].driveInfo.headLoadEvents & UINT64_C(0x00FFFFFFFFFFFFFF)));                            //!< Head Load Events
+    printf("\tHead Flight Hours, Actuator 0(debug):            %" PRIu64" \n", (vFarmFrame[page].driveInfo.headFlightHoursAct0 & UINT64_C(0x00FFFFFFFFFFFFFF)));                           //!< Head Flight Hours
+    printf("\tHead Load Events, Actuator 0(debug):             %" PRIu64" \n", (vFarmFrame[page].driveInfo.headLoadEventsAct0 & UINT64_C(0x00FFFFFFFFFFFFFF)));                            //!< Head Load Events
     printf("\tPower Cycle count(debug):                        %" PRIu64" \n", (vFarmFrame[page].driveInfo.powerCycleCount & UINT64_C(0x00FFFFFFFFFFFFFF)));                           //!< Power Cycle Count
     printf("\tHardware Reset count(debug):                     %" PRIu64" \n", (vFarmFrame[page].driveInfo.resetCount & UINT64_C(0x00FFFFFFFFFFFFFF)));                                //!< Hardware Reset Count
     printf("\tSpin-up Time(debug):                             %" PRIu64" \n", (vFarmFrame[page].driveInfo.spinUpTime & UINT64_C(0x00FFFFFFFFFFFFFF)));                                //!< SMART Spin-Up time in milliseconds
@@ -375,8 +375,8 @@ eReturnValues CATA_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint3
     set_json_64_bit_With_Status(pageInfo, "ATA Features Enabled (ID Word 79)", vFarmFrame[page].driveInfo.featuresEnabled, true, m_showStatusBits);         //!< ATA Features Enabled (ID Word 79)
 
     set_json_64_bit_With_Status(pageInfo, "Spindle Power on hours", vFarmFrame[page].driveInfo.spoh, false, m_showStatusBits);                                  //!< Spindle Power-on Hours
-    set_json_64_bit_With_Status(pageInfo, "Head Flight Hours", vFarmFrame[page].driveInfo.headFlightHours, false, m_showStatusBits);                            //!< Head Flight Hours
-    set_json_64_bit_With_Status(pageInfo, "Head Load Events", vFarmFrame[page].driveInfo.headLoadEvents, false, m_showStatusBits);                              //!< Head Load Events
+    set_json_64_bit_With_Status(pageInfo, "Head Flight Hours, Actuator 0", vFarmFrame[page].driveInfo.headFlightHoursAct0, false, m_showStatusBits);                            //!< Head Flight Hours
+    set_json_64_bit_With_Status(pageInfo, "Head Load Events, Actuator 0", vFarmFrame[page].driveInfo.headLoadEventsAct0, false, m_showStatusBits);                              //!< Head Load Events
     set_json_64_bit_With_Status(pageInfo, "Power Cycle count", vFarmFrame[page].driveInfo.powerCycleCount, false, m_showStatusBits);                            //!< Power Cycle Count
     set_json_64_bit_With_Status(pageInfo, "Hardware Reset count", vFarmFrame[page].driveInfo.resetCount, false, m_showStatusBits);                              //!< Hardware Reset Count
     set_json_64_bit_With_Status(pageInfo, "Spin-up Time", vFarmFrame[page].driveInfo.spinUpTime, false, m_showStatusBits);                                      //!< SMART Spin-Up time in milliseconds
