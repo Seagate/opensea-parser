@@ -247,14 +247,14 @@ eReturnValues CATA_Farm_Log::print_Header(JSONNODE *masterData)
     std::ostringstream temp;
     temp << "0x" << std::hex << std::uppercase << std::uppercase << check_Status_Strip_Status(header->signature);
     json_push_back(pageInfo, json_new_a("Log Signature", temp.str().c_str()));
-    json_push_back(pageInfo, json_new_i("Major Revision", static_cast<uint32_t>(check_Status_Strip_Status(header->majorRev))));
-    json_push_back(pageInfo, json_new_i("Minor Revision", static_cast<uint32_t>(check_Status_Strip_Status(header->minorRev))));
-    json_push_back(pageInfo, json_new_i("Pages Supported", static_cast<uint32_t>(check_Status_Strip_Status(header->pagesSupported))));
-    json_push_back(pageInfo, json_new_i("Log Size", static_cast<uint32_t>(check_Status_Strip_Status(header->logSize))));
-    json_push_back(pageInfo, json_new_i("Page Size", static_cast<uint32_t>(check_Status_Strip_Status(header->pageSize))));
-    json_push_back(pageInfo, json_new_i("Heads Supported", static_cast<uint32_t>(check_Status_Strip_Status(header->headsSupported))));
-    json_push_back(pageInfo, json_new_i("Number of Copies", static_cast<uint32_t>(check_Status_Strip_Status(header->copies))));
-    json_push_back(pageInfo, json_new_i("Reason for Frame Capture", static_cast<uint32_t>(check_Status_Strip_Status(header->reasonForFrameCapture))));
+    set_json_64_bit_With_Status(pageInfo, "Major Revision", header->majorRev, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Minor Revision", header->minorRev, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Pages Supported", header->pagesSupported, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Log Size", header->logSize, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Page Size", header->pageSize, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Heads Supported", header->headsSupported, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Number of Copies", header->copies, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Reason for Frame Capture", header->reasonForFrameCapture, false, m_showStatusBits);
     std::string reason;
     Get_FARM_Reason_For_Capture(&reason, M_Byte0(header->reasonForFrameCapture));
     json_push_back(pageInfo, json_new_a("Reason Meaning", reason.c_str()));
@@ -449,16 +449,8 @@ eReturnValues CATA_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint3
         set_json_64_bit_With_Status(pageInfo, "Head Flight Hours, Actuator 1", vFarmFrame[page].driveInfo.headFlightHoursAct1, false, m_showStatusBits);     //!< Head Flight Hours, Actuator 1
         set_json_64_bit_With_Status(pageInfo, "Head Load Events, Actuator 1", vFarmFrame[page].driveInfo.headLoadEventsAct1, false, m_showStatusBits);     //!< Head Load Events, Actuator 1
     }
-    myStr.str(""); myStr.clear();
-    myStr << "HAMR Data Protect Status";
-    if (check_Status_Strip_Status(vFarmFrame[page].driveInfo.depopped) != 0)
-    {
-        set_Json_Bool(pageInfo, myStr.str().c_str(), true);
-    }
-    else
-    {
-        set_Json_Bool(pageInfo, myStr.str().c_str(), false);
-    }
+
+    set_json_bool_With_Status(pageInfo, "HAMR Data Protect Status", vFarmFrame[page].driveInfo.HAMRProtectStatus, m_showStatusBits);
 
     json_push_back(masterData, pageInfo);
 
@@ -796,11 +788,11 @@ eReturnValues CATA_Farm_Log::print_Error_Information(JSONNODE *masterData, uint3
             temp << "Read Write Retry " << std::dec << loopCount;
             json_set_name(rwrInfo, temp.str().c_str());
 
-            set_json_64_bit_With_Status(rwrInfo, "Error Type", M_Byte6(check_Status_Strip_Status(vFarmFrame[page].errorPage.readWriteRetry[loopCount])), false, m_showStatusBits);
-            set_json_64_bit_With_Status(rwrInfo, "Log Entry", M_Word2(check_Status_Strip_Status(vFarmFrame[page].errorPage.readWriteRetry[loopCount])), false, m_showStatusBits);
-            set_json_64_bit_With_Status(rwrInfo, "Zone Group", M_Word1(check_Status_Strip_Status(vFarmFrame[page].errorPage.readWriteRetry[loopCount])), false, m_showStatusBits);
-            set_json_64_bit_With_Status(rwrInfo, "Head", M_Byte1(check_Status_Strip_Status(vFarmFrame[page].errorPage.readWriteRetry[loopCount])), false, m_showStatusBits);
-            set_json_64_bit_With_Status(rwrInfo, "Count", M_Byte0(check_Status_Strip_Status(vFarmFrame[page].errorPage.readWriteRetry[loopCount])), false, m_showStatusBits);
+            set_json_int_Check_Status(rwrInfo, "Error Type", M_Byte6(vFarmFrame[page].errorPage.readWriteRetry[loopCount]), vFarmFrame[page].errorPage.readWriteRetry[loopCount], m_showStatusBits);
+            set_json_int_Check_Status(rwrInfo, "Log Entry", M_Word2(vFarmFrame[page].errorPage.readWriteRetry[loopCount]), vFarmFrame[page].errorPage.readWriteRetry[loopCount], m_showStatusBits);
+            set_json_int_Check_Status(rwrInfo, "Zone Group", M_Word1(vFarmFrame[page].errorPage.readWriteRetry[loopCount]), vFarmFrame[page].errorPage.readWriteRetry[loopCount], m_showStatusBits);
+            set_json_int_Check_Status(rwrInfo, "Head", M_Byte1(vFarmFrame[page].errorPage.readWriteRetry[loopCount]), vFarmFrame[page].errorPage.readWriteRetry[loopCount], m_showStatusBits);
+            set_json_int_Check_Status(rwrInfo, "Count", M_Byte0(vFarmFrame[page].errorPage.readWriteRetry[loopCount]), vFarmFrame[page].errorPage.readWriteRetry[loopCount], m_showStatusBits);
 
             json_push_back(pageInfo, rwrInfo);
         }
@@ -824,8 +816,8 @@ eReturnValues CATA_Farm_Log::print_Error_Information(JSONNODE *masterData, uint3
         set_json_64_bit_With_Status(eventInfo, "Cum Lifetime Unrecoverable Read Unique", vFarmFrame[page].errorPage.cumLiveUnRecoveralbeReadUnique[loopCount], false, m_showStatusBits);   //!< Cumulative Lifetime Unrecoverable Read Unique by head
         json_push_back(pageInfo, eventInfo);
     }
-    if (m_MajorRev >= 4 && m_MinorRev > 20)
-    {
+    //if (m_MajorRev >= 4 && m_MinorRev > 20)
+    //{
         set_json_64_bit_With_Status(pageInfo, "Number of Reallocated Sectors, Actuator 1", vFarmFrame[page].errorPage.reallocSectorsAct1, false, m_showStatusBits);
         set_json_64_bit_With_Status(pageInfo, "Number of Reallocated Candidate Sectors, Actuator 1", vFarmFrame[page].errorPage.reallocCandidatesAct1, false, m_showStatusBits);
         set_json_64_bit_With_Status(pageInfo, "Total Flash LED (Assert) Events, Actuator 1", vFarmFrame[page].errorPage.totalFlashLEDEvents, false, m_showStatusBits);
@@ -868,11 +860,11 @@ eReturnValues CATA_Farm_Log::print_Error_Information(JSONNODE *masterData, uint3
             temp << "Read Write Retry " << std::dec << loopCount << " Actuator 1";
             json_set_name(rwrInfo, temp.str().c_str());
 
-            set_json_64_bit_With_Status(rwrInfo, "Error Type Actuator 1", M_Byte6(check_Status_Strip_Status(vFarmFrame[page].errorPage.last8ReadWriteRetryEvts[loopCount])), false, m_showStatusBits);
-            set_json_64_bit_With_Status(rwrInfo, "Log Entry Actuator 1", M_Word2(check_Status_Strip_Status(vFarmFrame[page].errorPage.last8ReadWriteRetryEvts[loopCount])), false, m_showStatusBits);
-            set_json_64_bit_With_Status(rwrInfo, "Zone Group Actuator 1", M_Word1(check_Status_Strip_Status(vFarmFrame[page].errorPage.last8ReadWriteRetryEvts[loopCount])), false, m_showStatusBits);
-            set_json_64_bit_With_Status(rwrInfo, "Head Actuator 1", M_Byte1(check_Status_Strip_Status(vFarmFrame[page].errorPage.last8ReadWriteRetryEvts[loopCount])), false, m_showStatusBits);
-            set_json_64_bit_With_Status(rwrInfo, "Count Actuator 1", M_Byte0(check_Status_Strip_Status(vFarmFrame[page].errorPage.last8ReadWriteRetryEvts[loopCount])), false, m_showStatusBits);
+            set_json_int_Check_Status(rwrInfo, "Error Type Actuator 1", M_Byte6(vFarmFrame[page].errorPage.last8ReadWriteRetryEvts[loopCount]), vFarmFrame[page].errorPage.last8ReadWriteRetryEvts[loopCount], m_showStatusBits);
+            set_json_int_Check_Status(rwrInfo, "Log Entry Actuator 1", M_Word2(vFarmFrame[page].errorPage.last8ReadWriteRetryEvts[loopCount]), vFarmFrame[page].errorPage.last8ReadWriteRetryEvts[loopCount], m_showStatusBits);
+            set_json_int_Check_Status(rwrInfo, "Zone Group Actuator 1", M_Word1(vFarmFrame[page].errorPage.last8ReadWriteRetryEvts[loopCount]), vFarmFrame[page].errorPage.last8ReadWriteRetryEvts[loopCount], m_showStatusBits);
+            set_json_int_Check_Status(rwrInfo, "Head Actuator 1", M_Byte1(vFarmFrame[page].errorPage.last8ReadWriteRetryEvts[loopCount]), vFarmFrame[page].errorPage.last8ReadWriteRetryEvts[loopCount], m_showStatusBits);
+            set_json_int_Check_Status(rwrInfo, "Count Actuator 1", M_Byte0(vFarmFrame[page].errorPage.last8ReadWriteRetryEvts[loopCount]), vFarmFrame[page].errorPage.last8ReadWriteRetryEvts[loopCount], m_showStatusBits);
 
             json_push_back(pageInfo, rwrInfo);
         }
@@ -883,7 +875,7 @@ eReturnValues CATA_Farm_Log::print_Error_Information(JSONNODE *masterData, uint3
             set_json_64_bit_With_Status(pageInfo, myStr, vFarmFrame[page].errorPage.reallocSectorsByCauseAct1[loopCount], false, m_showStatusBits);
         }
 
-    }
+    //}
 
     json_push_back(masterData, pageInfo);
 
