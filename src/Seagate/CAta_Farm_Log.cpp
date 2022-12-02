@@ -137,6 +137,33 @@ CATA_Farm_Log::~CATA_Farm_Log()
 }
 //-----------------------------------------------------------------------------
 //
+//! \fn Check_Page_number()
+//
+//! \brief
+//!   Description:  parse out the Farm Log into a vector called Farm Frame.
+//
+//  Entry:
+//! \param page - the number that the page should be
+//
+//  Exit:
+//!   \return SUCCESS or FAILURE
+//
+//---------------------------------------------------------------------------
+bool CATA_Farm_Log::Check_Page_number(uint64_t page, uint16_t pageNumber)
+{
+    if (pageNumber == M_Word0(page))
+        return true;
+    else
+    {
+        if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+        {
+            printf("\n page number did not match pointer information.\n");
+        }
+        return false;
+    }
+}
+//-----------------------------------------------------------------------------
+//
 //! \fn ParseFarmLog()
 //
 //! \brief
@@ -162,6 +189,7 @@ eReturnValues CATA_Farm_Log::parse_Farm_Log()
     // TODO:   Add in a check for time series that has all FFFF's even for the signature - show as empty 
     if (signature == FARMSIGNATURE || signature == FACTORYCOPY)                                     // check the head to see if it has the farm signature else fail
     {
+        retStatus = IN_PROGRESS;
         for (uint32_t index = 0; index <= m_copies; ++index)                       // loop for the number of copies. I don't think it's zero base as of now
         {
             sDriveInfo *idInfo = reinterpret_cast<sDriveInfo*>(&pBuf[offset]);                   // get the id drive information at the time.
@@ -180,28 +208,47 @@ eReturnValues CATA_Farm_Log::parse_Farm_Log()
             {
                 pFarmFrame->identStringInfo.modelNumber = "ST12345678";
             }
-
+            if (!Check_Page_number(idInfo->pageNumber, 1))
+            {
+                retStatus = VALIDATION_FAILURE;
+            }
 
             offset += m_pageSize;
 
             sWorkLoadStat *pworkLoad = reinterpret_cast<sWorkLoadStat*>(&pBuf[offset]);           // get the work load information
             memcpy(&pFarmFrame->workLoadPage, pworkLoad, sizeof(sWorkLoadStat));
+            if (!Check_Page_number(pworkLoad->pageNumber, 2))
+            {
+                retStatus = VALIDATION_FAILURE;
+            }
             offset += m_pageSize;
 
             sErrorStat *pError = reinterpret_cast<sErrorStat*>(&pBuf[offset]);                    // get the error status
             memcpy(&pFarmFrame->errorPage, pError, sizeof(sErrorStat));
+            if (!Check_Page_number(pError->pageNumber, 3))
+            {
+                retStatus = VALIDATION_FAILURE;
+            }
             offset += m_pageSize;
 
             sEnvironementStat *pEnvironment = reinterpret_cast<sEnvironementStat*>(&pBuf[offset]); // get the envirmonent information 
             memcpy(&pFarmFrame->environmentPage, pEnvironment, sizeof(sEnvironementStat));
+            if (!Check_Page_number(pEnvironment->pageNumber, 4))
+            {
+                retStatus = VALIDATION_FAILURE;
+            }
             offset += m_pageSize;
 
             sAtaReliabilityStat *pReli = reinterpret_cast<sAtaReliabilityStat*>(&pBuf[offset]);         // get the Reliabliity stat
             memcpy(&pFarmFrame->reliPage, pReli, sizeof(sAtaReliabilityStat));
+            if (!Check_Page_number(pReli->pageNumber, 5))
+            {
+                retStatus = VALIDATION_FAILURE;
+            }
             offset += m_pageSize;                                                  // add another page size. I think there is only on header
             vFarmFrame.push_back(*pFarmFrame);                                   // push the data to the vector
         }
-        retStatus = IN_PROGRESS;
+        
     }
     if (signature == FARMEMPTYSIGNATURE || signature == FARMPADDINGSIGNATURE)                                     // checking for an empty log aka all FFFF's
     {

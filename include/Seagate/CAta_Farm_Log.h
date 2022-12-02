@@ -51,6 +51,7 @@ namespace opensea_parser {
             uint32_t                    m_MinorRev;                         //!< holds the minor revision number
             uint8_t                     m_FrameReason;                      //!< holds the reason for Frame Capture information
  
+            bool Check_Page_number(uint64_t page, uint16_t pageNumber);
             eReturnValues print_Header(JSONNODE *masterData);
             eReturnValues print_Drive_Information(JSONNODE *masterData, uint32_t page);
             eReturnValues print_Work_Load(JSONNODE *masterData, uint32_t page);
@@ -58,7 +59,7 @@ namespace opensea_parser {
             eReturnValues print_Enviroment_Information(JSONNODE *masterData, uint32_t page);
             eReturnValues print_Reli_Information(JSONNODE *masterData, uint32_t page);
             eReturnValues print_Head_Information(JSONNODE *masterData, uint32_t page);
-
+            
         public:
             CATA_Farm_Log();
             CATA_Farm_Log( uint8_t *bufferData, size_t bufferSize, bool showStatus);
