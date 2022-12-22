@@ -352,7 +352,7 @@ namespace opensea_parser {
         uint64_t            servoStatus;                                 //!< Servo Status (follows standard DST error code definitions)
         uint64_t            altsBeforeIDD;                               //!< Number of Alt List Entries Before IDD Scan
         uint64_t            altsAfterIDD;                                //!< Number of Alt List Entries After IDD Scan
-        uint64_t            gListBeforIDD;                               //!< Number of Resident G-List Entries Before IDD Scan
+        uint64_t            gListBeforeIDD;                              //!< Number of Resident G-List Entries Before IDD Scan
         uint64_t            gListAfterIDD;                               //!< Number of Resident G-List Entries After IDD Scan
         uint64_t            scrubsBeforeIDD;                             //!< Number of Scrub List Entries Before IDD Scan
         uint64_t            scrubsAfterIDD;                              //!< Number of Scrub List Entries After IDD Scan
