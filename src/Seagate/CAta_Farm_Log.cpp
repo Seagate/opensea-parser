@@ -434,10 +434,10 @@ eReturnValues CATA_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint3
 
     temp.str("");temp.clear();
     temp << std::dec << (vFarmFrame[page].driveInfo.timeStamp1 & UINT64_C(0x00FFFFFFFFFFFFFF));
-    set_json_string_With_Status(pageInfo, "Timestamp of First SMART Summary Frame (ms)", temp.str(), vFarmFrame[page].driveInfo.timeStamp1, m_showStatusBits);
+    set_json_string_With_Status(pageInfo, "Timestamp of First SMART Summary Frame (ms)", temp.str().c_str(), vFarmFrame[page].driveInfo.timeStamp1, m_showStatusBits);
     temp.str("");temp.clear();
     temp << std::dec << (vFarmFrame[page].driveInfo.timeStamp2 & UINT64_C(0x00FFFFFFFFFFFFFF));
-    set_json_string_With_Status(pageInfo, "TimeStamp of Last SMART Summary Frame (ms)", temp.str(), vFarmFrame[page].driveInfo.timeStamp2, m_showStatusBits);      //!< Timestamp of latest SMART Summary Frame in Power-On Hours Milliseconds1
+    set_json_string_With_Status(pageInfo, "TimeStamp of Last SMART Summary Frame (ms)", temp.str().c_str(), vFarmFrame[page].driveInfo.timeStamp2, m_showStatusBits);      //!< Timestamp of latest SMART Summary Frame in Power-On Hours Milliseconds1
 
     temp.str("");temp.clear();
     temp << std::setfill('0') << std::setprecision(6) << static_cast<float>(M_Word0(vFarmFrame[page].driveInfo.timeToReady)) / 1000;
@@ -457,7 +457,7 @@ eReturnValues CATA_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint3
         }
     }
 
-    set_json_string_With_Status(pageInfo, myStr.str().c_str(), type, vFarmFrame[page].driveInfo.driveRecordingType, m_showStatusBits);
+    set_json_string_With_Status(pageInfo, myStr.str().c_str(), type.c_str(), vFarmFrame[page].driveInfo.driveRecordingType, m_showStatusBits);
     myStr.str(""); myStr.clear();
     myStr<< "Has Drive been Depopped";
     if (check_Status_Strip_Status(vFarmFrame[page].driveInfo.depopped) != 0)
@@ -491,11 +491,10 @@ eReturnValues CATA_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint3
     set_json_64_bit_With_Status(pageInfo, "Depopulation Head Mask", vFarmFrame[page].driveInfo.depopulationHeadMask, false, m_showStatusBits);     //!< Depopulation Head Mask
 
     //version 4.21
-    if (m_MajorRev >= 4 && m_MinorRev > 20)
-    {
-        set_json_64_bit_With_Status(pageInfo, "Head Flight Hours, Actuator 1", vFarmFrame[page].driveInfo.headFlightHoursAct1, false, m_showStatusBits);     //!< Head Flight Hours, Actuator 1
-        set_json_64_bit_With_Status(pageInfo, "Head Load Events, Actuator 1", vFarmFrame[page].driveInfo.headLoadEventsAct1, false, m_showStatusBits);     //!< Head Load Events, Actuator 1
-    }
+
+    set_json_64_bit_With_Status(pageInfo, "Head Flight Hours, Actuator 1", vFarmFrame[page].driveInfo.headFlightHoursAct1, false, m_showStatusBits);     //!< Head Flight Hours, Actuator 1
+    set_json_64_bit_With_Status(pageInfo, "Head Load Events, Actuator 1", vFarmFrame[page].driveInfo.headLoadEventsAct1, false, m_showStatusBits);     //!< Head Load Events, Actuator 1
+
 
     set_json_bool_With_Status(pageInfo, "HAMR Data Protect Status", vFarmFrame[page].driveInfo.HAMRProtectStatus, m_showStatusBits);
 
@@ -1321,7 +1320,7 @@ eReturnValues CATA_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint32
 
         temp.str(""); temp.clear();
         temp << std::fixed << std::setprecision(6) << std::setfill('0') << static_cast<double>(check_Status_Strip_Status(vFarmFrame[page].reliPage.idleTime)) / 3600;
-        set_json_string_With_Status(pageInfo, "Idle Time (hours), Actuator 0", temp.str(), vFarmFrame[page].reliPage.idleTime, m_showStatusBits);
+        set_json_string_With_Status(pageInfo, "Idle Time (hours), Actuator 0", temp.str().c_str(), vFarmFrame[page].reliPage.idleTime, m_showStatusBits);
         set_json_64_bit_With_Status(pageInfo, "Number of LBAs Corrected by Parity Sector, Actuator 0", vFarmFrame[page].reliPage.numberLBACorrectedByParitySector, false, m_showStatusBits);
         set_json_64_bit_With_Status(pageInfo, "Primary Super Parity Coverage Percentage, Actuator 0", vFarmFrame[page].reliPage.SuperParityCovPercent, false, m_showStatusBits);
     }
@@ -1349,7 +1348,7 @@ eReturnValues CATA_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint32
         set_json_64_bit_With_Status(pageInfo, "Max RV Absolute Mean, Actuator 1", vFarmFrame[page].reliPage.rvAbsMeanMaxAct1, false, m_showStatusBits);
         temp.str(""); temp.clear();
         temp << std::fixed << std::setprecision(6) << std::setfill('0') << static_cast<double>(check_Status_Strip_Status(vFarmFrame[page].reliPage.idleTimeAct1)) / 3600;
-        set_json_string_With_Status(pageInfo, "Idle Time (hours), Actuator 1", temp.str(),vFarmFrame[page].reliPage.idleTimeAct1, m_showStatusBits);
+        set_json_string_With_Status(pageInfo, "Idle Time (hours), Actuator 1", temp.str().c_str(),vFarmFrame[page].reliPage.idleTimeAct1, m_showStatusBits);
         //set_json_64_bit_With_Status(pageInfo, "Idle Time (hours), Actuator 1", vFarmFrame[page].reliPage.idleTimeAct1, false, m_showStatusBits);
         set_json_64_bit_With_Status(pageInfo, "Number of LBAs Corrected by Parity Sector, Actuator 1", vFarmFrame[page].reliPage.parityCorrLBAAct1, false, m_showStatusBits);   
         set_json_64_bit_With_Status(pageInfo, "Primary Super Parity Coverage Percentage, Actuator 1", vFarmFrame[page].reliPage.superParityCovPercentAct1, false, m_showStatusBits);
@@ -1904,23 +1903,23 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
             myHeader.assign(temp.str());
             //temp.str("");temp.clear();
             //temp << std::fixed << std::setprecision(1) << std::setfill('0') << static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].reliPage.postLFABER[loopCount].inner)));
-            set_json_float_With_Status(headInfo, myHeader, static_cast<double>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].reliPage.postLFABER[loopCount].inner))), vFarmFrame[page].reliPage.postLFABER[loopCount].inner, m_showStatusBits);
+            set_json_float_With_Status(headInfo, temp.str().c_str(), static_cast<double>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].reliPage.postLFABER[loopCount].inner))), vFarmFrame[page].reliPage.postLFABER[loopCount].inner, m_showStatusBits);
         }
         for (loopCount = 0; loopCount < m_heads; ++loopCount)
         {
             temp.str("");temp.clear();
             temp << "Post LFA Optimal BER middle Diameter by Head " << std::dec << loopCount;// Head count
-            myHeader.assign(temp.str());
-            set_json_float_With_Status(headInfo, myHeader, static_cast<double>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].reliPage.postLFABER[loopCount].middle))), vFarmFrame[page].reliPage.postLFABER[loopCount].middle, m_showStatusBits);
+            //myHeader.assign(temp.str());
+            set_json_float_With_Status(headInfo, temp.str().c_str(), static_cast<double>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].reliPage.postLFABER[loopCount].middle))), vFarmFrame[page].reliPage.postLFABER[loopCount].middle, m_showStatusBits);
         }
         for (loopCount = 0; loopCount < m_heads; ++loopCount)
         {
             temp.str("");temp.clear();
             temp << "Post LFA Optimal BER outer Diameter by Head " << std::dec << loopCount;// Head count
-            myHeader.assign(temp.str());
+            //myHeader.assign(temp.str());
             //temp.str("");temp.clear();
             //temp << std::fixed << std::setprecision(1) << std::setfill('0') << static_cast<float> (M_Word0(check_Status_Strip_Status(vFarmFrame[page].reliPage.postLFABER[loopCount].outer)));
-            set_json_float_With_Status(headInfo, myHeader, static_cast<double> (M_Word0(check_Status_Strip_Status(vFarmFrame[page].reliPage.postLFABER[loopCount].outer))), vFarmFrame[page].reliPage.postLFABER[loopCount].outer, m_showStatusBits);
+            set_json_float_With_Status(headInfo, temp.str().c_str(), static_cast<double> (M_Word0(check_Status_Strip_Status(vFarmFrame[page].reliPage.postLFABER[loopCount].outer))), vFarmFrame[page].reliPage.postLFABER[loopCount].outer, m_showStatusBits);
         }
         for (loopCount = 0; loopCount < m_heads; ++loopCount)
         {
