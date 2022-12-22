@@ -119,7 +119,7 @@ namespace opensea_parser {
         eReturnValues print_LUN_Actuator_Information(JSONNODE * LUNData, uint32_t page, uint16_t actNum);
         eReturnValues print_LUN_Actuator_FLED_Info(JSONNODE * LUNFLED, uint32_t page, uint16_t actNum);
         eReturnValues print_LUN_Actuator_Reallocation(JSONNODE * LUNNReallocation, uint32_t page, uint16_t actNum);
-        void farm_PrePython_Str(JSONNODE* masterData, const char* name, const char* statType, const char* unit, const char* location, int pageNum, const char* value);
+        //void farm_PrePython_Str(JSONNODE* masterData, const char* name, const char* statType, const char* unit, const char* location, int pageNum, const char* value);
         void farm_PrePython_Int(JSONNODE* masterData, const char* name, const char* statType, const char* header, \
             const char* unit, int pageNum, int64_t value);
         void farm_PrePython_Float(JSONNODE* masterData, const char* name, const char* statType, const char* header, \
@@ -135,7 +135,7 @@ namespace opensea_parser {
         virtual ~CSCSI_Farm_Log();
         eReturnValues parse_Farm_Log();
         void print_All_Pages(JSONNODE *masterData);
-        void print_Page(JSONNODE *masterData, uint32_t page);
+        //void print_Page(JSONNODE *masterData, uint32_t page);
         void print_Page_One_Node(JSONNODE *masterData);
         void print_Page_Without_Drive_Info(JSONNODE *masterData, uint32_t page);
         virtual eReturnValues get_Log_Status(){ return m_status; };
