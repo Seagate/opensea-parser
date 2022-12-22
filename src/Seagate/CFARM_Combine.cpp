@@ -31,13 +31,14 @@ using namespace opensea_parser;
 //
 //---------------------------------------------------------------------------
 CFarm_Combine::CFarm_Combine()
-	:bufferData()
+	:CFarmCommon()
+	, bufferData()
 	, m_LogSize(0)
 	, m_status(IN_PROGRESS)
 	, m_isScsi(false)
 	, m_combine_isScsi(false)
 	, m_isComboLog(false)
-	, m_shwoStatus(false)
+	, m_showStatus(false)
 	, m_version(0)
 	, m_maxLogSize(0)
 {
@@ -57,13 +58,14 @@ CFarm_Combine::CFarm_Combine()
 //
 //---------------------------------------------------------------------------
 CFarm_Combine::CFarm_Combine(bool showStatus)
-	:bufferData()
+	:CFarmCommon()
+	, bufferData()
 	, m_LogSize(0)
 	, m_status(IN_PROGRESS)
 	, m_isScsi(false)
 	, m_combine_isScsi(false)
 	, m_isComboLog(false)
-	, m_shwoStatus(showStatus)
+	, m_showStatus(showStatus)
 	, m_version(0)
 	, m_maxLogSize(0)
 {
@@ -83,13 +85,14 @@ CFarm_Combine::CFarm_Combine(bool showStatus)
 //
 //---------------------------------------------------------------------------
 CFarm_Combine::CFarm_Combine(uint8_t* buffer, size_t bufferSize, bool showStatus)
-	:bufferData(buffer)
+	:CFarmCommon()
+	, bufferData(buffer)
 	, m_LogSize(bufferSize)
 	, m_status(IN_PROGRESS)
 	, m_isScsi(false)
 	, m_combine_isScsi(false)
 	, m_isComboLog(false)
-	, m_shwoStatus(showStatus)
+	, m_showStatus(showStatus)
 	, m_version(0)
 	, m_maxLogSize(0)
 {
@@ -165,7 +168,7 @@ void CFarm_Combine::combine_Device_Scsi()
 		{
 			if (bufferData[1] == 03 || bufferData[1] == 04 || (bufferData[1] >= FARM_TIME_SERIES_0 && bufferData[1] <= FARM_TEMP_TRIGGER_LOG_PAGE))
 			{
-				m_combine_isScsi = true;
+				m_isScsi = true;
 			}
 		}
 		// check for sas log page being addded
@@ -297,17 +300,17 @@ void CFarm_Combine::get_FARM_Type(std::string* reason, uint64_t dataType)
 //!   \return bool - true if we need a subpage in the JSON
 //
 //---------------------------------------------------------------------------
-bool CFarm_Combine::is_Subpage_Neeeded(uint64_t* dataType)
+bool CFarm_Combine::is_Subpage_Neeeded(uint64_t dataType)
 {
-	if (*dataType == FARM_TIME)						// FARM TimeSeries Frame
+	if (dataType == FARM_TIME)						// FARM TimeSeries Frame
 	{
 		return true;
 	}
-	if (*dataType == FARM_STICKY)					// FARM Sticky Frame
+	if (dataType == FARM_STICKY)					// FARM Sticky Frame
 	{
 		return true;
 	}
-	if (*dataType == FARM_SAVE)						// Farm Saved Frame
+	if (dataType == FARM_SAVE)						// Farm Saved Frame
 	{
 		return true;
 	}
@@ -482,7 +485,7 @@ void CFarm_Combine::parse_FARM_Logs(size_t offset, size_t logSize, uint64_t data
 			json_set_name(farmInfo, temp.str().c_str());
 
 			CSCSI_Farm_Log* pCFarm;
-			pCFarm = new CSCSI_Farm_Log(&bufferData[offset], logSize, subpage, m_shwoStatus);
+			pCFarm = new CSCSI_Farm_Log(&bufferData[offset], logSize, subpage, false, m_showStatus);
 			if (pCFarm->get_Log_Status() == SUCCESS)
 			{
 				page = static_cast<size_t>(pCFarm->get_LogSize()) + 4;      // need add in the param length back in
@@ -507,12 +510,12 @@ void CFarm_Combine::parse_FARM_Logs(size_t offset, size_t logSize, uint64_t data
 		{
 
 			CATA_Farm_Log* pCFarm;
-			pCFarm = new CATA_Farm_Log(&bufferData[offset], logSize, m_shwoStatus);
+			pCFarm = new CATA_Farm_Log(&bufferData[offset], logSize, m_showStatus);
 			if (pCFarm->get_Log_Status() == IN_PROGRESS)
 			{
 				try
 				{
-					bool subFrame = is_Subpage_Neeeded(&dataType);  // check to see if the subpage is needed
+					bool subFrame = is_Subpage_Neeeded(dataType);  // check to see if the subpage is needed
 
 					JSONNODE* farmInfo;
 					if (!subFrame)
@@ -595,7 +598,7 @@ void CFarm_Combine::print_Combine_Log_Header(sStringIdentifyData* headerInfo, JS
 	json_push_back(label, json_new_a("Drive Interface", headerInfo->deviceInterface.c_str()));
 	json_push_back(label, json_new_a("Model Number", headerInfo->modelNumber.c_str()));
 	std::string verStr;
-	create_Version_Number(verStr, &m_version);
+	create_Version_Number(verStr, m_version);
 	json_push_back(label, json_new_a("FARM Combined version", verStr.c_str()));
 	json_push_back(header, label);
 }
