@@ -34,6 +34,7 @@ CFARMWLM::CFARMWLM()
     :pData(NULL)
     , m_name("WLM Log")
     , m_logSize(0)
+    , m_version(0)
     , m_WLMstatus(IN_PROGRESS)
     , m_DataHeader()
     , m_DataHeaderPTR(NULL)
@@ -61,6 +62,7 @@ CFARMWLM::CFARMWLM( uint8_t *bufferData, uint32_t dataSize, JSONNODE *masterData
     :pData(bufferData)
     , m_name("WLM Log")
     , m_logSize(dataSize)
+    , m_version(0)
     , m_WLMstatus(IN_PROGRESS)
     , m_DataHeader()
     , m_DataHeaderPTR(NULL)
@@ -205,10 +207,10 @@ bool CFARMWLM::validate_WLM()
 //!   \return bool 
 //
 //---------------------------------------------------------------------------
-bool CFARMWLM::check_For_Footer_Signature(size_t* offset)
+bool CFARMWLM::check_For_Footer_Signature(size_t offset)
 {
     
-    uint32_t footer = M_BytesTo4ByteValue(pData[*offset], pData[*offset + 1], pData[*offset + 2], pData[*offset + 3]);
+    uint32_t footer = M_BytesTo4ByteValue(pData[offset], pData[offset + 1], pData[offset + 2], pData[offset + 3]);
     if (footer == FARMFOOTWLM || footer == FARMFOOTWLMSWAP)
     {
         return true;
@@ -262,7 +264,7 @@ bool CFARMWLM::get_WLM_Header_Data(size_t offset)
     m_DataHeader.writeOps = M_BytesTo4ByteValue(pData[offset + 3], pData[offset + 2], pData[offset + 1], pData[offset]);
     offset += sizeof(m_DataHeader.writeOps);
     m_DataHeader.markers = M_BytesTo4ByteValue(pData[offset + 3], pData[offset + 2], pData[offset + 1], pData[offset]);
-    offset += sizeof(m_DataHeader.markers);
+    //offset += sizeof(m_DataHeader.markers);
     return true;
 
 
@@ -617,7 +619,7 @@ bool CFARMWLM::get_Trace_Data(size_t* offset, JSONNODE* wlmJson)
         }
         json_push_back(tData,tCmd);
         frameOffset += *offset - startOffset;
-        if (check_For_Footer_Signature(offset))
+        if (check_For_Footer_Signature(*offset))
         {
             break;
         }
