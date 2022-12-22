@@ -2838,7 +2838,7 @@ eReturnValues CSCSI_Farm_Log::print_Error_Information(JSONNODE *masterData, uint
         set_json_64_bit_With_Status(pageInfo, "Unrecoverable Read Errors", vFarmFrame[page].errorPage.errorStat.totalReadECC, false, m_showStatusBits);							//!< Number of Unrecoverable Read Errors
         set_json_64_bit_With_Status(pageInfo, "Unrecoverable Write Errors", vFarmFrame[page].errorPage.errorStat.totalWriteECC, false, m_showStatusBits);							//!< Number of Unrecoverable Write Errors
         set_json_64_bit_With_Status(pageInfo, "Reallocated Sectors", vFarmFrame[page].errorPage.errorStat.totalReallocations, false, m_showStatusBits);					//!< Number of Reallocated Sectors
-        set_json_64_bit_With_Status(pageInfo, "Number of Mechanical Start Failures", vFarmFrame[page].errorPage.errorStat.totalMechanicalFails, false, m_showStatusBits);			//!< Number of Mechanical Start Failures
+        set_json_64_bit_With_Status(pageInfo, "Mechanical Start Failures", vFarmFrame[page].errorPage.errorStat.totalMechanicalFails, false, m_showStatusBits);			//!< Number of Mechanical Start Failures
         set_json_64_bit_With_Status(pageInfo, "Reallocated Candidate Sectors", vFarmFrame[page].errorPage.errorStat.totalReallocatedCanidates, false, m_showStatusBits); //!< Number of Reallocated Candidate Sectors
         set_json_64_bit_With_Status(pageInfo, "Number of IOEDC Errors (Raw)", vFarmFrame[page].errorPage.errorStat.attrIOEDCErrors, false, m_showStatusBits);						//!< Number of IOEDC Errors (SMART Attribute 184 Raw)
         set_json_64_bit_With_Status(pageInfo, "Total Flash LED (Assert) Events", vFarmFrame[page].errorPage.errorStat.totalFlashLED, false, m_showStatusBits);						//!< Total Flash LED (Assert) Events
@@ -3963,7 +3963,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 }
                 else
                 {
-                    set_json_64_bit_With_Status(headPage, header.str().c_str(), M_DoubleWord0(vFarmFrame[page].DOSNeedToScan.headValue[loopCount]), false, m_showStatusBits);
+                    set_json_64_bit_With_Status(headPage, header.str().c_str(), vFarmFrame[page].DOSNeedToScan.headValue[loopCount], false, m_showStatusBits);
                 }
             }
             break;
@@ -3981,7 +3981,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 }
                 else
                 {
-                    set_json_64_bit_With_Status(headPage, header.str().c_str(), M_DoubleWord0(vFarmFrame[page].DOSWriteFaultScan.headValue[loopCount]), false, m_showStatusBits);
+                    set_json_64_bit_With_Status(headPage, header.str().c_str(), vFarmFrame[page].DOSWriteFaultScan.headValue[loopCount], false, m_showStatusBits);
                 }
             }
             break;
