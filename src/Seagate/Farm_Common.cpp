@@ -335,10 +335,10 @@ void CFarmCommon::create_Firmware_String_Flat(std::string& firmwareRevStr, uint3
 //!   \return none
 //
 //---------------------------------------------------------------------------
-void CFarmCommon::create_Version_Number(std::string &version, uint64_t* versionID)
+void CFarmCommon::create_Version_Number(std::string &version, uint64_t versionID)
 {
-	uint8_t minor = M_Byte0(*versionID);
-	uint8_t major = M_Byte1(*versionID);
+	uint8_t minor = M_Byte0(versionID);
+	uint8_t major = M_Byte1(versionID);
 	version = "0000000";
 	std::ostringstream temp;
 	temp << "" << std::dec << std::setw(1) << static_cast<uint16_t>(major) << "."  << static_cast<uint16_t>(minor);
