@@ -628,11 +628,11 @@ eReturnValues CATA_Farm_Log::print_Work_Load(JSONNODE *masterData, uint32_t page
     set_json_64_bit_With_Status(pageInfo, "Write Commands of transfer length > 2MB", vFarmFrame[page].workLoadPage.numWriteTransferLargeATA, false, m_showStatusBits);
     set_json_64_bit_With_Status(pageInfo, "Queue Depth bin = 1", vFarmFrame[page].workLoadPage.cntQueueDepth1, false, m_showStatusBits);
     set_json_64_bit_With_Status(pageInfo, "Queue Depth bin = 2", vFarmFrame[page].workLoadPage.cntQueueDepth2, false, m_showStatusBits);
-    set_json_64_bit_With_Status(pageInfo, "Queue Depth bin = 3-4", vFarmFrame[page].workLoadPage.cntQueueDepth3to4, false, m_showStatusBits);
-    set_json_64_bit_With_Status(pageInfo, "Queue Depth bin = 5-8", vFarmFrame[page].workLoadPage.cntQueueDepth5to8, false, m_showStatusBits);
-    set_json_64_bit_With_Status(pageInfo, "Queue Depth bin = 9-16", vFarmFrame[page].workLoadPage.cntQueueDepth9to16, false, m_showStatusBits);
-    set_json_64_bit_With_Status(pageInfo, "Queue Depth bin = 17-32", vFarmFrame[page].workLoadPage.cntQueueDepth17to32, false, m_showStatusBits);
-    set_json_64_bit_With_Status(pageInfo, "Queue Depth bin = 33-64", vFarmFrame[page].workLoadPage.cntQueueDepth33to64, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Queue Depth bin 3-4", vFarmFrame[page].workLoadPage.cntQueueDepth3to4, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Queue Depth bin 5-8", vFarmFrame[page].workLoadPage.cntQueueDepth5to8, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Queue Depth bin 9-16", vFarmFrame[page].workLoadPage.cntQueueDepth9to16, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Queue Depth bin 17-32", vFarmFrame[page].workLoadPage.cntQueueDepth17to32, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Queue Depth bin 33-64", vFarmFrame[page].workLoadPage.cntQueueDepth33to64, false, m_showStatusBits);
     set_json_64_bit_With_Status(pageInfo, "Queue Depth bin > 64", vFarmFrame[page].workLoadPage.cntQueueDepthmorethan64, false, m_showStatusBits);
     set_json_64_bit_With_Status(pageInfo, "dither events, Actuator 1", vFarmFrame[page].workLoadPage.numDithEvtAct1, false, m_showStatusBits);
     set_json_64_bit_With_Status(pageInfo, "dither was held off during random workloads, Actuator 1", vFarmFrame[page].workLoadPage.numRandWLDitherHoldOffAct1, false, m_showStatusBits);
