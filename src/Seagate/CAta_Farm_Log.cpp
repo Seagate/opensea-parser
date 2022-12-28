@@ -358,8 +358,8 @@ eReturnValues CATA_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint3
     printf("\tATA Security State (ID Word 128)(debug):         0x%04" PRIX64" \n", (vFarmFrame[page].driveInfo.security & UINT64_C(0x00FFFFFFFFFFFFFF)));                              //!< ATA Security State (ID Word 128)
     printf("\tPower on Hours(debug):                           %" PRIu64" \n", (vFarmFrame[page].driveInfo.poh & UINT64_C(0x00FFFFFFFFFFFFFF)));                                       //!< Power-on Hour
     printf("\tSpindle Power on hours(debug):                   %" PRIu64" \n", (vFarmFrame[page].driveInfo.spoh & UINT64_C(0x00FFFFFFFFFFFFFF)));                                      //!< Spindle Power-on Hours
-    printf("\tHead Flight Hours, Actuator 0(debug):            %" PRIu64" \n", (vFarmFrame[page].driveInfo.headFlightHoursAct0 & UINT64_C(0x00FFFFFFFFFFFFFF)));                           //!< Head Flight Hours
-    printf("\tHead Load Events, Actuator 0(debug):             %" PRIu64" \n", (vFarmFrame[page].driveInfo.headLoadEventsAct0 & UINT64_C(0x00FFFFFFFFFFFFFF)));                            //!< Head Load Events
+    printf("\tHead Flight Hours - Actuator 0(debug):            %" PRIu64" \n", (vFarmFrame[page].driveInfo.headFlightHoursAct0 & UINT64_C(0x00FFFFFFFFFFFFFF)));                           //!< Head Flight Hours
+    printf("\tHead Load Events - Actuator 0(debug):             %" PRIu64" \n", (vFarmFrame[page].driveInfo.headLoadEventsAct0 & UINT64_C(0x00FFFFFFFFFFFFFF)));                            //!< Head Load Events
     printf("\tPower Cycle count(debug):                        %" PRIu64" \n", (vFarmFrame[page].driveInfo.powerCycleCount & UINT64_C(0x00FFFFFFFFFFFFFF)));                           //!< Power Cycle Count
     printf("\tHardware Reset count(debug):                     %" PRIu64" \n", (vFarmFrame[page].driveInfo.resetCount & UINT64_C(0x00FFFFFFFFFFFFFF)));                                //!< Hardware Reset Count
     printf("\tSpin-up Time(debug):                             %" PRIu64" \n", (vFarmFrame[page].driveInfo.spinUpTime & UINT64_C(0x00FFFFFFFFFFFFFF)));                                //!< SMART Spin-Up time in milliseconds
@@ -370,9 +370,9 @@ eReturnValues CATA_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint3
     printf("\tTime to ready of the last power cycle(debug):    %" PRIu64" \n", (vFarmFrame[page].driveInfo.timeToReady & UINT64_C(0x00FFFFFFFFFFFFFF)));                               //!< time to ready of the last power cycle
     printf("\tTime drive is held in staggered spin(debug):     %" PRIu64" \n", (vFarmFrame[page].driveInfo.timeHeld & UINT64_C(0x00FFFFFFFFFFFFFF)));                                  //!< time drive is held in staffered spin during the last power on sequence
     printf("\tDepopulation Head Mask(debug):                   %" PRIu64" \n", (vFarmFrame[page].driveInfo.depopulationHeadMask & UINT64_C(0x00FFFFFFFFFFFFFF)));
-    printf("\tHead Flight Hours, Actuator 1(debug):            %" PRIu64" \n", (vFarmFrame[page].driveInfo.headFlightHoursAct1 & UINT64_C(0x00FFFFFFFFFFFFFF)));
+    printf("\tHead Flight Hours - Actuator 1(debug):            %" PRIu64" \n", (vFarmFrame[page].driveInfo.headFlightHoursAct1 & UINT64_C(0x00FFFFFFFFFFFFFF)));
 
-    printf("\tHead Load Events, Actuator 1(debug):             %" PRIu64" \n", (vFarmFrame[page].driveInfo.headLoadEventsAct1 & UINT64_C(0x00FFFFFFFFFFFFFF)));
+    printf("\tHead Load Events - Actuator 1(debug):             %" PRIu64" \n", (vFarmFrame[page].driveInfo.headLoadEventsAct1 & UINT64_C(0x00FFFFFFFFFFFFFF)));
     printf("\tDrive Recording Type(debug):                     %" PRIu64" \n", (vFarmFrame[page].driveInfo.driveRecordingType & UINT64_C(0x00FFFFFFFFFFFFFF)));
     printf("\tdepopped(debug):                                 %" PRIu64" \n", (vFarmFrame[page].driveInfo.depopped & UINT64_C(0x00FFFFFFFFFFFFFF)));
     printf("\tMax number of sectors for reasssingment(debug):  %" PRIu64" \n", (vFarmFrame[page].driveInfo.maxNumberForReasign & UINT64_C(0x00FFFFFFFFFFFFFF)));
@@ -422,8 +422,8 @@ eReturnValues CATA_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint3
     set_json_64_bit_With_Status(pageInfo, "ATA Features Enabled (ID Word 79)", vFarmFrame[page].driveInfo.featuresEnabled, true, m_showStatusBits);         //!< ATA Features Enabled (ID Word 79)
 
     set_json_64_bit_With_Status(pageInfo, "Spindle Power on hours", vFarmFrame[page].driveInfo.spoh, false, m_showStatusBits);                                  //!< Spindle Power-on Hours
-    set_json_64_bit_With_Status(pageInfo, "Head Flight Hours, Actuator 0", vFarmFrame[page].driveInfo.headFlightHoursAct0, false, m_showStatusBits);                            //!< Head Flight Hours
-    set_json_64_bit_With_Status(pageInfo, "Head Load Events, Actuator 0", vFarmFrame[page].driveInfo.headLoadEventsAct0, false, m_showStatusBits);                              //!< Head Load Events
+    set_json_64_bit_With_Status(pageInfo, "Head Flight Hours - Actuator 0", vFarmFrame[page].driveInfo.headFlightHoursAct0, false, m_showStatusBits);                            //!< Head Flight Hours
+    set_json_64_bit_With_Status(pageInfo, "Head Load Events - Actuator 0", vFarmFrame[page].driveInfo.headLoadEventsAct0, false, m_showStatusBits);                              //!< Head Load Events
     set_json_64_bit_With_Status(pageInfo, "Power Cycle count", vFarmFrame[page].driveInfo.powerCycleCount, false, m_showStatusBits);                            //!< Power Cycle Count
     set_json_64_bit_With_Status(pageInfo, "Hardware Reset count", vFarmFrame[page].driveInfo.resetCount, false, m_showStatusBits);                              //!< Hardware Reset Count
     set_json_64_bit_With_Status(pageInfo, "Spin-up Time", vFarmFrame[page].driveInfo.spinUpTime, false, m_showStatusBits);                                      //!< SMART Spin-Up time in milliseconds
@@ -492,8 +492,8 @@ eReturnValues CATA_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint3
 
     //version 4.21
 
-    set_json_64_bit_With_Status(pageInfo, "Head Flight Hours, Actuator 1", vFarmFrame[page].driveInfo.headFlightHoursAct1, false, m_showStatusBits);     //!< Head Flight Hours, Actuator 1
-    set_json_64_bit_With_Status(pageInfo, "Head Load Events, Actuator 1", vFarmFrame[page].driveInfo.headLoadEventsAct1, false, m_showStatusBits);     //!< Head Load Events, Actuator 1
+    set_json_64_bit_With_Status(pageInfo, "Head Flight Hours - Actuator 1", vFarmFrame[page].driveInfo.headFlightHoursAct1, false, m_showStatusBits);     //!< Head Flight Hours- Actuator 1
+    set_json_64_bit_With_Status(pageInfo, "Head Load Events - Actuator 1", vFarmFrame[page].driveInfo.headLoadEventsAct1, false, m_showStatusBits);     //!< Head Load Events- Actuator 1
 
 
     set_json_bool_With_Status(pageInfo, "HAMR Data Protect Status", vFarmFrame[page].driveInfo.HAMRProtectStatus, m_showStatusBits);
@@ -571,9 +571,9 @@ eReturnValues CATA_Farm_Log::print_Work_Load(JSONNODE *masterData, uint32_t page
         printf("\tCount of Queue Depth =17-32 at 30s intervals for last 3 SMART Summary Frames   %llu  \n", vFarmFrame[page].workLoadPage.cntQueueDepth17to32 & UINT64_C(0x00FFFFFFFFFFFFFF));
         printf("\tCount of Queue Depth =33-64 at 30s intervals for last 3 SMART Summary Frames   %llu  \n", vFarmFrame[page].workLoadPage.cntQueueDepth33to64 & UINT64_C(0x00FFFFFFFFFFFFFF));
         printf("\tCount of Queue Depth >64 at 30s intervals for last 3 SMART Summary Frames   %llu  \n", vFarmFrame[page].workLoadPage.cntQueueDepthmorethan64 & UINT64_C(0x00FFFFFFFFFFFFFF));
-        printf("\tNumber of dither events during current power cycle, Actuator 1   %llu  \n", vFarmFrame[page].workLoadPage.numDithEvtAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));
-        printf("\tNumber of times dither was held off during random workloads during current power cycle, Actuator 1   %llu  \n", vFarmFrame[page].workLoadPage.numRandWLDitherHoldOffAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));
-        printf("\tNumber of times dither was held off during sequential workloads during current power cycle, Actuator 1   %llu  \n", vFarmFrame[page].workLoadPage.numSequentialWLDitherHoldOffAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));
+        printf("\tNumber of dither events during current power cycle - Actuator 1   %llu  \n", vFarmFrame[page].workLoadPage.numDithEvtAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));
+        printf("\tNumber of times dither was held off during random workloads during current power cycle - Actuator 1   %llu  \n", vFarmFrame[page].workLoadPage.numRandWLDitherHoldOffAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));
+        printf("\tNumber of times dither was held off during sequential workloads during current power cycle - Actuator 1   %llu  \n", vFarmFrame[page].workLoadPage.numSequentialWLDitherHoldOffAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));
     }
 
 
@@ -604,9 +604,9 @@ eReturnValues CATA_Farm_Log::print_Work_Load(JSONNODE *masterData, uint32_t page
     temp << std::dec << (vFarmFrame[page].workLoadPage.logicalSecRead & UINT64_C(0x00FFFFFFFFFFFFFF));
     set_json_string_With_Status(pageInfo, "Logical Sectors Read", temp.str().c_str(), vFarmFrame[page].workLoadPage.logicalSecRead, m_showStatusBits);                        //!< Logical Sectors Read
     temp.str("");temp.clear();
-    set_json_64_bit_With_Status(pageInfo, "dither events Actuator 0", vFarmFrame[page].workLoadPage.dither, false, m_showStatusBits);             //!< Number of dither events during current power cycle (added 3.4)
-    set_json_64_bit_With_Status(pageInfo, "dither held off during random workloads, Actuator 0", vFarmFrame[page].workLoadPage.ditherRandom, false, m_showStatusBits);          //!< Number of times dither was held off during random workloads during current power cycle(added 3.4)
-    set_json_64_bit_With_Status(pageInfo, "dither was held off during sequential workloads, Actuator 0", vFarmFrame[page].workLoadPage.ditherSequential, false, m_showStatusBits);          //!< Number of times dither was held off during sequential workloads during current power cycle(added 3.4)
+    set_json_64_bit_With_Status(pageInfo, "dither events - Actuator 0", vFarmFrame[page].workLoadPage.dither, false, m_showStatusBits);             //!< Number of dither events during current power cycle (added 3.4)
+    set_json_64_bit_With_Status(pageInfo, "dither held off during random workloads - Actuator 0", vFarmFrame[page].workLoadPage.ditherRandom, false, m_showStatusBits);          //!< Number of times dither was held off during random workloads during current power cycle(added 3.4)
+    set_json_64_bit_With_Status(pageInfo, "dither was held off during sequential workloads - Actuator 0", vFarmFrame[page].workLoadPage.ditherSequential, false, m_showStatusBits);          //!< Number of times dither was held off during sequential workloads during current power cycle(added 3.4)
 
     set_json_64_bit_With_Status(pageInfo, "Read commands from 0-3.125% of LBA space", vFarmFrame[page].workLoadPage.numberOfReadCmds1, false, m_showStatusBits);          //!< Number of Read commands from 0-3.125% of LBA space for last 3 SMART Summary Frames(added 4.4)
     set_json_64_bit_With_Status(pageInfo, "Read commands from 3.125-25% of LBA space", vFarmFrame[page].workLoadPage.numberOfReadCmds2, false, m_showStatusBits);         //!< Number of Read commands from 3.125-25% of LBA space for last 3 SMART Summary Frames(added 4.4)
@@ -634,9 +634,9 @@ eReturnValues CATA_Farm_Log::print_Work_Load(JSONNODE *masterData, uint32_t page
     set_json_64_bit_With_Status(pageInfo, "Queue Depth bin 17-32", vFarmFrame[page].workLoadPage.cntQueueDepth17to32, false, m_showStatusBits);
     set_json_64_bit_With_Status(pageInfo, "Queue Depth bin 33-64", vFarmFrame[page].workLoadPage.cntQueueDepth33to64, false, m_showStatusBits);
     set_json_64_bit_With_Status(pageInfo, "Queue Depth bin > 64", vFarmFrame[page].workLoadPage.cntQueueDepthmorethan64, false, m_showStatusBits);
-    set_json_64_bit_With_Status(pageInfo, "dither events, Actuator 1", vFarmFrame[page].workLoadPage.numDithEvtAct1, false, m_showStatusBits);
-    set_json_64_bit_With_Status(pageInfo, "dither was held off during random workloads, Actuator 1", vFarmFrame[page].workLoadPage.numRandWLDitherHoldOffAct1, false, m_showStatusBits);
-    set_json_64_bit_With_Status(pageInfo, "dither was held off during sequential workloads, Actuator 1", vFarmFrame[page].workLoadPage.numSequentialWLDitherHoldOffAct1, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "dither events - Actuator 1", vFarmFrame[page].workLoadPage.numDithEvtAct1, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "dither was held off during random workloads - Actuator 1", vFarmFrame[page].workLoadPage.numRandWLDitherHoldOffAct1, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "dither was held off during sequential workloads - Actuator 1", vFarmFrame[page].workLoadPage.numSequentialWLDitherHoldOffAct1, false, m_showStatusBits);
     set_json_64_bit_With_Status(pageInfo, "Hot Write Statistics", vFarmFrame[page].workLoadPage.hotWriteStatistics, false, m_showStatusBits);
     json_push_back(masterData, pageInfo);
 
@@ -720,24 +720,24 @@ eReturnValues CATA_Farm_Log::print_Error_Information(JSONNODE *masterData, uint3
     //verion 4.21
     if (m_MajorRev >= 4 && m_MinorRev > 20)
     {
-        printf("\tReallocated Sectors, Actuator 1 %" PRIu32":        %" PRIu64" \n", loopCount, vFarmFrame[page].errorPage.reallocSectorsAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));
-        printf("\tReallocation Candidate Sectors , Actuator 1 %" PRIu32":           %" PRIu64" \n", loopCount, vFarmFrame[page].errorPage.reallocCandidatesAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));
-        printf("\tTotal Flash LED (Assert) Events, Actuator 1 %" PRIu32":        %" PRIu64" \n", loopCount, vFarmFrame[page].errorPage.totalFlashLEDEvents & UINT64_C(0x00FFFFFFFFFFFFFF));
-        printf("\tIndex of last entry in FLED Info array below, in case the array wraps, Actuator 1 %" PRIu32":           %" PRIu64" \n", loopCount, vFarmFrame[page].errorPage.lastIDXFLEDInfoAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));
+        printf("\tReallocated Sectors - Actuator 1 %" PRIu32":        %" PRIu64" \n", loopCount, vFarmFrame[page].errorPage.reallocSectorsAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));
+        printf("\tReallocation Candidate Sectors - Actuator 1 %" PRIu32":           %" PRIu64" \n", loopCount, vFarmFrame[page].errorPage.reallocCandidatesAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));
+        printf("\tTotal Flash LED (Assert) Event s- Actuator 1 %" PRIu32":        %" PRIu64" \n", loopCount, vFarmFrame[page].errorPage.totalFlashLEDEvents & UINT64_C(0x00FFFFFFFFFFFFFF));
+        printf("\tIndex of last entry in FLED Info array below, in case the array wraps - Actuator 1 %" PRIu32":           %" PRIu64" \n", loopCount, vFarmFrame[page].errorPage.lastIDXFLEDInfoAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));
         for (loopCount = 0; loopCount < FLASH_EVENTS; ++loopCount)
         {
-            printf("\tInfo on the last 8 Flash LED (assert) Events, wrapping array, Actuator 1 %" PRIu32":        %" PRIu64" \n", loopCount, vFarmFrame[page].errorPage.last8FLEDEventsAct1[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));
-            printf("\tInfo on the last 8 Read/Write Retry events, wrapping array, Actuator 1 %" PRIu32":           %" PRIu64" \n", loopCount, vFarmFrame[page].errorPage.last8ReadWriteRetryEvts[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));
+            printf("\tInfo on the last 8 Flash LED (assert) Events, wrapping array - Actuator 1 %" PRIu32":        %" PRIu64" \n", loopCount, vFarmFrame[page].errorPage.last8FLEDEventsAct1[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));
+            printf("\tInfo on the last 8 Read/Write Retry events, wrapping array - Actuator 1 %" PRIu32":           %" PRIu64" \n", loopCount, vFarmFrame[page].errorPage.last8ReadWriteRetryEvts[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));
         }
         for (loopCount = 0; loopCount < REALLOCATIONEVENTS; loopCount++)
         {
-            printf("\tReallocated sectors by cause, Actuator 1 %" PRIu32":        %" PRIu64" \n", loopCount, vFarmFrame[page].errorPage.reallocSectorsByCauseAct1[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));
+            printf("\tReallocated sectors by cause-  Actuator 1 %" PRIu32":        %" PRIu64" \n", loopCount, vFarmFrame[page].errorPage.reallocSectorsByCauseAct1[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));
         }
 
         for (loopCount = 0; loopCount < FLASH_EVENTS; ++loopCount)
         {
-            printf("\tUniversal Timestamp (us) of last 8 Flash LED (assert) Events, wrapping array, Actuator 1 %" PRIu32":        %" PRIu64" \n", loopCount, vFarmFrame[page].errorPage.last8FLEDEvtsAct1[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));
-            printf("\tPower Cycle of the last 8 Flash LED (assert) Events, wrapping array, Actuator 1 %" PRIu32":           %" PRIu64" \n", loopCount, vFarmFrame[page].errorPage.last8FLEDEvtsPowerCycleAct1[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));
+            printf("\tUniversal Timestamp (us) of last 8 Flash LED (assert) Events, wrapping array - Actuator 1 %" PRIu32":        %" PRIu64" \n", loopCount, vFarmFrame[page].errorPage.last8FLEDEvtsAct1[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));
+            printf("\tPower Cycle of the last 8 Flash LED (assert) Events, wrapping array - Actuator 1 %" PRIu32":           %" PRIu64" \n", loopCount, vFarmFrame[page].errorPage.last8FLEDEvtsPowerCycleAct1[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));
         }
     }
 
@@ -864,10 +864,10 @@ eReturnValues CATA_Farm_Log::print_Error_Information(JSONNODE *masterData, uint3
     }
     //if (m_MajorRev >= 4 && m_MinorRev > 20)
     //{
-        set_json_64_bit_With_Status(pageInfo, "Number of Reallocated Sectors, Actuator 1", vFarmFrame[page].errorPage.reallocSectorsAct1, false, m_showStatusBits);
-        set_json_64_bit_With_Status(pageInfo, "Number of Reallocated Candidate Sectors, Actuator 1", vFarmFrame[page].errorPage.reallocCandidatesAct1, false, m_showStatusBits);
-        set_json_64_bit_With_Status(pageInfo, "Total Flash LED (Assert) Events, Actuator 1", vFarmFrame[page].errorPage.totalFlashLEDEvents, false, m_showStatusBits);
-        set_json_64_bit_With_Status(pageInfo, "Index of last entry in FLED Info array below, in case the array wraps, Actuator 1", vFarmFrame[page].errorPage.lastIDXFLEDInfoAct1, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Number of Reallocated Sectors - Actuator 1", vFarmFrame[page].errorPage.reallocSectorsAct1, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Number of Reallocated Candidate Sectors - Actuator 1", vFarmFrame[page].errorPage.reallocCandidatesAct1, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Total Flash LED (Assert) Events - Actuator 1", vFarmFrame[page].errorPage.totalFlashLEDEvents, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Index of last entry in FLED Info array below, in case the array wraps - Actuator 1", vFarmFrame[page].errorPage.lastIDXFLEDInfoAct1, false, m_showStatusBits);
         for (loopCount = 0; loopCount < FLASH_EVENTS; ++loopCount)
         {
             JSONNODE *eventInfoact1 = json_new(JSON_NODE);
@@ -875,7 +875,7 @@ eReturnValues CATA_Farm_Log::print_Error_Information(JSONNODE *masterData, uint3
             temp << "Flash LED Event " << std::dec << loopCount << " Actuator 1";
             json_set_name(eventInfoact1, temp.str().c_str());
 
-            set_json_64_bit_With_Status(eventInfoact1, "Event Information", vFarmFrame[page].errorPage.last8FLEDEventsAct1[loopCount], true, m_showStatusBits);              //!> Info on the last 8 Flash LED(assert) Events, wrapping array, Actuator 1
+            set_json_64_bit_With_Status(eventInfoact1, "Event Information", vFarmFrame[page].errorPage.last8FLEDEventsAct1[loopCount], true, m_showStatusBits);              //!> Info on the last 8 Flash LED(assert) Events, wrapping array- Actuator 1
 
             temp.str(""); temp.clear();
             temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << M_Word2(check_Status_Strip_Status(vFarmFrame[page].errorPage.last8FLEDEventsAct1[loopCount]));
@@ -890,11 +890,11 @@ eReturnValues CATA_Farm_Log::print_Error_Information(JSONNODE *masterData, uint3
             temp << "TimeStamp Actuator 1 Event(hours) " << std::dec << loopCount;
             std::ostringstream temp1;
             temp1 << std::setprecision(3) << std::setfill('0') << static_cast<double>(M_DoubleWord0(check_Status_Strip_Status(vFarmFrame[page].errorPage.last8FLEDEvtsAct1[loopCount])) / 3600000) * .001;
-            set_json_string_With_Status(eventInfoact1, temp.str().c_str(), temp1.str().c_str(), vFarmFrame[page].errorPage.last8FLEDEvtsAct1[loopCount], m_showStatusBits);        //!< Universal Timestamp (us) of last 8 Flash LED (assert) Events, wrapping array, Actuator 1
+            set_json_string_With_Status(eventInfoact1, temp.str().c_str(), temp1.str().c_str(), vFarmFrame[page].errorPage.last8FLEDEvtsAct1[loopCount], m_showStatusBits);        //!< Universal Timestamp (us) of last 8 Flash LED (assert) Events, wrapping array- Actuator 1
 
             temp.str(""); temp.clear();
             temp << "Power Cycle Actuator 1 Event " << std::dec << loopCount;
-            set_json_64_bit_With_Status(eventInfoact1, temp.str().c_str(), vFarmFrame[page].errorPage.last8FLEDEvtsPowerCycleAct1[loopCount], false, m_showStatusBits);            //!< Power Cycle of the last 8 Flash LED (assert) Events, wrapping array, Actuator 1
+            set_json_64_bit_With_Status(eventInfoact1, temp.str().c_str(), vFarmFrame[page].errorPage.last8FLEDEvtsPowerCycleAct1[loopCount], false, m_showStatusBits);            //!< Power Cycle of the last 8 Flash LED (assert) Events, wrapping array- Actuator 1
             temp.str(""); temp.clear();
 
             json_push_back(pageInfo, eventInfoact1);
@@ -1248,29 +1248,29 @@ eReturnValues CATA_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint32
         printf("\tMax RV Absolute Meane (debug):                   %" PRIu64" \n", vFarmFrame[page].reliPage.maxRVAbsluteMean & UINT64_C(0x00FFFFFFFFFFFFFF));                      //!< Max RV Absolute Mean, value from the most recent SMART Summary Frame
         printf("\tIdle Time (debug):                               %" PRIu64" \n", vFarmFrame[page].reliPage.idleTime & UINT64_C(0x00FFFFFFFFFFFFFF));                              //!< idle Time, Value from most recent SMART Summary Frame
         printf("\tNumber of LBAs Corrected by Parity Sector (debug)%" PRIu64" \n", vFarmFrame[page].reliPage.numberLBACorrectedByParitySector & UINT64_C(0x00FFFFFFFFFFFFFF));      //!< Number of LBAs Corrected by Parity Sector
-        printf("\tPrimary Super Parity Coverage Percentage, Actuator 0%" PRIu64" \n", vFarmFrame[page].reliPage.SuperParityCovPercent & UINT64_C(0x00FFFFFFFFFFFFFF));              //!< Primary Super Parity Coverage Percentage
+        printf("\tPrimary Super Parity Coverage Percentage - Actuator 0%" PRIu64" \n", vFarmFrame[page].reliPage.SuperParityCovPercent & UINT64_C(0x00FFFFFFFFFFFFFF));              //!< Primary Super Parity Coverage Percentage
     }
     // version 4_21
     if (m_MajorRev >= 4 && m_MinorRev > 20)
     {
-        printf("\tTimestamp of last IDD test in Hours(POH), Actuator 1%" PRIu64" \n", vFarmFrame[page].reliPage.lastIDDTimeAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));                    //!< Number of LBAs Corrected by Parity Sector
-        printf("\tSub Command of last IDD Test, Actuator 1%" PRIu64" \n", vFarmFrame[page].reliPage.cmdLastIDDTestAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));                             //!< Number of LBAs Corrected by Parity Sector
-        printf("\tNumber of Reallocated Sector Reclamations, Actuator 1%" PRIu64" \n", vFarmFrame[page].reliPage.reallocSectorReclamAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));           //!< Number of LBAs Corrected by Parity Sector
-        printf("\tServo Status (follows standard DST error code definitions), Actuator 1%" PRIu64" \n", vFarmFrame[page].reliPage.servoStatusAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));  //!< Number of LBAs Corrected by Parity Sector
-        printf("\tNumber of Slipped Sectors Before IDD Scan, Actuator 1%" PRIu64" \n", vFarmFrame[page].reliPage.slippedSectorsBefIDDAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));              //!< Number of LBAs Corrected by Parity Sector
-        printf("\tNumber of Slipped Sectors After IDD Scan, Actuator 1%" PRIu64" \n", vFarmFrame[page].reliPage.slippedSectorsAftIDDAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));               //!< Number of LBAs Corrected by Parity Sector
-        printf("\tNumber of Resident Reallocated Sectors Before IDD Scan, Actuator 1%" PRIu64" \n", vFarmFrame[page].reliPage.resReallocSectorsBefIDDAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));              //!< Number of LBAs Corrected by Parity Sector
-        printf("\tNumber of Resident Reallocated Sectors After IDD Scan, Actuator 1%" PRIu64" \n", vFarmFrame[page].reliPage.resReallocSectorsAftIDDAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));               //!< Number of LBAs Corrected by Parity Sector
-        printf("\tNumber of Successfully Scrubbed Sectors Before IDD Scan, Actuator 1%" PRIu64" \n", vFarmFrame[page].reliPage.scrubbedSectorsBefIDDAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));               //!< Number of LBAs Corrected by Parity Sector
-        printf("\tNumber of Successfully Scrubbed Sectors After IDD Scan, Actuator 1%" PRIu64" \n", vFarmFrame[page].reliPage.scrubbedSectorsAftIDDAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));                //!< Number of LBAs Corrected by Parity Sector
-        printf("\tNumber of DOS Scans Performed, Actuator 1%" PRIu64" \n", vFarmFrame[page].reliPage.DOSScansAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));                                  //!< Number of LBAs Corrected by Parity Sector
-        printf("\tNumber of LBAs Corrected by ISP, Acuator 1%" PRIu64" \n", vFarmFrame[page].reliPage.correctedLBAsAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));                            //!< Number of LBAs Corrected by Parity Sector
-        printf("\t Number of Valid Parity Sectors, Actuator 1%" PRIu64" \n", vFarmFrame[page].reliPage.validParitySectAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));                         //!< Number of LBAs Corrected by Parity Sector
-        printf("\tRV Absolute Mean, value from most recent SMART Summary Frame in rad/s^2, Actuator 1%" PRIu64" \n", vFarmFrame[page].reliPage.rvAbsMeanAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));               //!< Number of LBAs Corrected by Parity Sector
-        printf("\tMax RV Absolute Mean, value from most recent SMART Summary Frame in rad/s^2, Actuator %" PRIu64" \n", vFarmFrame[page].reliPage.rvAbsMeanMaxAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));             //!< Number of LBAs Corrected by Parity Sector
-        printf("\tIdle Time, value from most recent SMART Summary Frame in seconds, Actuator 1%" PRIu64" \n", vFarmFrame[page].reliPage.idleTimeAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));               //!< Number of LBAs Corrected by Parity Sector
-        printf("\tNumber of LBAs Corrected by Parity Sector, Actuator 1%" PRIu64" \n", vFarmFrame[page].reliPage.parityCorrLBAAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));                 //!< Number of LBAs Corrected by Parity Sector
-        printf("\tPrimary Super Parity Coverage Percentage, Actuator 1%" PRIu64" \n", vFarmFrame[page].reliPage.superParityCovPercentAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));        
+        printf("\tTimestamp of last IDD test in Hours(POH) - Actuator 1%" PRIu64" \n", vFarmFrame[page].reliPage.lastIDDTimeAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));                    //!< Number of LBAs Corrected by Parity Sector
+        printf("\tSub Command of last IDD Test - Actuator 1%" PRIu64" \n", vFarmFrame[page].reliPage.cmdLastIDDTestAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));                             //!< Number of LBAs Corrected by Parity Sector
+        printf("\tNumber of Reallocated Sector Reclamations - Actuator 1%" PRIu64" \n", vFarmFrame[page].reliPage.reallocSectorReclamAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));           //!< Number of LBAs Corrected by Parity Sector
+        printf("\tServo Status (follows standard DST error code definitions) - Actuator 1%" PRIu64" \n", vFarmFrame[page].reliPage.servoStatusAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));  //!< Number of LBAs Corrected by Parity Sector
+        printf("\tNumber of Slipped Sectors Before IDD Scan - Actuator 1%" PRIu64" \n", vFarmFrame[page].reliPage.slippedSectorsBefIDDAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));              //!< Number of LBAs Corrected by Parity Sector
+        printf("\tNumber of Slipped Sectors After IDD Scan - Actuator 1%" PRIu64" \n", vFarmFrame[page].reliPage.slippedSectorsAftIDDAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));               //!< Number of LBAs Corrected by Parity Sector
+        printf("\tNumber of Resident Reallocated Sectors Before IDD Scan - Actuator 1%" PRIu64" \n", vFarmFrame[page].reliPage.resReallocSectorsBefIDDAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));              //!< Number of LBAs Corrected by Parity Sector
+        printf("\tNumber of Resident Reallocated Sectors After IDD Scan - Actuator 1%" PRIu64" \n", vFarmFrame[page].reliPage.resReallocSectorsAftIDDAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));               //!< Number of LBAs Corrected by Parity Sector
+        printf("\tNumber of Successfully Scrubbed Sectors Before IDD Scan - Actuator 1%" PRIu64" \n", vFarmFrame[page].reliPage.scrubbedSectorsBefIDDAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));               //!< Number of LBAs Corrected by Parity Sector
+        printf("\tNumber of Successfully Scrubbed Sectors After IDD Scan - Actuator 1%" PRIu64" \n", vFarmFrame[page].reliPage.scrubbedSectorsAftIDDAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));                //!< Number of LBAs Corrected by Parity Sector
+        printf("\tNumber of DOS Scans Performed - Actuator 1%" PRIu64" \n", vFarmFrame[page].reliPage.DOSScansAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));                                  //!< Number of LBAs Corrected by Parity Sector
+        printf("\tNumber of LBAs Corrected by ISP - Actuator 1%" PRIu64" \n", vFarmFrame[page].reliPage.correctedLBAsAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));                            //!< Number of LBAs Corrected by Parity Sector
+        printf("\t Number of Valid Parity Sectors - Actuator 1%" PRIu64" \n", vFarmFrame[page].reliPage.validParitySectAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));                         //!< Number of LBAs Corrected by Parity Sector
+        printf("\tRV Absolute Mean, value from most recent SMART Summary Frame in rad/s^2 - Actuator 1%" PRIu64" \n", vFarmFrame[page].reliPage.rvAbsMeanAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));               //!< Number of LBAs Corrected by Parity Sector
+        printf("\tMax RV Absolute Mean, value from most recent SMART Summary Frame in rad/s^2 - Actuator %" PRIu64" \n", vFarmFrame[page].reliPage.rvAbsMeanMaxAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));             //!< Number of LBAs Corrected by Parity Sector
+        printf("\tIdle Time, value from most recent SMART Summary Frame in seconds - Actuator 1%" PRIu64" \n", vFarmFrame[page].reliPage.idleTimeAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));               //!< Number of LBAs Corrected by Parity Sector
+        printf("\tNumber of LBAs Corrected by Parity Sector - Actuator 1%" PRIu64" \n", vFarmFrame[page].reliPage.parityCorrLBAAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));                 //!< Number of LBAs Corrected by Parity Sector
+        printf("\tPrimary Super Parity Coverage Percentage - Actuator 1%" PRIu64" \n", vFarmFrame[page].reliPage.superParityCovPercentAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));        
     }
 
 
@@ -1315,44 +1315,44 @@ eReturnValues CATA_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint32
 
     if (m_MajorRev >= 4 && m_MinorRev >= 1)
     {
-        set_json_64_bit_With_Status(pageInfo, "RV Absolute Mean, Actuator 0", vFarmFrame[page].reliPage.RVAbsoluteMean, false, m_showStatusBits);
-        set_json_64_bit_With_Status(pageInfo, "Max RV Absolute Mean, Actuator 0", vFarmFrame[page].reliPage.maxRVAbsluteMean, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "RV Absolute Mean - Actuator 0", vFarmFrame[page].reliPage.RVAbsoluteMean, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Max RV Absolute Mean - Actuator 0", vFarmFrame[page].reliPage.maxRVAbsluteMean, false, m_showStatusBits);
 
         temp.str(""); temp.clear();
         temp << std::fixed << std::setprecision(6) << std::setfill('0') << static_cast<double>(check_Status_Strip_Status(vFarmFrame[page].reliPage.idleTime)) / 3600;
-        set_json_string_With_Status(pageInfo, "Idle Time (hours), Actuator 0", temp.str().c_str(), vFarmFrame[page].reliPage.idleTime, m_showStatusBits);
-        set_json_64_bit_With_Status(pageInfo, "Number of LBAs Corrected by Parity Sector, Actuator 0", vFarmFrame[page].reliPage.numberLBACorrectedByParitySector, false, m_showStatusBits);
-        set_json_64_bit_With_Status(pageInfo, "Primary Super Parity Coverage Percentage, Actuator 0", vFarmFrame[page].reliPage.SuperParityCovPercent, false, m_showStatusBits);
+        set_json_string_With_Status(pageInfo, "Idle Time (hours) - Actuator 0", temp.str().c_str(), vFarmFrame[page].reliPage.idleTime, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Number of LBAs Corrected by Parity Sector - Actuator 0", vFarmFrame[page].reliPage.numberLBACorrectedByParitySector, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Primary Super Parity Coverage Percentage - Actuator 0", vFarmFrame[page].reliPage.SuperParityCovPercent, false, m_showStatusBits);
     }
 
     if (m_MajorRev >= 4 && m_MinorRev >= 19)
     {
         // information for Actuator 0
-        set_json_64_bit_With_Status(pageInfo, "Primary Super Parity Coverage Percentage SMR SWR, Actuator 0", vFarmFrame[page].reliPage.superParityCoveragePercentageAct0, false, m_showStatusBits);           //!< Primary Super Parity Coverage Percentage SMR/SWR, Actuator 0
+        set_json_64_bit_With_Status(pageInfo, "Primary Super Parity Coverage Percentage SMR SWR - Actuator 0", vFarmFrame[page].reliPage.superParityCoveragePercentageAct0, false, m_showStatusBits);           //!< Primary Super Parity Coverage Percentage SMR/SWR- Actuator 0
 
         // information for Actuator 1
-        set_json_64_bit_With_Status(pageInfo, "Timestamp of last IDD test in Hours(POH), Actuator 1", vFarmFrame[page].reliPage.lastIDDTimeAct1, false, m_showStatusBits);
-        set_json_64_bit_With_Status(pageInfo, "Sub Command of last IDD Test, Actuator 1", vFarmFrame[page].reliPage.cmdLastIDDTestAct1, false, m_showStatusBits);
-        set_json_64_bit_With_Status(pageInfo, "Number of Reallocated Sector Reclamations, Actuator 1", vFarmFrame[page].reliPage.reallocSectorReclamAct1, false, m_showStatusBits);
-        set_json_64_bit_With_Status(pageInfo, "Servo Status, Actuator 1", vFarmFrame[page].reliPage.servoStatusAct1, false, m_showStatusBits);
-        set_json_64_bit_With_Status(pageInfo, "Number of Slipped Sectors Before IDD Scan, Actuator 1", vFarmFrame[page].reliPage.slippedSectorsBefIDDAct1, false, m_showStatusBits);
-        set_json_64_bit_With_Status(pageInfo, "Number of Slipped Sectors After IDD Scan, Actuator 1", vFarmFrame[page].reliPage.slippedSectorsAftIDDAct1, false, m_showStatusBits);
-        set_json_64_bit_With_Status(pageInfo, "Number of Resident Reallocated Sectors Before IDD Scan, Actuator 1", vFarmFrame[page].reliPage.resReallocSectorsBefIDDAct1, false, m_showStatusBits);
-        set_json_64_bit_With_Status(pageInfo, "Number of Resident Reallocated Sectors After IDD Scan, Actuator 1", vFarmFrame[page].reliPage.resReallocSectorsAftIDDAct1, false, m_showStatusBits);
-        set_json_64_bit_With_Status(pageInfo, "Number of Successfully Scrubbed Sectors Before IDD Scan, Actuator 1", vFarmFrame[page].reliPage.scrubbedSectorsBefIDDAct1, false, m_showStatusBits);
-        set_json_64_bit_With_Status(pageInfo, "Number of Successfully Scrubbed Sectors After IDD Scan, Actuator 1", vFarmFrame[page].reliPage.scrubbedSectorsAftIDDAct1, false, m_showStatusBits);
-        set_json_64_bit_With_Status(pageInfo, "Number of DOS Scans Performed, Actuator 1", vFarmFrame[page].reliPage.DOSScansAct1, false, m_showStatusBits);
-        set_json_64_bit_With_Status(pageInfo, "Number of LBAs Corrected by ISP, Acuator 1", vFarmFrame[page].reliPage.correctedLBAsAct1, false, m_showStatusBits);
-        set_json_64_bit_With_Status(pageInfo, "Number of Valid Parity Sectors, Actuator 1", vFarmFrame[page].reliPage.validParitySectAct1, false, m_showStatusBits);
-        set_json_64_bit_With_Status(pageInfo, "RV Absolute Mean, Actuator 1", vFarmFrame[page].reliPage.rvAbsMeanAct1, false, m_showStatusBits);
-        set_json_64_bit_With_Status(pageInfo, "Max RV Absolute Mean, Actuator 1", vFarmFrame[page].reliPage.rvAbsMeanMaxAct1, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Timestamp of last IDD test in Hours(POH) - Actuator 1", vFarmFrame[page].reliPage.lastIDDTimeAct1, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Sub Command of last IDD Test- Actuator 1", vFarmFrame[page].reliPage.cmdLastIDDTestAct1, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Number of Reallocated Sector Reclamations - Actuator 1", vFarmFrame[page].reliPage.reallocSectorReclamAct1, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Servo Status - Actuator 1", vFarmFrame[page].reliPage.servoStatusAct1, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Number of Slipped Sectors Before IDD Scan - Actuator 1", vFarmFrame[page].reliPage.slippedSectorsBefIDDAct1, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Number of Slipped Sectors After IDD Scan - Actuator 1", vFarmFrame[page].reliPage.slippedSectorsAftIDDAct1, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Number of Resident Reallocated Sectors Before IDD Scan - Actuator 1", vFarmFrame[page].reliPage.resReallocSectorsBefIDDAct1, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Number of Resident Reallocated Sectors After IDD Scan - Actuator 1", vFarmFrame[page].reliPage.resReallocSectorsAftIDDAct1, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Number of Successfully Scrubbed Sectors Before IDD Scan - Actuator 1", vFarmFrame[page].reliPage.scrubbedSectorsBefIDDAct1, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Number of Successfully Scrubbed Sectors After IDD Scan - Actuator 1", vFarmFrame[page].reliPage.scrubbedSectorsAftIDDAct1, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Number of DOS Scans Performed - Actuator 1", vFarmFrame[page].reliPage.DOSScansAct1, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Number of LBAs Corrected by ISP - Actuator 1", vFarmFrame[page].reliPage.correctedLBAsAct1, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Number of Valid Parity Sectors - Actuator 1", vFarmFrame[page].reliPage.validParitySectAct1, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "RV Absolute Mean - Actuator 1", vFarmFrame[page].reliPage.rvAbsMeanAct1, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Max RV Absolute Mean - Actuator 1", vFarmFrame[page].reliPage.rvAbsMeanMaxAct1, false, m_showStatusBits);
         temp.str(""); temp.clear();
         temp << std::fixed << std::setprecision(6) << std::setfill('0') << static_cast<double>(check_Status_Strip_Status(vFarmFrame[page].reliPage.idleTimeAct1)) / 3600;
-        set_json_string_With_Status(pageInfo, "Idle Time (hours), Actuator 1", temp.str().c_str(),vFarmFrame[page].reliPage.idleTimeAct1, m_showStatusBits);
-        //set_json_64_bit_With_Status(pageInfo, "Idle Time (hours), Actuator 1", vFarmFrame[page].reliPage.idleTimeAct1, false, m_showStatusBits);
-        set_json_64_bit_With_Status(pageInfo, "Number of LBAs Corrected by Parity Sector, Actuator 1", vFarmFrame[page].reliPage.parityCorrLBAAct1, false, m_showStatusBits);   
-        set_json_64_bit_With_Status(pageInfo, "Primary Super Parity Coverage Percentage, Actuator 1", vFarmFrame[page].reliPage.superParityCovPercentAct1, false, m_showStatusBits);
-        set_json_64_bit_With_Status(pageInfo, "Primary Super Parity Coverage Percentage SMR SWR, Actuator 1", vFarmFrame[page].reliPage.superParityCoveragePercentageAct1, false, m_showStatusBits);
+        set_json_string_With_Status(pageInfo, "Idle Time (hours) - Actuator 1", temp.str().c_str(),vFarmFrame[page].reliPage.idleTimeAct1, m_showStatusBits);
+        //set_json_64_bit_With_Status(pageInfo, "Idle Time (hours) - Actuator 1", vFarmFrame[page].reliPage.idleTimeAct1, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Number of LBAs Corrected by Parity Sector - Actuator 1", vFarmFrame[page].reliPage.parityCorrLBAAct1, false, m_showStatusBits);   
+        set_json_64_bit_With_Status(pageInfo, "Primary Super Parity Coverage Percentage - Actuator 1", vFarmFrame[page].reliPage.superParityCovPercentAct1, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Primary Super Parity Coverage Percentage SMR SWR - Actuator 1", vFarmFrame[page].reliPage.superParityCoveragePercentageAct1, false, m_showStatusBits);
     }
     json_push_back(masterData, pageInfo);
     return SUCCESS;
