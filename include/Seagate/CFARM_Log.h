@@ -26,21 +26,17 @@ namespace opensea_parser {
     class CFARMLog : public CFarm_Combine
     {
     protected:
-		uint8_t						* bufferData;						 //!< pointer to the buffer	
-		size_t						m_LogSize;							 //!< size of the log
-        eReturnValues               m_status;                            //!< status of the class
-        bool                        m_isScsi;                            //!< true if the log is Scsi
+        eReturnValues               m_FARMstatus;                            //!< status of the class
         bool                        m_isCombo;                           //!< true if the log is a FARM combo log
-		bool						m_shwoStatus;						 //!< if true then we will show all the status bits for each entry
         bool                        m_bufferdelete;
 
     public:
         CFARMLog();
         CFARMLog(const std::string & fileName,bool showStatus);
-		CFARMLog(const std::string & fileName);
-		CFARMLog(uint8_t *farmbufferData, size_t bufferSize, bool showStatus);
+        explicit CFARMLog(const std::string & fileName);
+        CFARMLog(uint8_t *farmbufferData, size_t bufferSize, bool showStatus);
         virtual ~CFARMLog();
-		eReturnValues get_FARM_Status() { return m_status; };
+		eReturnValues get_FARM_Status() { return m_FARMstatus; };
         eReturnValues parse_Device_Farm_Log( JSONNODE *masterData);
 
     };

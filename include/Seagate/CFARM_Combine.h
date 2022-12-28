@@ -53,7 +53,7 @@ namespace opensea_parser {
         bool                        m_isScsi;                            //!< true if the log is Scsi
         bool                        m_combine_isScsi;                    //!< true if the combine log is a scsi log
         bool                        m_isComboLog;                        //!< true if the log is a combine log
-        bool						m_shwoStatus;						 //!< if true then we will show all the status bits for each entry
+        bool						m_showStatus;						 //!< if true then we will show all the status bits for each entry
         uint64_t                    m_version;                           //!< version number of the FARM Combined log
         size_t                      m_maxLogSize;                        //!< max log size from  the current log size
         std::vector<sComboDataSet>  vdataSetInfo;                        //!< vector holding the header data for each FARM Log
@@ -68,7 +68,7 @@ namespace opensea_parser {
         void get_FARM_Type(std::string* reason, uint64_t dataType);
         void get_Header_Info(sStringIdentifyData* headerInfo);
         void get_Data_Set(uint16_t DataSetNumber);
-        bool is_Subpage_Neeeded(uint64_t* dataType);
+        bool is_Subpage_Neeeded(uint64_t dataType);
         void get_Sticky_Frame_Type(std::string* reason, uint8_t frame);
         void parse_FARM_Logs(size_t offset, size_t logSize, uint64_t dataType, JSONNODE* farmJson);
         void print_Combine_Log_Header(sStringIdentifyData* headerInfo, JSONNODE* header);
@@ -78,12 +78,14 @@ namespace opensea_parser {
 
     public:
         CFarm_Combine();
-        CFarm_Combine(bool showStatus);
+        explicit CFarm_Combine(bool showStatus);
         CFarm_Combine(uint8_t* buffer, size_t bufferSize, bool showStatus);
         virtual ~CFarm_Combine();
         eReturnValues get_Combo_Status() { return m_status; };
         void setCombine(uint8_t* buffer, size_t bufferSize);
-        bool getIsScsi() {  return m_combine_isScsi; };
+        bool get_showStatus() { return m_showStatus; };
+        bool get_IsScsi() { return m_isScsi; };
+        bool get_Combo_IsScsi() {  return m_combine_isScsi; };
         bool getIsCombo() {  return  m_isComboLog; };
         eReturnValues combo_Parsing(JSONNODE* masterJson);
     };

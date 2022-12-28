@@ -64,7 +64,7 @@ namespace opensea_parser {
             uint32_t                reserved2;
 
             _sWLMDataHeader() : signature(0), farmeNumber(0), rev(0), startTimestamp(0), endTimestamp(0), \
-             preFrameOffset(0), cycleCount(0), frameSize (0), duration(0), readOps(0), writeOps(0), markers(0) {};
+             preFrameOffset(0), cycleCount(0), pad1(0),frameSize (0), duration(0), readOps(0), writeOps(0), markers(0),reserved(0),reserved2(0) {};
         }sWLMDataHeader;
 
         typedef struct _sWLM_Trace
@@ -100,7 +100,7 @@ namespace opensea_parser {
 
         bool is_FARM(uint32_t signature);
         bool validate_WLM();
-        bool check_For_Footer_Signature(size_t *offset);
+        bool check_For_Footer_Signature(size_t offset);
         bool get_WLM_Header_Data(size_t offset);
         uint16_t get_transferSize(uint8_t tLen,size_t* offset);
         bool get_Trace_Data(size_t* offset, JSONNODE* wlmJson);
