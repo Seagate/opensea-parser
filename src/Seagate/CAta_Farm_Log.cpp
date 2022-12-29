@@ -867,7 +867,7 @@ eReturnValues CATA_Farm_Log::print_Error_Information(JSONNODE *masterData, uint3
         set_json_64_bit_With_Status(pageInfo, "Number of Reallocated Sectors - Actuator 1", vFarmFrame[page].errorPage.reallocSectorsAct1, false, m_showStatusBits);
         set_json_64_bit_With_Status(pageInfo, "Number of Reallocated Candidate Sectors - Actuator 1", vFarmFrame[page].errorPage.reallocCandidatesAct1, false, m_showStatusBits);
         set_json_64_bit_With_Status(pageInfo, "Total Flash LED (Assert) Events - Actuator 1", vFarmFrame[page].errorPage.totalFlashLEDEvents, false, m_showStatusBits);
-        set_json_64_bit_With_Status(pageInfo, "Index of last entry in FLED Info array below, in case the array wraps - Actuator 1", vFarmFrame[page].errorPage.lastIDXFLEDInfoAct1, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Index of last entry in FLED Info array below - Actuator 1", vFarmFrame[page].errorPage.lastIDXFLEDInfoAct1, false, m_showStatusBits);
         for (loopCount = 0; loopCount < FLASH_EVENTS; ++loopCount)
         {
             JSONNODE *eventInfoact1 = json_new(JSON_NODE);
