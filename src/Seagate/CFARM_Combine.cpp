@@ -310,7 +310,7 @@ bool CFarm_Combine::is_Subpage_Neeeded(uint64_t dataType)
 	{
 		return true;
 	}
-	if (dataType == FARM_SAVE)						// Farm Saved Frame
+	if (dataType == FARM_LONG_SAVE)				    // Farm Long Saved Frame
 	{
 		return true;
 	}
@@ -683,7 +683,7 @@ eReturnValues CFarm_Combine::combo_Parsing(JSONNODE* masterJson)
 	{
 		for (std::vector<sComboDataSet>::iterator dataItr = vdataSetInfo.begin(); dataItr != vdataSetInfo.end(); ++dataItr)
 		{
-			if (dataItr->dataSetType == FARM_TIME || dataItr->dataSetType == FARM_SAVE || dataItr->dataSetType == FARM_STICKY)
+			if (dataItr->dataSetType == FARM_TIME || dataItr->dataSetType == FARM_LONG_SAVE || dataItr->dataSetType == FARM_STICKY)
 			{
 				JSONNODE* farmInfo = json_new(JSON_ARRAY);
 				std::string typeStr;
