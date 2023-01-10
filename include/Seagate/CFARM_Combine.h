@@ -65,6 +65,7 @@ namespace opensea_parser {
         void is_Device_Scsi();
         void is_Combo_Log();
 
+        uint64_t get_Log_Size(size_t offset);
         void get_FARM_Type(std::string* reason, uint64_t dataType);
         void get_Header_Info(sStringIdentifyData* headerInfo);
         void get_Data_Set(uint16_t DataSetNumber);

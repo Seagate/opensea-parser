@@ -237,6 +237,30 @@ void CFarm_Combine::is_Combo_Log()
 }
 //-----------------------------------------------------------------------------
 //
+//! \fn get_Log_Size()
+//
+//! \brief
+//!   Description: Get the log size from the buffer data. Starting offset + 32 - 39.
+//
+//  Entry:
+//! \param offset - location with in the buffer, to get the log size.
+//
+//  Exit:
+//!   \return uint64_t currentLogSize
+//
+//---------------------------------------------------------------------------
+uint64_t CFarm_Combine::get_Log_Size(size_t offset)
+{
+#define CURENTEMPTYLOGSIZE 0x00FFFFFFFFFFFFFF
+	uint64_t currentLogSize = (M_BytesTo8ByteValue(bufferData[offset + 39], bufferData[offset + 38], bufferData[offset + 37], bufferData[offset + 36], bufferData[offset + 35], bufferData[offset + 34], bufferData[offset + 33], bufferData[offset + 32]) & UINT64_C(0x00FFFFFFFFFFFFFF));
+	if (currentLogSize == CURENTEMPTYLOGSIZE || currentLogSize == PADDINGSIZE)
+	{
+		currentLogSize = ATALOGSIZE;
+	}
+	return currentLogSize;
+}
+//-----------------------------------------------------------------------------
+//
 //! \fn get_FARM_Type()
 //
 //! \brief
@@ -508,9 +532,8 @@ void CFarm_Combine::parse_FARM_Logs(size_t offset, size_t logSize, uint64_t data
 		}
 		else
 		{
-
 			CATA_Farm_Log* pCFarm;
-			pCFarm = new CATA_Farm_Log(&bufferData[offset], logSize, m_showStatus);
+			pCFarm = new CATA_Farm_Log(&bufferData[offset], get_Log_Size(offset), m_showStatus);
 			if (pCFarm->get_Log_Status() == IN_PROGRESS)
 			{
 				try
