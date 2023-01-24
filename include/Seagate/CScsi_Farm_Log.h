@@ -28,37 +28,6 @@ namespace opensea_parser {
 #ifndef SCSIFARM
 #define SCSIFARM
 
-#define FARMLOGPAGE 0x3D
-#define FARMSUBPAGE 0x03
-#define FARMSUBPAGEFACTORY 0x04
-
-#define FARM_LOG_PAGE                   0x03
-#define FARM_FACTORY_LOG_PAGE           0x04
-#define FARM_TIME_SERIES_0              0x10
-#define FARM_TIME_SERIES_1              0x11
-#define FARM_TIME_SERIES_2              0x12
-#define FARM_TIME_SERIES_3              0x13
-#define FARM_TIME_SERIES_4              0x14
-#define FARM_TIME_SERIES_5              0x15
-#define FARM_TIME_SERIES_6              0x16
-#define FARM_TIME_SERIES_7              0x17
-#define FARM_TIME_SERIES_8              0x18
-#define FARM_TIME_SERIES_9              0x19
-#define FARM_TIME_SERIES_10             0x1A
-#define FARM_TIME_SERIES_11             0x1B
-#define FARM_TIME_SERIES_12             0x1C
-#define FARM_TIME_SERIES_13             0x1D
-#define FARM_TIME_SERIES_14             0x1E
-#define FARM_TIME_SERIES_15             0x1F
-#define FARM_LONG_TERM_SAVES_0          0xC0
-#define FARM_LONG_TERM_SAVES_1          0xC1
-#define FARM_GLIST_ENTRIES              0xC2
-#define FARM_FIRST_UNRECOVERABLE        0xC3
-#define FARM_TENTH_UNRECOVERABLE        0xC4
-#define FARM_FIRST_CTO                  0xC5
-#define FARM_LAST_FRAME                 0xC6
-#define FARM_TEMP_TRIGGER_LOG_PAGE      0xC7
-
 #define SIZEPARAM   8
 
     class CSCSI_Farm_Log : public CFarmCommon
@@ -119,15 +88,7 @@ namespace opensea_parser {
         eReturnValues print_LUN_Actuator_Information(JSONNODE * LUNData, uint32_t page, uint16_t actNum);
         eReturnValues print_LUN_Actuator_FLED_Info(JSONNODE * LUNFLED, uint32_t page, uint16_t actNum);
         eReturnValues print_LUN_Actuator_Reallocation(JSONNODE * LUNNReallocation, uint32_t page, uint16_t actNum);
-        //void farm_PrePython_Str(JSONNODE* masterData, const char* name, const char* statType, const char* unit, const char* location, int pageNum, const char* value);
-        void farm_PrePython_Int(JSONNODE* masterData, const char* name, const char* statType, const char* header, \
-            const char* unit, int pageNum, int64_t value);
-        void farm_PrePython_Float(JSONNODE* masterData, const char* name, const char* statType, const char* header, \
-            const char* unit, int pageNum, double value);
-        void prePython_Head_Float(JSONNODE* masterData, const char* name, const char* statType, uint32_t headNumber, \
-            const char* unit, int pageNum, double value);
-        void prePython_Head_Int(JSONNODE* masterData, const char* name, const char* statType, uint32_t headNumber, \
-            const char* unit, int pageNum, int64_t value);
+  
     public:
         CSCSI_Farm_Log();
         CSCSI_Farm_Log(uint8_t* bufferData, size_t bufferSize, uint8_t subPage, bool m_fromScsiLogPages);

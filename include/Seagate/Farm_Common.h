@@ -30,6 +30,7 @@ namespace opensea_parser {
 
 			CFarmCommon();
 			virtual ~CFarmCommon();
+			bool is_Device_Scsi(uint8_t buff0, uint8_t buff1);
 			void create_Flat_SN(std::string& serialNumberStr, uint64_t* serialNumber,uint64_t* serialnumber2);
 			void create_Serial_Number(std::string& serialNumberStr, uint32_t serialNumber, uint32_t serialNumber2, uint32_t majorRev, bool sas);
 			void create_World_Wide_Name(std::string& worldWideName, uint64_t wwn, uint64_t wwn2, bool sas);
@@ -40,10 +41,7 @@ namespace opensea_parser {
 			void create_Model_Number_String(std::string& modelStr, uint64_t* productID, bool sas);
 			void create_Model_Number_String_Flat(std::string& modelStr, uint64_t* productID);
 			void create_Version_Number(std::string &version, uint64_t versionID);
-			void get_Reallocation_Cause_Meanings(std::string &meaning, uint16_t code);
-			void get_Assert_Code_Meaning(std::string &meaning, uint16_t code);
 			void create_Year_Assembled_String(std::string &dateStr, uint16_t date, bool isSAS);
-			void Get_NVC_Status(JSONNODE* NVC_Node, uint64_t status);
 			void Get_FARM_Reason_For_Capture(std::string* reason, uint8_t flag);
 	};
     

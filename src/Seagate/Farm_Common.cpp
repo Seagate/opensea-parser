@@ -51,6 +51,31 @@ CFarmCommon::~CFarmCommon()
 {
 
 }
+
+//-----------------------------------------------------------------------------
+//
+//! \fn is_Device_Scsi()
+//
+//! \brief
+//!   Description:  check the first part of the buffer to see if it's a scsi log or sata log
+//
+//  Entry:
+//
+//  Exit:
+//!   \return bool = True or False
+//
+//---------------------------------------------------------------------------
+bool CFarmCommon::is_Device_Scsi(uint8_t buff0, uint8_t buff1)
+{
+	if (M_GETBITRANGE(buff0, 5, 0) == 0x3D)
+	{
+		if (buff1 == FARM_LOG_PAGE || buff1 == FARM_FACTORY_LOG_PAGE || (buff1 >= FARM_TIME_SERIES_0 && buff1 <= FARM_TEMP_TRIGGER_LOG_PAGE))
+		{
+			return true;
+		}
+	}
+	return false;
+}
 //-----------------------------------------------------------------------------
 //
 //! \fn create_Flat_SN()
@@ -346,379 +371,32 @@ void CFarmCommon::create_Version_Number(std::string &version, uint64_t versionID
 }
 //-----------------------------------------------------------------------------
 //
-//! \fn get_Reallocation_Cause_Meanings()
+//! \fn create_Year_Assembled_String()
 //
 //! \brief
-//!   Description:  parse out the meaning of the reallocation
+//!   Description:  fill in the date string from the date. used for year and week assembled
 //
 //  Entry:
-//! \param meaning - string for the meaning of the cause
-//! \param code - code for the what the meaning is
-//
-//  Exit:
-//!   \return 
-//
-//---------------------------------------------------------------------------
-   void CFarmCommon::get_Reallocation_Cause_Meanings(std::string &meaning, uint16_t code)
-   {
-		switch (code)
-		{
-		case HOST_READ_GENERIC:
-			meaning = "host read - generic";
-			break;
-		case HOST_READ_UNCORRECTABLE:
-			meaning = "host read - uncorrectable";
-			break;
-		case HOST_READ_RAW:
-			meaning = "host read - RAW";
-			break;
-		case HOST_WRITE_GENERIC:
-			meaning = "host write - generic";
-			break;
-		case HOST_WRITE_UNCORRECTABLE:
-			meaning = "host write - uncorrectable";
-			break;
-		case HOST_WRITE_RAW:
-			meaning = "host write - RAW";
-			break;
-		case BACKGROUND_READ_GENERIC:
-			meaning = "background read - generic";
-			break;
-		case BACKGROUND_READ_RELIABILITY:
-			meaning = "background read - reliability";
-			break;
-		case BACKGROUND_READ_RECOVERY:
-			meaning = "background read - recovery";
-			break;
-		case BACKGROUND_READ_HOST_SELF_TEST:
-			meaning = "background read - host self test";
-			break;
-		case BACKGROUND_WRITE_GENERIC:
-			meaning = "background write - generic";
-			break;
-		case BACKGROUND_WRITE_RELIABILITY:
-			meaning = "background write - reliability";
-			break;
-		case BACKGROUND_WRITE_RECOVERY:
-			meaning = "background write - recovery";
-			break;
-		case BACKGROUND_WRITE_HOST_SELF_TEST:
-			meaning = "background write - host self test";
-			break;
-		case SERVO_WEDGE:
-			meaning = "servo wedge";
-			break;
-		default:
-			meaning = "unknown";
-			break;
-		}
-   }
-
-  	//-----------------------------------------------------------------------------
-	//
-	//! \fn get_Assert_Code_Meaning()
-	//
-	//! \brief
-	//!   Description: takes in the Assert code and will look up the meaning and fill in the string
-	//
-	//  Entry:
-	//! \param meaning  =  meaning string
-	//! \param code = the assert code 
-	//
-	//  Exit:
-	//!   \return bool
-	//
-	//---------------------------------------------------------------------------
-   void CFarmCommon::get_Assert_Code_Meaning(std::string &meaning, uint16_t code)
-   {
-		switch (code)
-		{
-		case ASSERT_UNKNOWN:
-			meaning = "unknown";
-			break;
-		case MICROPROCESSOR_FAILED:
-			meaning = "microprocessor failed";
-			break;
-		case DRAM_FAILED_POWERUP_OR_WRAM_FAIL:
-			meaning = "DRAM failed powerup or WRAM failed";
-			break;
-		case SCC_FAILED_POWERUP_DIAGNOSTICS:
-			meaning = "SCC failed powerup diagnostics";
-			break;
-		case FW_DOES_NOT_MATCH_THE_SCC_VERSION:
-			meaning = "firmware does not match the SCC version";
-			break;
-		case UNIMPLEMENTED_OPCODE_INTERRUPT:
-			meaning = "unimplemented opcode interrupt";
-			break;
-		case POWER_UP_XOR_FAILURE_FOR_FIBER_CH:
-			meaning = "power up XOR failure for fiber CH";
-			break;
-		case EEPROM_VERIFY_ERROR_EVEN_BYTE:
-			meaning = "EEPROM verify error even byte";
-			break;
-		case EEPROM_ERASE_ERROR_EVEN_BYTE:
-			meaning = "EEPROM erase error even byte";
-			break;
-		case DOWNLOAD_TPM_FAILED_0:
-			meaning = "download TPM failed 0";
-			break;
-		case DOWNLOAD_TPM_FAILED_1:
-			meaning = "download TPM failed 1";
-			break;
-		case DOWNLOAD_TPM_FAILED_2:
-			meaning = "download TPM failed 2";
-			break;
-		case DOWNLOAD_TPM_FAILED_3:
-			meaning = "download TPM failed 3";
-			break;
-		case DOWNLOAD_TPM_FAILED_4:
-			meaning = "download TPM failed 4";
-			break;
-		case DOWNLOAD_TPM_FAILED_5:
-			meaning = "download TPM failed 5";
-			break;
-		case DOWNLOAD_TPM_FAILED_6:
-			meaning = "download TPM failed 6";
-			break;
-		case DOWNLOAD_TPM_FAILED_7:
-			meaning = "download TPM failed 7";
-			break;
-		case DOWNLOAD_TPM_FAILED_8:
-			meaning = "download TPM failed 8";
-			break;
-		case DOWNLOAD_VOLTAGE_FAULT:
-			meaning = "download voltage fault";
-			break;
-		case FAILS_WRITING_ARRAY_DATA_TO_FLASH_0:
-			meaning = "fails writting array data to flash 0";
-			break;
-		case FLASH_LOOKING_FOR_MEMORY_RANGE_ERROR:
-			meaning = "flash Looking for memory range error";
-			break;
-		case FAILS_WRITING_ARRAY_DATA_TO_FLASH_1:
-			meaning = "fails writting array data to flash 1";
-			break;
-		case FAILS_WRITING_ARRAY_DATA_TO_FLASH_2:
-			meaning = "fails writting array data to flash 2";
-			break;
-		case FAILS_WRITING_ARRAY_DATA_TO_FLASH_3:
-			meaning = "fails writting array data to flash 3";
-			break;
-		case FAILS_WRITING_ARRAY_DATA_TO_FLASH_4:
-			meaning = "fails writting array data to flash 4";
-			break;
-		case FAILS_WRITING_ARRAY_DATA_TO_FLASH_5:
-			meaning = "fails writting array data to flash 5";
-			break;
-		case ALU_BUFFER_PARITY_ERROR:
-			meaning = "ALU buffer party error";
-			break;
-		case PREFETCH_TCM_ECC_ERROR:
-			meaning = "perfetch TCM ECC error";
-			break;
-		case ERROR_INJECTION_ASSERT:
-			meaning = "Error injection assert";
-			break;
-		case DRAM_CONFIGURATION_PROCESS_FAILED:
-			meaning = "DRAM configuration process failed";
-			break;
-		case FDE_BUS_PARITY_ERROR:
-			meaning = "FDE Bus parity error";
-			break;
-		case PREFETCH_VECTOR_OR_STACK_POINTER_OUT:
-			meaning = "prefetch vector or stack pointer out";
-			break;
-		case ERROR_IN_WRITING_TO_READ_CHIP:
-			meaning = "error in writting to read chip";
-			break;
-		case IER_STACK_OVERFLOW:
-			meaning = "IER stack overflow";
-			break;
-		case IER_STACK_UNDERFLOW:
-			meaning = "IER stack underflow";
-			break;
-		case IER_STACK_NOT_EMPTY_ON_ENTRY_TO_SLEEP:
-			meaning = "IER stack Not empty on entry to sleep";
-			break;
-		case IRAW_HAD_MISCOMPARE:
-			meaning = "IRAW has miscompare";
-			break;
-		case UNDEFINED_INSTRUCTION:
-			meaning = "underfined instruction";
-			break;
-		case LOGGING_SAVE_FAILED_EXCEEDED_ALLOCATED:
-			meaning = "logging save failed exceeded allocated";
-			break;
-		case CANT_FIND_BACKPLANE_DATA_RATE:
-			meaning = "cant find backplane data rate";
-			break;
-		case CONTROLLER_I_TCM_DOUBLE_BIT_ECC_ERROR:
-			meaning = "controller I TCM bouble bit ECC error";
-			break;
-		case CONTROLLER_D_TCM_DOUBLE_BIT_ECC_ERROR:
-			meaning = "controller D TCM double bit ECC error";
-			break;
-		case SERVO_I_TCM_DOUBLE_BIT_ECC_ERROR:
-			meaning = "servo I TCM double bit ECC error";
-			break;
-		case SERVO_D_TCM_DOUBLE_BIT_ECC_ERROR:
-			meaning = "servo D TCM double bit ECC error";
-			break;
-		case CDPRAM_UNRECOVERABLE_ERROR:
-			meaning = "CDPRAM unrecoverable drror";
-			break;
-		case SDPRAM_UNRECOVERABLE_ERROR:
-			meaning = "SDPRAM unrecoverable drror";
-			break;
-		case TCM_CRC_RESULT_IS_NON_ZERO:
-			meaning = "TCM CRC result is non zero";
-			break;
-		case SWI_ASSERT_FLASH_CODE_BOOT:
-			meaning = "SWI assert flash code boot";
-			break;
-		case SWI_ASSERT_FLASH_CODE_NQNR:
-			meaning = "SWI assert flash code NQNR";
-			break;
-		case SWI_ASSERT_FLASH_CODE_DISC:
-			meaning = "SWI assert flash code DISC";
-			break;
-		case REMOTE_ASSERT:
-			meaning = "remode assert";
-			break;
-		case DRAM_INTEGRITY_FAILURE:
-			meaning = "DRAM integrity failure";
-			break;
-		case CLOCK_FAILURE:
-			meaning = "clock failure";
-			break;
-		case ASSERT_FLASH_CODE:
-			meaning = "assert flash code";
-			break;
-		case ENSURE_FLASH_CODE:
-			meaning = "ensure flash code";
-			break;
-		case REQUIRE_FLASH_CODE:
-			meaning = "Require flash code";
-			break;
-		case SMART_FLASH_CODE:
-			meaning = "SMART flash code";
-			break;
-		case SCSI_UNEXEPCTED_INTERRUPT:
-			meaning = "SCSI unexpected interrupt";
-			break;
-		case SCSI_TIMEOUT:
-			meaning = "SCSI timeout";
-			break;
-		case ILLEGAL_STATUS_CODE:
-			meaning = "illegal status code";
-			break;
-		case SCSI_UNDER_OVER_RUN_OCCURRED:
-			meaning = "SCSI under over run occurred";
-			break;
-		case UNEXPECTED_STATUS:
-			meaning = "unexpected status";
-			break;
-		case DIVIDE_BY_ZERO_INTERRUPT:
-			meaning = "divide by zero interrupt";
-			break;
-		case DATA_ABORT_CACHE_ECC_ERROR:
-			meaning = "data abort cache ECC error";
-			break;
-		case DATA_ABORT_TCM_ECC_ERROR:
-			meaning = "data abort TCM ECC error";
-			break;
-		case ABORT_INTERRUPT:
-			meaning = "abort interrupt";
-			break;
-		case SELF_SEEK_FAILURE:
-			meaning = "self seek failure";
-			break;
-		case CONTROLLER_NUKED_BY_FDE:
-			meaning = "controller nuked by FDE";
-			break;
-		case FLASH_IOEDC_PARITY_ERROR:
-			meaning = "flash IOEDC parity error";
-			break;
-		case SERIAL_PORT_DUMP_MODE:
-			meaning = "serial port Ude";
-			break;
-		default:
-			meaning = "unknow";
-			break;
-		}
-   }
-
-   //-----------------------------------------------------------------------------
-	//
-	//! \fn create_Year_Assembled_String()
-	//
-	//! \brief
-	//!   Description:  fill in the date string from the date. used for year and week assembled
-	//
-	//  Entry:
-	//! \param dateStr - pointer to the date string
-	//! \param date  =  pointer to the date data
-	//
-	//  Exit:
-	//!   \return void
-	//
-	//---------------------------------------------------------------------------
-   void CFarmCommon::create_Year_Assembled_String(std::string &dateStr, uint16_t date, bool isSAS)
-   {
-		if (isSAS)
-		{
-			byte_Swap_16(&date);
-		}
-		if (date >= 0xFFFF)
-		{
-			dateStr = "00";
-		}
-		else
-		{
-            dateStr.assign(reinterpret_cast<const char*>(&date), sizeof(uint16_t));
-		}
-   }
-
-//-----------------------------------------------------------------------------
-//
-//! \fn Get_NVC_Status()
-//
-//! \brief
-//!   Description:  get the NVC status bits and create meaningful data
-//
-//  Entry:
-//! \param NVC_Node - JSON Node to add the array of information to
-//! \param status  =  what the status is for the NVC
+//! \param dateStr - pointer to the date string
+//! \param date  =  pointer to the date data
 //
 //  Exit:
 //!   \return void
 //
 //---------------------------------------------------------------------------
-void CFarmCommon::Get_NVC_Status(JSONNODE* NVC_Node, uint64_t status)
+void CFarmCommon::create_Year_Assembled_String(std::string &dateStr, uint16_t date, bool isSAS)
 {
-	if (status != 0)
+	if (isSAS)
 	{
-		JSONNODE* StatusEventsArray = json_new(JSON_ARRAY);
-		json_set_name(StatusEventsArray, ("NVC Status Events"));
-		if (status & BIT8)
-			json_push_back(StatusEventsArray, json_new_a("NVC Status Events", "flash burn started"));
-		if (status & BIT9)
-			json_push_back(StatusEventsArray, json_new_a("NVC Status Events", "flash burn finished"));
-		if (status & BIT10)
-			json_push_back(StatusEventsArray, json_new_a("NVC Status Events", "validate flash erase pattern skipped"));
-		if (status & BIT19)
-			json_push_back(StatusEventsArray, json_new_a("NVC Status Events", "servo r5 in WFE"));
-		if (status & BIT20)
-			json_push_back(StatusEventsArray, json_new_a("NVC Status Events", "servo m0 in WFI"));
-		if (status & BIT21)
-			json_push_back(StatusEventsArray, json_new_a("NVC Status Events", "servo r5 halt timeout"));
-		if (status & BIT22)
-			json_push_back(StatusEventsArray, json_new_a("NVC Status Events", "servo m0 halt timeout"));
-		if (status & BIT23)
-			json_push_back(StatusEventsArray, json_new_a("NVC Status Events", "AUX LLP stream timeout"));
-
-		json_push_back(NVC_Node, StatusEventsArray);
+		byte_Swap_16(&date);
+	}
+	if (date >= 0xFFFF)
+	{
+		dateStr = "00";
+	}
+	else
+	{
+        dateStr.assign(reinterpret_cast<const char*>(&date), sizeof(uint16_t));
 	}
 }
 //-----------------------------------------------------------------------------

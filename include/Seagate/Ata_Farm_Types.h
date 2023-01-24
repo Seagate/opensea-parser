@@ -20,6 +20,7 @@
 
 #pragma pack(push, 1)
 typedef struct _sDriveInfo
+
 {
     uint64_t        pageNumber;                                 //!< page Number 1
     uint64_t        copyNumber;                                 //!< copy number
@@ -47,7 +48,7 @@ typedef struct _sDriveInfo
     uint64_t        powerCycleCount;                            //!< Power Cycle Count
     uint64_t        resetCount;                                 //!< Hardware Reset Count
     uint64_t        spinUpTime;                                 //!< SMART Spin-Up time in milliseconds
-    uint64_t        NVC_StatusATPowerOn;                        //!< NVC Status on Power-on
+    uint64_t        reserved;                                   //!< Reserved
     uint64_t        timeAvailable;                              //!< Time Available to Save User Data to Media Over Last Power Cycle (in 100us)
     uint64_t        timeStamp1;                                 //!< Timestamp of most recent SMART Summary Frame in Power-On Hours Milliseconds
     uint64_t        timeStamp2;                                 //!< Timestamp of last SMART Summary Frame in Power-On Hours Milliseconds
@@ -89,8 +90,8 @@ typedef struct _sErrorStat
     uint64_t         reserved1;                                 //!< reserved
     uint64_t         flashLEDArray[8];                          //!< Info on the last 8 Flash LED events Wrapping array. (added 2.7)
     uint64_t         readWriteRetry[8];                         //!< Info on the last 8 read/write Retry events (added 2.7)
-    uint64_t         reserved2[2];                              //!< reserved  (added 3.0)
-    uint64_t         reallocatedSectors[15];                    //!< Reallocated Secotors by cause(added 3.0)
+    uint64_t         reserved2[2];                              //!< reserved [2] (added 3.0)
+    uint64_t         reserved3[15];                             //!< reserved [15] (open spec)
     uint64_t         timestampForLED[8];                        //!< Universal Timestamp (us) of last 8 Flash LED (assert) Events, wrapping array (added 4.7)
     uint64_t         powerCycleOfLED[8];                        //<! Power Cycle of the last 8 Flash LED (assert) Events, wrapping array (added 4.7)
     uint64_t         cumLifeTimeECCReadDueErrorRecovery;        //<! Cumulative Lifetime Unrecoverable Read errors due to Error Recovery Control 
@@ -103,7 +104,7 @@ typedef struct _sErrorStat
     uint64_t         lastIDXFLEDInfoAct1;                       //!< Index of last entry in FLED Info array below, in case the array wraps, Actuator 1
     uint64_t         last8FLEDEventsAct1[8];                    //!< Info on the last 8 Flash LED (assert) Events, wrapping array, Actuator 1
     uint64_t         last8ReadWriteRetryEvts[8];                //!< Info on the last 8 Read/Write Retry events, wrapping array, Actuator 1
-    uint64_t         reallocSectorsByCauseAct1[15];             //!< Reallocated sectors by cause, Actuator 1
+    uint64_t         reserved4[15];                             //!< Reserved [15] added open spec
     uint64_t         last8FLEDEvtsAct1[8];                      //!< Universal Timestamp (us) of last 8 Flash LED (assert) Events, wrapping array, Actuator 1
     uint64_t         last8FLEDEvtsPowerCycleAct1[8];            //!< Power Cycle of the last 8 Flash LED (assert) Events, wrapping array, Actuator 1
 }sErrorStat;
@@ -125,10 +126,10 @@ typedef struct _sEnvironementStat
     uint64_t         underTempTime;                             //!< Time In Under Temperature
     uint64_t         maxTemp;                                   //!< Specified Max Operating Temperature
     uint64_t         minTemp;                                   //!< Specified Min Operating Temperature
-    uint64_t         shockEvents;                               //!< Over-Limit Shock Events Count
-    uint64_t         hfWriteCounts;                             //!< High Fly Write Count 
+    uint64_t         reserved;                                  //!< Reserved
+    uint64_t         reserved1;                                 //!< Reserved 
     uint64_t         humidity;                                  //!< Current Relative Humidity (in units of .1%)
-    uint64_t         humidityRatio;                             //!< Humidity Mixed Ratio multiplied by 8 (divide by 8 to get actual value)
+    uint64_t         reserved2;                                 //!< Reserved
     uint64_t         currentMotorPower;                         //!< Current Motor Power, value from most recent SMART Summary Frame
     uint64_t         current12v;                                //!< Current 12V input (added 3.7)
     uint64_t         min12v;                                    //!< Minimum 12V input from last 3 SMART Summary Frames (3.7)
@@ -142,19 +143,7 @@ typedef struct _sEnvironementStat
     uint64_t         powerAvg5v;                                //!< 5V Power Average(mw) - Average of the three summary frames (4.3)
     uint64_t         powerMin5v;                                //!< 5V Power Min(mw) - Lowest of last 3 SMART summary frames (4.3)
     uint64_t         powerMax5v;                                //!< 5V Power Max(mw) - Highest of last 3 SMART summary frames (4.3)
-    //v4.21
-    uint64_t         currLFVibeAct0;                            //!< Current Low Frequency Vibe Score - Actuator 0 
-    uint64_t         currMFVibeAct0;                            //!< Current Mid Frequency Vibe Score - Actuator 0
-    uint64_t         currHFVibeAct0;                            //!< Current High Frequency Vibe Score - Actuator 0
-    uint64_t         worstLFVibeAct0;                           //!< Worst Low Frequency Vibe Score - Actuator 0
-    uint64_t         worstMFVibeAct0;                           //!< Worst Mid Frequency Vibe Score - Actuator 0
-    uint64_t         worstHFVibeAct0;                           //!< Worst High Frequency Vibe Score - Actuator 0
-    uint64_t         currLFVibeAct1;                            //!< Current Low Frequency Vibe Score - Acutator 1
-    uint64_t         currMFVibeAct1;                            //!< Current Mid Frequency Vibe Score - Actuator 1
-    uint64_t         currHFVibeAct1;                            //!< Current High Frequency Vibe Score - Actuator 1
-    uint64_t         worstLFVibeAct1;                           //!< Worst Low Frequency Vibe Score - Actuator 1
-    uint64_t         worstMFVibeAct1;                           //!< Worst Mid Frequency Vibe Score - Actuator 1
-    uint64_t         worstHFVibeAct1;                           //!< Worst High Frequency Vibe Score - Actuator 1
+
 }sEnvironementStat;
 
 typedef struct _sHeadInfo
@@ -186,96 +175,96 @@ typedef struct _H2SAT
 
 typedef struct _sAtaReliabilityStat
 {
-    uint64_t        pageNumber;                                  //!< Page Number = 5
-    uint64_t        copyNumber;                                  //!< Copy Number
-    int64_t         lastIDDTest;                                 //!< Timestamp of last IDD test
-    int64_t         cmdLastIDDTest;                              //!< Sub-command of last IDD test
-    uint64_t        discSlip[MAX_HEAD_COUNT];                    //!< [24] Disc Slip in micro-inches by Head
-    uint64_t        bitErrorRate[MAX_HEAD_COUNT];                //!< [24] Bit Error Rate of Zone 0 by Drive Head
-    int64_t         gListReclamed;                               //!< Number of G-List Reclamations 
-    int64_t         servoStatus;                                 //!< Servo Status (follows standard DST error code definitions)
-    int64_t         altsBeforeIDD;                               //!< Number of Alt List Entries Before IDD Scan
-    int64_t         altsAfterIDD;                                //!< Number of Alt List Entries After IDD Scan
-    int64_t         gListBeforIDD;                               //!< Number of Resident G-List Entries Before IDD Scan
-    int64_t         gListAfterIDD;                               //!< Number of Resident G-List Entries After IDD Scan
-    int64_t         scrubsBeforeIDD;                             //!< Number of Scrub List Entries Before IDD Scan
-    int64_t         scrubsAfterIDD;                              //!< Number of Scrub List Entries After IDD Scan
-    int64_t         numberDOSScans;                              //!< Number of DOS Scans Performed
-    int64_t         numberLBACorrect;                            //!< Number of LBAs Corrected by ISP
-    int64_t         numberValidParitySec;                        //!< Number of Valid Parity Sectors
-    int64_t         dosWriteCount[MAX_HEAD_COUNT];               //!< [24] DOS Write Refresh Count7
-    int64_t         numberRAWops;                                //!< Number of RAW Operations
-    int64_t         DVGASkipWriteDetect[MAX_HEAD_COUNT];         //!< [24] DVGA Skip Write Detect by Head
-    int64_t         RVGASkipWriteDetect[MAX_HEAD_COUNT];         //!< [24] RVGA Skip Write Detect by Head
-    int64_t         FVGASkipWriteDetect[MAX_HEAD_COUNT];         //!< [24] FVGA Skip Write Detect by Head
-    int64_t         skipWriteDetectThresExceeded[MAX_HEAD_COUNT];//!< [24] Skip Write Detect Threshold Exceeded Count by Head
-    int64_t         attrErrorRateRaw;                            //!< Error Rate 
-    int64_t         attrErrorRateNormal;                         //!< Error Rate 
-    int64_t         attrErrorRateWorst;                          //!< Error Rate 
-    int64_t         attrSeekErrorRateRaw;                        //!< Seek Error Rate 
-    int64_t         attrSeekErrorRateNormal;                     //!< Seek Error Rate 
-    int64_t         attrSeekErrorRateWorst;                      //!< Seek Error Rate 
-    int64_t         attrUnloadEventsRaw;                         //!< High Priority Unload Events 
-    uint64_t        microActuatorLockOUt;                        //!< Micro Actuator Lock-out, head mask accumulated over last 3 Summary Frames
-    int64_t         sineACFF[MAX_HEAD_COUNT];                    //!< [24] ACFF Sine 1X, value from most recent SMART Summary Frame by Head
-    int64_t         cosineACFF[MAX_HEAD_COUNT];                  //!< [24] ACFF Cosine 1X, value from most recent SMART Summary Frame by Head
-    int64_t         PZTCalibration[MAX_HEAD_COUNT];              //!< [24] PZT Calibration, value from most recent SMART Summary Frame by Head
-    int64_t         MRHeadResistance[MAX_HEAD_COUNT];            //!< [24] MR Head Resistance from most recent SMART Summary Frame by Head
-    int64_t         numberOfTMD[MAX_HEAD_COUNT];                 //!< [24] Number of TMD over last 3 SMART Summary Frames by Head
-    int64_t         velocityObserver[MAX_HEAD_COUNT];            //!< [24] Velocity Observer over last 3 SMART Summary Frames by Head
-    int64_t         numberOfVelocityObserver[MAX_HEAD_COUNT];    //!< [24] Number of Velocity Observer over last 3 SMART Summary Frames by Head
-    H2SAT           currentH2SAT[MAX_HEAD_COUNT];                //!< [24] Current H2SAT trimmed mean bits in error by Head, by Test Zone 
-    H2SAT           currentH2SATIterations[MAX_HEAD_COUNT];      //!< [24] Qword[24][3] Current H2SAT iterations to converge by Head, by Test Zone 
-    int64_t         currentH2SATPercentage[MAX_HEAD_COUNT];      //!< [24] Qword[24] Current H2SAT percentage of codewords at iteration level by Head, averaged
-    int64_t         currentH2SATamplitude[MAX_HEAD_COUNT];       //!< [24] Qword[24] Current H2SAT amplitude by Head, averaged across Test Zones 
-    int64_t         currentH2SATasymmetry[MAX_HEAD_COUNT];       //!< [24] Qword[24] Current H2SAT asymmetry by Head, averaged across Test Zones
-    sflyHeight      flyHeightClearance[MAX_HEAD_COUNT];          //!< [24][3] Applied fly height clearance delta per head in thousandths of one Angstrom.
-    int64_t         diskSlipRecalPerformed;                      //!< Number of disc slip recalibrations performed
-    int64_t         gList[MAX_HEAD_COUNT];                       //!< [24] Number of Reallocated Sectors per head
-    int64_t         pendingEntries[MAX_HEAD_COUNT];              //!< [24] Number of Reallocation Candidate Sectors per head
-    int64_t         heliumPresureTrip;                           //!< Helium Pressure Threshold Tripped ( 1- trip, 0 -no trip)
-    int64_t         oughtDOS[MAX_HEAD_COUNT];                    //!< [24] DOS Ought to scan count per head
-    int64_t         needDOS[MAX_HEAD_COUNT];                     //!< [24] DOS needs to scanns count per head
-    int64_t         writeDOSFault[MAX_HEAD_COUNT];               //!< [24] DOS  write Fault scans per head
-    int64_t         writePOH[MAX_HEAD_COUNT];                    //!< [24] write POS in sec value from most recent SMART Frame by head
-    int64_t         RVAbsoluteMean;                              //!< RV Absolute Mean, value from the most recent SMART Frame
-    int64_t         maxRVAbsluteMean;                            //!< Max RV Absolute Mean, value from the most recent SMART Summary Frame
-    int64_t         idleTime;                                    //!< idle Time, Value from most recent SMART Summary Frame
-    int64_t         countDOSWrite[MAX_HEAD_COUNT];               //!< [24] DOS Write Count Threshold per head
-    int64_t         secondMRHeadResistance[MAX_HEAD_COUNT];      //!< [24] Second Head, MR Head Resistance from most recent SMART Summary Frame by Head (added in 2.11)
-    int64_t         FAFHMeasurementStatus[MAX_HEAD_COUNT];       //!< [24] FAFH Measurement Status, bitwise OR across all diameters per head (added in 4.5)
-    int64_t         FAFHRelativeAmptitude[MAX_HEAD_COUNT];       //!< [24] FAFH HF/LF Relative Amplitude in tenths, maximum value across all 3 zones per head (added in 4.5)
-    sflyHeight      FAFHBitErrorRate[MAX_HEAD_COUNT];            //!< [24][3] FAFH Bit Error Rate, write then read BER on reserved tracks (added in 4.5)
-    sflyHeight      FAFHLowFrequency[MAX_HEAD_COUNT];            //<! [24][3] FAFH Low Frequency Passive Clearance in ADC counts (added in 4.5)
-    sflyHeight      FAFHHighFrequency[MAX_HEAD_COUNT];           //<! [24][3] FAFH High Frequency Passive Clearance in ADC counts (added in 4.5)
-    uint64_t        numberLBACorrectedByParitySector;            //<! Number of LBAs Corrected by Parity Sector
+    uint64_t        pageNumber;                                     //!< Page Number = 5
+    uint64_t        copyNumber;                                     //!< Copy Number
+    int64_t         reserved;                                       //!< reserved
+    int64_t         reserved1;                                      //!< reserved 1
+    uint64_t        reserved2[MAX_HEAD_COUNT];                      //!< [24] reserved 2
+    uint64_t        reserved3[MAX_HEAD_COUNT];                      //!< [24] reserved 3
+    int64_t         reserved4;                                      //!< reserved 4 
+    int64_t         reserved5;                                      //!< reserved 5
+    int64_t         reserved6;                                      //!< reserved 6
+    int64_t         reserved7;                                      //!< reserved 7
+    int64_t         reserved8;                                      //!< reserved 8
+    int64_t         reserved9;                                      //!< reserved 9
+    int64_t         reserved10;                                     //!< reserved 10
+    int64_t         reserved11;                                     //!< reserved 11
+    int64_t         numberDOSScans;                                 //!< Number of DOS Scans Performed
+    int64_t         numberLBACorrect;                               //!< Number of LBAs Corrected by ISP
+    int64_t         reserved12;                                     //!< reserved 12
+    int64_t         reserved13[MAX_HEAD_COUNT];                     //!< [24] reserved 13
+    int64_t         reserved14;                                     //!< reseved 14
+    int64_t         DVGASkipWriteDetect[MAX_HEAD_COUNT];            //!< [24] DVGA Skip Write Detect by Head
+    int64_t         RVGASkipWriteDetect[MAX_HEAD_COUNT];            //!< [24] RVGA Skip Write Detect by Head
+    int64_t         FVGASkipWriteDetect[MAX_HEAD_COUNT];            //!< [24] FVGA Skip Write Detect by Head
+    int64_t         skipWriteDetectThresExceeded[MAX_HEAD_COUNT];   //!< [24] Skip Write Detect Threshold Exceeded Count by Head
+    int64_t         attrErrorRateRaw;                               //!< Error Rate 
+    int64_t         attrErrorRateNormal;                            //!< Error Rate 
+    int64_t         attrErrorRateWorst;                             //!< Error Rate 
+    int64_t         attrSeekErrorRateRaw;                           //!< Seek Error Rate 
+    int64_t         attrSeekErrorRateNormal;                        //!< Seek Error Rate 
+    int64_t         attrSeekErrorRateWorst;                         //!< Seek Error Rate 
+    int64_t         attrUnloadEventsRaw;                            //!< High Priority Unload Events 
+    uint64_t        reserved15;                                     //!< reserved 15
+    int64_t         reserved16[MAX_HEAD_COUNT];                     //!< [24] reserved 16
+    int64_t         reserved17[MAX_HEAD_COUNT];                     //!< [24] reserved 17
+    int64_t         reserved18[MAX_HEAD_COUNT];                     //!< [24] reserved 18
+    int64_t         MRHeadResistance[MAX_HEAD_COUNT];               //!< [24] MR Head Resistance from most recent SMART Summary Frame by Head
+    int64_t         numberOfTMD[MAX_HEAD_COUNT];                    //!< [24] Number of TMD over last 3 SMART Summary Frames by Head
+    int64_t         velocityObserver[MAX_HEAD_COUNT];               //!< [24] Velocity Observer over last 3 SMART Summary Frames by Head
+    int64_t         numberOfVelocityObserver[MAX_HEAD_COUNT];       //!< [24] Number of Velocity Observer over last 3 SMART Summary Frames by Head
+    H2SAT           currentH2SAT[MAX_HEAD_COUNT];                   //!< [24] Current H2SAT trimmed mean bits in error by Head, by Test Zone 
+    H2SAT           currentH2SATIterations[MAX_HEAD_COUNT];         //!< [24] Qword[24][3] Current H2SAT iterations to converge by Head, by Test Zone 
+    int64_t         currentH2SATPercentage[MAX_HEAD_COUNT];         //!< [24] Qword[24] Current H2SAT percentage of codewords at iteration level by Head, averaged
+    int64_t         currentH2SATamplitude[MAX_HEAD_COUNT];          //!< [24] Qword[24] Current H2SAT amplitude by Head, averaged across Test Zones 
+    int64_t         currentH2SATasymmetry[MAX_HEAD_COUNT];          //!< [24] Qword[24] Current H2SAT asymmetry by Head, averaged across Test Zones
+    sflyHeight      flyHeightClearance[MAX_HEAD_COUNT];             //!< [24][3] Applied fly height clearance delta per head in thousandths of one Angstrom.
+    int64_t         diskSlipRecalPerformed;                         //!< Number of disc slip recalibrations performed
+    int64_t         gList[MAX_HEAD_COUNT];                          //!< [24] Number of Reallocated Sectors per head
+    int64_t         pendingEntries[MAX_HEAD_COUNT];                 //!< [24] Number of Reallocation Candidate Sectors per head
+    int64_t         heliumPresureTrip;                              //!< Helium Pressure Threshold Tripped ( 1- trip, 0 -no trip)
+    int64_t         oughtDOS[MAX_HEAD_COUNT];                       //!< [24] DOS Ought to scan count per head
+    int64_t         needDOS[MAX_HEAD_COUNT];                        //!< [24] DOS needs to scanns count per head
+    int64_t         writeDOSFault[MAX_HEAD_COUNT];                  //!< [24] DOS  write Fault scans per head
+    int64_t         writePOH[MAX_HEAD_COUNT];                       //!< [24] write POS in sec value from most recent SMART Frame by head
+    int64_t         reserved19;                                     //!< reserved 19
+    int64_t         reserved20;                                     //!< reserved 20
+    int64_t         reserved21;                                     //!< reserved 21
+    int64_t         reserved22[MAX_HEAD_COUNT];                     //!< [24] reserved 22
+    int64_t         secondMRHeadResistance[MAX_HEAD_COUNT];         //!< [24] Second Head, MR Head Resistance from most recent SMART Summary Frame by Head (added in 2.11)
+    int64_t         reserved23[MAX_HEAD_COUNT];                     //!< [24] reserved 23
+    int64_t         reserved24[MAX_HEAD_COUNT];                     //!< [24] reserved 24
+    sflyHeight      reserved25[MAX_HEAD_COUNT];                     //!< [24][3] reserved 25
+    sflyHeight      reserved26[MAX_HEAD_COUNT];                     //<! [24][3] reserved 26
+    sflyHeight      reserved27[MAX_HEAD_COUNT];                     //<! [24][3] reserved 27
+    uint64_t        numberLBACorrectedByParitySector;               //<! Number of LBAs Corrected by Parity Sector Actuator 0
     //4.21
-    uint64_t        SuperParityCovPercent;                       //!< Primary Super Parity Coverage Percentae, Actuator 0
-    uint64_t        numberOfLFAIterations[MAX_HEAD_COUNT];       //!< Number of total Laser Field Adjust iterations performed per head
-    sflyHeight      laserOperCurrent[MAX_HEAD_COUNT];            //!< Laser Operating Current by head Diameter 0: Outer Diameter 1: Inner Diameter 2: Middle
-    sflyHeight      postLFABER[MAX_HEAD_COUNT];                  //!< Post LFA Optimal BER by head Diameter 0: Outer Diameter 1: Inner Diameter 2: Middle
-    uint64_t        lastIDDTimeAct1;                             //!< Timestamp of last IDD test in Hours(POH), Actuator 1
-    uint64_t        cmdLastIDDTestAct1;                          //!< Sub Command of last IDD Test, Actuator 1
-    uint64_t        reallocSectorReclamAct1;                     //!< Number of Reallocated Sector Reclamations, Actuator 1
-    uint64_t        servoStatusAct1;                             //!< Servo Status (follows standard DST error code definitions), Actuator 1
-    uint64_t        slippedSectorsBefIDDAct1;                    //!< Number of Slipped Sectors Before IDD Scan, Actuator 1
-    uint64_t        slippedSectorsAftIDDAct1;                    //!< Number of Slipped Sectors After IDD Scan, Actuator 1
-    uint64_t        resReallocSectorsBefIDDAct1;                 //!< Number of Resident Reallocated Sectors Before IDD Scan, Actuator 1
-    uint64_t        resReallocSectorsAftIDDAct1;                 //!< Number of Resident Reallocated Sectors After IDD Scan, Actuator 1
-    uint64_t        scrubbedSectorsBefIDDAct1;                   //!< Number of Successfully Scrubbed Sectors Before IDD Scan, Actuator 1
-    uint64_t        scrubbedSectorsAftIDDAct1;                   //!< Number of Successfully Scrubbed Sectors After IDD Scan, Actuator 1
-    uint64_t        DOSScansAct1;                                //!< Number of DOS Scans Performed, Actuator 1
-    uint64_t        correctedLBAsAct1;                           //!< Number of LBAs Corrected by ISP, Acuator 1
-    uint64_t        validParitySectAct1;                         //!< Number of Valid Parity Sectors, Actuator 1
-    uint64_t        rvAbsMeanAct1;                               //!< RV Absolute Mean, value from most recent SMART Summary Frame in rad/s^2, Actuator 1
-    uint64_t        rvAbsMeanMaxAct1;                            //!< Max RV Absolute Mean, value from most recent SMART Summary Frame in rad/s^2, Actuator 1
-    uint64_t        idleTimeAct1;                                //!< Idle Time, value from most recent SMART Summary Frame in seconds, Actuator 1                  
-    uint64_t        parityCorrLBAAct1;                           //!< Number of LBAs Corrected by Parity Sector, Actuator 1
-    uint64_t        superParityCovPercentAct1;                   //!< Primary Super Parity Coverage Percentage, Actuator 1 
-    uint64_t        numOfReaderWriterOffset[MAX_HEAD_COUNT];     //!< Qword[24]	Number of Reader Writer offset Iterations by head
-    H2SAT           microJogOffset[MAX_HEAD_COUNT];              //!< Qword[24][3]	Micro Jog Offset by head
-    H2SAT           preLFABitErrorRate[MAX_HEAD_COUNT];          //!< Qword[24][3]	Pre LFA Bit Error Rate
-    H2SAT           zeroPercentShiftErrorRate[MAX_HEAD_COUNT];   //!< Qword[24][3]	Zero Percent Shift Bit Error Rate
+    uint64_t        SuperParityCovPercent;                          //!< Primary Super Parity Coverage Percentae, Actuator 0  added 4.21
+    uint64_t        reserved28[MAX_HEAD_COUNT];                     //!< reserved 28
+    sflyHeight      reserved29[MAX_HEAD_COUNT];                     //!< reserved 29
+    sflyHeight      reserved30[MAX_HEAD_COUNT];                     //!< reserved 30
+    uint64_t        reserved31;                                     //!< reserved 31
+    uint64_t        reserved32;                                     //!< reserved 32
+    uint64_t        reserved33;                                     //!< reserved 33
+    uint64_t        reserved34;                                     //!< reserved 34
+    uint64_t        reserved35;                                     //!< reserved 35
+    uint64_t        reserved36;                                     //!< reserved 36
+    uint64_t        reserved37;                                     //!< reserved 37
+    uint64_t        reserved38;                                     //!< reserved 38
+    uint64_t        reserved39;                                     //!< reserved 39
+    uint64_t        reserved40;                                     //!< reserved 40
+    uint64_t        reserved41;                                     //!< reserved 41
+    uint64_t        correctedLBAsAct1;                              //!< Number of LBAs Corrected by ISP, Acuator 1
+    uint64_t        released42;                                     //!< released 42
+    uint64_t        released43;                                     //!< released 43
+    uint64_t        released44;                                     //!< released 44
+    uint64_t        released45;                                     //!< released 45                
+    uint64_t        released46;                                     //!< released 46
+    uint64_t        released47;                                     //!< released 47
+    uint64_t        released48[MAX_HEAD_COUNT];                     //!< Qword[24]	released 48
+    H2SAT           released49[MAX_HEAD_COUNT];                     //!< Qword[24][3]	released 49
+    H2SAT           released50[MAX_HEAD_COUNT];                     //!< Qword[24][3]	released 50
+    H2SAT           released51[MAX_HEAD_COUNT];                     //!< Qword[24][3]	released 51
     uint64_t        superParityCoveragePercentageAct0;           //!< Primary Super Parity Coverage Percentage SMR/SWR, Actuator 0
     uint64_t        superParityCoveragePercentageAct1;           //!< Primary Super Parity Coverage Percentage SMR/SWR, Actuator 1
 }sAtaReliabilityStat;

@@ -29,10 +29,11 @@ using namespace opensea_parser;
 //
 //---------------------------------------------------------------------------
 CFARMLog::CFARMLog()
-	:CFarm_Combine()
-	, m_FARMstatus(IN_PROGRESS)
-	, m_isCombo(false)
+	:m_FARMstatus(IN_PROGRESS)
+	, bufferData()
     , m_bufferdelete(false)
+	, m_LogSize(0)
+	, m_showStatusBytes(false)
 {
 
 }
@@ -52,10 +53,11 @@ CFARMLog::CFARMLog()
 //
 //---------------------------------------------------------------------------
 CFARMLog::CFARMLog(const std::string& fileName, bool showStatus)
-	:CFarm_Combine(showStatus)
-	, m_FARMstatus(IN_PROGRESS)
-	, m_isCombo(false)
+	: m_FARMstatus(IN_PROGRESS)
+	, bufferData()
     , m_bufferdelete(true)
+	, m_LogSize(0)
+	, m_showStatusBytes(showStatus)
 {
 	CLog *cCLog;
 	cCLog = new CLog(fileName);
@@ -70,8 +72,6 @@ CFARMLog::CFARMLog(const std::string& fileName, bool showStatus)
 #else
 			memcpy_s(bufferData, m_LogSize, cCLog->get_Buffer(), m_LogSize);// copy the buffer data to the class member pBuf
 #endif
-			setCombine(bufferData, m_LogSize);
-			m_isCombo = getIsCombo();
 			m_FARMstatus = IN_PROGRESS;
 		}
 		else
@@ -101,10 +101,11 @@ CFARMLog::CFARMLog(const std::string& fileName, bool showStatus)
 //
 //---------------------------------------------------------------------------
 CFARMLog::CFARMLog(const std::string & fileName)
-	:CFarm_Combine()
-	, m_FARMstatus(IN_PROGRESS)
-	, m_isCombo(false)
+	:m_FARMstatus(IN_PROGRESS)
+	, bufferData()
     , m_bufferdelete(true)
+	, m_LogSize(0)
+	, m_showStatusBytes(false)
 {
 	CLog *cCLog;
 	cCLog = new CLog(fileName);
@@ -119,7 +120,6 @@ CFARMLog::CFARMLog(const std::string & fileName)
 #else
 			memcpy_s(bufferData, m_LogSize, cCLog->get_Buffer(), m_LogSize);// copy the buffer data to the class member pBuf
 #endif
-			m_isCombo = getIsCombo();
 			m_FARMstatus = IN_PROGRESS;
 		}
 		else
@@ -151,14 +151,14 @@ CFARMLog::CFARMLog(const std::string & fileName)
 //
 //---------------------------------------------------------------------------
 CFARMLog::CFARMLog(uint8_t *farmbufferData, size_t bufferSize, bool showStatus)
-	:CFarm_Combine(farmbufferData, bufferSize, showStatus)
-	, m_FARMstatus(IN_PROGRESS)
-	, m_isCombo(false)
+	: m_FARMstatus(IN_PROGRESS)
+	, bufferData(farmbufferData)
     , m_bufferdelete(false)
+	, m_LogSize(bufferSize)
+	, m_showStatusBytes(showStatus)
 {
 	if (farmbufferData != NULL)
 	{
-		m_isCombo = getIsCombo();
 		m_FARMstatus = IN_PROGRESS;
 }
 	else
@@ -207,53 +207,46 @@ CFARMLog::~CFARMLog()
 eReturnValues CFARMLog::parse_Device_Farm_Log(JSONNODE *masterJson)
 {
 	eReturnValues retStatus = SUCCESS; // MEMORY_FAILURE;
-    if (m_isCombo)
-    {
-		combo_Parsing( masterJson);
-		retStatus = get_Combo_Status();
-    }
-    else
-    {
-		if (get_IsScsi())
+
+	if (is_Device_Scsi(bufferData[0], bufferData[1]))
+	{
+		uint8_t subpage = bufferData[1];
+		CSCSI_Farm_Log* pCFarm;
+		pCFarm = new CSCSI_Farm_Log(bufferData, m_LogSize, subpage, false, m_showStatusBytes);
+		if (pCFarm->get_Log_Status() == SUCCESS)
 		{
-			uint8_t subpage = bufferData[1];
-			CSCSI_Farm_Log* pCFarm;
-			pCFarm = new CSCSI_Farm_Log(bufferData, m_LogSize, subpage, false, get_showStatus());
-			if (pCFarm->get_Log_Status() == SUCCESS)
-			{
-				pCFarm->print_All_Pages(masterJson);
-				retStatus = SUCCESS;
-			}
-			else
-			{
-				retStatus = pCFarm->get_Log_Status();
-			}
-			delete(pCFarm);
+			pCFarm->print_All_Pages(masterJson);
+			retStatus = SUCCESS;
 		}
 		else
 		{
-			CATA_Farm_Log* pCFarm;
-			pCFarm = new CATA_Farm_Log(bufferData, m_LogSize, get_showStatus());
-			if (pCFarm->get_Log_Status() == IN_PROGRESS)
-			{
-				try
-				{
-					retStatus = pCFarm->parse_Farm_Log();
-					if (retStatus == IN_PROGRESS)
-					{
-						pCFarm->print_All_Pages(masterJson);
-						retStatus = SUCCESS;
-					}
-				}
-				catch (...)
-				{
-					delete (pCFarm);
-					return MEMORY_FAILURE;
-				}
-
-			}
-			delete (pCFarm);
+			retStatus = pCFarm->get_Log_Status();
 		}
-    }
+		delete(pCFarm);
+	}
+	else
+	{
+		CATA_Farm_Log* pCFarm;
+		pCFarm = new CATA_Farm_Log(bufferData, m_LogSize, m_showStatusBytes);
+		if (pCFarm->get_Log_Status() == IN_PROGRESS)
+		{
+			try
+			{
+				retStatus = pCFarm->parse_Farm_Log();
+				if (retStatus == IN_PROGRESS)
+				{
+					pCFarm->print_All_Pages(masterJson);
+					retStatus = SUCCESS;
+				}
+			}
+			catch (...)
+			{
+				delete (pCFarm);
+				return MEMORY_FAILURE;
+			}
+
+		}
+		delete (pCFarm);
+	}
     return retStatus;
 }

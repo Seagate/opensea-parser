@@ -18,7 +18,6 @@
 #include "common.h"
 #include "libjson.h"
 #include "Opensea_Parser_Helper.h"
-#include "Farm_Types.h"
 #include <sstream>
 #include <iomanip>
 
