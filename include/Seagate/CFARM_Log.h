@@ -17,18 +17,24 @@
 #include <string>
 #include "common.h"
 #include "libjson.h"
-#include "CFARM_Combine.h"
+#include "Farm_Helper.h"
+#include "Farm_Common.h"
+#include "CAta_Farm_Log.h"
+#include "CScsi_Farm_Log.h"
+
 
 namespace opensea_parser {
 #ifndef FARMCLASS
 #define FARMCLASS
 
-    class CFARMLog : public CFarm_Combine
+    class CFARMLog : public CFarmCommon
     {
     protected:
-        eReturnValues               m_FARMstatus;                            //!< status of the class
-        bool                        m_isCombo;                           //!< true if the log is a FARM combo log
-        bool                        m_bufferdelete;
+        eReturnValues   m_FARMstatus;                       //!< status of the class
+        uint8_t*        bufferData;						    //!< pointer to the buffer	
+        bool            m_bufferdelete;                     //!<  Set true if we need to delete the buffer 
+        size_t			m_LogSize;							//!< size of the log
+        bool            m_showStatusBytes;                  //!< set to true to show the individual fiield status bytes
 
     public:
         CFARMLog();
