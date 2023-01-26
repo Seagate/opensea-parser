@@ -71,7 +71,7 @@ namespace opensea_parser {
         bool Get_Flash_LED(sActuatorFLEDInfo *fled, uint64_t offset);
         bool Get_Reallocation_Data(sActReallocationData *real, uint64_t offset);
         bool get_Head_Info(sHeadInformation *phead, uint8_t *buffer);
-        bool set_Head_Header(std::string &headerName, eLogPageTypes index);
+        bool set_Head_Header(std::string &headerName, eSASLogPageTypes index);
 		
 		eReturnValues init_Header_Data();
         eReturnValues print_Header(JSONNODE *masterData);
@@ -84,7 +84,7 @@ namespace opensea_parser {
         eReturnValues print_Enviroment_Statistics_Page_07(JSONNODE *masterData, uint32_t page);
         eReturnValues print_Workload_Statistics_Page_08(JSONNODE *masterData, uint32_t page);
         eReturnValues print_Reli_Information(JSONNODE *masterData, uint32_t page);
-        eReturnValues print_Head_Information(eLogPageTypes type, JSONNODE *masterData, uint32_t page);
+        eReturnValues print_Head_Information(eSASLogPageTypes type, JSONNODE *masterData, uint32_t page);
         eReturnValues print_LUN_Actuator_Information(JSONNODE * LUNData, uint32_t page, uint16_t actNum);
         eReturnValues print_LUN_Actuator_FLED_Info(JSONNODE * LUNFLED, uint32_t page, uint16_t actNum);
         eReturnValues print_LUN_Actuator_Reallocation(JSONNODE * LUNNReallocation, uint32_t page, uint16_t actNum);

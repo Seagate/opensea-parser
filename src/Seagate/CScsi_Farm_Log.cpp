@@ -296,7 +296,7 @@ bool CSCSI_Farm_Log::strip_Active_Status(uint64_t *value)
 //!  Void 
 //
 //---------------------------------------------------------------------------
-bool CSCSI_Farm_Log::set_Head_Header(std::string &headerName, eLogPageTypes index)
+bool CSCSI_Farm_Log::set_Head_Header(std::string &headerName, eSASLogPageTypes index)
 {
     bool ret = true;
     switch (index)
@@ -318,50 +318,24 @@ bool CSCSI_Farm_Log::set_Head_Header(std::string &headerName, eLogPageTypes inde
     case RESERVED_FOR_FUTURE_STATISTICS_9:
     case RESERVED_FOR_FUTURE_STATISTICS_10:
         break;
-    case DISC_SLIP_IN_MICRO_INCHES_BY_HEAD:
-        headerName = "Disc Slip in micro-inches by Head";
-        break;
-    case BIT_ERROR_RATE_OF_ZONE_0_BY_DRIVE_HEAD:
-        headerName = "Bit Error Rate of Zone 0";
-        break;
-    case DOS_WRITE_REFRESH_COUNT:
-        headerName = "DOS Write Refresh Count";
-        break;
-    case DVGA_SKIP_WRITE_DETECT_BY_HEAD:
-        headerName = "DVGA Skip Write";
-        break;
-    case RVGA_SKIP_WRITE_DETECT_BY_HEAD:
-        headerName = "RVGA Skip Write";
-        break;
-    case FVGA_SKIP_WRITE_DETECT_BY_HEAD:
-        headerName = "FVGA Skip Write";
-        break;
-    case SKIP_WRITE_DETECT_THRESHOLD_EXCEEDED_COUNT_BY_HEAD:
-        headerName = "Skip Write Detect Threshold Exceeded Count";
-        break;
-    case ACFF_SINE_1X_VALUE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD:
-        headerName = "ACFF Sine 1X, value from most recent SMART Summary Frame";
-        break;
-    case ACFF_COSINE_1X_VALUE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD:
-        headerName = "ACFF Cosine 1X, value from most recent SMART Summary Frame";
-        break;
-    case PZT_CALIBRATION_VALUE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD:
-        headerName = "PZT Calibration, value from most recent SMART Summary Frame";
+    case RESERVED_FOR_FUTURE_HEAD_1:
+    case RESERVED_FOR_FUTURE_HEAD_2:
+    case RESERVED_FOR_FUTURE_HEAD_3:
+    case RESERVED_FOR_FUTURE_HEAD_4:
+    case RESERVED_FOR_FUTURE_HEAD_5:
+    case RESERVED_FOR_FUTURE_HEAD_6:
+    case RESERVED_FOR_FUTURE_HEAD_7:
+    case RESERVED_FOR_FUTURE_HEAD_8:
+    case RESERVED_FOR_FUTURE_HEAD_9:
+    case RESERVED_FOR_FUTURE_HEAD_10:
         break;
     case MR_HEAD_RESISTANCE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD:
         headerName = "MR Head Resistance from most recent SMART Summary Frame";
         break;
-    case NUMBER_OF_TMD_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD:
-        headerName = "Number of TMD over last 3 SMART Summary Frame";
-        break;
-    case VELOCITY_OBSERVER_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD:
-        headerName = "Velocity Observer over last 3 SMART Summary Frame";
-        break;
-    case NUMBER_OF_VELOCITY_OBSERVER_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD:
-        headerName = "Number of Velocity Observer over last 3 SMART SummaryFrame";
-        break;
-    case CURRENT_H2SAT_PERCENTAGE_OF_CODEWORDS_AT_ITERATION_LEVEL_BY_HEAD_AVERAGED_ACROSS_TEST_ZONES:
-        headerName = "Current H2SAT percentage of codewords at iteration level";
+    case RESERVED_FOR_FUTURE_HEAD_11:
+    case RESERVED_FOR_FUTURE_HEAD_12:
+    case RESERVED_FOR_FUTURE_HEAD_13:
+    case RESERVED_FOR_FUTURE_HEAD_14:
         break;
     case CURRENT_H2SAT_AMPLITUDE_BY_HEAD_AVERAGED_ACROSS_TEST_ZONES:
         headerName = "Current H2SAT amplitude, averaged across Test Zone";
@@ -375,20 +349,14 @@ bool CSCSI_Farm_Log::set_Head_Header(std::string &headerName, eLogPageTypes inde
     case NUMBER_OF_PENDING_ENTRIES:
         headerName = "Resident Pending list Entries";
         break;
-    case DOS_OUGHT_TO_SCAN_COUNT_PER_HEAD:
-        headerName = "DOS Oought To Scan Count";
-        break;
-    case DOS_NEED_TO_SCAN_COUNT_PER_HEAD:
-        headerName = "DOS Needs To Scan Count";
-        break;
-    case DOS_WRITE_FAULT_SCAN_COUNT_PER_HEAD:
-        headerName = "DOS Write Fault Scan Count";
+    case RESERVED_FOR_FUTURE_HEAD_15:
+    case RESERVED_FOR_FUTURE_HEAD_16:
+    case RESERVED_FOR_FUTURE_HEAD_17:
         break;
     case WRITE_POWERON_HOURS_FROM_MOST_RECENT_SMART:
         headerName = "Write Power On Hours from most recent SMART";
         break;
-    case DOS_WRITE_COUNT_THRESHOLD_PER_HEAD:
-		headerName = "DOS Write Count Threshold per Head";
+    case RESERVED_FOR_FUTURE_HEAD_18:
 		break;
     case CUM_LIFETIME_UNRECOVERALBE_READ_REPET_PER_HEAD:
         headerName = "Cumlative Lifetime Unrecoverable Read Repeat by head";
@@ -396,23 +364,12 @@ bool CSCSI_Farm_Log::set_Head_Header(std::string &headerName, eLogPageTypes inde
     case CUM_LIFETIME_UNRECOVERABLE_READ_UNIQUE_PER_HEAD:
         headerName = "Cumlative Lifetime Unrecoverable Read Unique by head";
         break;
-    case TOTAL_LASER_FIELD_ADJUST_ITERATIONS:
-        headerName = "Number of total Laser Field Adjust iterations performed";
-        break;
-    case TOTAL_READER_WRITER_OFFSET_ITERATIONS_PERFORMED:
-        headerName = "Number of total Reader Writer Offset iterations performed";
-        break;
-    case PRE_LFA_ZONE_0:
-        headerName = "Pre LFA Zone 0 Bit Error Rate";
-        break;
-    case PRE_LFA_ZONE_1:
-        headerName = "Pre LFA Zone 1 Bit Error Rate";
-        break;
-    case PRE_LFA_ZONE_2:
-        headerName = "Pre LFA Zone 2 Bit Error Rate";
-        break;
-    case ZERO_PERCENT_SHIFT:
-        headerName = "Zero Percent Shift Zone 0 Bit Error Rate";
+    case RESERVED_FOR_FUTURE_HEAD_19:
+    case RESERVED_FOR_FUTURE_HEAD_20:
+    case RESERVED_FOR_FUTURE_HEAD_21:
+    case RESERVED_FOR_FUTURE_HEAD_22:
+    case RESERVED_FOR_FUTURE_HEAD_23:
+    case RESERVED_FOR_FUTURE_HEAD_24:
         break;
     case CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_0:
         headerName = "Current H2SAT trimmed mean bits in error Test Zone 0";
@@ -432,88 +389,34 @@ bool CSCSI_Farm_Log::set_Head_Header(std::string &headerName, eLogPageTypes inde
     case CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_2:
         headerName = "Current H2SAT iterations to converge Test Zone 2";
         break;
-    case LASER_OPERATING_ZONE_0:
-        headerName = "Laser Operating Current Zone 2";
-        break;
-    case LASER_OPERATING_ZONE_1:
-        headerName = "Laser Operating Current Zone 2";
-        break;
-    case LASER_OPERATING_ZONE_2:
-        headerName = "Laser Operating Current Zone 2";
-        break;
-    case POST_LFA_OPTIMAL_BER_ZONE_0:
-        headerName = "Post LFA Optimal BER Zone 0";
-        break;
-    case POST_LFA_OPTIMAL_BER_ZONE_1:
-        headerName = "Post LFA Optimal BER Zone 1";
-        break;
-    case POST_LFA_OPTIMAL_BER_ZONE_2:
-        headerName = "Post LFA Optimal BER Zone 2";
-        break;
-    case MICRO_JOG_OFFSET_ZONE_0:
-        headerName = "Micro Jog Offset Zone 0";
-        break;
-    case MICRO_JOG_OFFSET_ZONE_1:
-        headerName = "Micro Jog Offset Zone 1";
-        break;
-    case MICRO_JOG_OFFSET_ZONE_2:
-        headerName = "Micro Jog Offset Zone 2";
-        break;
-    case ZERO_PERCENT_SHIFT_ZONE_1:
-        headerName = "Zero Percent Shift Zone 1";
-        break;
-    case APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_OUTER:
-        if (!m_alreadySet)
-        {
-            headerName = "Applied fly height clearance delta per head - Outer";
-            m_alreadySet = true;
-        }
-        else // fix for the firmware issue. FDDRAGON-95
-        {
-            headerName = "Applied fly height clearance delta per head - Middle";
-        }
-        break;
-    case APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_INNER:
-        headerName = "Applied fly height clearance delta per head - Inner";
-        break;
-    case APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_MIDDLE:
-        headerName = "Applied fly height clearance delta per head - Middle";
+    case RESERVED_FOR_FUTURE_HEAD_25:
+    case RESERVED_FOR_FUTURE_HEAD_26:
+    case RESERVED_FOR_FUTURE_HEAD_27:
+    case RESERVED_FOR_FUTURE_HEAD_28:
+    case RESERVED_FOR_FUTURE_HEAD_29:
+    case RESERVED_FOR_FUTURE_HEAD_30:
+    case RESERVED_FOR_FUTURE_HEAD_31:
+    case RESERVED_FOR_FUTURE_HEAD_32:
+    case RESERVED_FOR_FUTURE_HEAD_33:
+    case RESERVED_FOR_FUTURE_HEAD_34:
+    case RESERVED_FOR_FUTURE_HEAD_35:
+    case RESERVED_FOR_FUTURE_HEAD_36:
+    case RESERVED_FOR_FUTURE_HEAD_37:
         break;
     case SECOND_MR_HEAD_RESISTANCE:
         headerName = "Second Head MR Head Resistance";
         break;
-    case FAFH_MEASUREMENT_STATUS:            
-        headerName = "FAFH Measurement Status, bitwise OR across all diameters per head";
-        break;
-    case FAFH_HF_LF_RELATIVE_APMLITUDE:      
-        headerName = " FAFH HF / LF Relative Amplitude in tenths, maximum value across all 3 zones per head";
-        break;
-    case FAFH_BIT_ERROR_RATE_0:              
-        headerName = " FAFH Bit Error Rate, write then read BER on reserved tracks Diameter 0: Outer";
-        break;
-    case FAFH_BIT_ERROR_RATE_1:              
-        headerName = " FAFH Bit Error Rate, write then read BER on reserved tracks Diameter 1 : Outer";
-        break;
-    case FAFH_BIT_ERROR_RATE_2:              
-        headerName = " FAFH Bit Error Rate, write then read BER on reserved tracks Diameter 2 : Outer";
-        break;
-    case FAFH_LOW_FREQUENCY_0:               
-        headerName = " FAFH Low Frequency Passive Clearance in ADC counts Diameter 0 : outer";
-        break;
-    case FAFH_LOW_FREQUENCY_1:               
-        headerName = " FAFH Low Frequency Passive Clearance in ADC counts Diameter 1 : outer";
-        break;
-    case FAFH_LOW_FREQUENCY_2:               
-        headerName = " FAFH Low Frequency Passive Clearance in ADC counts Diameter 2 : outer";
-        break;
-    case FAFH_HIGH_FREQUENCY_0:             
-        headerName = " FAFH High Frequency Passive Clearance in ADC counts Diameter 0 : outer";
-        break;
-    case FAFH_HIGH_FREQUENCY_1:              
-        headerName = " FAFH High Frequency Passive Clearance in ADC counts Diameter 1 : outer";
-        break;
-    case FAFH_HIGH_FREQUENCY_2:              
-        headerName = " FAFH High Frequency Passive Clearance in ADC counts Diameter 2 : outer";
+    case RESERVED_FOR_FUTURE_HEAD_38:
+    case RESERVED_FOR_FUTURE_HEAD_39:
+    case RESERVED_FOR_FUTURE_HEAD_40:
+    case RESERVED_FOR_FUTURE_HEAD_41:
+    case RESERVED_FOR_FUTURE_HEAD_42:
+    case RESERVED_FOR_FUTURE_HEAD_43:
+    case RESERVED_FOR_FUTURE_HEAD_44:
+    case RESERVED_FOR_FUTURE_HEAD_45:
+    case RESERVED_FOR_FUTURE_HEAD_46:
+    case RESERVED_FOR_FUTURE_HEAD_47:
+    case RESERVED_FOR_FUTURE_HEAD_48:
         break;
     case RESERVED_FOR_FUTURE_EXPANSION:
         headerName = "Future Expansion";
@@ -1383,7 +1286,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                 byte_Swap_16(&m_pageParam->paramCode);
                 if (!headerAlreadyFound || (m_pageParam->paramCode != 0x0000 && m_pageParam->paramCode < 0x008F))
                 {
-                    pFarmFrame->vFramesFound.push_back(static_cast<eLogPageTypes>(m_pageParam->paramCode));                // collect all the log page types in a vector to pump them out at the end
+                    pFarmFrame->vFramesFound.push_back(static_cast<eSASLogPageTypes>(m_pageParam->paramCode));                // collect all the log page types in a vector to pump them out at the end
                 }
                 switch (m_pageParam->paramCode)
                 {
@@ -1492,137 +1395,11 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     delete pHeadInfo;
                 }
                 break;
-                case DISC_SLIP_IN_MICRO_INCHES_BY_HEAD:     
-                {
-                    sHeadInformation *pHeadInfo = new sHeadInformation();
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->discSlipPerHead, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
-                    delete pHeadInfo;  
-                }
-                break;
-                case BIT_ERROR_RATE_OF_ZONE_0_BY_DRIVE_HEAD:     
-                {
-                    sHeadInformation *pHeadInfo = new sHeadInformation();
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->bitErrorRateByHead, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
-                    delete pHeadInfo;  
-                }
-                break;
-                case DOS_WRITE_REFRESH_COUNT:     
-                {
-                    sHeadInformation *pHeadInfo = new sHeadInformation();
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->dosWriteRefreshCountByHead, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
-                    delete pHeadInfo;  
-                }
-                break;
-                case DVGA_SKIP_WRITE_DETECT_BY_HEAD:     
-                {
-                    sHeadInformation *pHeadInfo = new sHeadInformation();
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->dvgaSkipWriteDetectByHead, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
-                    delete pHeadInfo;  
-                }
-                break;
-                case RVGA_SKIP_WRITE_DETECT_BY_HEAD:     
-                {
-                    sHeadInformation *pHeadInfo = new sHeadInformation();
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->rvgaSkipWriteDetectByHead, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
-                    delete pHeadInfo;  
-                }
-                break;        
-                case FVGA_SKIP_WRITE_DETECT_BY_HEAD:     
-                {
-                    sHeadInformation *pHeadInfo = new sHeadInformation();
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->fvgaSkipWriteDetectByHead, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
-                    delete pHeadInfo;  
-                }
-                break;
-                case SKIP_WRITE_DETECT_THRESHOLD_EXCEEDED_COUNT_BY_HEAD:     
-                {
-                    sHeadInformation *pHeadInfo = new sHeadInformation();
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->skipWriteDectedThresholdExceededByHead, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
-                    delete pHeadInfo;  
-                }
-                break;
-                case ACFF_SINE_1X_VALUE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD:     
-                {
-                    sHeadInformation *pHeadInfo = new sHeadInformation(); 
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->acffSine1xValueByHead, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
-                    delete pHeadInfo;  
-                }
-                break;
-                case ACFF_COSINE_1X_VALUE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD:     
-                {
-                    sHeadInformation *pHeadInfo = new sHeadInformation();
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->acffCosine1xValueByHead, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
-                    delete pHeadInfo;  
-                }
-                break;
-                case PZT_CALIBRATION_VALUE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD:     
-                {
-                    sHeadInformation *pHeadInfo = new sHeadInformation();
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->pztCalibrationValueByHead, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
-                    delete pHeadInfo;  
-                }
-                break;
                 case MR_HEAD_RESISTANCE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD:     
                 {
                     sHeadInformation *pHeadInfo = new sHeadInformation(); 
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->mrHeadResistanceByHead, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
-                    delete pHeadInfo;  
-                }
-                break;
-                case NUMBER_OF_TMD_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD:  
-                {
-                    sHeadInformation *pHeadInfo = new sHeadInformation();
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->numberOfTMDByHead, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
-                    delete pHeadInfo;  
-                }
-                break;
-                case VELOCITY_OBSERVER_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD:     
-                {
-                    sHeadInformation *pHeadInfo = new sHeadInformation();
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->velocityObserverByHead, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
-                    delete pHeadInfo;  
-                }
-                break;
-                case NUMBER_OF_VELOCITY_OBSERVER_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD:     
-                {
-                    sHeadInformation *pHeadInfo = new sHeadInformation();
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->numberOfVelocityObservedByHead, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
-                    delete pHeadInfo;  
-                }
-                break;
-                case CURRENT_H2SAT_PERCENTAGE_OF_CODEWORDS_AT_ITERATION_LEVEL_BY_HEAD_AVERAGED_ACROSS_TEST_ZONES:  
-                {
-                    sHeadInformation *pHeadInfo = new sHeadInformation();
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->currentH2SATPercentagedbyHead, pHeadInfo, sizeof(*pHeadInfo));
                     offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;  
                 }
@@ -1663,33 +1440,6 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     delete pHeadInfo;  
                 }
                 break;
-                case DOS_OUGHT_TO_SCAN_COUNT_PER_HEAD:     
-                {
-                    sHeadInformation *pHeadInfo = new sHeadInformation();
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->DOSOoughtToScan, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
-                    delete pHeadInfo;  
-                }
-                break;
-                case DOS_NEED_TO_SCAN_COUNT_PER_HEAD:     
-                {
-                    sHeadInformation *pHeadInfo = new sHeadInformation(); 
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->DOSNeedToScan, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
-                    delete pHeadInfo;  
-                }
-                break;
-                case DOS_WRITE_FAULT_SCAN_COUNT_PER_HEAD:     
-                {
-                    sHeadInformation *pHeadInfo = new sHeadInformation();
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->DOSWriteFaultScan, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
-                    delete pHeadInfo;  
-                }
-                break;
                 case WRITE_POWERON_HOURS_FROM_MOST_RECENT_SMART:     
                 {
                     sHeadInformation *pHeadInfo = new sHeadInformation();
@@ -1697,15 +1447,6 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     memcpy(&pFarmFrame->writePowerOnHours, pHeadInfo, sizeof(*pHeadInfo));
                     offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;  
-                }
-                break;
-                case DOS_WRITE_COUNT_THRESHOLD_PER_HEAD:     
-                {
-                        sHeadInformation *pHeadInfo = new sHeadInformation();
-                        get_Head_Info(pHeadInfo, &pBuf[offset]);
-                        memcpy(&pFarmFrame->dosWriteCount, pHeadInfo, sizeof(*pHeadInfo));
-                        offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
-                        delete pHeadInfo; 
                 }
                 break;
                 case CUM_LIFETIME_UNRECOVERALBE_READ_REPET_PER_HEAD:
@@ -1722,60 +1463,6 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     sHeadInformation *pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
                     memcpy(&pFarmFrame->cumECCReadUnique, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
-                    delete pHeadInfo;
-                }
-                break;
-                case TOTAL_LASER_FIELD_ADJUST_ITERATIONS:
-                {
-                    sHeadInformation* pHeadInfo = new sHeadInformation();
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->totalLaserFieldAdjustIterations, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
-                    delete pHeadInfo;
-                }
-                break;
-                case TOTAL_READER_WRITER_OFFSET_ITERATIONS_PERFORMED:
-                {
-                    sHeadInformation* pHeadInfo = new sHeadInformation();
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->totalReaderWriteerOffsetIterationsPerformed, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
-                    delete pHeadInfo;
-                }
-                break;
-                case PRE_LFA_ZONE_0:
-                {
-                    sHeadInformation* pHeadInfo = new sHeadInformation();
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->pre_lfaZone_0, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
-                    delete pHeadInfo;
-                }
-                break;
-                case PRE_LFA_ZONE_1:
-                {
-                    sHeadInformation* pHeadInfo = new sHeadInformation();
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->pre_lfaZone_1, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
-                    delete pHeadInfo;
-                }
-                break;
-                case PRE_LFA_ZONE_2:
-                {
-                    sHeadInformation* pHeadInfo = new sHeadInformation();
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->pre_lfaZone_2, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
-                    delete pHeadInfo;
-                }
-                break;
-                case ZERO_PERCENT_SHIFT:
-                {
-                    sHeadInformation* pHeadInfo = new sHeadInformation();
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->zeroPercentShift, pHeadInfo, sizeof(*pHeadInfo));
                     offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;
                 }
@@ -1834,123 +1521,6 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     delete pHeadInfo;  
                 }
                 break;
-                case LASER_OPERATING_ZONE_0:
-                {
-                    sHeadInformation* pHeadInfo = new sHeadInformation();
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->laser_operatingZone_0, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
-                    delete pHeadInfo;
-                }
-                break;
-                case LASER_OPERATING_ZONE_1:
-                {
-                    sHeadInformation* pHeadInfo = new sHeadInformation();
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->laser_operatingZone_1, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
-                    delete pHeadInfo;
-                }
-                break;
-                case LASER_OPERATING_ZONE_2:
-                {
-                    sHeadInformation* pHeadInfo = new sHeadInformation();
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->laserOperatingZone_2, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
-                    delete pHeadInfo;
-                }
-                break;
-                case POST_LFA_OPTIMAL_BER_ZONE_0:
-                {
-                    sHeadInformation* pHeadInfo = new sHeadInformation();
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->postLFAOptimalBERZone_0, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
-                    delete pHeadInfo;
-                }
-                break;
-                case POST_LFA_OPTIMAL_BER_ZONE_1:
-                {
-                    sHeadInformation* pHeadInfo = new sHeadInformation();
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->postLFAOptimalBERZone_1, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
-                    delete pHeadInfo;
-                }
-                break;
-                case POST_LFA_OPTIMAL_BER_ZONE_2:
-                {
-                    sHeadInformation* pHeadInfo = new sHeadInformation();
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->postLFAOptimalBERZone_2, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
-                    delete pHeadInfo;
-                }
-                break;
-                case MICRO_JOG_OFFSET_ZONE_0:
-                {
-                    sHeadInformation* pHeadInfo = new sHeadInformation();
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->microJogOffsetZone_0, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
-                    delete pHeadInfo;
-                }
-                break;
-                case MICRO_JOG_OFFSET_ZONE_1:
-                {
-                    sHeadInformation* pHeadInfo = new sHeadInformation();
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->microJogOffsetZone_1, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
-                    delete pHeadInfo;
-                }
-                break;
-                case MICRO_JOG_OFFSET_ZONE_2:
-                {
-                    sHeadInformation* pHeadInfo = new sHeadInformation();
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->microJogOffsetZone_2, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
-                    delete pHeadInfo;
-                }
-                break;
-                case ZERO_PERCENT_SHIFT_ZONE_1:
-                {
-                    sHeadInformation* pHeadInfo = new sHeadInformation();
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->zeroPercentShiftZone_1, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
-                    delete pHeadInfo;
-                }
-                break;
-                case APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_OUTER:   
-                {
-                    sHeadInformation *pHeadInfo = new sHeadInformation();
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->appliedFlyHeightByHeadOuter, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
-                    delete pHeadInfo;  
-                }
-                break;
-                case APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_INNER:    
-                {
-                    sHeadInformation *pHeadInfo = new sHeadInformation();
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->appliedFlyHeightByHeadInner, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
-                    delete pHeadInfo;
-                }
-                break;
-                case APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_MIDDLE:     
-                {
-                    sHeadInformation *pHeadInfo = new sHeadInformation();
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->appliedFlyHeightByHeadMiddle, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
-                    delete pHeadInfo; 
-                }
-                break; 
                 case SECOND_MR_HEAD_RESISTANCE:
                 {
                     sHeadInformation *pHeadInfo = new sHeadInformation();
@@ -1960,114 +1530,6 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     delete pHeadInfo;
                 }
                 break;
-                case FAFH_MEASUREMENT_STATUS:            // FAFH Measurement Status, bitwise OR across all diameters per head
-                {
-                    sHeadInformation *pHeadInfo = new sHeadInformation();
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->fafhMeasurementStatus, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
-                    delete pHeadInfo;
-                }
-                break;
-                case FAFH_HF_LF_RELATIVE_APMLITUDE:      // FAFH HF / LF Relative Amplitude in tenths, maximum value across all 3 zones per head
-                {
-                    sHeadInformation *pHeadInfo = new sHeadInformation();
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->fafhRelativeApmlitude, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
-                    delete pHeadInfo;
-                }
-                break;
-                case FAFH_BIT_ERROR_RATE_0:              // FAFH Bit Error Rate, write then read BER on reserved tracks Diameter 0: Outer
-                {
-                    sHeadInformation *pHeadInfo = new sHeadInformation();
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->fafh_bit_error_rate_0, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
-                    delete pHeadInfo;
-                }
-                break;
-                case FAFH_BIT_ERROR_RATE_1:              // FAFH Bit Error Rate, write then read BER on reserved tracks Diameter 1 : Outer
-                {
-                    sHeadInformation *pHeadInfo = new sHeadInformation();
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->fafh_bit_error_rate_1, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
-                    delete pHeadInfo;
-                }
-                break;
-                case FAFH_BIT_ERROR_RATE_2:              // FAFH Bit Error Rate, write then read BER on reserved tracks Diameter 2 : Outer
-                {
-                    sHeadInformation *pHeadInfo = new sHeadInformation();
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->fafh_bit_error_rate_2, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
-                    delete pHeadInfo;
-                }
-                break;
-                case FAFH_LOW_FREQUENCY_0:               // FAFH Low Frequency Passive Clearance in ADC counts Diameter 0 : outer
-                {
-                    sHeadInformation *pHeadInfo = new sHeadInformation();
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->fafhLowFrequency_0, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
-                    delete pHeadInfo;
-                }
-                break;
-                case FAFH_LOW_FREQUENCY_1:               // FAFH Low Frequency Passive Clearance in ADC counts Diameter 1 : outer
-                {
-                    sHeadInformation *pHeadInfo = new sHeadInformation();
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->fafhLowFrequency_1, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
-                    delete pHeadInfo;
-                }
-                break;
-                case FAFH_LOW_FREQUENCY_2:               // FAFH Low Frequency Passive Clearance in ADC counts Diameter 2 : outer
-                {
-                    sHeadInformation *pHeadInfo = new sHeadInformation();
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->fafhLowFrequency_2, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
-                    delete pHeadInfo;
-                }
-                break;
-                case FAFH_HIGH_FREQUENCY_0:              // FAFH High Frequency Passive Clearance in ADC counts Diameter 0 : outer
-                {
-                    sHeadInformation *pHeadInfo = new sHeadInformation();
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->fafhHighFrequency_0, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
-                    delete pHeadInfo;
-                }
-                break;
-                case FAFH_HIGH_FREQUENCY_1:              // FAFH High Frequency Passive Clearance in ADC counts Diameter 1 : outer
-                {
-                    sHeadInformation *pHeadInfo = new sHeadInformation();
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->fafhHighFrequency_1, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
-                    delete pHeadInfo;
-                }
-                break;
-                case FAFH_HIGH_FREQUENCY_2:              // FAFH High Frequency Passive Clearance in ADC counts Diameter 2 : outer
-                {
-                    sHeadInformation *pHeadInfo = new sHeadInformation();
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->fafhHighFrequency_2, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
-                    delete pHeadInfo;
-                }
-                break;
-                case ZERO_PERCENT_SHIFT_ZONE_2:
-                {
-                    sHeadInformation* pHeadInfo = new sHeadInformation();
-                    get_Head_Info(pHeadInfo, &pBuf[offset]);
-                    memcpy(&pFarmFrame->zeroPercentShiftZone_2, pHeadInfo, sizeof(*pHeadInfo));
-                    offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
-                    delete pHeadInfo;
-                }
-                    break;
                 case LUN_0_ACTUATOR:
                 {
                     Get_sLUNStruct(&pFarmFrame->vLUN50,offset);
@@ -3123,7 +2585,7 @@ eReturnValues CSCSI_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint3
 //!   \return SUCCESS
 //
 //---------------------------------------------------------------------------
-eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNODE *headPage, uint32_t page)
+eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSONNODE *headPage, uint32_t page)
 {
     uint32_t loopCount = 0;
     std::string myHeader;
@@ -3143,145 +2605,6 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
         case ENVIRONMENTAL_STATISTICS_PARAMETER:
         case RELIABILITY_STATISTICS_PARAMETER:
             break;
-        case DISC_SLIP_IN_MICRO_INCHES_BY_HEAD:
-        {
-            std::ostringstream header;
-            for (loopCount = 0; loopCount < m_heads; ++loopCount)
-            {
-                header.str(""); header.clear();
-                header << "Disc Slip in micro-inches by Head " << std::dec << loopCount;
-                uint64_t dsHead = check_Status_Strip_Status(vFarmFrame[page].discSlipPerHead.headValue[loopCount]);
-                int16_t whole = M_WordInt2(dsHead);							                      // get 5:4 whole part of the float
-                double decimal = static_cast<double>(M_DoubleWordInt0(dsHead));                   // get 3:0 for the Deciaml Part of the float
-                double number = 0.0;
-                if (whole >= 0)
-                {
-                    number = static_cast<double>(whole) + (decimal * .0001);
-                }
-                else
-                {
-                    number = static_cast<double>(whole) - (decimal * .0001);
-                }
-#if defined _DEBUG
-                printf("\tDisc Slip in micro-inches for Head %" PRIu32":  raw 0x%" PRIx64", calculated %" PRIi16".%04.0f (debug) \n" \
-                    , loopCount, vFarmFrame[page].discSlipPerHead.headValue[loopCount], whole, decimal);  //!< Disc Slip in micro-inches
-#endif
-                set_json_float_With_Status(headPage, header.str().c_str(), number, vFarmFrame[page].discSlipPerHead.headValue[loopCount], m_showStatusBits);
-            }
-            //json_push_back(headPage, myArray);
-        }
-        break;
-        case BIT_ERROR_RATE_OF_ZONE_0_BY_DRIVE_HEAD:
-            for (loopCount = 0; loopCount < m_heads; ++loopCount)
-            {
-                uint64_t beHead = check_Status_Strip_Status(vFarmFrame[page].bitErrorRateByHead.headValue[loopCount]);
-                int16_t whole = M_WordInt2(beHead);							// get 5:4 whole part of the float
-                double decimal = static_cast<double>(M_DoubleWordInt0(beHead));                     // get 3:0 for the Deciaml Part of the float
-                double number = 0.0;
-                if (whole >= 0)
-                {
-                    number = static_cast<double>(whole) + (decimal * .0001);
-                }
-                else
-                {
-                    number = static_cast<double>(whole) - (decimal * .0001);
-                }
-#if defined _DEBUG
-                printf("\tBit Error Rate of Zone 0 by Head %" PRIu32":  raw 0x%" PRIx64", %" PRIi16".%04.0f \n", loopCount, vFarmFrame[page].bitErrorRateByHead.headValue[loopCount], whole, decimal);  //!< Bit Error Rate of Zone 0 by Drive Head
-#endif
-                std::ostringstream header;
-                header << "Bit Error Rate of Zone 0 for Head " << std::dec << loopCount; // Head count
-                set_json_float_With_Status(headPage, header.str().c_str(),number , vFarmFrame[page].bitErrorRateByHead.headValue[loopCount], m_showStatusBits);
-            }
-            break;
-        case DOS_WRITE_REFRESH_COUNT:
-            for (loopCount = 0; loopCount < m_heads; ++loopCount)
-            {
-#if defined _DEBUG
-                printf("\tDOS Write Refresh Count by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].dosWriteRefreshCountByHead.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));  //!< DOS Write Refresh Count
-#endif
-                std::ostringstream header;
-                header << "DOS Write Refresh Count for Head " << std::dec << loopCount; // Head count
-                set_json_64_bit_With_Status(headPage, header.str().c_str(), vFarmFrame[page].dosWriteRefreshCountByHead.headValue[loopCount], false, m_showStatusBits);  //!< DOS Write Refresh Count
-            }
-            break;
-        case DVGA_SKIP_WRITE_DETECT_BY_HEAD:
-            for (loopCount = 0; loopCount < m_heads; ++loopCount)
-            {
-#if defined _DEBUG
-                printf("\tDVGA Skip Write 0 by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].dvgaSkipWriteDetectByHead.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));  //!< DVGA Skip Write
-#endif
-                std::ostringstream header;
-                header << "DVGA Skip Write Detect for Head " << std::dec << loopCount; // Head count
-                set_json_64_bit_With_Status(headPage, header.str().c_str(), vFarmFrame[page].dvgaSkipWriteDetectByHead.headValue[loopCount], false, m_showStatusBits); //!< DVGA Skip Write
-            }
-            break;
-        case RVGA_SKIP_WRITE_DETECT_BY_HEAD:
-            for (loopCount = 0; loopCount < m_heads; ++loopCount)
-            {
-#if defined _DEBUG
-                printf("\tRVGA Skip Write 0 by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].rvgaSkipWriteDetectByHead.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));  //!< RVGA Skip Write
-#endif
-                std::ostringstream header;
-                header << "RVGA Skip Write Detect for Head " << std::dec << loopCount; // Head count
-                set_json_64_bit_With_Status(headPage, header.str().c_str(), vFarmFrame[page].rvgaSkipWriteDetectByHead.headValue[loopCount], false, m_showStatusBits); //!< RVGA Skip Write
-            }
-            break;
-        case FVGA_SKIP_WRITE_DETECT_BY_HEAD:
-            for (loopCount = 0; loopCount < m_heads; ++loopCount)
-            {
-#if defined _DEBUG
-                printf("\tFVGA Skip Write 0 by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fvgaSkipWriteDetectByHead.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));  //!< FVGA Skip Write 
-#endif
-                std::ostringstream header;
-                header << "FVGA Skip Write Detect for Head " << std::dec << loopCount; // Head count
-                set_json_64_bit_With_Status(headPage, header.str().c_str(), vFarmFrame[page].fvgaSkipWriteDetectByHead.headValue[loopCount], false, m_showStatusBits); //!< FVGA Skip Write 
-            }
-            break;
-        case SKIP_WRITE_DETECT_THRESHOLD_EXCEEDED_COUNT_BY_HEAD:
-            for (loopCount = 0; loopCount < m_heads; ++loopCount)
-            {
-#if defined _DEBUG
-                printf("\tSkip Write Detect Threshold Exceeded Count by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].skipWriteDectedThresholdExceededByHead.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));  //!< Skip Write Detect Threshold Exceeded Count
-#endif
-                std::ostringstream header;
-                header << "Skip Write Detect Threshold Exceeded for Head " << std::dec << loopCount; // Head count
-                set_json_64_bit_With_Status(headPage, header.str().c_str(), vFarmFrame[page].skipWriteDectedThresholdExceededByHead.headValue[loopCount], false, m_showStatusBits);  //!< Skip Write Detect Threshold Exceeded Count
-            }
-            break;
-        case ACFF_SINE_1X_VALUE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD:
-            for (loopCount = 0; loopCount < m_heads; ++loopCount)
-            {
-#if defined _DEBUG
-                printf("\tACFF Sine 1X for Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].acffSine1xValueByHead.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));  //!< ACFF Sine 1X, value from most recent SMART Summary Frame
-#endif
-                std::ostringstream header;
-                header << "ACFF Sine 1X for Head " << std::dec << loopCount; // Head count
-                set_json_int_Check_Status(headPage, header.str().c_str(), static_cast<int8_t>(M_Byte0(vFarmFrame[page].acffSine1xValueByHead.headValue[loopCount])) * 16, vFarmFrame[page].acffSine1xValueByHead.headValue[loopCount], m_showStatusBits);  //!< ACFF Sine 1X, value from most recent SMART Summary Frame
-            }
-            break;
-        case ACFF_COSINE_1X_VALUE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD:
-            for (loopCount = 0; loopCount < m_heads; ++loopCount)
-            {
-#if defined _DEBUG
-                printf("\tACFF Cosine 1X for Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].acffCosine1xValueByHead.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));  //!< ACFF Cosine 1X, value from most recent SMART Summary Frame
-#endif
-                std::ostringstream header;
-                header << "ACFF Cosine 1X for Head " << std::dec << loopCount; // Head count
-                set_json_int_Check_Status(headPage, header.str().c_str(), static_cast<int8_t>(M_Byte0(vFarmFrame[page].acffCosine1xValueByHead.headValue[loopCount])) * 16, vFarmFrame[page].acffCosine1xValueByHead.headValue[loopCount], m_showStatusBits);  //!< ACFF Cosine 1X, value from most recent SMART Summary Frame
-            }
-            break;
-        case PZT_CALIBRATION_VALUE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD:
-            for (loopCount = 0; loopCount < m_heads; ++loopCount)
-            {
-#if defined _DEBUG
-                printf("\tPZT Calibration for Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].pztCalibrationValueByHead.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));  //!< PZT Calibration, value from most recent SMART Summary Frame
-#endif
-                std::ostringstream header;
-                header << "PZT Calibration for Head " << std::dec << loopCount; // Head count
-                set_json_64_bit_With_Status(headPage, header.str().c_str(), vFarmFrame[page].pztCalibrationValueByHead.headValue[loopCount], false, m_showStatusBits);  //!< PZT Calibration, value from most recent SMART SummaryFrame
-            }
-            break;
         case MR_HEAD_RESISTANCE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD:
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
@@ -3291,50 +2614,6 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 std::ostringstream header;
                 header << "MR Head Resistance for Head " << std::dec << loopCount; // Head count
                 set_json_64_bit_With_Status(headPage, header.str().c_str(), vFarmFrame[page].mrHeadResistanceByHead.headValue[loopCount], false, m_showStatusBits);  //!< MR Head Resistance from most recent SMART Summary Frame
-            }
-            break;
-        case NUMBER_OF_TMD_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD:
-            for (loopCount = 0; loopCount < m_heads; ++loopCount)
-            {
-#if defined _DEBUG
-                printf("\tNumber of TMD for Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].numberOfTMDByHead.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));  //!< Number of TMD over last 3 SMART Summary Frame
-#endif
-                std::ostringstream header;
-                header << "Servo No Timing Mark Detect for Head " << std::dec << loopCount; // Head count
-                set_json_64_bit_With_Status(headPage, header.str().c_str(), vFarmFrame[page].numberOfTMDByHead.headValue[loopCount], false, m_showStatusBits);  //!< Number of TMD over last 3 SMART Summary Frame
-            }
-            break;
-        case VELOCITY_OBSERVER_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD:
-            for (loopCount = 0; loopCount < m_heads; ++loopCount)
-            {
-#if defined _DEBUG
-                printf("\tVelocity Observer by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].velocityObserverByHead.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));  //!< Velocity Observer over last 3 SMART Summary Frame
-#endif
-                std::ostringstream header;
-                header << "Velocity Observer by Head " << std::dec << loopCount; // Head count
-                set_json_64_bit_With_Status(headPage, header.str().c_str(), vFarmFrame[page].velocityObserverByHead.headValue[loopCount], false, m_showStatusBits); //!< Velocity Observer over last 3 SMART Summary Frame
-            }
-            break;
-        case NUMBER_OF_VELOCITY_OBSERVER_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD:
-            for (loopCount = 0; loopCount < m_heads; ++loopCount)
-            {
-#if defined _DEBUG
-                printf("\tNumber of Velocity Observer by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].numberOfVelocityObservedByHead.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));  //!< Number of Velocity Observer over last 3 SMART Summary Frame
-#endif
-                std::ostringstream header;
-                header << "Servo Velocity No Timing Mark Detect by Head " << std::dec << loopCount; // Head count
-                set_json_64_bit_With_Status(headPage, header.str().c_str(), vFarmFrame[page].numberOfVelocityObservedByHead.headValue[loopCount], false, m_showStatusBits); //!< Number of Velocity Observer over last 3 SMART Summary Frame
-            }
-            break;
-        case CURRENT_H2SAT_PERCENTAGE_OF_CODEWORDS_AT_ITERATION_LEVEL_BY_HEAD_AVERAGED_ACROSS_TEST_ZONES:
-            for (loopCount = 0; loopCount < m_heads; ++loopCount)
-            {
-#if defined _DEBUG
-                printf("\tCurrent H2SAT percentage of codewords at iteration level by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].currentH2SATPercentagedbyHead.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));  //!< Current H2SAT percentage of codewords at iteration level
-#endif
-                std::ostringstream header;
-                header << "Current H2SAT percentage of codewords at iteration level by Head " << std::dec << loopCount; // Head count
-                set_json_64_bit_With_Status(headPage, header.str().c_str(), vFarmFrame[page].currentH2SATPercentagedbyHead.headValue[loopCount], false, m_showStatusBits);  //!< Current H2SAT percentage of codewords at iteration level
             }
             break;
         case CURRENT_H2SAT_AMPLITUDE_BY_HEAD_AVERAGED_ACROSS_TEST_ZONES:
@@ -3381,39 +2660,6 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 set_json_64_bit_With_Status(headPage, header.str().c_str(), vFarmFrame[page].ResidentPlistEntries.headValue[loopCount], false, m_showStatusBits);
             }
             break;
-        case DOS_OUGHT_TO_SCAN_COUNT_PER_HEAD:
-            for (loopCount = 0; loopCount < m_heads; ++loopCount)
-            {
-#if defined _DEBUG
-                printf("\tDOS Ought to scan count by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].DOSOoughtToScan.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));
-#endif
-                std::ostringstream header;
-                header << "DOS Ought to scan count by Head " << std::dec << loopCount; // Head count
-                set_json_64_bit_With_Status(headPage, header.str().c_str(), vFarmFrame[page].DOSOoughtToScan.headValue[loopCount], false, m_showStatusBits);
-            }
-            break;
-        case DOS_NEED_TO_SCAN_COUNT_PER_HEAD:
-            for (loopCount = 0; loopCount < m_heads; ++loopCount)
-            {
-#if defined _DEBUG
-                printf("\tDOS needs to scans count by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].DOSNeedToScan.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));
-#endif
-                std::ostringstream header;
-                header << "DOS needs to scans count by Head " << std::dec << loopCount; // Head count
-                set_json_64_bit_With_Status(headPage, header.str().c_str(), vFarmFrame[page].DOSNeedToScan.headValue[loopCount], false, m_showStatusBits);
-            }
-            break;
-        case DOS_WRITE_FAULT_SCAN_COUNT_PER_HEAD:
-            for (loopCount = 0; loopCount < m_heads; ++loopCount)
-            {
-#if defined _DEBUG
-                printf("\tDOS write Fault scans by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].DOSWriteFaultScan.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));
-#endif
-                std::ostringstream header;
-                header << "DOS write Fault scans by Head " << std::dec << loopCount; // Head count
-                set_json_64_bit_With_Status(headPage, header.str().c_str(), vFarmFrame[page].DOSWriteFaultScan.headValue[loopCount], false, m_showStatusBits);
-            }
-            break;
         case WRITE_POWERON_HOURS_FROM_MOST_RECENT_SMART:
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
@@ -3424,17 +2670,6 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 header << "Write Power On (hrs) by Head " << std::dec << loopCount; // Head count
                 double number = static_cast<double>(M_DoubleWord0(vFarmFrame[page].writePowerOnHours.headValue[loopCount]) / 3600.0);
                 set_json_float_With_Status(headPage, header.str().c_str(), number, vFarmFrame[page].discSlipPerHead.headValue[loopCount], m_showStatusBits);
-            }
-            break;
-        case DOS_WRITE_COUNT_THRESHOLD_PER_HEAD:
-            for (loopCount = 0; loopCount < m_heads; ++loopCount)
-            {
-#if defined _DEBUG
-                printf("\tDOS Write Count Threshold by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].dosWriteCount.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));
-#endif
-                std::ostringstream header;
-                header << "DOS Write Count Threshold by Head " << std::dec << loopCount; // Head count
-                set_json_64_bit_With_Status(headPage, header.str().c_str(), vFarmFrame[page].dosWriteCount.headValue[loopCount], false, m_showStatusBits);
             }
             break;
         case CUM_LIFETIME_UNRECOVERALBE_READ_REPET_PER_HEAD:
@@ -3459,88 +2694,6 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 set_json_64_bit_With_Status(headPage, header.str().c_str(), vFarmFrame[page].cumECCReadUnique.headValue[loopCount], false, m_showStatusBits);
             }
             break;
-        case TOTAL_LASER_FIELD_ADJUST_ITERATIONS:
-        {
-            for (loopCount = 0; loopCount < m_heads; ++loopCount)
-            {
-#if defined _DEBUG
-                printf("\tFine Laser Calibrations per head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].totalLaserFieldAdjustIterations.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));
-#endif
-                std::ostringstream header;
-                header << "Fine Laser Calibrations per head " << std::dec << loopCount; // Head count
-                set_json_64_bit_With_Status(headPage, header.str().c_str(), vFarmFrame[page].totalLaserFieldAdjustIterations.headValue[loopCount], false, m_showStatusBits);
-            }
-        }
-        break;
-        case TOTAL_READER_WRITER_OFFSET_ITERATIONS_PERFORMED:
-        {
-            for (loopCount = 0; loopCount < m_heads; ++loopCount)
-            {
-#if defined _DEBUG
-                printf("\tReader Writer offset Iterations per head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].totalReaderWriteerOffsetIterationsPerformed.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));
-#endif
-                std::ostringstream header;
-                header << "Reader Writer offset Iterations per head " << std::dec << loopCount; // Head count
-                set_json_64_bit_With_Status(headPage, header.str().c_str(), vFarmFrame[page].totalReaderWriteerOffsetIterationsPerformed.headValue[loopCount], false, m_showStatusBits);
-            }
-        }
-        break;
-        case PRE_LFA_ZONE_0:
-        {
-            for (loopCount = 0; loopCount < m_heads; ++loopCount)
-            {
-#if defined _DEBUG
-                printf("\tPre LFA Optimal BER Zone 0 per head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].pre_lfaZone_0.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));
-#endif
-                std::ostringstream header;
-                header << "Pre LFA Optimal BER Zone 0 per head " << std::dec << loopCount; // Head count
-                int16_t number = static_cast<int16_t>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].pre_lfaZone_0.headValue[loopCount])), 16) * 1000);
-                set_json_int_Check_Status(headPage, header.str().c_str(), number, vFarmFrame[page].pre_lfaZone_0.headValue[loopCount], m_showStatusBits);
-            }
-        }
-        break;
-        case PRE_LFA_ZONE_1:
-        {
-            for (loopCount = 0; loopCount < m_heads; ++loopCount)
-            {
-#if defined _DEBUG
-                printf("\tPre LFA Optimal BER Zone 1 per head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].pre_lfaZone_1.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));
-#endif
-                std::ostringstream header;
-                header << "Pre LFA Optimal BER Zone 1 per head " << std::dec << loopCount; // Head count
-                int16_t number = static_cast<int16_t>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].pre_lfaZone_1.headValue[loopCount])), 16) * 1000);
-                set_json_int_Check_Status(headPage, header.str().c_str(),number, vFarmFrame[page].pre_lfaZone_1.headValue[loopCount], m_showStatusBits);
-            }
-        }
-        break;
-        case PRE_LFA_ZONE_2:
-        {
-            for (loopCount = 0; loopCount < m_heads; ++loopCount)
-            {
-#if defined _DEBUG
-                printf("\tPre LFA Optimal BER Zone 2 per head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].pre_lfaZone_2.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));
-#endif
-                std::ostringstream header;
-                header << "Pre LFA Optimal BER Zone 2 per head " << std::dec << loopCount; // Head count
-                int16_t number = static_cast<int16_t>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].pre_lfaZone_2.headValue[loopCount])), 16) * 1000);
-                set_json_int_Check_Status(headPage, header.str().c_str(), number, vFarmFrame[page].pre_lfaZone_2.headValue[loopCount], m_showStatusBits);
-            }
-        }
-        break;
-        case ZERO_PERCENT_SHIFT:
-        {
-            for (loopCount = 0; loopCount < m_heads; ++loopCount)
-            {
-#if defined _DEBUG
-                printf("\tZero Percent Shift Zone 0 per head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].zeroPercentShift.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));
-#endif
-                std::ostringstream header;
-                header << "Zero Percent Shift Zone 0  per head " << std::dec << loopCount; // Head count
-                int16_t number = static_cast<int16_t>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].zeroPercentShift.headValue[loopCount])), 16) * 1000);
-                set_json_int_Check_Status(headPage, header.str().c_str(), number, vFarmFrame[page].zeroPercentShift.headValue[loopCount], m_showStatusBits);
-            }
-        }
-        break;
         case CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_0:
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
@@ -3613,463 +2766,15 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eLogPageTypes type, JSONNOD
                 set_json_float_With_Status(headPage, header.str().c_str(), number, vFarmFrame[page].currentH2STIterationsByHeadZone2.headValue[loopCount], m_showStatusBits);  //!< Current H2SAT iterations to cnverge by Head, by Test Zone 2
             }
             break;
-        case LASER_OPERATING_ZONE_0:
-            for (loopCount = 0; loopCount < m_heads; ++loopCount)
-            {
-#if defined _DEBUG
-                printf("\tLaser Operating Current Zone 0 by Head %" PRIu32" :      %" PRIu64" \n", loopCount, vFarmFrame[page].laser_operatingZone_0.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));  //!< Current H2SAT iterations to cnverge by Head, by Test Zone 2
-#endif
-                std::ostringstream header;
-                header << "Laser Operating Current Zone 0 by Head " << std::dec << loopCount; // Head count
-                set_json_64_bit_With_Status(headPage, header.str().c_str(), M_DoubleWord0(vFarmFrame[page].laser_operatingZone_0.headValue[loopCount]), false, m_showStatusBits);
-            }
-            break;
-        case LASER_OPERATING_ZONE_1:
-            for (loopCount = 0; loopCount < m_heads; ++loopCount)
-            {
-#if defined _DEBUG
-                printf("\tLaser Operating Current Zone 1 by Head %" PRIu32" :  %" PRIu64" \n", loopCount, vFarmFrame[page].laser_operatingZone_1.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));  //!< Current H2SAT iterations to cnverge by Head, by Test Zone 2
-#endif
-                std::ostringstream header;
-                header << "Laser Operating Current Zone 1 by Head " << std::dec << loopCount; // Head count
-                set_json_64_bit_With_Status(headPage, header.str().c_str(), M_DoubleWord0(vFarmFrame[page].laser_operatingZone_1.headValue[loopCount]), false, m_showStatusBits);
-            }
-            break;
-        case LASER_OPERATING_ZONE_2:
-            for (loopCount = 0; loopCount < m_heads; ++loopCount)
-            {
-#if defined _DEBUG
-                printf("\tLaser Operating Current Zone 2 by Head %" PRIu32" :      %" PRIu64" \n", loopCount, vFarmFrame[page].laserOperatingZone_2.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));  //!< Current H2SAT iterations to cnverge by Head, by Test Zone 2
-#endif
-                std::ostringstream header;
-                header << "Laser Operating Current Zone 2 by Head " << std::dec << loopCount; // Head count
-                set_json_64_bit_With_Status(headPage, header.str().c_str(), M_DoubleWord0(vFarmFrame[page].laserOperatingZone_2.headValue[loopCount]), false, m_showStatusBits);
-            }
-            break;
-        case POST_LFA_OPTIMAL_BER_ZONE_0:
-        {
-            for (loopCount = 0; loopCount < m_heads; ++loopCount)
-            {
-#if defined _DEBUG
-                printf("\tPost LFA Optimal BER Zone 0 per head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].postLFAOptimalBERZone_0.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));
-#endif
-                std::ostringstream header;
-                header << "Post LFA Optimal BER Zone 0 per head " << std::dec << loopCount; // Head count
-                int16_t number = static_cast<int16_t>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].postLFAOptimalBERZone_0.headValue[loopCount])), 16) * 1000);
-                set_json_int_Check_Status(headPage, header.str().c_str(), number, vFarmFrame[page].postLFAOptimalBERZone_0.headValue[loopCount], m_showStatusBits);
-            }
-        }
-        break;
-        case POST_LFA_OPTIMAL_BER_ZONE_1:
-        {
-            for (loopCount = 0; loopCount < m_heads; ++loopCount)
-            {
-#if defined _DEBUG
-                printf("\tPost LFA Optimal BER Zone 1 per head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].postLFAOptimalBERZone_1.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));
-#endif
-                std::ostringstream header;
-                header << "Post LFA Optimal BER Zone 1 per head " << std::dec << loopCount; // Head count
-                int16_t number = static_cast<int16_t>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].postLFAOptimalBERZone_1.headValue[loopCount])), 16) * 1000);
-                set_json_int_Check_Status(headPage, header.str().c_str(), number, vFarmFrame[page].postLFAOptimalBERZone_1.headValue[loopCount], m_showStatusBits);
-            }
-        }
-        break;
-        case POST_LFA_OPTIMAL_BER_ZONE_2:
-        {
-            for (loopCount = 0; loopCount < m_heads; ++loopCount)
-            {
-#if defined _DEBUG
-                printf("\tPost LFA Optimal BER Zone 2 per head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].postLFAOptimalBERZone_2.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));
-#endif
-                std::ostringstream header;
-                header << "Post LFA Optimal BER Zone 2 per head " << std::dec << loopCount; // Head count
-                int16_t number = static_cast<int16_t>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].postLFAOptimalBERZone_2.headValue[loopCount])), 16) * 1000);
-                set_json_int_Check_Status(headPage, header.str().c_str(), number, vFarmFrame[page].postLFAOptimalBERZone_2.headValue[loopCount], m_showStatusBits);
-            }
-        }
-        break;
-        case MICRO_JOG_OFFSET_ZONE_0:
-        {
-            for (loopCount = 0; loopCount < m_heads; ++loopCount)
-            {
-#if defined _DEBUG
-                printf("\tMicro Jog offset Zone 0 per head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].microJogOffsetZone_0.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));
-#endif
-                std::ostringstream header;
-                header << "Micro Jog offset Zone 0 per head " << std::dec << loopCount; // Head count
-                int16_t number = static_cast<int16_t>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].microJogOffsetZone_0.headValue[loopCount])), 16));
-                set_json_int_Check_Status(headPage, header.str().c_str(), number, vFarmFrame[page].microJogOffsetZone_0.headValue[loopCount], m_showStatusBits);
-            }
-        }
-        break;
-        case MICRO_JOG_OFFSET_ZONE_1:
-        {
-            for (loopCount = 0; loopCount < m_heads; ++loopCount)
-            {
-#if defined _DEBUG
-                printf("\tMicro Jog offset Zone 1 per head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].microJogOffsetZone_1.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));
-#endif
-                std::ostringstream header;
-                header << "Micro Jog offset Zone 1 per head " << std::dec << loopCount; // Head count
-                int16_t number = static_cast<int16_t>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].microJogOffsetZone_1.headValue[loopCount])), 16));
-                set_json_int_Check_Status(headPage, header.str().c_str(), number, vFarmFrame[page].microJogOffsetZone_1.headValue[loopCount], m_showStatusBits);
-            }
-        }
-        break;
-        case MICRO_JOG_OFFSET_ZONE_2:
-        {
-            for (loopCount = 0; loopCount < m_heads; ++loopCount)
-            {
-#if defined _DEBUG
-                printf("\tMicro Jog offset Zone 2 per head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].microJogOffsetZone_2.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));
-#endif
-                std::ostringstream header;
-                header << "Micro Jog offset Zone 2 per head " << std::dec << loopCount; // Head count
-                int16_t number = static_cast<int16_t>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].microJogOffsetZone_2.headValue[loopCount])), 16));
-                set_json_int_Check_Status(headPage, header.str().c_str(), number, vFarmFrame[page].microJogOffsetZone_2.headValue[loopCount], m_showStatusBits);
-            }
-        }
-        break;
-        case ZERO_PERCENT_SHIFT_ZONE_1:
-        {
-            for (loopCount = 0; loopCount < m_heads; ++loopCount)
-            {
-#if defined _DEBUG
-                printf("\tZero Percent Shift Zone 1 per head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].zeroPercentShiftZone_1.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));
-#endif
-                std::ostringstream header;
-                header << "Zero Percent Shift Zone 1  per head " << std::dec << loopCount; // Head count
-                int16_t number = static_cast<int16_t>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].zeroPercentShiftZone_1.headValue[loopCount])), 16) * 1000);
-                set_json_int_Check_Status(headPage, header.str().c_str(),number, vFarmFrame[page].zeroPercentShiftZone_1.headValue[loopCount], m_showStatusBits);
-            }
-        }
-        break;
-        case APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_OUTER:
-            for (loopCount = 0; loopCount < m_heads; ++loopCount)
-            {
-#if defined _DEBUG
-                printf("\tFly height clearance delta outer by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].appliedFlyHeightByHeadOuter.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));  //!< Applied fly height clearance delta per head in thousandths of one Angstrom: Outer by Head
-#endif
-                std::ostringstream header;
-                header << "Fly height clearance delta outer by Head " << std::dec << loopCount; // Head count
-                double number = static_cast<double>(M_WordInt0(vFarmFrame[page].appliedFlyHeightByHeadOuter.headValue[loopCount]) * 0.001);
-                set_json_float_With_Status(headPage, header.str().c_str(), number, vFarmFrame[page].appliedFlyHeightByHeadOuter.headValue[loopCount], m_showStatusBits);
-            }
-            break;
-        case APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_INNER:
-            for (loopCount = 0; loopCount < m_heads; ++loopCount)
-            {
-#if defined _DEBUG
-                printf("\tFly height clearance delta inner by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].appliedFlyHeightByHeadInner.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));  //!< Applied fly height clearance delta per head in thousandths of one Angstrom: Inner by Head
-#endif
-                std::ostringstream header;
-                header << "Fly height clearance delta inner by Head " << std::dec << loopCount; // Head count
-                double number = static_cast<double>(M_WordInt0(vFarmFrame[page].appliedFlyHeightByHeadInner.headValue[loopCount]) * 0.001);
-                set_json_float_With_Status(headPage, header.str().c_str(), number, vFarmFrame[page].appliedFlyHeightByHeadInner.headValue[loopCount], m_showStatusBits);
-            }
-            break;
-        case APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_MIDDLE:
-            for (loopCount = 0; loopCount < m_heads; ++loopCount)
-            {
-#if defined _DEBUG
-                printf("\tFly height clearance delta middle by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].appliedFlyHeightByHeadMiddle.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));  //!< Applied fly height clearance delta per head in thousandths of one Angstrom: middle by Head
-#endif
-                std::ostringstream header;
-                header << "Fly height clearance delta middle by Head " << std::dec << loopCount;     // Head count
-                double number = static_cast<double>(M_WordInt0(vFarmFrame[page].appliedFlyHeightByHeadMiddle.headValue[loopCount]) * 0.001);
-                set_json_float_With_Status(headPage, header.str().c_str(), number, vFarmFrame[page].appliedFlyHeightByHeadMiddle.headValue[loopCount], m_showStatusBits);
-            }
-            break;
-        case SECOND_MR_HEAD_RESISTANCE:
-        {
-            for (loopCount = 0; loopCount < m_heads; ++loopCount)
-            {
-#if defined _DEBUG
-                printf("\tSecond MR Head Resistance by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].secondMRHeadResistanceByHead.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));  //!< Second MR Head Resistance
-#endif
-                std::ostringstream header;
-                header << "Second MR Head Resistance by Head " << std::dec << loopCount;     // Head count
-                set_json_64_bit_With_Status(headPage, header.str().c_str(), vFarmFrame[page].secondMRHeadResistanceByHead.headValue[loopCount], false, m_showStatusBits);  //!< Second MR Head Resistance
-            }
-        }
-        break;
-        case FAFH_MEASUREMENT_STATUS:            // FAFH Measurement Status, bitwise OR across all diameters per head
-        {
-            for (loopCount = 0; loopCount < m_heads; ++loopCount)
-            {
-#if defined _DEBUG
-                printf("\tFAFH Measurement Status by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fafhMeasurementStatus.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));  //!< FAFH Measurement Status
-#endif
-                std::ostringstream header;
-                header << "FAFH Measurement Status by Head " << std::dec << loopCount;     // Head count
-                set_json_64_bit_With_Status(headPage, header.str().c_str(), vFarmFrame[page].fafhMeasurementStatus.headValue[loopCount], false, m_showStatusBits);
-            }
-        }
-        break;
-        case FAFH_HF_LF_RELATIVE_APMLITUDE:      // FAFH HF / LF Relative Amplitude in tenths, maximum value across all 3 zones per head
-        {
-            for (loopCount = 0; loopCount < m_heads; ++loopCount)
-            {
-
-#if defined _DEBUG
-                printf("\tFAFH HF - LF Relative Amplitude by Head%" PRIu32":  raw 0x%" PRIx64", calculated %f (debug)\n" , \
-                    loopCount, vFarmFrame[page].fafhRelativeApmlitude.headValue[loopCount], static_cast<double>(M_DoubleWordInt0(check_Status_Strip_Status(vFarmFrame[page].fafhRelativeApmlitude.headValue[loopCount]))) * .1);  //!< Disc Slip in micro-inches 
-#endif
-                std::ostringstream header;
-                header << "FAFH Relative Amplitude by Head " << std::dec << loopCount;     // Head count
-                double number = static_cast<double>(M_WordInt0(vFarmFrame[page].fafhRelativeApmlitude.headValue[loopCount]) * 0.1);
-                set_json_float_With_Status(headPage, header.str().c_str(), number, vFarmFrame[page].fafhRelativeApmlitude.headValue[loopCount], m_showStatusBits);
-            }
-        }
-        break;
-        case FAFH_BIT_ERROR_RATE_0:              // FAFH Bit Error Rate, write then read BER on reserved tracks Diameter 0: Outer
-        {
-            for (loopCount = 0; loopCount < m_heads; ++loopCount)
-            {
-                uint64_t dsHead = check_Status_Strip_Status(vFarmFrame[page].fafh_bit_error_rate_0.headValue[loopCount]);
-                int16_t whole = M_WordInt2(dsHead);							// get 5:4 whole part of the float
-                double decimal = static_cast<double>(M_DoubleWordInt0(dsHead)) ;  // get 3:0 for the decimal  Part of the float
-                double number = 0.0;
-                if (whole >= 0)
-                {
-                    number = static_cast<double>(whole) + (decimal * .0001);
-                }
-                else
-                {
-                    number = static_cast<double>(whole) - (decimal * .0001);
-                }
-#if defined _DEBUG
-                printf("\tFAFH Bit Error Rate outer by Head %" PRIu32":     raw 0x%" PRIx64"  calculated %" PRIi16".%03.0f (debug)\n", loopCount, vFarmFrame[page].fafh_bit_error_rate_0.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF), whole,decimal);
-#endif
-                std::ostringstream header;
-                header << "FAFH Bit Error Rate outer by Head " << std::dec << loopCount;     // Head count
-                set_json_float_With_Status(headPage, header.str().c_str(), number, vFarmFrame[page].fafh_bit_error_rate_0.headValue[loopCount], m_showStatusBits);
-            }
-        }
-        break;
-        case FAFH_BIT_ERROR_RATE_1:              // FAFH Bit Error Rate, write then read BER on reserved tracks Diameter 1 : Outer
-        {
-            for (loopCount = 0; loopCount < m_heads; ++loopCount)
-            {
-                uint64_t dsHead = check_Status_Strip_Status(vFarmFrame[page].fafh_bit_error_rate_1.headValue[loopCount]);
-                int16_t whole = M_WordInt2(dsHead);							// get 5:4 whole part of the float
-                double decimal = static_cast<double>(M_DoubleWordInt0(dsHead));  // get 3:0 for the Deciaml Part of the float
-                double number = 0.0;
-                if (whole >= 0)
-                {
-                    number = static_cast<double>(whole) + (decimal * .0001);
-                }
-                else
-                {
-                    number = static_cast<double>(whole) - (decimal * .0001);
-                }
-#if defined _DEBUG
-                printf("\tFAFH Bit Error Rate inner by Head %" PRIu32":     raw 0x%" PRIx64"  calculated %" PRIi16".%03.0f (debug)\n", loopCount, vFarmFrame[page].fafh_bit_error_rate_1.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF), whole, decimal);
-#endif
-                std::ostringstream header;
-                header << "FAFH Bit Error Rate inner by Head " << std::dec << loopCount;     // Head count
-                set_json_float_With_Status(headPage, header.str().c_str(), number, vFarmFrame[page].fafh_bit_error_rate_1.headValue[loopCount], m_showStatusBits);
-            }
-        }
-        break;
-        case FAFH_BIT_ERROR_RATE_2:              // FAFH Bit Error Rate, write then read BER on reserved tracks Diameter 2 : Outer
-        {
-            for (loopCount = 0; loopCount < m_heads; ++loopCount)
-            {
-                uint64_t dsHead = check_Status_Strip_Status(vFarmFrame[page].fafh_bit_error_rate_2.headValue[loopCount]);
-                int16_t whole = M_WordInt2(dsHead);							// get 5:4 whole part of the float
-                double decimal = static_cast<double>(M_DoubleWordInt0(dsHead));  // get 3:0 for the Deciaml Part of the float
-                double number = 0.0;
-                if (whole >= 0)
-                {
-                    number = static_cast<double>(whole) + (decimal * .0001);
-                }
-                else
-                {
-                    number = static_cast<double>(whole) - (decimal * .0001);
-                }
-#if defined _DEBUG
-                printf("\tFAFH Bit Error Rate middle by Head %" PRIu32":     raw 0x%" PRIx64"  calculated %" PRIi16".%03.0f (debug)\n", loopCount, vFarmFrame[page].fafh_bit_error_rate_2.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF), whole, decimal);
-#endif
-                std::ostringstream header;
-                header << "FAFH Bit Error Rate middle by Head " << std::dec << loopCount;     // Head count
-                set_json_float_With_Status(headPage, header.str().c_str(), number, vFarmFrame[page].fafh_bit_error_rate_2.headValue[loopCount], m_showStatusBits);
-            }
-        }
-        break;
-        case FAFH_LOW_FREQUENCY_0:               // FAFH Low Frequency Passive Clearance in ADC counts Diameter 0 : outer
-        {
-            for (loopCount = 0; loopCount < m_heads; ++loopCount)
-            {
-#if defined _DEBUG
-                printf("\tFAFH LF Passive Clearance OD by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fafhLowFrequency_0.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));  
-#endif
-                std::ostringstream header;
-                header << "FAFH LF Passive Clearance OD by Head " << std::dec << loopCount;     // Head count
-                set_json_int_Check_Status(headPage, header.str().c_str(), M_Word0(vFarmFrame[page].fafhLowFrequency_0.headValue[loopCount]), vFarmFrame[page].fafhLowFrequency_0.headValue[loopCount], m_showStatusBits);
-            }
-        }
-        break;
-        case FAFH_LOW_FREQUENCY_1:               // FAFH Low Frequency Passive Clearance in ADC counts Diameter 1 : outer
-        {
-            for (loopCount = 0; loopCount < m_heads; ++loopCount)
-            {
-#if defined _DEBUG
-                printf("\tFAFH LF Passive Clearance ID by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fafhLowFrequency_1.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));  
-#endif
-                std::ostringstream header;
-                header << "FAFH LF Passive Clearance ID by Head " << std::dec << loopCount;     // Head count
-                set_json_int_Check_Status(headPage, header.str().c_str(), M_Word0(vFarmFrame[page].fafhLowFrequency_1.headValue[loopCount]), vFarmFrame[page].fafhLowFrequency_1.headValue[loopCount], m_showStatusBits);
-            }
-        }
-        break;
-        case FAFH_LOW_FREQUENCY_2:               // FAFH Low Frequency Passive Clearance in ADC counts Diameter 2 : outer
-        {
-            for (loopCount = 0; loopCount < m_heads; ++loopCount)
-            {
-#if defined _DEBUG
-                printf("\tFAFH LF Passive Clearance MD by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fafhLowFrequency_2.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));  
-#endif
-                std::ostringstream header;
-                header << "FAFH LF Passive Clearance MD by Head " << std::dec << loopCount;     // Head count
-                set_json_int_Check_Status(headPage, header.str().c_str(), M_Word0(vFarmFrame[page].fafhLowFrequency_2.headValue[loopCount]), vFarmFrame[page].fafhLowFrequency_2.headValue[loopCount], m_showStatusBits);
-            }
-        }
-        break;
-        case FAFH_HIGH_FREQUENCY_0:              // FAFH High Frequency Passive Clearance in ADC counts Diameter 0 : outer
-        {
-            for (loopCount = 0; loopCount < m_heads; ++loopCount)
-            {
-#if defined _DEBUG
-                printf("\tFAFH HF Passive Clearance OD by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fafhHighFrequency_0.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));  
-#endif
-                std::ostringstream header;
-                header << "FAFH HF Passive Clearance OD by Head " << std::dec << loopCount;     // Head count
-                set_json_int_Check_Status(headPage, header.str().c_str(), M_Word0(vFarmFrame[page].fafhHighFrequency_0.headValue[loopCount]), vFarmFrame[page].fafhHighFrequency_0.headValue[loopCount], m_showStatusBits);
-            }
-        }
-        break;
-        case FAFH_HIGH_FREQUENCY_1:              // FAFH High Frequency Passive Clearance in ADC counts Diameter 1 : outer
-        {
-            for (loopCount = 0; loopCount < m_heads; ++loopCount)
-            {
-#if defined _DEBUG
-                printf("\tFAFH HF Passive Clearance ID by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fafhHighFrequency_1.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));  
-#endif
-                std::ostringstream header;
-                header << "FAFH HF Passive Clearance ID by Head " << std::dec << loopCount;     // Head count
-                set_json_int_Check_Status(headPage, header.str().c_str(), M_Word0(vFarmFrame[page].fafhHighFrequency_1.headValue[loopCount]), vFarmFrame[page].fafhHighFrequency_1.headValue[loopCount], m_showStatusBits);
-            }
-        }
-        break;
-        case FAFH_HIGH_FREQUENCY_2:              // FAFH High Frequency Passive Clearance in ADC counts Diameter 2 : outer
-        {
-            for (loopCount = 0; loopCount < m_heads; ++loopCount)
-            {
-#if defined _DEBUG
-                printf("\tFAFH HF Passive Clearance MD by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fafhHighFrequency_2.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));  
-#endif
-                std::ostringstream header;
-                header << "FAFH HF Passive Clearance MD by Head " << std::dec << loopCount;     // Head count
-                uint32_t number = M_Word0(vFarmFrame[page].fafhHighFrequency_2.headValue[loopCount]);                
-                set_json_int_Check_Status(headPage, header.str().c_str(), number, vFarmFrame[page].fafhHighFrequency_2.headValue[loopCount], m_showStatusBits);
-
-            }
-        }
-        break;
-        case ZERO_PERCENT_SHIFT_ZONE_2:
-        {
-            for (loopCount = 0; loopCount < m_heads; ++loopCount)
-            {
-#if defined _DEBUG
-                printf("\tZero Percent shift Zone 2 by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].fafhHighFrequency_2.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));
-#endif
-                std::ostringstream temp;
-                temp.str(""); temp.clear();
-                temp << "Zero Percent shift Zone 2 by Head " << std::dec << loopCount; // Head count
-                int16_t number = static_cast<int16_t>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].zeroPercentShiftZone_2.headValue[loopCount])), 16) * 1000);
-                set_json_int_Check_Status(headPage, temp.str().c_str(),number, vFarmFrame[page].zeroPercentShiftZone_2.headValue[loopCount], m_showStatusBits);
-                
-            }
-        }
-        case LUN_0_ACTUATOR:
-        case LUN_0_FLASH_LED:
-        case LUN_REALLOCATION_0:
-        case RESERVED_FOR_FUTURE_EXPANSION_42:
-        case RESERVED_FOR_FUTURE_EXPANSION_43:
-        case RESERVED_FOR_FUTURE_EXPANSION_44:
-        case RESERVED_FOR_FUTURE_EXPANSION_45:
-        case RESERVED_FOR_FUTURE_EXPANSION_46:
-        case RESERVED_FOR_FUTURE_EXPANSION_47:
-        case RESERVED_FOR_FUTURE_EXPANSION_48:
-        case RESERVED_FOR_FUTURE_EXPANSION_49:
-        case RESERVED_FOR_FUTURE_EXPANSION_50:
-        case RESERVED_FOR_FUTURE_EXPANSION_51:
-        case RESERVED_FOR_FUTURE_EXPANSION_52:
-        case RESERVED_FOR_FUTURE_EXPANSION_53:
-        case RESERVED_FOR_FUTURE_EXPANSION_54:
-        case LUN_1_ACTUATOR:
-        case LUN_1_FLASH_LED:
-        case LUN_REALLOCATION_1:
-        case RESERVED_FOR_FUTURE_EXPANSION_62:
-        case RESERVED_FOR_FUTURE_EXPANSION_63:
-        case RESERVED_FOR_FUTURE_EXPANSION_64:
-        case RESERVED_FOR_FUTURE_EXPANSION_65:
-        case RESERVED_FOR_FUTURE_EXPANSION_66:
-        case RESERVED_FOR_FUTURE_EXPANSION_67:
-        case RESERVED_FOR_FUTURE_EXPANSION_68:
-        case RESERVED_FOR_FUTURE_EXPANSION_69:
-        case RESERVED_FOR_FUTURE_EXPANSION_70:
-        case RESERVED_FOR_FUTURE_EXPANSION_71:
-        case RESERVED_FOR_FUTURE_EXPANSION_72:
-        case RESERVED_FOR_FUTURE_EXPANSION_73:
-        case RESERVED_FOR_FUTURE_EXPANSION_74:
-        case LUN_2_ACTUATOR:
-        case LUN_2_FLASH_LED:
-        case LUN_REALLOCATION_2:
-        case RESERVED_FOR_FUTURE_EXPANSION_82:
-        case RESERVED_FOR_FUTURE_EXPANSION_83:
-        case RESERVED_FOR_FUTURE_EXPANSION_84:
-        case RESERVED_FOR_FUTURE_EXPANSION_85:
-        case RESERVED_FOR_FUTURE_EXPANSION_86:
-        case RESERVED_FOR_FUTURE_EXPANSION_87:
-        case RESERVED_FOR_FUTURE_EXPANSION_88:
-        case RESERVED_FOR_FUTURE_EXPANSION_89:
-        case RESERVED_FOR_FUTURE_EXPANSION_90:
-        case RESERVED_FOR_FUTURE_EXPANSION_91:
-        case RESERVED_FOR_FUTURE_EXPANSION_92:
-        case RESERVED_FOR_FUTURE_EXPANSION_93:
-        case RESERVED_FOR_FUTURE_EXPANSION_94:
-        case LUN_3_ACTUATOR:
-        case LUN_3_FLASH_LED:
-        case LUN_REALLOCATION_3:
-        case RESERVED_FOR_FUTURE_EXPANSION_102:
-        case RESERVED_FOR_FUTURE_EXPANSION_103:
-        case RESERVED_FOR_FUTURE_EXPANSION_104:
-        case RESERVED_FOR_FUTURE_EXPANSION_105:
-        case RESERVED_FOR_FUTURE_EXPANSION_106:
-        case RESERVED_FOR_FUTURE_EXPANSION_107:
-        case RESERVED_FOR_FUTURE_EXPANSION_108:
-        case RESERVED_FOR_FUTURE_EXPANSION_109:
-        case RESERVED_FOR_FUTURE_EXPANSION_110:
-        case RESERVED_FOR_FUTURE_EXPANSION_111:
-        case RESERVED_FOR_FUTURE_EXPANSION_112:
-        case RESERVED_FOR_FUTURE_EXPANSION_113:
-        case RESERVED_FOR_FUTURE_EXPANSION_114:
         case RESERVED_FOR_FUTURE_EXPANSION:
             break;
         default:
 #if defined _DEBUG
             printf("\tSomething went wrong, ERROR \n");
 #endif
-
             break;
         }
-
-        //json_push_back(masterData, headPage);
-  
     }
-
     return SUCCESS;
 }
 //-----------------------------------------------------------------------------
@@ -4455,96 +3160,22 @@ void CSCSI_Farm_Log::print_All_Pages(JSONNODE *masterData)
                 case WORKLOAD_STATISTICS_PAMATER_08:
                     print_Workload_Statistics_Page_08(masterData, index);
                     break;
-                case DISC_SLIP_IN_MICRO_INCHES_BY_HEAD:
-                case BIT_ERROR_RATE_OF_ZONE_0_BY_DRIVE_HEAD:
-                case DOS_WRITE_REFRESH_COUNT:
-                case DVGA_SKIP_WRITE_DETECT_BY_HEAD:
-                case RVGA_SKIP_WRITE_DETECT_BY_HEAD:
-                case FVGA_SKIP_WRITE_DETECT_BY_HEAD:
-                case SKIP_WRITE_DETECT_THRESHOLD_EXCEEDED_COUNT_BY_HEAD:
-                case ACFF_SINE_1X_VALUE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD:
-                case ACFF_COSINE_1X_VALUE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD:
-                case PZT_CALIBRATION_VALUE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD:
                 case MR_HEAD_RESISTANCE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD:
-                case NUMBER_OF_TMD_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD:
-                case VELOCITY_OBSERVER_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD:
-                case NUMBER_OF_VELOCITY_OBSERVER_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD:
-                case CURRENT_H2SAT_PERCENTAGE_OF_CODEWORDS_AT_ITERATION_LEVEL_BY_HEAD_AVERAGED_ACROSS_TEST_ZONES:
                 case CURRENT_H2SAT_AMPLITUDE_BY_HEAD_AVERAGED_ACROSS_TEST_ZONES:
                 case CURRENT_H2SAT_ASYMMETRY_BY_HEAD_AVERAGED_ACROSS_TEST_ZONES:
                 case NUMBER_OF_RESIDENT_GLIST_ENTRIES:
                 case NUMBER_OF_PENDING_ENTRIES:
-                case DOS_OUGHT_TO_SCAN_COUNT_PER_HEAD:
-                case DOS_NEED_TO_SCAN_COUNT_PER_HEAD:
-                case DOS_WRITE_FAULT_SCAN_COUNT_PER_HEAD:
                 case WRITE_POWERON_HOURS_FROM_MOST_RECENT_SMART:
-                case DOS_WRITE_COUNT_THRESHOLD_PER_HEAD:
                 case CUM_LIFETIME_UNRECOVERALBE_READ_REPET_PER_HEAD:
                 case CUM_LIFETIME_UNRECOVERABLE_READ_UNIQUE_PER_HEAD:
-                case TOTAL_LASER_FIELD_ADJUST_ITERATIONS:
-                case TOTAL_READER_WRITER_OFFSET_ITERATIONS_PERFORMED:
-                case PRE_LFA_ZONE_0:
-                case PRE_LFA_ZONE_1:
-                case PRE_LFA_ZONE_2:
-                case ZERO_PERCENT_SHIFT:
                 case CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_0:
                 case CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_1:
                 case CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_2:
                 case CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_0:
                 case CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_1:
                 case CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_2:
-                case LASER_OPERATING_ZONE_0:
-                case LASER_OPERATING_ZONE_1:
-                case LASER_OPERATING_ZONE_2:
-                case POST_LFA_OPTIMAL_BER_ZONE_0:
-                case POST_LFA_OPTIMAL_BER_ZONE_1:
-                case POST_LFA_OPTIMAL_BER_ZONE_2:
-                case MICRO_JOG_OFFSET_ZONE_0:
-                case MICRO_JOG_OFFSET_ZONE_1:
-                case MICRO_JOG_OFFSET_ZONE_2:
-                case ZERO_PERCENT_SHIFT_ZONE_1:
-                case APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_OUTER:
-                case APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_INNER:
-                case APPLIED_FLY_HEIGHT_CLEARANCE_DELTA_PER_HEAD_IN_THOUSANDTHS_OF_ONE_ANGSTROM_MIDDLE:
                 case SECOND_MR_HEAD_RESISTANCE:
                     print_Head_Information(vFarmFrame.at(index).vFramesFound.at(pramCode), headPage, index);   
-                    break;
-                case FAFH_MEASUREMENT_STATUS:            // FAFH Measurement Status, bitwise OR across all diameters per head
-                    print_Head_Information(vFarmFrame.at(index).vFramesFound.at(pramCode), headPage, index);
-                    break;
-                case FAFH_HF_LF_RELATIVE_APMLITUDE:      // FAFH HF / LF Relative Amplitude in tenths, maximum value across all 3 zones per head
-                    print_Head_Information(vFarmFrame.at(index).vFramesFound.at(pramCode), headPage, index);
-                    break;
-                case FAFH_BIT_ERROR_RATE_0:              // FAFH Bit Error Rate, write then read BER on reserved tracks Diameter 0: Outer
-                    print_Head_Information(vFarmFrame.at(index).vFramesFound.at(pramCode), headPage, index);
-                    break;
-                case FAFH_BIT_ERROR_RATE_1:              // FAFH Bit Error Rate, write then read BER on reserved tracks Diameter 1 : Outer
-                    print_Head_Information(vFarmFrame.at(index).vFramesFound.at(pramCode), headPage, index);
-                    break;
-                case FAFH_BIT_ERROR_RATE_2:              // FAFH Bit Error Rate, write then read BER on reserved tracks Diameter 2 : Outer
-                    print_Head_Information(vFarmFrame.at(index).vFramesFound.at(pramCode), headPage, index);
-                    break;
-                case FAFH_LOW_FREQUENCY_0:               // FAFH Low Frequency Passive Clearance in ADC counts Diameter 0 : outer
-                    print_Head_Information(vFarmFrame.at(index).vFramesFound.at(pramCode), headPage, index);
-                    break;
-                case FAFH_LOW_FREQUENCY_1:               // FAFH Low Frequency Passive Clearance in ADC counts Diameter 1 : outer
-                    print_Head_Information(vFarmFrame.at(index).vFramesFound.at(pramCode), headPage, index);
-                    break;
-                case FAFH_LOW_FREQUENCY_2:               // FAFH Low Frequency Passive Clearance in ADC counts Diameter 2 : outer
-                    print_Head_Information(vFarmFrame.at(index).vFramesFound.at(pramCode), headPage, index);
-                    break;
-                case FAFH_HIGH_FREQUENCY_0:              // FAFH High Frequency Passive Clearance in ADC counts Diameter 0 : outer
-                    print_Head_Information(vFarmFrame.at(index).vFramesFound.at(pramCode), headPage, index);
-                    break;
-                case FAFH_HIGH_FREQUENCY_1:              // FAFH High Frequency Passive Clearance in ADC counts Diameter 1 : outer
-                    print_Head_Information(vFarmFrame.at(index).vFramesFound.at(pramCode), headPage, index);
-                    break;
-                case FAFH_HIGH_FREQUENCY_2:              // FAFH High Frequency Passive Clearance in ADC counts Diameter 2 : outer
-                    print_Head_Information(vFarmFrame.at(index).vFramesFound.at(pramCode), headPage, index);
-                    break;
-
-                case ZERO_PERCENT_SHIFT_ZONE_2:
-                    print_Head_Information(vFarmFrame.at(index).vFramesFound.at(pramCode), headPage, index);
                     break;
                 case LUN_0_ACTUATOR:
                     print_LUN_Actuator_Information(masterData, index, LUN_0_ACTUATOR);
@@ -4555,20 +3186,6 @@ void CSCSI_Farm_Log::print_All_Pages(JSONNODE *masterData)
                 case LUN_REALLOCATION_0:
                     print_LUN_Actuator_Reallocation(masterData, index, LUN_REALLOCATION_0);
                     break;
-                case RESERVED_FOR_FUTURE_EXPANSION_42:
-                case RESERVED_FOR_FUTURE_EXPANSION_43:
-                case RESERVED_FOR_FUTURE_EXPANSION_44:
-                case RESERVED_FOR_FUTURE_EXPANSION_45:
-                case RESERVED_FOR_FUTURE_EXPANSION_46:
-                case RESERVED_FOR_FUTURE_EXPANSION_47:
-                case RESERVED_FOR_FUTURE_EXPANSION_48:
-                case RESERVED_FOR_FUTURE_EXPANSION_49:
-                case RESERVED_FOR_FUTURE_EXPANSION_50:
-                case RESERVED_FOR_FUTURE_EXPANSION_51:
-                case RESERVED_FOR_FUTURE_EXPANSION_52:
-                case RESERVED_FOR_FUTURE_EXPANSION_53:
-                case RESERVED_FOR_FUTURE_EXPANSION_54:
-                    break;
                 case LUN_1_ACTUATOR:
                     print_LUN_Actuator_Information(masterData, index, LUN_1_ACTUATOR);
                     break;
@@ -4577,20 +3194,6 @@ void CSCSI_Farm_Log::print_All_Pages(JSONNODE *masterData)
                     break;
                 case LUN_REALLOCATION_1:
                     print_LUN_Actuator_Reallocation(masterData, index,LUN_REALLOCATION_1);
-                    break;
-                case RESERVED_FOR_FUTURE_EXPANSION_62:
-                case RESERVED_FOR_FUTURE_EXPANSION_63:
-                case RESERVED_FOR_FUTURE_EXPANSION_64:
-                case RESERVED_FOR_FUTURE_EXPANSION_65:
-                case RESERVED_FOR_FUTURE_EXPANSION_66:
-                case RESERVED_FOR_FUTURE_EXPANSION_67:
-                case RESERVED_FOR_FUTURE_EXPANSION_68:
-                case RESERVED_FOR_FUTURE_EXPANSION_69:
-                case RESERVED_FOR_FUTURE_EXPANSION_70:
-                case RESERVED_FOR_FUTURE_EXPANSION_71:
-                case RESERVED_FOR_FUTURE_EXPANSION_72:
-                case RESERVED_FOR_FUTURE_EXPANSION_73:
-                case RESERVED_FOR_FUTURE_EXPANSION_74:
                     break;
                 case LUN_2_ACTUATOR:
                     print_LUN_Actuator_Information(masterData, index, LUN_2_ACTUATOR);
@@ -4601,20 +3204,6 @@ void CSCSI_Farm_Log::print_All_Pages(JSONNODE *masterData)
                 case LUN_REALLOCATION_2:
                     print_LUN_Actuator_Reallocation(masterData, index, LUN_REALLOCATION_2);
                     break;
-                case RESERVED_FOR_FUTURE_EXPANSION_82:
-                case RESERVED_FOR_FUTURE_EXPANSION_83:
-                case RESERVED_FOR_FUTURE_EXPANSION_84:
-                case RESERVED_FOR_FUTURE_EXPANSION_85:
-                case RESERVED_FOR_FUTURE_EXPANSION_86:
-                case RESERVED_FOR_FUTURE_EXPANSION_87:
-                case RESERVED_FOR_FUTURE_EXPANSION_88:
-                case RESERVED_FOR_FUTURE_EXPANSION_89:
-                case RESERVED_FOR_FUTURE_EXPANSION_90:
-                case RESERVED_FOR_FUTURE_EXPANSION_91:
-                case RESERVED_FOR_FUTURE_EXPANSION_92:
-                case RESERVED_FOR_FUTURE_EXPANSION_93:
-                case RESERVED_FOR_FUTURE_EXPANSION_94:
-                    break;
                 case LUN_3_ACTUATOR:
                     print_LUN_Actuator_Information(masterData, index,LUN_3_ACTUATOR); 
                     break;
@@ -4624,19 +3213,6 @@ void CSCSI_Farm_Log::print_All_Pages(JSONNODE *masterData)
                 case LUN_REALLOCATION_3:
                     print_LUN_Actuator_Reallocation(masterData, index, LUN_REALLOCATION_3);
                     break;
-                case RESERVED_FOR_FUTURE_EXPANSION_102:
-                case RESERVED_FOR_FUTURE_EXPANSION_103:
-                case RESERVED_FOR_FUTURE_EXPANSION_104:
-                case RESERVED_FOR_FUTURE_EXPANSION_105:
-                case RESERVED_FOR_FUTURE_EXPANSION_106:
-                case RESERVED_FOR_FUTURE_EXPANSION_107:
-                case RESERVED_FOR_FUTURE_EXPANSION_108:
-                case RESERVED_FOR_FUTURE_EXPANSION_109:
-                case RESERVED_FOR_FUTURE_EXPANSION_110:
-                case RESERVED_FOR_FUTURE_EXPANSION_111:
-                case RESERVED_FOR_FUTURE_EXPANSION_112:
-                case RESERVED_FOR_FUTURE_EXPANSION_113:
-                case RESERVED_FOR_FUTURE_EXPANSION_114:
                 case RESERVED_FOR_FUTURE_EXPANSION:
                     break;
                 default:
@@ -4662,41 +3238,7 @@ void CSCSI_Farm_Log::print_All_Pages(JSONNODE *masterData)
         }
     }
 }
-//-----------------------------------------------------------------------------
-//
-//! \fn PrintPage()
-//
-//! \brief
-//!   Description:  print out a copy of a the pages
-//
-//  Entry:
-//! \param page  = the page copy number of the data we want to print.
-//
-//  Exit:
-//!   \return 
-//
-//---------------------------------------------------------------------------
-/*
-void CSCSI_Farm_Log::print_Page(JSONNODE *masterData, uint32_t page)
-{
-    if (vFarmFrame.size() > 0)
-    {
-        if (page < vFarmFrame.size())
-        {
 
-            print_Drive_Information(masterData, page);
-            print_WorkLoad(masterData, page);
-            print_Error_Information(masterData, page);
-            print_Enviroment_Information(masterData, page);
-            print_Reli_Information(masterData, page);
-            for (uint32_t frame = 0; frame < vFarmFrame.at(page).vFramesFound.size(); frame++)
-            {
-                print_Head_Information(vFarmFrame.at(page).vFramesFound.at(frame), masterData, page);
-            }
-        }
-    }
-}
-*/
 //-----------------------------------------------------------------------------
 //
 //! \fn print_Page_One_Node()
@@ -4777,176 +3319,3 @@ void CSCSI_Farm_Log::print_Page_Without_Drive_Info(JSONNODE *masterData, uint32_
         }
     }
 }
-//-----------------------------------------------------------------------------
-//
-//! \fn farm_PrePython_Str()
-//
-//! \brief
-//!   Description:  format the data for the prepython data
-//
-//  Entry:
-//! \param 
-//
-//  Exit:
-//!   \return 
-//
-//---------------------------------------------------------------------------
-/*
-void CSCSI_Farm_Log::farm_PrePython_Str(JSONNODE* masterData, const char* name, const char* statType, const char* unit, const char* location, int pageNum, const char* value)
-{
-    JSONNODE* data = json_new(JSON_NODE);
-
-    json_push_back(data, json_new_a("name", name));
-    JSONNODE* label = json_new(JSON_NODE);
-    json_set_name(label, "labels");
-    std::ostringstream temp;
-    temp << "scsi-log-page:0x" << std::hex << std::nouppercase << FARMLOGPAGE << "," << std::hex << std::nouppercase << static_cast<uint16_t>(m_farmSubPage) << ":0x" << std::hex << std::nouppercase << pageNum;
-    json_push_back(label, json_new_a("metric_source", temp.str().c_str()));
-    json_push_back(label, json_new_a("stat_type", statType));
-    json_push_back(label, json_new_a("location", location));
-    json_push_back(label, json_new_a("units", unit));
-    json_push_back(data, label);
-    json_push_back(data, json_new_a("value", value));
-    json_push_back(masterData, data);
-}
-
-//-----------------------------------------------------------------------------
-//
-//! \fn farm_PrePython_Int()
-//
-//! \brief
-//!   Description:  format the data for the prepython data int type
-//
-//  Entry:
-//! \param 
-//
-//  Exit:
-//!   \return 
-//
-//---------------------------------------------------------------------------
-void CSCSI_Farm_Log::farm_PrePython_Int(JSONNODE* masterData, const char* name, const char* statType, const char* header, const char* unit, int pageNum, int64_t value)
-{
-    JSONNODE* data = json_new(JSON_NODE);
-
-    json_push_back(data, json_new_a("name", name));
-    JSONNODE* label = json_new(JSON_NODE);
-    json_set_name(label, "labels");
-    std::ostringstream temp;
-    temp << "scsi-log-page:0x" << std::hex << std::nouppercase << FARMLOGPAGE << "," << std::hex << std::nouppercase << static_cast<uint16_t>(m_farmSubPage) << ":0x" << std::hex << std::nouppercase << pageNum;
-    json_push_back(label, json_new_a("metric_source", temp.str().c_str()));
-    json_push_back(label, json_new_a("stat_type", statType));
-    json_push_back(label, json_new_a("location", header));
-    json_push_back(label, json_new_a("units", unit));
-    json_push_back(data, label);
-    json_push_back(data, json_new_i("value", value));    
-    json_push_back(masterData, data);
-    
-}
-//-----------------------------------------------------------------------------
-//
-//! \fn farm_PrePython_Float()
-//
-//! \brief
-//!   Description:  format the data for the prepython data float type
-//
-//  Entry:
-//! \param 
-//
-//  Exit:
-//!   \return 
-//
-//---------------------------------------------------------------------------
-void CSCSI_Farm_Log::farm_PrePython_Float(JSONNODE* masterData, const char* name, const char* statType, const char* header, \
-    const char* unit, int pageNum, double value)
-{
-    JSONNODE* data = json_new(JSON_NODE);
-
-    json_push_back(data, json_new_a("name", name));
-    JSONNODE* label = json_new(JSON_NODE);
-    json_set_name(label, "labels");
-    std::ostringstream temp;
-    temp << "scsi-log-page:0x" << std::hex << std::nouppercase << FARMLOGPAGE << "," << std::hex << std::nouppercase << static_cast<uint16_t>(m_farmSubPage) << ":0x" << std::hex << std::nouppercase << pageNum;
-    json_push_back(label, json_new_a("metric_source", temp.str().c_str()));
-    json_push_back(label, json_new_a("stat_type", statType));
-    json_push_back(label, json_new_a("location", header));
-    json_push_back(label, json_new_a("units", unit));
-    json_push_back(data, label);
-    json_push_back(data, json_new_f("value", value));       // float is limited to 53 bits of precision (2^53)
-    json_push_back(masterData, data);
-}
-//-----------------------------------------------------------------------------
-//
-//! \fn prePython_Head()
-//
-//! \brief
-//!   Description:  format the data for the prepython data head data float type
-//
-//  Entry:
-//! \param 
-//
-//  Exit:
-//!   \return 
-//
-//---------------------------------------------------------------------------
-void CSCSI_Farm_Log::prePython_Head_Float(JSONNODE* masterData, const char* name, const char* statType, uint32_t headNumber, \
-    const char* unit, int pageNum, double value)
-{
-    JSONNODE* data = json_new(JSON_NODE);
-
-    json_push_back(data, json_new_a("name", name));
-    JSONNODE* label = json_new(JSON_NODE);
-    json_set_name(label, "labels");
-    std::ostringstream temp;
-    temp << "scsi-log-page:0x" << std::hex << std::nouppercase << FARMLOGPAGE << "," << std::hex << std::nouppercase << static_cast<uint16_t>(m_farmSubPage) << ":0x" << std::hex << std::nouppercase << pageNum;
-    json_push_back(label, json_new_a("metric_source", temp.str().c_str()));
-    if (statType != NULL)
-    {
-        json_push_back(label, json_new_a("stat_type", statType));
-    }
-    temp.str("");
-    temp.clear();
-    temp << std::dec << headNumber;
-    json_push_back(label, json_new_a("head_number", temp.str().c_str()));
-    json_push_back(label, json_new_a("units", unit));
-    json_push_back(data, label);
-    json_push_back(data, json_new_f("value", value));         // float is limited to 53 bits of precision (2^53)
-    json_push_back(masterData, data);
-}
-//-----------------------------------------------------------------------------
-//
-//! \fn prePython_Head_Int()
-//
-//! \brief
-//!   Description:  format the data for the prepython data head data int type
-//
-//  Entry:
-//! \param 
-//
-//  Exit:
-//!   \return 
-//
-//---------------------------------------------------------------------------
-void CSCSI_Farm_Log::prePython_Head_Int(JSONNODE* masterData, const char* name, const char* statType, uint32_t headNumber, \
-    const char* unit, int pageNum, int64_t value)
-{
-    JSONNODE* data = json_new(JSON_NODE);
-    json_push_back(data, json_new_a("name", name));
-    JSONNODE* label = json_new(JSON_NODE);
-    json_set_name(label, "labels");
-    std::ostringstream temp;
-    temp << "scsi-log-page:0x" << std::hex << std::nouppercase << FARMLOGPAGE << "," << std::hex << std::nouppercase << static_cast<uint16_t>(m_farmSubPage) << ":0x" << std::hex << std::nouppercase << pageNum;
-    json_push_back(label, json_new_a("metric_source", temp.str().c_str()));
-    if (statType != NULL)
-    {
-        json_push_back(label, json_new_a("stat_type", statType));
-    }
-    temp.str("");
-    temp.clear();
-    temp << std::dec << headNumber;
-    json_push_back(label, json_new_a("head_number", temp.str().c_str()));
-    json_push_back(label, json_new_a("units", unit));
-    json_push_back(data, label);
-    json_push_back(data, json_new_f("value", static_cast<double>(value)));                   // float is limited to 53 bits of precision (2^53)
-    json_push_back(masterData, data);
-}
-*/
