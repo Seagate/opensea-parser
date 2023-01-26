@@ -54,7 +54,7 @@
     <ProjectGuid>{D7A121F5-30B5-4CA9-A272-3B6469FF8F46}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>openseaparser</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -623,9 +623,7 @@
     <ClCompile Include="..\..\..\..\src\CScsi_Zoned_Device_Statistics_Log.cpp" />
     <ClCompile Include="..\..\..\..\src\Opensea_Parser_Helper.cpp" />
     <ClCompile Include="..\..\..\..\src\Seagate\CAta_Farm_Log.cpp" />
-    <ClCompile Include="..\..\..\..\src\Seagate\CFARM_Combine.cpp" />
     <ClCompile Include="..\..\..\..\src\Seagate\CFARM_Log.cpp" />
-    <ClCompile Include="..\..\..\..\src\Seagate\CFARM_WLM_Log.cpp" />
     <ClCompile Include="..\..\..\..\src\Seagate\CScsi_Farm_Log.cpp" />
     <ClCompile Include="..\..\..\..\src\Seagate\Farm_Common.cpp" />
   </ItemGroup>
