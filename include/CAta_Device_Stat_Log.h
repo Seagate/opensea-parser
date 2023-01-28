@@ -44,7 +44,7 @@ namespace opensea_parser {
 		uint8_t     lifeMaxTemp;                                    //!< Current drive HDA temperature in degrees Celsius.              204
 		uint8_t     reserved6;                                      //!< reserved                                                       205
 		uint8_t     reserved7[307];                                 //!< to the end                                                     206 - 511   
-		_sStatusResponse() : formatVersion(0), SCTversion(0), SCTspec(0), statusFlag(0), driveStatus(0), 
+		_sStatusResponse() : formatVersion(0), SCTversion(0), SCTspec(0), statusFlag(0), driveStatus(0),
 #if defined __cplusplus >= 201103L
 			reserved1{ 0 },
 #endif

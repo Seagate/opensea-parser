@@ -4228,6 +4228,7 @@ CAta_Identify_Log_08::CAta_Identify_Log_08(uint8_t *Buffer)
     :m_name("ATA Identify Log Page 08")
     , m_status(IN_PROGRESS)
     , m_SATACap()
+    , m_pLog(NULL)
     , m_CurrentSet()
 {
 

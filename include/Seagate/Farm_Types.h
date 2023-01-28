@@ -87,6 +87,7 @@
 #define FARM_LAST_FRAME                         0xC6
 #define FARM_TEMP_TRIGGER_LOG_PAGE              0xC7
 
+#pragma pack(push, 1)
 typedef struct _sStringIdentifyData
 {
     std::string serialNumber;									//!< seiral number of the drive
@@ -96,7 +97,7 @@ typedef struct _sStringIdentifyData
     std::string modelNumber;                                    //!< Model Number (4.3 and newer will have this)
 }sStringIdentifyData;
 
-#pragma pack(push, 1)
+
 typedef struct _sFarmHeader
 {
     uint64_t        signature;                                  //!< Log Signature = 0x00004641524D4552
