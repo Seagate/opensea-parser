@@ -161,7 +161,7 @@ void opensea_parser::CScsiCacheMemStatLog::process_Cache_Memory_Statistics_inter
 {
     std::string myStr = "";
 
-#if defined_DEBUG
+#if defined _DEBUG
     printf("Cache Memory Statistics Log Description\n");
 #endif
 
@@ -200,7 +200,7 @@ void CScsiCacheMemStatLog::process_Generic_Data(JSONNODE *genData)
     std::string myStr;
     std::string myHeader;
 
-#if defined_DEBUG
+#if defined _DEBUG
     printf("Cache Memory Statistics Log Description\n");
 #endif
     byte_Swap_16(&m_CacheMemLog->paramCode);
