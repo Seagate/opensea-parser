@@ -45,19 +45,19 @@ namespace opensea_parser {
 		uint8_t     reserved6;                                      //!< reserved                                                       205
 		uint8_t     reserved7[307];                                 //!< to the end                                                     206 - 511   
 		_sStatusResponse() : formatVersion(0), SCTversion(0), SCTspec(0), statusFlag(0), driveStatus(0),
-#if defined __cplusplus >= 201103L
+#if defined _WIN32  || (__cplusplus && __cplusplus >= 201103L)
 			reserved1{ 0 },
 #endif
 			extenededStatusCode(0), actionCode(0), functionCode(0), 
-#if defined __cplusplus >= 201103L
+#if defined _WIN32  || (__cplusplus && __cplusplus >= 201103L)
 			reserved2{ 0 },
 #endif
 			lba(0),
-#if defined __cplusplus >= 201103L
+#if defined _WIN32  || (__cplusplus && __cplusplus >= 201103L)
 			reserved3{ 0 }, 
 #endif
 			temp(0), reserved4(), maxTemp(0), reserved5(0), lifeMaxTemp(0), reserved6(0)
-#if defined __cplusplus >= 201103L
+#if defined _WIN32  || (__cplusplus && __cplusplus >= 201103L)
 			//CLANG++ does not like this and the best I can find on the web is that this is a C++11 addition for initializing all elements of an array to zero - TJE
 			, reserved7{ 0 }
 #endif
