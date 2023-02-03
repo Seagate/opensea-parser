@@ -1,5 +1,5 @@
 //
-// Farm_Helper.h   Farm Related Functions
+// CFarm_Common.h   Farm Related Functions
 //
 // Do NOT modify or remove this copyright and license
 //
@@ -11,7 +11,7 @@
 //
 // ******************************************************************************************
 //
-// \file Farm_Helper.h  
+// \file CFarm_Common.h  
 #pragma once
 
 #include <string>
