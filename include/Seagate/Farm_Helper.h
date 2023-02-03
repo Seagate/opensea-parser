@@ -134,14 +134,14 @@ namespace opensea_parser {
 			{
 				set_Json_Bool(bigBit, "Field Valid", false);
 			}
-			value = check_Status_Strip_Status(value);
-			json_push_back(bigBit, json_new_i(myStr.c_str(), static_cast<int32_t>(M_DoubleWord0(value))));
+			value = check_Status_Strip_Status(static_cast<uint64_t>(value));
+			json_push_back(bigBit, json_new_i(myStr.c_str(), value));
 			json_push_back(nowNode, bigBit);
 		}
 		else
 		{
-			value = check_Status_Strip_Status(value);
-			json_push_back(nowNode, json_new_i(myStr.c_str(), static_cast<int32_t>(M_DoubleWord0(value))));
+			value = check_Status_Strip_Status(static_cast<uint64_t>(value));
+			json_push_back(nowNode, json_new_i(myStr.c_str(), value));
 		}
 	}
 	//-----------------------------------------------------------------------------
