@@ -403,7 +403,7 @@ eReturnValues CATA_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint3
     set_json_64_bit_With_Status(pageInfo, "Number of heads", vFarmFrame[page].driveInfo.heads, false, m_showStatusBits);                                        //!< Number of Heads
     if (check_Status_Strip_Status(vFarmFrame[page].driveInfo.heads) != 0)
     {
-        m_heads = check_Status_Strip_Status(vFarmFrame[page].driveInfo.heads);
+        m_heads = static_cast<uint64_t>(check_Status_Strip_Status(vFarmFrame[page].driveInfo.heads));
     }
     set_json_64_bit_With_Status(pageInfo, "Device form factor", vFarmFrame[page].driveInfo.factor, false, m_showStatusBits);                                    //!< Device Form Factor (ID Word 168)
     set_json_64_bit_With_Status(pageInfo, "Rotation Rate", vFarmFrame[page].driveInfo.rotationRate, false, m_showStatusBits);
@@ -727,23 +727,23 @@ eReturnValues CATA_Farm_Log::print_Error_Information(JSONNODE *masterData, uint3
 
     set_json_64_bit_With_Status(pageInfo, "Unrecoverable Read Errors", vFarmFrame[page].errorPage.totalReadECC, false, m_showStatusBits);                       //!< Number of Unrecoverable Read Errors
     set_json_64_bit_With_Status(pageInfo, "Unrecoverable Write Errors", vFarmFrame[page].errorPage.totalWriteECC, false, m_showStatusBits);                     //!< Number of Unrecoverable Write Errors
-    set_json_64_bit_With_Status(pageInfo, "Reallocated Sectors", vFarmFrame[page].errorPage.totalReallocations, false, m_showStatusBits);             //!< Number of Reallocated Sectors
-    set_json_64_bit_With_Status(pageInfo, "Read Recovery Attempts", vFarmFrame[page].errorPage.totalReadRecoveryAttepts, false, m_showStatusBits);    //!< Number of Read Recovery Attempts
-    set_json_64_bit_With_Status(pageInfo, "Mechanical Start Failures", vFarmFrame[page].errorPage.totalMechanicalFails, false, m_showStatusBits);     //!< Number of Mechanical Start Failures
+    set_json_64_bit_With_Status(pageInfo, "Reallocated Sectors", vFarmFrame[page].errorPage.totalReallocations, false, m_showStatusBits);                       //!< Number of Reallocated Sectors
+    set_json_64_bit_With_Status(pageInfo, "Read Recovery Attempts", vFarmFrame[page].errorPage.totalReadRecoveryAttepts, false, m_showStatusBits);              //!< Number of Read Recovery Attempts
+    set_json_64_bit_With_Status(pageInfo, "Mechanical Start Failures", vFarmFrame[page].errorPage.totalMechanicalFails, false, m_showStatusBits);               //!< Number of Mechanical Start Failures
 
-    set_json_int_With_Status(pageInfo, "Reallocated Candidate Sectors", vFarmFrame[page].errorPage.totalReallocatedCanidates, m_showStatusBits);      //!< Number of Reallocated Candidate Sectors
-    set_json_64_bit_With_Status(pageInfo, "ASR Events", vFarmFrame[page].errorPage.totalASREvents, false, m_showStatusBits);                          //!< Number of ASR Events
-    set_json_64_bit_With_Status(pageInfo, "Interface CRC Errors", vFarmFrame[page].errorPage.totalCRCErrors, false, m_showStatusBits);                //!< Number of Interface CRC Errors
+    set_json_64_bit_With_Status(pageInfo, "Reallocated Candidate Sectors", vFarmFrame[page].errorPage.totalReallocatedCanidates,false, m_showStatusBits);       //!< Number of Reallocated Candidate Sectors
+    set_json_64_bit_With_Status(pageInfo, "ASR Events", vFarmFrame[page].errorPage.totalASREvents, false, m_showStatusBits);                                    //!< Number of ASR Events
+    set_json_64_bit_With_Status(pageInfo, "Interface CRC Errors", vFarmFrame[page].errorPage.totalCRCErrors, false, m_showStatusBits);                          //!< Number of Interface CRC Errors
     set_json_64_bit_With_Status(pageInfo, "Spin Retry Count", vFarmFrame[page].errorPage.attrSpinRetryCount, false, m_showStatusBits);                          //!< Spin Retry Count (Most recent value from array at byte 401 of attribute sector)
     set_json_64_bit_With_Status(pageInfo, "Spin Retry Count Normalized", vFarmFrame[page].errorPage.normalSpinRetryCount, false, m_showStatusBits);             //!< Spin Retry Count (SMART Attribute 10 Normalized)
     set_json_64_bit_With_Status(pageInfo, "Spin Retry Count Worst", vFarmFrame[page].errorPage.worstSpinRretryCount, false, m_showStatusBits);                  //!< Spin Retry Count (SMART Attribute 10 Worst Ever)
-    set_json_64_bit_With_Status(pageInfo, "IOEDC Errors (Raw)", vFarmFrame[page].errorPage.attrIOEDCErrors, false, m_showStatusBits);                 //!< Number of IOEDC Errors (SMART Attribute 184 Raw)
+    set_json_64_bit_With_Status(pageInfo, "IOEDC Errors (Raw)", vFarmFrame[page].errorPage.attrIOEDCErrors, false, m_showStatusBits);                           //!< Number of IOEDC Errors (SMART Attribute 184 Raw)
     set_json_64_bit_With_Status(pageInfo, "CTO Count Total", vFarmFrame[page].errorPage.attrCTOCount, false, m_showStatusBits);                                 //!< CTO Count Total (SMART Attribute 188 Raw[0..1])
     set_json_64_bit_With_Status(pageInfo, "CTO Count Over 5s", vFarmFrame[page].errorPage.overfiveSecCTO, false, m_showStatusBits);                             //!< CTO Count Over 5s (SMART Attribute 188 Raw[2..3])
     set_json_64_bit_With_Status(pageInfo, "CTO Count Over 7.5s", vFarmFrame[page].errorPage.oversevenSecCTO, false, m_showStatusBits);                          //!< CTO Count Over 7.5s (SMART Attribute
     set_json_64_bit_With_Status(pageInfo, "Total Flash LED (Assert) Events", vFarmFrame[page].errorPage.totalFlashLED, false, m_showStatusBits);                //!< Total Flash LED (Assert) Events
 
-    set_json_int_With_Status(pageInfo, "Index of the last Flash LED", vFarmFrame[page].errorPage.indexFlashLED, m_showStatusBits);                              //!< index of the last Flash LED of the array          
+    set_json_64_bit_With_Status(pageInfo, "Index of the last Flash LED", vFarmFrame[page].errorPage.indexFlashLED,false, m_showStatusBits);                              //!< index of the last Flash LED of the array          
     set_json_64_bit_With_Status(pageInfo, "Uncorrectable errors", vFarmFrame[page].errorPage.uncorrectables, false, m_showStatusBits);                          //!< uncorrecatables errors (sata only)
 
     for (loopCount = 0; loopCount < FLASH_EVENTS; loopCount++)
@@ -1003,8 +1003,8 @@ eReturnValues CATA_Farm_Log::print_Enviroment_Information(JSONNODE *masterData, 
     temp << std::fixed << std::setprecision(2) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.lowestLongTemp)*1.00);
     set_json_string_With_Status(pageInfo, "Lowest Average Long Term Temperature", temp.str().c_str(), vFarmFrame[page].environmentPage.lowestLongTemp, m_showStatusBits);         //!< Lowest Average Long Term Temperature
 
-    set_json_int_With_Status(pageInfo, "Time In Over Temperature", vFarmFrame[page].environmentPage.overTempTime, m_showStatusBits);                                                //!< Time In Over Temperature
-    set_json_int_With_Status(pageInfo, "Time In Under Temperature", vFarmFrame[page].environmentPage.underTempTime, m_showStatusBits);                                              //!< Time In Under Temperature
+    set_json_64_bit_With_Status(pageInfo, "Time In Over Temperature", vFarmFrame[page].environmentPage.overTempTime,false, m_showStatusBits);                                                //!< Time In Over Temperature
+    set_json_64_bit_With_Status(pageInfo, "Time In Under Temperature", vFarmFrame[page].environmentPage.underTempTime, false, m_showStatusBits);                                              //!< Time In Under Temperature
     temp.str("");temp.clear();
     temp << std::fixed << std::setprecision(2) << std::setfill('0') << static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.maxTemp)*1.00);
     set_json_string_With_Status(pageInfo, "Specified Max Operating Temperature", temp.str().c_str(), vFarmFrame[page].environmentPage.maxTemp, m_showStatusBits);                 //!< Specified Max Operating Temperature
@@ -1014,9 +1014,9 @@ eReturnValues CATA_Farm_Log::print_Enviroment_Information(JSONNODE *masterData, 
     set_json_string_With_Status(pageInfo, "Specified Min Operating Temperature", temp.str().c_str(), vFarmFrame[page].environmentPage.minTemp, m_showStatusBits);                 //!< Specified Min Operating Temperature
 
     temp.str("");temp.clear();
-    temp << std::fixed << std::setprecision(2) << std::setfill('0') << (check_Status_Strip_Status(vFarmFrame[page].environmentPage.humidity))*0.1;                                                    //!< Current Relative Humidity (in units of .1%)
+    temp << std::fixed << std::setprecision(2) << std::setfill('0') << static_cast<double>((check_Status_Strip_Status(vFarmFrame[page].environmentPage.humidity)))*0.1;                                                    //!< Current Relative Humidity (in units of .1%)
     set_json_string_With_Status(pageInfo, "Current Relative Humidity", temp.str().c_str(), vFarmFrame[page].environmentPage.humidity, m_showStatusBits);
-    set_json_int_With_Status(pageInfo, "Current Motor Power", vFarmFrame[page].environmentPage.currentMotorPower, m_showStatusBits);                                                //!< Current Motor Power, value from most recent SMART Summary Frame6
+    set_json_64_bit_With_Status(pageInfo, "Current Motor Power", vFarmFrame[page].environmentPage.currentMotorPower,false, m_showStatusBits);                                                //!< Current Motor Power, value from most recent SMART Summary Frame6
 
     temp.str("");temp.clear();
     temp << std::dec << (M_Word0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.current12v)) / 1000) << "." << std::dec << std::setfill('0') << std::setw(3) << M_Word0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.current12v)) % 1000;
@@ -1127,17 +1127,17 @@ eReturnValues CATA_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint32
     }
     json_set_name(pageInfo, temp.str().c_str());
   
-    set_json_64_bit_With_Status(pageInfo, "Number of DOS Scans Performed", vFarmFrame[page].reliPage.numberDOSScans, false, m_showStatusBits);                              //!< Number of DOS Scans Performed
-    set_json_64_bit_With_Status(pageInfo, "Number of LBAs Corrected by ISP", vFarmFrame[page].reliPage.numberLBACorrect, false, m_showStatusBits);                          //!< Number of LBAs Corrected by ISP
+    set_json_int_With_Status(pageInfo, "Number of DOS Scans Performed", vFarmFrame[page].reliPage.numberDOSScans,  m_showStatusBits);                                       //!< Number of DOS Scans Performed
+    set_json_int_With_Status(pageInfo, "Number of LBAs Corrected by ISP", vFarmFrame[page].reliPage.numberLBACorrect, m_showStatusBits);                                    //!< Number of LBAs Corrected by ISP
     set_json_64_bit_With_Status(pageInfo, "Error Rate (SMART Attribute 1 Raw)", vFarmFrame[page].reliPage.attrErrorRateRaw, true, m_showStatusBits);                        //!< Error Rate (SMART Attribute 1 Raw)
-    set_json_64_bit_With_Status(pageInfo, "Error Rate (SMART Attribute 1 Normalized)", vFarmFrame[page].reliPage.attrErrorRateNormal, false, m_showStatusBits);             //!< Error Rate (SMART Attribute 1 Normalized)
-    set_json_64_bit_With_Status(pageInfo, "Error Rate (SMART Attribute 1 Worst)", vFarmFrame[page].reliPage.attrErrorRateWorst, false, m_showStatusBits);                   //!< Error Rate (SMART Attribute 1 Worst)
+    set_json_int_With_Status(pageInfo, "Error Rate (SMART Attribute 1 Normalized)", vFarmFrame[page].reliPage.attrErrorRateNormal, m_showStatusBits);                       //!< Error Rate (SMART Attribute 1 Normalized)
+    set_json_int_With_Status(pageInfo, "Error Rate (SMART Attribute 1 Worst)", vFarmFrame[page].reliPage.attrErrorRateWorst, m_showStatusBits);                             //!< Error Rate (SMART Attribute 1 Worst)
     set_json_64_bit_With_Status(pageInfo, "Seek Error Rate (SMART Attr 7 Raw)", vFarmFrame[page].reliPage.attrSeekErrorRateRaw, true, m_showStatusBits);                    //!< Seek Error Rate (SMART Attribute 7 Raw)
-    set_json_64_bit_With_Status(pageInfo, "Seek Error Rate (SMART Attr 7 Normalized)", vFarmFrame[page].reliPage.attrSeekErrorRateNormal, false, m_showStatusBits);         //!< Seek Error Rate (SMART Attribute 7 Normalized)
-    set_json_64_bit_With_Status(pageInfo, "Seek Error Rate (SMART Attr 7 Worst)", vFarmFrame[page].reliPage.attrSeekErrorRateWorst, false, m_showStatusBits);               //!< Seek Error Rate (SMART Attribute 7 Worst)
+    set_json_int_With_Status(pageInfo, "Seek Error Rate (SMART Attr 7 Normalized)", vFarmFrame[page].reliPage.attrSeekErrorRateNormal, m_showStatusBits);                   //!< Seek Error Rate (SMART Attribute 7 Normalized)
+    set_json_int_With_Status(pageInfo, "Seek Error Rate (SMART Attr 7 Worst)", vFarmFrame[page].reliPage.attrSeekErrorRateWorst, m_showStatusBits);                         //!< Seek Error Rate (SMART Attribute 7 Worst)
     set_json_64_bit_With_Status(pageInfo, "High Priority Unload Events", vFarmFrame[page].reliPage.attrUnloadEventsRaw, false, m_showStatusBits);                           //!< High Priority Unload Events (SMART Attribute 192 Raw)
-    set_json_64_bit_With_Status(pageInfo, "Number of Disc Slip Recalibrations Performed", vFarmFrame[page].reliPage.diskSlipRecalPerformed, false, m_showStatusBits);       //!< Number of disc slip recalibrations performed
-    set_json_64_bit_With_Status(pageInfo, "Helium Pressure Threshold Tripped", vFarmFrame[page].reliPage.heliumPresureTrip, false, m_showStatusBits);                       //!< Helium Pressure Threshold Tripped ( 1- trip, 0 -no trip)//!< idle Time, Value from most recent SMART Summary Frame
+    set_json_int_With_Status(pageInfo, "Number of Disc Slip Recalibrations Performed", vFarmFrame[page].reliPage.diskSlipRecalPerformed, m_showStatusBits);                 //!< Number of disc slip recalibrations performed
+    set_json_int_With_Status(pageInfo, "Helium Pressure Threshold Tripped", vFarmFrame[page].reliPage.heliumPresureTrip, m_showStatusBits);                                 //!< Helium Pressure Threshold Tripped ( 1- trip, 0 -no trip)//!< idle Time, Value from most recent SMART Summary Frame
 
     set_json_64_bit_With_Status(pageInfo, "Number of LBAs Corrected by Parity Sector - Actuator 0", vFarmFrame[page].reliPage.numberLBACorrectedByParitySector, false, m_showStatusBits);
     set_json_64_bit_With_Status(pageInfo, "Primary Super Parity Coverage Percentage - Actuator 0", vFarmFrame[page].reliPage.SuperParityCovPercent, false, m_showStatusBits);
@@ -1219,11 +1219,11 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         printf("\tFly height outer clearance delta by Head  %d:   raw 0x%" PRIx64" outer, calculated %0.02f (debug)\n", loopCount, vFarmFrame[page].reliPage.flyHeightClearance[loopCount].outer, \
-            static_cast<float>(M_WordInt0((check_Status_Strip_Status(vFarmFrame[page].reliPage.flyHeightClearance[loopCount].outer))) * .001));                //!< [24][3] Applied fly height clearance delta per head in thousandths of one Angstrom.
+            static_cast<float>(M_WordInt0((static_cast<uint64_t>(check_Status_Strip_Status(vFarmFrame[page].reliPage.flyHeightClearance[loopCount].outer)))) * .001));                //!< [24][3] Applied fly height clearance delta per head in thousandths of one Angstrom.
         printf("\tFly height inner clearance delta by Head  %d:   raw 0x%" PRIx64" inner, calculated %0.02f (debug)\n", loopCount, vFarmFrame[page].reliPage.flyHeightClearance[loopCount].inner, \
-            static_cast<float>(M_WordInt0((check_Status_Strip_Status(vFarmFrame[page].reliPage.flyHeightClearance[loopCount].inner))) * .001));                //!< [24][3] Applied fly height clearance delta per head in thousandths of one Angstrom.
+            static_cast<float>(M_WordInt0((static_cast<uint64_t>(check_Status_Strip_Status(vFarmFrame[page].reliPage.flyHeightClearance[loopCount].inner)))) * .001));                //!< [24][3] Applied fly height clearance delta per head in thousandths of one Angstrom.
         printf("\tFly height middle clearance delta by Head  %d:   raw 0x%" PRIx64" middle, calculated %0.02f (debug)\n", loopCount, vFarmFrame[page].reliPage.flyHeightClearance[loopCount].middle, \
-            static_cast<float>(M_WordInt0(check_Status_Strip_Status((vFarmFrame[page].reliPage.flyHeightClearance[loopCount].middle))) * .001));               //!< [24][3] Applied fly height clearance delta per head in thousandths of one Angstrom.
+            static_cast<float>(M_WordInt0(static_cast<uint64_t>(check_Status_Strip_Status((vFarmFrame[page].reliPage.flyHeightClearance[loopCount].middle)))) * .001));               //!< [24][3] Applied fly height clearance delta per head in thousandths of one Angstrom.
     }
     printf("\tNumber of disc slip recalibrations performed:  %" PRId64" (debug)\n", vFarmFrame[page].reliPage.diskSlipRecalPerformed & UINT64_C(0x00FFFFFFFFFFFFFF));                  //!< Number of disc slip recalibrations performed
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
@@ -1268,112 +1268,112 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
     {
         temp.str("");temp.clear();
         temp << "DVGA Skip Write Detect by Head " << std::dec << loopCount;// Head count
-        set_json_64_bit_With_Status(headInfo, temp.str(), vFarmFrame[page].reliPage.DVGASkipWriteDetect[loopCount], false, m_showStatusBits);              //!< [24] DVGA Skip Write Detect by Head7
+        set_json_int_With_Status(headInfo, temp.str(), vFarmFrame[page].reliPage.DVGASkipWriteDetect[loopCount], m_showStatusBits);              //!< [24] DVGA Skip Write Detect by Head7
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         temp.str("");temp.clear();
         temp << "RVGA Skip Write Detect by Head " << std::dec << loopCount;// Head count
-        set_json_64_bit_With_Status(headInfo, temp.str(), vFarmFrame[page].reliPage.RVGASkipWriteDetect[loopCount], false, m_showStatusBits);              //!< [24] RVGA Skip Write Detect by Head7
+        set_json_int_With_Status(headInfo, temp.str(), vFarmFrame[page].reliPage.RVGASkipWriteDetect[loopCount],  m_showStatusBits);              //!< [24] RVGA Skip Write Detect by Head7
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         temp.str("");temp.clear();
         temp << "FVGA Skip Write Detect by Head " << std::dec << loopCount;// Head count
-        set_json_64_bit_With_Status(headInfo, temp.str(), vFarmFrame[page].reliPage.FVGASkipWriteDetect[loopCount], false, m_showStatusBits);              //!< [24] FVGA Skip Write Detect by Head7
+        set_json_int_With_Status(headInfo, temp.str(), vFarmFrame[page].reliPage.FVGASkipWriteDetect[loopCount],  m_showStatusBits);              //!< [24] FVGA Skip Write Detect by Head7
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         temp.str("");temp.clear();
         temp << "Skip Write Detect Threshold Exceeded by Head " << std::dec << loopCount;// Head count
-        set_json_64_bit_With_Status(headInfo, temp.str(), vFarmFrame[page].reliPage.skipWriteDetectThresExceeded[loopCount], false, m_showStatusBits);    //!< [24] Skip Write Detect Threshold Exceeded Count by Head7
+        set_json_int_With_Status(headInfo, temp.str(), vFarmFrame[page].reliPage.skipWriteDetectThresExceeded[loopCount], m_showStatusBits);    //!< [24] Skip Write Detect Threshold Exceeded Count by Head7
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         temp.str("");temp.clear();
         temp << "MR Head Resistance for Head " << std::dec << loopCount;// Head count
-        set_json_64_bit_With_Status(headInfo, temp.str(), vFarmFrame[page].reliPage.MRHeadResistance[loopCount], false, m_showStatusBits);                     //!< [24] MR Head Resistance from most recent SMART Summary Frame by Head9,10
+        set_json_int_With_Status(headInfo, temp.str(), vFarmFrame[page].reliPage.MRHeadResistance[loopCount], m_showStatusBits);                     //!< [24] MR Head Resistance from most recent SMART Summary Frame by Head9,10
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         temp.str("");temp.clear();
         temp << "Servo No Timing Mark Detect for Head " << std::dec << loopCount;// Head count
-        set_json_64_bit_With_Status(headInfo, temp.str(), vFarmFrame[page].reliPage.numberOfTMD[loopCount], false, m_showStatusBits);                          //!< [24] Number of TMD over last 3 SMART Summary Frames by Head9,10
+        set_json_int_With_Status(headInfo, temp.str(), vFarmFrame[page].reliPage.numberOfTMD[loopCount], m_showStatusBits);                          //!< [24] Number of TMD over last 3 SMART Summary Frames by Head9,10
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         temp.str("");temp.clear();
         temp << "Velocity Observer by Head " << std::dec << loopCount;// Head count
-        set_json_64_bit_With_Status(headInfo, temp.str(), vFarmFrame[page].reliPage.velocityObserver[loopCount], false, m_showStatusBits);                     //!< [24] Velocity Observer over last 3 SMART Summary Frames by Head9,10
+        set_json_int_With_Status(headInfo, temp.str(), vFarmFrame[page].reliPage.velocityObserver[loopCount], m_showStatusBits);                     //!< [24] Velocity Observer over last 3 SMART Summary Frames by Head9,10
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         temp.str("");temp.clear();
         temp << "Servo Velocity No Timing Mark Detect by Head " << std::dec << loopCount;// Head count
-        set_json_64_bit_With_Status(headInfo, temp.str(), vFarmFrame[page].reliPage.numberOfVelocityObserver[loopCount], false, m_showStatusBits);             //!< [24] Number of Velocity Observer over last 3 SMART Summary Frames by Head9,10
+        set_json_int_With_Status(headInfo, temp.str(), vFarmFrame[page].reliPage.numberOfVelocityObserver[loopCount], m_showStatusBits);             //!< [24] Number of Velocity Observer over last 3 SMART Summary Frames by Head9,10
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         temp.str("");temp.clear();
         temp << "Fly height clearance delta outer by Head " << std::dec << loopCount;// Head count
         double number = static_cast<double>(M_WordInt0(vFarmFrame[page].reliPage.flyHeightClearance[loopCount].outer) * 0.001);
-        set_json_float_With_Status(headInfo, temp.str().c_str(), number, vFarmFrame[page].reliPage.flyHeightClearance[loopCount].outer, m_showStatusBits);    //!< [24][3] Applied fly height clearance delta per head in thousandths of one Angstrom.
+        set_json_float_With_Status(headInfo, temp.str().c_str(), number, static_cast<uint64_t>(vFarmFrame[page].reliPage.flyHeightClearance[loopCount].outer), m_showStatusBits);    //!< [24][3] Applied fly height clearance delta per head in thousandths of one Angstrom.
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         temp.str("");temp.clear();
         temp << "Fly height clearance delta inner by Head " << std::dec << loopCount;// Head count
         double number = static_cast<double>(M_WordInt0(vFarmFrame[page].reliPage.flyHeightClearance[loopCount].inner) * 0.001);
-        set_json_float_With_Status(headInfo, temp.str().c_str(), number, vFarmFrame[page].reliPage.flyHeightClearance[loopCount].inner, m_showStatusBits);    //!< [24][3] Applied fly height clearance delta per head in thousandths of one Angstrom.
+        set_json_float_With_Status(headInfo, temp.str().c_str(), number, static_cast<uint64_t>(vFarmFrame[page].reliPage.flyHeightClearance[loopCount].inner), m_showStatusBits);    //!< [24][3] Applied fly height clearance delta per head in thousandths of one Angstrom.
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         temp.str("");temp.clear();
         temp << "Fly height clearance delta middle by Head " << std::dec << loopCount;// Head count
         double number = static_cast<double>(M_WordInt0(vFarmFrame[page].reliPage.flyHeightClearance[loopCount].middle) * 0.001);;
-        set_json_float_With_Status(headInfo, temp.str().c_str(), number, vFarmFrame[page].reliPage.flyHeightClearance[loopCount].middle, m_showStatusBits);    //!< [24][3] Applied fly height clearance delta per head in thousandths of one Angstrom.
+        set_json_float_With_Status(headInfo, temp.str().c_str(), number, static_cast<uint64_t>(vFarmFrame[page].reliPage.flyHeightClearance[loopCount].middle), m_showStatusBits);    //!< [24][3] Applied fly height clearance delta per head in thousandths of one Angstrom.
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         temp.str("");temp.clear();
         temp << "Current H2SAT trimmed mean bits in error Zone 0 by Head " << std::dec << loopCount;// Head count
         double number = static_cast<double>(M_Word0(vFarmFrame[page].reliPage.currentH2SAT[loopCount].zone0) * 0.10);
-        set_json_float_With_Status(headInfo, temp.str().c_str(), number, vFarmFrame[page].reliPage.currentH2SAT[loopCount].zone0, m_showStatusBits); //!< Current H2SAT trimmed mean bits in error by Head, by Test Zone 0
+        set_json_float_With_Status(headInfo, temp.str().c_str(), number, static_cast<uint64_t>(vFarmFrame[page].reliPage.currentH2SAT[loopCount].zone0), m_showStatusBits); //!< Current H2SAT trimmed mean bits in error by Head, by Test Zone 0
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         temp.str("");temp.clear();
         temp << "Current H2SAT trimmed mean bits in error Zone 1 by Head " << std::dec << loopCount;// Head count
         double number = static_cast<double>(M_Word0(vFarmFrame[page].reliPage.currentH2SAT[loopCount].zone1) * 0.10);
-        set_json_float_With_Status(headInfo, temp.str().c_str(), number, vFarmFrame[page].reliPage.currentH2SAT[loopCount].zone1, m_showStatusBits); //!< Current H2SAT trimmed mean bits in error by Head, by Test Zone 1
+        set_json_float_With_Status(headInfo, temp.str().c_str(), number, static_cast<uint64_t>(vFarmFrame[page].reliPage.currentH2SAT[loopCount].zone1), m_showStatusBits); //!< Current H2SAT trimmed mean bits in error by Head, by Test Zone 1
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         temp.str("");temp.clear();
         temp << "Current H2SAT trimmed mean bits in error Zone 2 by Head " << std::dec << loopCount;// Head count
         double number = static_cast<double>(M_Word0(vFarmFrame[page].reliPage.currentH2SAT[loopCount].zone2) * 0.10);
-        set_json_float_With_Status(headInfo, temp.str().c_str(), number, vFarmFrame[page].reliPage.currentH2SAT[loopCount].zone2, m_showStatusBits); //!< Current H2SAT trimmed mean bits in error by Head, by Test Zone 2
+        set_json_float_With_Status(headInfo, temp.str().c_str(), number, static_cast<uint64_t>(vFarmFrame[page].reliPage.currentH2SAT[loopCount].zone2), m_showStatusBits); //!< Current H2SAT trimmed mean bits in error by Head, by Test Zone 2
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         temp.str("");temp.clear();
         temp << "Current H2SAT iterations to converge Test Zone 0 by Head " << std::dec << loopCount;// Head count
         double number = static_cast<double>(M_Word0(vFarmFrame[page].reliPage.currentH2SATIterations[loopCount].zone0) * 0.10);
-        set_json_float_With_Status(headInfo, temp.str().c_str(), number, vFarmFrame[page].reliPage.currentH2SATIterations[loopCount].zone0, m_showStatusBits);  //!< Current H2SAT iterations to cnverge by Head, by Test Zone 0
+        set_json_float_With_Status(headInfo, temp.str().c_str(), number, static_cast<uint64_t>(vFarmFrame[page].reliPage.currentH2SATIterations[loopCount].zone0), m_showStatusBits);  //!< Current H2SAT iterations to cnverge by Head, by Test Zone 0
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         temp.str("");temp.clear();
         temp << "Current H2SAT iterations to converge Test Zone 1 by Head " << std::dec << loopCount;// Head count
         double number = static_cast<double>(M_Word0(vFarmFrame[page].reliPage.currentH2SATIterations[loopCount].zone1) * 0.10);
-        set_json_float_With_Status(headInfo, temp.str().c_str(), number, vFarmFrame[page].reliPage.currentH2SATIterations[loopCount].zone1, m_showStatusBits);  //!< Current H2SAT iterations to cnverge by Head, by Test Zone 1
+        set_json_float_With_Status(headInfo, temp.str().c_str(), number, static_cast<uint64_t>(vFarmFrame[page].reliPage.currentH2SATIterations[loopCount].zone1), m_showStatusBits);  //!< Current H2SAT iterations to cnverge by Head, by Test Zone 1
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         temp.str("");temp.clear();
         temp << "Current H2SAT iterations to converge Test Zone 2 by Head " << std::dec << loopCount;// Head count
         double number = static_cast<double>(M_Word0(vFarmFrame[page].reliPage.currentH2SATIterations[loopCount].zone2) * 0.10);
-        set_json_float_With_Status(headInfo, temp.str().c_str(), number, vFarmFrame[page].reliPage.currentH2SATIterations[loopCount].zone2, m_showStatusBits);  //!< Current H2SAT iterations to cnverge by Head, by Test Zone 2
+        set_json_float_With_Status(headInfo, temp.str().c_str(), number, static_cast<uint64_t>(vFarmFrame[page].reliPage.currentH2SATIterations[loopCount].zone2), m_showStatusBits);  //!< Current H2SAT iterations to cnverge by Head, by Test Zone 2
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
@@ -1397,31 +1397,31 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
     {
         temp.str("");temp.clear();
         temp << "Number of Reallocated Sectors by Head " << std::dec << loopCount;// Head count
-        set_json_64_bit_With_Status(headInfo, temp.str(), vFarmFrame[page].reliPage.gList[loopCount], false, m_showStatusBits);                            //!< [24] Number of Reallocated Sectors per head
+        set_json_int_With_Status(headInfo, temp.str(), vFarmFrame[page].reliPage.gList[loopCount], m_showStatusBits);                            //!< [24] Number of Reallocated Sectors per head
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         temp.str("");temp.clear();
         temp << "Number of Reallocation Candidate Sectors by Head " << std::dec << loopCount;// Head count
-        set_json_64_bit_With_Status(headInfo, temp.str(), vFarmFrame[page].reliPage.pendingEntries[loopCount], false, m_showStatusBits);                   //!< [24] Number of Reallocation Candidate Sectors per head
+        set_json_int_With_Status(headInfo, temp.str(), vFarmFrame[page].reliPage.pendingEntries[loopCount], m_showStatusBits);                   //!< [24] Number of Reallocation Candidate Sectors per head
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         temp.str("");temp.clear();
         temp << "DOS Ought to scan count by Head " << std::dec << loopCount;// Head count
-        set_json_64_bit_With_Status(headInfo, temp.str(), vFarmFrame[page].reliPage.oughtDOS[loopCount], false, m_showStatusBits);                         //!< [24] DOS Ought to scan count per head
+        set_json_int_With_Status(headInfo, temp.str(), vFarmFrame[page].reliPage.oughtDOS[loopCount], m_showStatusBits);                         //!< [24] DOS Ought to scan count per head
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         temp.str("");temp.clear();
         temp << "DOS needs to scans count by Head " << std::dec << loopCount;// Head count
-        set_json_64_bit_With_Status(headInfo, temp.str(), vFarmFrame[page].reliPage.needDOS[loopCount], false, m_showStatusBits);                          //!< [24] DOS needs to scans count per head
+        set_json_int_With_Status(headInfo, temp.str(), vFarmFrame[page].reliPage.needDOS[loopCount], m_showStatusBits);                          //!< [24] DOS needs to scans count per head
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         temp.str("");temp.clear();
         temp << "DOS write Fault scans by Head " << std::dec << loopCount;// Head count
-        set_json_64_bit_With_Status(headInfo, temp.str(), vFarmFrame[page].reliPage.writeDOSFault[loopCount], false, m_showStatusBits);                    //!< [24] DOS  write Fault scans per head
+        set_json_int_With_Status(headInfo, temp.str(), vFarmFrame[page].reliPage.writeDOSFault[loopCount], m_showStatusBits);                    //!< [24] DOS  write Fault scans per head
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
@@ -1433,7 +1433,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
     {
         temp.str("");temp.clear();
         temp << "Second MR Head Resistance by Head " << std::dec << loopCount;// Head count
-        set_json_64_bit_With_Status(headInfo, temp.str(), vFarmFrame[page].reliPage.secondMRHeadResistance[loopCount], false, m_showStatusBits);                   //!< [24] DOS Write Count Threshold per head
+        set_json_int_With_Status(headInfo, temp.str(), vFarmFrame[page].reliPage.secondMRHeadResistance[loopCount], m_showStatusBits);                   //!< [24] DOS Write Count Threshold per head
     }
 
 

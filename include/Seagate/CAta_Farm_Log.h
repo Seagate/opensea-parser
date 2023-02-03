@@ -74,7 +74,7 @@ namespace opensea_parser {
             virtual void get_Serial_Number(std::string sn){ sn.assign( vFarmFrame[0].identStringInfo.serialNumber); };
             virtual void get_Firmware_String(std::string firmware){ firmware.assign(vFarmFrame[0].identStringInfo.firmwareRev); };
 			virtual void get_World_Wide_Name(std::string wwn) {wwn.assign(vFarmFrame[0].identStringInfo.worldWideName);};
-            uint32_t get_LogSize() { return M_DoubleWordInt0(m_logSize); };                                  //<! return the page size for the combine farm log
+            uint32_t get_LogSize() { return M_DoubleWord1(m_logSize); };                                  //<! return the page size for the combine farm log
             uint8_t get_FrameReason() { return m_FrameReason; };
     };
 #endif //!ATAFARM

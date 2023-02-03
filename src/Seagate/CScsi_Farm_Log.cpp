@@ -370,6 +370,7 @@ bool CSCSI_Farm_Log::set_Head_Header(std::string &headerName, eSASLogPageTypes i
     case RESERVED_FOR_FUTURE_HEAD_22:
     case RESERVED_FOR_FUTURE_HEAD_23:
     case RESERVED_FOR_FUTURE_HEAD_24:
+        headerName = "Reserved Head information";
         break;
     case CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_0:
         headerName = "Current H2SAT trimmed mean bits in error Test Zone 0";
@@ -402,6 +403,7 @@ bool CSCSI_Farm_Log::set_Head_Header(std::string &headerName, eSASLogPageTypes i
     case RESERVED_FOR_FUTURE_HEAD_35:
     case RESERVED_FOR_FUTURE_HEAD_36:
     case RESERVED_FOR_FUTURE_HEAD_37:
+        headerName = "Reserved Head information";
         break;
     case SECOND_MR_HEAD_RESISTANCE:
         headerName = "Second Head MR Head Resistance";
@@ -417,7 +419,76 @@ bool CSCSI_Farm_Log::set_Head_Header(std::string &headerName, eSASLogPageTypes i
     case RESERVED_FOR_FUTURE_HEAD_46:
     case RESERVED_FOR_FUTURE_HEAD_47:
     case RESERVED_FOR_FUTURE_HEAD_48:
+    case RESERVED_FOR_FUTURE_HEAD_49:
+        headerName = "Reserved Head information";
         break;
+    case LUN_0_ACTUATOR:
+    case LUN_0_FLASH_LED:
+    case LUN_REALLOCATION_0:
+    case RESERVED_FOR_FUTURE_EXPANSION_42:
+    case RESERVED_FOR_FUTURE_EXPANSION_43:
+    case RESERVED_FOR_FUTURE_EXPANSION_44:
+    case RESERVED_FOR_FUTURE_EXPANSION_45:
+    case RESERVED_FOR_FUTURE_EXPANSION_46:
+    case RESERVED_FOR_FUTURE_EXPANSION_47:
+    case RESERVED_FOR_FUTURE_EXPANSION_48:
+    case RESERVED_FOR_FUTURE_EXPANSION_49:
+    case RESERVED_FOR_FUTURE_EXPANSION_50:
+    case RESERVED_FOR_FUTURE_EXPANSION_51:
+    case RESERVED_FOR_FUTURE_EXPANSION_52:
+    case RESERVED_FOR_FUTURE_EXPANSION_53:
+    case RESERVED_FOR_FUTURE_EXPANSION_54:
+    case LUN_1_ACTUATOR:
+    case LUN_1_FLASH_LED:
+    case LUN_REALLOCATION_1:
+    case RESERVED_FOR_FUTURE_EXPANSION_61:
+    case RESERVED_FOR_FUTURE_EXPANSION_62:
+    case RESERVED_FOR_FUTURE_EXPANSION_63:
+    case RESERVED_FOR_FUTURE_EXPANSION_64:
+    case RESERVED_FOR_FUTURE_EXPANSION_65:
+    case RESERVED_FOR_FUTURE_EXPANSION_66:
+    case RESERVED_FOR_FUTURE_EXPANSION_67:
+    case RESERVED_FOR_FUTURE_EXPANSION_68:
+    case RESERVED_FOR_FUTURE_EXPANSION_69:
+    case RESERVED_FOR_FUTURE_EXPANSION_70:
+    case RESERVED_FOR_FUTURE_EXPANSION_71:
+    case RESERVED_FOR_FUTURE_EXPANSION_72:
+    case RESERVED_FOR_FUTURE_EXPANSION_73:
+    case RESERVED_FOR_FUTURE_EXPANSION_74:
+    case LUN_2_ACTUATOR:
+    case LUN_2_FLASH_LED:
+    case LUN_REALLOCATION_2:
+    case RESERVED_FOR_FUTURE_EXPANSION_81:
+    case RESERVED_FOR_FUTURE_EXPANSION_82:
+    case RESERVED_FOR_FUTURE_EXPANSION_83:
+    case RESERVED_FOR_FUTURE_EXPANSION_84:
+    case RESERVED_FOR_FUTURE_EXPANSION_85:
+    case RESERVED_FOR_FUTURE_EXPANSION_86:
+    case RESERVED_FOR_FUTURE_EXPANSION_87:
+    case RESERVED_FOR_FUTURE_EXPANSION_88:
+    case RESERVED_FOR_FUTURE_EXPANSION_89:
+    case RESERVED_FOR_FUTURE_EXPANSION_90:
+    case RESERVED_FOR_FUTURE_EXPANSION_91:
+    case RESERVED_FOR_FUTURE_EXPANSION_92:
+    case RESERVED_FOR_FUTURE_EXPANSION_93:
+    case RESERVED_FOR_FUTURE_EXPANSION_94:
+    case LUN_3_ACTUATOR:
+    case LUN_3_FLASH_LED:
+    case LUN_REALLOCATION_3:
+    case RESERVED_FOR_FUTURE_EXPANSION_101:
+    case RESERVED_FOR_FUTURE_EXPANSION_102:
+    case RESERVED_FOR_FUTURE_EXPANSION_103:
+    case RESERVED_FOR_FUTURE_EXPANSION_104:
+    case RESERVED_FOR_FUTURE_EXPANSION_105:
+    case RESERVED_FOR_FUTURE_EXPANSION_106:
+    case RESERVED_FOR_FUTURE_EXPANSION_107:
+    case RESERVED_FOR_FUTURE_EXPANSION_108:
+    case RESERVED_FOR_FUTURE_EXPANSION_109:
+    case RESERVED_FOR_FUTURE_EXPANSION_110:
+    case RESERVED_FOR_FUTURE_EXPANSION_111:
+    case RESERVED_FOR_FUTURE_EXPANSION_112:
+    case RESERVED_FOR_FUTURE_EXPANSION_113:
+    case RESERVED_FOR_FUTURE_EXPANSION_114:
     case RESERVED_FOR_FUTURE_EXPANSION:
         headerName = "Future Expansion";
         break;
@@ -1767,7 +1838,7 @@ eReturnValues CSCSI_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint
     set_json_64_bit_With_Status(pageInfo, "Number of heads", vFarmFrame[page].driveInfo.heads, false, m_showStatusBits);											//!< Number of Heads
     if (check_Status_Strip_Status(vFarmFrame[page].driveInfo.heads) != 0)
     {
-        m_heads = check_Status_Strip_Status(vFarmFrame[page].driveInfo.heads);
+        m_heads = static_cast<uint64_t>(check_Status_Strip_Status(vFarmFrame[page].driveInfo.heads));
     }
     set_json_64_bit_With_Status(pageInfo, "Device form factor", vFarmFrame[page].driveInfo.factor, false, m_showStatusBits);										//!< Device Form Factor (ID Word 168)
 
@@ -2182,20 +2253,20 @@ eReturnValues CSCSI_Farm_Log::print_Enviroment_Information(JSONNODE *masterData,
     printf("\tCurrent Temperature:                      %0.02f     \n", static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.curentTemp)*.10));			        //!< Current Temperature in Celsius
     printf("\tHighest Temperature:                      %0.02f     \n", static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.highestTemp)*.10));			        //!< Highest Temperature in Celsius
     printf("\tLowest Temperature:                       %0.02f     \n", static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.lowestTemp)*.10));			        //!< Lowest Temperature
-    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved & UINT64_C(0x00FFFFFFFFFFFFFF));				//!< Reserved
-    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved1 & UINT64_C(0x00FFFFFFFFFFFFFF));				//!< Reserved
-    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved2 & UINT64_C(0x00FFFFFFFFFFFFFF));				//!< Reserved
-    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved3 & UINT64_C(0x00FFFFFFFFFFFFFF));				//!< Reserved
-    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved4 & UINT64_C(0x00FFFFFFFFFFFFFF));				//!< Reserved
-    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved5 & UINT64_C(0x00FFFFFFFFFFFFFF));				//!< Reserved
-    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved6 & UINT64_C(0x00FFFFFFFFFFFFFF));				//!< Reserved
-    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved7 & UINT64_C(0x00FFFFFFFFFFFFFF));				//!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved & UINT64_C(0x00FFFFFFFFFFFFFF));				            //!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved1 & UINT64_C(0x00FFFFFFFFFFFFFF));				            //!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved2 & UINT64_C(0x00FFFFFFFFFFFFFF));				            //!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved3 & UINT64_C(0x00FFFFFFFFFFFFFF));				            //!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved4 & UINT64_C(0x00FFFFFFFFFFFFFF));				            //!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved5 & UINT64_C(0x00FFFFFFFFFFFFFF));				            //!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved6 & UINT64_C(0x00FFFFFFFFFFFFFF));				            //!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved7 & UINT64_C(0x00FFFFFFFFFFFFFF));				            //!< Reserved
     printf("\tSpecified Max Operating Temperature:      %0.02f     \n", static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.maxTemp) * 1.00));				    //!< Specified Max Operating Temperature
     printf("\tSpecified Min Operating Temperature:      %0.02f     \n", static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.minTemp) * 1.00));				    //!< Specified Min Operating Temperature
-    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved8 & UINT64_C(0x00FFFFFFFFFFFFFF));				//!< Reserved
-    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved9 & UINT64_C(0x00FFFFFFFFFFFFFF));	            //!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved8 & UINT64_C(0x00FFFFFFFFFFFFFF));				            //!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved9 & UINT64_C(0x00FFFFFFFFFFFFFF));	                        //!< Reserved
     printf("\tCurrent Relative Humidity:                %" PRId32".%" PRId32"   \n", M_DoubleWord1(vFarmFrame[page].environmentPage.humidity & UINT64_C(0x00FFFFFFFFFFFFFF)), M_DoubleWord0(vFarmFrame[page].environmentPage.humidity & UINT64_C(0x00FFFFFFFFFFFFFF)));		//!< Current Relative Humidity (in units of .1%)
-    printf("\tHumidity Mixed Ratio:                     %0.02f     \n", static_cast<float>((vFarmFrame[page].environmentPage.humidityRatio & UINT64_C(0x00FFFFFFFFFFFFFF)) / 8.0)); //!< Humidity Mixed Ratio multiplied by 8 (divide by 8 to get actual value)
+    printf("\tHumidity Mixed Ratio:                     %0.02f     \n", static_cast<double>(M_WordInt0(vFarmFrame[page].environmentPage.humidityRatio & UINT64_C(0x00FFFFFFFFFFFFFF)) / 8.0)); //!< Humidity Mixed Ratio multiplied by 8 (divide by 8 to get actual value)
     printf("\tCurrent Motor Power:                      %" PRIu16" \n", (M_Word0(vFarmFrame[page].environmentPage.currentMotorPower)));	
     printf("\t12v Power Average(mw):                    %" PRIu64" \n", vFarmFrame[page].environmentPage.average12v & UINT64_C(0x00FFFFFFFFFFFFFF));				
     printf("\t12v Power Min(mw):                        %" PRIu64" \n", vFarmFrame[page].environmentPage.min12v & UINT64_C(0x00FFFFFFFFFFFFFF));				
@@ -2403,14 +2474,14 @@ eReturnValues CSCSI_Farm_Log::print_Workload_Statistics_Page_08(JSONNODE *master
             temp << "Workload Information Continued From Farm Log copy " << std::dec << page;
         }
         json_set_name(pageInfo, temp.str().c_str());
-        set_json_int_With_Status(pageInfo, "Queue Depth bin = 1", vFarmFrame[page].workloadStatPage08.countQueDepth1, m_showStatusBits);
-        set_json_int_With_Status(pageInfo, "Queue Depth bin = 2", vFarmFrame[page].workloadStatPage08.countQueDepth2, m_showStatusBits);
-        set_json_int_With_Status(pageInfo, "Queue Depth bin 3-4", vFarmFrame[page].workloadStatPage08.countQueDepth3_4, m_showStatusBits);
-        set_json_int_With_Status(pageInfo, "Queue Depth bin 5-8", vFarmFrame[page].workloadStatPage08.countQueDepth5_8, m_showStatusBits);
-        set_json_int_With_Status(pageInfo, "Queue Depth bin 9-16", vFarmFrame[page].workloadStatPage08.countQueDepth9_16, m_showStatusBits);
-        set_json_int_With_Status(pageInfo, "Queue Depth bin 17-32", vFarmFrame[page].workloadStatPage08.countQueDepth17_32, m_showStatusBits);
-        set_json_int_With_Status(pageInfo, "Queue Depth bin 33-64", vFarmFrame[page].workloadStatPage08.countQueDepth33_64, m_showStatusBits);
-        set_json_int_With_Status(pageInfo, "Queue Depth bin > 64", vFarmFrame[page].workloadStatPage08.countQueDepth_gt_64, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Queue Depth bin = 1", vFarmFrame[page].workloadStatPage08.countQueDepth1,false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Queue Depth bin = 2", vFarmFrame[page].workloadStatPage08.countQueDepth2, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Queue Depth bin 3-4", vFarmFrame[page].workloadStatPage08.countQueDepth3_4, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Queue Depth bin 5-8", vFarmFrame[page].workloadStatPage08.countQueDepth5_8, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Queue Depth bin 9-16", vFarmFrame[page].workloadStatPage08.countQueDepth9_16, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Queue Depth bin 17-32", vFarmFrame[page].workloadStatPage08.countQueDepth17_32, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Queue Depth bin 33-64", vFarmFrame[page].workloadStatPage08.countQueDepth33_64, false, m_showStatusBits);
+        set_json_64_bit_With_Status(pageInfo, "Queue Depth bin > 64", vFarmFrame[page].workloadStatPage08.countQueDepth_gt_64, false, m_showStatusBits);
         json_push_back(masterData, pageInfo);
 
     }
@@ -2604,6 +2675,26 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSON
         case ERROR_STATISTICS_PARAMETER:
         case ENVIRONMENTAL_STATISTICS_PARAMETER:
         case RELIABILITY_STATISTICS_PARAMETER:
+        case GENERAL_DRIVE_INFORMATION_06:
+        case ENVIRONMENT_STATISTICS_PAMATER_07:
+        case WORKLOAD_STATISTICS_PAMATER_08:
+        case RESERVED_FOR_FUTURE_STATISTICS_4:
+        case RESERVED_FOR_FUTURE_STATISTICS_5:
+        case RESERVED_FOR_FUTURE_STATISTICS_6:
+        case RESERVED_FOR_FUTURE_STATISTICS_7:
+        case RESERVED_FOR_FUTURE_STATISTICS_8:
+        case RESERVED_FOR_FUTURE_STATISTICS_9:
+        case RESERVED_FOR_FUTURE_STATISTICS_10:
+        case RESERVED_FOR_FUTURE_HEAD_1:
+        case RESERVED_FOR_FUTURE_HEAD_2:
+        case RESERVED_FOR_FUTURE_HEAD_3:
+        case RESERVED_FOR_FUTURE_HEAD_4:
+        case RESERVED_FOR_FUTURE_HEAD_5:
+        case RESERVED_FOR_FUTURE_HEAD_6:
+        case RESERVED_FOR_FUTURE_HEAD_7:
+        case RESERVED_FOR_FUTURE_HEAD_8:
+        case RESERVED_FOR_FUTURE_HEAD_9:
+        case RESERVED_FOR_FUTURE_HEAD_10:
             break;
         case MR_HEAD_RESISTANCE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD:
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
@@ -2615,6 +2706,11 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSON
                 header << "MR Head Resistance for Head " << std::dec << loopCount; // Head count
                 set_json_64_bit_With_Status(headPage, header.str().c_str(), vFarmFrame[page].mrHeadResistanceByHead.headValue[loopCount], false, m_showStatusBits);  //!< MR Head Resistance from most recent SMART Summary Frame
             }
+            break;
+        case RESERVED_FOR_FUTURE_HEAD_11:
+        case RESERVED_FOR_FUTURE_HEAD_12:
+        case RESERVED_FOR_FUTURE_HEAD_13:
+        case RESERVED_FOR_FUTURE_HEAD_14:
             break;
         case CURRENT_H2SAT_AMPLITUDE_BY_HEAD_AVERAGED_ACROSS_TEST_ZONES:
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
@@ -2660,6 +2756,10 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSON
                 set_json_64_bit_With_Status(headPage, header.str().c_str(), vFarmFrame[page].ResidentPlistEntries.headValue[loopCount], false, m_showStatusBits);
             }
             break;
+        case RESERVED_FOR_FUTURE_HEAD_15:
+        case RESERVED_FOR_FUTURE_HEAD_16:
+        case RESERVED_FOR_FUTURE_HEAD_17:
+            break;
         case WRITE_POWERON_HOURS_FROM_MOST_RECENT_SMART:
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
@@ -2671,6 +2771,8 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSON
                 double number = static_cast<double>(M_DoubleWord0(vFarmFrame[page].writePowerOnHours.headValue[loopCount]) / 3600.0);
                 set_json_float_With_Status(headPage, header.str().c_str(), number, vFarmFrame[page].discSlipPerHead.headValue[loopCount], m_showStatusBits);
             }
+            break;
+        case RESERVED_FOR_FUTURE_HEAD_18:
             break;
         case CUM_LIFETIME_UNRECOVERALBE_READ_REPET_PER_HEAD:
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
@@ -2693,6 +2795,13 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSON
                 header << "Cum Lifetime Unrecoverable Read Unique " << std::dec << loopCount; // Head count
                 set_json_64_bit_With_Status(headPage, header.str().c_str(), vFarmFrame[page].cumECCReadUnique.headValue[loopCount], false, m_showStatusBits);
             }
+            break;
+        case RESERVED_FOR_FUTURE_HEAD_19:
+        case RESERVED_FOR_FUTURE_HEAD_20:
+        case RESERVED_FOR_FUTURE_HEAD_21:
+        case RESERVED_FOR_FUTURE_HEAD_22:
+        case RESERVED_FOR_FUTURE_HEAD_23:
+        case RESERVED_FOR_FUTURE_HEAD_24:
             break;
         case CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_0:
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
@@ -2766,6 +2875,113 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSON
                 set_json_float_With_Status(headPage, header.str().c_str(), number, vFarmFrame[page].currentH2STIterationsByHeadZone2.headValue[loopCount], m_showStatusBits);  //!< Current H2SAT iterations to cnverge by Head, by Test Zone 2
             }
             break;
+        case RESERVED_FOR_FUTURE_HEAD_25:
+        case RESERVED_FOR_FUTURE_HEAD_26:
+        case RESERVED_FOR_FUTURE_HEAD_27:
+        case RESERVED_FOR_FUTURE_HEAD_28:
+        case RESERVED_FOR_FUTURE_HEAD_29:
+        case RESERVED_FOR_FUTURE_HEAD_30:
+        case RESERVED_FOR_FUTURE_HEAD_31:
+        case RESERVED_FOR_FUTURE_HEAD_32:
+        case RESERVED_FOR_FUTURE_HEAD_33:
+        case RESERVED_FOR_FUTURE_HEAD_34:
+        case RESERVED_FOR_FUTURE_HEAD_35:
+        case RESERVED_FOR_FUTURE_HEAD_36:
+        case RESERVED_FOR_FUTURE_HEAD_37:
+            break;
+        case SECOND_MR_HEAD_RESISTANCE:
+        {
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
+#if defined _DEBUG
+                printf("\tSecond MR Head Resistance by Head %" PRIu32":      %" PRIu64" \n", loopCount, vFarmFrame[page].secondMRHeadResistanceByHead.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));  //!< Second MR Head Resistance
+#endif
+                std::ostringstream header;
+                header << "Second MR Head Resistance by Head " << std::dec << loopCount;     // Head count
+                set_json_64_bit_With_Status(headPage, header.str().c_str(), vFarmFrame[page].secondMRHeadResistanceByHead.headValue[loopCount], false, m_showStatusBits);  //!< Second MR Head Resistance
+            }
+        }
+        break;
+
+        case RESERVED_FOR_FUTURE_HEAD_38:
+        case RESERVED_FOR_FUTURE_HEAD_39:
+        case RESERVED_FOR_FUTURE_HEAD_40:
+        case RESERVED_FOR_FUTURE_HEAD_41:
+        case RESERVED_FOR_FUTURE_HEAD_42:
+        case RESERVED_FOR_FUTURE_HEAD_43:
+        case RESERVED_FOR_FUTURE_HEAD_44:
+        case RESERVED_FOR_FUTURE_HEAD_45:
+        case RESERVED_FOR_FUTURE_HEAD_46:
+        case RESERVED_FOR_FUTURE_HEAD_47:
+        case RESERVED_FOR_FUTURE_HEAD_48:
+        case RESERVED_FOR_FUTURE_HEAD_49:
+        case LUN_0_ACTUATOR:
+        case LUN_0_FLASH_LED:
+        case LUN_REALLOCATION_0:
+        case RESERVED_FOR_FUTURE_EXPANSION_42:
+        case RESERVED_FOR_FUTURE_EXPANSION_43:
+        case RESERVED_FOR_FUTURE_EXPANSION_44:
+        case RESERVED_FOR_FUTURE_EXPANSION_45:
+        case RESERVED_FOR_FUTURE_EXPANSION_46:
+        case RESERVED_FOR_FUTURE_EXPANSION_47:
+        case RESERVED_FOR_FUTURE_EXPANSION_48:
+        case RESERVED_FOR_FUTURE_EXPANSION_49:
+        case RESERVED_FOR_FUTURE_EXPANSION_50:
+        case RESERVED_FOR_FUTURE_EXPANSION_51:
+        case RESERVED_FOR_FUTURE_EXPANSION_52:
+        case RESERVED_FOR_FUTURE_EXPANSION_53:
+        case RESERVED_FOR_FUTURE_EXPANSION_54:
+        case LUN_1_ACTUATOR:
+        case LUN_1_FLASH_LED:
+        case LUN_REALLOCATION_1:
+        case RESERVED_FOR_FUTURE_EXPANSION_61:
+        case RESERVED_FOR_FUTURE_EXPANSION_62:
+        case RESERVED_FOR_FUTURE_EXPANSION_63:
+        case RESERVED_FOR_FUTURE_EXPANSION_64:
+        case RESERVED_FOR_FUTURE_EXPANSION_65:
+        case RESERVED_FOR_FUTURE_EXPANSION_66:
+        case RESERVED_FOR_FUTURE_EXPANSION_67:
+        case RESERVED_FOR_FUTURE_EXPANSION_68:
+        case RESERVED_FOR_FUTURE_EXPANSION_69:
+        case RESERVED_FOR_FUTURE_EXPANSION_70:
+        case RESERVED_FOR_FUTURE_EXPANSION_71:
+        case RESERVED_FOR_FUTURE_EXPANSION_72:
+        case RESERVED_FOR_FUTURE_EXPANSION_73:
+        case RESERVED_FOR_FUTURE_EXPANSION_74:
+        case LUN_2_ACTUATOR:
+        case LUN_2_FLASH_LED:
+        case LUN_REALLOCATION_2:
+        case RESERVED_FOR_FUTURE_EXPANSION_81:
+        case RESERVED_FOR_FUTURE_EXPANSION_82:
+        case RESERVED_FOR_FUTURE_EXPANSION_83:
+        case RESERVED_FOR_FUTURE_EXPANSION_84:
+        case RESERVED_FOR_FUTURE_EXPANSION_85:
+        case RESERVED_FOR_FUTURE_EXPANSION_86:
+        case RESERVED_FOR_FUTURE_EXPANSION_87:
+        case RESERVED_FOR_FUTURE_EXPANSION_88:
+        case RESERVED_FOR_FUTURE_EXPANSION_89:
+        case RESERVED_FOR_FUTURE_EXPANSION_90:
+        case RESERVED_FOR_FUTURE_EXPANSION_91:
+        case RESERVED_FOR_FUTURE_EXPANSION_92:
+        case RESERVED_FOR_FUTURE_EXPANSION_93:
+        case RESERVED_FOR_FUTURE_EXPANSION_94:
+        case LUN_3_ACTUATOR:
+        case LUN_3_FLASH_LED:
+        case LUN_REALLOCATION_3:
+        case RESERVED_FOR_FUTURE_EXPANSION_101:
+        case RESERVED_FOR_FUTURE_EXPANSION_102:
+        case RESERVED_FOR_FUTURE_EXPANSION_103:
+        case RESERVED_FOR_FUTURE_EXPANSION_104:
+        case RESERVED_FOR_FUTURE_EXPANSION_105:
+        case RESERVED_FOR_FUTURE_EXPANSION_106:
+        case RESERVED_FOR_FUTURE_EXPANSION_107:
+        case RESERVED_FOR_FUTURE_EXPANSION_108:
+        case RESERVED_FOR_FUTURE_EXPANSION_109:
+        case RESERVED_FOR_FUTURE_EXPANSION_110:
+        case RESERVED_FOR_FUTURE_EXPANSION_111:
+        case RESERVED_FOR_FUTURE_EXPANSION_112:
+        case RESERVED_FOR_FUTURE_EXPANSION_113:
+        case RESERVED_FOR_FUTURE_EXPANSION_114:
         case RESERVED_FOR_FUTURE_EXPANSION:
             break;
         default:
@@ -3160,22 +3376,95 @@ void CSCSI_Farm_Log::print_All_Pages(JSONNODE *masterData)
                 case WORKLOAD_STATISTICS_PAMATER_08:
                     print_Workload_Statistics_Page_08(masterData, index);
                     break;
+                case RESERVED_FOR_FUTURE_STATISTICS_4:
+                case RESERVED_FOR_FUTURE_STATISTICS_5:
+                case RESERVED_FOR_FUTURE_STATISTICS_6:
+                case RESERVED_FOR_FUTURE_STATISTICS_7:
+                case RESERVED_FOR_FUTURE_STATISTICS_8:
+                case RESERVED_FOR_FUTURE_STATISTICS_9:
+                case RESERVED_FOR_FUTURE_STATISTICS_10:
+                case RESERVED_FOR_FUTURE_HEAD_1:
+                case RESERVED_FOR_FUTURE_HEAD_2:
+                case RESERVED_FOR_FUTURE_HEAD_3:
+                case RESERVED_FOR_FUTURE_HEAD_4:
+                case RESERVED_FOR_FUTURE_HEAD_5:
+                case RESERVED_FOR_FUTURE_HEAD_6:
+                case RESERVED_FOR_FUTURE_HEAD_7:
+                case RESERVED_FOR_FUTURE_HEAD_8:
+                case RESERVED_FOR_FUTURE_HEAD_9:
+                case RESERVED_FOR_FUTURE_HEAD_10:
+                    break;
                 case MR_HEAD_RESISTANCE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD:
+                    print_Head_Information(vFarmFrame.at(index).vFramesFound.at(pramCode), headPage, index);
+                    break;
+                case RESERVED_FOR_FUTURE_HEAD_11:
+                case RESERVED_FOR_FUTURE_HEAD_12:
+                case RESERVED_FOR_FUTURE_HEAD_13:
+                case RESERVED_FOR_FUTURE_HEAD_14:
+                    break;
                 case CURRENT_H2SAT_AMPLITUDE_BY_HEAD_AVERAGED_ACROSS_TEST_ZONES:
                 case CURRENT_H2SAT_ASYMMETRY_BY_HEAD_AVERAGED_ACROSS_TEST_ZONES:
                 case NUMBER_OF_RESIDENT_GLIST_ENTRIES:
                 case NUMBER_OF_PENDING_ENTRIES:
+                    print_Head_Information(vFarmFrame.at(index).vFramesFound.at(pramCode), headPage, index);
+                    break;
+                case RESERVED_FOR_FUTURE_HEAD_15:
+                case RESERVED_FOR_FUTURE_HEAD_16:
+                case RESERVED_FOR_FUTURE_HEAD_17:
+                    break;
                 case WRITE_POWERON_HOURS_FROM_MOST_RECENT_SMART:
+                    print_Head_Information(vFarmFrame.at(index).vFramesFound.at(pramCode), headPage, index);
+                    break;
+                case RESERVED_FOR_FUTURE_HEAD_18:
+                    break;
                 case CUM_LIFETIME_UNRECOVERALBE_READ_REPET_PER_HEAD:
                 case CUM_LIFETIME_UNRECOVERABLE_READ_UNIQUE_PER_HEAD:
+                    print_Head_Information(vFarmFrame.at(index).vFramesFound.at(pramCode), headPage, index);
+                    break;
+                case RESERVED_FOR_FUTURE_HEAD_19:
+                case RESERVED_FOR_FUTURE_HEAD_20:
+                case RESERVED_FOR_FUTURE_HEAD_21:
+                case RESERVED_FOR_FUTURE_HEAD_22:
+                case RESERVED_FOR_FUTURE_HEAD_23:
+                case RESERVED_FOR_FUTURE_HEAD_24:
+                    break;
                 case CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_0:
                 case CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_1:
                 case CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_2:
                 case CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_0:
                 case CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_1:
                 case CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_2:
+                    print_Head_Information(vFarmFrame.at(index).vFramesFound.at(pramCode), headPage, index);
+                    break;
+                case RESERVED_FOR_FUTURE_HEAD_25:
+                case RESERVED_FOR_FUTURE_HEAD_26:
+                case RESERVED_FOR_FUTURE_HEAD_27:
+                case RESERVED_FOR_FUTURE_HEAD_28:
+                case RESERVED_FOR_FUTURE_HEAD_29:
+                case RESERVED_FOR_FUTURE_HEAD_30:
+                case RESERVED_FOR_FUTURE_HEAD_31:
+                case RESERVED_FOR_FUTURE_HEAD_32:
+                case RESERVED_FOR_FUTURE_HEAD_33:
+                case RESERVED_FOR_FUTURE_HEAD_34:
+                case RESERVED_FOR_FUTURE_HEAD_35:
+                case RESERVED_FOR_FUTURE_HEAD_36:
+                case RESERVED_FOR_FUTURE_HEAD_37:
+                    break;
                 case SECOND_MR_HEAD_RESISTANCE:
                     print_Head_Information(vFarmFrame.at(index).vFramesFound.at(pramCode), headPage, index);   
+                    break;
+                case RESERVED_FOR_FUTURE_HEAD_38:
+                case RESERVED_FOR_FUTURE_HEAD_39:
+                case RESERVED_FOR_FUTURE_HEAD_40:
+                case RESERVED_FOR_FUTURE_HEAD_41:
+                case RESERVED_FOR_FUTURE_HEAD_42:
+                case RESERVED_FOR_FUTURE_HEAD_43:
+                case RESERVED_FOR_FUTURE_HEAD_44:
+                case RESERVED_FOR_FUTURE_HEAD_45:
+                case RESERVED_FOR_FUTURE_HEAD_46:
+                case RESERVED_FOR_FUTURE_HEAD_47:
+                case RESERVED_FOR_FUTURE_HEAD_48:
+                case RESERVED_FOR_FUTURE_HEAD_49:
                     break;
                 case LUN_0_ACTUATOR:
                     print_LUN_Actuator_Information(masterData, index, LUN_0_ACTUATOR);
@@ -3186,6 +3475,20 @@ void CSCSI_Farm_Log::print_All_Pages(JSONNODE *masterData)
                 case LUN_REALLOCATION_0:
                     print_LUN_Actuator_Reallocation(masterData, index, LUN_REALLOCATION_0);
                     break;
+                case RESERVED_FOR_FUTURE_EXPANSION_42:
+                case RESERVED_FOR_FUTURE_EXPANSION_43:
+                case RESERVED_FOR_FUTURE_EXPANSION_44:
+                case RESERVED_FOR_FUTURE_EXPANSION_45:
+                case RESERVED_FOR_FUTURE_EXPANSION_46:
+                case RESERVED_FOR_FUTURE_EXPANSION_47:
+                case RESERVED_FOR_FUTURE_EXPANSION_48:
+                case RESERVED_FOR_FUTURE_EXPANSION_49:
+                case RESERVED_FOR_FUTURE_EXPANSION_50:
+                case RESERVED_FOR_FUTURE_EXPANSION_51:
+                case RESERVED_FOR_FUTURE_EXPANSION_52:
+                case RESERVED_FOR_FUTURE_EXPANSION_53:
+                case RESERVED_FOR_FUTURE_EXPANSION_54:
+                    break;
                 case LUN_1_ACTUATOR:
                     print_LUN_Actuator_Information(masterData, index, LUN_1_ACTUATOR);
                     break;
@@ -3194,6 +3497,21 @@ void CSCSI_Farm_Log::print_All_Pages(JSONNODE *masterData)
                     break;
                 case LUN_REALLOCATION_1:
                     print_LUN_Actuator_Reallocation(masterData, index,LUN_REALLOCATION_1);
+                    break;
+                case RESERVED_FOR_FUTURE_EXPANSION_61:
+                case RESERVED_FOR_FUTURE_EXPANSION_62:
+                case RESERVED_FOR_FUTURE_EXPANSION_63:
+                case RESERVED_FOR_FUTURE_EXPANSION_64:
+                case RESERVED_FOR_FUTURE_EXPANSION_65:
+                case RESERVED_FOR_FUTURE_EXPANSION_66:
+                case RESERVED_FOR_FUTURE_EXPANSION_67:
+                case RESERVED_FOR_FUTURE_EXPANSION_68:
+                case RESERVED_FOR_FUTURE_EXPANSION_69:
+                case RESERVED_FOR_FUTURE_EXPANSION_70:
+                case RESERVED_FOR_FUTURE_EXPANSION_71:
+                case RESERVED_FOR_FUTURE_EXPANSION_72:
+                case RESERVED_FOR_FUTURE_EXPANSION_73:
+                case RESERVED_FOR_FUTURE_EXPANSION_74:
                     break;
                 case LUN_2_ACTUATOR:
                     print_LUN_Actuator_Information(masterData, index, LUN_2_ACTUATOR);
@@ -3204,6 +3522,21 @@ void CSCSI_Farm_Log::print_All_Pages(JSONNODE *masterData)
                 case LUN_REALLOCATION_2:
                     print_LUN_Actuator_Reallocation(masterData, index, LUN_REALLOCATION_2);
                     break;
+                case RESERVED_FOR_FUTURE_EXPANSION_81:
+                case RESERVED_FOR_FUTURE_EXPANSION_82:
+                case RESERVED_FOR_FUTURE_EXPANSION_83:
+                case RESERVED_FOR_FUTURE_EXPANSION_84:
+                case RESERVED_FOR_FUTURE_EXPANSION_85:
+                case RESERVED_FOR_FUTURE_EXPANSION_86:
+                case RESERVED_FOR_FUTURE_EXPANSION_87:
+                case RESERVED_FOR_FUTURE_EXPANSION_88:
+                case RESERVED_FOR_FUTURE_EXPANSION_89:
+                case RESERVED_FOR_FUTURE_EXPANSION_90:
+                case RESERVED_FOR_FUTURE_EXPANSION_91:
+                case RESERVED_FOR_FUTURE_EXPANSION_92:
+                case RESERVED_FOR_FUTURE_EXPANSION_93:
+                case RESERVED_FOR_FUTURE_EXPANSION_94:
+                    break;
                 case LUN_3_ACTUATOR:
                     print_LUN_Actuator_Information(masterData, index,LUN_3_ACTUATOR); 
                     break;
@@ -3213,6 +3546,20 @@ void CSCSI_Farm_Log::print_All_Pages(JSONNODE *masterData)
                 case LUN_REALLOCATION_3:
                     print_LUN_Actuator_Reallocation(masterData, index, LUN_REALLOCATION_3);
                     break;
+                case RESERVED_FOR_FUTURE_EXPANSION_101:
+                case RESERVED_FOR_FUTURE_EXPANSION_102:
+                case RESERVED_FOR_FUTURE_EXPANSION_103:
+                case RESERVED_FOR_FUTURE_EXPANSION_104:
+                case RESERVED_FOR_FUTURE_EXPANSION_105:
+                case RESERVED_FOR_FUTURE_EXPANSION_106:
+                case RESERVED_FOR_FUTURE_EXPANSION_107:
+                case RESERVED_FOR_FUTURE_EXPANSION_108:
+                case RESERVED_FOR_FUTURE_EXPANSION_109:
+                case RESERVED_FOR_FUTURE_EXPANSION_110:
+                case RESERVED_FOR_FUTURE_EXPANSION_111:
+                case RESERVED_FOR_FUTURE_EXPANSION_112:
+                case RESERVED_FOR_FUTURE_EXPANSION_113:
+                case RESERVED_FOR_FUTURE_EXPANSION_114:
                 case RESERVED_FOR_FUTURE_EXPANSION:
                     break;
                 default:
