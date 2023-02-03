@@ -267,6 +267,24 @@ typedef struct _sAtaReliabilityStat
     H2SAT           released51[MAX_HEAD_COUNT];                     //!< Qword[24][3]	released 51
     uint64_t        superParityCoveragePercentageAct0;           //!< Primary Super Parity Coverage Percentage SMR/SWR, Actuator 0
     uint64_t        superParityCoveragePercentageAct1;           //!< Primary Super Parity Coverage Percentage SMR/SWR, Actuator 1
+
+    _sAtaReliabilityStat() : pageNumber(0), copyNumber(0), reserved(0), reserved1(0),reserved4(0), reserved5(0), reserved6(0), \
+        reserved7(0), reserved8(0), reserved9(0), reserved10(0), reserved11(0),numberDOSScans(0), numberLBACorrect(0), reserved12(0),\
+        reserved14(0),attrErrorRateRaw(0), attrErrorRateNormal(0), attrErrorRateWorst(0), attrSeekErrorRateRaw(0), attrSeekErrorRateNormal(0), \
+        attrSeekErrorRateWorst(0), attrUnloadEventsRaw(0), reserved15(0), diskSlipRecalPerformed(0), heliumPresureTrip(0), \
+        reserved19(0), reserved20(0), reserved21(0), numberLBACorrectedByParitySector(0), SuperParityCovPercent(0)
+#if defined _WIN32  ||  (__cplusplus && __cplusplus >= 201103L)
+        ,reserved2{ 0 }, reserved3{ 0 }, reserved13{ 0 }, DVGASkipWriteDetect{ 0 }, RVGASkipWriteDetect{ 0 }, FVGASkipWriteDetect{ 0 },
+        skipWriteDetectThresExceeded{ 0 },reserved16{ 0 },reserved17{ 0 },reserved18{ 0 }, MRHeadResistance{ 0 }, numberOfTMD{ 0 },
+        velocityObserver{ 0 }, numberOfVelocityObserver{ 0 },currentH2SAT{ },currentH2SATIterations{ },currentH2SATPercentage{ 0 },
+        currentH2SATamplitude{ 0 }, currentH2SATasymmetry{ 0 },flyHeightClearance{ }, gList{ 0 }, pendingEntries{ 0 }, oughtDOS{ 0 },
+        needDOS{ 0 }, writeDOSFault{ 0 }, writePOH{ 0 }, reserved22{ 0 }, secondMRHeadResistance{ 0 }, reserved23{ 0 }, reserved24{ 0 },
+        reserved25{ }, reserved26{ }, reserved27{ }, reserved28{ 0 }, reserved29{ }, reserved30{ }, released48{ 0 }, released49{ },
+        released50{ }, released51{ }
+#endif
+        ,reserved31(0), reserved32(0), reserved33(0), reserved34(0), reserved35(0), reserved36(0), reserved37(0), \
+        reserved38(0), reserved39(0), reserved40(0), reserved41(0), correctedLBAsAct1(0), released42(0), released43(0), \
+        released44(0), released45(0), released46(0), released47(0),superParityCoveragePercentageAct0(0), superParityCoveragePercentageAct1(0) {};
 }sAtaReliabilityStat;
 
 typedef struct _sFarmFrame
