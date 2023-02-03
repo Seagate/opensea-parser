@@ -51,6 +51,8 @@ namespace opensea_parser {
 #ifndef OPENSEA_PARSER
 #define OPENSEA_PARSER
 
+	
+
 	// quick size for of the ints for case statements
 #define ONE_INT_SIZE 1
 #define TWO_INT_SIZE 2
@@ -244,7 +246,7 @@ namespace opensea_parser {
 	//!   \return bool - false or true
 	//
 	//---------------------------------------------------------------------------
-	inline bool check_For_Active_Status(uint64_t *value)
+	inline bool check_For_Active_Status(uint64_t *const value)
 	{
 		if ((*value & BIT63) == BIT63 && (*value & BIT62) == BIT62)
 		{
@@ -276,7 +278,7 @@ namespace opensea_parser {
 		{
 			value = 0;
 		}
-		return value;
+		return static_cast<int64_t>(value);
 	}
 	//-----------------------------------------------------------------------------
 	//
@@ -325,24 +327,25 @@ namespace opensea_parser {
 	//-----------------------------------------------------------------------------
     inline void set_json_64bit_With_Check_Status(JSONNODE *nowNode, const std::string & myStr, uint64_t value, bool hexPrint)
     {
-		value = check_Status_Strip_Status(value);
+		int64_t statusValue = 0;
+		statusValue = check_Status_Strip_Status(value);
         std::ostringstream temp;
         if (hexPrint)
         {
             //json does not support 64 bit numbers. Therefore we will print it as a string
-            temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(16) << value;
+            temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(16) << statusValue;
             json_push_back(nowNode, json_new_a(myStr.c_str(), temp.str().c_str()));
         }
         else
         {
-            if (M_IGETBITRANGE(value, 63, 31) == 0)
+            if (M_IGETBITRANGE(statusValue, 63, 31) == 0)
             {
-                json_push_back(nowNode, json_new_i(myStr.c_str(), value));
+                json_push_back(nowNode, json_new_i(myStr.c_str(), static_cast<json_int_t>(statusValue)));
             }
             else
             {
                 // if the vale is greater then a unsigned 32 bit number print it as a string
-                temp << std::dec << value;
+                temp << std::dec << statusValue;
                 json_push_back(nowNode, json_new_a(myStr.c_str(), temp.str().c_str()));
             }
         }
@@ -377,7 +380,7 @@ namespace opensea_parser {
         {
             if (M_IGETBITRANGE(value,63,32) == 0)
             {
-                json_push_back(nowNode, json_new_i(myStr.c_str(), value));
+                json_push_back(nowNode, json_new_i(myStr.c_str(), static_cast<json_int_t>(value)));
             }
             else
             {
@@ -466,11 +469,7 @@ namespace opensea_parser {
 		}
 		return false;
 	}
-    void get_SMART_Save_Flages(JSONNODE *headerNode, uint8_t flag);
-	void get_SMART_Save_Flages_String(std::string &reason, uint8_t flag);
-	void prePython_unknown_params(JSONNODE* masterData, uint64_t value, uint16_t logPage, uint8_t subPage, uint16_t paramCode, uint32_t offset);
-	void prePython_int(JSONNODE* masterData, const char* name, const char* statType, const char* unit, uint64_t value, uint16_t logPage, uint8_t subPage, uint16_t paramCode, uint32_t offset);
-	void prePython_float(JSONNODE* masterData, const char* name, const char* statType, const char* unit, double value, uint16_t logPage, uint8_t subPage, uint16_t paramCode, uint32_t offset);
+
 
     inline void byte_swap_std_string(std::string &stringToSwap)
     {
@@ -512,7 +511,7 @@ namespace opensea_parser {
 
 	}
 
-	inline double remove_Double_Transfer_Digits(double* decimalValue)
+	inline double remove_Double_Transfer_Digits(double* const decimalValue)
 	{
 		double newValue = 0.0;
 		std::ostringstream temp;
