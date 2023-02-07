@@ -140,7 +140,7 @@ void CScsiNonMediumErrorCountLog::process_Non_Medium_Error_Count_Data(JSONNODE* 
 	}
 	else
 	{
-		json_push_back(cacheInfo, json_new_i("Non-Medium Error Count", m_Value));
+		json_push_back(cacheInfo, json_new_i("Non-Medium Error Count", static_cast<json_int_t>(m_Value)));
 	}
 
 	json_push_back(countData, cacheInfo);

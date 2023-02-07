@@ -255,23 +255,23 @@ namespace opensea_parser {
 		}
 	}
 	//-----------------------------------------------------------------------------
-//
-//! \fn set_json_int_Check_Status()
-//
-//! \brief
-//!   Description:  set the json values for a intiger value and will show status bits if the flag is set
-//
-//  Entry:
-//! \param  nowNode = the Json node that the data will be added to
-//! \param  myStr = the string data what will be adding to
-//! \param value  =  int value that would have already been calculated.
-//! \param value  =  64 bit value to check to see if the bit is set or not
-//! \param showStatusBits = flag to force showing the status bits on the value
-//
-//  Exit:
-//!   \return void
-//
-//-----------------------------------------------------------------------------
+	//
+	//! \fn set_json_int_Check_Status()
+	//
+	//! \brief
+	//!   Description:  set the json values for a intiger value and will show status bits if the flag is set
+	//
+	//  Entry:
+	//! \param  nowNode = the Json node that the data will be added to
+	//! \param  myStr = the string data what will be adding to
+	//! \param value  =  int value that would have already been calculated.
+	//! \param value  =  64 bit value to check to see if the bit is set or not
+	//! \param showStatusBits = flag to force showing the status bits on the value
+	//
+	//  Exit:
+	//!   \return void
+	//
+	//-----------------------------------------------------------------------------
 	inline void set_json_int_Check_Status(JSONNODE* nowNode, const std::string& myStr, long value, uint64_t fullValue, bool showStatusBits)
 	{
 		if (showStatusBits)

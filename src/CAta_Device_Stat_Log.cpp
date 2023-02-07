@@ -773,7 +773,7 @@ void CAtaDeviceStatisticsLogs::logPage01(uint64_t *value, JSONNODE *masterData)
     opensea_parser::set_json_64bit_With_Check_Status(sctStat, "Number Of Write Commands", dsLog->numberOfWrites, false);
     opensea_parser::set_json_64bit_With_Check_Status(sctStat, "Logical Sectors Read", dsLog->logSectRead, false);
     opensea_parser::set_json_64bit_With_Check_Status(sctStat, "Number of Read Commands", dsLog->numberOfReads, false);
-    opensea_parser::set_json_64bit(sctStat, "Date and Time TimeStamp(hrs)", ((check_Status_Strip_Status(dsLog->date) / 1000) / 3600), false);
+    opensea_parser::set_json_64bit(sctStat, "Date and Time TimeStamp(hrs)", (static_cast<uint64_t>((check_Status_Strip_Status(dsLog->date)) / 1000) / 3600), false);
 	json_push_back(sctStat, json_new_i("Pending Error Count", static_cast<uint32_t>(check_Status_Strip_Status(dsLog->pendingErrorCount))));
 	json_push_back(sctStat, json_new_i("Workload Utilization", static_cast<uint32_t>(check_Status_Strip_Status(dsLog->workLoad))));
 	opensea_parser::set_json_64bit_With_Check_Status(sctStat, "Utilization Usage Rate", dsLog->utilRate, false);

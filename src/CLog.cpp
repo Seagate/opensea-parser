@@ -181,7 +181,7 @@ eReturnValues CLog::read_In_Buffer()
     std::fstream logFile(m_fileName.c_str(), std::ios::in | std::ios::binary);//only allow reading as a binary file
     if (logFile.is_open())
     {
-        logFile.read(pData, m_size);
+        logFile.read(pData, static_cast<std::streamsize>(m_size));
         logFile.close();
     }
     else
@@ -237,7 +237,7 @@ void CLog::read_In_Log()
         std::fstream logFile(m_fileName.c_str(), std::ios::in );
         if (logFile.is_open())
         {
-            logFile.read(pData, m_size);
+            logFile.read(pData, static_cast<std::streamsize>(m_size));
             logFile.close();
             m_logStatus = SUCCESS;
         }
