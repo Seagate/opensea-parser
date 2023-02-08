@@ -256,7 +256,7 @@ bool CScsiErrorCounterLog::get_Error_Parameter_Code_Description(std::string *err
     default:
     {
         std::ostringstream temp;
-        temp << "Vendor Specific 0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << m_Error->paramCode;
+        temp << "Vendor Specific 0x" << std::hex << std::uppercase << std::setfill('0') << std::setw << m_Error->paramCode;
         error->assign(temp.str());
         break;
     }
