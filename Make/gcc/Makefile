@@ -31,9 +31,20 @@ VERSION=$(MAJOR).$(MINOR).$(PATCH)
 SRC_DIR=../../src/
 INC_DIR=-I../../include -I../../include/Seagate -I../../../opensea-common/include -I../../../libjson
 CXX ?= g++
-CXXFLAGS ?= -Wall -Wextra -Werror=old-style-cast -Wshadow -Wmaybe-uninitialized -Wvla -Wfloat-equal \
-    -Wlogical-op -Wdouble-promotion -Wformat-security
-CXXFLAGS += -c -fPIC -std=c++98 -I.
+
+CXXFLAGS ?= -Wall -Wextra 
+CXXFLAGS += -c -fPIC -I.
+
+COMPILER_VERSION := $(shell $(CXX) --version)
+ifneq (,$(findstring clang,$(COMPILER_VERSION)))
+	CXXFLAGS += -Wno-unknown-warning-option -Wcast-align=strict -Wvla -Wfloat-equal -Wnull-dereference -Wunused-const-variable -Wunused-private-field -Wuninitialized \
+	-Wduplicated-cond -Wjump-misses-init -Wstringop-overflow -Wlogical-op -Wshift-overflow=2 -Wdouble-promotion -Wformat-security -Wunused-but-set-variable \
+	-Wold-style-definition -Wstrict-prototypes -Wmissing-declarations -Wmissing-prototypes -stdlib=libc++
+else
+	CXXFLAGS += -Werror=old-style-cast -Wshadow -Wmaybe-uninitialized -Wvla -Wfloat-equal \
+	-Wlogical-op -Wdouble-promotion -Wformat-security -std=c++98
+endif
+
 ARCHIVE ?= ar
 LFLAGS ?= -Wall-Wl,--whole-archive ../../../opensea-common/Make/gcc/lib/$(FILE_OUTPUT_DIR)/libopensea-common.a -Wl,--no-whole-archive
 LIB_SRC_FILES = \
@@ -129,8 +140,8 @@ $(LIBS): $(LIB_OBJ_FILES)
 	rm -f $(FILE_OUTPUT_DIR)/$@
 	$(ARCHIVE) cq $(FILE_OUTPUT_DIR)/$@ $(LIB_OBJ_FILES)
 # Removing the line below since we don't need a shared object for this right now...a static library is enough for the common stuff
-	$(CXX) $(LXXFLAGS) $(LIB_OBJ_FILES) -o lib$(NAME).so.$(VERSION)
-	cd $(FILE_OUTPUT_DIR) && ln -s lib$(NAME).so* lib$(NAME).so
+	$(CXX) $(LXXFLAGS) $(LIB_OBJ_FILES) -o $(FILE_OUTPUT_DIR)/lib$(NAME).so.$(VERSION)
+	cd $(FILE_OUTPUT_DIR) && ln -s lib$(NAME).so.$(VERSION) lib$(NAME).so
 
 clean: banner
 	rm -f $(SRC_DIR)*.o
