@@ -342,6 +342,7 @@
       <AdditionalIncludeDirectories>..\..\..\..\include;..\..\..\..\..\libjson;..\..\..\..\..\opensea-common\include;..\..\..\..\..\opensea-parser\include;..\..\..\..\..\opensea-parser\include\Seagate</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
