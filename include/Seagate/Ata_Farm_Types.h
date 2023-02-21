@@ -110,7 +110,7 @@ typedef struct _sErrorStat
     uint64_t         cumLiveUnRecoveralbeReadUnique[24];        //<! Cumulative Lifetime Unrecoverable Read Unique by head
 //version 4.21
     uint64_t         reallocSectorsAct1;                        //!< Number of Reallocated sectors, Actuator 1
-    uint64_t         reallocCandidatesAct1;                        //!< Number of Reallocation Candidate Sectors, Actuator 1
+    uint64_t         reallocCandidatesAct1;                     //!< Number of Reallocation Candidate Sectors, Actuator 1
     uint64_t         totalFlashLEDEvents;                       //!< Total Flash LED (Assert) Events, Actuator 1 
     uint64_t         lastIDXFLEDInfoAct1;                       //!< Index of last entry in FLED Info array below, in case the array wraps, Actuator 1
     uint64_t         last8FLEDEventsAct1[8];                    //!< Info on the last 8 Flash LED (assert) Events, wrapping array, Actuator 1
@@ -244,7 +244,7 @@ typedef struct _sAtaReliabilityStat
     int64_t         reserved17[MAX_HEAD_COUNT];                     //!< [24] reserved 17
     int64_t         reserved18[MAX_HEAD_COUNT];                     //!< [24] reserved 18
     int64_t         MRHeadResistance[MAX_HEAD_COUNT];               //!< [24] MR Head Resistance from most recent SMART Summary Frame by Head
-    int64_t         numberOfTMD[MAX_HEAD_COUNT];                    //!< [24] Number of TMD over last 3 SMART Summary Frames by Head
+    int64_t         reserved52[MAX_HEAD_COUNT];                     //!< [24] reserved 52
     int64_t         velocityObserver[MAX_HEAD_COUNT];               //!< [24] Velocity Observer over last 3 SMART Summary Frames by Head
     int64_t         numberOfVelocityObserver[MAX_HEAD_COUNT];       //!< [24] Number of Velocity Observer over last 3 SMART Summary Frames by Head
     H2SAT           currentH2SAT[MAX_HEAD_COUNT];                   //!< [24] Current H2SAT trimmed mean bits in error by Head, by Test Zone 
@@ -290,7 +290,7 @@ typedef struct _sAtaReliabilityStat
     uint64_t        reserved41;                                     //!< reserved 41
     uint64_t        correctedLBAsAct1;                              //!< Number of LBAs Corrected by ISP, Acuator 1
     uint64_t        released42;                                     //!< released 42
-    uint64_t        released43;                                     //!< released 43
+    uint64_t        numberLBACorrectedByParitySectorAct1;           //!< Number of LBAs Corrected by Parity Sector, Actuator 1
     uint64_t        released44;                                     //!< released 44
     uint64_t        released45;                                     //!< released 45                
     uint64_t        released46;                                     //!< released 46
@@ -341,7 +341,7 @@ typedef struct _sAtaReliabilityStat
         reserved28{ 0 }, reserved29{ }, reserved30{ }, 
 #endif    
         reserved31(0), reserved32(0), reserved33(0), reserved34(0), reserved35(0), reserved36(0), reserved37(0), 
-        reserved38(0), reserved39(0), reserved40(0), reserved41(0), correctedLBAsAct1(0), released42(0), released43(0), 
+        reserved38(0), reserved39(0), reserved40(0), reserved41(0), correctedLBAsAct1(0), released42(0), numberLBACorrectedByParitySectorAct1(0),
         released44(0), released45(0), released46(0), released47(0),
 #if defined __cplusplus && __cplusplus >= 201103L
         released48{ 0 }, released49{ },released50{ }, released51{ },

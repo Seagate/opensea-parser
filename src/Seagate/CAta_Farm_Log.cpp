@@ -417,8 +417,7 @@ eReturnValues CATA_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint3
     set_json_64_bit_With_Status(pageInfo, "Power Cycle count", vFarmFrame[page].driveInfo.powerCycleCount, false, m_showStatusBits);                            //!< Power Cycle Count
     set_json_64_bit_With_Status(pageInfo, "Hardware Reset count", vFarmFrame[page].driveInfo.resetCount, false, m_showStatusBits);                              //!< Hardware Reset Count
     set_json_64_bit_With_Status(pageInfo, "Spin-up Time", vFarmFrame[page].driveInfo.spinUpTime, false, m_showStatusBits);                                      //!< SMART Spin-Up time in milliseconds
-    set_json_64_bit_With_Status(pageInfo, "NVC Time Available to save (in 100us)", vFarmFrame[page].driveInfo.timeAvailable, false, m_showStatusBits);          //!< Time Available to Save User Data to Media Over Last Power Cycle (in 100us)
-
+    
     temp.str("");temp.clear();
     temp << std::dec << (vFarmFrame[page].driveInfo.timeStamp1 & UINT64_C(0x00FFFFFFFFFFFFFF));
     set_json_string_With_Status(pageInfo, "Timestamp of First SMART Summary Frame (ms)", temp.str().c_str(), vFarmFrame[page].driveInfo.timeStamp1, m_showStatusBits);
@@ -1140,9 +1139,10 @@ eReturnValues CATA_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint32
     set_json_64_bit_With_Status(pageInfo, "Number of LBAs Corrected by Parity Sector - Actuator 0", vFarmFrame[page].reliPage.numberLBACorrectedByParitySector, false, m_showStatusBits);
     set_json_64_bit_With_Status(pageInfo, "Primary Super Parity Coverage Percentage - Actuator 0", vFarmFrame[page].reliPage.SuperParityCovPercent, false, m_showStatusBits);
     
-    // information for Actuator 0
     set_json_64_bit_With_Status(pageInfo, "Primary Super Parity Coverage Percentage SMR SWR - Actuator 0", vFarmFrame[page].reliPage.superParityCoveragePercentageAct0, false, m_showStatusBits);           //!< Primary Super Parity Coverage Percentage SMR/SWR- Actuator 0 
+    
     set_json_64_bit_With_Status(pageInfo, "Number of LBAs Corrected by ISP - Actuator 1", vFarmFrame[page].reliPage.correctedLBAsAct1, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Number of LBAs Corrected by Parity Sector - Actuator 1", vFarmFrame[page].reliPage.numberLBACorrectedByParitySectorAct1, false, m_showStatusBits);
     set_json_64_bit_With_Status(pageInfo, "Primary Super Parity Coverage Percentage SMR SWR - Actuator 1", vFarmFrame[page].reliPage.superParityCoveragePercentageAct1, false, m_showStatusBits);
   
     json_push_back(masterData, pageInfo);
@@ -1291,12 +1291,6 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
         temp.str("");temp.clear();
         temp << "MR Head Resistance for Head " << std::dec << loopCount;// Head count
         set_json_int_With_Status(headInfo, temp.str(), vFarmFrame[page].reliPage.MRHeadResistance[loopCount], m_showStatusBits);                     //!< [24] MR Head Resistance from most recent SMART Summary Frame by Head9,10
-    }
-    for (loopCount = 0; loopCount < m_heads; ++loopCount)
-    {
-        temp.str("");temp.clear();
-        temp << "Servo No Timing Mark Detect for Head " << std::dec << loopCount;// Head count
-        set_json_int_With_Status(headInfo, temp.str(), vFarmFrame[page].reliPage.numberOfTMD[loopCount], m_showStatusBits);                          //!< [24] Number of TMD over last 3 SMART Summary Frames by Head9,10
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
