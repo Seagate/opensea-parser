@@ -1204,10 +1204,6 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
-        printf("\tNumber of TMD for Head %d:                %" PRIu64" (debug)\n", loopCount, vFarmFrame[page].reliPage.numberOfTMD[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));               //!< [24] Number of TMD over last 3 SMART Summary Frames by Head9,10
-    }
-    for (loopCount = 0; loopCount < m_heads; ++loopCount)
-    {
         printf("\tVelocity Observer by Head %d:             %" PRIu64"(debug) \n", loopCount, vFarmFrame[page].reliPage.velocityObserver[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));         //!< [24] Velocity Observer over last 3 SMART Summary Frames by Head9,10
     }
     for (loopCount = 0; loopCount < m_heads; ++loopCount)

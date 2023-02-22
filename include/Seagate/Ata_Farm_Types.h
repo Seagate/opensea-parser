@@ -318,7 +318,7 @@ typedef struct _sAtaReliabilityStat
         attrErrorRateRaw(0), attrErrorRateNormal(0), attrErrorRateWorst(0), attrSeekErrorRateRaw(0), attrSeekErrorRateNormal(0), \
         attrSeekErrorRateWorst(0), attrUnloadEventsRaw(0), reserved15(0),     
 #if defined __cplusplus && __cplusplus >= 201103L   
-        reserved16{ 0 }, reserved17{ 0 }, reserved18{ 0 }, MRHeadResistance{ 0 }, numberOfTMD{ 0 },
+        reserved16{ 0 }, reserved17{ 0 }, reserved18{ 0 }, MRHeadResistance{ 0 }, reserved52{ 0 },
         velocityObserver{ 0 }, numberOfVelocityObserver{ 0 }, currentH2SAT{ }, currentH2SATIterations{ }, currentH2SATPercentage{ 0 },
         currentH2SATamplitude{ 0 }, currentH2SATasymmetry{ 0 }, flyHeightClearance{ },
 #endif
