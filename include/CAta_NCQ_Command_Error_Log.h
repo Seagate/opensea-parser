@@ -70,8 +70,8 @@ namespace opensea_parser {
         bool create_LBA();
     public:
         CAta_NCQ_Command_Error_Log();
-        CAta_NCQ_Command_Error_Log(const std::string & fileName);
-        CAta_NCQ_Command_Error_Log(uint8_t *buffer);
+		explicit CAta_NCQ_Command_Error_Log(const std::string & fileName);
+		explicit CAta_NCQ_Command_Error_Log(uint8_t *buffer);
         ~CAta_NCQ_Command_Error_Log();
 		eReturnValues get_NCQ_Command_Error_Log_Status() { return m_status; };
         eReturnValues get_NCQ_Command_Error_Log(JSONNODE *masterData);

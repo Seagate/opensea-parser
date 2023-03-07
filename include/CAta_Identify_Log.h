@@ -40,8 +40,8 @@ namespace opensea_parser {
         eReturnValues parse_Device_Info();
     public:
         CAta_Identify_log();
-        CAta_Identify_log(uint8_t *Buffer);
-        CAta_Identify_log(const std::string & fileName);
+        explicit CAta_Identify_log(uint8_t *Buffer);
+        explicit CAta_Identify_log(const std::string & fileName);
         ~CAta_Identify_log();
 		eReturnValues get_Identify_Information_Status() { return m_status; };
         eReturnValues print_Identify_Information(JSONNODE *masterData);
@@ -56,7 +56,7 @@ namespace opensea_parser {
         eReturnValues                       m_status;                                                   //!< the status of the class  
         sLogPage00                          *m_pLog0;  
     public:
-        CAta_Identify_Log_00(uint8_t *Buffer);
+        explicit CAta_Identify_Log_00(uint8_t *Buffer);
         ~CAta_Identify_Log_00();
         bool is_Page_Supported(uint8_t pageNumber);
         eReturnValues get_Log_Page00(JSONNODE *masterData);
@@ -78,7 +78,7 @@ namespace opensea_parser {
         //bool get_Normal_Buffer_size(JSONNODE *bufferData);
 
     public:
-        CAta_Identify_Log_02(uint8_t *Buffer);
+        explicit CAta_Identify_Log_02(uint8_t *Buffer);
         ~CAta_Identify_Log_02();
         eReturnValues get_Log_Page02(uint8_t *lp2pData, JSONNODE *masterData);
     };
@@ -117,7 +117,7 @@ namespace opensea_parser {
         bool get_Depopulation_Execution_Time(JSONNODE *depop);
 
     public:
-        CAta_Identify_Log_03(uint8_t *Buffer);
+        explicit CAta_Identify_Log_03(uint8_t *Buffer);
         ~CAta_Identify_Log_03();
         eReturnValues get_Log_Page03(uint8_t *lp3pData, JSONNODE *masterData);
     };
@@ -144,7 +144,7 @@ namespace opensea_parser {
         bool get_Free_Fall_Control(JSONNODE *freeFallData);
         bool get_Device_Maintenance_Schedule(JSONNODE *freeFallData);
     public:
-        CAta_Identify_Log_04(uint8_t *Buffer);
+        explicit CAta_Identify_Log_04(uint8_t *Buffer);
         ~CAta_Identify_Log_04();
         eReturnValues get_Log_Page04(uint8_t *lp4pData, JSONNODE *masterData);
     };
@@ -191,7 +191,7 @@ namespace opensea_parser {
         bool create_Product_string();
         bool get_printables(JSONNODE *masterData);
     public:
-        CAta_Identify_Log_05(uint8_t *Buffer);
+        explicit CAta_Identify_Log_05(uint8_t *Buffer);
         ~CAta_Identify_Log_05();
         eReturnValues get_Log_Page05(uint8_t *lp5pData, JSONNODE *masterData);
     };
@@ -215,7 +215,7 @@ namespace opensea_parser {
         bool set_Security_Capabilities();
         bool get_Security_Capabilities(JSONNODE *sCap);
     public:
-        CAta_Identify_Log_06(uint8_t *Buffer);
+        explicit CAta_Identify_Log_06(uint8_t *Buffer);
         ~CAta_Identify_Log_06();
         eReturnValues get_Log_Page06(uint8_t *lp6pData, JSONNODE *masterData);
     };
@@ -231,7 +231,7 @@ namespace opensea_parser {
         ATAHardwareResetResult              m_hardwareRR;                       //<! structur to the ATA Hardware Reset Results
 
     public:
-        CAta_Identify_Log_07(uint8_t *Buffer);
+        explicit CAta_Identify_Log_07(uint8_t *Buffer);
         ~CAta_Identify_Log_07();
         eReturnValues get_Log_Page07(uint8_t *lp7pData, JSONNODE *masterData);
     };
@@ -254,7 +254,7 @@ namespace opensea_parser {
         void get_Supported_Hardware(JSONNODE *supported);
         void get_Device_Sleep_Timing_Variables(JSONNODE *sleep);
     public:
-        CAta_Identify_Log_08(uint8_t *Buffer);
+        explicit CAta_Identify_Log_08(uint8_t *Buffer);
         ~CAta_Identify_Log_08();
         eReturnValues get_Log_Page08(uint8_t *pData, JSONNODE *masterData);
     };
@@ -270,8 +270,8 @@ namespace opensea_parser {
         //eReturnValues get_Interface_Type();
         
     public:
-        CAta_Identify_Log_30( const std::string & fileName);
-		CAta_Identify_Log_30(uint8_t *pBufferData);
+        explicit CAta_Identify_Log_30( const std::string & fileName);
+        explicit CAta_Identify_Log_30(uint8_t *pBufferData);
         virtual ~CAta_Identify_Log_30();
         eReturnValues get_identify_Status(){ return m_status; };
         eReturnValues parse_Identify_Log_30(JSONNODE *masterData);

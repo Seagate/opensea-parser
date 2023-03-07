@@ -23,6 +23,8 @@
 #include "CScsi_Supported_LogPages_Log.h"
 #include "CScsi_Pending_Defects_Log.h"
 #include "CScsi_Non_Medium_Error_Count_Log.h"
+#include "CScsi_Page_19h_Cache_Memory_Statistics_Log.h"
+#include "CScsi_Page_19h_Command_Duration_limits_Log.h"
 #include "CScsi_Logical_Block_Provisioning_Log.h"
 #include "CScsi_Informational_Exeptions_Log.h"
 #include "CScsi_Format_Status_Log.h"
@@ -71,7 +73,7 @@ CScsiLog::CScsiLog()
 //  Exit:
 //
 //---------------------------------------------------------------------------
-CScsiLog::CScsiLog(const std::string fileName, JSONNODE *masterData)
+CScsiLog::CScsiLog(const std::string &fileName, JSONNODE *masterData)
     : bufferData(NULL)
     , m_LogSize(0)
     , m_name("SCSI Log")
@@ -640,6 +642,71 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				delete (cPSP);
 			}
 			break;
+			case CACHE_MEMORY_STATISTICES:
+			{
+				if (lpStruct->subPage == SAS_SUBPAGE_20)        // Cache Memory Statistics 5.2.7
+				{
+					if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+					{
+						std::cout << "Cache Memory Statisitics Log Page Found" << std::endl;
+					}
+					CScsiCacheMemStatLog* cCacheLog;
+					cCacheLog = new CScsiCacheMemStatLog(&bufferData[4], m_LogSize, lpStruct->pageLength);
+					retStatus = cCacheLog->get_Cache_Memory_Statistics_Log_Status();
+					if (retStatus == IN_PROGRESS)
+					{
+						try
+						{
+							retStatus = cCacheLog->parse_Cache_Memory_Statistics_Log(masterData);
+						}
+						catch (...)
+						{
+							retStatus = cCacheLog->get_Cache_Memory_Statistics_Log_Status();
+							delete(cCacheLog);
+							if (retStatus == SUCCESS || retStatus == IN_PROGRESS)
+							{
+								return PARSE_FAILURE;
+							}
+							else
+							{
+								return retStatus;
+							}
+						}
+					}
+					delete(cCacheLog);
+					}
+				else if (lpStruct->subPage == SAS_SUBPAGE_21)        // Command Duration Limits Statistics 5.2.8
+				{
+					if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+					{
+						std::cout << "Command Duration Limits Statisitics Log Found" << std::endl;
+					}
+					CScsiCmdDurationLimitsLog* cLimitsLog;
+					cLimitsLog = new CScsiCmdDurationLimitsLog(&bufferData[4], m_LogSize, lpStruct->pageLength);
+					retStatus = cLimitsLog->get_Limits_Log_Status();
+					if (retStatus == IN_PROGRESS)
+					{
+						try
+						{
+							retStatus = cLimitsLog->parse_Limits_Log(masterData);
+						}
+						catch (...)
+						{
+							retStatus = cLimitsLog->get_Limits_Log_Status();
+							delete(cLimitsLog);
+							if (retStatus == SUCCESS || retStatus == IN_PROGRESS)
+							{
+								return PARSE_FAILURE;
+							}
+							else
+							{
+								return retStatus;
+							}
+						}
+					}
+					delete(cLimitsLog);
+				}
+			}
 			case POWER_CONDITION_TRANSITIONS:
 			{
 				if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)

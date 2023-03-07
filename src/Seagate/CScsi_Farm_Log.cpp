@@ -1458,6 +1458,16 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                 case  RESERVED_FOR_FUTURE_STATISTICS_8:
                 case  RESERVED_FOR_FUTURE_STATISTICS_9:
                 case  RESERVED_FOR_FUTURE_STATISTICS_10:
+                case  RESERVED_FOR_FUTURE_HEAD_1:
+                case  RESERVED_FOR_FUTURE_HEAD_2:
+                case  RESERVED_FOR_FUTURE_HEAD_3:
+                case  RESERVED_FOR_FUTURE_HEAD_4:
+                case  RESERVED_FOR_FUTURE_HEAD_5:
+                case  RESERVED_FOR_FUTURE_HEAD_6:
+                case  RESERVED_FOR_FUTURE_HEAD_7:
+                case  RESERVED_FOR_FUTURE_HEAD_8:
+                case  RESERVED_FOR_FUTURE_HEAD_9:
+                case  RESERVED_FOR_FUTURE_HEAD_10:
                 {
                     sHeadInformation *pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &pBuf[offset]);
@@ -1475,6 +1485,10 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     delete pHeadInfo;  
                 }
                 break;
+                case RESERVED_FOR_FUTURE_HEAD_11:
+                case RESERVED_FOR_FUTURE_HEAD_12:
+                case RESERVED_FOR_FUTURE_HEAD_13:
+                case RESERVED_FOR_FUTURE_HEAD_14:
                 case CURRENT_H2SAT_AMPLITUDE_BY_HEAD_AVERAGED_ACROSS_TEST_ZONES:     
                 {
                     sHeadInformation *pHeadInfo = new sHeadInformation(); 
@@ -1511,6 +1525,9 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     delete pHeadInfo;  
                 }
                 break;
+                case RESERVED_FOR_FUTURE_HEAD_15:
+                case RESERVED_FOR_FUTURE_HEAD_16:
+                case RESERVED_FOR_FUTURE_HEAD_17:
                 case WRITE_POWERON_HOURS_FROM_MOST_RECENT_SMART:     
                 {
                     sHeadInformation *pHeadInfo = new sHeadInformation();
@@ -1520,6 +1537,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     delete pHeadInfo;  
                 }
                 break;
+                case RESERVED_FOR_FUTURE_HEAD_18:
                 case CUM_LIFETIME_UNRECOVERALBE_READ_REPET_PER_HEAD:
                 {
                     sHeadInformation *pHeadInfo = new sHeadInformation();
@@ -1538,6 +1556,12 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     delete pHeadInfo;
                 }
                 break;
+                case RESERVED_FOR_FUTURE_HEAD_19:
+                case RESERVED_FOR_FUTURE_HEAD_20:
+                case RESERVED_FOR_FUTURE_HEAD_21:
+                case RESERVED_FOR_FUTURE_HEAD_22:
+                case RESERVED_FOR_FUTURE_HEAD_23:
+                case RESERVED_FOR_FUTURE_HEAD_24:
                 case CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_0:    
                 {
                     sHeadInformation *pHeadInfo = new sHeadInformation();
@@ -1592,6 +1616,19 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     delete pHeadInfo;  
                 }
                 break;
+                case RESERVED_FOR_FUTURE_HEAD_25:
+                case RESERVED_FOR_FUTURE_HEAD_26:
+                case RESERVED_FOR_FUTURE_HEAD_27:
+                case RESERVED_FOR_FUTURE_HEAD_28:
+                case RESERVED_FOR_FUTURE_HEAD_29:
+                case RESERVED_FOR_FUTURE_HEAD_30:
+                case RESERVED_FOR_FUTURE_HEAD_31:
+                case RESERVED_FOR_FUTURE_HEAD_32:
+                case RESERVED_FOR_FUTURE_HEAD_33:
+                case RESERVED_FOR_FUTURE_HEAD_34:
+                case RESERVED_FOR_FUTURE_HEAD_35:
+                case RESERVED_FOR_FUTURE_HEAD_36:
+                case RESERVED_FOR_FUTURE_HEAD_37:
                 case SECOND_MR_HEAD_RESISTANCE:
                 {
                     sHeadInformation *pHeadInfo = new sHeadInformation();
@@ -1601,6 +1638,18 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     delete pHeadInfo;
                 }
                 break;
+                case RESERVED_FOR_FUTURE_HEAD_38:
+                case RESERVED_FOR_FUTURE_HEAD_39:
+                case RESERVED_FOR_FUTURE_HEAD_40:
+                case RESERVED_FOR_FUTURE_HEAD_41:
+                case RESERVED_FOR_FUTURE_HEAD_42:
+                case RESERVED_FOR_FUTURE_HEAD_43:
+                case RESERVED_FOR_FUTURE_HEAD_44:
+                case RESERVED_FOR_FUTURE_HEAD_45:
+                case RESERVED_FOR_FUTURE_HEAD_46:
+                case RESERVED_FOR_FUTURE_HEAD_47:
+                case RESERVED_FOR_FUTURE_HEAD_48:
+                case RESERVED_FOR_FUTURE_HEAD_49:
                 case LUN_0_ACTUATOR:
                 {
                     Get_sLUNStruct(&pFarmFrame->vLUN50,offset);
@@ -1621,6 +1670,19 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     offset += (pFarmFrame->reall52.pageHeader.paramLength + sizeof(sLogParams));
                 }
                 break;
+                case RESERVED_FOR_FUTURE_EXPANSION_42:
+                case RESERVED_FOR_FUTURE_EXPANSION_43:
+                case RESERVED_FOR_FUTURE_EXPANSION_44:
+                case RESERVED_FOR_FUTURE_EXPANSION_45:
+                case RESERVED_FOR_FUTURE_EXPANSION_46:
+                case RESERVED_FOR_FUTURE_EXPANSION_47:
+                case RESERVED_FOR_FUTURE_EXPANSION_48:
+                case RESERVED_FOR_FUTURE_EXPANSION_49:
+                case RESERVED_FOR_FUTURE_EXPANSION_50:
+                case RESERVED_FOR_FUTURE_EXPANSION_51:
+                case RESERVED_FOR_FUTURE_EXPANSION_52:
+                case RESERVED_FOR_FUTURE_EXPANSION_53:
+                case RESERVED_FOR_FUTURE_EXPANSION_54:
                 case LUN_1_ACTUATOR:
                 {
                     Get_sLUNStruct(&pFarmFrame->vLUN60,offset);
@@ -1639,6 +1701,20 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     offset += (pFarmFrame->reall62.pageHeader.paramLength + sizeof(sLogParams));
                 }
                 break;
+                case RESERVED_FOR_FUTURE_EXPANSION_61:
+                case RESERVED_FOR_FUTURE_EXPANSION_62:
+                case RESERVED_FOR_FUTURE_EXPANSION_63:
+                case RESERVED_FOR_FUTURE_EXPANSION_64:
+                case RESERVED_FOR_FUTURE_EXPANSION_65:
+                case RESERVED_FOR_FUTURE_EXPANSION_66:
+                case RESERVED_FOR_FUTURE_EXPANSION_67:
+                case RESERVED_FOR_FUTURE_EXPANSION_68:
+                case RESERVED_FOR_FUTURE_EXPANSION_69:
+                case RESERVED_FOR_FUTURE_EXPANSION_70:
+                case RESERVED_FOR_FUTURE_EXPANSION_71:
+                case RESERVED_FOR_FUTURE_EXPANSION_72:
+                case RESERVED_FOR_FUTURE_EXPANSION_73:
+                case RESERVED_FOR_FUTURE_EXPANSION_74:
                 case LUN_2_ACTUATOR:
                 {
                     Get_sLUNStruct(&pFarmFrame->vLUN70,offset);
@@ -1657,6 +1733,20 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     offset += (pFarmFrame->reall72.pageHeader.paramLength + sizeof(sLogParams));
                 }
                 break;
+                case RESERVED_FOR_FUTURE_EXPANSION_81:
+                case RESERVED_FOR_FUTURE_EXPANSION_82:
+                case RESERVED_FOR_FUTURE_EXPANSION_83:
+                case RESERVED_FOR_FUTURE_EXPANSION_84:
+                case RESERVED_FOR_FUTURE_EXPANSION_85:
+                case RESERVED_FOR_FUTURE_EXPANSION_86:
+                case RESERVED_FOR_FUTURE_EXPANSION_87:
+                case RESERVED_FOR_FUTURE_EXPANSION_88:
+                case RESERVED_FOR_FUTURE_EXPANSION_89:
+                case RESERVED_FOR_FUTURE_EXPANSION_90:
+                case RESERVED_FOR_FUTURE_EXPANSION_91:
+                case RESERVED_FOR_FUTURE_EXPANSION_92:
+                case RESERVED_FOR_FUTURE_EXPANSION_93:
+                case RESERVED_FOR_FUTURE_EXPANSION_94:
                 case LUN_3_ACTUATOR:
                 {
                     Get_sLUNStruct(&pFarmFrame->vLUN80,offset);

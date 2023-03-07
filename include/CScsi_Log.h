@@ -33,7 +33,7 @@ namespace opensea_parser {
 		eReturnValues get_Log_Parsed(JSONNODE *masterData);
 	public:
 		CScsiLog();
-        CScsiLog(const std::string fileName, JSONNODE *masterData);
+        CScsiLog(const std::string &fileName, JSONNODE *masterData);
 		virtual ~CScsiLog();
         virtual eReturnValues get_Log_Status(){ return m_ScsiStatus; };
 		inline int get_Page_Code() const { return m_Page->pageCode; }

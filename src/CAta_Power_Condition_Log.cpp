@@ -64,7 +64,7 @@ CAtaPowerConditionsLog::CAtaPowerConditionsLog()
 //!  \return NONE
 //
 //---------------------------------------------------------------------------
-CAtaPowerConditionsLog::CAtaPowerConditionsLog(std::string filename)
+CAtaPowerConditionsLog::CAtaPowerConditionsLog(std::string &filename)
     : m_powerConditionLog(NULL)
     , m_powerFlags(NULL)
     , Buffer()

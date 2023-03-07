@@ -37,7 +37,7 @@ namespace opensea_parser {
 
 	public:
 		CLog();
-        CLog(const std::string & fileName);
+        explicit CLog(const std::string & fileName);
 		CLog(const uint8_t * pBuf, uint32_t logSize);
         virtual ~CLog();
         //void get_CLog(const std::string & fileName);
