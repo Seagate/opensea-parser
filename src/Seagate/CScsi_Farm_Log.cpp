@@ -182,6 +182,7 @@ CSCSI_Farm_Log::CSCSI_Farm_Log( uint8_t *bufferData, size_t bufferSize, uint8_t 
         m_status = FAILURE;
     }
     delete[] pBuf;
+    delete[] m_pHeader;
 }
 //-----------------------------------------------------------------------------
 //
