@@ -24,7 +24,7 @@
 #include "CScsi_Pending_Defects_Log.h"
 #include "CScsi_Non_Medium_Error_Count_Log.h"
 #include "CScsi_Page_19h_Cache_Memory_Statistics_Log.h"
-#include "CScsi_Page_19h_Command_Duration_limits_Log.h"
+#include "CScsi_Page_19h_Command_Duration_Limits_Log.h"
 #include "CScsi_Logical_Block_Provisioning_Log.h"
 #include "CScsi_Informational_Exeptions_Log.h"
 #include "CScsi_Format_Status_Log.h"
