@@ -707,6 +707,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 					delete(cLimitsLog);
 				}
 			}
+			break;
 			case POWER_CONDITION_TRANSITIONS:
 			{
 				if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
