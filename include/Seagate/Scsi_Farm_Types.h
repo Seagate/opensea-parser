@@ -247,19 +247,19 @@ namespace opensea_parser {
         uint64_t            reserved3;									//!< Reserved
         uint64_t            reserved4;									//!< Reserved
         uint64_t            reserved5;									//!< Reserved
-        uint64_t            attrIOEDCErrors;							//!< Number of IOEDC Errors 
-        uint64_t            reserved6;									//!< Reserved
+        uint64_t            reserved6;							        //!< Reserved
         uint64_t            reserved7;									//!< Reserved
         uint64_t            reserved8;									//!< Reserved
-        uint64_t            totalFlashLED;								//!< Total Flash LED (Assert) Events
         uint64_t            reserved9;									//!< Reserved
+        uint64_t            totalFlashLED;								//!< Total Flash LED (Assert) Events
         uint64_t            reserved10;									//!< Reserved
+        uint64_t            reserved11;									//!< Reserved
         uint64_t            FRUCode;									//!< FRU code if smart trip from most recent SMART Frame (SAS only) 
         uint64_t            parity;                                     //!< Super Parity on the Fly Recovery
         
         _sScsiErrorStat() :pageNumber(0), copyNumber(0), totalReadECC(0), totalWriteECC(0), totalReallocations(0), reserved(0), totalMechanicalFails(0), totalReallocatedCanidates(0),
-            reserved1(0), reserved2(0), reserved3(0), reserved4(0), reserved5(0), attrIOEDCErrors(0), reserved6(0), reserved7(0), reserved8(0), totalFlashLED(0),
-            reserved9(0), reserved10(0), FRUCode(0), parity(0) {};
+            reserved1(0), reserved2(0), reserved3(0), reserved4(0), reserved5(0), reserved6(0), reserved7(0), reserved8(0), totalFlashLED(0),
+            reserved9(0), reserved10(0), reserved11(0), FRUCode(0), parity(0) {};
             
     }sScsiErrorStat;
 
@@ -279,13 +279,13 @@ namespace opensea_parser {
         uint64_t            reserved5;									//!< Reserved
         uint64_t            reserved6;									//!< Reserved
         uint64_t            reserved7;									//!< Reserved
-        uint64_t            attrIOEDCErrors;							//!< Number of IOEDC Errors 
-        uint64_t            reserved8;									//!< Reserved
+        uint64_t            reserved8;							        //!< Reserved
         uint64_t            reserved9;									//!< Reserved
         uint64_t            reserved10;									//!< Reserved
-        uint64_t            reserved11;								    //!< reserved
-        uint64_t            reserved12;									//!< Reserved
+        uint64_t            reserved11;									//!< Reserved
+        uint64_t            reserved12;								    //!< reserved
         uint64_t            reserved13;									//!< Reserved
+        uint64_t            reserved14;									//!< Reserved
         uint64_t            FRUCode;									//!< FRU code if smart trip from most recent SMART Frame (SAS only) 
         uint64_t            portAInvalidDwordCount;                     //!< Invalid DWord Count (Port A)
         uint64_t            portBInvalidDwordCount;                     //!< Invalid DWord Count (Port B)
@@ -298,8 +298,8 @@ namespace opensea_parser {
 
         _sScsiErrorStatVersion4() : pageNumber(0), copyNumber(0), totalReadECC(0), totalWriteECC(0), reserved(0), reserved1(0),
             totalMechanicalFails(0), reserved2(0), reserved3(0), reserved4(0), reserved5(0), reserved6(0),
-            reserved7(0), attrIOEDCErrors(0), reserved8(0), reserved9(0), reserved10(0), reserved11(0),
-            reserved12(0), reserved13(0), FRUCode(0), portAInvalidDwordCount(0), portBInvalidDwordCount(0),
+            reserved7(0), reserved8(0), reserved9(0), reserved10(0), reserved11(0), reserved12(0),
+             reserved13(0), reserved14(0), FRUCode(0), portAInvalidDwordCount(0), portBInvalidDwordCount(0),
             portADisparityErrorCount(0), portBDisparityErrorCount(0), portALossDwordSync(0),
             portBLossDwordSync(0), portAPhyResetProblem(0), portBPhyResetProblem(0) {};
     }sScsiErrorVersion4;

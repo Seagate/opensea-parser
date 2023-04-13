@@ -762,9 +762,7 @@ bool CSCSI_Farm_Log::Get_sErrorStat(sScsiErrorFrame * es, uint64_t offset)
         es->errorStat.totalMechanicalFails = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
         offset += SIZEPARAM;
         es->errorStat.totalReallocatedCanidates = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-        offset += (SIZEPARAM * 6); // 5 reseved
-        es->errorStat.attrIOEDCErrors = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-        offset += (SIZEPARAM * 4); //3 reseved
+        offset += (SIZEPARAM * 10); // 9 reseved
         es->errorStat.totalFlashLED = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
         offset += (SIZEPARAM * 3);
         es->errorStat.FRUCode = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
@@ -790,9 +788,7 @@ bool CSCSI_Farm_Log::Get_sErrorStat(sScsiErrorFrame * es, uint64_t offset)
         es->errorV4.totalWriteECC = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
         offset += (SIZEPARAM * 3); // 2 reserved
         es->errorV4.totalMechanicalFails = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-        offset += (SIZEPARAM * 7);  // 6 reserved
-        es->errorV4.attrIOEDCErrors = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-        offset += (SIZEPARAM * 7); // 6 reserved
+        offset += (SIZEPARAM * 14);  // 13 reserved
         es->errorV4.FRUCode = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
         offset += SIZEPARAM;
         es->errorV4.portAInvalidDwordCount = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
@@ -2192,10 +2188,10 @@ eReturnValues CSCSI_Farm_Log::print_Error_Information(JSONNODE *masterData, uint
     printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorStat.reserved3 & UINT64_C(0x00FFFFFFFFFFFFFF));					//!< Reserved
     printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorStat.reserved4 & UINT64_C(0x00FFFFFFFFFFFFFF));					//!< Reserved
     printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorStat.reserved5 & UINT64_C(0x00FFFFFFFFFFFFFF));					//!< Reserved
-    printf("\tIOEDC Errors (not supported in sas):      %" PRIu64" \n", vFarmFrame[page].errorPage.errorStat.attrIOEDCErrors & UINT64_C(0x00FFFFFFFFFFFFFF));				//!< Number of IOEDC Errors 
     printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorStat.reserved6 & UINT64_C(0x00FFFFFFFFFFFFFF));					//!< Reserved
     printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorStat.reserved7 & UINT64_C(0x00FFFFFFFFFFFFFF));					//!< Reserved
     printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorStat.reserved8 & UINT64_C(0x00FFFFFFFFFFFFFF));					//!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorStat.reserved9 & UINT64_C(0x00FFFFFFFFFFFFFF));					//!< Reserved
     printf("\tTotal Flash LED (Assert) Events:          %" PRIu64" \n", vFarmFrame[page].errorPage.errorStat.totalFlashLED & UINT64_C(0x00FFFFFFFFFFFFFF));				//!< Total Flash LED (Assert) Events
     printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorStat.reserved9 & UINT64_C(0x00FFFFFFFFFFFFFF));					//!< Reserved
     printf("\tFRU code if smart trip:                   %" PRIu64" \n", vFarmFrame[page].errorPage.errorStat.FRUCode & UINT64_C(0x00FFFFFFFFFFFFFF));
@@ -2220,8 +2216,7 @@ eReturnValues CSCSI_Farm_Log::print_Error_Information(JSONNODE *masterData, uint
     set_json_64_bit_With_Status(pageInfo, "Unrecoverable Write Errors", vFarmFrame[page].errorPage.errorStat.totalWriteECC, false, m_showStatusBits);							//!< Number of Unrecoverable Write Errors
     set_json_64_bit_With_Status(pageInfo, "Reallocated Sectors", vFarmFrame[page].errorPage.errorStat.totalReallocations, false, m_showStatusBits);					//!< Number of Reallocated Sectors
     set_json_64_bit_With_Status(pageInfo, "Mechanical Start Failures", vFarmFrame[page].errorPage.errorStat.totalMechanicalFails, false, m_showStatusBits);			//!< Number of Mechanical Start Failures
-    set_json_64_bit_With_Status(pageInfo, "Reallocated Candidate Sectors", vFarmFrame[page].errorPage.errorStat.totalReallocatedCanidates, false, m_showStatusBits); //!< Number of Reallocated Candidate Sectors
-    set_json_64_bit_With_Status(pageInfo, "Number of IOEDC Errors (Raw)", vFarmFrame[page].errorPage.errorStat.attrIOEDCErrors, false, m_showStatusBits);						//!< Number of IOEDC Errors (SMART Attribute 184 Raw)
+    set_json_64_bit_With_Status(pageInfo, "Reallocated Candidate Sectors", vFarmFrame[page].errorPage.errorStat.totalReallocatedCanidates, false, m_showStatusBits); //!< Number of Reallocated Candidate Sectors	
     set_json_64_bit_With_Status(pageInfo, "Total Flash LED (Assert) Events", vFarmFrame[page].errorPage.errorStat.totalFlashLED, false, m_showStatusBits);						//!< Total Flash LED (Assert) Events
     set_json_64_bit_With_Status(pageInfo, "SMART Trip FRU code", vFarmFrame[page].errorPage.errorStat.FRUCode, false, m_showStatusBits);		//!< FRU code if smart trip from most recent SMART Frame
     set_json_64_bit_With_Status(pageInfo, "Super Parity on the Fly Recovery", vFarmFrame[page].errorPage.errorStat.parity, false, m_showStatusBits);                      //!< Super Parity on the Fly Recovery
@@ -2260,20 +2255,21 @@ eReturnValues CSCSI_Farm_Log::print_Error_Information_Version_4(JSONNODE *master
     printf("\tUnrecoverable Read Errors:                %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.totalReadECC & UINT64_C(0x00FFFFFFFFFFFFFF));				//!< Number of Unrecoverable Read Errors
     printf("\tUnrecoverable Write Errors:               %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.totalWriteECC & UINT64_C(0x00FFFFFFFFFFFFFF));				//!< Number of Unrecoverable Write Errors
     printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.reserved & UINT64_C(0x00FFFFFFFFFFFFFF));
-    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.reserved & UINT64_C(0x00FFFFFFFFFFFFFF));					//!< Reserved
-    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.totalMechanicalFails & UINT64_C(0x00FFFFFFFFFFFFFF));		//!< Number of Mechanical Start Failures
-    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.reserved & UINT64_C(0x00FFFFFFFFFFFFFF));
     printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.reserved1 & UINT64_C(0x00FFFFFFFFFFFFFF));					//!< Reserved
-    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.reserved2 & UINT64_C(0x00FFFFFFFFFFFFFF));					//!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.totalMechanicalFails & UINT64_C(0x00FFFFFFFFFFFFFF));		//!< Number of Mechanical Start Failures
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.reserved2 & UINT64_C(0x00FFFFFFFFFFFFFF));
     printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.reserved3 & UINT64_C(0x00FFFFFFFFFFFFFF));					//!< Reserved
     printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.reserved4 & UINT64_C(0x00FFFFFFFFFFFFFF));					//!< Reserved
     printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.reserved5 & UINT64_C(0x00FFFFFFFFFFFFFF));					//!< Reserved
-    printf("\tIOEDC Errors (not supported in sas):      %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.attrIOEDCErrors & UINT64_C(0x00FFFFFFFFFFFFFF));				//!< Number of IOEDC Errors 
     printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.reserved6 & UINT64_C(0x00FFFFFFFFFFFFFF));					//!< Reserved
     printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.reserved7 & UINT64_C(0x00FFFFFFFFFFFFFF));					//!< Reserved
     printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.reserved8 & UINT64_C(0x00FFFFFFFFFFFFFF));					//!< Reserved
-    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.reserved & UINT64_C(0x00FFFFFFFFFFFFFF));
     printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.reserved9 & UINT64_C(0x00FFFFFFFFFFFFFF));					//!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.reserved10 & UINT64_C(0x00FFFFFFFFFFFFFF));					//!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.reserved11 & UINT64_C(0x00FFFFFFFFFFFFFF));
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.reserved12 & UINT64_C(0x00FFFFFFFFFFFFFF));					//!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.reserved13 & UINT64_C(0x00FFFFFFFFFFFFFF));					//!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.reserved14 & UINT64_C(0x00FFFFFFFFFFFFFF));					//!< Reserved
     printf("\tSMART Trip FRU code:                      %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.FRUCode & UINT64_C(0x00FFFFFFFFFFFFFF));
     printf("\tInvalid DWord Count Port A                %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.portAInvalidDwordCount & UINT64_C(0x00FFFFFFFFFFFFFF));
     printf("\tInvalid DWord Count Port B                %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.portBInvalidDwordCount & UINT64_C(0x00FFFFFFFFFFFFFF));
@@ -2300,7 +2296,6 @@ eReturnValues CSCSI_Farm_Log::print_Error_Information_Version_4(JSONNODE *master
     set_json_64_bit_With_Status(pageInfo, "Unrecoverable Read Errors", vFarmFrame[page].errorPage.errorV4.totalReadECC, false, m_showStatusBits);							//!< Number of Unrecoverable Read Errors
     set_json_64_bit_With_Status(pageInfo, "Unrecoverable Write Errors", vFarmFrame[page].errorPage.errorV4.totalWriteECC, false, m_showStatusBits);							//!< Number of Unrecoverable Write Errors
     set_json_64_bit_With_Status(pageInfo, "Mechanical Start Failures", vFarmFrame[page].errorPage.errorV4.totalMechanicalFails, false, m_showStatusBits);			//!< Number of Mechanical Start Failures
-    set_json_64_bit_With_Status(pageInfo, "IOEDC Errors (Raw)", vFarmFrame[page].errorPage.errorV4.attrIOEDCErrors, false, m_showStatusBits);						//!< Number of IOEDC Errors (SMART Attribute 184 Raw)   
     set_json_64_bit_With_Status(pageInfo, "SMART Trip FRU code", vFarmFrame[page].errorPage.errorV4.FRUCode, false, m_showStatusBits);		//!< FRU code if smart trip from most recent SMART Frame
     set_json_64_bit_With_Status(pageInfo, "Invalid DWord Count Port A ", vFarmFrame[page].errorPage.errorV4.portAInvalidDwordCount, false, m_showStatusBits);
     set_json_64_bit_With_Status(pageInfo, "Invalid DWord Count Port B", vFarmFrame[page].errorPage.errorV4.portBInvalidDwordCount, false, m_showStatusBits);
