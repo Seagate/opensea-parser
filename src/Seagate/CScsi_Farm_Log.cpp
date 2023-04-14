@@ -741,74 +741,41 @@ bool CSCSI_Farm_Log::Get_sWorkLoadStat(sScsiWorkLoadStat *wl, uint64_t offset)
 bool CSCSI_Farm_Log::Get_sErrorStat(sScsiErrorFrame * es, uint64_t offset)
 {
 
-    if (m_MajorRev < 4)
-    {
-        es->errorStat.pPageHeader.paramCode = M_BytesTo2ByteValue(pBuf[offset], pBuf[offset + 1]);
-        offset += 2;
-        es->errorStat.pPageHeader.paramControlByte = pBuf[offset];
-        offset++;
-        es->errorStat.pPageHeader.paramLength = pBuf[offset];
-        offset++;
-        es->errorStat.pageNumber = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-        offset += SIZEPARAM;
-        es->errorStat.copyNumber = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-        offset += SIZEPARAM;
-        es->errorStat.totalReadECC = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-        offset += SIZEPARAM;
-        es->errorStat.totalWriteECC = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-        offset += SIZEPARAM;
-        es->errorStat.totalReallocations = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-        offset += (SIZEPARAM * 2); //one reserved
-        es->errorStat.totalMechanicalFails = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-        offset += SIZEPARAM;
-        es->errorStat.totalReallocatedCanidates = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-        offset += (SIZEPARAM * 10); // 9 reseved
-        es->errorStat.totalFlashLED = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-        offset += (SIZEPARAM * 3);
-        es->errorStat.FRUCode = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-        offset += SIZEPARAM;
-        es->errorStat.parity = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-        //offset += SIZEPARAM;
+    es->pPageHeader.paramCode = M_BytesTo2ByteValue(pBuf[offset], pBuf[offset + 1]);
+    offset += 2;
+    es->pPageHeader.paramControlByte = pBuf[offset];
+    offset++;
+    es->pPageHeader.paramLength = pBuf[offset];
+    offset++;
+    es->pageNumber = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    es->copyNumber = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    es->totalReadECC = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    es->totalWriteECC = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += (SIZEPARAM * 3); // 2 reserved
+    es->totalMechanicalFails = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += (SIZEPARAM * 14);  // 13 reserved
+    es->FRUCode = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    es->portAInvalidDwordCount = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    es->portBInvalidDwordCount = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    es->portADisparityErrorCount = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    es->portBDisparityErrorCount = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    es->portALossDwordSync = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    es->portBLossDwordSync = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    es->portAPhyResetProblem = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    es->portBPhyResetProblem = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
 
-    }
-    else
-    {
-        es->errorV4.pPageHeader.paramCode = M_BytesTo2ByteValue(pBuf[offset], pBuf[offset + 1]);
-        offset += 2;
-        es->errorV4.pPageHeader.paramControlByte = pBuf[offset];
-        offset++;
-        es->errorV4.pPageHeader.paramLength = pBuf[offset];
-        offset++;
-        es->errorV4.pageNumber = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-        offset += SIZEPARAM;
-        es->errorV4.copyNumber = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-        offset += SIZEPARAM;
-        es->errorV4.totalReadECC = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-        offset += SIZEPARAM;
-        es->errorV4.totalWriteECC = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-        offset += (SIZEPARAM * 3); // 2 reserved
-        es->errorV4.totalMechanicalFails = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-        offset += (SIZEPARAM * 14);  // 13 reserved
-        es->errorV4.FRUCode = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-        offset += SIZEPARAM;
-        es->errorV4.portAInvalidDwordCount = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-        offset += SIZEPARAM;
-        es->errorV4.portBInvalidDwordCount = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-        offset += SIZEPARAM;
-        es->errorV4.portADisparityErrorCount = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-        offset += SIZEPARAM;
-        es->errorV4.portBDisparityErrorCount = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-        offset += SIZEPARAM;
-        es->errorV4.portALossDwordSync = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-        offset += SIZEPARAM;
-        es->errorV4.portBLossDwordSync = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-        offset += SIZEPARAM;
-        es->errorV4.portAPhyResetProblem = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-        offset += SIZEPARAM;
-        es->errorV4.portBPhyResetProblem = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-        //offset += SIZEPARAM;
 
-    }
     return true;
 }
 
@@ -956,7 +923,6 @@ bool CSCSI_Farm_Log::Get_WorkloadPage08(sScsiWorkloadStatPage08 *ep, uint64_t of
     ep->countQueDepth33_64 = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
     offset += SIZEPARAM;
     ep->countQueDepth_gt_64 = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-    //offset += SIZEPARAM;
 
     return true;
 }
@@ -979,85 +945,22 @@ bool CSCSI_Farm_Log::Get_WorkloadPage08(sScsiWorkloadStatPage08 *ep, uint64_t of
 //---------------------------------------------------------------------------
 bool CSCSI_Farm_Log::Get_sScsiReliabilityStat(sScsiReliablility *ss, uint64_t offset)
 {
-    if (m_MajorRev < 4)
-    {
-
-        ss->reli.pPageHeader.paramCode = M_BytesTo2ByteValue(pBuf[offset], pBuf[offset + 1]);
-        offset += 2;
-        ss->reli.pPageHeader.paramControlByte = pBuf[offset];
-        offset++;
-        ss->reli.pPageHeader.paramLength = pBuf[offset];
-        offset++;
-        ss->reli.pageNumber = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-        offset += SIZEPARAM;
-        ss->reli.copyNumber = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-        offset += SIZEPARAM;
-        ss->reli.lastIDDTest = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-        offset += SIZEPARAM;
-        ss->reli.cmdLastIDDTest = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-        offset += SIZEPARAM;
-        ss->reli.gListReclamed = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-        offset += SIZEPARAM;
-        ss->reli.servoStatus = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-        offset += SIZEPARAM;
-        ss->reli.altsBeforeIDD = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-        offset += SIZEPARAM;
-        ss->reli.altsAfterIDD = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-        offset += SIZEPARAM;
-        ss->reli.gListBeforeIDD = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-        offset += SIZEPARAM;
-        ss->reli.gListAfterIDD = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-        offset += SIZEPARAM;
-        ss->reli.scrubsBeforeIDD = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-        offset += SIZEPARAM;
-        ss->reli.scrubsAfterIDD = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-        offset += SIZEPARAM;
-        ss->reli.numberDOSScans = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-        offset += SIZEPARAM;
-        ss->reli.numberLBACorrect = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-        offset += SIZEPARAM;
-        ss->reli.numberValidParitySec = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-        offset += SIZEPARAM;
-        ss->reli.numberRAWops = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-        offset += (SIZEPARAM * 8); //6 reserved
-        ss->reli.microActuatorLockOut = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-        offset += SIZEPARAM;
-        ss->reli.diskSlipRecalPerformed = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-        offset += SIZEPARAM;
-        ss->reli.heliumPressuretThreshold = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-        offset += SIZEPARAM;
-        ss->reli.rvAbsoluteMean = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-        offset += SIZEPARAM;
-        ss->reli.maxRVAbsoluteMean = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-        offset += SIZEPARAM;
-        ss->reli.idleTime = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-        //offset += SIZEPARAM;
-
-    }
-    else
-    {
-        ss->reli4.pPageHeader.paramCode = M_BytesTo2ByteValue(pBuf[offset], pBuf[offset + 1]);
-        offset += 2;
-        ss->reli4.pPageHeader.paramControlByte = pBuf[offset];
-        offset++;
-        ss->reli4.pPageHeader.paramLength = pBuf[offset];
-        offset++;
-        ss->reli4.pageNumber = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-        offset += SIZEPARAM;
-        ss->reli4.copyNumber = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-        offset += (SIZEPARAM * 14);
-        ss->reli4.numberRAWops = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-        offset += SIZEPARAM;
-        ss->reli4.cumECCDueToERC = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-        offset += (SIZEPARAM * 7);
-        ss->reli4.microActuatorLockOut = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-        offset += SIZEPARAM;
-        ss->reli4.diskSlipRecalPerformed = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-        offset += SIZEPARAM;
-        ss->reli4.heliumPressuretThreshold = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-        //offset += SIZEPARAM;
-
-    }
+    ss->pPageHeader.paramCode = M_BytesTo2ByteValue(pBuf[offset], pBuf[offset + 1]);
+    offset += 2;
+    ss->pPageHeader.paramControlByte = pBuf[offset];
+    offset++;
+    ss->pPageHeader.paramLength = pBuf[offset];
+    offset++;
+    ss->pageNumber = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    ss->copyNumber = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += (SIZEPARAM * 14);
+    ss->numberRAWops = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    ss->cumECCDueToERC = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += (SIZEPARAM * 9);
+    ss->heliumPressuretThreshold = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+ 
     return true;
 }
 //-----------------------------------------------------------------------------
@@ -1118,61 +1021,16 @@ bool CSCSI_Farm_Log::Get_sLUNStruct(sLUNStruct *LUN,uint64_t offset)
     LUN->LUNID = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
     offset += SIZEPARAM;
     LUN->headLoadEvents = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-    offset += SIZEPARAM;
-    LUN->reallocatedSectors = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-    offset += SIZEPARAM;
-    LUN->reallocatedCandidates = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-    offset += SIZEPARAM;
-    LUN->timeStampOfIDD = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-    offset += SIZEPARAM;
-    LUN->subCmdOfIDD = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-    offset += SIZEPARAM;
-    LUN->reclamedGlist = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-    offset += SIZEPARAM;
-    LUN->servoStatus = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-    offset += SIZEPARAM;
-    LUN->slippedSectorsBeforeIDD = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-    offset += SIZEPARAM;
-    LUN->slippedSectorsAfterIDD = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-    offset += SIZEPARAM;
-    LUN->residentReallocatedBeforeIDD = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-    offset += SIZEPARAM;
-    LUN->residentReallocatedAfterIDD = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-    offset += SIZEPARAM;
-    LUN->successScrubbedBeforeIDD = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-    offset += SIZEPARAM;
-    LUN->successScrubbedAfterIDD = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-    offset += SIZEPARAM;
+    offset += SIZEPARAM * 13;
     LUN->dosScansPerformed = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
     offset += SIZEPARAM;
     LUN->correctedLBAbyISP = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-    offset += SIZEPARAM;
-    LUN->paritySectors = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-    offset += SIZEPARAM;
-    LUN->RVabsolue = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-    offset += SIZEPARAM;
-    LUN->maxRVabsolue = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-    offset += SIZEPARAM;
-    LUN->idleTime = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-    offset += SIZEPARAM;
+    offset += SIZEPARAM * 5;
     LUN->lbasCorrectedByParity = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-    offset += SIZEPARAM;
-    LUN->currentLowFrequencyVibe = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-    offset += SIZEPARAM;
-    LUN->currentMidFrequencyVibe = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-    offset += SIZEPARAM;
-    LUN->currentHighFrequencyVibe = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-    offset += SIZEPARAM;
-    LUN->worstLowFrequencyVibe = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-    offset += SIZEPARAM;
-    LUN->worstMidFrequencyVibe = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-    offset += SIZEPARAM;
-    LUN->worstHighFrequencyVibe = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-    offset += SIZEPARAM;
+    offset += SIZEPARAM * 7;
     LUN->primarySPCovPercentage = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
     offset += SIZEPARAM;
     LUN->primarySPCovPercentageSMR = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-    //offset += SIZEPARAM;
 
     return true;
 }
@@ -1396,16 +1254,9 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                    
                 case ERROR_STATISTICS_PARAMETER:   
                 {
-                    if (m_MajorRev < 4)
-                    {
-                        Get_sErrorStat(&pFarmFrame->errorPage,offset);
-                        offset += (pFarmFrame->errorPage.errorStat.pPageHeader.paramLength + sizeof(sLogParams));
-                    }
-                    else
-                    {
-                        Get_sErrorStat(&pFarmFrame->errorPage,offset);
-                        offset += (pFarmFrame->errorPage.errorV4.pPageHeader.paramLength + sizeof(sLogParams));
-                    }
+                    Get_sErrorStat(&pFarmFrame->errorPage,offset);
+                    offset += (pFarmFrame->errorPage.pPageHeader.paramLength + sizeof(sLogParams));
+
                 }
                 break;
                     
@@ -1418,16 +1269,8 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                    
                 case RELIABILITY_STATISTICS_PARAMETER:    
                 {
-                    if (m_MajorRev < 4)
-                    {
-                        Get_sScsiReliabilityStat(&pFarmFrame->reliPage,offset);
-                        offset += (pFarmFrame->reliPage.reli.pPageHeader.paramLength + sizeof(sLogParams));
-                    }
-                    else
-                    {
-                        Get_sScsiReliabilityStat(&pFarmFrame->reliPage, offset);
-                        offset += (pFarmFrame->reliPage.reli4.pPageHeader.paramLength + sizeof(sLogParams));
-                    }
+                    Get_sScsiReliabilityStat(&pFarmFrame->reliPage, offset);
+                    offset += (pFarmFrame->reliPage.pPageHeader.paramLength + sizeof(sLogParams));
                 }
                 break; 
                 case  GENERAL_DRIVE_INFORMATION_06:
@@ -2156,7 +1999,7 @@ eReturnValues CSCSI_Farm_Log::print_WorkLoad(JSONNODE *masterData, uint32_t page
 //! \fn print_Error_Information()
 //
 //! \brief
-//!   Description:  print out the Error log information 
+//!   Description:  print out the Error log information version 4 and up 
 //
 //  Entry:
 //! \param masterData - pointer to the json data that will be printed or passed on
@@ -2169,7 +2012,7 @@ eReturnValues CSCSI_Farm_Log::print_WorkLoad(JSONNODE *masterData, uint32_t page
 eReturnValues CSCSI_Farm_Log::print_Error_Information(JSONNODE *masterData, uint32_t page)
 {
 #if defined _DEBUG
-    if (vFarmFrame[page].errorPage.errorStat.copyNumber == FACTORYCOPY)
+    if (vFarmFrame[page].errorPage.copyNumber == FACTORYCOPY)
     {
         printf("\nError Information From Farm Log copy FACTORY \n");
     }
@@ -2177,113 +2020,38 @@ eReturnValues CSCSI_Farm_Log::print_Error_Information(JSONNODE *masterData, uint
     {
         printf("\nError Information Log From Farm Log copy %d: \n", page);
     }
-    printf("\tUnrecoverable Read Errors:                %" PRIu64" \n", vFarmFrame[page].errorPage.errorStat.totalReadECC & UINT64_C(0x00FFFFFFFFFFFFFF));				//!< Number of Unrecoverable Read Errors
-    printf("\tUnrecoverable Write Errors:               %" PRIu64" \n", vFarmFrame[page].errorPage.errorStat.totalWriteECC & UINT64_C(0x00FFFFFFFFFFFFFF));				//!< Number of Unrecoverable Write Errors
-    printf("\tNumber of Reallocated Sectors:            %" PRIu64" \n", vFarmFrame[page].errorPage.errorStat.totalReallocations & UINT64_C(0x00FFFFFFFFFFFFFF));			//!< Number of Reallocated Sectors
-    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorStat.reserved & UINT64_C(0x00FFFFFFFFFFFFFF));					//!< Reserved
-    printf("\tNumber of Mechanical Start Failures:      %" PRIu64" \n", vFarmFrame[page].errorPage.errorStat.totalMechanicalFails & UINT64_C(0x00FFFFFFFFFFFFFF));		//!< Number of Mechanical Start Failures
-    printf("\tNumber of Reallocated Candidate Sectors:  %" PRIu64" \n", vFarmFrame[page].errorPage.errorStat.totalReallocatedCanidates & UINT64_C(0x00FFFFFFFFFFFFFF));	//!< Number of Reallocated Candidate Sectors
-    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorStat.reserved1 & UINT64_C(0x00FFFFFFFFFFFFFF));					//!< Reserved
-    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorStat.reserved2 & UINT64_C(0x00FFFFFFFFFFFFFF));					//!< Reserved
-    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorStat.reserved3 & UINT64_C(0x00FFFFFFFFFFFFFF));					//!< Reserved
-    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorStat.reserved4 & UINT64_C(0x00FFFFFFFFFFFFFF));					//!< Reserved
-    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorStat.reserved5 & UINT64_C(0x00FFFFFFFFFFFFFF));					//!< Reserved
-    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorStat.reserved6 & UINT64_C(0x00FFFFFFFFFFFFFF));					//!< Reserved
-    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorStat.reserved7 & UINT64_C(0x00FFFFFFFFFFFFFF));					//!< Reserved
-    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorStat.reserved8 & UINT64_C(0x00FFFFFFFFFFFFFF));					//!< Reserved
-    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorStat.reserved9 & UINT64_C(0x00FFFFFFFFFFFFFF));					//!< Reserved
-    printf("\tTotal Flash LED (Assert) Events:          %" PRIu64" \n", vFarmFrame[page].errorPage.errorStat.totalFlashLED & UINT64_C(0x00FFFFFFFFFFFFFF));				//!< Total Flash LED (Assert) Events
-    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorStat.reserved9 & UINT64_C(0x00FFFFFFFFFFFFFF));					//!< Reserved
-    printf("\tFRU code if smart trip:                   %" PRIu64" \n", vFarmFrame[page].errorPage.errorStat.FRUCode & UINT64_C(0x00FFFFFFFFFFFFFF));
-    printf("\tSuper Parity on the Fly Recovery          %" PRIu64" \n", vFarmFrame[page].errorPage.errorStat.parity & UINT64_C(0x00FFFFFFFFFFFFFF));
+    printf("\tUnrecoverable Read Errors:                %" PRIu64" \n", vFarmFrame[page].errorPage.totalReadECC & UINT64_C(0x00FFFFFFFFFFFFFF));				//!< Number of Unrecoverable Read Errors
+    printf("\tUnrecoverable Write Errors:               %" PRIu64" \n", vFarmFrame[page].errorPage.totalWriteECC & UINT64_C(0x00FFFFFFFFFFFFFF));				//!< Number of Unrecoverable Write Errors
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.reserved & UINT64_C(0x00FFFFFFFFFFFFFF));
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.reserved1 & UINT64_C(0x00FFFFFFFFFFFFFF));					//!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.totalMechanicalFails & UINT64_C(0x00FFFFFFFFFFFFFF));		//!< Number of Mechanical Start Failures
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.reserved2 & UINT64_C(0x00FFFFFFFFFFFFFF));
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.reserved3 & UINT64_C(0x00FFFFFFFFFFFFFF));					//!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.reserved4 & UINT64_C(0x00FFFFFFFFFFFFFF));					//!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.reserved5 & UINT64_C(0x00FFFFFFFFFFFFFF));					//!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.reserved6 & UINT64_C(0x00FFFFFFFFFFFFFF));					//!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.reserved7 & UINT64_C(0x00FFFFFFFFFFFFFF));					//!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.reserved8 & UINT64_C(0x00FFFFFFFFFFFFFF));					//!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.reserved9 & UINT64_C(0x00FFFFFFFFFFFFFF));					//!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.reserved10 & UINT64_C(0x00FFFFFFFFFFFFFF));					//!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.reserved11 & UINT64_C(0x00FFFFFFFFFFFFFF));
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.reserved12 & UINT64_C(0x00FFFFFFFFFFFFFF));					//!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.reserved13 & UINT64_C(0x00FFFFFFFFFFFFFF));					//!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.reserved14 & UINT64_C(0x00FFFFFFFFFFFFFF));					//!< Reserved
+    printf("\tSMART Trip FRU code:                      %" PRIu64" \n", vFarmFrame[page].errorPage.FRUCode & UINT64_C(0x00FFFFFFFFFFFFFF));
+    printf("\tInvalid DWord Count Port A                %" PRIu64" \n", vFarmFrame[page].errorPage.portAInvalidDwordCount & UINT64_C(0x00FFFFFFFFFFFFFF));
+    printf("\tInvalid DWord Count Port B                %" PRIu64" \n", vFarmFrame[page].errorPage.portBInvalidDwordCount & UINT64_C(0x00FFFFFFFFFFFFFF));
+    printf("\tDisparity Error Count Port A              %" PRIu64" \n", vFarmFrame[page].errorPage.portADisparityErrorCount & UINT64_C(0x00FFFFFFFFFFFFFF));
+    printf("\tDisparity Error Count Port B              %" PRIu64" \n", vFarmFrame[page].errorPage.portBDisparityErrorCount & UINT64_C(0x00FFFFFFFFFFFFFF));
+    printf("\tLoss Of DWord Sync Port A                 %" PRIu64" \n", vFarmFrame[page].errorPage.portALossDwordSync & UINT64_C(0x00FFFFFFFFFFFFFF));
+    printf("\tLoss Of DWord Sync Port B                 %" PRIu64" \n", vFarmFrame[page].errorPage.portBLossDwordSync & UINT64_C(0x00FFFFFFFFFFFFFF));
+    printf("\tPhy Reset Problem Port A                  %" PRIu64" \n", vFarmFrame[page].errorPage.portAPhyResetProblem & UINT64_C(0x00FFFFFFFFFFFFFF));
+    printf("\tPhy Reset Problem Port B                  %" PRIu64" \n", vFarmFrame[page].errorPage.portBPhyResetProblem & UINT64_C(0x00FFFFFFFFFFFFFF));
 #endif
 
     JSONNODE* pageInfo = json_new(JSON_NODE);
     std::ostringstream temp;
-    std::string header;
-    if (vFarmFrame[page].errorPage.errorStat.copyNumber == FACTORYCOPY)
-    {
-        header.assign("Error Information From Farm Log copy FACTORY");
-    }
-    else
-    {
-        temp << "Error Information Log From Farm Log copy " << std::dec << page;
-        header.assign(temp.str());
-    }
-    json_set_name(pageInfo, header.c_str());
-
-    set_json_64_bit_With_Status(pageInfo, "Unrecoverable Read Errors", vFarmFrame[page].errorPage.errorStat.totalReadECC, false, m_showStatusBits);							//!< Number of Unrecoverable Read Errors
-    set_json_64_bit_With_Status(pageInfo, "Unrecoverable Write Errors", vFarmFrame[page].errorPage.errorStat.totalWriteECC, false, m_showStatusBits);							//!< Number of Unrecoverable Write Errors
-    set_json_64_bit_With_Status(pageInfo, "Reallocated Sectors", vFarmFrame[page].errorPage.errorStat.totalReallocations, false, m_showStatusBits);					//!< Number of Reallocated Sectors
-    set_json_64_bit_With_Status(pageInfo, "Mechanical Start Failures", vFarmFrame[page].errorPage.errorStat.totalMechanicalFails, false, m_showStatusBits);			//!< Number of Mechanical Start Failures
-    set_json_64_bit_With_Status(pageInfo, "Reallocated Candidate Sectors", vFarmFrame[page].errorPage.errorStat.totalReallocatedCanidates, false, m_showStatusBits); //!< Number of Reallocated Candidate Sectors	
-    set_json_64_bit_With_Status(pageInfo, "Total Flash LED (Assert) Events", vFarmFrame[page].errorPage.errorStat.totalFlashLED, false, m_showStatusBits);						//!< Total Flash LED (Assert) Events
-    set_json_64_bit_With_Status(pageInfo, "SMART Trip FRU code", vFarmFrame[page].errorPage.errorStat.FRUCode, false, m_showStatusBits);		//!< FRU code if smart trip from most recent SMART Frame
-    set_json_64_bit_With_Status(pageInfo, "Super Parity on the Fly Recovery", vFarmFrame[page].errorPage.errorStat.parity, false, m_showStatusBits);                      //!< Super Parity on the Fly Recovery
-
-    json_push_back(masterData, pageInfo);
-
-    return SUCCESS;
-}
-
-//-----------------------------------------------------------------------------
-//
-//! \fn print_Error_Information_Version_4()
-//
-//! \brief
-//!   Description:  print out the Error log information version 4 and up 
-//
-//  Entry:
-//! \param masterData - pointer to the json data that will be printed or passed on
-//! \param page  = the page copy number of the data we want to print. 
-//
-//  Exit:
-//!   \return SUCCESS
-//
-//---------------------------------------------------------------------------
-eReturnValues CSCSI_Farm_Log::print_Error_Information_Version_4(JSONNODE *masterData, uint32_t page)
-{
-#if defined _DEBUG
-    if (vFarmFrame[page].errorPage.errorV4.copyNumber == FACTORYCOPY)
-    {
-        printf("\nError Information From Farm Log copy FACTORY \n");
-    }
-    else
-    {
-        printf("\nError Information Log From Farm Log copy %d: \n", page);
-    }
-    printf("\tUnrecoverable Read Errors:                %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.totalReadECC & UINT64_C(0x00FFFFFFFFFFFFFF));				//!< Number of Unrecoverable Read Errors
-    printf("\tUnrecoverable Write Errors:               %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.totalWriteECC & UINT64_C(0x00FFFFFFFFFFFFFF));				//!< Number of Unrecoverable Write Errors
-    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.reserved & UINT64_C(0x00FFFFFFFFFFFFFF));
-    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.reserved1 & UINT64_C(0x00FFFFFFFFFFFFFF));					//!< Reserved
-    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.totalMechanicalFails & UINT64_C(0x00FFFFFFFFFFFFFF));		//!< Number of Mechanical Start Failures
-    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.reserved2 & UINT64_C(0x00FFFFFFFFFFFFFF));
-    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.reserved3 & UINT64_C(0x00FFFFFFFFFFFFFF));					//!< Reserved
-    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.reserved4 & UINT64_C(0x00FFFFFFFFFFFFFF));					//!< Reserved
-    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.reserved5 & UINT64_C(0x00FFFFFFFFFFFFFF));					//!< Reserved
-    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.reserved6 & UINT64_C(0x00FFFFFFFFFFFFFF));					//!< Reserved
-    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.reserved7 & UINT64_C(0x00FFFFFFFFFFFFFF));					//!< Reserved
-    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.reserved8 & UINT64_C(0x00FFFFFFFFFFFFFF));					//!< Reserved
-    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.reserved9 & UINT64_C(0x00FFFFFFFFFFFFFF));					//!< Reserved
-    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.reserved10 & UINT64_C(0x00FFFFFFFFFFFFFF));					//!< Reserved
-    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.reserved11 & UINT64_C(0x00FFFFFFFFFFFFFF));
-    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.reserved12 & UINT64_C(0x00FFFFFFFFFFFFFF));					//!< Reserved
-    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.reserved13 & UINT64_C(0x00FFFFFFFFFFFFFF));					//!< Reserved
-    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.reserved14 & UINT64_C(0x00FFFFFFFFFFFFFF));					//!< Reserved
-    printf("\tSMART Trip FRU code:                      %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.FRUCode & UINT64_C(0x00FFFFFFFFFFFFFF));
-    printf("\tInvalid DWord Count Port A                %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.portAInvalidDwordCount & UINT64_C(0x00FFFFFFFFFFFFFF));
-    printf("\tInvalid DWord Count Port B                %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.portBInvalidDwordCount & UINT64_C(0x00FFFFFFFFFFFFFF));
-    printf("\tDisparity Error Count Port A              %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.portADisparityErrorCount & UINT64_C(0x00FFFFFFFFFFFFFF));
-    printf("\tDisparity Error Count Port B              %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.portBDisparityErrorCount & UINT64_C(0x00FFFFFFFFFFFFFF));
-    printf("\tLoss Of DWord Sync Port A                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.portALossDwordSync & UINT64_C(0x00FFFFFFFFFFFFFF));
-    printf("\tLoss Of DWord Sync Port B                 %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.portBLossDwordSync & UINT64_C(0x00FFFFFFFFFFFFFF));
-    printf("\tPhy Reset Problem Port A                  %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.portAPhyResetProblem & UINT64_C(0x00FFFFFFFFFFFFFF));
-    printf("\tPhy Reset Problem Port B                  %" PRIu64" \n", vFarmFrame[page].errorPage.errorV4.portBPhyResetProblem & UINT64_C(0x00FFFFFFFFFFFFFF));
-#endif
-
-    JSONNODE* pageInfo = json_new(JSON_NODE);
-    std::ostringstream temp;
-    if (vFarmFrame[page].errorPage.errorV4.copyNumber == FACTORYCOPY)
+    if (vFarmFrame[page].errorPage.copyNumber == FACTORYCOPY)
     {
         temp << "Error Information From Farm Log copy FACTORY";
     }
@@ -2293,18 +2061,18 @@ eReturnValues CSCSI_Farm_Log::print_Error_Information_Version_4(JSONNODE *master
     }
     json_set_name(pageInfo, temp.str().c_str());
 
-    set_json_64_bit_With_Status(pageInfo, "Unrecoverable Read Errors", vFarmFrame[page].errorPage.errorV4.totalReadECC, false, m_showStatusBits);							//!< Number of Unrecoverable Read Errors
-    set_json_64_bit_With_Status(pageInfo, "Unrecoverable Write Errors", vFarmFrame[page].errorPage.errorV4.totalWriteECC, false, m_showStatusBits);							//!< Number of Unrecoverable Write Errors
-    set_json_64_bit_With_Status(pageInfo, "Mechanical Start Failures", vFarmFrame[page].errorPage.errorV4.totalMechanicalFails, false, m_showStatusBits);			//!< Number of Mechanical Start Failures
-    set_json_64_bit_With_Status(pageInfo, "SMART Trip FRU code", vFarmFrame[page].errorPage.errorV4.FRUCode, false, m_showStatusBits);		//!< FRU code if smart trip from most recent SMART Frame
-    set_json_64_bit_With_Status(pageInfo, "Invalid DWord Count Port A ", vFarmFrame[page].errorPage.errorV4.portAInvalidDwordCount, false, m_showStatusBits);
-    set_json_64_bit_With_Status(pageInfo, "Invalid DWord Count Port B", vFarmFrame[page].errorPage.errorV4.portBInvalidDwordCount, false, m_showStatusBits);
-    set_json_64_bit_With_Status(pageInfo, "Disparity Error Count Port A", vFarmFrame[page].errorPage.errorV4.portADisparityErrorCount, false, m_showStatusBits);
-    set_json_64_bit_With_Status(pageInfo, "Disparity Error Count Port B", vFarmFrame[page].errorPage.errorV4.portBDisparityErrorCount, false, m_showStatusBits);
-    set_json_64_bit_With_Status(pageInfo, "Loss Of DWord Sync Port A", vFarmFrame[page].errorPage.errorV4.portALossDwordSync, false, m_showStatusBits);
-    set_json_64_bit_With_Status(pageInfo, "Loss Of DWord Sync Port B", vFarmFrame[page].errorPage.errorV4.portBLossDwordSync, false, m_showStatusBits);
-    set_json_64_bit_With_Status(pageInfo, "Phy Reset Problem Port A", vFarmFrame[page].errorPage.errorV4.portAPhyResetProblem, false, m_showStatusBits);
-    set_json_64_bit_With_Status(pageInfo, "Phy Reset Problem Port B", vFarmFrame[page].errorPage.errorV4.portBPhyResetProblem, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Unrecoverable Read Errors", vFarmFrame[page].errorPage.totalReadECC, false, m_showStatusBits);							//!< Number of Unrecoverable Read Errors
+    set_json_64_bit_With_Status(pageInfo, "Unrecoverable Write Errors", vFarmFrame[page].errorPage.totalWriteECC, false, m_showStatusBits);							//!< Number of Unrecoverable Write Errors
+    set_json_64_bit_With_Status(pageInfo, "Mechanical Start Failures", vFarmFrame[page].errorPage.totalMechanicalFails, false, m_showStatusBits);			//!< Number of Mechanical Start Failures
+    set_json_64_bit_With_Status(pageInfo, "SMART Trip FRU code", vFarmFrame[page].errorPage.FRUCode, false, m_showStatusBits);		//!< FRU code if smart trip from most recent SMART Frame
+    set_json_64_bit_With_Status(pageInfo, "Invalid DWord Count Port A ", vFarmFrame[page].errorPage.portAInvalidDwordCount, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Invalid DWord Count Port B", vFarmFrame[page].errorPage.portBInvalidDwordCount, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Disparity Error Count Port A", vFarmFrame[page].errorPage.portADisparityErrorCount, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Disparity Error Count Port B", vFarmFrame[page].errorPage.portBDisparityErrorCount, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Loss Of DWord Sync Port A", vFarmFrame[page].errorPage.portALossDwordSync, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Loss Of DWord Sync Port B", vFarmFrame[page].errorPage.portBLossDwordSync, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Phy Reset Problem Port A", vFarmFrame[page].errorPage.portAPhyResetProblem, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Phy Reset Problem Port B", vFarmFrame[page].errorPage.portBPhyResetProblem, false, m_showStatusBits);
 
     json_push_back(masterData, pageInfo);
   
@@ -2592,138 +2360,61 @@ eReturnValues CSCSI_Farm_Log::print_Workload_Statistics_Page_08(JSONNODE *master
 //---------------------------------------------------------------------------
 eReturnValues CSCSI_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint32_t page)
 {
-#if defined _DEBUG
-    if (m_MajorRev < 4)
-    {
-        if (vFarmFrame[page].reliPage.reli.copyNumber == FACTORYCOPY)
-        {
-            printf("Reliability Information From Farm Log copy FACTORY");
-        }
-        else
-        {
-            printf("\nReliability Information From Farm Log copy: %d\n", page);
-        }
-        printf("\tTimeStamp of last IDD test:               %" PRIu64" \n", vFarmFrame[page].reliPage.reli.lastIDDTest & UINT64_C(0x00FFFFFFFFFFFFFF));                     //!< Timestamp of last IDD test
-        printf("\tSub-command of last IDD test:             %" PRIu64" \n", vFarmFrame[page].reliPage.reli.cmdLastIDDTest & UINT64_C(0x00FFFFFFFFFFFFFF));                  //!< Sub-command of last IDD test
-        printf("\tNumber of Reclamations Sectors:           %" PRIu64" \n", vFarmFrame[page].reliPage.reli.gListReclamed & UINT64_C(0x00FFFFFFFFFFFFFF));                   //!< Number of G-List Reclamations 
-        printf("\tServo Status:                             %" PRIu64" \n", vFarmFrame[page].reliPage.reli.servoStatus & UINT64_C(0x00FFFFFFFFFFFFFF));                     //!< Servo Status (follows standard DST error code definitions)
-        printf("\tNumber of Slipped Secotrs Before IDD Scan:%" PRIu64" \n", vFarmFrame[page].reliPage.reli.altsBeforeIDD & UINT64_C(0x00FFFFFFFFFFFFFF));                   //!< Number of Alt List Entries Before IDD Scan
-        printf("\tNumber of Slipped Secotrs After IDD Scan: %" PRIu64" \n", vFarmFrame[page].reliPage.reli.altsAfterIDD & UINT64_C(0x00FFFFFFFFFFFFFF));                    //!< Number of Alt List Entries After IDD Scan
-        printf("\tResident G-List Entries Before IDD Scan:  %" PRIu64" \n", vFarmFrame[page].reliPage.reli.gListBeforeIDD & UINT64_C(0x00FFFFFFFFFFFFFF));                   //!< Number of Resident G-List Entries Before IDD Scan
-        printf("\tResident G-List Entries After IDD Scan:   %" PRIu64" \n", vFarmFrame[page].reliPage.reli.gListAfterIDD & UINT64_C(0x00FFFFFFFFFFFFFF));                   //!< Number of Resident G-List Entries After IDD Scan
-        printf("\tScrubs List Entries Before IDD Scan:      %" PRIu64" \n", vFarmFrame[page].reliPage.reli.scrubsBeforeIDD & UINT64_C(0x00FFFFFFFFFFFFFF));                 //!< Number of Scrub List Entries Before IDD Scan
-        printf("\tScrubs List Entries After IDD Scan:       %" PRIu64" \n", vFarmFrame[page].reliPage.reli.scrubsAfterIDD & UINT64_C(0x00FFFFFFFFFFFFFF));                  //!< Number of Scrub List Entries After IDD Scan
-        printf("\tNumber of DOS Scans Performed:            %" PRIu64" \n", vFarmFrame[page].reliPage.reli.numberDOSScans & UINT64_C(0x00FFFFFFFFFFFFFF));                  //!< Number of DOS Scans Performed
-        printf("\tNumber of LBAs Corrected by ISP:          %" PRIu64" \n", vFarmFrame[page].reliPage.reli.numberLBACorrect & UINT64_C(0x00FFFFFFFFFFFFFF));                //!< Number of LBAs Corrected by ISP
-        printf("\tNumber of Valid Parity Sectors:           %" PRIu64" \n", vFarmFrame[page].reliPage.reli.numberValidParitySec & UINT64_C(0x00FFFFFFFFFFFFFF));            //!< Number of Valid Parity Sectors
-        printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli.reserved & UINT64_C(0x00FFFFFFFFFFFFFF));							//!< Reserved
-        printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli.reserved1 & UINT64_C(0x00FFFFFFFFFFFFFF));						//!< Reserved
-        printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli.reserved2 & UINT64_C(0x00FFFFFFFFFFFFFF));						//!< Reserved
-        printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli.reserved3 & UINT64_C(0x00FFFFFFFFFFFFFF));						//!< Reserved
-        printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli.reserved4 & UINT64_C(0x00FFFFFFFFFFFFFF));						//!< Reserved
-        printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli.reserved5 & UINT64_C(0x00FFFFFFFFFFFFFF));						//!< Reserved
-        printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli.reserved6 & UINT64_C(0x00FFFFFFFFFFFFFF));						//!< Reserved
-        printf("\tNumber of RAW Operations:                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli.numberRAWops & UINT64_C(0x00FFFFFFFFFFFFFF));						//!< Reserved
-        printf("\tMicro Actuator Lock-out accumulated:      %" PRIu64" \n", vFarmFrame[page].reliPage.reli.microActuatorLockOut & UINT64_C(0x00FFFFFFFFFFFFFF));				//!< Micro Actuator Lock-out, head mask accumulated over last 3 Summary Frames
-        printf("\t# of Disc Slip Recalibrations Performed : %" PRIu64" \n", vFarmFrame[page].reliPage.reli.diskSlipRecalPerformed & UINT64_C(0x00FFFFFFFFFFFFFF));			//!< Number of disc slip recalibrations performed
-        printf("\tHelium Pressure Threshold Trip:           %" PRIu64" \n", vFarmFrame[page].reliPage.reli.heliumPressuretThreshold & UINT64_C(0x00FFFFFFFFFFFFFF));			//!< helium Pressure Threshold Trip
-        printf("\tRV Absolute Mean:                         %" PRIu64" \n", vFarmFrame[page].reliPage.reli.rvAbsoluteMean & UINT64_C(0x00FFFFFFFFFFFFFF));					//!< RV Absulute Mean
-        printf("\tMax RV Absolute Mean:                     %" PRIu64" \n", vFarmFrame[page].reliPage.reli.maxRVAbsoluteMean & UINT64_C(0x00FFFFFFFFFFFFFF));				//!< Max RV absulute Mean
-        printf("\tIdle Time value from the most recent SMART Summary Frame:     %" PRIu64" \n", vFarmFrame[page].reliPage.reli.idleTime & UINT64_C(0x00FFFFFFFFFFFFFF));		//!< idle Time value from the most recent SMART Summary Frame
-    }
-#endif
-   
     JSONNODE* pageInfo = json_new(JSON_NODE);
     std::ostringstream temp;
-    if (m_MajorRev < 4)
+    
+#if defined _DEBUG
+    if (vFarmFrame[page].reliPage.copyNumber == FACTORYCOPY)
     {
-        if (vFarmFrame[page].reliPage.reli.copyNumber == FACTORYCOPY)
-        {
-            temp << "Reliability Information From Farm Log copy FACTORY";
-        }
-        else
-        {
-            temp << "Reliability Information From Farm Log copy " << std::dec << page;
-        }
-        json_set_name(pageInfo, temp.str().c_str());
-
-        set_json_64_bit_With_Status(pageInfo, "TimeStamp of last IDD test", vFarmFrame[page].reliPage.reli.lastIDDTest, false, m_showStatusBits);							//!< Timestamp of last IDD test
-        set_json_64_bit_With_Status(pageInfo, "Sub-Command of Last IDD Test", vFarmFrame[page].reliPage.reli.cmdLastIDDTest, false, m_showStatusBits);						//!< Sub-command of last IDD test
-        set_json_64_bit_With_Status(pageInfo, "Number of Reallocated Sector Reclamations", vFarmFrame[page].reliPage.reli.gListReclamed, false, m_showStatusBits);						//!< Number of G-List Reclamations 
-        set_json_64_bit_With_Status(pageInfo, "Servo Status", vFarmFrame[page].reliPage.reli.servoStatus, false, m_showStatusBits);											//!< Servo Status (follows standard DST error code definitions)
-        set_json_64_bit_With_Status(pageInfo, "Number of Slipped Sectors Before IDD Scan", vFarmFrame[page].reliPage.reli.altsBeforeIDD, false, m_showStatusBits);					//!< Number of Alt List Entries Before IDD Scan
-        set_json_64_bit_With_Status(pageInfo, "Number of Slipped Sectors After IDD Scan", vFarmFrame[page].reliPage.reli.altsAfterIDD, false, m_showStatusBits);						//!< Number of Alt List Entries After IDD Scan
-        set_json_64_bit_With_Status(pageInfo, "Number of Resident Reallocated Sectors Before IDD Scan", vFarmFrame[page].reliPage.reli.gListBeforeIDD, false, m_showStatusBits);				//!< Number of Resident G-List Entries Before IDD Scan
-        set_json_64_bit_With_Status(pageInfo, "Number of Resident Reallocated Sectors After IDD Scan", vFarmFrame[page].reliPage.reli.gListAfterIDD, false, m_showStatusBits);				//!< Number of Resident G-List Entries After IDD Scan
-        set_json_64_bit_With_Status(pageInfo, "Successfully Scrubbed Sectors Before IDD Scan", vFarmFrame[page].reliPage.reli.scrubsBeforeIDD, false, m_showStatusBits);				//!< Number of Scrub List Entries Before IDD Scan
-        set_json_64_bit_With_Status(pageInfo, "Successfully Scrubbed Sectors After IDD Scan", vFarmFrame[page].reliPage.reli.scrubsAfterIDD, false, m_showStatusBits);					//!< Number of Scrub List Entries After IDD Scan
-        set_json_64_bit_With_Status(pageInfo, "Number of DOS Scans Performed", vFarmFrame[page].reliPage.reli.numberDOSScans, false, m_showStatusBits);						//!< Number of DOS Scans Performed
-        set_json_64_bit_With_Status(pageInfo, "Number of LBAs Corrected by ISP", vFarmFrame[page].reliPage.reli.numberLBACorrect, false, m_showStatusBits);					//!< Number of LBAs Corrected by ISP
-        set_json_64_bit_With_Status(pageInfo, "Number of Valid Parity Sectors", vFarmFrame[page].reliPage.reli.numberValidParitySec, false, m_showStatusBits);				//!< Number of Valid Parity Sectors
-        set_json_64_bit_With_Status(pageInfo, "Number of RAW Operations", vFarmFrame[page].reliPage.reli.numberRAWops, false, m_showStatusBits);								//!< Number of RAW Operations
-        set_json_64_bit_With_Status(pageInfo, "Micro Actuator Lock-out accumulated", vFarmFrame[page].reliPage.reli.microActuatorLockOut, false, m_showStatusBits);			//!< Micro Actuator Lock-out, head mask accumulated over last 3 Summary Frames8
-        set_json_64_bit_With_Status(pageInfo, "Number of Disc Slip Recalibrations Performed", vFarmFrame[page].reliPage.reli.diskSlipRecalPerformed, false, m_showStatusBits);	            //!< Number of disc slip recalibrations performed
-        set_json_64_bit_With_Status(pageInfo, "Helium Pressure Threshold Tripped", vFarmFrame[page].reliPage.reli.heliumPressuretThreshold, false, m_showStatusBits);			//!< helium Pressure Threshold Trip
-        set_json_64_bit_With_Status(pageInfo, "RV Absolute Mean", vFarmFrame[page].reliPage.reli.rvAbsoluteMean, false, m_showStatusBits);									//!< RV Absulute Mean
-        set_json_64_bit_With_Status(pageInfo, "Max RV Absolute Mean", vFarmFrame[page].reliPage.reli.maxRVAbsoluteMean, false, m_showStatusBits);							//!< Max RV absulute Mean
-        set_json_64_bit_With_Status(pageInfo, "Idle Time (hours)", vFarmFrame[page].reliPage.reli.idleTime, false, m_showStatusBits);	//!< idle Time value from the most recent SMART Summary Frame
+        printf("Reliability Information From Farm Log copy FACTORY");
     }
     else
     {
-#if defined _DEBUG
-        if (vFarmFrame[page].reliPage.reli.copyNumber == FACTORYCOPY)
-        {
-            printf("Reliability Information From Farm Log copy FACTORY");
-        }
-        else
-        {
-            printf("\nReliability Information From Farm Log copy: %d\n", page);
-        }
-        printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.reserved & UINT64_C(0x00FFFFFFFFFFFFFF));						//!< Reserved
-        printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.reserved1 & UINT64_C(0x00FFFFFFFFFFFFFF));						//!< Reserved
-        printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.reserved2 & UINT64_C(0x00FFFFFFFFFFFFFF));						//!< Reserved
-        printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.reserved3 & UINT64_C(0x00FFFFFFFFFFFFFF));						//!< Reserved
-        printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.reserved4 & UINT64_C(0x00FFFFFFFFFFFFFF));						//!< Reserved
-        printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.reserved5 & UINT64_C(0x00FFFFFFFFFFFFFF));						//!< Reserved
-        printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.reserved6 & UINT64_C(0x00FFFFFFFFFFFFFF));                       //!< Reserved
-        printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.reserved7 & UINT64_C(0x00FFFFFFFFFFFFFF));							//!< Reserved
-        printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.reserved8 & UINT64_C(0x00FFFFFFFFFFFFFF));						//!< Reserved
-        printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.reserved9 & UINT64_C(0x00FFFFFFFFFFFFFF));						//!< Reserved
-        printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.reserved10 & UINT64_C(0x00FFFFFFFFFFFFFF));						//!< Reserved
-        printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.reserved11 & UINT64_C(0x00FFFFFFFFFFFFFF));						//!< Reserved
-        printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.reserved12 & UINT64_C(0x00FFFFFFFFFFFFFF));						//!< Reserved
-        printf("\tNumber of RAW Operations:                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.numberRAWops & UINT64_C(0x00FFFFFFFFFFFFFF));
-        printf("\tCumulative Lifetime ECC due to ERC:       %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.cumECCDueToERC & UINT64_C(0x00FFFFFFFFFFFFFF));
-        printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.reserved13 & UINT64_C(0x00FFFFFFFFFFFFFF));						//!< Reserved
-        printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.reserved14 & UINT64_C(0x00FFFFFFFFFFFFFF));						//!< Reserved
-        printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.reserved15 & UINT64_C(0x00FFFFFFFFFFFFFF));						//!< Reserved
-        printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.reserved16 & UINT64_C(0x00FFFFFFFFFFFFFF));						//!< Reserved
-        printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.reserved17 & UINT64_C(0x00FFFFFFFFFFFFFF));
-        printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.reserved18 & UINT64_C(0x00FFFFFFFFFFFFFF));
-        printf("\tMicro Actuator Lock-out accumulated:      %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.microActuatorLockOut & UINT64_C(0x00FFFFFFFFFFFFFF));				//!< Micro Actuator Lock-out, head mask accumulated over last 3 Summary Frames
-        printf("\t# of Disc Slip Recalibrations Performed : %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.diskSlipRecalPerformed & UINT64_C(0x00FFFFFFFFFFFFFF));			//!< Number of disc slip recalibrations performed
-        printf("\tHelium Pressure Threshold Trip:           %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.heliumPressuretThreshold & UINT64_C(0x00FFFFFFFFFFFFFF));			//!< helium Pressure Threshold Trip
-        printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.reserved19 & UINT64_C(0x00FFFFFFFFFFFFFF));					//!< RV Absulute Mean
-        printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.reserved20 & UINT64_C(0x00FFFFFFFFFFFFFF));				//!< Max RV absulute Mean
-        printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reli4.reserved21 & UINT64_C(0x00FFFFFFFFFFFFFF));		//!< idle Time value from the most recent SMART Summary Frame
+        printf("\nReliability Information From Farm Log copy: %d\n", page);
+    }
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reserved & UINT64_C(0x00FFFFFFFFFFFFFF));						    //!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reserved1 & UINT64_C(0x00FFFFFFFFFFFFFF));						//!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reserved2 & UINT64_C(0x00FFFFFFFFFFFFFF));						//!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reserved3 & UINT64_C(0x00FFFFFFFFFFFFFF));						//!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reserved4 & UINT64_C(0x00FFFFFFFFFFFFFF));						//!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reserved5 & UINT64_C(0x00FFFFFFFFFFFFFF));						//!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reserved6 & UINT64_C(0x00FFFFFFFFFFFFFF));                        //!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reserved7 & UINT64_C(0x00FFFFFFFFFFFFFF));						//!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reserved8 & UINT64_C(0x00FFFFFFFFFFFFFF));						//!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reserved9 & UINT64_C(0x00FFFFFFFFFFFFFF));						//!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reserved10 & UINT64_C(0x00FFFFFFFFFFFFFF));						//!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reserved11 & UINT64_C(0x00FFFFFFFFFFFFFF));						//!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reserved12 & UINT64_C(0x00FFFFFFFFFFFFFF));						//!< Reserved
+    printf("\tNumber of RAW Operations:                 %" PRIu64" \n", vFarmFrame[page].reliPage.numberRAWops & UINT64_C(0x00FFFFFFFFFFFFFF));
+    printf("\tCumulative Lifetime ECC due to ERC:       %" PRIu64" \n", vFarmFrame[page].reliPage.cumECCDueToERC & UINT64_C(0x00FFFFFFFFFFFFFF));
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reserved13 & UINT64_C(0x00FFFFFFFFFFFFFF));						//!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reserved14 & UINT64_C(0x00FFFFFFFFFFFFFF));						//!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reserved15 & UINT64_C(0x00FFFFFFFFFFFFFF));						//!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reserved16 & UINT64_C(0x00FFFFFFFFFFFFFF));						//!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reserved17 & UINT64_C(0x00FFFFFFFFFFFFFF));                       //!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reserved18 & UINT64_C(0x00FFFFFFFFFFFFFF));                       //!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reserved & UINT64_C(0x00FFFFFFFFFFFFFF));							//!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reserved & UINT64_C(0x00FFFFFFFFFFFFFF));							//!< Reserved
+    printf("\tHelium Pressure Threshold Trip:           %" PRIu64" \n", vFarmFrame[page].reliPage.heliumPressuretThreshold & UINT64_C(0x00FFFFFFFFFFFFFF));			//!< helium Pressure Threshold Trip
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reserved19 & UINT64_C(0x00FFFFFFFFFFFFFF));					    //!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reserved20 & UINT64_C(0x00FFFFFFFFFFFFFF));				        //!< Reserved
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].reliPage.reserved21 & UINT64_C(0x00FFFFFFFFFFFFFF));		                //!< Reserved
 
 #endif
-        if (vFarmFrame[page].reliPage.reli.copyNumber == FACTORYCOPY)
-        {
-            temp << "Reliability Information From Farm Log copy FACTORY";
-        }
-        else
-        {
-            temp << "Reliability Information From Farm Log copy " << std::dec << page;
-        }
-        json_set_name(pageInfo, temp.str().c_str());
-
-        set_json_64_bit_With_Status(pageInfo, "Number of RAW Operations", vFarmFrame[page].reliPage.reli4.numberRAWops, false, m_showStatusBits);								//!< Number of RAW Operations
-        set_json_64_bit_With_Status(pageInfo, "Cumulative Lifetime ECC due to ERC", vFarmFrame[page].reliPage.reli4.cumECCDueToERC, false, m_showStatusBits);
-        set_json_64_bit_With_Status(pageInfo, "Micro Actuator Lock-out accumulated", vFarmFrame[page].reliPage.reli4.microActuatorLockOut, false, m_showStatusBits);			//!< Micro Actuator Lock-out, head mask accumulated over last 3 Summary Frames8
-        set_json_64_bit_With_Status(pageInfo, "Number of Disc Slip Recalibrations Performed", vFarmFrame[page].reliPage.reli4.diskSlipRecalPerformed, false, m_showStatusBits);	            //!< Number of disc slip recalibrations performed
-        set_json_64_bit_With_Status(pageInfo, "Helium Pressure Threshold Tripped", vFarmFrame[page].reliPage.reli4.heliumPressuretThreshold, false, m_showStatusBits);			//!< helium Pressure Threshold Trip
+    if (vFarmFrame[page].reliPage.copyNumber == FACTORYCOPY)
+    {
+        temp << "Reliability Information From Farm Log copy FACTORY";
     }
+    else
+    {
+        temp << "Reliability Information From Farm Log copy " << std::dec << page;
+    }
+    json_set_name(pageInfo, temp.str().c_str());
+
+    set_json_64_bit_With_Status(pageInfo, "Number of RAW Operations", vFarmFrame[page].reliPage.numberRAWops, false, m_showStatusBits);								//!< Number of RAW Operations
+    set_json_64_bit_With_Status(pageInfo, "Cumulative Lifetime ECC due to ERC", vFarmFrame[page].reliPage.cumECCDueToERC, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Helium Pressure Threshold Tripped", vFarmFrame[page].reliPage.heliumPressuretThreshold, false, m_showStatusBits);			//!< helium Pressure Threshold Trip
+   
 
     json_push_back(masterData, pageInfo);
     return SUCCESS;
@@ -3117,36 +2808,36 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Information(JSONNODE *LUNData, 
     {
         printf("\nLUN Actuator 0x%" PRIx16" Information From Farm Log copy: %" PRIu32"\n", M_Word0(pLUN->LUNID), page);
     }
-    printf("\tPage Number:                                0x%" PRIx64" \n", pLUN->pageNumber & UINT64_C(0x00FFFFFFFFFFFFFF));                   //!< Page Number 
+    printf("\tPage Number:                                  0x%" PRIx64" \n", pLUN->pageNumber & UINT64_C(0x00FFFFFFFFFFFFFF));                   //!< Page Number 
     printf("\tCopy Number:                                  %" PRIu64" \n", pLUN->copyNumber & UINT64_C(0x00FFFFFFFFFFFFFF));                   //!< Copy Number 
     printf("\tLUN ID:                                       %" PRIu64" \n", pLUN->LUNID & UINT64_C(0x00FFFFFFFFFFFFFF));                        //!< LUN ID  
     printf("\tHead Load Events:                             %" PRIu64" \n", pLUN->headLoadEvents & UINT64_C(0x00FFFFFFFFFFFFFF));               //!< Head Load Events 
-    if (pLUN->reallocatedSectors != 0)
-    {
-        printf("\tNumber of Reallocated Sectors:                %" PRIu64" \n", pLUN->reallocatedSectors & UINT64_C(0x00FFFFFFFFFFFFFF));           //!< Number of Reallocated Sectors 
-    }
-    if (pLUN->reallocatedCandidates != 0)
-    {
-        printf("\tNumber of Reallocated Candidate Sectors:      %" PRIu64" \n", pLUN->reallocatedCandidates & UINT64_C(0x00FFFFFFFFFFFFFF));        //!< Number of Reallocated Candidate Sectors 
-    }
-    printf("\tNumber of Reallocated Candidate Sectors:      %" PRIu64" \n", pLUN->reallocatedCandidates & UINT64_C(0x00FFFFFFFFFFFFFF));        //!< Number of Reallocated Candidate Sectors 
-    printf("\tTimeStamp of last IDD test:                   %" PRIu64" \n", pLUN->timeStampOfIDD & UINT64_C(0x00FFFFFFFFFFFFFF));               //!< Timestamp of last IDD test 
-    printf("\tSub-Command of Last IDD Test:                 %" PRIu64" \n", pLUN->subCmdOfIDD & UINT64_C(0x00FFFFFFFFFFFFFF));                  //!< Sub-command of last IDD test 
-    printf("\tNumber of Reallocated Sector Reclamations:    %" PRIu64" \n", pLUN->reclamedGlist & UINT64_C(0x00FFFFFFFFFFFFFF));				//!< Number of G-list reclamations 
-    printf("\tServo Status:                                 %" PRIu64" \n", pLUN->servoStatus & UINT64_C(0x00FFFFFFFFFFFFFF));					//!< Servo Status 
-    printf("\tNumber of Slipped Sectors Before IDD Scan:    %" PRIu64" \n", pLUN->slippedSectorsBeforeIDD & UINT64_C(0x00FFFFFFFFFFFFFF));      //!< Number of Slipped Sectors Before IDD Scan 
-    printf("\tNumber of Slipped Sectors After IDD Scan:     %" PRIu64" \n", pLUN->slippedSectorsAfterIDD & UINT64_C(0x00FFFFFFFFFFFFFF));       //!< Number of Slipped Sectors After IDD Scan 
-    printf("\tResident Reallocated Sectors Before IDD Scan: %" PRIu64" \n", pLUN->residentReallocatedBeforeIDD & UINT64_C(0x00FFFFFFFFFFFFFF)); //!< Number of Resident Reallocated Sectors Before IDD Scan 
-    printf("\tResident Reallocated Sectors After IDD Scan:  %" PRIu64" \n", pLUN->residentReallocatedAfterIDD & UINT64_C(0x00FFFFFFFFFFFFFF));  //!< Number of Resident Reallocated Sectors After IDD Scan  
-    printf("\tSuccessfully Scrubbed Sectors Before IDD Scan:%" PRIu64" \n", pLUN->successScrubbedBeforeIDD & UINT64_C(0x00FFFFFFFFFFFFFF));     //!< Number of Successfully Scrubbed Sectors Before IDD Scan 
-    printf("\tSuccessfully Scrubbed Sectors After IDD Scan: %" PRIu64" \n", pLUN->successScrubbedAfterIDD & UINT64_C(0x00FFFFFFFFFFFFFF));      //!< Number of Successfully Scrubbed Sectors After IDD Scan 
+    printf("\tReserved:                                     %" PRIu64" \n", pLUN->reserved & UINT64_C(0x00FFFFFFFFFFFFFF));	                    //!< Reserved
+    printf("\tReserved:                                     %" PRIu64" \n", pLUN->reserved1 & UINT64_C(0x00FFFFFFFFFFFFFF));	                //!< Reserved
+    printf("\tReserved:                                     %" PRIu64" \n", pLUN->reserved2 & UINT64_C(0x00FFFFFFFFFFFFFF));	                //!< Reserved
+    printf("\tReserved:                                     %" PRIu64" \n", pLUN->reserved3 & UINT64_C(0x00FFFFFFFFFFFFFF));	                //!< Reserved
+    printf("\tReserved:                                     %" PRIu64" \n", pLUN->reserved4 & UINT64_C(0x00FFFFFFFFFFFFFF));	                //!< Reserved
+    printf("\tReserved:                                     %" PRIu64" \n", pLUN->reserved5 & UINT64_C(0x00FFFFFFFFFFFFFF));	                //!< Reserved
+    printf("\tReserved:                                     %" PRIu64" \n", pLUN->reserved6 & UINT64_C(0x00FFFFFFFFFFFFFF));	                //!< Reserved
+    printf("\tReserved:                                     %" PRIu64" \n", pLUN->reserved7 & UINT64_C(0x00FFFFFFFFFFFFFF));	                //!< Reserved
+    printf("\tReserved:                                     %" PRIu64" \n", pLUN->reserved8 & UINT64_C(0x00FFFFFFFFFFFFFF));	                //!< Reserved
+    printf("\tReserved:                                     %" PRIu64" \n", pLUN->reserved9 & UINT64_C(0x00FFFFFFFFFFFFFF));	                //!< Reserved
+    printf("\tReserved:                                     %" PRIu64" \n", pLUN->reserved10 & UINT64_C(0x00FFFFFFFFFFFFFF));	                //!< Reserved
+    printf("\tReserved:                                     %" PRIu64" \n", pLUN->reserved11 & UINT64_C(0x00FFFFFFFFFFFFFF));	                //!< Reserved
     printf("\tNumber of DOS Scans Performed:                %" PRIu64" \n", pLUN->dosScansPerformed & UINT64_C(0x00FFFFFFFFFFFFFF));            //!< Number of DOS Scans Performed
+    printf("\tReserved:                                     %" PRIu64" \n", pLUN->reserved12 & UINT64_C(0x00FFFFFFFFFFFFFF));	                //!< Reserved
+    printf("\tReserved:                                     %" PRIu64" \n", pLUN->reserved13 & UINT64_C(0x00FFFFFFFFFFFFFF));	                //!< Reserved
+    printf("\tReserved:                                     %" PRIu64" \n", pLUN->reserved14 & UINT64_C(0x00FFFFFFFFFFFFFF));	                //!< Reserved
+    printf("\tReserved:                                     %" PRIu64" \n", pLUN->reserved15 & UINT64_C(0x00FFFFFFFFFFFFFF));	                //!< Reserved
     printf("\tNumber of LBAs Corrected by ISP:              %" PRIu64" \n", pLUN->correctedLBAbyISP & UINT64_C(0x00FFFFFFFFFFFFFF));            //!< Number of LBAs Corrected by ISP
-    printf("\tNumber of Valid Parity Sectors:               %" PRIu64" \n", pLUN->paritySectors & UINT64_C(0x00FFFFFFFFFFFFFF));                //!< Number of Valid Parity Sectors
-    printf("\tRV Absulute Mean:                             %" PRIu64" \n", pLUN->RVabsolue & UINT64_C(0x00FFFFFFFFFFFFFF));					//!< RV Absulute Mean
-    printf("\tMax RV absulute Mean:                         %" PRIu64" \n", pLUN->maxRVabsolue & UINT64_C(0x00FFFFFFFFFFFFFF));				    //!< Max RV absulute Mean
-    printf("\tIdle Time:                                    %" PRIu64" \n", pLUN->idleTime & UINT64_C(0x00FFFFFFFFFFFFFF));		                //!< idle Time value from the most recent SMART Summary Frame
-    printf("\tNumber of LBAs Corrected by Parity Sector:    %" PRIu64" \n", pLUN->lbasCorrectedByParity & UINT64_C(0x00FFFFFFFFFFFFFF)); //!< Number of LBAs Corrected by Parity Sector
+    printf("\tReserved:                                     %" PRIu64" \n", pLUN->reserved16 & UINT64_C(0x00FFFFFFFFFFFFFF));	                //!< Reserved
+    printf("\tReserved:                                     %" PRIu64" \n", pLUN->reserved17 & UINT64_C(0x00FFFFFFFFFFFFFF));	                //!< Reserved
+    printf("\tReserved:                                     %" PRIu64" \n", pLUN->reserved18 & UINT64_C(0x00FFFFFFFFFFFFFF));	                //!< Reserved
+    printf("\tReserved:                                     %" PRIu64" \n", pLUN->reserved19 & UINT64_C(0x00FFFFFFFFFFFFFF));	                //!< Reserved
+    printf("\tReserved:                                     %" PRIu64" \n", pLUN->reserved20 & UINT64_C(0x00FFFFFFFFFFFFFF));	                //!< Reserved
+    printf("\tReserved:                                     %" PRIu64" \n", pLUN->reserved21 & UINT64_C(0x00FFFFFFFFFFFFFF));                   //!< Reserved
+    printf("\tNumber of LBAs Corrected by Parity Sector:    %" PRIu64" \n", pLUN->lbasCorrectedByParity & UINT64_C(0x00FFFFFFFFFFFFFF));        //!< Number of LBAs Corrected by Parity Sector
+    printf("\tNumber of LBAs Corrected by Parity Sector SMR:%" PRIu64" \n", pLUN->primarySPCovPercentageSMR & UINT64_C(0x00FFFFFFFFFFFFFF));    //!< Number of LBAs Corrected by Parity Sector SMR
 #endif
 
     std::ostringstream temp;
@@ -3165,36 +2856,9 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Information(JSONNODE *LUNData, 
     set_json_64_bit_With_Status(pageInfo, "Copy Number ", pLUN->copyNumber, false, m_showStatusBits);						                            //!< Copy Number 
     set_json_64_bit_With_Status(pageInfo, "LUN Actuator ID", pLUN->LUNID, false, m_showStatusBits);						                                //!< LUN ID 
     set_json_64_bit_With_Status(pageInfo, "Head Load Events", pLUN->headLoadEvents, false, m_showStatusBits);											//!< Head Load Events 
-    if (pLUN->reallocatedSectors != 0)
-    {
-        set_json_64_bit_With_Status(pageInfo, "Number of Reallocated Sectors", pLUN->reallocatedSectors, false, m_showStatusBits);					        //!< Number of Reallocated Sectors 
-        set_json_64_bit_With_Status(pageInfo, "Number of Reallocated Sectors Candidate", pLUN->reallocatedCandidates, false, m_showStatusBits);				//!< Number of Reallocated Candidate Sectors  
-    }
-    set_json_64_bit_With_Status(pageInfo, "TimeStamp of last IDD test", pLUN->timeStampOfIDD, false, m_showStatusBits);						            //!< Timestamp of last IDD test  
-    set_json_64_bit_With_Status(pageInfo, "Sub-Command of Last IDD Test", pLUN->subCmdOfIDD, false, m_showStatusBits);				                    //!< Sub-command of last IDD test 
-    set_json_64_bit_With_Status(pageInfo, "Number of Reallocated Sector Reclamations", pLUN->reclamedGlist, false, m_showStatusBits);				                //!< Number of G-list reclamations  
-    set_json_64_bit_With_Status(pageInfo, "Servo Status", pLUN->servoStatus, false, m_showStatusBits);				                                    //!< Servo Status  
-    set_json_64_bit_With_Status(pageInfo, "Number of Slipped Sectors Before IDD Scan", pLUN->slippedSectorsBeforeIDD, false, m_showStatusBits);			//!< Number of Slipped Sectors Before IDD Scan 
-    set_json_64_bit_With_Status(pageInfo, "Number of Slipped Sectors After IDD Scan", pLUN->slippedSectorsAfterIDD, false, m_showStatusBits);			//!< Number of Slipped Sectors After IDD Scan 
-    set_json_64_bit_With_Status(pageInfo, "Number of Resident Reallocated Sectors Before IDD Scan", pLUN->residentReallocatedBeforeIDD, false, m_showStatusBits);	//!< Number of Resident Reallocated Sectors Before IDD Scan
-    set_json_64_bit_With_Status(pageInfo, "Number of Resident Reallocated Sectors After IDD Scan", pLUN->residentReallocatedAfterIDD, false, m_showStatusBits);	//!< Number of Resident Reallocated Sectors After IDD Scan
-    set_json_64_bit_With_Status(pageInfo, "Successfully Scrubbed Sectors Before IDD Scan", pLUN->successScrubbedBeforeIDD, false, m_showStatusBits);	//!< Number of Successfully Scrubbed Sectors Before IDD Scan 
-    set_json_64_bit_With_Status(pageInfo, "Successfully Scrubbed Sectors After IDD Scan", pLUN->successScrubbedAfterIDD, false, m_showStatusBits);		//!< Number of Successfully Scrubbed Sectors After IDD Scan 
     set_json_64_bit_With_Status(pageInfo, "Number of DOS Scans Performed", pLUN->dosScansPerformed, false, m_showStatusBits);	                        //!< Number of DOS Scans Performed 
     set_json_64_bit_With_Status(pageInfo, "Number of LBAs Corrected by ISP", pLUN->correctedLBAbyISP, false, m_showStatusBits);                         //!< Number of LBAs Corrected by ISP  
-    set_json_64_bit_With_Status(pageInfo, "Number of Valid Parity Sectors", pLUN->paritySectors, false, m_showStatusBits);                              //!< Number of Valid Parity Sectors  
-    set_json_64_bit_With_Status(pageInfo, "RV Absolute Mean", pLUN->RVabsolue, false, m_showStatusBits);									            //!< RV Absulute Mean
-    set_json_64_bit_With_Status(pageInfo, "Max RV Absolute Mean", pLUN->maxRVabsolue, false, m_showStatusBits);							                //!< Max RV absulute Mean 
-    temp.str("");temp.clear();
-    temp << std::fixed << std::setprecision(3) << (static_cast<double>(M_DoubleWord0(check_Status_Strip_Status(pLUN->idleTime)) * 1.0) / 3600);
-    set_json_string_With_Status(pageInfo, "Idle Time (hours)", temp.str().c_str(), pLUN->idleTime, m_showStatusBits);                                 //!< idle Time value from the most recent SMART Summary Frame
     set_json_64_bit_With_Status(pageInfo, "Number of LBAs Corrected by Parity Sector", pLUN->lbasCorrectedByParity, false, m_showStatusBits);           //!< Number of LBAs Corrected by Parity Sector
-    set_json_64_bit_With_Status(pageInfo, "current low vibe score",   pLUN->currentLowFrequencyVibe, false, m_showStatusBits);
-    set_json_64_bit_With_Status(pageInfo, "current mid vibe score",   pLUN->currentMidFrequencyVibe, false, m_showStatusBits);
-    set_json_64_bit_With_Status(pageInfo, "current high vibe score",  pLUN->currentHighFrequencyVibe, false, m_showStatusBits);
-    set_json_64_bit_With_Status(pageInfo, "worst low vibe score",  pLUN->worstLowFrequencyVibe, false, m_showStatusBits);
-    set_json_64_bit_With_Status(pageInfo, "worst mid vibe score",  pLUN->worstMidFrequencyVibe, false, m_showStatusBits);
-    set_json_64_bit_With_Status(pageInfo, "worst high vibe score", pLUN->worstHighFrequencyVibe, false, m_showStatusBits);
     set_json_64_bit_With_Status(pageInfo, "primary super parity coverage",  pLUN->primarySPCovPercentage, false, m_showStatusBits);
     set_json_64_bit_With_Status(pageInfo, "primary super parity coverage SMR",  pLUN->primarySPCovPercentageSMR, false, m_showStatusBits);
     json_push_back(LUNData, pageInfo);
@@ -3247,9 +2911,9 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_FLED_Info(JSONNODE *LUNFLED, ui
     for (i = 0; i < FLASH_EVENTS; i++)
     {
 
-        printf("\tInformation of Event %" PRIu16":             0x%" PRIx64" \n", i,pFLED->flashLEDArray[i] & UINT64_C(0x00FFFFFFFFFFFFFF));           //!< Info on the last 8 Flash LED (assert) Events, wrapping array
-        printf("\tTimeStamp of Event%" PRIu16":                  %" PRIu64" \n", i,pFLED->timestampForLED[i] & UINT64_C(0x00FFFFFFFFFFFFFF));         //!< Universal Timestamp (us) of last 8 Flash LED (assert) Events, wrapping array
-        printf("\tPower Cycle Event %" PRIu16":                  %" PRIu64" \n", i,pFLED->powerCycleOfLED[i] & UINT64_C(0x00FFFFFFFFFFFFFF));         //!< SPower Cycle of the last 8 Flash LED (assert) Events, wrapping array
+        printf("\tInformation of Event %" PRIu16":                      0x%" PRIx64" \n", i,pFLED->flashLEDArray[i] & UINT64_C(0x00FFFFFFFFFFFFFF));           //!< Info on the last 8 Flash LED (assert) Events, wrapping array
+        printf("\tTimeStamp of Event%" PRIu16":                          %" PRIu64" \n", i,pFLED->timestampForLED[i] & UINT64_C(0x00FFFFFFFFFFFFFF));         //!< Universal Timestamp (us) of last 8 Flash LED (assert) Events, wrapping array
+        printf("\tPower Cycle Event %" PRIu16":                          %" PRIu64" \n", i,pFLED->powerCycleOfLED[i] & UINT64_C(0x00FFFFFFFFFFFFFF));         //!< SPower Cycle of the last 8 Flash LED (assert) Events, wrapping array
     }
 
 
@@ -3438,14 +3102,7 @@ void CSCSI_Farm_Log::print_All_Pages(JSONNODE *masterData)
                     break;
                 case ERROR_STATISTICS_PARAMETER:
                 {
-                    if (m_MajorRev < 4)
-                    {
-                        print_Error_Information(masterData, index);                    // get the error status
-                    }
-                    else
-                    {
-                        print_Error_Information_Version_4(masterData, index);
-                    }
+                    print_Error_Information(masterData, index);
                 }
                 break;
                 case ENVIRONMENTAL_STATISTICS_PARAMETER:

@@ -79,7 +79,6 @@ namespace opensea_parser {
         eReturnValues print_General_Drive_Information_Continued(JSONNODE *masterData, uint32_t page);
         eReturnValues print_WorkLoad(JSONNODE *masterData, uint32_t page);
         eReturnValues print_Error_Information(JSONNODE *masterData, uint32_t page);
-        eReturnValues print_Error_Information_Version_4(JSONNODE *masterData, uint32_t page);
         eReturnValues print_Enviroment_Information(JSONNODE *masterData, uint32_t page);
         eReturnValues print_Enviroment_Statistics_Page_07(JSONNODE *masterData, uint32_t page);
         eReturnValues print_Workload_Statistics_Page_08(JSONNODE *masterData, uint32_t page);
