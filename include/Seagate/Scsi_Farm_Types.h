@@ -295,7 +295,7 @@ namespace opensea_parser {
         uint64_t            reserved8;									//!< Reserved
         uint64_t            reserved9;									//!< Reserved
         uint64_t            humidity;									//!< Current Relative Humidity (in units of .1%)
-        uint64_t            humidityRatio;								//!< Humidity Mixed Ratio multiplied by 8 (divide by 8 to get actual value)
+        uint64_t            reserved10;								    //!< Reserved
         uint64_t            currentMotorPower;							//!< Current Motor Power, value from most recent SMART Summary Frame6
         uint64_t            average12v;                                 //!< 12V Power Average(mw) - Highest of the three summary frames
         uint64_t            min12v;                                     //!< 12V Power Min(mw) - Lowest of last 3 SMART summary frames
@@ -306,7 +306,7 @@ namespace opensea_parser {
 
         _sScsiEnvironmentStat() : pageNumber(0), copyNumber(0), curentTemp(0), highestTemp(0), lowestTemp(0), reserved(0), 
             reserved1(0), reserved2(0), reserved3(0), reserved4(0), reserved5(0), reserved6(0), reserved7(0), maxTemp(0), minTemp(0),
-            reserved8(0), reserved9(0), humidity(0), humidityRatio(0), currentMotorPower(0), average12v(0), min12v(0), max12v(0), 
+            reserved8(0), reserved9(0), humidity(0), reserved10(0), currentMotorPower(0), average12v(0), min12v(0), max12v(0), 
             average5v(0), min5v(0), max5v(0) {};
     }sScsiEnvironmentStat;
 

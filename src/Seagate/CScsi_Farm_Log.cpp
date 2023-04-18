@@ -817,9 +817,7 @@ bool CSCSI_Farm_Log::Get_sEnvironmentStat(sScsiEnvironmentStat *es, uint64_t off
     es->minTemp = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
     offset += (SIZEPARAM*3);
     es->humidity = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-    offset += SIZEPARAM;
-    es->humidityRatio = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-    offset += SIZEPARAM;
+    offset += SIZEPARAM *2;
     es->currentMotorPower = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
     offset += SIZEPARAM;
 
@@ -2121,7 +2119,7 @@ eReturnValues CSCSI_Farm_Log::print_Enviroment_Information(JSONNODE *masterData,
     printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved8 & UINT64_C(0x00FFFFFFFFFFFFFF));				            //!< Reserved
     printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved9 & UINT64_C(0x00FFFFFFFFFFFFFF));	                        //!< Reserved
     printf("\tCurrent Relative Humidity:                %" PRId32".%" PRId32"   \n", M_DoubleWord1(vFarmFrame[page].environmentPage.humidity & UINT64_C(0x00FFFFFFFFFFFFFF)), M_DoubleWord0(vFarmFrame[page].environmentPage.humidity & UINT64_C(0x00FFFFFFFFFFFFFF)));		//!< Current Relative Humidity (in units of .1%)
-    printf("\tHumidity Mixed Ratio:                     %0.02f     \n", static_cast<double>(M_WordInt0(vFarmFrame[page].environmentPage.humidityRatio & UINT64_C(0x00FFFFFFFFFFFFFF)) / 8.0)); //!< Humidity Mixed Ratio multiplied by 8 (divide by 8 to get actual value)
+    printf("\tReserved:                                 %" PRIu64" \n", vFarmFrame[page].environmentPage.reserved10 & UINT64_C(0x00FFFFFFFFFFFFFF));
     printf("\tCurrent Motor Power:                      %" PRIu16" \n", (M_Word0(vFarmFrame[page].environmentPage.currentMotorPower)));	
     printf("\t12v Power Average(mw):                    %" PRIu64" \n", vFarmFrame[page].environmentPage.average12v & UINT64_C(0x00FFFFFFFFFFFFFF));				
     printf("\t12v Power Min(mw):                        %" PRIu64" \n", vFarmFrame[page].environmentPage.min12v & UINT64_C(0x00FFFFFFFFFFFFFF));				
@@ -2162,9 +2160,6 @@ eReturnValues CSCSI_Farm_Log::print_Enviroment_Information(JSONNODE *masterData,
     temp.str("");temp.clear();
     temp << std::fixed << std::setprecision(2) << (static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.humidity)) * 0.1));							//!< Current Relative Humidity (in units of .1%)
     set_json_string_With_Status(pageInfo, "Current Relative Humidity", temp.str().c_str(), vFarmFrame[page].environmentPage.humidity, m_showStatusBits);
-    temp.str("");temp.clear();
-    temp << std::fixed << std::setprecision(2) << (static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.humidityRatio)) / 8.0));						//!< Humidity Mixed Ratio multiplied by 8 (divide by 8 to get actual value)
-    set_json_string_With_Status(pageInfo, "Humidity Mixed Ratio", temp.str().c_str(), vFarmFrame[page].environmentPage.humidityRatio, m_showStatusBits);
     temp.str("");temp.clear();
     temp << std::dec << M_Word0(check_Status_Strip_Status(vFarmFrame[page].environmentPage.currentMotorPower));
     set_json_string_With_Status(pageInfo, "Current Motor Power", temp.str().c_str(), vFarmFrame[page].environmentPage.currentMotorPower, m_showStatusBits);					    //!< Current Motor Power, value from most recent SMART Summary Frame6
