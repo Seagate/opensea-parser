@@ -1146,7 +1146,7 @@ bool CSCSI_Farm_Log::Get_Reallocation_Data(sActReallocationData *real, uint64_t 
 bool CSCSI_Farm_Log::get_Head_Info(sHeadInformation *phead, uint8_t *buffer)
 {
     memcpy(phead->headValue, reinterpret_cast<sHeadInformation *>(&buffer[4]), (sizeof(uint64_t) * static_cast<size_t>(m_heads)));
-    memcpy(&phead->pageHeader, reinterpret_cast<sLogPageStruct *>(&buffer[0]), sizeof(sLogPageStruct));
+    memcpy(&phead->pageHeader, reinterpret_cast<sLogParams *>(&buffer[0]), sizeof(sLogParams));
     for (uint64_t index = 0; index < m_heads; index++)
     {
         byte_Swap_64(&phead->headValue[index] );

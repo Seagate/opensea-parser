@@ -343,7 +343,7 @@ namespace opensea_parser {
         uint64_t            reserved22;                                  //!< reserved
         uint64_t            reserved23;                                  //!< reserved
 
-        _sScsiReliablility() : pageNumber(0), copyNumber(0), reserved(0), reserved1(0), reserved2(0), reserved3(0), 
+        _sScsiReliablility() : pageNumber(0), copyNumber(0), reserved(0), reserved1(0), reserved2(0), reserved3(0),
             reserved4(0), reserved5(0), reserved6(0), reserved7(0), reserved8(0), reserved9(0), reserved10(0), 
             reserved11(0), reserved12(0), reserved13(0), reserved14(0), reserved15(0), reserved16(0), reserved17(0),
             reserved18(0), reserved19(0), reserved20(0), reserved21(0), reserved22(0), reserved23(0) {};
@@ -455,8 +455,8 @@ namespace opensea_parser {
 
         _sLUNStruct() : pageNumber(0), copyNumber(0), LUNID(0), headLoadEvents(0),reserved(0), reserved1(0), reserved2(0), 
             reserved3(0),  reserved4(0), reserved5(0), reserved6(0), reserved7(0), reserved8(0), reserved9(0), reserved10(0),
-            reserved11(0), dosScansPerformed(0), correctedLBAbyISP(0), reserved12(0), reserved13(0), reserved14(0), 
-            lbasCorrectedByParity(0), reserved15(0), reserved16(0), reserved17(0), reserved18(0), reserved19(0), 
+            reserved11(0), dosScansPerformed(0), correctedLBAbyISP(0), reserved12(0), reserved13(0), reserved14(0), reserved15(0),
+            lbasCorrectedByParity(0), reserved16(0), reserved17(0), reserved18(0), reserved19(0), 
             reserved20(0), reserved21(0), primarySPCovPercentage(0), primarySPCovPercentageSMR(0) {};
     }sLUNStruct;
 
