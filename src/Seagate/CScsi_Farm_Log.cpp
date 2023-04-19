@@ -1295,7 +1295,7 @@ bool CSCSI_Farm_Log::get_Head_Info(sHeadInformation *phead, uint8_t *buffer)
     //    .. / .. / src//Seagate/CScsi_Farm_Log.cpp:1293:11: warning: ‘void* memcpy(void*, const void*, size_t)’ copying an object of non-trivial type ‘opensea_parser::sLogParams’ {aka ‘struct opensea_parser::_sLogPageParamStruct’} from an array of ‘opensea_parser::sLogPageStruct’ {aka ‘struct opensea_parser::_sLogPageStruct’} [-Wclass-memaccess]
     //    1293 | memcpy(&phead->pageHeader, reinterpret_cast<sLogPageStruct *>(&buffer[0]), sizeof(sLogPageStruct));
     //| ~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    memcpy(&phead->pageHeader, reinterpret_cast<sLogPageStruct *>(&buffer[0]), sizeof(sLogPageStruct));
+    memcpy(&phead->pageHeader, reinterpret_cast<sLogParams *>(&buffer[0]), sizeof(sLogParams));
     for (uint64_t index = 0; index < m_heads; index++)
     {
         byte_Swap_64(&phead->headValue[index] );
