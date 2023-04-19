@@ -64,7 +64,7 @@ namespace opensea_parser {
 		sPowerConditionFlags    conditionFlags;
 	public:
 		CAtaPowerConditionsLog();
-		CAtaPowerConditionsLog(std::string filename);
+		explicit CAtaPowerConditionsLog(std::string &filename);
         CAtaPowerConditionsLog(tDataPtr pData, JSONNODE *masterData);
 		virtual ~CAtaPowerConditionsLog();
 		eReturnValues get_Power_Condition_Flags(uint8_t readFlags);

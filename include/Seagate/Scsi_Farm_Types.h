@@ -219,9 +219,11 @@ namespace opensea_parser {
         uint64_t            firstTimeStamp;                             //!< Timestamp of first SMART Summary Frame in Power-On Hours Milliseconds
         uint64_t            lastTimeStamp;                              //!< Timestamp of latest SMART Summary Frame in Power-On Hours Milliseconds
         uint64_t            dateOfAssembly;                             //!< Date of Assembly in ASCII “YYWW” where YY is the year and WW is the calendar week
-        _sScsiDriveInfo() :pageNumber(0), copyNumber(0), serialNumber(0), serialNumber2(0), worldWideName(0), worldWideName2(0), deviceInterface(0), deviceCapacity(0), \
-            psecSize(0), lsecSize(0), deviceBufferSize(0), heads(0), factor(0), rotationRate(0), firmware(0), firmwareRev(0), reserved(0), reserved1(0), reserved2(0), poh(0), reserved3(0), \
-            reserved4(0), headLoadEvents(0), powerCycleCount(0), resetCount(0), reserved6(0), NVC_StatusATPowerOn(0), timeAvailable(0), firstTimeStamp(0), lastTimeStamp(0), dateOfAssembly(0) {};
+        _sScsiDriveInfo() :pageNumber(0), copyNumber(0), serialNumber(0), serialNumber2(0), worldWideName(0), 
+            worldWideName2(0), deviceInterface(0), deviceCapacity(0),  psecSize(0), lsecSize(0), deviceBufferSize(0),
+            heads(0), factor(0), rotationRate(0), firmware(0), firmwareRev(0), reserved(0), reserved1(0), reserved2(0), 
+            poh(0), reserved3(0), reserved4(0), headLoadEvents(0), powerCycleCount(0), resetCount(0), reserved6(0), 
+            NVC_StatusATPowerOn(0), timeAvailable(0), firstTimeStamp(0), lastTimeStamp(0), dateOfAssembly(0) {};
     }sScsiDriveInfo;
 
     typedef struct _sScsiWorkLoadStat
@@ -231,39 +233,7 @@ namespace opensea_parser {
 
     }sScsiWorkLoadStat;
 
-    typedef struct _sScsiErrorStat
-    {
-        sLogParams          pPageHeader;								//!< pointer the farm header page parameter
-        uint64_t            pageNumber;									//!< Page Number = 3
-        uint64_t            copyNumber;									//!< Copy Number
-        uint64_t            totalReadECC;								//!< Number of Unrecoverable Read Errors
-        uint64_t            totalWriteECC;								//!< Number of Unrecoverable Write Errors
-        uint64_t            totalReallocations;							//!< Number of Reallocated Sectors
-        uint64_t            reserved;									//!< Reserved
-        uint64_t            totalMechanicalFails;						//!< Number of Mechanical Start Failures
-        uint64_t            totalReallocatedCanidates;					//!< Number of Reallocated Candidate Sectors
-        uint64_t            reserved1;									//!< Reserved
-        uint64_t            reserved2;									//!< Reserved
-        uint64_t            reserved3;									//!< Reserved
-        uint64_t            reserved4;									//!< Reserved
-        uint64_t            reserved5;									//!< Reserved
-        uint64_t            attrIOEDCErrors;							//!< Number of IOEDC Errors 
-        uint64_t            reserved6;									//!< Reserved
-        uint64_t            reserved7;									//!< Reserved
-        uint64_t            reserved8;									//!< Reserved
-        uint64_t            totalFlashLED;								//!< Total Flash LED (Assert) Events
-        uint64_t            reserved9;									//!< Reserved
-        uint64_t            reserved10;									//!< Reserved
-        uint64_t            FRUCode;									//!< FRU code if smart trip from most recent SMART Frame (SAS only) 
-        uint64_t            parity;                                     //!< Super Parity on the Fly Recovery
-        
-        _sScsiErrorStat() :pageNumber(0), copyNumber(0), totalReadECC(0), totalWriteECC(0), totalReallocations(0), reserved(0), totalMechanicalFails(0), totalReallocatedCanidates(0),
-            reserved1(0), reserved2(0), reserved3(0), reserved4(0), reserved5(0), attrIOEDCErrors(0), reserved6(0), reserved7(0), reserved8(0), totalFlashLED(0),
-            reserved9(0), reserved10(0), FRUCode(0), parity(0) {};
-            
-    }sScsiErrorStat;
-
-    typedef struct _sScsiErrorStatVersion4
+    typedef struct _sScsiErrorFrame
     {
         sLogParams          pPageHeader;								//!< pointer the farm header page parameter
         uint64_t            pageNumber;									//!< Page Number = 3
@@ -279,13 +249,13 @@ namespace opensea_parser {
         uint64_t            reserved5;									//!< Reserved
         uint64_t            reserved6;									//!< Reserved
         uint64_t            reserved7;									//!< Reserved
-        uint64_t            attrIOEDCErrors;							//!< Number of IOEDC Errors 
-        uint64_t            reserved8;									//!< Reserved
+        uint64_t            reserved8;							        //!< Reserved
         uint64_t            reserved9;									//!< Reserved
         uint64_t            reserved10;									//!< Reserved
-        uint64_t            reserved11;								    //!< reserved
-        uint64_t            reserved12;									//!< Reserved
+        uint64_t            reserved11;									//!< Reserved
+        uint64_t            reserved12;								    //!< reserved
         uint64_t            reserved13;									//!< Reserved
+        uint64_t            reserved14;									//!< Reserved
         uint64_t            FRUCode;									//!< FRU code if smart trip from most recent SMART Frame (SAS only) 
         uint64_t            portAInvalidDwordCount;                     //!< Invalid DWord Count (Port A)
         uint64_t            portBInvalidDwordCount;                     //!< Invalid DWord Count (Port B)
@@ -296,18 +266,12 @@ namespace opensea_parser {
         uint64_t            portAPhyResetProblem;                       //!< Phy Reset Problem (Port A)
         uint64_t            portBPhyResetProblem;                       //!< Phy Reset Problem (Port B()
 
-        _sScsiErrorStatVersion4() : pageNumber(0), copyNumber(0), totalReadECC(0), totalWriteECC(0), reserved(0), reserved1(0),
+        _sScsiErrorFrame() : pageNumber(0), copyNumber(0), totalReadECC(0), totalWriteECC(0), reserved(0), reserved1(0),
             totalMechanicalFails(0), reserved2(0), reserved3(0), reserved4(0), reserved5(0), reserved6(0),
-            reserved7(0), attrIOEDCErrors(0), reserved8(0), reserved9(0), reserved10(0), reserved11(0),
-            reserved12(0), reserved13(0), FRUCode(0), portAInvalidDwordCount(0), portBInvalidDwordCount(0),
+            reserved7(0), reserved8(0), reserved9(0), reserved10(0), reserved11(0), reserved12(0),
+             reserved13(0), reserved14(0), FRUCode(0), portAInvalidDwordCount(0), portBInvalidDwordCount(0),
             portADisparityErrorCount(0), portBDisparityErrorCount(0), portALossDwordSync(0),
             portBLossDwordSync(0), portAPhyResetProblem(0), portBPhyResetProblem(0) {};
-    }sScsiErrorVersion4;
-
-    typedef struct _sScsiErrorFrame
-    {
-        sScsiErrorStat      errorStat;                                  //!< version 1.9 - 3.9
-        sScsiErrorVersion4  errorV4;                                    //!< version 4.0 and up
     }sScsiErrorFrame;
 
     typedef struct _sScsiEnvironmentStat
@@ -331,7 +295,7 @@ namespace opensea_parser {
         uint64_t            reserved8;									//!< Reserved
         uint64_t            reserved9;									//!< Reserved
         uint64_t            humidity;									//!< Current Relative Humidity (in units of .1%)
-        uint64_t            humidityRatio;								//!< Humidity Mixed Ratio multiplied by 8 (divide by 8 to get actual value)
+        uint64_t            reserved10;								    //!< Reserved
         uint64_t            currentMotorPower;							//!< Current Motor Power, value from most recent SMART Summary Frame6
         uint64_t            average12v;                                 //!< 12V Power Average(mw) - Highest of the three summary frames
         uint64_t            min12v;                                     //!< 12V Power Min(mw) - Lowest of last 3 SMART summary frames
@@ -339,43 +303,14 @@ namespace opensea_parser {
         uint64_t            average5v;                                  //!< 5V Power Average (mw) - Highest of the last 3 SMART summary frames
         uint64_t            min5v;                                      //!< 5V Power Min(mw) - Lowest of last 3 SMART summary frames
         uint64_t            max5v;                                      //!< 5V Power Max(mw) - Highest of last 3 SMART summary frames
+
+        _sScsiEnvironmentStat() : pageNumber(0), copyNumber(0), curentTemp(0), highestTemp(0), lowestTemp(0), reserved(0), 
+            reserved1(0), reserved2(0), reserved3(0), reserved4(0), reserved5(0), reserved6(0), reserved7(0), maxTemp(0), minTemp(0),
+            reserved8(0), reserved9(0), humidity(0), reserved10(0), currentMotorPower(0), average12v(0), min12v(0), max12v(0), 
+            average5v(0), min5v(0), max5v(0) {};
     }sScsiEnvironmentStat;
 
-    typedef struct _sScsiReliabilityStat
-    {
-        sLogParams          pPageHeader;								 //!< pointer the farm header page parameter
-        uint64_t            pageNumber;                                  //!< Page Number = 5
-        uint64_t            copyNumber;                                  //!< Copy Number
-        uint64_t            lastIDDTest;                                 //!< Timestamp of last IDD test
-        uint64_t            cmdLastIDDTest;                              //!< Sub-command of last IDD test
-        uint64_t            gListReclamed;                               //!< Number of G-List Reclamations 
-        uint64_t            servoStatus;                                 //!< Servo Status (follows standard DST error code definitions)
-        uint64_t            altsBeforeIDD;                               //!< Number of Alt List Entries Before IDD Scan
-        uint64_t            altsAfterIDD;                                //!< Number of Alt List Entries After IDD Scan
-        uint64_t            gListBeforeIDD;                              //!< Number of Resident G-List Entries Before IDD Scan
-        uint64_t            gListAfterIDD;                               //!< Number of Resident G-List Entries After IDD Scan
-        uint64_t            scrubsBeforeIDD;                             //!< Number of Scrub List Entries Before IDD Scan
-        uint64_t            scrubsAfterIDD;                              //!< Number of Scrub List Entries After IDD Scan
-        uint64_t            numberDOSScans;                              //!< Number of DOS Scans Performed
-        uint64_t            numberLBACorrect;                            //!< Number of LBAs Corrected by ISP
-        uint64_t            numberValidParitySec;                        //!< Number of Valid Parity Sectors
-        uint64_t            numberRAWops;                                //!< Number of RAW Operations
-        uint64_t            reserved;									 //!< Reserved
-        uint64_t            reserved1;									 //!< Reserved
-        uint64_t            reserved2;									 //!< Reserved
-        uint64_t            reserved3;									 //!< Reserved
-        uint64_t            reserved4;									 //!< Reserved
-        uint64_t            reserved5;									 //!< Reserved
-        uint64_t            reserved6;									 //!< Reserved
-        uint64_t            microActuatorLockOut;                        //!< Micro Actuator Lock-out, head mask accumulated over last 3 Summary Frames8
-        uint64_t            diskSlipRecalPerformed;                      //!< Number of disc slip recalibrations performed
-        uint64_t            heliumPressuretThreshold;                    //!< helium Pressure Threshold Trip
-        uint64_t            rvAbsoluteMean;                              //!< RV Absolute Mean
-        uint64_t            maxRVAbsoluteMean;                           //!< Max RV absolute Mean
-        uint64_t            idleTime;                                    //!< idle Time value from the most recent SMART Summary Frame
-    }sScsiReliabilityStat;
-
-    typedef struct _sScsiReliabilityStatVERSION4
+    typedef struct _sScsiReliablility
     {
         sLogParams          pPageHeader;								 //!< pointer the farm header page parameter
         uint64_t            pageNumber;                                  //!< Page Number = 5
@@ -401,18 +336,18 @@ namespace opensea_parser {
         uint64_t            reserved16;									 //!< Reserved
         uint64_t            reserved17;									 //!< Reserved
         uint64_t            reserved18;									 //!< Reserved
-        uint64_t            microActuatorLockOut;                        //!< Micro Actuator Lock-out, head mask accumulated over last 3 Summary Frames8
-        uint64_t            diskSlipRecalPerformed;                      //!< Number of disc slip recalibrations performed
-        uint64_t            heliumPressuretThreshold;                    //!< helium Pressure Threshold Trip
         uint64_t            reserved19;                                  //!< reserved
         uint64_t            reserved20;                                  //!< reserved
+        uint64_t            heliumPressuretThreshold;                    //!< helium Pressure Threshold Trip
         uint64_t            reserved21;                                  //!< reserved
-    }sScsiReliStatVersion4;
+        uint64_t            reserved22;                                  //!< reserved
+        uint64_t            reserved23;                                  //!< reserved
 
-    typedef struct _sScsiReliablility
-    {
-        sScsiReliabilityStat    reli;                                    //!< version 1 - 3.9
-        sScsiReliStatVersion4   reli4;                                   //!< version 4 and up
+        _sScsiReliablility() : pageNumber(0), copyNumber(0), reserved(0), reserved1(0), reserved2(0), reserved3(0),
+            reserved4(0), reserved5(0), reserved6(0), reserved7(0), reserved8(0), reserved9(0), reserved10(0), 
+            reserved11(0), reserved12(0), reserved13(0), reserved14(0), reserved15(0), reserved16(0), reserved17(0),
+            reserved18(0), reserved19(0), reserved20(0), reserved21(0), reserved22(0), reserved23(0) {};
+
     }sScsiReliablility;
 
     typedef struct _sGeneralDriveInformationpage06
@@ -428,6 +363,13 @@ namespace opensea_parser {
         uint64_t            timeToReady;                                 //!< Time to Ready of the last power cycle in milliseconds 
         uint64_t            holdTime;                                    //!< Time the drive is held in staggered spin in milliseconds
         uint64_t            servoSpinUpTime;                             //!< The last servo spin up time in milliseconds
+
+        _sGeneralDriveInformationpage06() : pageNumber(0), copyNumber(0), Depop(0),
+#if defined __cplusplus && __cplusplus >= 201103L
+            productID{ 0 },
+#endif
+            driveType(0), isDepopped(0), maxNumAvaliableSectors(0), timeToReady(0),
+            holdTime(0), servoSpinUpTime(0) {};
     }sGeneralDriveInfoPage06;
 
     typedef struct _sScsiEnvironmentStatPage07
@@ -441,6 +383,9 @@ namespace opensea_parser {
         uint64_t            average5v;                                  //!< 5V Power Average (mw) - Highest of the last 3 SMART summary frames
         uint64_t            min5v;                                      //!< 5V Power Min(mw) - Lowest of last 3 SMART summary frames
         uint64_t            max5v;                                      //!< 5V Power Max(mw) - Highest of last 3 SMART summary frames
+
+        _sScsiEnvironmentStatPage07() : pageNumber(0), copyNumber(0), average12v(0), min12v(0),
+            max12v(0), average5v(0), min5v(0), max5v(0) {};
     }sScsiEnvStatPage07;
 
     typedef struct _sScsiWorkloadStatPage08
@@ -456,12 +401,21 @@ namespace opensea_parser {
         uint64_t            countQueDepth17_32;                         //!< Count of Queue Depth 17-32 at 30s intervals for last 3 SMART Summary Frames
         uint64_t            countQueDepth33_64;                         //!< Count of Queue Depth 33-64 at 30s intervals for last 3 SMART Summary Frames
         uint64_t            countQueDepth_gt_64;                        //!< Count of Queue Depth greater than 64 at 30s intervals for last 3 SMART Summary Frames
+
+        _sScsiWorkloadStatPage08() : pageNumber(0), copyNumber(0), countQueDepth1(0), countQueDepth2(0), 
+            countQueDepth3_4(0), countQueDepth5_8(0), countQueDepth9_16(0), countQueDepth17_32(0), 
+            countQueDepth33_64(0), countQueDepth_gt_64(0) {};
     }sScsiWorkloadStatPage08;
 
     typedef struct _sHeadInformation
     {
         sLogParams          pageHeader;                                  //!<  header page parameters
         uint64_t            headValue[MAX_HEAD_COUNT];                   //!< head information
+        
+#if defined __cplusplus && __cplusplus >= 201103L
+        _sHeadInformation() : headValue{ 0 } {};
+#endif
+           
     }sHeadInformation;
 
     typedef struct _sLUNStruct
@@ -471,39 +425,39 @@ namespace opensea_parser {
         uint64_t            copyNumber;                                 //!< Copy Number
         uint64_t            LUNID;                                      //!< LUN ID
         uint64_t            headLoadEvents;                             //!< Head Load Events
-        union {
-            uint64_t            reallocatedSectors;                         //!< Number of Reallocated Sectors
-            uint64_t            reserved;                                   //!< Number of Reallocated Sectors
-        };
-        union {
-            uint64_t            reallocatedCandidates;                      //!< Number of Reallocated Candidate Sectors
-            uint64_t            reserved1;                                   //!< Number of Reallocated Sectors
-        };
-        uint64_t            timeStampOfIDD;                             //!< Timestamp of last IDD test
-        uint64_t            subCmdOfIDD;                                //!< Sub - command of last IDD test
-        uint64_t            reclamedGlist;                              //!< Number of G - list reclamations
-        uint64_t            servoStatus;                                //!< Servo Status
-        uint64_t            slippedSectorsBeforeIDD;                    //!< Number of Slipped Sectors Before IDD Scan
-        uint64_t            slippedSectorsAfterIDD;                     //!< Number of Slipped Sectors After IDD Scan
-        uint64_t            residentReallocatedBeforeIDD;               //!< Number of Resident Reallocated Sectors Before IDD Scan
-        uint64_t            residentReallocatedAfterIDD;                //!< Number of Resident Reallocated Sectors After IDD Scan
-        uint64_t            successScrubbedBeforeIDD;                   //!< Number of Successfully Scrubbed Sectors Before IDD Scan
-        uint64_t            successScrubbedAfterIDD;                    //!< Number of Successfully Scrubbed Sectors After IDD Scan
+        uint64_t            reserved;                                   //!< Reserved
+        uint64_t            reserved1;                                  //!< Reserved
+        uint64_t            reserved2;                                  //!< Reserved
+        uint64_t            reserved3;                                  //!< Reserved
+        uint64_t            reserved4;                                  //!< Reserved
+        uint64_t            reserved5;                                  //!< Reserved
+        uint64_t            reserved6;                                  //!< Reserved
+        uint64_t            reserved7;                                  //!< Reserved
+        uint64_t            reserved8;                                  //!< Reserved
+        uint64_t            reserved9;                                  //!< Reserved
+        uint64_t            reserved10;                                 //!< Reserved
+        uint64_t            reserved11;                                 //!< Reserved
         uint64_t            dosScansPerformed;                          //!< Number of DOS Scans Performed
         uint64_t            correctedLBAbyISP;                          //!< Number of LBAs Corrected by ISP
-        uint64_t            paritySectors;                              //!< Number of Valid Parity Sectors
-        uint64_t            RVabsolue;                                  //!< RV Absolute Mean, value from most recent SMART Summary Frame
-        uint64_t            maxRVabsolue;                               //!< Max RV Absolute Mean, value from most recent SMART Summary Frame
-        uint64_t            idleTime;                                   //!< Idle Time, value from most recent SMART Summary Frame in seconds
+        uint64_t            reserved12;                                 //!< Reserved
+        uint64_t            reserved13;                                 //!< Reserved
+        uint64_t            reserved14;                                 //!< Reserved
+        uint64_t            reserved15;                                 //!< Reserved
         uint64_t            lbasCorrectedByParity;                      //!< total valid parity sectors
-        uint64_t            currentLowFrequencyVibe;                    //!< Current Low Frequency Vibe Score
-        uint64_t            currentMidFrequencyVibe;                    //!< Current Mid Frequency Vibe Score
-        uint64_t            currentHighFrequencyVibe;                   //!< Current High Frequency Vibe Score
-        uint64_t            worstLowFrequencyVibe;                      //!< Worst Low Frequency Vibe Score
-        uint64_t            worstMidFrequencyVibe;                      //!< Worst Mid Frequency Vibe Score
-        uint64_t            worstHighFrequencyVibe;                     //!< Worst High Frequency Vibe Score
+        uint64_t            reserved16;                                 //!< Reserved
+        uint64_t            reserved17;                                 //!< Reserved
+        uint64_t            reserved18;                                 //!< Reserved
+        uint64_t            reserved19;                                 //!< Reserved
+        uint64_t            reserved20;                                 //!< WReserved
+        uint64_t            reserved21;                                 //!< Reserved
         uint64_t            primarySPCovPercentage;                     //!< Primary Super Parity Coverage Percentage
         uint64_t            primarySPCovPercentageSMR;                  //!< Primary Super Parity Coverage Percentage SMR
+
+        _sLUNStruct() : pageNumber(0), copyNumber(0), LUNID(0), headLoadEvents(0),reserved(0), reserved1(0), reserved2(0), 
+            reserved3(0),  reserved4(0), reserved5(0), reserved6(0), reserved7(0), reserved8(0), reserved9(0), reserved10(0),
+            reserved11(0), dosScansPerformed(0), correctedLBAbyISP(0), reserved12(0), reserved13(0), reserved14(0), reserved15(0),
+            lbasCorrectedByParity(0), reserved16(0), reserved17(0), reserved18(0), reserved19(0), 
+            reserved20(0), reserved21(0), primarySPCovPercentage(0), primarySPCovPercentageSMR(0) {};
     }sLUNStruct;
 
     typedef struct _sActuatorFLEDInfo
@@ -517,6 +471,12 @@ namespace opensea_parser {
         uint64_t            flashLEDArray[8];                           //!< Info on the last 8 Flash LED events Wrapping array. 
         uint64_t            timestampForLED[8];                         //!< Universal Timestamp (us) of last 8 Flash LED (assert) Events, wrapping array 
         uint64_t            powerCycleOfLED[8];                        //<! Power Cycle of the last 8 Flash LED (assert) Events, wrapping array 
+
+        _sActuatorFLEDInfo() : pageNumber(0), copyNumber(0), actID(0), totalFLEDEvents(0), index(0)
+#if defined __cplusplus && __cplusplus >= 201103L
+            ,flashLEDArray{ 0 }, timestampForLED{ 0 }, powerCycleOfLED{ 0 }
+#endif 
+        {};
     }sActuatorFLEDInfo;
 
     typedef struct _sActuatorReallocationData
@@ -528,6 +488,12 @@ namespace opensea_parser {
         uint64_t            numberReallocatedSectors;                   //!< Number of Reallocated Sectors
         uint64_t            numberReallocatedCandidates;                //!< Number of Reallocated Candidate Sectors
         uint64_t            reallocatedCauses[15];                      //!< Reallocated sectors by cause, see below.  This is a 15 element array, each element is 8 bytes
+
+        _sActuatorReallocationData() : pageNumber(0), copyNumber(0), actID(0), numberReallocatedSectors(0), numberReallocatedCandidates(0)
+#if defined __cplusplus && __cplusplus >= 201103L
+            , reallocatedCauses{ 0 }
+#endif 
+        {};
     }sActReallocationData;
 
     typedef struct _sScsiFarmFrame
