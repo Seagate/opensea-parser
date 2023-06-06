@@ -2102,7 +2102,20 @@ eReturnValues CSCSI_Farm_Log::print_Enviroment_Information(JSONNODE *masterData,
     {
         printf("\nEnvironment Information From Farm Log copy %d: \n", page);
     }
-
+	//2106 | printf("\tCurrent Temperature:                      %0.02f     \n", static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.curentTemp)*.10));                               //!< Current Temperature in Celsius
+	//| ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	//	.. / .. / src//Seagate/CScsi_Farm_Log.cpp:2107:73: warning: implicit conversion from ‘float’ to ‘double’ when passing argument to function [-Wdouble-promotion]
+	//	2107 | printf("\tHighest Temperature:                      %0.02f     \n", static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.highestTemp)*.10));                              //!< Highest Temperature in Celsius
+	//| ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	//	.. / .. / src//Seagate/CScsi_Farm_Log.cpp:2108:73: warning: implicit conversion from ‘float’ to ‘double’ when passing argument to function [-Wdouble-promotion]
+	//	2108 | printf("\tLowest Temperature:                       %0.02f     \n", static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.lowestTemp)*.10));                               //!< Lowest Temperature
+	//| ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	//	.. / .. / src//Seagate/CScsi_Farm_Log.cpp:2117:73: warning: implicit conversion from ‘float’ to ‘double’ when passing argument to function [-Wdouble-promotion]
+	//	2117 | printf("\tSpecified Max Operating Temperature:      %0.02f     \n", static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.maxTemp) * 1.00));                                   //!< Specified Max Operating Temperature
+	//| ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	//	.. / .. / src//Seagate/CScsi_Farm_Log.cpp:2118:73: warning: implicit conversion from ‘float’ to ‘double’ when passing argument to function [-Wdouble-promotion]
+	//	2118 | printf("\tSpecified Min Operating Temperature:      %0.02f     \n", static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.minTemp) * 1.00));                                   //!< Specified Min Operating Temperature
+	//| ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     printf("\tCurrent Temperature:                      %0.02f     \n", static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.curentTemp)*.10));			        //!< Current Temperature in Celsius
     printf("\tHighest Temperature:                      %0.02f     \n", static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.highestTemp)*.10));			        //!< Highest Temperature in Celsius
     printf("\tLowest Temperature:                       %0.02f     \n", static_cast<float>(M_WordInt0(vFarmFrame[page].environmentPage.lowestTemp)*.10));			        //!< Lowest Temperature

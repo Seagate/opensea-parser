@@ -1210,6 +1210,14 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
     {
         printf("\tNumber of Velocity Observer by Head %d:   %" PRIu64" (debug)\n", loopCount, vFarmFrame[page].reliPage.numberOfVelocityObserver[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));          //!< [24] Number of Velocity Observer over last 3 SMART Summary Frames by Head9,10
     }
+	//CAta_Farm_Log.cpp:1216 : 13 : warning : implicit conversion from ‘float’ to ‘double’ when passing argument to function[-Wdouble - promotion]
+	//	1216 | static_cast<float>(M_WordInt0((static_cast<uint64_t>(check_Status_Strip_Status(vFarmFrame[page].reliPage.flyHeightClearance[loopCount].outer)))) * .001));                //!< [24][3] Applied fly height clearance delta per head in thousandths of one Angstrom.
+	//	| ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	//		.. / .. / src//Seagate/CAta_Farm_Log.cpp:1218:13: warning: implicit conversion from ‘float’ to ‘double’ when passing argument to function [-Wdouble-promotion]
+	//		1218 | static_cast<float>(M_WordInt0((static_cast<uint64_t>(check_Status_Strip_Status(vFarmFrame[page].reliPage.flyHeightClearance[loopCount].inner)))) * .001));                //!< [24][3] Applied fly height clearance delta per head in thousandths of one Angstrom.
+	//		| ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	//			.. / .. / src//Seagate/CAta_Farm_Log.cpp:1220:13: warning: implicit conversion from ‘float’ to ‘double’ when passing argument to function [-Wdouble-promotion]
+	//			1220 | static_cast<float>(M_WordInt0(static_cast<uint64_t>(check_Status_Strip_Status((vFarmFrame[page].reliPage.flyHeightClearance[loopCount].middle)))) * .001));               //!< [24][3] Applied fly height clearance delta per head in thousandths of one Angstrom.
     for (loopCount = 0; loopCount < m_heads; ++loopCount)
     {
         printf("\tFly height outer clearance delta by Head  %d:   raw 0x%" PRIx64" outer, calculated %0.02f (debug)\n", loopCount, vFarmFrame[page].reliPage.flyHeightClearance[loopCount].outer, \
