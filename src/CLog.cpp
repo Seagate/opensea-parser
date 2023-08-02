@@ -1,6 +1,6 @@
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2021 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2023 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -181,7 +181,7 @@ eReturnValues CLog::read_In_Buffer()
     std::fstream logFile(m_fileName.c_str(), std::ios::in | std::ios::binary);//only allow reading as a binary file
     if (logFile.is_open())
     {
-        logFile.read(pData, m_size);
+        logFile.read(pData, static_cast<std::streamsize>(m_size));
         logFile.close();
     }
     else
@@ -237,7 +237,7 @@ void CLog::read_In_Log()
         std::fstream logFile(m_fileName.c_str(), std::ios::in );
         if (logFile.is_open())
         {
-            logFile.read(pData, m_size);
+            logFile.read(pData, static_cast<std::streamsize>(m_size));
             logFile.close();
             m_logStatus = SUCCESS;
         }

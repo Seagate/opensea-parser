@@ -1,6 +1,6 @@
 // Do NOT modify or remove this copyright and license
 //
-//Copyright (c) 2014 - 2021 Seagate Technology LLC and/or its Affiliates
+//Copyright (c) 2014 - 2023 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -366,7 +366,7 @@ eReturnValues CAta_Identify_log::parse_Device_Info()
     if ((identWordPtr[59] & BIT8) > 0)
     {
         m_sDriveInfo.multipleValid = true;
-        m_sDriveInfo.numDRQBlocks = identWordPtr[59] & 0x00FF;
+        m_sDriveInfo.numDRQBlocks = static_cast<uint16_t>(identWordPtr[59] & UINT16_C(0x00FF));
     }
 
     //parse out some identifying information
@@ -409,21 +409,21 @@ eReturnValues CAta_Identify_log::parse_Device_Info()
         }
         else                                                                                //multiple logical sectors per physical sector
         {
-            m_sDriveInfo.sSizes.sectorSizeExponent = identWordPtr[106] & 0x000F;                     //get the number of logical blocks per physical blocks
+            m_sDriveInfo.sSizes.sectorSizeExponent = M_Byte0(identWordPtr[106] & UINT16_C(0x000F));                     //get the number of logical blocks per physical blocks
             if (m_sDriveInfo.sSizes.sectorSizeExponent != 0)
             {
                 uint8_t logicalPerPhysical = 1;
                 uint8_t shiftCounter = 0;
                 while (shiftCounter < m_sDriveInfo.sSizes.sectorSizeExponent)
                 {
-                    logicalPerPhysical = logicalPerPhysical << 1;                           //multiply by 2
+                    logicalPerPhysical = static_cast<uint8_t>(logicalPerPhysical << 1);                           //multiply by 2
                     shiftCounter++;
                 }
                 m_sDriveInfo.sSizes.physicalSectorSize = m_sDriveInfo.sSizes.logicalSectorSize * logicalPerPhysical;
             }
         }
         //logical sector alignment
-        m_sDriveInfo.logicalSectorAlignment = identWordPtr[209] & 0x3FFF;
+        m_sDriveInfo.logicalSectorAlignment = static_cast<uint32_t>(identWordPtr[209] & UINT16_C(0x3FFF));
 
     }
 
@@ -446,7 +446,7 @@ eReturnValues CAta_Identify_log::parse_Device_Info()
         {
             break;
         }
-        m_sDriveInfo.ataSpecBits = m_sDriveInfo.ataSpecBits >> 1;
+        m_sDriveInfo.ataSpecBits = static_cast<uint16_t>(m_sDriveInfo.ataSpecBits >> 1);
     }
 
     //minor spec version number
@@ -461,14 +461,14 @@ eReturnValues CAta_Identify_log::parse_Device_Info()
     {
         m_sDriveInfo.sTrans.transportType = M_GETBITRANGE(identWordPtr[222], 15, 12);
         m_sDriveInfo.sTrans.transportCounter = 0;
-        m_sDriveInfo.sTrans.transportBits = identWordPtr[222] & 0x0FFF;
+        m_sDriveInfo.sTrans.transportBits = static_cast<uint16_t>(identWordPtr[222] & UINT16_C(0x0FFF));
         for (m_sDriveInfo.sTrans.transportCounter = 0; m_sDriveInfo.sTrans.transportCounter < 11; m_sDriveInfo.sTrans.transportCounter++)
         {
             if (m_sDriveInfo.sTrans.transportBits == 0x0001 || m_sDriveInfo.sTrans.transportBits == 0x0000)
             {
                 break;
             }
-            m_sDriveInfo.sTrans.transportBits = m_sDriveInfo.sTrans.transportBits >> 1;
+            m_sDriveInfo.sTrans.transportBits = static_cast<uint16_t>(m_sDriveInfo.sTrans.transportBits >> 1);
         }
 
         m_sDriveInfo.sTrans.transportReported = true;
@@ -4227,6 +4227,7 @@ eReturnValues CAta_Identify_Log_07::get_Log_Page07(uint8_t *lp7pData, JSONNODE *
 CAta_Identify_Log_08::CAta_Identify_Log_08(uint8_t *Buffer)
     :m_name("ATA Identify Log Page 08")
     , m_status(IN_PROGRESS)
+    , m_pLog(NULL)
     , m_SATACap()
     , m_CurrentSet()
 {

@@ -3,7 +3,7 @@
 //
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2021 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2023 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -12,7 +12,7 @@
 // ******************************************************************************************
 
 // \file CAta_Farm_Log.h
-// \brief Defines the function calls and structures for pulling Seagate logs
+// \brief Defines the function calls and structures for parsing Seagate logs
 #pragma once
 #include <vector>
 #include <string>
@@ -49,7 +49,9 @@ namespace opensea_parser {
             uint8_t                     *pBuf;                              //!< pointer to the buffer data that is the binary of FARM LOG
             uint32_t                    m_MajorRev;                         //!< holds the Major Revision number
             uint32_t                    m_MinorRev;                         //!< holds the minor revision number
+            uint8_t                     m_FrameReason;                      //!< holds the reason for Frame Capture information
  
+            bool Check_Page_number(uint64_t page, uint16_t pageNumber);
             eReturnValues print_Header(JSONNODE *masterData);
             eReturnValues print_Drive_Information(JSONNODE *masterData, uint32_t page);
             eReturnValues print_Work_Load(JSONNODE *masterData, uint32_t page);
@@ -57,7 +59,7 @@ namespace opensea_parser {
             eReturnValues print_Enviroment_Information(JSONNODE *masterData, uint32_t page);
             eReturnValues print_Reli_Information(JSONNODE *masterData, uint32_t page);
             eReturnValues print_Head_Information(JSONNODE *masterData, uint32_t page);
-
+            
         public:
             CATA_Farm_Log();
             CATA_Farm_Log( uint8_t *bufferData, size_t bufferSize, bool showStatus);
@@ -72,6 +74,8 @@ namespace opensea_parser {
             virtual void get_Serial_Number(std::string sn){ sn.assign( vFarmFrame[0].identStringInfo.serialNumber); };
             virtual void get_Firmware_String(std::string firmware){ firmware.assign(vFarmFrame[0].identStringInfo.firmwareRev); };
 			virtual void get_World_Wide_Name(std::string wwn) {wwn.assign(vFarmFrame[0].identStringInfo.worldWideName);};
+            uint32_t get_LogSize() { return M_DoubleWord1(m_logSize); };                                  //<! return the page size for the combine farm log
+            uint8_t get_FrameReason() { return m_FrameReason; };
     };
 #endif //!ATAFARM
 }

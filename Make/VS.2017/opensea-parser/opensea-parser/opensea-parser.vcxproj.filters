@@ -144,6 +144,12 @@
     <ClInclude Include="..\..\..\..\include\CScsi_Page_19h_Command_Duration_Limits_Log.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\include\Seagate\CFARM_Combine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\include\Seagate\CFARM_WLM_Log.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\src\CAta_Device_Stat_Log.cpp">

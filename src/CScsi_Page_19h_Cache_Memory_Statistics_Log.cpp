@@ -2,7 +2,7 @@
 // CScsi_Page_19h_Cache_Memory_Statistics_Log.cpp  Definition of SCSI cache memory statistics log
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2015 - 2021 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2015 - 2023 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -161,7 +161,7 @@ void opensea_parser::CScsiCacheMemStatLog::process_Cache_Memory_Statistics_inter
 {
     std::string myStr = "";
 
-#if defined_DEBUG
+#if defined _DEBUG
     printf("Cache Memory Statistics Log Description\n");
 #endif
 
@@ -200,7 +200,7 @@ void CScsiCacheMemStatLog::process_Generic_Data(JSONNODE *genData)
     std::string myStr;
     std::string myHeader;
 
-#if defined_DEBUG
+#if defined _DEBUG
     printf("Cache Memory Statistics Log Description\n");
 #endif
     byte_Swap_16(&m_CacheMemLog->paramCode);

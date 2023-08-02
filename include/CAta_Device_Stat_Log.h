@@ -3,7 +3,7 @@
 //
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2021 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2023 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -30,7 +30,7 @@ namespace opensea_parser {
 		uint16_t    SCTspec;                                        //!< Highest level of SCT Technical Report supported                4 - 5
 		uint32_t    statusFlag;                                     //!< Bit 0: Segment Initialized Flag.                               6 - 9
 		uint8_t     driveStatus;                                    //!< drive status                                                   10
-		uint8_t     reseved1[3];                                    //!< reserved                                                       11 - 13
+		uint8_t     reserved1[3];                                   //!< reserved                                                       11 - 13
 		uint16_t    extenededStatusCode;                            //!< Status of last SCT command issued. FFFFh if SCT command        14 - 15 
 		uint16_t    actionCode;                                     //!< Action code of last SCT command issued.                        16 - 17
 		uint16_t    functionCode;                                   //!< Function code of last SCT command issued.                      18 - 19
@@ -44,13 +44,31 @@ namespace opensea_parser {
 		uint8_t     lifeMaxTemp;                                    //!< Current drive HDA temperature in degrees Celsius.              204
 		uint8_t     reserved6;                                      //!< reserved                                                       205
 		uint8_t     reserved7[307];                                 //!< to the end                                                     206 - 511   
+		_sStatusResponse() : formatVersion(0), SCTversion(0), SCTspec(0), statusFlag(0), driveStatus(0),
+#if defined _WIN32  || (__cplusplus && __cplusplus >= 201103L)
+			reserved1{ 0 },
+#endif
+			extenededStatusCode(0), actionCode(0), functionCode(0), 
+#if defined _WIN32  || (__cplusplus && __cplusplus >= 201103L)
+			reserved2{ 0 },
+#endif
+			lba(0),
+#if defined _WIN32  || (__cplusplus && __cplusplus >= 201103L)
+			reserved3{ 0 }, 
+#endif
+			temp(0), reserved4(), maxTemp(0), reserved5(0), lifeMaxTemp(0), reserved6(0)
+#if defined _WIN32  || (__cplusplus && __cplusplus >= 201103L)
+			//CLANG++ does not like this and the best I can find on the web is that this is a C++11 addition for initializing all elements of an array to zero - TJE
+			, reserved7{ 0 }
+#endif
+		{};
 	}sStatusResponse;
 	typedef struct _sHeader
 	{
 		uint16_t   RevNum;
 		uint8_t   LogPageNum;
 		uint8_t   Reserved[5];
-        _sHeader() :RevNum(0), LogPageNum(0) {};   // removed the Reserved init, because of clang issue with setting it zero's
+        _sHeader() :RevNum(0), LogPageNum(0), Reserved() {};   // removed the Reserved init, because of clang issue with setting it zero's
 	}sHeader;
 	typedef struct _sLogPage01
 	{
@@ -67,6 +85,8 @@ namespace opensea_parser {
 		uint64_t	utilRate;								//!< Utilization Usage Rate
 		uint64_t	resourceAval;							//!< Resource Avablity
 		uint64_t	randomWriteResourcesUsed;				//!< Random Write Resources Used
+		_sLogPage01() : header(), lifeTimePWRResets(0), poh(0), logSectWritten(0), numberOfWrites(0), logSectRead(0), numberOfReads(0), date(0), pendingErrorCount(0), \
+			workLoad(0), utilRate(0), resourceAval(0), randomWriteResourcesUsed(0) {};
 	}sLogPage01;
 	typedef struct _sDEVICELOGFOUR
 	{
@@ -74,6 +94,7 @@ namespace opensea_parser {
 		uint64_t	numberReportedECC;						//!< Number of Reported Uncorrectable Errors
 		uint64_t	resets;									//!< Number of Resets Between Command Acceptance and Command Completion
 		uint64_t	statusChanged;							//!< Physical Element Status Changed
+		_sDEVICELOGFOUR() : header(), numberReportedECC(0), resets(0), statusChanged(0) {};
 	}sDeviceLog04;
 	typedef struct _DEVICELOGTHREE
 	{

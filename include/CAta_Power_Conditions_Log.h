@@ -3,7 +3,7 @@
 //
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2021 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2023 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -64,7 +64,7 @@ namespace opensea_parser {
 		sPowerConditionFlags    conditionFlags;
 	public:
 		CAtaPowerConditionsLog();
-		CAtaPowerConditionsLog(std::string filename);
+		explicit CAtaPowerConditionsLog(std::string &filename);
         CAtaPowerConditionsLog(tDataPtr pData, JSONNODE *masterData);
 		virtual ~CAtaPowerConditionsLog();
 		eReturnValues get_Power_Condition_Flags(uint8_t readFlags);

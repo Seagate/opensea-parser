@@ -3,7 +3,7 @@
 //
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2021 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2023 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -769,14 +769,14 @@ void CAtaDeviceStatisticsLogs::logPage01(uint64_t *value, JSONNODE *masterData)
 #endif
     json_push_back(sctStat, json_new_i("Number of processed Power-On Reset", static_cast<uint32_t>(check_Status_Strip_Status(dsLog->lifeTimePWRResets))));
     json_push_back(sctStat, json_new_i("Power-On Hours", static_cast<uint32_t>(check_Status_Strip_Status(dsLog->poh))));
-    opensea_parser::set_json_64bit(sctStat, "Logical Sectors Written", check_Status_Strip_Status(dsLog->logSectWritten), false);
-    opensea_parser::set_json_64bit(sctStat, "Number Of Write Commands", check_Status_Strip_Status(dsLog->numberOfWrites), false);
-    opensea_parser::set_json_64bit(sctStat, "Logical Sectors Read", check_Status_Strip_Status(dsLog->logSectRead), false);
-    opensea_parser::set_json_64bit(sctStat, "Number of Read Commands", check_Status_Strip_Status(dsLog->numberOfReads), false);
-    opensea_parser::set_json_64bit(sctStat, "Date and Time TimeStamp(hrs)", ((check_Status_Strip_Status(dsLog->date) / 1000) / 3600), false);
+    opensea_parser::set_json_64bit_With_Check_Status(sctStat, "Logical Sectors Written", dsLog->logSectWritten, false);
+    opensea_parser::set_json_64bit_With_Check_Status(sctStat, "Number Of Write Commands", dsLog->numberOfWrites, false);
+    opensea_parser::set_json_64bit_With_Check_Status(sctStat, "Logical Sectors Read", dsLog->logSectRead, false);
+    opensea_parser::set_json_64bit_With_Check_Status(sctStat, "Number of Read Commands", dsLog->numberOfReads, false);
+    opensea_parser::set_json_64bit(sctStat, "Date and Time TimeStamp(hrs)", (static_cast<uint64_t>((check_Status_Strip_Status(dsLog->date)) / 1000) / 3600), false);
 	json_push_back(sctStat, json_new_i("Pending Error Count", static_cast<uint32_t>(check_Status_Strip_Status(dsLog->pendingErrorCount))));
 	json_push_back(sctStat, json_new_i("Workload Utilization", static_cast<uint32_t>(check_Status_Strip_Status(dsLog->workLoad))));
-	opensea_parser::set_json_64bit(sctStat, "Utilization Usage Rate", check_Status_Strip_Status(dsLog->utilRate), false);
+	opensea_parser::set_json_64bit_With_Check_Status(sctStat, "Utilization Usage Rate", dsLog->utilRate, false);
 	json_push_back(sctStat, json_new_i("Resource Availibility", static_cast<uint32_t>(check_Status_Strip_Status(dsLog->resourceAval))));
 	json_push_back(sctStat, json_new_i("Random Write Resources Used", static_cast<uint32_t>(check_Status_Strip_Status(dsLog->randomWriteResourcesUsed))));
 
@@ -971,7 +971,7 @@ void CAtaDeviceStatisticsLogs::logPage05(uint64_t *value, JSONNODE *masterData)
     LowAvgLongTemp = CheckStatusAndValidSigned_8(&cData[9]);
     TimeInOverTemp = CheckStatusAndValid_32(&cData[10]);
     MaxOperTemp = CheckStatusAndValidSigned_8(&cData[11]);
-    TimeInUndTemp = CheckStatusAndValid_32(&cData[12]);
+    TimeInUndTemp = static_cast<int32_t>(CheckStatusAndValid_32(&cData[12]));
     MinOperTemp = CheckStatusAndValidSigned_8(&cData[13]);
 
     //string myStr = "Temperature Statistics";

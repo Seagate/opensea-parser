@@ -14,9 +14,9 @@ NAME=opensea-parser
 #Change the Major version when major interface changes are made.
 MAJOR=0
 #Change the Minor version when new features are added. 
-MINOR=1
+MINOR=2
 #Change the patch version when only bug fixes are made.
-PATCH=14
+PATCH=16
 
 UNAME := $(shell uname -s)
 OS=$(shell uname)
@@ -74,6 +74,7 @@ LIB_SRC_FILES = \
     $(SRC_DIR)/Seagate/CAta_Farm_Log.cpp\
     $(SRC_DIR)/Seagate/CScsi_Farm_Log.cpp\
 
+
 PROJECT_DEFINES += #-D_DEBUG
 
 #All of the source files have associated object files
@@ -127,8 +128,8 @@ $(LIBS): $(LIB_OBJ_FILES)
 	rm -f $(FILE_OUTPUT_DIR)/$@
 	$(ARCHIVE) cq $(FILE_OUTPUT_DIR)/$@ $(LIB_OBJ_FILES)
 # Removing the line below since we don't need a shared object for this right now...a static library is enough for the common stuff
-	$(CXX) $(LXXFLAGS) $(LIB_OBJ_FILES) -o lib$(NAME).so.$(VERSION)
-	cd $(FILE_OUTPUT_DIR) && ln -s lib$(NAME).so* lib$(NAME).so
+	#$(CXX) $(LXXFLAGS) $(LIB_OBJ_FILES) -o lib$(NAME).so.$(VERSION)
+	#cd $(FILE_OUTPUT_DIR) && ln -s lib$(NAME).so* lib$(NAME).so
 
 clean: banner
 	rm -f $(SRC_DIR)*.o

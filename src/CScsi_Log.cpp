@@ -2,7 +2,7 @@
 // CScsiLog.cpp  Implementation of Base class CScsiLog
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2021 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2023 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -23,6 +23,8 @@
 #include "CScsi_Supported_LogPages_Log.h"
 #include "CScsi_Pending_Defects_Log.h"
 #include "CScsi_Non_Medium_Error_Count_Log.h"
+#include "CScsi_Page_19h_Cache_Memory_Statistics_Log.h"
+#include "CScsi_Page_19h_Command_Duration_Limits_Log.h"
 #include "CScsi_Logical_Block_Provisioning_Log.h"
 #include "CScsi_Informational_Exeptions_Log.h"
 #include "CScsi_Format_Status_Log.h"
@@ -71,7 +73,7 @@ CScsiLog::CScsiLog()
 //  Exit:
 //
 //---------------------------------------------------------------------------
-CScsiLog::CScsiLog(const std::string fileName, JSONNODE *masterData)
+CScsiLog::CScsiLog(const std::string &fileName, JSONNODE *masterData)
     : bufferData(NULL)
     , m_LogSize(0)
     , m_name("SCSI Log")
@@ -640,6 +642,72 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				delete (cPSP);
 			}
 			break;
+			case CACHE_MEMORY_STATISTICES:
+			{
+				if (lpStruct->subPage == SAS_SUBPAGE_20)        // Cache Memory Statistics 5.2.7
+				{
+					if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+					{
+						std::cout << "Cache Memory Statisitics Log Page Found" << std::endl;
+					}
+					CScsiCacheMemStatLog* cCacheLog;
+					cCacheLog = new CScsiCacheMemStatLog(&bufferData[4], m_LogSize, lpStruct->pageLength);
+					retStatus = cCacheLog->get_Cache_Memory_Statistics_Log_Status();
+					if (retStatus == IN_PROGRESS)
+					{
+						try
+						{
+							retStatus = cCacheLog->parse_Cache_Memory_Statistics_Log(masterData);
+						}
+						catch (...)
+						{
+							retStatus = cCacheLog->get_Cache_Memory_Statistics_Log_Status();
+							delete(cCacheLog);
+							if (retStatus == SUCCESS || retStatus == IN_PROGRESS)
+							{
+								return PARSE_FAILURE;
+							}
+							else
+							{
+								return retStatus;
+							}
+						}
+					}
+					delete(cCacheLog);
+					}
+				else if (lpStruct->subPage == SAS_SUBPAGE_21)        // Command Duration Limits Statistics 5.2.8
+				{
+					if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+					{
+						std::cout << "Command Duration Limits Statisitics Log Found" << std::endl;
+					}
+					CScsiCmdDurationLimitsLog* cLimitsLog;
+					cLimitsLog = new CScsiCmdDurationLimitsLog(&bufferData[4], m_LogSize, lpStruct->pageLength);
+					retStatus = cLimitsLog->get_Limits_Log_Status();
+					if (retStatus == IN_PROGRESS)
+					{
+						try
+						{
+							retStatus = cLimitsLog->parse_Limits_Log(masterData);
+						}
+						catch (...)
+						{
+							retStatus = cLimitsLog->get_Limits_Log_Status();
+							delete(cLimitsLog);
+							if (retStatus == SUCCESS || retStatus == IN_PROGRESS)
+							{
+								return PARSE_FAILURE;
+							}
+							else
+							{
+								return retStatus;
+							}
+						}
+					}
+					delete(cLimitsLog);
+				}
+			}
+			break;
 			case POWER_CONDITION_TRANSITIONS:
 			{
 				if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
@@ -740,7 +808,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				if (lpStruct->subPage == FARM_LOG_PAGE)   // Farm Log
 				{
 					CSCSI_Farm_Log* pCFarm;
-					pCFarm = new CSCSI_Farm_Log(bufferData, lpStruct->pageLength + 4, lpStruct->subPage,false);
+					pCFarm = new CSCSI_Farm_Log(bufferData, static_cast<size_t>(lpStruct->pageLength + 4), lpStruct->subPage,false);
 					if (pCFarm->get_Log_Status() == SUCCESS)
 					{
 						try
@@ -767,7 +835,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				else if (lpStruct->subPage == FARM_FACTORY_LOG_PAGE)   // Farm Log
 				{
 					CSCSI_Farm_Log* pCFarm;
-					pCFarm = new CSCSI_Farm_Log(bufferData, lpStruct->pageLength + 4, lpStruct->subPage,false);
+					pCFarm = new CSCSI_Farm_Log(bufferData, static_cast<size_t>(lpStruct->pageLength + 4), lpStruct->subPage,false);
 					if (pCFarm->get_Log_Status() == SUCCESS)
 					{
 						try
@@ -794,7 +862,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				else if (lpStruct->subPage >= FARM_TIME_SERIES_0 && lpStruct->subPage <= FARM_TEMP_TRIGGER_LOG_PAGE)   // FARM log when Temperature exceeds 70 c
 				{
 					CSCSI_Farm_Log* pCFarm;
-					pCFarm = new CSCSI_Farm_Log(bufferData, lpStruct->pageLength + 4, lpStruct->subPage,false);  // issue with the log bufer size
+					pCFarm = new CSCSI_Farm_Log(bufferData, static_cast<size_t>(lpStruct->pageLength + 4), lpStruct->subPage,false);  // issue with the log bufer size
 					if (pCFarm->get_Log_Status() == SUCCESS)
 					{
 						retStatus = pCFarm->get_Log_Status();

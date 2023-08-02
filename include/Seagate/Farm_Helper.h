@@ -3,7 +3,7 @@
 //
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2021 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2023 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -18,7 +18,6 @@
 #include "common.h"
 #include "libjson.h"
 #include "Opensea_Parser_Helper.h"
-#include "Farm_Types.h"
 #include <sstream>
 #include <iomanip>
 
@@ -47,9 +46,6 @@ namespace opensea_parser {
 	//-----------------------------------------------------------------------------
 	inline void set_json_64_bit_With_Status(JSONNODE *nowNode, const std::string & myStr, uint64_t value, bool hexPrint, bool showStatusBits)
 	{
-		std::string lowStr = "64 bit Value Lower value";
-		std::string upperStr = "64 bit Value Upper value";
-        //value = check_Status_Strip_Status(value);
 		// if the 31 bit is set it will turn the value to a negitive number
         if (!showStatusBits  && (M_GETBITRANGE(value, 63, 31) == 0))
 		{
@@ -135,14 +131,14 @@ namespace opensea_parser {
 			{
 				set_Json_Bool(bigBit, "Field Valid", false);
 			}
-			value = check_Status_Strip_Status(value);
-			json_push_back(bigBit, json_new_i(myStr.c_str(), static_cast<int32_t>(M_DoubleWord0(value))));
+			value = check_Status_Strip_Status(static_cast<uint64_t>(value));
+			json_push_back(bigBit, json_new_i(myStr.c_str(), value));
 			json_push_back(nowNode, bigBit);
 		}
 		else
 		{
-			value = check_Status_Strip_Status(value);
-			json_push_back(nowNode, json_new_i(myStr.c_str(), static_cast<int32_t>(M_DoubleWord0(value))));
+			value = check_Status_Strip_Status(static_cast<uint64_t>(value));
+			json_push_back(nowNode, json_new_i(myStr.c_str(), value));
 		}
 	}
 	//-----------------------------------------------------------------------------
@@ -163,11 +159,11 @@ namespace opensea_parser {
 	//!   \return void
 	//
 	//-----------------------------------------------------------------------------
-	inline void set_json_string_With_Status(JSONNODE *nowNode, const std::string & myStr, const std::string & strValue, uint64_t value, bool showStatusBits)
+	inline void set_json_string_With_Status(JSONNODE* nowNode, const std::string& myStr, const std::string& strValue, uint64_t value, bool showStatusBits)
 	{
 		if (showStatusBits)
 		{
-			JSONNODE *bigBit = json_new(JSON_NODE);
+			JSONNODE* bigBit = json_new(JSON_NODE);
 			json_set_name(bigBit, myStr.c_str());
 			if ((value & BIT63) == BIT63)
 			{
@@ -256,23 +252,23 @@ namespace opensea_parser {
 		}
 	}
 	//-----------------------------------------------------------------------------
-//
-//! \fn set_json_int_Check_Status()
-//
-//! \brief
-//!   Description:  set the json values for a intiger value and will show status bits if the flag is set
-//
-//  Entry:
-//! \param  nowNode = the Json node that the data will be added to
-//! \param  myStr = the string data what will be adding to
-//! \param value  =  int value that would have already been calculated.
-//! \param value  =  64 bit value to check to see if the bit is set or not
-//! \param showStatusBits = flag to force showing the status bits on the value
-//
-//  Exit:
-//!   \return void
-//
-//-----------------------------------------------------------------------------
+	//
+	//! \fn set_json_int_Check_Status()
+	//
+	//! \brief
+	//!   Description:  set the json values for a intiger value and will show status bits if the flag is set
+	//
+	//  Entry:
+	//! \param  nowNode = the Json node that the data will be added to
+	//! \param  myStr = the string data what will be adding to
+	//! \param value  =  int value that would have already been calculated.
+	//! \param value  =  64 bit value to check to see if the bit is set or not
+	//! \param showStatusBits = flag to force showing the status bits on the value
+	//
+	//  Exit:
+	//!   \return void
+	//
+	//-----------------------------------------------------------------------------
 	inline void set_json_int_Check_Status(JSONNODE* nowNode, const std::string& myStr, long value, uint64_t fullValue, bool showStatusBits)
 	{
 		if (showStatusBits)
@@ -314,6 +310,67 @@ namespace opensea_parser {
 			else
 			{
 				json_push_back(nowNode, json_new_i(myStr.c_str(), value));
+			}
+		}
+	}
+	//-----------------------------------------------------------------------------
+	//
+	//! \fn set_json_bool_With_Status()
+	//
+	//! \brief
+	//!   Description:  set the json values for a boolean and will show status bits if the flag is set
+	//
+	//  Entry:
+	//! \param  nowNode = the Json node that the data will be added to
+	//! \param  myStr = the string data what will be adding to
+	//! \param value  =  64 bit value to check to see if the bit is set or not
+	//! \param showStatusBits = flag to force showing the status bits on the value
+	//
+	//  Exit:
+	//!   \return void
+	//
+	//-----------------------------------------------------------------------------
+	inline void set_json_bool_With_Status(JSONNODE* nowNode, const std::string& myStr, uint64_t value, bool showStatusBits)
+	{
+		if (showStatusBits)
+		{
+			JSONNODE* bigBit = json_new(JSON_NODE);
+			json_set_name(bigBit, myStr.c_str());
+			if ((value & BIT63) == BIT63)
+			{
+				set_Json_Bool(bigBit, "Field Supported", true);
+			}
+			else
+			{
+				set_Json_Bool(bigBit, "Field Supported", false);
+			}
+			if ((value & BIT62) == BIT62)
+			{
+				set_Json_Bool(bigBit, "Field Valid", true);
+			}
+			else
+			{
+				set_Json_Bool(bigBit, "Field Valid", false);
+			}
+			if (check_Status_Strip_Status(value) != 0)
+			{
+				set_Json_Bool(bigBit, myStr, true);
+			}
+			else
+			{
+				set_Json_Bool(bigBit, myStr, false);
+			}
+			json_push_back(nowNode, bigBit);
+		}
+		else
+		{
+			if (check_Status_Strip_Status(value) != 0)
+			{
+				set_Json_Bool(nowNode, myStr, true);
+			}
+			else
+			{
+				set_Json_Bool(nowNode, myStr, false);
 			}
 		}
 	}

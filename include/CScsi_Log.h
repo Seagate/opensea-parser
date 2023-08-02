@@ -3,7 +3,7 @@
 //
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2021 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2023 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -33,7 +33,7 @@ namespace opensea_parser {
 		eReturnValues get_Log_Parsed(JSONNODE *masterData);
 	public:
 		CScsiLog();
-        CScsiLog(const std::string fileName, JSONNODE *masterData);
+        CScsiLog(const std::string &fileName, JSONNODE *masterData);
 		virtual ~CScsiLog();
         virtual eReturnValues get_Log_Status(){ return m_ScsiStatus; };
 		inline int get_Page_Code() const { return m_Page->pageCode; }

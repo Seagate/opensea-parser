@@ -3,7 +3,7 @@
 //
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2021 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2023 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -200,7 +200,7 @@ eReturnValues CAta_Ext_DST_Log::parse_Ext_Self_Test_Log(JSONNODE *masterData)
         StatusByte = pData[DSTIndex + 1];
         timeStamp = M_BytesTo2ByteValue(pData[DSTIndex + 3], pData[DSTIndex + 2]);
         compTime = M_BytesTo2ByteValue(pData[DSTIndex + 13], pData[DSTIndex + 12]);
-        checkPointByte = pData[DSTIndex + 4];
+        checkPointByte = static_cast<int8_t>(pData[DSTIndex + 4]);
         LBA = M_BytesTo8ByteValue(0,0, pData[DSTIndex + 10], pData[DSTIndex + 9], pData[DSTIndex + 8], pData[DSTIndex + 7], pData[DSTIndex + 6], pData[DSTIndex + 5]);
         JSONNODE *runInfo = json_new(JSON_NODE);
 
