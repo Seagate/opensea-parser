@@ -634,7 +634,12 @@ bool CSCSI_Farm_Log::Get_sDrive_Info_Page_06(sGeneralDriveInfoPage06 *gd, uint64
     offset += SIZEPARAM;
     gd->servoSpinUpTime = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
     //offset += SIZEPARAM;
-    
+
+    // need to byte swap the product ID
+    byte_Swap_64(&gd->productID[0]);
+    byte_Swap_64(&gd->productID[1]);
+    byte_Swap_64(&gd->productID[2]);
+    byte_Swap_64(&gd->productID[3]);
     return true;
 }
 
@@ -3090,21 +3095,19 @@ void CSCSI_Farm_Log::print_All_Pages(JSONNODE *masterData)
                     //get the Farm Header information;
                     break;
                 case  GENERAL_DRIVE_INFORMATION_PARAMETER:
-                    print_Drive_Information(masterData, index);                   // get the id drive information at the time.
+                    print_Drive_Information(masterData, index);                     // get the id drive information at the time.
                     break;
                 case  WORKLOAD_STATISTICS_PARAMETER:
-                    print_WorkLoad(masterData, index);                           // get the work load information
+                    print_WorkLoad(masterData, index);                              // get the work load information
                     break;
                 case ERROR_STATISTICS_PARAMETER:
-                {
-                    print_Error_Information(masterData, index);
-                }
-                break;
+                    print_Error_Information(masterData, index);                     // get the Error Information
+                    break;
                 case ENVIRONMENTAL_STATISTICS_PARAMETER:
-                    print_Enviroment_Information(masterData, index);               // get the envirmonent information 
+                    print_Enviroment_Information(masterData, index);                // get the envirmonent information 
                     break;
                 case RELIABILITY_STATISTICS_PARAMETER:
-                    print_Reli_Information(masterData, index);         // get the Reliabliity stat
+                    print_Reli_Information(masterData, index);                      // get the Reliabliity stat
                     break;
                 case GENERAL_DRIVE_INFORMATION_06:
                     print_General_Drive_Information_Continued(masterData, index);
