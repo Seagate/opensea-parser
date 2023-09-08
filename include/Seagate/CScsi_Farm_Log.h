@@ -57,8 +57,8 @@ namespace opensea_parser {
 
 		
         
-        bool strip_Active_Status(uint64_t *value);
-        bool swap_Bytes_sFarmHeader(sScsiFarmHeader *fh, uint8_t* pData);
+        
+        bool get_sFarmHeader(sScsiFarmHeader* fh, uint8_t* pData, uint64_t position);
         bool Get_sDriveInfo(sScsiDriveInfo *di, uint64_t offset);
         bool Get_sDrive_Info_Page_06(sGeneralDriveInfoPage06 *gd,uint64_t offset);
         bool Get_sWorkLoadStat(sScsiWorkLoadStat *wl, uint64_t offset);
@@ -93,6 +93,7 @@ namespace opensea_parser {
         CSCSI_Farm_Log(uint8_t* bufferData, size_t bufferSize, uint8_t subPage, bool m_fromScsiLogPages);
         CSCSI_Farm_Log(uint8_t *bufferData, size_t bufferSize, uint8_t subpage, bool m_fromScsiLogPages, bool showStatus);
         virtual ~CSCSI_Farm_Log();
+        bool strip_Active_Status(uint64_t* value);
         eReturnValues parse_Farm_Log();
         void print_All_Pages(JSONNODE *masterData);
         //void print_Page(JSONNODE *masterData, uint32_t page);

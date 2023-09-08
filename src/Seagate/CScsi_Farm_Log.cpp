@@ -223,42 +223,42 @@ CSCSI_Farm_Log::~CSCSI_Farm_Log()
 //---------------------------------------------------------------------------
 eReturnValues CSCSI_Farm_Log::init_Header_Data()
 {
-	if (pBuf == NULL)
-	{
-		return MEMORY_FAILURE;
-	}
-	else
-	{
-        
+    if (pBuf == NULL)
+    {
+        return MEMORY_FAILURE;
+    }
+    else
+    {
+
         if (m_fromScsiLogPages == true)
         {
             m_pHeader->pPageHeader = *reinterpret_cast<sLogParams*>(&pBuf[0]);
-            swap_Bytes_sFarmHeader(m_pHeader, &pBuf[4]);											// swap all the bytes for the header
+            get_sFarmHeader(m_pHeader, &pBuf[4], 4);											// swap all the bytes for the header
         }
         else
         {
             m_logParam = reinterpret_cast<sLogPageStruct*>(&pBuf[0]);
             m_logSize = m_logParam->pageLength;									    // set the class log size 
             byte_Swap_16(&m_logSize);
-            
+
             m_pHeader->pPageHeader = *reinterpret_cast<sLogParams*>(&pBuf[4]);
-            swap_Bytes_sFarmHeader(m_pHeader, &pBuf[8]);											// swap all the bytes for the header
+            get_sFarmHeader(m_pHeader, &pBuf[8], 8);											// swap all the bytes for the header
         }
-		
-		m_totalPages = M_DoubleWord0(m_pHeader->farmHeader.pagesSupported);			// get the total pages
-		m_pageSize = M_DoubleWord0(m_pHeader->farmHeader.pageSize);					// get the page size
+
+        m_totalPages = M_DoubleWord0(m_pHeader->farmHeader.pagesSupported);			// get the total pages
+        m_pageSize = M_DoubleWord0(m_pHeader->farmHeader.pageSize);					// get the page size
         uint64_t heads = m_pHeader->farmHeader.headsSupported;                      // get the number of heads, but don't se m_heads yet
-		if (check_For_Active_Status(&heads))			                            // the the number of heads if supported
-		{
-			if ((m_pHeader->farmHeader.headsSupported & UINT64_C(0x00FFFFFFFFFFFFFF)) > 0)
-			{
-				m_heads = M_DoubleWord0(m_pHeader->farmHeader.headsSupported);
-				m_MaxHeads = M_DoubleWord0(m_pHeader->farmHeader.headsSupported);
-			}
-		}
-		m_copies = M_DoubleWord0(m_pHeader->farmHeader.copies);						// finish up with the number of copies (not supported "YET" in SAS)
-	}
-	return SUCCESS;
+        if (check_For_Active_Status(&heads))			                            // the the number of heads if supported
+        {
+            if ((m_pHeader->farmHeader.headsSupported & UINT64_C(0x00FFFFFFFFFFFFFF)) > 0)
+            {
+                m_heads = M_DoubleWord0(m_pHeader->farmHeader.headsSupported);
+                m_MaxHeads = M_DoubleWord0(m_pHeader->farmHeader.headsSupported);
+            }
+        }
+        m_copies = M_DoubleWord0(m_pHeader->farmHeader.copies);						// finish up with the number of copies (not supported "YET" in SAS)
+    }
+    return SUCCESS;
 }
 //-----------------------------------------------------------------------------
 //
@@ -976,22 +976,27 @@ bool CSCSI_Farm_Log::Get_sScsiReliabilityStat(sScsiReliablility *ss, uint64_t of
 //  Entry:
 //! \param sScsiFarmHeader  =  pointer to the Farm header information
 //! \param pData = pointer to the buffer data
+//! \param offset = how many byte we have removed from the size ( 4 or is it 8)
 //
 //  Exit:
 //!   \return bool
 //
 //---------------------------------------------------------------------------
-bool CSCSI_Farm_Log::swap_Bytes_sFarmHeader(sScsiFarmHeader *fh, uint8_t* pData)
+bool CSCSI_Farm_Log::get_sFarmHeader(sScsiFarmHeader* fh, uint8_t* pData, uint64_t position)
 {
-    fh->farmHeader.signature = M_BytesTo8ByteValue(pData[0], pData[1], pData[2], pData[3], pData[4], pData[5], pData[6], pData[7] );
-    fh->farmHeader.majorRev = M_BytesTo8ByteValue(pData[8], pData[9], pData[10], pData[11], pData[12], pData[13], pData[14], pData[15]);
-    fh->farmHeader.minorRev = M_BytesTo8ByteValue(pData[16], pData[17], pData[18], pData[19], pData[20], pData[21], pData[22], pData[23]);
-    fh->farmHeader.pagesSupported = M_BytesTo8ByteValue(pData[24], pData[25], pData[26], pData[27], pData[28], pData[29], pData[30], pData[31]);
-    fh->farmHeader.logSize  = M_BytesTo8ByteValue(pData[32], pData[33], pData[34], pData[35], pData[36], pData[37], pData[38], pData[39]);
-    fh->farmHeader.pageSize = M_BytesTo8ByteValue(pData[40], pData[41], pData[42], pData[43], pData[44], pData[45], pData[46], pData[47]);
-    fh->farmHeader.headsSupported  = M_BytesTo8ByteValue(pData[48], pData[49], pData[50], pData[51], pData[52], pData[53], pData[54], pData[55]);
-    fh->farmHeader.copies = M_BytesTo8ByteValue(pData[56], pData[57], pData[58], pData[59], pData[60], pData[61], pData[62], pData[63]);
-    fh->farmHeader.reasonForFrameCapture = M_BytesTo8ByteValue(pData[64], pData[65], pData[66], pData[67], pData[68], pData[69], pData[70], pData[71]);
+    uint64_t offset = 0;
+    fh->farmHeader.signature = M_BytesTo8ByteValue(pData[offset], pData[offset + 1], pData[offset + 2], pData[offset + 3], pData[offset + 4], pData[offset + 5], pData[offset + 6], pData[offset + 7]);
+    fh->farmHeader.majorRev = M_BytesTo8ByteValue(pData[offset + 8], pData[offset + 9], pData[offset + 10], pData[offset + 11], pData[offset + 12], pData[offset + 13], pData[offset + 14], pData[offset + 15]);
+    fh->farmHeader.minorRev = M_BytesTo8ByteValue(pData[offset + 16], pData[offset + 17], pData[offset + 18], pData[offset + 19], pData[offset + 20], pData[offset + 21], pData[offset + 22], pData[offset + 23]);
+    fh->farmHeader.pagesSupported = M_BytesTo8ByteValue(pData[offset + 24], pData[offset + 25], pData[26], pData[offset + 27], pData[offset + 28], pData[offset + 29], pData[offset + 30], pData[offset + 31]);
+    fh->farmHeader.logSize = M_BytesTo8ByteValue(pData[offset + 32], pData[offset + 33], pData[offset + 34], pData[offset + 35], pData[offset + 36], pData[offset + 37], pData[offset + 38], pData[offset + 39]);
+    fh->farmHeader.pageSize = M_BytesTo8ByteValue(pData[offset + 40], pData[offset + 41], pData[offset + 42], pData[offset + 43], pData[offset + 44], pData[offset + 45], pData[offset + 46], pData[offset + 47]);
+    fh->farmHeader.headsSupported = M_BytesTo8ByteValue(pData[offset + 48], pData[offset + 49], pData[offset + 50], pData[offset + 51], pData[offset + 52], pData[offset + 53], pData[offset + 54], pData[offset + 55]);
+    fh->farmHeader.copies = M_BytesTo8ByteValue(pData[offset + 56], pData[offset + 57], pData[offset + 58], pData[offset + 59], pData[offset + 60], pData[offset + 61], pData[offset + 62], pData[offset + 63]);
+    if (position + 64 <= m_logSize && m_logSize != 0)
+    {
+        fh->farmHeader.reasonForFrameCapture = M_BytesTo8ByteValue(pData[offset + 64], pData[offset + 65], pData[offset + 66], pData[offset + 67], pData[offset + 68], pData[offset + 69], pData[offset + 70], pData[offset + 71]);
+    }
 
     return true;
 }
