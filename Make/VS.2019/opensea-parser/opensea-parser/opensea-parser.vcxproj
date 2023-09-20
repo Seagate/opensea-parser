@@ -526,10 +526,12 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\include\CAta_Capacity_Model_Log.h" />
     <ClInclude Include="..\..\..\..\include\CAta_Device_Stat_Log.h" />
     <ClInclude Include="..\..\..\..\include\CAta_Ext_Comprehensive_Log.h" />
     <ClInclude Include="..\..\..\..\include\CAta_Ext_DST_Log.h" />
     <ClInclude Include="..\..\..\..\include\CAta_Identify_Log.h" />
+    <ClInclude Include="..\..\..\..\include\CAta_LBA_Status_Log.h" />
     <ClInclude Include="..\..\..\..\include\CAta_NCQ_Command_Error_Log.h" />
     <ClInclude Include="..\..\..\..\include\CAta_Power_Conditions_Log.h" />
     <ClInclude Include="..\..\..\..\include\CAta_SMART_Log_Dir.h" />
@@ -570,10 +572,12 @@
     <ClInclude Include="..\..\..\..\include\Seagate\Scsi_Farm_Types.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\src\CAta_Capacity_Model_Log.cpp" />
     <ClCompile Include="..\..\..\..\src\CAta_Device_Stat_Log.cpp" />
     <ClCompile Include="..\..\..\..\src\CAta_Ext_Comprehensive_Log.cpp" />
     <ClCompile Include="..\..\..\..\src\CAta_Ext_DST_Log.cpp" />
     <ClCompile Include="..\..\..\..\src\CAta_Identify_Log.cpp" />
+    <ClCompile Include="..\..\..\..\src\CAta_LBA_Status_Log.cpp" />
     <ClCompile Include="..\..\..\..\src\CAta_NCQ_Command_Error_Log.cpp" />
     <ClCompile Include="..\..\..\..\src\CAta_Power_Condition_Log.cpp" />
     <ClCompile Include="..\..\..\..\src\CAta_SMART_Log_Dir.cpp" />

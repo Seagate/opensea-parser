@@ -144,6 +144,12 @@
     <ClInclude Include="..\..\..\..\include\CScsi_Page_19h_Command_Duration_Limits_Log.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\include\CAta_LBA_Status_Log.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\include\CAta_Capacity_Model_Log.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\src\CAta_Device_Stat_Log.cpp">
@@ -252,6 +258,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\src\CScsi_Page_19h_Command_Duration_Limits_Log.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\CAta_LBA_Status_Log.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\CAta_Capacity_Model_Log.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
