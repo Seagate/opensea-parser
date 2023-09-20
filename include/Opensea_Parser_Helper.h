@@ -37,7 +37,8 @@
 #include <string>
 
 
-extern eVerbosityLevels g_verbosity;
+
+
 extern eDataFormat g_dataformat;
 extern bool	g_parseUnknown;
 extern time_t g_currentTime;
@@ -92,6 +93,17 @@ namespace opensea_parser {
 #define SAS_SUBPAGE_FF				0xFF
 
 #define COMMAND_DURATION_LIMITS_LOG 0x19
+
+	enum class eVerbosityLevelClass : int
+	{
+		VERBOSITY_QUIET = 0,
+		VERBOSITY_DEFAULT = 1,
+		VERBOSITY_COMMAND_NAMES = 2,
+		VERBOSITY_COMMAND_VERBOSE = 3,
+		VERBOSITY_BUFFERS = 4
+	};
+
+	
 
 	typedef enum _eParserInterfaceTypes
 	{
@@ -476,6 +488,12 @@ namespace opensea_parser {
         std::stringstream tempString;
         for (size_t strOffset = 0; (strOffset + 1) < stringToSwap.size(); strOffset += 2)
         {
+			if (stringToSwap.at(strOffset + 1) == 0x20)
+			{
+				tempString << stringToSwap.at(strOffset);
+				tempString << stringToSwap.at(strOffset + 1);
+				break;
+			}
 			tempString << stringToSwap.at(strOffset + 1);
             tempString << stringToSwap.at(strOffset);
         }
@@ -523,4 +541,5 @@ namespace opensea_parser {
 #endif // !OPENSEA_PARSER
 }
 
+extern opensea_parser::eVerbosityLevelClass g_verbosity;
 
