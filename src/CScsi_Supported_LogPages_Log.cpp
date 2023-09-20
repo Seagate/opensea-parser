@@ -40,7 +40,7 @@ CScsiSupportedLog::CScsiSupportedLog()
 	, m_ShowSubPage(false)
     , m_ShowSupportedPagesOnce(true)
 {
-	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+	if (eVerbosityLevelClass::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
 		printf("%s \n", m_SupportedName.c_str());
 	}
@@ -72,7 +72,7 @@ CScsiSupportedLog::CScsiSupportedLog(uint8_t * buffer, size_t bufferSize, uint16
 	, m_ShowSubPage(subPage)
     , m_ShowSupportedPagesOnce(true)
 {
-	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+	if (eVerbosityLevelClass::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
 		printf("%s \n", m_SupportedName.c_str());
 	}

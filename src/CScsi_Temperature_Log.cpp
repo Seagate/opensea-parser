@@ -37,7 +37,7 @@ CScsiTemperatureLog::CScsiTemperatureLog()
 	, m_TempStatus(IN_PROGRESS)
 	, m_PageLength(0)
 {
-	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+	if (eVerbosityLevelClass::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
 		printf("%s \n", m_TempName.c_str());
 	}
@@ -63,7 +63,7 @@ CScsiTemperatureLog::CScsiTemperatureLog(uint8_t * buffer, size_t bufferSize)
 	, m_TempStatus(IN_PROGRESS)
 	, m_PageLength(0)
 {
-	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+	if (eVerbosityLevelClass::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
 		printf("%s \n", m_TempName.c_str());
 	}

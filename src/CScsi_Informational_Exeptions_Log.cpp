@@ -37,7 +37,7 @@ CScsiInformationalExeptionsLog::CScsiInformationalExeptionsLog()
 	, m_bufferLength()
 	, m_Exeptions()
 {
-	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+	if (eVerbosityLevelClass::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
 		printf("%s \n", m_infoName.c_str());
 	}
@@ -65,7 +65,7 @@ CScsiInformationalExeptionsLog::CScsiInformationalExeptionsLog(uint8_t * buffer,
 	, m_bufferLength(bufferSize)
 	, m_Exeptions()
 {
-	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+	if (eVerbosityLevelClass::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
 		printf("%s \n", m_infoName.c_str());
 	}

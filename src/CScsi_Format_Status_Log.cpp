@@ -39,7 +39,7 @@ CScsiFormatStatusLog::CScsiFormatStatusLog()
     , m_Format()
     , m_FormatDataOutParamValue()
 {
-    if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+    if (eVerbosityLevelClass::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
         printf("%s \n", m_FormatName.c_str());
     }
@@ -69,7 +69,7 @@ CScsiFormatStatusLog::CScsiFormatStatusLog(uint8_t * buffer, size_t bufferSize, 
     , m_Format()
     , m_FormatDataOutParamValue()
 {
-    if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+    if (eVerbosityLevelClass::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
         printf("%s \n", m_FormatName.c_str());
     }

@@ -36,7 +36,7 @@ CScsi_DST_Results::CScsi_DST_Results()
     , m_SubPage(0)
 	, m_DST()
 {
-	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+	if (eVerbosityLevelClass::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
 		printf("%s \n", m_DSTName.c_str());
 	}
@@ -62,7 +62,7 @@ CScsi_DST_Results::CScsi_DST_Results(uint8_t * buffer, size_t bufferSize, JSONNO
     , m_SubPage(0)
 	, m_DST(0)
 {
-	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+	if (eVerbosityLevelClass::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
 		printf("%s \n", m_DSTName.c_str());
 	}
@@ -173,7 +173,7 @@ void CScsi_DST_Results::print_Self_Test_Log(JSONNODE *dstNode, uint16_t run)
     std::ostringstream temp;
     temp << "Entry " << std::setw(3) << run;   // changed the run# to Entry per Paul
 	json_set_name(runInfo, temp.str().c_str());
-	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+	if (eVerbosityLevelClass::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
         temp.str("");temp.clear();
         temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << m_DST->paramCode;

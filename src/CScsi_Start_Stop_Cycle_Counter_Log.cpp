@@ -251,7 +251,7 @@ eReturnValues CScsiStartStop::week_Year_Print(JSONNODE *data, uint16_t param, ui
 	JSONNODE *dateInfo = json_new(JSON_NODE);
 	json_set_name(dateInfo, strHeader.c_str());
 	
-    if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+    if (eVerbosityLevelClass::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
         std::ostringstream temp;
 
@@ -346,7 +346,7 @@ eReturnValues CScsiStartStop::get_Count(JSONNODE *countData, uint16_t param, uin
 	JSONNODE *countInfo = json_new(JSON_NODE);
 	json_set_name(countInfo, strHeader.c_str());
 
-    if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+    if (eVerbosityLevelClass::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
         std::ostringstream temp;
         temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << param;

@@ -38,7 +38,7 @@ CScsiSolidStateDriveLog::CScsiSolidStateDriveLog()
     , m_SSDValue(0)
     , m_SSDParam()
 {
-    if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+    if (eVerbosityLevelClass::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
         printf("%s \n", m_SSDName.c_str());
     }
@@ -67,7 +67,7 @@ CScsiSolidStateDriveLog::CScsiSolidStateDriveLog(uint8_t * buffer, size_t buffer
     , m_SSDValue(0)
     , m_SSDParam()
 {
-    if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+    if (eVerbosityLevelClass::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
         printf("%s \n", m_SSDName.c_str());
     }

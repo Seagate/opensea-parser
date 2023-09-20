@@ -35,8 +35,11 @@ CScsiProtocolPortLog::CScsiProtocolPortLog()
 	, m_PSPStatus(IN_PROGRESS)
 	, m_PageLength(0)
 	, m_bufferLength(0)
+	, m_List(NULL)
+	, m_Descriptor(NULL)
+	, m_Event(NULL)
 {
-	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+	if (eVerbosityLevelClass::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
 		printf("%s \n", m_PSPName.c_str());
 	}
@@ -64,7 +67,7 @@ CScsiProtocolPortLog::CScsiProtocolPortLog(uint8_t *buffer, size_t bufferSize)
 	, m_Descriptor(NULL)
 	, m_Event(NULL)
 {
-	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+	if (eVerbosityLevelClass::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
 		printf("%s \n", m_PSPName.c_str());
 	}

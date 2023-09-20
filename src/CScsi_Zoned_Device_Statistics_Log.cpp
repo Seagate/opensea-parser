@@ -38,7 +38,7 @@ CScsiZonedDeviceStatisticsLog::CScsiZonedDeviceStatisticsLog()
     , m_ZDSValue(0)
     , m_ZDSParam()
 {
-    if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+    if (eVerbosityLevelClass::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
         printf("%s \n", m_ZDSName.c_str());
     }
@@ -68,7 +68,7 @@ CScsiZonedDeviceStatisticsLog::CScsiZonedDeviceStatisticsLog(uint8_t * buffer, s
     , m_ZDSValue(0)
     , m_ZDSParam()
 {
-    if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+    if (eVerbosityLevelClass::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
         printf("%s \n", m_ZDSName.c_str());
     }

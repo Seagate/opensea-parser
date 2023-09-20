@@ -38,7 +38,7 @@ CScsiLBAProvisionLog::CScsiLBAProvisionLog()
     , m_bufferLength()
     , m_Provision()
 {
-    if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+    if (eVerbosityLevelClass::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
         printf("%s \n", m_LBAName.c_str());
     }
@@ -66,7 +66,7 @@ CScsiLBAProvisionLog::CScsiLBAProvisionLog(uint8_t * buffer, size_t bufferSize, 
     , m_bufferLength(bufferSize)
     , m_Provision()
 {
-    if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+    if (eVerbosityLevelClass::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
         printf("%s \n", m_LBAName.c_str());
     }

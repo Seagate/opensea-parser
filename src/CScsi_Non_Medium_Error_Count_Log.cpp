@@ -39,7 +39,7 @@ CScsiNonMediumErrorCountLog::CScsiNonMediumErrorCountLog()
 	, m_Value(0)
 	, m_CountErrors()
 {
-	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+	if (eVerbosityLevelClass::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
 		printf("%s \n", m_NMECName.c_str());
 	}
@@ -68,7 +68,7 @@ CScsiNonMediumErrorCountLog::CScsiNonMediumErrorCountLog(uint8_t * buffer, size_
 	, m_Value(0)
 	, m_CountErrors()
 {
-	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+	if (eVerbosityLevelClass::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
 		printf("%s \n", m_NMECName.c_str());
 	}

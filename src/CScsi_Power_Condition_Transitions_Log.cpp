@@ -37,7 +37,7 @@ CScsiPowerConditiontLog::CScsiPowerConditiontLog()
 	, m_bufferLength()
 	, m_PowerParam(0)
 {
-	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+	if (eVerbosityLevelClass::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
 		printf("%s \n", m_PowerName.c_str());
 	}
@@ -64,7 +64,7 @@ CScsiPowerConditiontLog::CScsiPowerConditiontLog(uint8_t * buffer, size_t buffer
 	, m_bufferLength(bufferSize)
 	, m_PowerParam(0)
 {
-	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+	if (eVerbosityLevelClass::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
 		printf("%s \n", m_PowerName.c_str());
 	}

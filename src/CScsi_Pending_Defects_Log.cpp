@@ -39,7 +39,7 @@ CScsiPendingDefectsLog::CScsiPendingDefectsLog()
 	, m_PlistDefect()
 	, m_count(0)
 {
-	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+	if (eVerbosityLevelClass::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
 		printf("%s \n", m_PlistName.c_str());
 	}
@@ -69,7 +69,7 @@ CScsiPendingDefectsLog::CScsiPendingDefectsLog(uint8_t * buffer, size_t bufferSi
 	, m_PlistDefect()
 	, m_count(0)
 {
-	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+	if (eVerbosityLevelClass::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
 		printf("%s \n", m_PlistName.c_str());
 	}
