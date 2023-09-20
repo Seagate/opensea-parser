@@ -38,7 +38,7 @@ CScsiCacheLog::CScsiCacheLog()
     , m_Value(0)
     , m_cache()
 {
-    if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+    if (eVerbosityLevelClass::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
         printf("%s \n", m_CacheName.c_str());
     }
@@ -67,7 +67,7 @@ CScsiCacheLog::CScsiCacheLog(uint8_t * buffer, size_t bufferSize, uint16_t pageL
     , m_Value(0)
     , m_cache()
 {
-    if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+    if (eVerbosityLevelClass::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
         printf("%s \n", m_CacheName.c_str());
     }

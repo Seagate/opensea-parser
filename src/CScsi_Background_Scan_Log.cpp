@@ -39,7 +39,7 @@ CScsiScanLog::CScsiScanLog()
 	, m_defect()
     , m_ParamHeader()
 {
-	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+	if (eVerbosityLevelClass::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
 		printf("%s \n", m_ScanName.c_str());
 	}
@@ -69,7 +69,7 @@ CScsiScanLog::CScsiScanLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLen
 	, m_defect()
     , m_ParamHeader()
 {
-	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+	if (eVerbosityLevelClass::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
 		printf("%s \n", m_ScanName.c_str());
 	}
@@ -451,13 +451,13 @@ eReturnValues CScsiScanLog::get_Scan_Data(JSONNODE *masterData)
                         m_defect = reinterpret_cast<sScanFindingsParams*>(&pData[offset]);
                         process_Defect_Data(pageInfo);
                         //offset += sizeof(sScanFindingsParams);
-                        offset += m_defect->paramLength + PARAMSIZE;
+                        offset += static_cast<size_t>(m_defect->paramLength) + PARAMSIZE;
                     }
                     else //if (paramCode >= 0x8000) //TODO: Nayana to check with Tim how to skip ssd part here
                     {
                         m_ParamHeader = reinterpret_cast<sBackgroundScanParamHeader*>(&pData[offset]);
                         process_other_param_data(pageInfo, offset);
-                        offset += m_ParamHeader->paramLength + PARAMSIZE;
+                        offset += static_cast<size_t>(m_ParamHeader->paramLength) + PARAMSIZE;
                     }
                 }
                 else

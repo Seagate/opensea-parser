@@ -190,7 +190,7 @@ eReturnValues CLog::read_In_Buffer()
         return FILE_OPEN_ERROR;
     }
 
-    if (VERBOSITY_DEFAULT < g_verbosity)
+    if (eVerbosityLevelClass::VERBOSITY_DEFAULT < g_verbosity)
     {
         printf("\nLoadbinbuf read %zd bytes into buffer.\n", m_size);
     }

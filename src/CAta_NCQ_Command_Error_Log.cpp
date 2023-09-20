@@ -28,8 +28,15 @@ using namespace opensea_parser;
 //
 //---------------------------------------------------------------------------
 CAta_NCQ_Command_Error_Log::CAta_NCQ_Command_Error_Log()
-    : m_name("ATA NCQ Command Error Log")
+    : writeValid(0)
+    , m_name("ATA NCQ Command Error Log")
     , m_status(IN_PROGRESS)
+    , ncqError(NULL)
+    , ncqWrite(NULL)
+    , pBuf(NULL)
+    , m_LBA(0)
+    , writeErrors()
+    , fullWriteErrors()
 {
 
 }
@@ -47,8 +54,15 @@ CAta_NCQ_Command_Error_Log::CAta_NCQ_Command_Error_Log()
 //
 //---------------------------------------------------------------------------
 CAta_NCQ_Command_Error_Log::CAta_NCQ_Command_Error_Log(const std::string & fileName)
-    :  m_name("ATA NCQ Command Error Log")
+    : writeValid(0)
+    , m_name("ATA NCQ Command Error Log")
     , m_status(IN_PROGRESS)
+    , ncqError(NULL)
+    , ncqWrite(NULL)
+    , pBuf(NULL)
+    , m_LBA(0)
+    , writeErrors()
+    , fullWriteErrors()
 {
 	CLog *cCLog;
 	cCLog = new CLog(fileName);
@@ -102,8 +116,15 @@ CAta_NCQ_Command_Error_Log::CAta_NCQ_Command_Error_Log(const std::string & fileN
 //
 //---------------------------------------------------------------------------
 CAta_NCQ_Command_Error_Log::CAta_NCQ_Command_Error_Log(uint8_t *buffer)
-    : m_name("ATA NCQ Command Error Log")
+    : writeValid(0)
+    , m_name("ATA NCQ Command Error Log")
     , m_status(IN_PROGRESS)
+    , ncqError(NULL)
+    , ncqWrite(NULL)
+    , pBuf(NULL)
+    , m_LBA(0)
+    , writeErrors()
+    , fullWriteErrors()
 {
     pBuf = buffer;
     if (pBuf != NULL)

@@ -39,7 +39,7 @@ CScsiErrorCounterLog::CScsiErrorCounterLog()
     , m_Error()
     , m_pageType(WRITE)
 {
-    if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+    if (eVerbosityLevelClass::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
         printf("%s \n", m_ErrorName.c_str());
     }
@@ -70,7 +70,7 @@ CScsiErrorCounterLog::CScsiErrorCounterLog(uint8_t * buffer, size_t bufferSize, 
     , m_Error()
     , m_pageType(type)
 {
-    if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+    if (eVerbosityLevelClass::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
         printf("%s \n", m_ErrorName.c_str());
     }

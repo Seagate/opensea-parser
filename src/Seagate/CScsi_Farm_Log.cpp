@@ -88,7 +88,7 @@ CSCSI_Farm_Log::CSCSI_Farm_Log(uint8_t* bufferData, size_t bufferSize, uint8_t s
     , m_farmSubPage(subPage)
 {
     m_status = IN_PROGRESS;
-    if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+    if (eVerbosityLevelClass::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
         printf("SCSI FARM Log \n");
     }
@@ -155,7 +155,7 @@ CSCSI_Farm_Log::CSCSI_Farm_Log( uint8_t *bufferData, size_t bufferSize, uint8_t 
     , m_farmSubPage(subPage)
 {
     m_status = IN_PROGRESS;
-    if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+    if (eVerbosityLevelClass::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
         printf("SCSI FARM Log \n");
     }
@@ -1181,7 +1181,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
         offset = 4;
     }
 
-    if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+    if (eVerbosityLevelClass::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
         printf("SCSI parse FARM Log\n");
     }
@@ -2509,7 +2509,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSON
 #endif
                 std::ostringstream header;
                 header << "Current H2SAT asymmetry by Head " << std::dec << loopCount;// Head count
-                set_json_float_With_Status(headPage, header.str().c_str(), static_cast<double>(M_WordInt0(vFarmFrame[page].currentH2STAsymmetryByHead.headValue[loopCount]) * 0.1F), vFarmFrame[page].currentH2STAsymmetryByHead.headValue[loopCount], m_showStatusBits);  //!< Current H2SAT asymmetry, averaged across Test Zone
+                set_json_float_With_Status(headPage, header.str().c_str(), static_cast<double>(M_WordInt0(vFarmFrame[page].currentH2STAsymmetryByHead.headValue[loopCount])) * 0.1F, vFarmFrame[page].currentH2STAsymmetryByHead.headValue[loopCount], m_showStatusBits);  //!< Current H2SAT asymmetry, averaged across Test Zone
             }
             break;
         case NUMBER_OF_RESIDENT_GLIST_ENTRIES:
@@ -2589,7 +2589,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSON
 #endif
                 std::ostringstream header;
                 header << "Current H2SAT trimmed mean bits in error Zone 0 by Head " << std::dec << loopCount; // Head count
-                double number = static_cast<double>(M_Word0(vFarmFrame[page].currentH2STTrimmedbyHeadZone0.headValue[loopCount]) * 0.10F);
+                double number = static_cast<double>(M_Word0(vFarmFrame[page].currentH2STTrimmedbyHeadZone0.headValue[loopCount])) * 0.10F;
                 set_json_float_With_Status(headPage, header.str().c_str(), number, vFarmFrame[page].currentH2STTrimmedbyHeadZone0.headValue[loopCount], m_showStatusBits); //!< Current H2SAT trimmed mean bits in error by Head, by Test Zone 0
             }
             break;
@@ -2601,7 +2601,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSON
 #endif
                 std::ostringstream header;
                 header << "Current H2SAT trimmed mean bits in error Zone 1 by Head " << std::dec << loopCount; // Head count
-                double number = static_cast<double>(M_Word0(vFarmFrame[page].currentH2STTrimmedbyHeadZone1.headValue[loopCount]) * 0.10F);
+                double number = static_cast<double>(M_Word0(vFarmFrame[page].currentH2STTrimmedbyHeadZone1.headValue[loopCount])) * 0.10F;
                 set_json_float_With_Status(headPage, header.str().c_str(), number, vFarmFrame[page].currentH2STTrimmedbyHeadZone1.headValue[loopCount], m_showStatusBits); //!< Current H2SAT trimmed mean bits in error by Head, by Test Zone 1
             }
             break;
@@ -2613,7 +2613,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSON
 #endif
                 std::ostringstream header;
                 header << "Current H2SAT trimmed mean bits in error Zone 2 by Head " << std::dec << loopCount;// Head count
-                double number = static_cast<double>(M_Word0(vFarmFrame[page].currentH2STTrimmedbyHeadZone2.headValue[loopCount]) * 0.10F);
+                double number = static_cast<double>(M_Word0(vFarmFrame[page].currentH2STTrimmedbyHeadZone2.headValue[loopCount])) * 0.10F;
                 set_json_float_With_Status(headPage, header.str().c_str(), number, vFarmFrame[page].currentH2STTrimmedbyHeadZone2.headValue[loopCount], m_showStatusBits); //!< Current H2SAT trimmed mean bits in error by Head, by Test Zone 2
             }
             break;
@@ -2625,7 +2625,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSON
 #endif
                 std::ostringstream header;
                 header << "Current H2SAT iterations to converge Test Zone 0 by Head " << std::dec << loopCount; // Head count
-                double number = static_cast<double>(M_Word0(vFarmFrame[page].currentH2STIterationsByHeadZone0.headValue[loopCount]) * 0.10F);
+                double number = static_cast<double>(M_Word0(vFarmFrame[page].currentH2STIterationsByHeadZone0.headValue[loopCount])) * 0.10F;
                 set_json_float_With_Status(headPage, header.str().c_str(), number, vFarmFrame[page].currentH2STIterationsByHeadZone0.headValue[loopCount], m_showStatusBits);  //!< Current H2SAT iterations to cnverge by Head, by Test Zone 0
             }
             break;
@@ -2637,7 +2637,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSON
 #endif
                 std::ostringstream header;
                 header << "Current H2SAT iterations to converge Test Zone 1 by Head " << std::dec << loopCount; // Head count
-                double number = static_cast<double>(M_Word0(vFarmFrame[page].currentH2STIterationsByHeadZone1.headValue[loopCount]) * 0.10F);
+                double number = static_cast<double>(M_Word0(vFarmFrame[page].currentH2STIterationsByHeadZone1.headValue[loopCount])) * 0.10F;
                 set_json_float_With_Status(headPage, header.str().c_str(), number, vFarmFrame[page].currentH2STIterationsByHeadZone1.headValue[loopCount], m_showStatusBits);  //!< Current H2SAT iterations to cnverge by Head, by Test Zone 1
             }
             break;
@@ -2649,7 +2649,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSON
 #endif
                 std::ostringstream header;
                 header << "Current H2SAT iterations to converge Test Zone 2 by Head " << std::dec << loopCount; // Head count
-                double number = static_cast<double>(M_Word0(vFarmFrame[page].currentH2STIterationsByHeadZone1.headValue[loopCount]) * 0.10F);
+                double number = static_cast<double>(M_Word0(vFarmFrame[page].currentH2STIterationsByHeadZone1.headValue[loopCount])) * 0.10F;
                 set_json_float_With_Status(headPage, header.str().c_str(), number, vFarmFrame[page].currentH2STIterationsByHeadZone2.headValue[loopCount], m_showStatusBits);  //!< Current H2SAT iterations to cnverge by Head, by Test Zone 2
             }
             break;

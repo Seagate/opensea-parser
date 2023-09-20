@@ -31,12 +31,13 @@ using namespace opensea_parser;
 //---------------------------------------------------------------------------
 CScsiEnvironmentLog::CScsiEnvironmentLog()
 	: CScsiTemperatureLog()
+	, m_Page(NULL)
 	, m_EvnName("Environmnetal Log")
 	, m_EnvStatus(IN_PROGRESS)
 	, m_PageLength(0)
 	, m_SubPage(0)
 {
-	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+	if (eVerbosityLevelClass::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
 		printf("%s \n", m_EvnName.c_str());
 	}
@@ -58,12 +59,13 @@ CScsiEnvironmentLog::CScsiEnvironmentLog()
 //---------------------------------------------------------------------------
 CScsiEnvironmentLog::CScsiEnvironmentLog(uint8_t *bufferData, size_t bufferSize, uint8_t subPage, JSONNODE *masterData)
 	:CScsiTemperatureLog(&bufferData[4], bufferSize)
+	, m_Page(NULL)
 	, m_EvnName("Environmnetal Log")
 	, m_EnvStatus(IN_PROGRESS)
 	, m_PageLength(0)
 	, m_SubPage(subPage)
 {
-	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+	if (eVerbosityLevelClass::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
 		printf("%s \n", m_EvnName.c_str());
 	}

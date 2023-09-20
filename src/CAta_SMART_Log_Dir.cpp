@@ -20,7 +20,7 @@ using namespace opensea_parser;
 //! \fn   CAta_SMART_Log_Dir()
 //
 //! \brief
-//!   Description:  Default Class constructor for the CSeaTreasureLog
+//!   Description:  Default Class constructor for the CAta_SMART_Log_Dir
 //
 //  Entry:
 //
@@ -43,7 +43,7 @@ CAta_SMART_Log_Dir::CAta_SMART_Log_Dir()
 //! \fn   CAta_SMART_Log_Dir()
 //
 //! \brief
-//!   Description:  Default Class constructor for the CSeaTreasureLog
+//!   Description:  Default Class constructor for the CAta_SMART_Log_Dir
 //
 //  Entry:
 //! \parama fileName = the name of the file that we need to open to get the buffer data
@@ -94,7 +94,7 @@ CAta_SMART_Log_Dir::CAta_SMART_Log_Dir(const std::string &fileName)
 //! \fn   CAta_SMART_Log_Dir()
 //
 //! \brief
-//!   Description:  Default Class constructor for the CSeaTreasureLog
+//!   Description:  Default Class constructor for the CAta_SMART_Log_Dir
 //
 //  Entry:
 //! \parama BufferData = pointer, length and allocation structure to the data

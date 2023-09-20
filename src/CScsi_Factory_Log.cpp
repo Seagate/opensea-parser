@@ -38,7 +38,7 @@ CScsiFactoryLog::CScsiFactoryLog()
     , m_Value(0)
     , m_factory()
 {
-    if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+    if (eVerbosityLevelClass::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
         printf("%s \n", m_FactoryName.c_str());
     }
@@ -67,7 +67,7 @@ CScsiFactoryLog::CScsiFactoryLog(uint8_t * buffer, size_t bufferSize, uint16_t p
     , m_Value(0)
     , m_factory()
 {
-    if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+    if (eVerbosityLevelClass::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
         printf("%s \n", m_FactoryName.c_str());
     }

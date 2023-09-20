@@ -39,7 +39,7 @@ CScsiApplicationLog::CScsiApplicationLog()
 	, m_bufferLength()
 	, m_App(0)
 {
-	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+	if (eVerbosityLevelClass::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
 		printf("%s \n", m_ApplicationName.c_str());
 	}
@@ -67,7 +67,7 @@ CScsiApplicationLog::CScsiApplicationLog(uint8_t * buffer, size_t bufferSize, ui
 	, m_bufferLength(bufferSize)
 	, m_App(0)
 {
-	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+	if (eVerbosityLevelClass::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
 		printf("%s \n", m_ApplicationName.c_str());
 	}
@@ -139,7 +139,7 @@ void CScsiApplicationLog::process_Client_Data(JSONNODE *appData)
     json_push_back(appInfo, json_new_a("Application Client Length ", temp.str().c_str()));
     
     // format to show the buffer data.
-    if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+    if (eVerbosityLevelClass::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
         uint32_t lineNumber = 0;
         uint32_t offset = 0;
