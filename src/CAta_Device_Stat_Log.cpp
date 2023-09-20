@@ -184,7 +184,7 @@ eReturnValues CSAtaDevicStatisticsTempLogs::parse_SCT_Temp_Log()
 	JSONNODE *sctTemp = json_new(JSON_NODE);
 	json_set_name(sctTemp, "SCT Temp Log");
 
-	if (m_dataSize > 0 && m_dataSize < static_cast<size_t>(34 + CBIndex))   // check the size fo the data
+	if (m_dataSize > 0 && m_dataSize < static_cast<size_t>(CBIndex) + 34)   // check the size fo the data
 	{
 		json_push_back(JsonData, sctTemp);
 		return static_cast<eReturnValues>(INVALID_LENGTH);
@@ -393,7 +393,7 @@ eReturnValues CAtaDeviceStatisticsLogs::ParseSCTDeviceStatLog(JSONNODE *masterDa
 {
     sHeader *pDeviceHeader = NULL;
     uint64_t *pLogPage = NULL;
-    if (VERBOSITY_DEFAULT < g_verbosity)
+    if (eVerbosityLevelClass::VERBOSITY_DEFAULT < g_verbosity)
     {
         printf("\nStarting Device Statistics Parsing \n");
     }                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           

@@ -155,7 +155,7 @@ bool CATA_Farm_Log::Check_Page_number(uint64_t page, uint16_t pageNumber)
         return true;
     else
     {
-        if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+        if (eVerbosityLevelClass::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
         {
             printf("\n page number did not match pointer information.\n");
         }
