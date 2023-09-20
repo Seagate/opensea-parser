@@ -12,7 +12,8 @@
 // \file Opensea_Parser_Helper.cpp   Definition of SeaParser specific functions, structures
 #include "Opensea_Parser_Helper.h"
 
-eVerbosityLevels    g_verbosity = VERBOSITY_DEFAULT;
+//eVerbosityLevels    g_verbosity = VERBOSITY_DEFAULT;
+opensea_parser::eVerbosityLevelClass g_verbosity = opensea_parser::eVerbosityLevelClass::VERBOSITY_DEFAULT;
 eDataFormat         g_dataformat = JSON_DATA;
 bool                g_parseUnknown = true;
 time_t              g_currentTime;
