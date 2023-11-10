@@ -52,7 +52,10 @@ namespace opensea_parser {
 #define OPENSEA_PARSER
 
 	
-
+#define OFFSETZERO 0
+#define OFFSETONE 1
+#define OFFSETTWO 2
+#define OFFSETTHREE 3
 	// quick size for of the ints for case statements
 #define ONE_INT_SIZE 1
 #define TWO_INT_SIZE 2
@@ -177,9 +180,9 @@ namespace opensea_parser {
         {
             if (buffer != NULL)
             {
-                pageCode = buffer[0];
-                subPage = buffer[1];
-                pageLength = *(reinterpret_cast<uint16_t*>(&buffer[2]));
+                pageCode = buffer[OFFSETZERO];
+                subPage = buffer[OFFSETONE];
+                pageLength = *(reinterpret_cast<uint16_t*>(&buffer[OFFSETTWO]));
             }
             else
             {
@@ -504,9 +507,9 @@ namespace opensea_parser {
 	inline eReturnValues fill_Log_Params(sLogParams &myStruct, uint8_t *buffer )
 	{
 
-		myStruct.paramCode = M_BytesTo2ByteValue(buffer[0],buffer[1]);
-		myStruct.paramControlByte = buffer[2];
-		myStruct.paramLength = buffer[3];
+		myStruct.paramCode = M_BytesTo2ByteValue(buffer[OFFSETZERO],buffer[OFFSETONE]);
+		myStruct.paramControlByte = buffer[OFFSETTWO];
+		myStruct.paramLength = buffer[OFFSETTHREE];
 		return SUCCESS;
 
 	}
