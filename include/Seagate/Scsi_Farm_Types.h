@@ -20,7 +20,7 @@
 
 
 namespace opensea_parser {
-#pragma pack(push)
+#pragma pack(push,1)
     typedef enum _eSASLogPageTypes
     {
         FARM_HEADER_PARAMETER,
@@ -174,7 +174,7 @@ namespace opensea_parser {
     }eSASLogPageTypes;
 #pragma pack(pop)
 
-#pragma pack(push)
+#pragma pack(push, 1)
     typedef struct _sScsiFarmHeader
     {
         sLogParams          pPageHeader;								//!< pointer the farm header page parameter
