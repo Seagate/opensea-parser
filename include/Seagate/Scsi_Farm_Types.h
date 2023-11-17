@@ -496,7 +496,7 @@ namespace opensea_parser {
 #endif 
         {};
     }sActReallocationData;
-
+#pragma pack(pop)
     typedef struct _sScsiFarmFrame
     {
         sScsiFarmHeader         farmHeader;                             //!< Farm header 
@@ -588,7 +588,9 @@ namespace opensea_parser {
 
         std::vector<eSASLogPageTypes>   vFramesFound;
 
+        _sScsiFarmFrame() : vFramesFound(FARM_HEADER_PARAMETER) {};
+
     }sScsiFarmFrame;
 
-#pragma pack(pop)
+
 }
