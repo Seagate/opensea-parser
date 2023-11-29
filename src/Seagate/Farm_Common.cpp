@@ -168,6 +168,8 @@ void CFarmCommon::create_Model_Number_String(std::string& modelStr, uint64_t *pr
 {
 #define MAXSIZE  5
 	uint32_t modelParts[MAXSIZE] = { 0,0,0,0,0 };
+	// need  to clear the modelStr for timeseries 
+	modelStr.clear();
 	// loop for and get the information from the lower bits
 	for (uint8_t i = 0; i < MAXSIZE; i++)
 	{
