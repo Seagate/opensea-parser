@@ -147,7 +147,7 @@ CAta_Identify_log::CAta_Identify_log(const std::string & fileName)
             // create a buffer for the first part of the buffer to check to make sure it is not a sas log
             uint8_t* idCheckBuf = new uint8_t[sizeof(sLogPageStruct)];
 #ifndef __STDC_SECURE_LIB__
-            memcpy(idCheckBuf, cCLog->get_Buffer(), sizeof(sLogPageStruct);
+            memcpy(idCheckBuf, cCLog->get_Buffer(), sizeof(sLogPageStruct));
 #else
             memcpy_s(idCheckBuf, sizeof(sLogPageStruct), cCLog->get_Buffer(), sizeof(sLogPageStruct));// copy the buffer data to the class member pBuf
 #endif
