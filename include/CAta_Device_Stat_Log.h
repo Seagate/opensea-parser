@@ -98,14 +98,14 @@ namespace opensea_parser {
 	}sDeviceLog04;
 	typedef struct _DEVICELOGTHREE
 	{
-		uint32_t SpdPoh;									//!< Spindle Motor Power-on Hours
-		uint32_t HeadFlyHour;								//!< Head Flying Hours
-		uint32_t HeadLoadEvent;								//!< Head Load Events
-		uint32_t ReLogicalSec;								//!< Number of Reallocated Logical Sectors
-		uint32_t ReadRecAtmp;								//!< Read Recovery Attempts 
-		uint32_t MeStartFail;								//!< Number of Mechanical Start Failures
-		uint32_t ReCandidate;								//!< Number of Reallocation Candidate Logical Sectors
-		uint32_t UnloadEvent;								//!< Number of High Priority Unload Events
+		double	 SpdPoh;									//!< Spindle Motor Power-on Hours
+		double	 HeadFlyHour;								//!< Head Flying Hours
+		uint64_t HeadLoadEvent;								//!< Head Load Events
+		uint64_t ReLogicalSec;								//!< Number of Reallocated Logical Sectors
+		uint64_t ReadRecAtmp;								//!< Read Recovery Attempts 
+		uint64_t MeStartFail;								//!< Number of Mechanical Start Failures
+		uint64_t ReCandidate;								//!< Number of Reallocation Candidate Logical Sectors
+		uint64_t UnloadEvent;								//!< Number of High Priority Unload Events
 		_DEVICELOGTHREE() :SpdPoh(0), HeadFlyHour(0), HeadLoadEvent(0), ReLogicalSec(0), ReadRecAtmp(0), MeStartFail(0), ReCandidate(0), UnloadEvent(0) {};
 	}sDeviceLog3;
 
@@ -116,6 +116,22 @@ namespace opensea_parser {
 		uint32_t CRCError;
 		_DEVICELOGSIX() : HwReset(0), ASREvent(0), CRCError(0) {};
 	}sDeviceLog6;
+
+	typedef struct _DSTempLog
+	{
+		uint16_t	version;
+		uint16_t	SamplePeriod = 0;
+		uint16_t	Interval = 0;
+		uint8_t		MaxOpLimit = 0;
+		uint8_t		OverLimit = 0;
+		uint8_t		MinOpLimit = 0;
+		uint8_t		UnderLimit = 0;
+		uint16_t	CBSize = 0;
+		uint16_t	CBIndex = 0;
+		uint8_t		Temperature;
+
+		_DSTempLog() : version(0),SamplePeriod(0), Interval(0), MaxOpLimit(0), OverLimit(0), MinOpLimit(0), UnderLimit(0), CBSize(0), CBIndex(0), Temperature(0) {};
+	}DSTempLog;
 #pragma pack(pop)
 
 
@@ -123,17 +139,17 @@ namespace opensea_parser {
     {
     protected:
         std::string                         m_name;                                                     //!< name of the class
-        uint8_t                             *pData;                                                     //!< pointer to the data
 		size_t								m_logSize;													//!< size fo the log
         eReturnValues						m_status;                                                   //!< holds the status of the class 
-		size_t								m_dataSize;													//!< data size read in form the clog
+		DSTempLog							m_tempData;													//!< temp log data
         JSONNODE							*JsonData;                                                  //!< json master data
     public:
         CSAtaDevicStatisticsTempLogs();
-        CSAtaDevicStatisticsTempLogs(uint8_t *buffer,JSONNODE *masterData);
+        CSAtaDevicStatisticsTempLogs(uint8_t* buffer,JSONNODE *masterData);
         CSAtaDevicStatisticsTempLogs(const std::string &fileName, JSONNODE *masterData);
         virtual ~CSAtaDevicStatisticsTempLogs();
-        eReturnValues parse_SCT_Temp_Log();
+        eReturnValues parse_SCT_Temp_Log(uint8_t* pData);
+		eReturnValues print_SCT_Temp_Log();
         eReturnValues get_Status(){ return m_status; };
     };
 
@@ -156,6 +172,7 @@ namespace opensea_parser {
         uint8_t  CheckStatusAndValid_8(uint64_t *value);
         int8_t  CheckStatusAndValidSigned_8(uint64_t *value);
         uint32_t CheckStatusAndValid_32(uint64_t *value);
+		uint64_t CheckStatusAndValid_64(uint64_t* value);
         void logPage00(uint64_t *value);
         void logPage01(uint64_t *value, JSONNODE *masterData);
         void logPage02(uint64_t *value, JSONNODE *masterData);

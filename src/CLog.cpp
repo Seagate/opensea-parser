@@ -183,6 +183,7 @@ eReturnValues CLog::read_In_Buffer()
     {
         logFile.read(pData, static_cast<std::streamsize>(m_size));
         logFile.close();
+        v_Buff.insert(v_Buff.end(), pData[0], pData[m_size]);
     }
     else
     {

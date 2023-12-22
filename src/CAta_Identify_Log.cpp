@@ -144,18 +144,27 @@ CAta_Identify_log::CAta_Identify_log(const std::string & fileName)
     {
         if (cCLog->get_Buffer() != NULL)
         {
-            size_t bufferSize = cCLog->get_Size();
-            pData = new uint8_t[cCLog->get_Size()];								// new a buffer to the point				
+            // create a buffer for the first part of the buffer to check to make sure it is not a sas log
+            uint8_t* idCheckBuf = new uint8_t[sizeof(sLogPageStruct)];
 #ifndef __STDC_SECURE_LIB__
-            memcpy(pData, cCLog->get_Buffer(), bufferSize);
+            memcpy(idCheckBuf, cCLog->get_Buffer(), sizeof(sLogPageStruct);
 #else
-            memcpy_s(pData, bufferSize, cCLog->get_Buffer(), bufferSize);// copy the buffer data to the class member pBuf
+            memcpy_s(idCheckBuf, sizeof(sLogPageStruct), cCLog->get_Buffer(), sizeof(sLogPageStruct));// copy the buffer data to the class member pBuf
 #endif
-            sLogPageStruct *idCheck;
-            idCheck = reinterpret_cast<sLogPageStruct*>(&pData[0]);
+            sLogPageStruct* idCheck;
+            idCheck = reinterpret_cast<sLogPageStruct*>(&idCheckBuf[0]);
             byte_Swap_16(&idCheck->pageLength);
+            // verify that it is not a sas log
             if (IsScsiLogPage(idCheck->pageLength, idCheck->pageCode) == false)
             {
+                size_t  bufferSize = cCLog->get_Size();
+                pData = new uint8_t[(bufferSize - 0x200)];								// new a buffer to the point	
+                // First page of the identify is not used. we will strip it out and parse for the second Sector
+#ifndef __STDC_SECURE_LIB__
+                memcpy(pData, cCLog->get_Buffer_Offset(0x200), bufferSize);
+#else
+                memcpy_s(pData, (bufferSize - 0x200), cCLog->get_Buffer_Offset(0x200), (bufferSize - 0x200));// copy the buffer data to the class member pBuf
+#endif
                 parse_Device_Info();
                 m_status = IN_PROGRESS;
             }
@@ -163,6 +172,7 @@ CAta_Identify_log::CAta_Identify_log(const std::string & fileName)
             {
                 m_status = BAD_PARAMETER;
             }
+            delete [] idCheckBuf;
         }
         else
         {
@@ -210,7 +220,7 @@ CAta_Identify_log::~CAta_Identify_log()
 void CAta_Identify_log::create_Serial_Number(uint16_t offset)
 {
 
-    m_sDriveInfo.serialNumber.assign(reinterpret_cast<const char*>(&pData[512 + offset]), ATA_SERIAL_NUMBER_LEN);
+    m_sDriveInfo.serialNumber.assign(reinterpret_cast<const char*>(&pData[offset]), ATA_SERIAL_NUMBER_LEN);
     byte_swap_std_string(m_sDriveInfo.serialNumber);
     ltrim(m_sDriveInfo.serialNumber);
     m_sDriveInfo.serialNumber.resize(ATA_SERIAL_NUMBER_LEN);//don't know why this was here, but assuming there is a reason - TJE   
@@ -231,7 +241,7 @@ void CAta_Identify_log::create_Serial_Number(uint16_t offset)
 //---------------------------------------------------------------------------
 void CAta_Identify_log::create_Firmware_String(uint16_t offset)
 {
-    m_sDriveInfo.firmware.assign(reinterpret_cast<const char*>(&pData[512 + offset]), ATA_FIRMWARE_REV_LEN);
+    m_sDriveInfo.firmware.assign(reinterpret_cast<const char*>(&pData[offset]), ATA_FIRMWARE_REV_LEN);
     byte_swap_std_string(m_sDriveInfo.firmware);
     rtrim(m_sDriveInfo.firmware);
     m_sDriveInfo.firmware.resize(ATA_FIRMWARE_REV_LEN);
@@ -251,7 +261,7 @@ void CAta_Identify_log::create_Firmware_String(uint16_t offset)
 //---------------------------------------------------------------------------
 void CAta_Identify_log::create_Model_Number(uint16_t offset)
 {
-    m_sDriveInfo.modelNumber.assign(reinterpret_cast<const char*>(&pData[512 + offset]), ATA_MODEL_NUMBER_LEN);
+    m_sDriveInfo.modelNumber.assign(reinterpret_cast<const char*>(&pData[offset]), ATA_MODEL_NUMBER_LEN);
     byte_swap_std_string(m_sDriveInfo.modelNumber);
     rtrim(m_sDriveInfo.modelNumber);
     m_sDriveInfo.modelNumber.resize(ATA_MODEL_NUMBER_LEN);
@@ -271,7 +281,7 @@ void CAta_Identify_log::create_Model_Number(uint16_t offset)
 //---------------------------------------------------------------------------
 void CAta_Identify_log::create_WWN_Info()
 {
-    uint16_t *identWordPtr = (reinterpret_cast<uint16_t*>(&pData[512])); // move it to the second page / sector
+    uint16_t *identWordPtr = (reinterpret_cast<uint16_t*>(&pData[0])); // move it to the second page / sector
 
     m_sDriveInfo.worldWideName.resize(WORLD_WIDE_NAME_LEN);
     m_sDriveInfo.ieeeOUI.resize(WORLD_WIDE_NAME_LEN);
@@ -314,7 +324,7 @@ void CAta_Identify_log::create_WWN_Info()
 eReturnValues CAta_Identify_log::parse_Device_Info()
 {
     uint8_t *IDptr = pData;
-    uint16_t *identWordPtr = (reinterpret_cast<uint16_t*>(&pData[512])); // move it to the second page / sector
+    uint16_t *identWordPtr = (reinterpret_cast<uint16_t*>(&pData[0])); // move it to the second page / sector
 
     if ((identWordPtr[48] & BIT0) > 0)
     {
@@ -478,17 +488,17 @@ eReturnValues CAta_Identify_log::parse_Device_Info()
     //form factor
     m_sDriveInfo.formFactor = (identWordPtr[168]);
 
-    uint8_t page = 2; //nothing in first pages
+    uint8_t page = 1;  
 
-    //fill in data for page 2
+    //fill in data for page 1
     m_sDriveInfo.IDDevCap = M_BytesTo8ByteValue(0, IDptr[page * 512 + 14], IDptr[page * 512 + 13], IDptr[page * 512 + 12], IDptr[page * 512 + 11], IDptr[page * 512 + 10], IDptr[page * 512 + 9], IDptr[page * 512 + 8]);
 
     m_sDriveInfo.IDPhySecSize = M_BytesTo8ByteValue(IDptr[page * 512 + 23], IDptr[page * 512 + 22], IDptr[page * 512 + 21], IDptr[page * 512 + 20], IDptr[page * 512 + 19], IDptr[page * 512 + 18], IDptr[page * 512 + 17], IDptr[page * 512 + 16]);
     m_sDriveInfo.IDLogSecSize = M_BytesTo8ByteValue(IDptr[page * 512 + 31], IDptr[page * 512 + 30], IDptr[page * 512 + 29], IDptr[page * 512 + 28], IDptr[page * 512 + 27], IDptr[page * 512 + 26], IDptr[page * 512 + 25], IDptr[page * 512 + 24]);
     m_sDriveInfo.IDBufSize =    M_BytesTo8ByteValue(IDptr[page * 512 + 39], IDptr[page * 512 + 38], IDptr[page * 512 + 37], IDptr[page * 512 + 36], IDptr[page * 512 + 35], IDptr[page * 512 + 34], IDptr[page * 512 + 33], IDptr[page * 512 + 32]);
 
-    //fill in data for page 3
-    page = 3;
+    //fill in data for page 2
+    page = 2;
     m_sDriveInfo.IDCapabilities = M_BytesTo8ByteValue(IDptr[page * 512 + 15], IDptr[page * 512 + 14], IDptr[page * 512 + 13], IDptr[page * 512 + 12], IDptr[page * 512 + 11], IDptr[page * 512 + 10], IDptr[page * 512 + 9], IDptr[page * 512 + 8]);
     m_sDriveInfo.IDMicrocode =    M_BytesTo8ByteValue(IDptr[page * 512 + 23], IDptr[page * 512 + 22], IDptr[page * 512 + 21], IDptr[page * 512 + 20], IDptr[page * 512 + 19], IDptr[page * 512 + 18], IDptr[page * 512 + 17], IDptr[page * 512 + 16]);
     m_sDriveInfo.IDMediaRotRate = M_BytesTo8ByteValue(IDptr[page * 512 + 31], IDptr[page * 512 + 30], IDptr[page * 512 + 29], IDptr[page * 512 + 28], IDptr[page * 512 + 27], IDptr[page * 512 + 26], IDptr[page * 512 + 25], IDptr[page * 512 + 24]);
@@ -497,9 +507,9 @@ eReturnValues CAta_Identify_log::parse_Device_Info()
     m_sDriveInfo.IDWRVSecCount3 = M_BytesTo8ByteValue(IDptr[page * 512 + 55], IDptr[page * 512 + 54], IDptr[page * 512 + 53], IDptr[page * 512 + 52], IDptr[page * 512 + 51], IDptr[page * 512 + 50], IDptr[page * 512 + 49], IDptr[page * 512 + 48]);
     m_sDriveInfo.IDWWN =          M_BytesTo8ByteValue(IDptr[page * 512 + 71], IDptr[page * 512 + 70], IDptr[page * 512 + 69], IDptr[page * 512 + 68], IDptr[page * 512 + 67], IDptr[page * 512 + 66], IDptr[page * 512 + 65], IDptr[page * 512 + 64]);
     
-    //fill in data for page 6
-    //data in page 6    
-    page = 6;
+    //fill in data for page 5
+    //data in page 5    
+    page = 5;
     m_sDriveInfo.IDSecurityStatus = M_BytesTo8ByteValue(IDptr[page * 512 + 23], IDptr[page * 512 + 22], IDptr[page * 512 + 21], IDptr[page * 512 + 20], IDptr[page * 512 + 19], IDptr[page * 512 + 18], IDptr[page * 512 + 17], IDptr[page * 512 + 16]);
 
     // Device Capabilities:
@@ -740,7 +750,7 @@ eReturnValues CAta_Identify_log::print_Identify_Information(JSONNODE *masterData
         temp << std::dec << m_sDriveInfo.sSizes.logicalSectorSize;
         json_push_back(sectorSize, json_new_a("Logical", temp.str().c_str()));
         temp.str("");temp.clear();
-        temp << std::dec << m_sDriveInfo.sSizes.sectorSizeExponent;
+        temp << std::dec << static_cast<uint16_t>(m_sDriveInfo.sSizes.sectorSizeExponent);
         json_push_back(sectorSize, json_new_a("Sector Size Exponent", temp.str().c_str()));
         temp.str("");temp.clear();
         temp << std::dec << m_sDriveInfo.sSizes.physicalSectorSize;
