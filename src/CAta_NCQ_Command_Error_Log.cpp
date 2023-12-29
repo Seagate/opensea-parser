@@ -28,8 +28,7 @@ using namespace opensea_parser;
 //
 //---------------------------------------------------------------------------
 CAta_NCQ_Command_Error_Log::CAta_NCQ_Command_Error_Log()
-    : writeValid(0)
-    , m_name("ATA NCQ Command Error Log")
+    : m_name("ATA NCQ Command Error Log")
     , m_status(IN_PROGRESS)
 {
 
@@ -48,8 +47,7 @@ CAta_NCQ_Command_Error_Log::CAta_NCQ_Command_Error_Log()
 //
 //---------------------------------------------------------------------------
 CAta_NCQ_Command_Error_Log::CAta_NCQ_Command_Error_Log(const std::string & fileName)
-    : writeValid(0)
-    , m_name("ATA NCQ Command Error Log")
+    : m_name("ATA NCQ Command Error Log")
     , m_status(IN_PROGRESS)
 {
 	CLog *cCLog;
@@ -114,15 +112,14 @@ CAta_NCQ_Command_Error_Log::CAta_NCQ_Command_Error_Log(const std::string & fileN
 //
 //---------------------------------------------------------------------------
 CAta_NCQ_Command_Error_Log::CAta_NCQ_Command_Error_Log(uint8_t *buffer, size_t length)
-    : writeValid(0)
-    , m_name("ATA NCQ Command Error Log")
+    : m_name("ATA NCQ Command Error Log")
     , m_status(IN_PROGRESS)
 {	
     
     if (buffer != NULL)
     {
         sNCQError* pNCQError = new sNCQError;
-        for (size_t offset = 0; (offset + sizeof(sNCQError)) < length;)
+        for (size_t offset = 0; (offset + sizeof(sNCQError)) <= length;)
         {
             pNCQError = reinterpret_cast<sNCQError*>(&buffer[offset]);
             vNCQFrame.push_back(*pNCQError);

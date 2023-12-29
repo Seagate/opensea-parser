@@ -55,7 +55,6 @@ namespace opensea_parser {
     class CAta_NCQ_Command_Error_Log 
     {
     private:
-        uint32_t                writeValid;								//!< write pointer valid field
         std::string             m_name;                                 //!< name of the class
         eReturnValues           m_status;                               //!< the status of the class  
 		
