@@ -28,7 +28,8 @@ using namespace opensea_parser;
 //
 //---------------------------------------------------------------------------
 CAta_NCQ_Command_Error_Log::CAta_NCQ_Command_Error_Log()
-    : m_name("ATA NCQ Command Error Log")
+    : writeValid(0)
+    , m_name("ATA NCQ Command Error Log")
     , m_status(IN_PROGRESS)
 {
 
@@ -121,14 +122,12 @@ CAta_NCQ_Command_Error_Log::CAta_NCQ_Command_Error_Log(uint8_t *buffer, size_t l
     if (buffer != NULL)
     {
         sNCQError* pNCQError = new sNCQError;
-        for (size_t offset = 0; (offset + sizeof(sNCQError)) <= length;)
+        for (size_t offset = 0; (offset + sizeof(sNCQError)) < length;)
         {
-     
             pNCQError = reinterpret_cast<sNCQError*>(&buffer[offset]);
             vNCQFrame.push_back(*pNCQError);
             offset += sizeof(sNCQError);
             pNCQError = NULL;
-
         }
         delete pNCQError;
         m_status = IN_PROGRESS;
