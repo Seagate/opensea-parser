@@ -179,6 +179,7 @@ eReturnValues CSAtaDevicStatisticsTempLogs::parse_SCT_Temp_Log(uint8_t* pData)
     m_tempData.Temperature = pData[(34 + m_tempData.CBIndex)];
     return SUCCESS;
 }
+
 eReturnValues CSAtaDevicStatisticsTempLogs::print_SCT_Temp_Log()
 {
     JSONNODE* sctTemp = json_new(JSON_NODE);

@@ -120,14 +120,14 @@ namespace opensea_parser {
 	typedef struct _DSTempLog
 	{
 		uint16_t	version;
-		uint16_t	SamplePeriod = 0;
-		uint16_t	Interval = 0;
-		uint8_t		MaxOpLimit = 0;
-		uint8_t		OverLimit = 0;
-		uint8_t		MinOpLimit = 0;
-		uint8_t		UnderLimit = 0;
-		uint16_t	CBSize = 0;
-		uint16_t	CBIndex = 0;
+		uint16_t	SamplePeriod;
+		uint16_t	Interval;
+		uint8_t		MaxOpLimit;
+		uint8_t		OverLimit;
+		uint8_t		MinOpLimit;
+		uint8_t		UnderLimit;
+		uint16_t	CBSize;
+		uint16_t	CBIndex;
 		uint8_t		Temperature;
 
 		_DSTempLog() : version(0),SamplePeriod(0), Interval(0), MaxOpLimit(0), OverLimit(0), MinOpLimit(0), UnderLimit(0), CBSize(0), CBIndex(0), Temperature(0) {};
@@ -148,8 +148,8 @@ namespace opensea_parser {
         CSAtaDevicStatisticsTempLogs(uint8_t* buffer,JSONNODE *masterData);
         CSAtaDevicStatisticsTempLogs(const std::string &fileName, JSONNODE *masterData);
         virtual ~CSAtaDevicStatisticsTempLogs();
-        eReturnValues parse_SCT_Temp_Log(uint8_t* pData);
 		eReturnValues print_SCT_Temp_Log();
+        eReturnValues parse_SCT_Temp_Log(uint8_t* pData);
         eReturnValues get_Status(){ return m_status; };
     };
 
