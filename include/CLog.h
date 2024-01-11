@@ -52,10 +52,10 @@ namespace opensea_parser {
         inline size_t get_Size() const { return m_size; }
         inline uint8_t *get_Buffer(){ return reinterpret_cast<uint8_t *>(m_bufferData); };
         inline uint8_t *get_Buffer_Offset(uint32_t offset){ return reinterpret_cast<uint8_t*>(&m_bufferData[offset]); };
-        inline bool get_vBuffer(std::vector<uint8_t>* buff) 
+        inline bool get_vBuffer(std::vector<uint8_t>& buff) 
         {
-            buff = &v_Buff; 
-            if (buff->size() == 0) 
+            buff = v_Buff; 
+            if (buff.size() == 0) 
             { 
                 return false; 
             } 
