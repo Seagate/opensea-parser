@@ -381,7 +381,7 @@ namespace opensea_parser {
         }
         else
         {
-            if (M_IGETBITRANGE(value,63,32) == 0)
+            if (M_IGETBITRANGE(value,63,48) == 0)
             {
                 json_push_back(nowNode, json_new_i(myStr.c_str(), static_cast<json_int_t>(value)));
             }
