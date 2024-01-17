@@ -69,14 +69,13 @@ CAta_NCQ_Command_Error_Log::CAta_NCQ_Command_Error_Log(const std::string & fileN
 			if (IsScsiLogPage(idCheck->pageLength, idCheck->pageCode) == false)
 			{
 				byte_Swap_16(&idCheck->pageLength);  // now that we know it's not scsi we need to flip the bytes back
+                sNCQError* pNCQError;
                 for (size_t offset = 0; offset <= logSize;)
                 {
-                    sNCQError* pNCQError = new sNCQError;
                     pNCQError = reinterpret_cast<sNCQError*>(&pBuf[offset]);
                     vNCQFrame.push_back(*pNCQError);
                     offset += sizeof(sNCQError);
-                    delete pNCQError;
-
+                    pNCQError = NULL;
                 }
 				m_status = IN_PROGRESS;
 			}
@@ -118,7 +117,7 @@ CAta_NCQ_Command_Error_Log::CAta_NCQ_Command_Error_Log(uint8_t *buffer, size_t l
     
     if (buffer != NULL)
     {
-        sNCQError* pNCQError = new sNCQError;
+        sNCQError* pNCQError;
         for (size_t offset = 0; (offset + sizeof(sNCQError)) <= length;)
         {
             pNCQError = reinterpret_cast<sNCQError*>(&buffer[offset]);
@@ -126,7 +125,6 @@ CAta_NCQ_Command_Error_Log::CAta_NCQ_Command_Error_Log(uint8_t *buffer, size_t l
             offset += sizeof(sNCQError);
             pNCQError = NULL;
         }
-        delete pNCQError;
         m_status = IN_PROGRESS;
     }
     else
