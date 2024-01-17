@@ -161,12 +161,13 @@ CAta_Identify_log::CAta_Identify_log(const std::string & fileName)
                 pData = new uint8_t[(bufferSize - 0x200)];								// new a buffer to the point	
                 // First page of the identify is not used. we will strip it out and parse for the second Sector
 #ifndef __STDC_SECURE_LIB__
-                memcpy(pData, cCLog->get_Buffer_Offset(0x200), bufferSize);
+                memcpy(pData, cCLog->get_Buffer_Offset(0x200), (bufferSize - 0x200));
 #else
                 memcpy_s(pData, (bufferSize - 0x200), cCLog->get_Buffer_Offset(0x200), (bufferSize - 0x200));// copy the buffer data to the class member pBuf
 #endif
                 parse_Device_Info();
                 m_status = IN_PROGRESS;
+                delete[] pData;
             }
             else
             {

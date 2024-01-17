@@ -197,7 +197,7 @@ eReturnValues CSAtaDevicStatisticsTempLogs::print_SCT_Temp_Log()
 #endif
     std::ostringstream temp;
 
-    if (m_logSize > 0 && m_logSize < static_cast<size_t>(m_tempData.CBIndex + 34))   // check the size fo the data
+    if (m_logSize > 0 && m_logSize < (static_cast<size_t>(m_tempData.CBIndex) + 34))   // check the size fo the data
     {
         json_push_back(JsonData, sctTemp);
         return static_cast<eReturnValues>(INVALID_LENGTH);
