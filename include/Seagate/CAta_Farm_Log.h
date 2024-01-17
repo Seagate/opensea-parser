@@ -71,9 +71,9 @@ namespace opensea_parser {
             void print_Page_Without_Drive_Info(JSONNODE *masterData, uint32_t page);
             void print_Page_One_Node(JSONNODE *masterData);
             virtual eReturnValues get_Log_Status(){ return m_status; };
-            virtual void get_Serial_Number(std::string sn){ sn.assign( vFarmFrame[0].identStringInfo.serialNumber); };
-            virtual void get_Firmware_String(std::string firmware){ firmware.assign(vFarmFrame[0].identStringInfo.firmwareRev); };
-			virtual void get_World_Wide_Name(std::string wwn) {wwn.assign(vFarmFrame[0].identStringInfo.worldWideName);};
+            virtual void get_Serial_Number(std::string sn){ sn.assign( vFarmFrame.at(0).identStringInfo.serialNumber); };
+            virtual void get_Firmware_String(std::string firmware){ firmware.assign(vFarmFrame.at(0).identStringInfo.firmwareRev); };
+			virtual void get_World_Wide_Name(std::string wwn) {wwn.assign(vFarmFrame.at(0).identStringInfo.worldWideName);};
             uint32_t get_LogSize() { return M_DoubleWord1(m_logSize); };                                  //<! return the page size for the combine farm log
             uint8_t get_FrameReason() { return m_FrameReason; };
     };
