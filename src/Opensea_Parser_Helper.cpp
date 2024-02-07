@@ -15,6 +15,7 @@
 eVerbosityLevels    g_verbosity = VERBOSITY_DEFAULT;
 eDataFormat         g_dataformat = JSON_DATA;
 bool                g_parseUnknown = true;
+bool                g_parseNULL = false;
 time_t              g_currentTime;
 char                g_currentTimeString[64];
 char                *g_currentTimeStringPtr = g_currentTimeString;

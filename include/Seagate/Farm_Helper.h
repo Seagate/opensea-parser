@@ -49,15 +49,22 @@ namespace opensea_parser {
 		// if the 31 bit is set it will turn the value to a negitive number
         if (!showStatusBits  && (M_GETBITRANGE(value, 63, 31) == 0))
 		{
-			if (hexPrint) 
+			if (g_parseNULL)
 			{
-                std::ostringstream temp;
-                temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(8) << static_cast<int32_t>(M_DoubleWord0(value));
-				json_push_back(nowNode, json_new_a(myStr.c_str(), temp.str().c_str()));
+				json_push_back(nowNode, json_new_a(myStr.c_str(), "NULL"));
 			}
 			else
 			{
-				json_push_back(nowNode, json_new_i(myStr.c_str(), static_cast<int32_t>(M_DoubleWord0(value))));
+				if (hexPrint)
+				{
+					std::ostringstream temp;
+					temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(8) << static_cast<int32_t>(M_DoubleWord0(value));
+					json_push_back(nowNode, json_new_a(myStr.c_str(), temp.str().c_str()));
+				}
+				else
+				{
+					json_push_back(nowNode, json_new_i(myStr.c_str(), static_cast<int32_t>(M_DoubleWord0(value))));
+				}
 			}
 			return;
 		}
@@ -137,8 +144,15 @@ namespace opensea_parser {
 		}
 		else
 		{
-			value = check_Status_Strip_Status(static_cast<uint64_t>(value));
-			json_push_back(nowNode, json_new_i(myStr.c_str(), value));
+			if (g_parseNULL && check_For_Active_Status(reinterpret_cast<uint64_t*>(&value)) ==false)
+			{
+				json_push_back(nowNode, json_new_a(myStr.c_str(), "NULL"));
+			}
+			else
+			{
+				value = check_Status_Strip_Status(static_cast<uint64_t>(value));
+				json_push_back(nowNode, json_new_i(myStr.c_str(), value));
+			}
 		}
 	}
 	//-----------------------------------------------------------------------------
@@ -243,7 +257,14 @@ namespace opensea_parser {
 		{
 			if (!check_For_Active_Status(&fullValue))
 			{
-				json_push_back(nowNode, json_new_f(myStr.c_str(), 0.0));
+				if (g_parseNULL)
+				{
+					json_push_back(nowNode, json_new_a(myStr.c_str(), "NULL"));
+				}
+				else
+				{
+					json_push_back(nowNode, json_new_f(myStr.c_str(), 0.0));
+				}
 			}
 			else
 			{
@@ -269,7 +290,7 @@ namespace opensea_parser {
 	//!   \return void
 	//
 	//-----------------------------------------------------------------------------
-	inline void set_json_int_Check_Status(JSONNODE* nowNode, const std::string& myStr, long value, uint64_t fullValue, bool showStatusBits)
+	inline void set_json_int_Check_Status(JSONNODE* nowNode, const std::string& myStr, long long value, uint64_t fullValue, bool showStatusBits)
 	{
 		if (showStatusBits)
 		{
@@ -305,7 +326,14 @@ namespace opensea_parser {
 		{
 			if (!check_For_Active_Status(&fullValue))
 			{
-				json_push_back(nowNode, json_new_i(myStr.c_str(), 0));
+				if (g_parseNULL)
+				{
+					json_push_back(nowNode, json_new_a(myStr.c_str(), "NULL"));
+				}
+				else
+				{
+					json_push_back(nowNode, json_new_i(myStr.c_str(), 0));
+				}
 			}
 			else
 			{
