@@ -349,19 +349,19 @@ namespace opensea_parser {
         }
         else
         {
-            if ((M_IGETBITRANGE(statusValue, 63, 31) == 0) && check_For_Active_Status(&value) == true)
+            if ((M_IGETBITRANGE(statusValue, 63, 56) == 0) && check_For_Active_Status(&value) == true)
             {
                 json_push_back(nowNode, json_new_i(myStr.c_str(), static_cast<json_int_t>(statusValue)));
             }
             else
             {
-				if (g_parseNULL )
+				if (g_parseNULL && check_For_Active_Status(&value) == false)
 				{
 					json_push_back(nowNode, json_new_a(myStr.c_str(), "NULL"));
 				}
 				else
 				{
-					// if the value is greater then a unsigned 32 bit number print it as a string
+					// if the value is greater then a unsigned 48 bit number print it as a string
 					temp << std::dec << statusValue;
 					json_push_back(nowNode, json_new_a(myStr.c_str(), temp.str().c_str()));
 				}
