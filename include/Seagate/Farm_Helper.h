@@ -200,7 +200,21 @@ namespace opensea_parser {
 		}
 		else
 		{
-			json_push_back(nowNode, json_new_a(myStr.c_str(), strValue.c_str()));
+			if (!check_For_Active_Status(&value))
+			{
+				if (g_parseNULL)
+				{
+					json_push_back(nowNode, json_new_a(myStr.c_str(), "NULL"));
+				}
+				else
+				{
+					json_push_back(nowNode, json_new_f(myStr.c_str(), 0.0));
+				}
+			}
+			else
+			{
+				json_push_back(nowNode, json_new_a(myStr.c_str(), strValue.c_str()));
+			}
 		}
 	}
 	//-----------------------------------------------------------------------------
