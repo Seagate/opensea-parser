@@ -316,7 +316,14 @@ void CFarmCommon::create_Firmware_String(std::string& firmwareRevStr, uint32_t f
 	}
 	else
 	{
-		firm = firmware;
+		if (firmware != 0 && firmware != 0x20202020)
+		{
+			firm = firmware;
+		}
+		else
+		{
+			firm = firmware2;
+		}
 	}
 	firmwareRevStr = "00000000";
 	firmwareRevStr.assign(reinterpret_cast<const char*>(&firm), 8);

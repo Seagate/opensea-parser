@@ -40,6 +40,7 @@
 extern eVerbosityLevels g_verbosity;
 extern eDataFormat g_dataformat;
 extern bool	g_parseUnknown;
+extern bool g_parseNULL;
 extern time_t g_currentTime;
 extern char g_currentTimeString[64];
 extern char *g_currentTimeStringPtr;
@@ -335,21 +336,35 @@ namespace opensea_parser {
         std::ostringstream temp;
         if (hexPrint)
         {
-            //json does not support 64 bit numbers. Therefore we will print it as a string
-            temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(16) << statusValue;
-            json_push_back(nowNode, json_new_a(myStr.c_str(), temp.str().c_str()));
+			if (g_parseNULL && check_For_Active_Status(reinterpret_cast<uint64_t*>(&value)) == false)
+			{
+				json_push_back(nowNode, json_new_a(myStr.c_str(), "NULL"));
+			}
+			else
+			{
+				//json does not support 64 bit numbers. Therefore we will print it as a string
+				temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(16) << statusValue;
+				json_push_back(nowNode, json_new_a(myStr.c_str(), temp.str().c_str()));
+			}
         }
         else
         {
-            if (M_IGETBITRANGE(statusValue, 63, 31) == 0)
+            if ((M_IGETBITRANGE(statusValue, 63, 56) == 0) && check_For_Active_Status(&value) == true)
             {
                 json_push_back(nowNode, json_new_i(myStr.c_str(), static_cast<json_int_t>(statusValue)));
             }
             else
             {
-                // if the vale is greater then a unsigned 32 bit number print it as a string
-                temp << std::dec << statusValue;
-                json_push_back(nowNode, json_new_a(myStr.c_str(), temp.str().c_str()));
+				if (g_parseNULL && check_For_Active_Status(&value) == false)
+				{
+					json_push_back(nowNode, json_new_a(myStr.c_str(), "NULL"));
+				}
+				else
+				{
+					// if the value is greater then a unsigned 48 bit number print it as a string
+					temp << std::dec << statusValue;
+					json_push_back(nowNode, json_new_a(myStr.c_str(), temp.str().c_str()));
+				}
             }
         }
 	}
@@ -381,7 +396,7 @@ namespace opensea_parser {
         }
         else
         {
-            if (M_IGETBITRANGE(value,63,32) == 0)
+            if (M_IGETBITRANGE(value,63,48) == 0)
             {
                 json_push_back(nowNode, json_new_i(myStr.c_str(), static_cast<json_int_t>(value)));
             }
