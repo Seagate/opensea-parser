@@ -96,7 +96,7 @@ CATA_Farm_Log::CATA_Farm_Log(uint8_t *bufferData, size_t bufferSize, bool showSt
             m_pageSize = m_pHeader->pageSize & UINT64_C(0x00FFFFFFFFFFFFFF);
             m_heads = m_pHeader->headsSupported & UINT64_C(0x00FFFFFFFFFFFFFF);
             m_MaxHeads = m_pHeader->headsSupported & UINT64_C(0x00FFFFFFFFFFFFFF);
-            m_copies = m_pHeader->copies & UINT64_C(0x00FFFFFFFFFFFFFF);
+            m_copies = m_pHeader->reserved & UINT64_C(0x00FFFFFFFFFFFFFF);
             m_status = IN_PROGRESS;
             m_MajorRev = M_DoubleWord0(m_pHeader->majorRev);
             m_MinorRev = M_DoubleWord0(m_pHeader->minorRev);
@@ -286,7 +286,7 @@ eReturnValues CATA_Farm_Log::print_Header(JSONNODE *masterData)
     printf("\tLog Size                (debug):                 %" PRIu64"  \n", header->logSize & UINT64_C(0x00FFFFFFFFFFFFFF));                        //!< log size in bytes
     printf("\tPage Size               (debug):                 %" PRIu64"  \n", header->pageSize & UINT64_C(0x00FFFFFFFFFFFFFF));                       //!< page size in bytes
     printf("\tHeads Supported         (debug):                 %" PRIu64"  \n", header->headsSupported & UINT64_C(0x00FFFFFFFFFFFFFF));                 //!< Maximum Drive Heads Supported
-    printf("\tNumber of Copies        (debug):                 %" PRIu64"  \n", header->copies & UINT64_C(0x00FFFFFFFFFFFFF));                          //!< Number of Historical Copies
+    printf("\tReserved                (debug):                 %" PRIu64"  \n", header->reserved & UINT64_C(0x00FFFFFFFFFFFFF));                          //!< Number of Historical Copies
     printf("\tReason for Frame Capture(debug):                 %" PRIu64"  \n", header->reasonForFrameCapture & UINT64_C(0x00FFFFFFFFFFFFF));           //!< Reason for Frame Capture
 
 #endif
@@ -300,7 +300,7 @@ eReturnValues CATA_Farm_Log::print_Header(JSONNODE *masterData)
     set_json_64_bit_With_Status(pageInfo, "Log Size", header->logSize, false, m_showStatusBits);
     set_json_64_bit_With_Status(pageInfo, "Page Size", header->pageSize, false, m_showStatusBits);
     set_json_64_bit_With_Status(pageInfo, "Heads Supported", header->headsSupported, false, m_showStatusBits);
-    set_json_64_bit_With_Status(pageInfo, "Number of Copies", header->copies, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Reserved", header->reserved, false, m_showStatusBits);
     set_json_64_bit_With_Status(pageInfo, "Reason for Frame Capture", header->reasonForFrameCapture, false, m_showStatusBits);
     std::string reason;
     Get_FARM_Reason_For_Capture(&reason, M_Byte0(header->reasonForFrameCapture));
@@ -358,8 +358,8 @@ eReturnValues CATA_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint3
     printf("\tATA Security State (ID Word 128)(debug):         0x%04" PRIX64" \n", (vFarmFrame[page].driveInfo.security & UINT64_C(0x00FFFFFFFFFFFFFF)));                              //!< ATA Security State (ID Word 128)
     printf("\tPower on Hours(debug):                           %" PRIu64" \n", (vFarmFrame[page].driveInfo.poh & UINT64_C(0x00FFFFFFFFFFFFFF)));                                       //!< Power-on Hour
     printf("\tSpindle Power on hours(debug):                   %" PRIu64" \n", (vFarmFrame[page].driveInfo.spoh & UINT64_C(0x00FFFFFFFFFFFFFF)));                                      //!< Spindle Power-on Hours
-    printf("\tHead Flight Hours - Actuator 0(debug):            %" PRIu64" \n", (vFarmFrame[page].driveInfo.headFlightHoursAct0 & UINT64_C(0x00FFFFFFFFFFFFFF)));                      //!< Head Flight Hours
-    printf("\tHead Load Events - Actuator 0(debug):             %" PRIu64" \n", (vFarmFrame[page].driveInfo.headLoadEventsAct0 & UINT64_C(0x00FFFFFFFFFFFFFF)));                       //!< Head Load Events
+    printf("\tHead Flight Hours - Actuator 0(debug):           %" PRIu64" \n", (vFarmFrame[page].driveInfo.headFlightHoursAct0 & UINT64_C(0x00FFFFFFFFFFFFFF)));                      //!< Head Flight Hours
+    printf("\tHead Load Events - Actuator 0(debug):            %" PRIu64" \n", (vFarmFrame[page].driveInfo.headLoadEventsAct0 & UINT64_C(0x00FFFFFFFFFFFFFF)));                       //!< Head Load Events
     printf("\tPower Cycle count(debug):                        %" PRIu64" \n", (vFarmFrame[page].driveInfo.powerCycleCount & UINT64_C(0x00FFFFFFFFFFFFFF)));                           //!< Power Cycle Count
     printf("\tHardware Reset count(debug):                     %" PRIu64" \n", (vFarmFrame[page].driveInfo.resetCount & UINT64_C(0x00FFFFFFFFFFFFFF)));                                //!< Hardware Reset Count
     printf("\tSpin-up Time(debug):                             %" PRIu64" \n", (vFarmFrame[page].driveInfo.spinUpTime & UINT64_C(0x00FFFFFFFFFFFFFF)));                                //!< SMART Spin-Up time in milliseconds
@@ -369,13 +369,14 @@ eReturnValues CATA_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint3
     printf("\tTime to ready of the last power cycle(debug):    %" PRIu64" \n", (vFarmFrame[page].driveInfo.timeToReady & UINT64_C(0x00FFFFFFFFFFFFFF)));                               //!< time to ready of the last power cycle
     printf("\tTime drive is held in staggered spin(debug):     %" PRIu64" \n", (vFarmFrame[page].driveInfo.timeHeld & UINT64_C(0x00FFFFFFFFFFFFFF)));                                  //!< time drive is held in staffered spin during the last power on sequence
     printf("\tDepopulation Head Mask(debug):                   %" PRIu64" \n", (vFarmFrame[page].driveInfo.depopulationHeadMask & UINT64_C(0x00FFFFFFFFFFFFFF)));
-    printf("\tHead Flight Hours - Actuator 1(debug):            %" PRIu64" \n", (vFarmFrame[page].driveInfo.headFlightHoursAct1 & UINT64_C(0x00FFFFFFFFFFFFFF)));
-    printf("\tHead Load Events - Actuator 1(debug):             %" PRIu64" \n", (vFarmFrame[page].driveInfo.headLoadEventsAct1 & UINT64_C(0x00FFFFFFFFFFFFFF)));
+    printf("\tHead Flight Hours - Actuator 1(debug):           %" PRIu64" \n", (vFarmFrame[page].driveInfo.headFlightHoursAct1 & UINT64_C(0x00FFFFFFFFFFFFFF)));
+    printf("\tHead Load Events - Actuator 1(debug):            %" PRIu64" \n", (vFarmFrame[page].driveInfo.headLoadEventsAct1 & UINT64_C(0x00FFFFFFFFFFFFFF)));
     printf("\tDrive Recording Type(debug):                     %" PRIu64" \n", (vFarmFrame[page].driveInfo.driveRecordingType & UINT64_C(0x00FFFFFFFFFFFFFF)));
     printf("\tdepopped(debug):                                 %" PRIu64" \n", (vFarmFrame[page].driveInfo.depopped & UINT64_C(0x00FFFFFFFFFFFFFF)));
     printf("\tMax number of sectors for reasssingment(debug):  %" PRIu64" \n", (vFarmFrame[page].driveInfo.maxNumberForReasign & UINT64_C(0x00FFFFFFFFFFFFFF)));
     printf("\tDate of Assembly(debug):                         %" PRIu64" \n", (vFarmFrame[page].driveInfo.dateOfAssembly & UINT64_C(0x00FFFFFFFFFFFFFF)));
     printf("\tHAMR Data Protect Status(debug):                 %" PRIu64" \n", (vFarmFrame[page].driveInfo.HAMRProtectStatus & UINT64_C(0x00FFFFFFFFFFFFFF)));
+    printf("\tRegen Head Mask (debug):                         %" PRIu64" \n", (vFarmFrame[page].driveInfo.regenHeadMask & UINT64_C(0x00FFFFFFFFFFFFFF)));
 #endif
 
     std::ostringstream temp;
@@ -481,6 +482,7 @@ eReturnValues CATA_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint3
     set_json_64_bit_With_Status(pageInfo, "Head Flight Hours - Actuator 1", vFarmFrame[page].driveInfo.headFlightHoursAct1, false, m_showStatusBits);       //!< Head Flight Hours- Actuator 1
     set_json_64_bit_With_Status(pageInfo, "Head Load Events - Actuator 1", vFarmFrame[page].driveInfo.headLoadEventsAct1, false, m_showStatusBits);         //!< Head Load Events- Actuator 1
     set_json_bool_With_Status(pageInfo, "HAMR Data Protect Status", vFarmFrame[page].driveInfo.HAMRProtectStatus, m_showStatusBits);
+    set_json_bool_With_Status(pageInfo, "Regen Head Mask", vFarmFrame.at(page).driveInfo.regenHeadMask, m_showStatusBits);
 
     json_push_back(masterData, pageInfo);
 
