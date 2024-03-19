@@ -364,13 +364,15 @@ namespace opensea_parser {
         uint64_t            timeToReady;                                 //!< Time to Ready of the last power cycle in milliseconds 
         uint64_t            holdTime;                                    //!< Time the drive is held in staggered spin in milliseconds
         uint64_t            servoSpinUpTime;                             //!< The last servo spin up time in milliseconds
+        uint64_t            writeProtect;                                //!< HAMR Data Protect Status: 1 = Data Protect, 0 = No Data Protect
+        uint64_t            regenHeadMask;                               //!< Regen Head Mask: bitmap where 1 = bad head, 0 = good head
 
         _sGeneralDriveInformationpage06() : pageNumber(0), copyNumber(0), Depop(0),
 #if defined __cplusplus && __cplusplus >= 201103L
             productID{ 0 },
 #endif
             driveType(0), isDepopped(0), maxNumAvaliableSectors(0), timeToReady(0),
-            holdTime(0), servoSpinUpTime(0) {};
+            holdTime(0), servoSpinUpTime(0), writeProtect(0), regenHeadMask(0) {};
     }sGeneralDriveInfoPage06;
 
     typedef struct _sScsiEnvironmentStatPage07
@@ -451,14 +453,14 @@ namespace opensea_parser {
         uint64_t            reserved19;                                 //!< Reserved
         uint64_t            reserved20;                                 //!< WReserved
         uint64_t            reserved21;                                 //!< Reserved
-        uint64_t            primarySPCovPercentage;                     //!< Primary Super Parity Coverage Percentage
+        uint64_t            primarySPCovPercentageCMR;                  //!< Primary Super Parity Coverage Percentage CMR
         uint64_t            primarySPCovPercentageSMR;                  //!< Primary Super Parity Coverage Percentage SMR
 
         _sLUNStruct() : pageNumber(0), copyNumber(0), LUNID(0), headLoadEvents(0),reserved(0), reserved1(0), reserved2(0), 
             reserved3(0),  reserved4(0), reserved5(0), reserved6(0), reserved7(0), reserved8(0), reserved9(0), reserved10(0),
             reserved11(0), dosScansPerformed(0), correctedLBAbyISP(0), reserved12(0), reserved13(0), reserved14(0), reserved15(0),
             lbasCorrectedByParity(0), reserved16(0), reserved17(0), reserved18(0), reserved19(0), 
-            reserved20(0), reserved21(0), primarySPCovPercentage(0), primarySPCovPercentageSMR(0) {};
+            reserved20(0), reserved21(0), primarySPCovPercentageCMR(0), primarySPCovPercentageSMR(0) {};
     }sLUNStruct;
 
     typedef struct _sActuatorFLEDInfo
