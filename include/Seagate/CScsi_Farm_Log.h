@@ -25,10 +25,10 @@
 #include "Scsi_Farm_Types.h"
 
 namespace opensea_parser {
+#define SIZEPARAM   8
+
 #ifndef SCSIFARM
 #define SCSIFARM
-
-#define SIZEPARAM   8
 
     class CSCSI_Farm_Log : public CFarmCommon
     {
