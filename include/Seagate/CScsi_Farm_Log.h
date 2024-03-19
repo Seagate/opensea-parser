@@ -25,10 +25,10 @@
 #include "Scsi_Farm_Types.h"
 
 namespace opensea_parser {
+#define SIZEPARAM   8
+
 #ifndef SCSIFARM
 #define SCSIFARM
-
-#define SIZEPARAM   8
 
     class CSCSI_Farm_Log : public CFarmCommon
     {
@@ -76,6 +76,7 @@ namespace opensea_parser {
 		eReturnValues init_Header_Data();
         eReturnValues print_Header(JSONNODE *masterData);
         eReturnValues print_Drive_Information(JSONNODE *masterData, uint32_t page);
+        eReturnValues get_Regen_Head_Mask(JSONNODE* headMask, uint64_t mask);
         eReturnValues print_General_Drive_Information_Continued(JSONNODE *masterData, uint32_t page);
         eReturnValues print_WorkLoad(JSONNODE *masterData, uint32_t page);
         eReturnValues print_Error_Information(JSONNODE *masterData, uint32_t page);

@@ -256,7 +256,7 @@ eReturnValues CSCSI_Farm_Log::init_Header_Data()
                 m_MaxHeads = M_DoubleWord0(m_pHeader->farmHeader.headsSupported);
             }
         }
-        m_copies = M_DoubleWord0(m_pHeader->farmHeader.copies);						// finish up with the number of copies (not supported "YET" in SAS)
+        m_copies = M_DoubleWord0(m_pHeader->farmHeader.reserved);						// finish up with the number of copies (not supported "YET" in SAS)
     }
     return SUCCESS;
 }
@@ -639,7 +639,10 @@ bool CSCSI_Farm_Log::Get_sDrive_Info_Page_06(sGeneralDriveInfoPage06 *gd, uint64
     gd->holdTime = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
     offset += SIZEPARAM;
     gd->servoSpinUpTime = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-    //offset += SIZEPARAM;
+    gd->writeProtect = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
+    gd->regenHeadMask = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM;
 
     // need to byte swap the product ID
     byte_Swap_64(&gd->productID[0]);
@@ -1098,7 +1101,7 @@ bool CSCSI_Farm_Log::get_sFarmHeader(sScsiFarmHeader* fh, uint8_t* pData, uint64
     fh->farmHeader.logSize = M_BytesTo8ByteValue(pData[offset + 32], pData[offset + 33], pData[offset + 34], pData[offset + 35], pData[offset + 36], pData[offset + 37], pData[offset + 38], pData[offset + 39]);
     fh->farmHeader.pageSize = M_BytesTo8ByteValue(pData[offset + 40], pData[offset + 41], pData[offset + 42], pData[offset + 43], pData[offset + 44], pData[offset + 45], pData[offset + 46], pData[offset + 47]);
     fh->farmHeader.headsSupported = M_BytesTo8ByteValue(pData[offset + 48], pData[offset + 49], pData[offset + 50], pData[offset + 51], pData[offset + 52], pData[offset + 53], pData[offset + 54], pData[offset + 55]);
-    fh->farmHeader.copies = M_BytesTo8ByteValue(pData[offset + 56], pData[offset + 57], pData[offset + 58], pData[offset + 59], pData[offset + 60], pData[offset + 61], pData[offset + 62], pData[offset + 63]);
+    fh->farmHeader.reserved = M_BytesTo8ByteValue(pData[offset + 56], pData[offset + 57], pData[offset + 58], pData[offset + 59], pData[offset + 60], pData[offset + 61], pData[offset + 62], pData[offset + 63]);
     if (position + 64 <= m_logSize && m_logSize != 0 && m_logSize != UINT64_C(0x00FFFFFFFFFFFFFF))
     {
         fh->farmHeader.reasonForFrameCapture = M_BytesTo8ByteValue(pData[offset + 64], pData[offset + 65], pData[offset + 66], pData[offset + 67], pData[offset + 68], pData[offset + 69], pData[offset + 70], pData[offset + 71]);
@@ -1186,7 +1189,7 @@ bool CSCSI_Farm_Log::Get_sLUNStruct(sLUNStruct *LUN,uint64_t offset)
     offset += SIZEPARAM; //reserved
     LUN->reserved21 = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
     offset += SIZEPARAM; //reserved
-    LUN->primarySPCovPercentage = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    LUN->primarySPCovPercentageCMR = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
     offset += SIZEPARAM;
     LUN->primarySPCovPercentageSMR = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
 
@@ -1972,6 +1975,51 @@ eReturnValues CSCSI_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint
 }
 //-----------------------------------------------------------------------------
 //
+//! \fn get_Regen_Head_Mask()
+//
+//! \brief
+//!   Description:  creates the bitmap data for which head is good or bad.  1 = bad 0 = good
+//
+//  Entry:
+//! \param headMask - pointer to the json data that will be printed or passed on
+//! \param mask  = the 64 bit data for creating the bitmap 
+//
+//  Exit:
+//!   \return SUCCESS
+//
+//---------------------------------------------------------------------------
+eReturnValues CSCSI_Farm_Log::get_Regen_Head_Mask(JSONNODE* headMask, uint64_t mask)
+{
+    eReturnValues status = IN_PROGRESS;
+    if (opensea_parser::check_For_Active_Status(&mask))
+    {
+        uint32_t tempHeadMask = M_DoubleWord0(mask);
+        std::ostringstream temp;
+        for (uint32_t i = 0; i <= m_MaxHeads; i++)
+        {
+            temp.str(""); temp.clear();
+            temp << "head " << std::dec << i;
+            if (tempHeadMask & BIT0)
+            {
+                set_json_string_With_Status(headMask, temp.str().c_str(), "bad", mask, m_showStatusBits);
+            }
+            else
+            {
+                set_json_string_With_Status(headMask, temp.str().c_str(), "good", mask, m_showStatusBits);
+            }
+            tempHeadMask >>= 1;
+        }
+        status = SUCCESS;
+    }
+    else
+    {
+        set_json_string_With_Status(headMask, "HeadMask", "NULL", mask, m_showStatusBits);
+        status = NOT_SUPPORTED;
+    }
+    return status;
+}
+//-----------------------------------------------------------------------------
+//
 //! \fn print_General_Drive_Information_Continued()
 //
 //! \brief
@@ -1987,6 +2035,7 @@ eReturnValues CSCSI_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint
 //---------------------------------------------------------------------------
 eReturnValues CSCSI_Farm_Log::print_General_Drive_Information_Continued(JSONNODE* masterData, uint32_t page)
 {
+    eReturnValues status = IN_PROGRESS;
     JSONNODE* pageInfo = json_new(JSON_NODE);
     std::ostringstream temp;
     std::string header;
@@ -2035,6 +2084,13 @@ eReturnValues CSCSI_Farm_Log::print_General_Drive_Information_Continued(JSONNODE
     temp.str("");temp.clear();
     temp << std::fixed << std::setprecision(3) << (static_cast<float>(M_Word0(vFarmFrame[page].gDPage06.servoSpinUpTime)) * .001F);
     set_json_string_With_Status(pageInfo, "Last Servo Spin up Time (sec)", temp.str().c_str(), vFarmFrame[page].gDPage06.servoSpinUpTime, m_showStatusBits);			//!< time to ready of the last power cycle
+
+    set_json_bool_With_Status(pageInfo, "HAMR Write Protect", vFarmFrame.at(page).gDPage06.writeProtect, m_showStatusBits);
+    status = get_Regen_Head_Mask(pageInfo, vFarmFrame.at(page).gDPage06.regenHeadMask);
+    if ((status == NOT_SUPPORTED) || (status == SUCCESS))
+    {
+        status = SUCCESS;
+    }
 
     json_push_back(masterData, pageInfo);
     return SUCCESS;
@@ -2990,7 +3046,7 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Information(JSONNODE *LUNData, 
     printf("\tReserved:                                     %" PRIu64" \n", pLUN->reserved19 & UINT64_C(0x00FFFFFFFFFFFFFF));	                //!< Reserved
     printf("\tReserved:                                     %" PRIu64" \n", pLUN->reserved20 & UINT64_C(0x00FFFFFFFFFFFFFF));	                //!< Reserved
     printf("\tReserved:                                     %" PRIu64" \n", pLUN->reserved21 & UINT64_C(0x00FFFFFFFFFFFFFF));                   //!< Reserved
-    printf("\tNumber of LBAs Corrected by Parity Sector:    %" PRIu64" \n", pLUN->lbasCorrectedByParity & UINT64_C(0x00FFFFFFFFFFFFFF));        //!< Number of LBAs Corrected by Parity Sector
+    printf("\tNumber of LBAs Corrected by Parity Sector CMR:%" PRIu64" \n", pLUN->lbasCorrectedByParity & UINT64_C(0x00FFFFFFFFFFFFFF));        //!< Number of LBAs Corrected by Parity Sector
     printf("\tNumber of LBAs Corrected by Parity Sector SMR:%" PRIu64" \n", pLUN->primarySPCovPercentageSMR & UINT64_C(0x00FFFFFFFFFFFFFF));    //!< Number of LBAs Corrected by Parity Sector SMR
 #endif
 
@@ -3013,7 +3069,7 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Information(JSONNODE *LUNData, 
     set_json_64_bit_With_Status(pageInfo, "Number of DOS Scans Performed", pLUN->dosScansPerformed, false, m_showStatusBits);	                        //!< Number of DOS Scans Performed 
     set_json_64_bit_With_Status(pageInfo, "Number of LBAs Corrected by ISP", pLUN->correctedLBAbyISP, false, m_showStatusBits);                         //!< Number of LBAs Corrected by ISP  
     set_json_64_bit_With_Status(pageInfo, "Number of LBAs Corrected by Parity Sector", pLUN->lbasCorrectedByParity, false, m_showStatusBits);           //!< Number of LBAs Corrected by Parity Sector
-    set_json_64_bit_With_Status(pageInfo, "primary super parity coverage",  pLUN->primarySPCovPercentage, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "primary super parity coverage CMR",  pLUN->primarySPCovPercentageCMR, false, m_showStatusBits);
     set_json_64_bit_With_Status(pageInfo, "primary super parity coverage SMR",  pLUN->primarySPCovPercentageSMR, false, m_showStatusBits);
     json_push_back(LUNData, pageInfo);
     

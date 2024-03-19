@@ -62,7 +62,8 @@ typedef struct _sDriveInfo
     uint64_t        depopulationHeadMask;                       //!< Depopulation Head Mask(started in 4.7)
     uint64_t        headFlightHoursAct1;                        //!< Head Flight Hours, Actuator1
     uint64_t        headLoadEventsAct1;                         //!< Head Load Events, Actuator 1
-    uint64_t        HAMRProtectStatus;
+    uint64_t        HAMRProtectStatus;                          //!< HAMR Data Protect Status: 1 = Data Protect, 0 = No Data Protect
+    uint64_t        regenHeadMask;                              //!< Regen Head Mask: bitmap where 1 = bad head, 0 = good head
 
     _sDriveInfo() : pageNumber(0), copyNumber(0), serialNumber(0), serialNumber2(0), worldWideName(0), worldWideName2(0),
         deviceInterface(0), deviceCapacity(0), psecSize(0), lsecSize(0), deviceBufferSize(0), heads(0), factor(0),
@@ -73,7 +74,7 @@ typedef struct _sDriveInfo
         modelNumber{ 0 },
 #endif
         driveRecordingType(0), depopped(0), maxNumberForReasign(0), dateOfAssembly(0), depopulationHeadMask(0), headFlightHoursAct1(0),
-        headLoadEventsAct1(0), HAMRProtectStatus(0) {};
+        headLoadEventsAct1(0), HAMRProtectStatus(0), regenHeadMask(0) {};
 }sDriveInfo;
 
 typedef struct _sErrorStat
