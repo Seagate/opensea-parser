@@ -379,7 +379,7 @@ eReturnValues CAtaPowerConditionsLog::printPowerLogDescriptor(JSONNODE *masterDa
 
 		//json_push_back(masterData, json_new_a("Reserved :", "Reserved"));
         std::ostringstream temp;
-        temp << std::hex << logDescriptor->bitFlags;
+        temp << std::hex << static_cast<uint16_t>(logDescriptor->bitFlags);
 		json_push_back(masterData, json_new_a("Power Condition Flags", temp.str().c_str()));
 		printPowerConditionFlag(masterData);
 		//json_push_back(masterData, json_new_a("Reserved :", "Reserved"));
