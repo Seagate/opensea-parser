@@ -3,7 +3,7 @@
 //
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2023 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -36,9 +36,16 @@
 #include <cctype>
 #include <string>
 
+enum class eVerbosity_open
+{
+	VERBOSITY_QUIET = 0,
+	VERBOSITY_DEFAULT = 1,
+	VERBOSITY_COMMAND_NAMES = 2,
+	VERBOSITY_COMMAND_VERBOSE = 3,
+	VERBOSITY_BUFFERS = 4
+};
 
-extern eVerbosityLevels g_verbosity;
-extern eDataFormat g_dataformat;
+extern eVerbosity_open g_verbosity;
 extern bool	g_parseUnknown;
 extern bool g_parseNULL;
 extern time_t g_currentTime;
@@ -52,7 +59,6 @@ namespace opensea_parser {
 #ifndef OPENSEA_PARSER
 #define OPENSEA_PARSER
 
-	
 #define OFFSETZERO 0
 #define OFFSETONE 1
 #define OFFSETTWO 2
@@ -342,8 +348,8 @@ namespace opensea_parser {
 			}
 			else
 			{
-				//json does not support 64 bit numbers. Therefore we will print it as a string
-				temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(16) << statusValue;
+				//64 bit in hex is only 8 in width
+				temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(8) << statusValue;
 				json_push_back(nowNode, json_new_a(myStr.c_str(), temp.str().c_str()));
 			}
         }
