@@ -2,7 +2,7 @@
 // CScsi_Non_Medium_Error_Count_Log.cpp Definition of the Non-Medium Error Count Log
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2023 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -39,7 +39,7 @@ CScsiNonMediumErrorCountLog::CScsiNonMediumErrorCountLog()
 	, m_Value(0)
 	, m_CountErrors()
 {
-	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+	if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
 		printf("%s \n", m_NMECName.c_str());
 	}
@@ -68,7 +68,7 @@ CScsiNonMediumErrorCountLog::CScsiNonMediumErrorCountLog(uint8_t * buffer, size_
 	, m_Value(0)
 	, m_CountErrors()
 {
-	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+	if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
 		printf("%s \n", m_NMECName.c_str());
 	}

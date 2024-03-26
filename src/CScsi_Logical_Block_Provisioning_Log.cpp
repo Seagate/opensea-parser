@@ -2,7 +2,7 @@
 // CScsi_Logical_Block_Provisioning_Logg.cpp  Definition of Logical Block Provisioning Log page
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2023 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -38,7 +38,7 @@ CScsiLBAProvisionLog::CScsiLBAProvisionLog()
     , m_bufferLength()
     , m_Provision()
 {
-    if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+    if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
         printf("%s \n", m_LBAName.c_str());
     }
@@ -66,7 +66,7 @@ CScsiLBAProvisionLog::CScsiLBAProvisionLog(uint8_t * buffer, size_t bufferSize, 
     , m_bufferLength(bufferSize)
     , m_Provision()
 {
-    if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+    if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
         printf("%s \n", m_LBAName.c_str());
     }

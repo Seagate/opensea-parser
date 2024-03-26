@@ -39,7 +39,7 @@ CScsiCmdDurationLimitsLog::CScsiCmdDurationLimitsLog()
     , m_limitsLog(NULL)
     , m_Value(0)
 {
-    if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+    if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
         printf("%s \n", m_CMDLimitsName.c_str());
     }
@@ -69,7 +69,7 @@ CScsiCmdDurationLimitsLog::CScsiCmdDurationLimitsLog(uint8_t * buffer, size_t bu
     , m_limitsLog(NULL)
     , m_Value(0)
 {
-    if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+    if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
         printf("%s \n", m_CMDLimitsName.c_str());
     }

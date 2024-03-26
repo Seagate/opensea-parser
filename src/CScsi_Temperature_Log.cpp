@@ -2,7 +2,7 @@
 // CScsi_Temperature_Log.cpp  Implementation of CScsi Temperature Log class
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2023 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -37,7 +37,7 @@ CScsiTemperatureLog::CScsiTemperatureLog()
 	, m_TempStatus(IN_PROGRESS)
 	, m_PageLength(0)
 {
-	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+	if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
 		printf("%s \n", m_TempName.c_str());
 	}
@@ -63,7 +63,7 @@ CScsiTemperatureLog::CScsiTemperatureLog(uint8_t * buffer, size_t bufferSize)
 	, m_TempStatus(IN_PROGRESS)
 	, m_PageLength(0)
 {
-	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+	if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
 		printf("%s \n", m_TempName.c_str());
 	}

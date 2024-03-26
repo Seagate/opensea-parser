@@ -2,7 +2,7 @@
 // CScsiLog.cpp  Implementation of Base class CScsiLog
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2023 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -160,7 +160,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 			{
 			case SUPPORTED_LOG_PAGES:
 			{
-				if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+				if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 				{
 					std::cout << "Supported Log Pages Found" << std::endl;
 				}
@@ -199,7 +199,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 			break;
 			case WRITE_ERROR_COUNTER:
 			{
-				if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+				if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 				{
 					std::cout << "Write Error Counter Log Pages Found" << std::endl;
 				}
@@ -231,7 +231,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 			break;
 			case READ_ERROR_COUNTER:
 			{
-				if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+				if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 				{
 					std::cout << "Read Error Counter Log Pages Found" << std::endl;
 				}
@@ -263,7 +263,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 			break;
 			case VERIFY_ERROR_COUNTER:
 			{
-				if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+				if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 				{
 					std::cout << "Verify Error Counter Log Pages Found" << std::endl;
 				}
@@ -295,7 +295,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 			break;
 			case NON_MEDIUM_ERROR:
 			{
-				if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+				if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 				{
 					std::cout << "Non-Medium Error Log Pages Found" << std::endl;
 				}
@@ -327,7 +327,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 			break;
 			case FORMAT_STATUS:
 			{
-				if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+				if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 				{
 					std::cout << "Format Status Log Pages Found" << std::endl;
 				}
@@ -360,7 +360,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 			break;
 			case LOGICAL_BLOCK_PROVISIONING:
 			{
-				if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+				if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 				{
 					std::cout << "Logical Block Provisioning Log Pages Found" << std::endl;
 				}
@@ -392,7 +392,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 			break;
 			case ENVIRONMENTAL:
 			{
-				if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+				if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 				{
 					std::cout << "Environmental Log Found" << std::endl;
 				}
@@ -404,7 +404,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 			break;
 			case START_STOP_CYCLE_COUNTER:
 			{
-				if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+				if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 				{
 					std::cout << "Start Stop Cycle Log Found" << std::endl;
 				}
@@ -416,7 +416,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 			break;
 			case APPLICATION_CLIENT:
 			{
-				if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+				if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 				{
 					std::cout << "Application Client Log Pages Found" << std::endl;
 				}
@@ -448,7 +448,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 			break;
 			case SELF_TEST_RESULTS:
 			{
-				if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+				if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 				{
 					std::cout << "Self Test Log Found" << std::endl;
 				}
@@ -460,7 +460,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 			break;
             case SOLID_STATE_MEDIA:
             {
-                if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+                if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
                 {
                     std::cout << "Solid State Drive Log Pages Found" << std::endl;
                 }
@@ -492,7 +492,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
             break;
             case ZONED_DEVICE_STATISTICS:
             {
-                if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+                if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
                 {
                     std::cout << "Zoned Device Statistics Log Pages Found" << std::endl;
                 }
@@ -610,7 +610,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 			case PROTOCOL_SPECIFIC_PORT:
 			{
 
-				if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+				if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 				{
 					std::cout << "Protocol Specific Port Log Pages Found" << std::endl;
 				}
@@ -646,7 +646,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 			{
 				if (lpStruct->subPage == SAS_SUBPAGE_20)        // Cache Memory Statistics 5.2.7
 				{
-					if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+					if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 					{
 						std::cout << "Cache Memory Statisitics Log Page Found" << std::endl;
 					}
@@ -677,7 +677,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 					}
 				else if (lpStruct->subPage == SAS_SUBPAGE_21)        // Command Duration Limits Statistics 5.2.8
 				{
-					if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+					if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 					{
 						std::cout << "Command Duration Limits Statisitics Log Found" << std::endl;
 					}
@@ -710,7 +710,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 			break;
 			case POWER_CONDITION_TRANSITIONS:
 			{
-				if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+				if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 				{
 					std::cout << "Power Condition Transitions Log Pages Found" << std::endl;
 				}
@@ -742,7 +742,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 			break;
 			case INFORMATIONAL_EXCEPTIONS:
 			{
-				if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+				if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 				{
 					std::cout << "Informational Exceptions Log Pages Found" << std::endl;
 				}
@@ -774,7 +774,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 			break;
 			case CACHE_STATISTICS:
 			{
-				if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+				if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 				{
 					std::cout << "Cache Statistics Log Pages Found" << std::endl;
 				}
@@ -808,7 +808,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				if (lpStruct->subPage == FARM_LOG_PAGE)   // Farm Log
 				{
 					CSCSI_Farm_Log* pCFarm;
-					pCFarm = new CSCSI_Farm_Log(bufferData, (static_cast<size_t>(lpStruct->pageLength) + sizeof(sLogPageStruct)), lpStruct->subPage,false);
+					pCFarm = new CSCSI_Farm_Log(bufferData, (static_cast<size_t>(lpStruct->pageLength) + sizeof(sLogPageStruct)), lpStruct->subPage,false,false);
 					if (pCFarm->get_Log_Status() == SUCCESS)
 					{
 						try
@@ -835,7 +835,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				else if (lpStruct->subPage == FARM_FACTORY_LOG_PAGE)   // Farm Log
 				{
 					CSCSI_Farm_Log* pCFarm;
-					pCFarm = new CSCSI_Farm_Log(bufferData, (static_cast<size_t>(lpStruct->pageLength) + sizeof(sLogPageStruct)), lpStruct->subPage,false);
+					pCFarm = new CSCSI_Farm_Log(bufferData, (static_cast<size_t>(lpStruct->pageLength) + sizeof(sLogPageStruct)), lpStruct->subPage,false,false);
 					if (pCFarm->get_Log_Status() == SUCCESS)
 					{
 						try
@@ -862,7 +862,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				else if (lpStruct->subPage >= FARM_TIME_SERIES_0 && lpStruct->subPage <= FARM_TEMP_TRIGGER_LOG_PAGE)   // FARM log when Temperature exceeds 70 c
 				{
 					CSCSI_Farm_Log* pCFarm;
-					pCFarm = new CSCSI_Farm_Log(bufferData, (static_cast<size_t>(lpStruct->pageLength) + sizeof(sLogPageStruct)), lpStruct->subPage,false);  // issue with the log bufer size
+					pCFarm = new CSCSI_Farm_Log(bufferData, (static_cast<size_t>(lpStruct->pageLength) + sizeof(sLogPageStruct)), lpStruct->subPage,false,false);  // issue with the log bufer size
 					if (pCFarm->get_Log_Status() == SUCCESS)
 					{
 						retStatus = pCFarm->get_Log_Status();
@@ -894,7 +894,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 			break;
 			case FACTORY_LOG:
 			{
-				if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+				if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 				{
 					std::cout << "Factory Log Pages Found" << std::endl;
 				}
@@ -926,7 +926,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 			break;
 			default:
 			{
-				if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+				if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 				{
 					std::cout << "Not Found" << std::endl;
 				}
@@ -938,7 +938,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 		}
 		else
 		{
-			if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+			if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 			{
 				std::cout << "Not Found" << std::endl;
 			}

@@ -2,7 +2,7 @@
 // CScsi_Zoned_Device_Statistics_Log.cpp  
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2023 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -38,7 +38,7 @@ CScsiZonedDeviceStatisticsLog::CScsiZonedDeviceStatisticsLog()
     , m_ZDSValue(0)
     , m_ZDSParam()
 {
-    if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+    if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
         printf("%s \n", m_ZDSName.c_str());
     }
@@ -68,7 +68,7 @@ CScsiZonedDeviceStatisticsLog::CScsiZonedDeviceStatisticsLog(uint8_t * buffer, s
     , m_ZDSValue(0)
     , m_ZDSParam()
 {
-    if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+    if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
         printf("%s \n", m_ZDSName.c_str());
     }

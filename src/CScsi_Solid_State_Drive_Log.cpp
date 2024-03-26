@@ -2,7 +2,7 @@
 // CScsi_Solid_State_Drive_Log.cpp  Definition of Solid State Drive Log
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2023 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -38,7 +38,7 @@ CScsiSolidStateDriveLog::CScsiSolidStateDriveLog()
     , m_SSDValue(0)
     , m_SSDParam()
 {
-    if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+    if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
         printf("%s \n", m_SSDName.c_str());
     }
@@ -67,7 +67,7 @@ CScsiSolidStateDriveLog::CScsiSolidStateDriveLog(uint8_t * buffer, size_t buffer
     , m_SSDValue(0)
     , m_SSDParam()
 {
-    if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+    if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
         printf("%s \n", m_SSDName.c_str());
     }
