@@ -3,7 +3,7 @@
 //
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2023 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -50,6 +50,8 @@ namespace opensea_parser {
             uint32_t                    m_MajorRev;                         //!< holds the Major Revision number
             uint32_t                    m_MinorRev;                         //!< holds the minor revision number
             uint8_t                     m_FrameReason;                      //!< holds the reason for Frame Capture information
+            bool                        m_ShowAct1;                         //!< set to true to show the acutator 1 information
+            bool                        m_showStatic;                       //!< set to true to show all data statically 
  
             bool Check_Page_number(uint64_t page, uint16_t pageNumber);
             eReturnValues print_Header(JSONNODE *masterData);
@@ -62,7 +64,7 @@ namespace opensea_parser {
             
         public:
             CATA_Farm_Log();
-            CATA_Farm_Log( uint8_t *bufferData, size_t bufferSize, bool showStatus);
+            CATA_Farm_Log( uint8_t *bufferData, size_t bufferSize, bool showStatus, bool showStatic);
             virtual ~CATA_Farm_Log();
             eReturnValues parse_Farm_Log();
             //void get_Reallocated_Sector_By_Cause(std::string *description, uint64_t readWriteRetry);
@@ -71,10 +73,9 @@ namespace opensea_parser {
             void print_Page_Without_Drive_Info(JSONNODE *masterData, uint32_t page);
             void print_Page_One_Node(JSONNODE *masterData);
             virtual eReturnValues get_Log_Status(){ return m_status; };
-            virtual void get_Serial_Number(std::string sn){ sn.assign( vFarmFrame[0].identStringInfo.serialNumber); };
-            virtual void get_Firmware_String(std::string firmware){ firmware.assign(vFarmFrame[0].identStringInfo.firmwareRev); };
-			virtual void get_World_Wide_Name(std::string wwn) {wwn.assign(vFarmFrame[0].identStringInfo.worldWideName);};
-            uint32_t get_LogSize() { return M_DoubleWord1(m_logSize); };                                  //<! return the page size for the combine farm log
+            virtual void get_Serial_Number(std::string sn){ sn.assign( vFarmFrame.at(0).identStringInfo.serialNumber); };
+            virtual void get_Firmware_String(std::string firmware){ firmware.assign(vFarmFrame.at(0).identStringInfo.firmwareRev); };
+			virtual void get_World_Wide_Name(std::string wwn) {wwn.assign(vFarmFrame.at(0).identStringInfo.worldWideName);};
             uint8_t get_FrameReason() { return m_FrameReason; };
     };
 #endif //!ATAFARM
