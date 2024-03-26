@@ -2,7 +2,7 @@
 // Farm_Common.cpp
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2023 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -483,3 +483,2016 @@ void CFarmCommon::Get_FARM_Reason_For_Capture(std::string* reason, uint8_t flag)
 		break;
 	}
 }
+//-----------------------------------------------------------------------------
+//
+//! \fn floatHeadData()
+//
+//! \brief
+//!   Description:  Takes a float data and creates the JSON information in a NODE or array depending on showStatic
+//
+//  Entry:
+//  Entry:
+//! \param Node - JSON Node to add the array of information to
+//! \param title  =  string information for that attribute 
+//! \param value = pointer to the frame attribute H2SAT
+//! \param heads = the total number of heads
+//! \param showStatusBits = when set to true the valid and supported bits will be shown
+//! \param showStatic = true it will print the static json node way
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void CFarmCommon::floatHeadData(JSONNODE* Node, const std::string& title, uint64_t* value, uint64_t heads, bool showStatusBits, bool showStatic)
+{
+	if (showStatic)
+	{
+		float_NODE_Data(Node, title, value, heads, showStatusBits);
+	}
+	else
+	{
+		float_Array_Data(Node, title, value, heads, showStatusBits);
+	}
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn float_NODE_Data()
+//
+//! \brief
+//!   Description:  Takes a fload data and creates the JSON information in a NODE
+//
+//  Entry:
+//  Entry:
+//! \param Node - JSON Node to add the array of information to
+//! \param title  =  string information for that attribute 
+//! \param value = pointer to the frame attribute H2SAT
+//! \param heads = the total number of heads
+//! \param showStatusBits = when set to true the valid and supported bits will be shown
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void CFarmCommon::float_NODE_Data(JSONNODE* Node, const std::string& title, uint64_t* value, uint64_t heads, bool showStatusBits)
+{
+	std::ostringstream temp;
+	for (uint32_t loopCount = 0; loopCount < heads; ++loopCount)
+	{
+		temp.str(""); temp.clear();
+		temp << title.c_str() << " by Head " << std::dec << loopCount;                    // write out the title plus the Head count
+		uint64_t dsHead = check_Status_Strip_Status(value[loopCount]);
+		int16_t whole = M_WordInt2(dsHead);							                      // get 5:4 whole part of the float
+		double decimal = static_cast<double>(M_DoubleWordInt0(dsHead));                   // get 3:0 for the Deciaml Part of the float
+		double number = 0.0;
+		if (whole >= 0)
+		{
+			number = static_cast<double>(whole) + (decimal * .0001);
+		}
+		else
+		{
+			number = static_cast<double>(whole) - (decimal * .0001);
+		}
+		set_json_float_With_Status(Node, temp.str().c_str(), number, value[loopCount], showStatusBits);
+	}
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn float_Array_Data()
+//
+//! \brief
+//!   Description:  Takes a fload data and creates the JSON information into an array
+//
+//  Entry:
+//  Entry:
+//! \param Node - JSON Node to add the array of information to
+//! \param title  =  string information for that attribute 
+//! \param value = pointer to the frame attribute H2SAT
+//! \param heads = the total number of heads
+//! \param showStatusBits = when set to true the valid and supported bits will be shown
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void CFarmCommon::float_Array_Data(JSONNODE* Node, const std::string& title, uint64_t* value, uint64_t heads, bool showStatusBits)
+{
+	JSONNODE* header = json_new(JSON_ARRAY);
+	json_set_name(header, title.c_str());
+	for (uint32_t loopCount = 0; loopCount < heads; ++loopCount)
+	{
+		uint64_t dsHead = check_Status_Strip_Status(value[loopCount]);
+		int16_t whole = M_WordInt2(dsHead);							                      // get 5:4 whole part of the float
+		double decimal = static_cast<double>(M_DoubleWordInt0(dsHead));                   // get 3:0 for the Deciaml Part of the float
+		double number = 0.0;
+		if (whole >= 0)
+		{
+			number = static_cast<double>(whole) + (decimal * .0001);
+		}
+		else
+		{
+			number = static_cast<double>(whole) - (decimal * .0001);
+		}
+		set_json_float_With_Status(header, title, number, value[loopCount], showStatusBits);
+	}
+	json_push_back(Node, header);
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn sflyHeightData()
+//
+//! \brief
+//!   Description:  Takes a sflyHeight data array and creates the JSON information in a NODE or array depending on showStatic
+//
+//  Entry:
+//  Entry:
+//! \param Node - JSON Node to add the array of information to
+//! \param title  =  string information for that attribute 
+//! \param calculation = tell the function which word from the value it need to use for the information
+//! \param value = pointer to the frame attribute H2SAT
+//! \param track = get the data for the inner outer middle of the the array data for the sflyheight
+//! \param sizeAmount = defined size for word, word int, dword 0 ore dword 1 
+//! \param heads = the total number of heads
+//! \param showStatusBits = when set to true the valid and supported bits will be shown
+//! \param showStatic = true it will print the static json node way
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void CFarmCommon::sflyHeightData(JSONNODE* Node, const std::string& title, double calculation, sflyHeight* value, int track, int sizeAmount, uint64_t heads, bool showStatusBits, bool showStatic)
+{
+	if (showStatic)
+	{
+		sflyHeight_Node_Data(Node, title, calculation, value, track, sizeAmount, heads, showStatusBits);
+	}
+	else
+	{
+		sflyHeight_Array_Data(Node, title, calculation, value, track, sizeAmount, heads, showStatusBits);
+	}
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn sflyHeight_Node_Data()
+//
+//! \brief
+//!   Description:  Takes a sflyHeight data array and creates the JSON information in a static NODE.
+//
+//  Entry:
+//  Entry:
+//! \param Node - JSON Node to add the array of information to
+//! \param title  =  string information for that attribute 
+//! \param calculation = tell the function which word from the value it need to use for the information
+//! \param value = pointer to the frame attribute H2SAT
+//! \param track = get the data for the inner outer middle of the the array data for the sflyheight
+//! \param sizeAmount = defined size for word, word int, dword 0 ore dword 1 
+//! \param heads = the total number of heads
+//! \param showStatusBits = when set to true the valid and supported bits will be shown
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void CFarmCommon::sflyHeight_Node_Data(JSONNODE* Node, const std::string& title, double calculation, sflyHeight* value, int track, int sizeAmount, uint64_t heads, bool showStatusBits)
+{
+	std::ostringstream temp;
+	for (uint32_t loopCount = 0; loopCount < heads; ++loopCount)
+	{
+		temp.str(""); temp.clear();
+		temp << title.c_str() << " by Head " << std::dec << loopCount;                    // write out the title plus the Head count
+		double number = 0;
+		switch (track)
+		{
+		case INNER:
+			switch (sizeAmount)
+			{
+			case WORD0:
+				number = static_cast<double>(M_Word0(value[loopCount].inner) * calculation);
+			case WORDINT0:
+				number = static_cast<double>(M_WordInt0(value[loopCount].inner) * calculation);
+			case DWORD0:
+				number = static_cast<double>(M_DoubleWord0(value[loopCount].inner) * calculation);
+			default:
+				number = static_cast<double>(M_WordInt0(value[loopCount].inner) * calculation);
+			}
+			set_json_float_With_Status(Node, temp.str().c_str(), number, value[loopCount].inner, showStatusBits);
+			break;
+		case OUTER:
+			switch (sizeAmount)
+			{
+			case WORD0:
+				number = static_cast<double>(M_Word0(value[loopCount].outer) * calculation);
+			case WORDINT0:
+				number = static_cast<double>(M_WordInt0(value[loopCount].outer) * calculation);
+			case DWORD0:
+				number = static_cast<double>(M_DoubleWord0(value[loopCount].outer) * calculation);
+			default:
+				number = static_cast<double>(M_WordInt0(value[loopCount].outer) * calculation);
+			}
+			set_json_float_With_Status(Node, temp.str().c_str(), number, value[loopCount].outer, showStatusBits);
+			break;
+		case MIDDLE:
+			switch (sizeAmount)
+			{
+			case WORD0:
+				number = static_cast<double>(M_Word0(value[loopCount].middle) * calculation);
+			case WORDINT0:
+				number = static_cast<double>(M_WordInt0(value[loopCount].middle) * calculation);
+			case DWORD0:
+				number = static_cast<double>(M_DoubleWord0(value[loopCount].middle) * calculation);
+			default:
+				number = static_cast<double>(M_WordInt0(value[loopCount].middle) * calculation);
+			}
+			set_json_float_With_Status(Node, temp.str().c_str(), number, value[loopCount].middle, showStatusBits);
+			break;
+		default:
+			number = static_cast<double>(M_WordInt0(value[loopCount].inner) * calculation);
+			set_json_float_With_Status(Node, temp.str().c_str(), number, value[loopCount].inner, showStatusBits);
+			break;
+		}
+	}
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn sflyHeight_Array_Data()
+//
+//! \brief
+//!   Description:  get the sFlyHeight array data
+//
+//  Entry:
+//! \param Node - JSON Node to add the array of information to
+//! \param title  =  string information for that attribute 
+//! \param calculation = tell the function which word from the value it need to use for the information
+//! \param value = pointer to the frame attribute H2SAT
+//! \param track = get the data for the inner outer middle of the the array data for the sflyheight
+//! \param sizeAmount = defined size for word, word int, dword 0 ore dword 1 
+//! \param heads = the total number of heads
+//! \param showStatusBits = when set to true the valid and supported bits will be shown
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void CFarmCommon::sflyHeight_Array_Data(JSONNODE* Node, const std::string& title, double calculation, sflyHeight* value, int track, int sizeAmount, uint64_t heads, bool showStatusBits)
+{
+	JSONNODE* headerror = json_new(JSON_ARRAY);
+	json_set_name(headerror, title.c_str());
+	for (uint32_t loopCount = 0; loopCount < heads; ++loopCount)
+	{
+		double number = 0;
+		switch (track)
+		{
+		case INNER:
+			switch (sizeAmount)
+			{
+			case WORD0:
+				number = static_cast<double>(M_Word0(value[loopCount].inner) * calculation);
+			case WORDINT0:
+				number = static_cast<double>(M_WordInt0(value[loopCount].inner) * calculation);
+			case DWORD0:
+				number = static_cast<double>(M_DoubleWord0(value[loopCount].inner) * calculation);
+			default:
+				number = static_cast<double>(M_WordInt0(value[loopCount].inner) * calculation);
+			}
+			set_json_float_With_Status(headerror, title, number, value[loopCount].inner, showStatusBits);
+			break;
+		case OUTER:
+			switch (sizeAmount)
+			{
+			case WORD0:
+				number = static_cast<double>(M_Word0(value[loopCount].outer) * calculation);
+			case WORDINT0:
+				number = static_cast<double>(M_WordInt0(value[loopCount].outer) * calculation);
+			case DWORD0:
+				number = static_cast<double>(M_DoubleWord0(value[loopCount].outer) * calculation);
+			default:
+				number = static_cast<double>(M_WordInt0(value[loopCount].outer) * calculation);
+			}
+			set_json_float_With_Status(headerror, title, number, value[loopCount].outer, showStatusBits);
+			break;
+		case MIDDLE:
+			switch (sizeAmount)
+			{
+			case WORD0:
+				number = static_cast<double>(M_Word0(value[loopCount].middle) * calculation);
+			case WORDINT0:
+				number = static_cast<double>(M_WordInt0(value[loopCount].middle) * calculation);
+			case DWORD0:
+				number = static_cast<double>(M_DoubleWord0(value[loopCount].middle) * calculation);
+			default:
+				number = static_cast<double>(M_WordInt0(value[loopCount].middle) * calculation);
+			}
+			set_json_float_With_Status(headerror, title, number, value[loopCount].middle, showStatusBits);
+			break;
+		default:
+			number = static_cast<double>(M_WordInt0(value[loopCount].inner) * calculation);
+			set_json_float_With_Status(headerror, title, number, value[loopCount].inner, showStatusBits);
+			break;
+		}
+	}
+	json_push_back(Node, headerror);
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn sflyHeight_Float_Data()
+//
+//! \brief
+//!   Description:  get the static or dynamic build of the data for sflyHeaight array as float information
+//
+//  Entry:
+//! \param Node - JSON Node to add the array of information to
+//! \param title  =  string information for that attribute 
+//! \param value = pointer to the frame attribute H2SAT
+//! \param track = get the data for the inner outer middle of the the array data for the sflyheight
+//! \param heads = the total number of heads
+//! \param showStatusBits = when set to true the valid and supported bits will be shown
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void CFarmCommon::sflyHeight_Float_Data(JSONNODE* Node, const std::string& title, sflyHeight* value, int track, uint64_t heads, bool showStatusBits, bool showStatic)
+{
+	if (showStatic)
+	{
+		sflyHeight_Float_Node_Data(Node, title, value, track, heads, showStatusBits);
+	}
+	else
+	{
+		sflyHeight_Float_Array_Data(Node, title, value, track, heads, showStatusBits);
+	}
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn sflyHeight_Float_Node_Data()
+//
+//! \brief
+//!   Description:  get the static build of the data for sflyHeaight array as float information
+//
+//  Entry:
+//! \param Node - JSON Node to add the array of information to
+//! \param title  =  string information for that attribute 
+//! \param value = pointer to the frame attribute H2SAT
+//! \param track = get the data for the inner outer middle of the the array data for the sflyheight
+//! \param heads = the total number of heads
+//! \param showStatusBits = when set to true the valid and supported bits will be shown
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void CFarmCommon::sflyHeight_Float_Node_Data(JSONNODE* Node, const std::string& title, sflyHeight* value, int track, uint64_t heads, bool showStatusBits)
+{
+	std::ostringstream temp;
+	for (uint32_t loopCount = 0; loopCount < heads; ++loopCount)
+	{
+		temp.str(""); temp.clear();
+		temp << title.c_str() << " by Head " << std::dec << loopCount;                    // write out the title plus the Head count
+		uint64_t dsHead = 0;
+		int16_t whole = 0;							                      // get 5:4 whole part of the float
+		double decimal = 0.0;                   // get 3:0 for the Deciaml Part of the float
+		double number = 0.0;
+
+		switch (track)
+		{
+		case INNER:
+			dsHead = check_Status_Strip_Status(value[loopCount].inner);
+			whole = M_WordInt2(dsHead);
+			decimal = static_cast<double>(M_DoubleWordInt0(dsHead));
+			break;
+		case OUTER:
+			dsHead = check_Status_Strip_Status(value[loopCount].outer);
+			whole = M_WordInt2(dsHead);
+			decimal = static_cast<double>(M_DoubleWordInt0(dsHead));
+			break;
+		case MIDDLE:
+			dsHead = check_Status_Strip_Status(value[loopCount].middle);
+			whole = M_WordInt2(dsHead);
+			decimal = static_cast<double>(M_DoubleWordInt0(dsHead));
+			break;
+		}
+		if (whole >= 0)
+		{
+			number = static_cast<double>(whole) + (decimal * .0001);
+		}
+		else
+		{
+			number = static_cast<double>(whole) - (decimal * .0001);
+		}
+		switch (track)
+		{
+		case INNER:
+			set_json_float_With_Status(Node, temp.str().c_str(), number, value[loopCount].inner, showStatusBits);
+			break;
+		case OUTER:
+			set_json_float_With_Status(Node, temp.str().c_str(), number, value[loopCount].outer, showStatusBits);
+			break;
+		case MIDDLE:
+			set_json_float_With_Status(Node, temp.str().c_str(), number, value[loopCount].middle, showStatusBits);
+			break;
+		}
+
+	}
+
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn sflyHeight_Float_Array_Data()
+//
+//! \brief
+//!   Description:  get the dynamic build of the data for sflyHeaight array as float information
+//
+//  Entry:
+//! \param Node - JSON Node to add the array of information to
+//! \param title  =  string information for that attribute 
+//! \param value = pointer to the frame attribute H2SAT
+//! \param track = get the data for the inner outer middle of the the array data for the sflyheight
+//! \param heads = the total number of heads
+//! \param showStatusBits = when set to true the valid and supported bits will be shown
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void CFarmCommon::sflyHeight_Float_Array_Data(JSONNODE* Node, const std::string& title, sflyHeight* value, int track, uint64_t heads, bool showStatusBits)
+{
+	JSONNODE* valueNode = json_new(JSON_ARRAY);
+	json_set_name(valueNode, title.c_str());
+	for (uint32_t loopCount = 0; loopCount < heads; ++loopCount)
+	{
+		uint64_t dsHead = 0;
+		int16_t whole = 0;							                      // get 5:4 whole part of the float
+		double decimal = 0.0;                   // get 3:0 for the Deciaml Part of the float
+		double number = 0.0;
+
+		switch (track)
+		{
+		case INNER:
+			dsHead = check_Status_Strip_Status(value[loopCount].inner);
+			whole = M_WordInt2(dsHead);
+			decimal = static_cast<double>(M_DoubleWordInt0(dsHead));
+			break;
+		case OUTER:
+			dsHead = check_Status_Strip_Status(value[loopCount].outer);
+			whole = M_WordInt2(dsHead);
+			decimal = static_cast<double>(M_DoubleWordInt0(dsHead));
+			break;
+		case MIDDLE:
+			dsHead = check_Status_Strip_Status(value[loopCount].middle);
+			whole = M_WordInt2(dsHead);
+			decimal = static_cast<double>(M_DoubleWordInt0(dsHead));
+			break;
+		}
+		if (whole >= 0)
+		{
+			number = static_cast<double>(whole) + (decimal * .0001);
+		}
+		else
+		{
+			number = static_cast<double>(whole) - (decimal * .0001);
+		}
+		switch (track)
+		{
+		case INNER:
+			set_json_float_With_Status(valueNode, title, number, value[loopCount].inner, showStatusBits);
+			break;
+		case OUTER:
+			set_json_float_With_Status(valueNode, title, number, value[loopCount].outer, showStatusBits);
+			break;
+		case MIDDLE:
+			set_json_float_With_Status(valueNode, title, number, value[loopCount].middle, showStatusBits);
+			break;
+		}
+
+	}
+	json_push_back(Node, valueNode);
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn h2sat_Data()
+//
+//! \brief
+//!   Description:  get the static or dynamic build of the data for h2sat array information
+//
+//  Entry:
+//! \param Node - JSON Node to add the array of information to
+//! \param title  =  string information for that attribute 
+//! \param movement = the amount to move inorder to check the status of the value
+//! \param value = pointer to the frame attribute H2SAT
+//! \param track = get the data for the inner outer middle of the the array data for the H2SAT
+//! \param heads = the total number of heads
+//! \param showStatusBits = when set to true the valid and supported bits will be shown
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void CFarmCommon::h2sat_Data(JSONNODE* Node, const std::string& title, int movement, H2SAT* value, int track, uint64_t heads, bool showStatusBits, bool showStatic)
+{
+	if (showStatic)
+	{
+		h2sat_Node_Data(Node, title, movement, value, track, heads, showStatusBits);
+	}
+	else
+	{
+		h2sat_Array_Data(Node, title, movement, value, track, heads, showStatusBits);
+	}
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn h2sat_Node_Data()
+//
+//! \brief
+//!   Description:  get the static or dynamic build of the data for h2sat array information
+//
+//  Entry:
+//! \param Node - JSON Node to add the array of information to
+//! \param title  =  string information for that attribute 
+//! \param movement = the amount to move inorder to check the status of the value
+//! \param value = pointer to the frame attribute H2SAT
+//! \param track = get the data for the inner outer middle of the the array data for the H2SAT
+//! \param heads = the total number of heads
+//! \param showStatusBits = when set to true the valid and supported bits will be shown
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void CFarmCommon::h2sat_Node_Data(JSONNODE* Node, const std::string& title, int movement, H2SAT* value, int track, uint64_t heads, bool showStatusBits)
+{
+	std::ostringstream temp;
+	for (uint32_t loopCount = 0; loopCount < heads; ++loopCount)
+	{
+		temp.str(""); temp.clear();
+		temp << title.c_str() << " by Head " << std::dec << loopCount;                    // write out the title plus the Head count
+		int16_t number = 0;
+		if (movement == WORDINT0)
+		{
+			switch (track)
+			{
+			case ZONE0:
+				number = static_cast<int16_t>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(value[loopCount].zone0)), 16));
+				break;
+			case ZONE1:
+				number = static_cast<int16_t>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(value[loopCount].zone1)), 16));
+				break;
+			case ZONE2:
+				number = static_cast<int16_t>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(value[loopCount].zone2)), 16));
+				break;
+			}
+		}
+		else
+		{
+			switch (track)
+			{
+			case ZONE0:
+				number = static_cast<int16_t>(check_for_signed_int(M_DoubleWordInt0(check_Status_Strip_Status(value[loopCount].zone0)), 32));
+				break;
+			case ZONE1:
+				number = static_cast<int16_t>(check_for_signed_int(M_DoubleWordInt0(check_Status_Strip_Status(value[loopCount].zone1)), 32));
+				break;
+			case ZONE2:
+				number = static_cast<int16_t>(check_for_signed_int(M_DoubleWordInt0(check_Status_Strip_Status(value[loopCount].zone2)), 32));
+				break;
+			}
+		}
+		switch (track)
+		{
+		case ZONE0:
+			set_json_int_Check_Status(Node, temp.str().c_str(), number, value[loopCount].zone0, showStatusBits);
+			break;
+		case ZONE1:
+			set_json_int_Check_Status(Node, temp.str().c_str(), number, value[loopCount].zone1, showStatusBits);
+			break;
+		case ZONE2:
+			set_json_int_Check_Status(Node, temp.str().c_str(), number, value[loopCount].zone2, showStatusBits);
+			break;
+		}
+
+	}
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn h2sat_Array_Data()
+//
+//! \brief
+//!   Description:  get the static or dynamic build of the data for h2sat array information
+//
+//  Entry:
+//! \param Node - JSON Node to add the array of information to
+//! \param title  =  string information for that attribute 
+//! \param movement = the amount to move inorder to check the status of the value
+//! \param value = pointer to the frame attribute H2SAT
+//! \param track = get the data for the inner outer middle of the the array data for the H2SAT
+//! \param heads = the total number of heads
+//! \param showStatusBits = when set to true the valid and supported bits will be shown
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void CFarmCommon::h2sat_Array_Data(JSONNODE* Node, const std::string& title, int movement, H2SAT* value, int track, uint64_t heads, bool showStatusBits)
+{
+	JSONNODE* headerror = json_new(JSON_ARRAY);
+	json_set_name(headerror, title.c_str());
+	for (uint32_t loopCount = 0; loopCount < heads; ++loopCount)
+	{
+		int16_t number = 0;
+		if (movement == WORDINT0)
+		{
+			switch (track)
+			{
+			case ZONE0:
+				number = static_cast<int16_t>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(value[loopCount].zone0)), 16));
+				break;
+			case ZONE1:
+				number = static_cast<int16_t>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(value[loopCount].zone1)), 16));
+				break;
+			case ZONE2:
+				number = static_cast<int16_t>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(value[loopCount].zone2)), 16));
+				break;
+			}
+		}
+		else
+		{
+			switch (track)
+			{
+			case ZONE0:
+				number = static_cast<int16_t>(check_for_signed_int(M_DoubleWordInt0(check_Status_Strip_Status(value[loopCount].zone0)), 32));
+				break;
+			case ZONE1:
+				number = static_cast<int16_t>(check_for_signed_int(M_DoubleWordInt0(check_Status_Strip_Status(value[loopCount].zone1)), 32));
+				break;
+			case ZONE2:
+				number = static_cast<int16_t>(check_for_signed_int(M_DoubleWordInt0(check_Status_Strip_Status(value[loopCount].zone2)), 32));
+				break;
+			}
+		}
+		switch (track)
+		{
+		case ZONE0:
+			set_json_int_Check_Status(headerror, title, number, value[loopCount].zone0, showStatusBits);
+			break;
+		case ZONE1:
+			set_json_int_Check_Status(headerror, title, number, value[loopCount].zone1, showStatusBits);
+			break;
+		case ZONE2:
+			set_json_int_Check_Status(headerror, title, number, value[loopCount].zone2, showStatusBits);
+			break;
+		}
+
+	}
+	json_push_back(Node, headerror);
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn h2sat_Float_Data()
+//
+//! \brief
+//!   Description:  get the static or dynamic build of the data for h2sat array as float information
+//
+//  Entry:
+//! \param Node - JSON Node to add the array of information to
+//! \param title  =  string information for that attribute 
+//! \param movement = the amount to move inorder to check the status of the value
+//! \param calculation = tell the function which word from the value it need to use for the information
+//! \param value = pointer to the frame attribute H2SAT
+//! \param track = get the data for the inner outer middle of the the array data for the H2SAT
+//! \param heads = the total number of heads
+//! \param showStatusBits = when set to true the valid and supported bits will be shown
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void CFarmCommon::h2sat_Float_Data(JSONNODE* Node, const std::string& title, int movement, double calculation, H2SAT* value, int track, uint64_t heads, bool showStatusBits, bool showStatic)
+{
+	if (showStatic)
+	{
+		h2sat_Float_Node_Data(Node, title, movement, calculation, value, track, heads, showStatusBits);
+	}
+	else
+	{
+		h2sat_Float_Array_Data(Node, title, movement, calculation, value, track, heads, showStatusBits);
+	}
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn h2sat_Float_Node_Data()
+//
+//! \brief
+//!   Description:  get the static or dynamic build of the data for H2SAT as float information
+//
+//  Entry:
+//! \param Node - JSON Node to add the array of information to
+//! \param title  =  string information for that attribute 
+//! \param movement = the amount to move inorder to check the status of the value
+//! \param calculation = tell the function which word from the value it need to use for the information
+//! \param value = pointer to the frame attribute H2SAT
+//! \param track = get the data for the inner outer middle of the the array data for the H2SAT
+//! \param heads = the total number of heads
+//! \param showStatusBits = when set to true the valid and supported bits will be shown
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void CFarmCommon::h2sat_Float_Node_Data(JSONNODE* Node, const std::string& title, int movement, double calculation, H2SAT* value, int track, uint64_t heads, bool showStatusBits)
+{
+	std::ostringstream temp;
+	for (uint32_t loopCount = 0; loopCount < heads; ++loopCount)
+	{
+		temp.str(""); temp.clear();
+		temp << title.c_str() << " by Head " << std::dec << loopCount;                    // write out the title plus the Head count
+		double number = 0;
+		if (movement == WORDINT0 || movement == WORD0)
+		{
+			switch (track)
+			{
+			case ZONE0:
+				number = static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(value[loopCount].zone0)), 16) * calculation);
+				break;
+			case ZONE1:
+				number = static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(value[loopCount].zone1)), 16) * calculation);
+				break;
+			case ZONE2:
+				number = static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(value[loopCount].zone2)), 16) * calculation);
+				break;
+			}
+		}
+		else
+		{
+			switch (track)
+			{
+			case ZONE0:
+				number = static_cast<double>(check_for_signed_int(M_DoubleWordInt0(check_Status_Strip_Status(value[loopCount].zone0)), 32) * calculation);
+				break;
+			case ZONE1:
+				number = static_cast<double>(check_for_signed_int(M_DoubleWordInt0(check_Status_Strip_Status(value[loopCount].zone1)), 32) * calculation);
+				break;
+			case ZONE2:
+				number = static_cast<double>(check_for_signed_int(M_DoubleWordInt0(check_Status_Strip_Status(value[loopCount].zone2)), 32) * calculation);
+				break;
+			}
+		}
+		switch (track)
+		{
+		case ZONE0:
+			set_json_float_With_Status(Node, temp.str().c_str(), number, value[loopCount].zone0, showStatusBits);
+			break;
+		case ZONE1:
+			set_json_float_With_Status(Node, temp.str().c_str(), number, value[loopCount].zone1, showStatusBits);
+			break;
+		case ZONE2:
+			set_json_float_With_Status(Node, temp.str().c_str(), number, value[loopCount].zone2, showStatusBits);
+			break;
+		}
+
+	}
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn h2sat_Float_Array_Data()
+//
+//! \brief
+//!   Description:  get the static or dynamic build of the data for H2SAT array as float information
+//
+//  Entry:
+//! \param Node - JSON Node to add the array of information to
+//! \param title  =  string information for that attribute 
+//! \param movement = the amount to move inorder to check the status of the value
+//! \param calculation = tell the function which word from the value it need to use for the information
+//! \param value = pointer to the frame attribute H2SAT
+//! \param track = get the data for the inner outer middle of the the array data for the H2SAT
+//! \param heads = the total number of heads
+//! \param showStatusBits = when set to true the valid and supported bits will be shown
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void CFarmCommon::h2sat_Float_Array_Data(JSONNODE* Node, const std::string& title, int movement, double calculation, H2SAT* value, int track, uint64_t heads, bool showStatusBits)
+{
+	JSONNODE* headerror = json_new(JSON_ARRAY);
+	json_set_name(headerror, title.c_str());
+	for (uint32_t loopCount = 0; loopCount < heads; ++loopCount)
+	{
+		double number = 0;
+		if (movement == WORDINT0 || movement == WORD0)
+		{
+			switch (track)
+			{
+			case ZONE0:
+				number = static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(value[loopCount].zone0)), 16) * calculation);
+				break;
+			case ZONE1:
+				number = static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(value[loopCount].zone1)), 16) * calculation);
+				break;
+			case ZONE2:
+				number = static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(value[loopCount].zone2)), 16) * calculation);
+				break;
+			}
+		}
+		else
+		{
+			switch (track)
+			{
+			case ZONE0:
+				number = static_cast<double>(check_for_signed_int(M_DoubleWordInt0(check_Status_Strip_Status(value[loopCount].zone0)), 32) * calculation);
+				break;
+			case ZONE1:
+				number = static_cast<double>(check_for_signed_int(M_DoubleWordInt0(check_Status_Strip_Status(value[loopCount].zone1)), 32) * calculation);
+				break;
+			case ZONE2:
+				number = static_cast<double>(check_for_signed_int(M_DoubleWordInt0(check_Status_Strip_Status(value[loopCount].zone2)), 32) * calculation);
+				break;
+			}
+		}
+		switch (track)
+		{
+		case ZONE0:
+			set_json_float_With_Status(headerror, title, number, value[loopCount].zone0, showStatusBits);
+			break;
+		case ZONE1:
+			set_json_float_With_Status(headerror, title, number, value[loopCount].zone1, showStatusBits);
+			break;
+		case ZONE2:
+			set_json_float_With_Status(headerror, title, number, value[loopCount].zone2, showStatusBits);
+			break;
+		}
+
+	}
+	json_push_back(Node, headerror);
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn h2sat_Float_Dword_Data()
+//
+//! \brief
+//!   Description:  get the static or dynamic build of the data for h2sat array as dword calculation information
+//
+//  Entry:
+//! \param Node - JSON Node to add the array of information to
+//! \param title  =  string information for that attribute 
+//! \param value = pointer to the frame attribute H2SAT
+//! \param track = get the data for the inner outer middle of the the array data for the H2SAT
+//! \param heads = the total number of heads
+//! \param showStatusBits = when set to true the valid and supported bits will be shown
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void CFarmCommon::h2sat_Float_Dword_Data(JSONNODE* Node, const std::string& title, H2SAT* value, int track, uint64_t heads, bool showStatusBits, bool showStatic)
+{
+	if (showStatic)
+	{
+		h2sat_Float_Dword_Node_Data(Node, title, value, track, heads, showStatusBits);
+	}
+	else
+	{
+		h2sat_Float_Dword_Array_Data(Node, title, value, track, heads, showStatusBits);
+	}
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn h2sat_Float_Dword_Node_Data()
+//
+//! \brief
+//!   Description:  get the static build of the data for h2sat array as dword calculation information
+//
+//  Entry:
+//! \param Node - JSON Node to add the array of information to
+//! \param title  =  string information for that attribute 
+//! \param value = pointer to the frame attribute H2SAT
+//! \param track = get the data for the inner outer middle of the the array data for the H2SAT
+//! \param heads = the total number of heads
+//! \param showStatusBits = when set to true the valid and supported bits will be shown
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void CFarmCommon::h2sat_Float_Dword_Node_Data(JSONNODE* Node, const std::string& title, H2SAT* value, int track, uint64_t heads, bool showStatusBits)
+{
+	std::ostringstream myStr;
+	for (uint32_t loopCount = 0; loopCount < heads; ++loopCount)
+	{
+		myStr.str(""); myStr.clear();
+		myStr << title.c_str() << " by Head " << std::dec << loopCount;                    // write out the title plus the Head count
+		uint64_t dsHead = 0;
+		int16_t whole = 0;							                      // get 5:4 whole part of the float
+		double decimal = 0.0;                   // get 3:0 for the Deciaml Part of the float
+		double number = 0.0;
+
+		switch (track)
+		{
+		case ZONE0:
+			dsHead = check_Status_Strip_Status(value[loopCount].zone0);
+			whole = M_WordInt2(dsHead);
+			decimal = static_cast<double>(M_DoubleWordInt0(dsHead));
+			break;
+		case ZONE1:
+			dsHead = check_Status_Strip_Status(value[loopCount].zone1);
+			whole = M_WordInt2(dsHead);
+			decimal = static_cast<double>(M_DoubleWordInt0(dsHead));
+			break;
+		case ZONE2:
+			dsHead = check_Status_Strip_Status(value[loopCount].zone2);
+			whole = M_WordInt2(dsHead);
+			decimal = static_cast<double>(M_DoubleWordInt0(dsHead));
+			break;
+		}
+		if (whole >= 0)
+		{
+			number = static_cast<double>(whole) + (decimal * .0001);
+		}
+		else
+		{
+			number = static_cast<double>(whole) - (decimal * .0001);
+		}
+		switch (track)
+		{
+		case ZONE0:
+			set_json_float_With_Status(Node, myStr.str().c_str(), number, value[loopCount].zone0, showStatusBits);
+			break;
+		case ZONE1:
+			set_json_float_With_Status(Node, myStr.str().c_str(), number, value[loopCount].zone1, showStatusBits);
+			break;
+		case ZONE2:
+			set_json_float_With_Status(Node, myStr.str().c_str(), number, value[loopCount].zone2, showStatusBits);
+			break;
+		}
+
+	}
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn h2sat_Float_Dword_Array_Data()
+//
+//! \brief
+//!   Description:  get the static build of the data for h2sat array as dword calculation information
+//
+//  Entry:
+//! \param Node - JSON Node to add the array of information to
+//! \param title  =  string information for that attribute 
+//! \param value = pointer to the frame attribute H2SAT
+//! \param track = get the data for the inner outer middle of the the array data for the H2SAT
+//! \param heads = the total number of heads
+//! \param showStatusBits = when set to true the valid and supported bits will be shown
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void CFarmCommon::h2sat_Float_Dword_Array_Data(JSONNODE* Node, const std::string& title, H2SAT* value, int track, uint64_t heads, bool showStatusBits)
+{
+	JSONNODE* valueNode = json_new(JSON_ARRAY);
+	json_set_name(valueNode, title.c_str());
+	for (uint32_t loopCount = 0; loopCount < heads; ++loopCount)
+	{
+		uint64_t dsHead = 0;
+		int16_t whole = 0;							                      // get 5:4 whole part of the float
+		double decimal = 0.0;                   // get 3:0 for the Deciaml Part of the float
+		double number = 0.0;
+
+		switch (track)
+		{
+		case ZONE0:
+			dsHead = check_Status_Strip_Status(value[loopCount].zone0);
+			whole = M_WordInt2(dsHead);
+			decimal = static_cast<double>(M_DoubleWordInt0(dsHead));
+			break;
+		case ZONE1:
+			dsHead = check_Status_Strip_Status(value[loopCount].zone1);
+			whole = M_WordInt2(dsHead);
+			decimal = static_cast<double>(M_DoubleWordInt0(dsHead));
+			break;
+		case ZONE2:
+			dsHead = check_Status_Strip_Status(value[loopCount].zone2);
+			whole = M_WordInt2(dsHead);
+			decimal = static_cast<double>(M_DoubleWordInt0(dsHead));
+			break;
+		}
+		if (whole >= 0)
+		{
+			number = static_cast<double>(whole) + (decimal * .0001);
+		}
+		else
+		{
+			number = static_cast<double>(whole) - (decimal * .0001);
+		}
+		switch (track)
+		{
+		case ZONE0:
+			set_json_float_With_Status(valueNode, title, number, value[loopCount].zone0, showStatusBits);
+			break;
+		case ZONE1:
+			set_json_float_With_Status(valueNode, title, number, value[loopCount].zone1, showStatusBits);
+			break;
+		case ZONE2:
+			set_json_float_With_Status(valueNode, title, number, value[loopCount].zone2, showStatusBits);
+			break;
+		}
+
+	}
+	json_push_back(Node, valueNode);
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn uint_Data()
+//
+//! \brief
+//!   Description:  get the static or dynamic build of the data for uint64_t data information
+//
+//  Entry:
+//! \param Node - JSON Node to add the array of information to
+//! \param title  =  string information for that attribute 
+//! \param value = pointer to the frame attribute uint64
+//! \param heads = the total number of heads
+//! \param showStatusBits = when set to true the valid and supported bits will be shown
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void CFarmCommon::uint_Data(JSONNODE* Node, const std::string& title, uint64_t* value, uint64_t heads, bool showStatusBits, bool showStatic)
+{
+	if (showStatic)
+	{
+		uint_Node_Data(Node, title, value, heads, showStatusBits);
+	}
+	else
+	{
+		uint_Array_Data(Node, title, value, heads, showStatusBits);
+	}
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn uint_Node_Data()
+//
+//! \brief
+//!   Description:  get the static build of the data for uint64_t data information
+//
+//  Entry:
+//! \param Node - JSON Node to add the array of information to
+//! \param title  =  string information for that attribute 
+//! \param value = pointer to the frame attribute uint64
+//! \param heads = the total number of heads
+//! \param showStatusBits = when set to true the valid and supported bits will be shown
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void CFarmCommon::uint_Node_Data(JSONNODE* Node, const std::string& title, uint64_t* value, uint64_t heads, bool showStatusBits)
+{
+	std::ostringstream myStr;
+	for (uint32_t loopCount = 0; loopCount < heads; ++loopCount)
+	{
+		myStr.str(""); myStr.clear();
+		myStr << title.c_str() << " by Head " << std::dec << loopCount;                    // write out the title plus the Head count
+		set_json_int_With_Status(Node, myStr.str().c_str(), value[loopCount], showStatusBits);
+	}
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn uint_Array_Data()
+//
+//! \brief
+//!   Description:  Set the json uint with status using the below information for head data
+//
+//  Entry:
+//! \param Node - JSON Node to add the array of information to
+//! \param title  =  string information for that attribute 
+//! \param value = pointer to the frame attribute
+//! \param heads = the total number of heads
+//! \param showStatusBits = when set to true the valid and supported bits will be shown
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void CFarmCommon::uint_Array_Data(JSONNODE* Node, const std::string& title, uint64_t* value, uint64_t heads, bool showStatusBits)
+{
+	JSONNODE* headInt = json_new(JSON_ARRAY);
+	json_set_name(headInt, title.c_str());
+	for (uint32_t loopCount = 0; loopCount < heads; ++loopCount)
+	{
+		set_json_int_With_Status(headInt, title, value[loopCount], showStatusBits);
+	}
+	json_push_back(Node, headInt);
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn int_Data()
+//
+//! \brief
+//!   Description:  get the static or dynamic build of the data for int64_t data information
+//
+//  Entry:
+//! \param Node - JSON Node to add the array of information to
+//! \param title  =  string information for that attribute 
+//! \param value = pointer to the frame attribute uint64
+//! \param heads = the total number of heads
+//! \param showStatusBits = when set to true the valid and supported bits will be shown
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void CFarmCommon::int_Data(JSONNODE* Node, const std::string& title, int64_t* value, uint64_t heads, bool showStatusBits, bool showStatic)
+{
+	if (showStatic)
+	{
+		int_Node_Data(Node, title, value, heads, showStatusBits);
+	}
+	else
+	{
+		int_Array_Data(Node, title, value, heads, showStatusBits);
+	}
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn int_Node_Data()
+//
+//! \brief
+//!   Description:  get the static build of the data for int64_t data information
+//
+//  Entry:
+//! \param Node - JSON Node to add the array of information to
+//! \param title  =  string information for that attribute 
+//! \param value = pointer to the frame attribute int64
+//! \param heads = the total number of heads
+//! \param showStatusBits = when set to true the valid and supported bits will be shown
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void  CFarmCommon::int_Node_Data(JSONNODE* Node, const std::string& title, int64_t* value, uint64_t heads, bool showStatusBits)
+{
+	std::ostringstream myStr;
+	for (uint32_t loopCount = 0; loopCount < heads; ++loopCount)
+	{
+		myStr.str(""); myStr.clear();
+		myStr << title.c_str() << " by Head " << std::dec << loopCount;                    // write out the title plus the Head count
+		set_json_int_With_Status(Node, myStr.str().c_str(), value[loopCount], showStatusBits);
+	}
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn int_Array_Data()
+//
+//! \brief
+//!   Description:  Set the json int with status using the below information for head data
+//
+//  Entry:
+//! \param Node - JSON Node to add the array of information to
+//! \param title  =  string information for that attribute 
+//! \param value = pointer to the frame attribute
+//! \param heads = the total number of heads
+//! \param showStatusBits = when set to true the valid and supported bits will be shown
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void CFarmCommon::int_Array_Data(JSONNODE* Node, const std::string& title, int64_t* value, uint64_t heads, bool showStatusBits)
+{
+	JSONNODE* headInt = json_new(JSON_ARRAY);
+	json_set_name(headInt, title.c_str());
+	for (uint32_t loopCount = 0; loopCount < heads; ++loopCount)
+	{
+		set_json_int_With_Status(headInt, title, value[loopCount], showStatusBits);
+	}
+	json_push_back(Node, headInt);
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn int_Dword_Data()
+//
+//! \brief
+//!   Description:  get the static or dynamic build of the data for int64_t Dword data information
+//
+//  Entry:
+//! \param Node - JSON Node to add the array of information to
+//! \param title  =  string information for that attribute 
+//! \param value = pointer to the frame attribute uint64
+//! \param heads = the total number of heads
+//! \param showStatusBits = when set to true the valid and supported bits will be shown
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void CFarmCommon::int_Dword_Data(JSONNODE* Node, const std::string& title, int64_t* value, uint64_t heads, bool showStatusBits, bool showStatic)
+{
+	if (showStatic)
+	{
+		int_Dword_Node_Data(Node, title, value, heads, showStatusBits);
+	}
+	else
+	{
+		int_Dword_Array_Data(Node, title, value, heads, showStatusBits);
+	}
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn int_Dword_Node_Data()
+//
+//! \brief
+//!   Description:  get the static build of the data for int64_t Dword data information
+//
+//  Entry:
+//! \param Node - JSON Node to add the array of information to
+//! \param title  =  string information for that attribute 
+//! \param value = pointer to the frame attribute uint64
+//! \param heads = the total number of heads
+//! \param showStatusBits = when set to true the valid and supported bits will be shown
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void CFarmCommon::int_Dword_Node_Data(JSONNODE* Node, const std::string& title, int64_t* value, uint64_t heads, bool showStatusBits)
+{
+	std::ostringstream myStr;
+	for (uint32_t loopCount = 0; loopCount < heads; ++loopCount)
+	{
+		myStr.str(""); myStr.clear();
+		myStr << title.c_str() << " by Head " << std::dec << loopCount;                    // write out the title plus the Head count
+		// valid number is a int32_t need to strip off all the upper bits and check if negitive
+		int32_t number = static_cast<int32_t>(check_for_signed_int(M_DoubleWord0(check_Status_Strip_Status(value[loopCount])), 32));
+		set_json_int_Check_Status(Node, myStr.str().c_str(), number, value[loopCount], showStatusBits);
+	}
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn int_Dword_Array_Data()
+//
+//! \brief
+//!   Description:  Set the json int with status using the below information for head data
+//
+//  Entry:
+//! \param Node - JSON Node to add the array of information to
+//! \param title  =  string information for that attribute 
+//! \param value = pointer to the frame attribute
+//! \param heads = the total number of heads
+//! \param showStatusBits = when set to true the valid and supported bits will be shown
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void CFarmCommon::int_Dword_Array_Data(JSONNODE* Node, const std::string& title, int64_t* value, uint64_t heads, bool showStatusBits)
+{
+	JSONNODE* headInt = json_new(JSON_ARRAY);
+	json_set_name(headInt, title.c_str());
+	for (uint32_t loopCount = 0; loopCount < heads; ++loopCount)
+	{
+		// valid number is a int32_t need to strip off all the upper bits and check if negitive
+		int32_t number = static_cast<int32_t>(check_for_signed_int(M_DoubleWord0(check_Status_Strip_Status(value[loopCount])), 32));
+		set_json_int_Check_Status(headInt, title.c_str(), number, value[loopCount], showStatusBits);
+	}
+	json_push_back(Node, headInt);
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn int_Cal_Byte_Data()
+//
+//! \brief
+//!   Description:  get the static or dynamic build of the data for int64_t Dword data information
+//
+//  Entry:
+//! \param Node - JSON Node to add the array of information to
+//! \param title  =  string information for that attribute 
+//! \param calculation = M_Byte0 fo the param times the calculation
+//! \param param = pointer to the frame attribute int64
+//! \param heads = the total number of heads
+//! \param showStatusBits = when set to true the valid and supported bits will be shown
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void CFarmCommon::int_Cal_Byte_Data(JSONNODE* Node, const std::string& title, int16_t calculation, int64_t* param, uint64_t heads, bool showStatusBits, bool showStatic)
+{
+	if (showStatic)
+	{
+		int_Cal_Byte_Node_Data(Node, title, calculation, param, heads, showStatusBits);
+	}
+	else
+	{
+		int_Cal_Byte_Array_Data(Node, title, calculation, param, heads, showStatusBits);
+	}
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn int_Cal_Byte_Node_Data()
+//
+//! \brief
+//!   Description:  get the static build of the data for int64_t Dword data information
+//
+//  Entry:
+//! \param Node - JSON Node to add the array of information to
+//! \param title  =  string information for that attribute 
+//! \param calculation = M_Byte0 fo the param times the calculation
+//! \param param = pointer to the frame attribute int64
+//! \param heads = the total number of heads
+//! \param showStatusBits = when set to true the valid and supported bits will be shown
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void CFarmCommon::int_Cal_Byte_Node_Data(JSONNODE* Node, const std::string& title, int16_t calculation, int64_t* param, uint64_t heads, bool showStatusBits)
+{
+	std::ostringstream myStr;
+	for (uint32_t loopCount = 0; loopCount < heads; ++loopCount)
+	{
+		myStr.str(""); myStr.clear();
+		myStr << title.c_str() << " by Head " << std::dec << loopCount;                    // write out the title plus the Head count
+		set_json_int_Check_Status(Node, myStr.str().c_str(), (static_cast<int64_t>(M_Byte0(param[loopCount])) * calculation), param[loopCount], showStatusBits);
+	}
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn int_Cal_Byte_Array_Data()
+//
+//! \brief
+//!   Description:  get the static build of the data for int64_t Dword data information
+//
+//  Entry:
+//! \param Node - JSON Node to add the array of information to
+//! \param title  =  string information for that attribute 
+//! \param calculation = M_Byte0 fo the param times the calculation
+//! \param param = pointer to the frame attribute int64
+//! \param heads = the total number of heads
+//! \param showStatusBits = when set to true the valid and supported bits will be shown
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void CFarmCommon::int_Cal_Byte_Array_Data(JSONNODE* Node, const std::string& title, int16_t calculation, int64_t* param, uint64_t heads, bool showStatusBits)
+{
+	JSONNODE* cal = json_new(JSON_ARRAY);
+	json_set_name(cal, title.c_str());
+	for (uint32_t loopCount = 0; loopCount < heads; ++loopCount)
+	{
+		set_json_int_Check_Status(cal, title,  static_cast<int64_t>(M_Byte0(param[loopCount])) * calculation, param[loopCount], showStatusBits);
+	}
+	json_push_back(Node, cal);
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn int_Percent_Dword_Data()
+//
+//! \brief
+//!   Description:  get the static build of the data for int64_t Dword data information
+//
+//  Entry:
+//! \param Node - JSON Node to add the array of information to
+//! \param title  =  string information for that attribute 
+//! \param param = pointer to the frame attribute int64
+//! \param heads = the total number of heads
+//! \param showStatusBits = when set to true the valid and supported bits will be shown
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void CFarmCommon::int_Percent_Dword_Data(JSONNODE* Node, const std::string& title, int64_t* param, uint64_t heads, bool showStatusBits, bool showStatic)
+{
+	if (showStatic)
+	{
+		int_Percent_Dword_Node_Data(Node, title, param, heads, showStatusBits);
+	}
+	else
+	{
+		int_Percent_Dword_Array_Data(Node, title, param, heads, showStatusBits);
+	}
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn int_Percent_Dword_Node_Data()
+//
+//! \brief
+//!   Description:  get the static build of the data for int64_t Dword data information
+//
+//  Entry:
+//! \param Node - JSON Node to add the array of information to
+//! \param title  =  string information for that attribute 
+//! \param param = pointer to the frame attribute int64
+//! \param heads = the total number of heads
+//! \param showStatusBits = when set to true the valid and supported bits will be shown
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void CFarmCommon::int_Percent_Dword_Node_Data(JSONNODE* Node, const std::string& title, int64_t* param, uint64_t heads, bool showStatusBits)
+{
+	std::ostringstream myStr;
+	int16_t whole = 0;
+	for (uint32_t loopCount = 0; loopCount < heads; ++loopCount)
+	{
+		myStr.str(""); myStr.clear();
+		myStr << title.c_str() << " for Head " << std::dec << loopCount;                    // write out the title plus the Head count
+		int64_t delta = M_IGETBITRANGE((opensea_parser::check_Status_Strip_Status(param[loopCount])), 48, 0);
+		whole = M_WordInt2(delta);							                      // get 5:4 whole part of the float
+		double decimal = static_cast<double>(M_DoubleWordInt0(delta));                   // get 3:0 for the Deciaml Part of the float
+		double number = 0.0;
+		if (whole >= 0 && ((param[loopCount] & BIT49) != BIT49))
+		{
+			number = static_cast<double>(whole) + (decimal * .0001);
+		}
+		else
+		{
+			number = static_cast<double>(whole) - (decimal * .0001);
+		}
+		std::ostringstream value;
+		if ((param[loopCount] & BIT63) == BIT63 && (param[loopCount] & BIT62) == BIT62)
+		{
+			value.str(""); value.clear();
+			value << std::setfill('0') << std::setprecision(4) << ROUNDF(number, 10000);
+		}
+		else
+		{
+			value << "NULL";
+		}
+		set_json_string_With_Status(Node, myStr.str().c_str(), value.str().c_str(), param[loopCount], showStatusBits);
+	}
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn int_Percent_Dword_Array_Data()
+//
+//! \brief
+//!   Description:  get the dynamic build of the data for int64_t Dword data information
+//
+//  Entry:
+//! \param Node - JSON Node to add the array of information to
+//! \param title  =  string information for that attribute
+//! \param param = pointer to the frame attribute int64
+//! \param heads = the total number of heads
+//! \param showStatusBits = when set to true the valid and supported bits will be shown
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void CFarmCommon::int_Percent_Dword_Array_Data(JSONNODE* Node, const std::string& title, int64_t* param, uint64_t heads, bool showStatusBits)
+{
+	JSONNODE* cal = json_new(JSON_ARRAY);
+	json_set_name(cal, title.c_str());
+	int16_t whole = 0;
+	for (uint32_t loopCount = 0; loopCount < heads; ++loopCount)
+	{
+		int64_t delta = M_IGETBITRANGE((check_Status_Strip_Status(param[loopCount])), 48, 0);
+		whole = M_WordInt2(delta);							                      // get 5:4 whole part of the float
+		double decimal = static_cast<double>(M_DoubleWordInt0(delta));                   // get 3:0 for the Deciaml Part of the float
+		double number = 0.0;
+		if (whole >= 0 && (param[loopCount] & BIT49) != BIT49)
+		{
+			number = static_cast<double>(whole) + (decimal * .0001);
+		}
+		else
+		{
+			number = static_cast<double>(whole) - (decimal * .0001);
+		}
+		std::ostringstream value;
+		if ((param[loopCount] & BIT63) == BIT63 && (param[loopCount] & BIT62) == BIT62)
+		{
+			set_json_float_With_Status(cal, title, ROUNDF(number, 10000), param[loopCount], showStatusBits);
+		}
+		else
+		{
+			value << "NULL";
+			set_json_string_With_Status(cal, title, value.str().c_str(), param[loopCount], showStatusBits);
+		}
+
+	}
+	json_push_back(Node, cal);
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn float_Cal_Word_Data()
+//
+//! \brief
+//!   Description:  get the static or dynamic build of the data for float calculated data information
+//
+//  Entry:
+//! \param Node - JSON Node to add the array of information to
+//! \param title  =  string information for that attribute 
+//! \param calculation = M_Byte0 fo the param times the calculation
+//! \param param = pointer to the frame attribute int64
+//! \param heads = the total number of heads
+//! \param showStatusBits = when set to true the valid and supported bits will be shown
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void CFarmCommon::float_Cal_Word_Data(JSONNODE* Node, const std::string& title, double calculation, int64_t* param, uint64_t heads, bool showStatusBits, bool showStatic)
+{
+	if (showStatic)
+	{
+		float_Cal_Word_Node_Data(Node, title, calculation, param, heads, showStatusBits);
+	}
+	else
+	{
+		float_Cal_Word_Array_Data(Node, title, calculation, param, heads, showStatusBits);
+	}
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn float_Cal_Word_Node_Data()
+//
+//! \brief
+//!   Description:  get the static build of the data for float calculated data information
+//
+//  Entry:
+//! \param Node - JSON Node to add the array of information to
+//! \param title  =  string information for that attribute 
+//! \param calculation = M_Byte0 fo the param times the calculation
+//! \param param = pointer to the frame attribute int64
+//! \param heads = the total number of heads
+//! \param showStatusBits = when set to true the valid and supported bits will be shown
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void CFarmCommon::float_Cal_Word_Node_Data(JSONNODE* Node, const std::string& title, double calculation, int64_t* param, uint64_t heads, bool showStatusBits)
+{
+	std::ostringstream myStr;
+	for (uint32_t loopCount = 0; loopCount < heads; ++loopCount)
+	{
+		myStr.str(""); myStr.clear();
+		myStr << title.c_str() << " by Head " << std::dec << loopCount;                    // write out the title plus the Head count
+		set_json_float_With_Status(Node, myStr.str().c_str(), (static_cast<double>(M_WordInt0(param[loopCount])) * calculation), param[loopCount], showStatusBits);
+	}
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn float_Cal_Word_Array_Data()
+//
+//! \brief
+//!   Description:  get the dynamic build of the data for float calculated data information
+//
+//  Entry:
+//! \param Node - JSON Node to add the array of information to
+//! \param title  =  string information for that attribute 
+//! \param calculation = M_Byte0 fo the param times the calculation
+//! \param param = pointer to the frame attribute int64
+//! \param heads = the total number of heads
+//! \param showStatusBits = when set to true the valid and supported bits will be shown
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void CFarmCommon::float_Cal_Word_Array_Data(JSONNODE* Node, const std::string& title, double calculation, int64_t* param, uint64_t heads, bool showStatusBits)
+{
+	JSONNODE* cal = json_new(JSON_ARRAY);
+	json_set_name(cal, title.c_str());
+	for (uint32_t loopCount = 0; loopCount < heads; ++loopCount)
+	{
+		set_json_float_With_Status(cal, title, (static_cast<double>(M_WordInt0(param[loopCount])) * calculation), param[loopCount], showStatusBits);
+	}
+	json_push_back(Node, cal);
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn float_Cal_DoubleWord_Data()
+//
+//! \brief
+//!   Description:  get the static or dynamic build of the data for float calculated data information
+//
+//  Entry:
+//! \param Node - JSON Node to add the array of information to
+//! \param title  =  string information for that attribute 
+//! \param calculation = M_Byte0 fo the param times the calculation
+//! \param param = pointer to the frame attribute int64
+//! \param heads = the total number of heads
+//! \param showStatusBits = when set to true the valid and supported bits will be shown
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void CFarmCommon::float_Cal_DoubleWord_Data(JSONNODE* Node, const std::string& title, double calculation, int64_t* param, uint64_t heads, bool showStatusBits, bool showStatic)
+{
+	if (showStatic)
+	{
+		float_Cal_DoubleWord_Node_Data(Node, title, calculation, param, heads, showStatusBits);
+	}
+	else
+	{
+		float_Cal_DoubleWord_Array_Data(Node, title, calculation, param, heads, showStatusBits);
+	}
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn float_Cal_DoubleWord_Node_Data()
+//
+//! \brief
+//!   Description:  get the static or dynamic build of the data for float calculated data information
+//
+//  Entry:
+//! \param Node - JSON Node to add the array of information to
+//! \param title  =  string information for that attribute 
+//! \param calculation = M_Byte0 fo the param times the calculation
+//! \param param = pointer to the frame attribute int64
+//! \param heads = the total number of heads
+//! \param showStatusBits = when set to true the valid and supported bits will be shown
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void CFarmCommon::float_Cal_DoubleWord_Node_Data(JSONNODE* Node, const std::string& title, double calculation, int64_t* param, uint64_t heads, bool showStatusBits)
+{
+	std::ostringstream myStr;
+	for (uint32_t loopCount = 0; loopCount < heads; ++loopCount)
+	{
+		myStr.str(""); myStr.clear();
+		myStr << title.c_str() << " by Head " << std::dec << loopCount;                    // write out the title plus the Head count
+		set_json_float_With_Status(Node, myStr.str().c_str(), (static_cast<double>(M_DoubleWord0(param[loopCount])) / calculation), param[loopCount], showStatusBits);
+	}
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn float_Cal_DoubleWord_Array_Data()
+//
+//! \brief
+//!   Description:  get the dynamic build of the data for float calculated data information
+//
+//  Entry:
+//! \param Node - JSON Node to add the array of information to
+//! \param title  =  string information for that attribute 
+//! \param calculation = M_Byte0 fo the param times the calculation
+//! \param param = pointer to the frame attribute int64
+//! \param heads = the total number of heads
+//! \param showStatusBits = when set to true the valid and supported bits will be shown
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void CFarmCommon::float_Cal_DoubleWord_Array_Data(JSONNODE* Node, const std::string& title, double calculation, int64_t* param, uint64_t heads, bool showStatusBits)
+{
+	JSONNODE* cal = json_new(JSON_ARRAY);
+	json_set_name(cal, title.c_str());
+	for (uint32_t loopCount = 0; loopCount < heads; ++loopCount)
+	{
+		set_json_float_With_Status(cal, title, (static_cast<double>(M_DoubleWord0(param[loopCount])) / calculation), param[loopCount], showStatusBits);
+	}
+	json_push_back(Node, cal);
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn sas_Head_Float_Data()
+//
+//! \brief
+//!   Description:  get the static or dynamic build of the data for int64_t array as float information
+//
+//  Entry:
+//! \param Node - JSON Node to add the array of information to
+//! \param title  =  string information for that attribute 
+//! \param movement = the amount to move inorder to check the status of the value
+//! \param calculation = tell the function which word from the value it need to use for the information
+//! \param value = pointer to the frame attribute int64_t
+//! \param heads = the total number of heads
+//! \param showStatusBits = when set to true the valid and supported bits will be shown
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void CFarmCommon::sas_Head_Float_Data(JSONNODE* Node, const std::string& title, int movement, double calculation, uint64_t* value, uint64_t heads, bool showStatusBits, bool showStatic)
+{
+	if (showStatic)
+	{
+		sas_Head_Float_Node_Data(Node, title, movement, calculation, value, heads, showStatusBits);
+	}
+	else
+	{
+		Sas_Head_Float_Array_Data(Node, title, movement, calculation, value, heads, showStatusBits);
+	}
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn sas_Head_Float_Node_Data()
+//
+//! \brief
+//!   Description:  get the static or dynamic build of the data for int64_t as float information
+//
+//  Entry:
+//! \param Node - JSON Node to add the array of information to
+//! \param title  =  string information for that attribute 
+//! \param movement = the amount to move inorder to check the status of the value
+//! \param calculation = tell the function which word from the value it need to use for the information
+//! \param value = pointer to the frame attribute int64_t
+//! \param heads = the total number of heads
+//! \param showStatusBits = when set to true the valid and supported bits will be shown
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void CFarmCommon::sas_Head_Float_Node_Data(JSONNODE* Node, const std::string& title, int movement, double calculation, uint64_t* value, uint64_t heads, bool showStatusBits)
+{
+	std::ostringstream temp;
+	for (uint32_t loopCount = 0; loopCount < heads; ++loopCount)
+	{
+		temp.str(""); temp.clear();
+		temp << title.c_str() << " by Head " << std::dec << loopCount;                    // write out the title plus the Head count
+		double number = 0;
+		if (movement == WORDINT0 || movement == WORD0)
+		{
+			number = static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(value[loopCount])), 16) * calculation);
+		}
+		else
+		{
+			number = static_cast<double>(check_for_signed_int(M_DoubleWordInt0(check_Status_Strip_Status(value[loopCount])), 32) * calculation);
+		}
+		set_json_float_With_Status(Node, temp.str().c_str(), number, value[loopCount], showStatusBits);
+	}
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn Sas_Head_Float_Array_Data()
+//
+//! \brief
+//!   Description:  get the static or dynamic build of the data for int64_t array as float information
+//
+//  Entry:
+//! \param Node - JSON Node to add the array of information to
+//! \param title  =  string information for that attribute 
+//! \param movement = the amount to move inorder to check the status of the value
+//! \param calculation = tell the function which word from the value it need to use for the information
+//! \param value = pointer to the frame attribute int64_t
+//! \param heads = the total number of heads
+//! \param showStatusBits = when set to true the valid and supported bits will be shown
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void CFarmCommon::Sas_Head_Float_Array_Data(JSONNODE* Node, const std::string& title, int movement, double calculation, uint64_t* value, uint64_t heads, bool showStatusBits)
+{
+	JSONNODE* headerror = json_new(JSON_ARRAY);
+	json_set_name(headerror, title.c_str());
+	for (uint32_t loopCount = 0; loopCount < heads; ++loopCount)
+	{
+		double number = 0;
+		if (movement == WORDINT0 || movement == WORD0)
+		{
+			number = static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(value[loopCount])), 16) * calculation);
+		}
+		else
+		{
+			number = static_cast<double>(check_for_signed_int(M_DoubleWordInt0(check_Status_Strip_Status(value[loopCount])), 32) * calculation);
+		}
+
+		set_json_float_With_Status(headerror, title, number, value[loopCount], showStatusBits);
+
+
+	}
+	json_push_back(Node, headerror);
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn sas_Head_int_Data()
+//
+//! \brief
+//!   Description:  get the static or dynamic build of the data for int64_t array as int information
+//
+//  Entry:
+//! \param Node - JSON Node to add the array of information to
+//! \param title  =  string information for that attribute 
+//! \param movement = the amount to move inorder to check the status of the value
+//! \param calculation = tell the function which word from the value it need to use for the information
+//! \param value = pointer to the frame attribute uint64_t
+//! \param heads = the total number of heads
+//! \param showStatusBits = when set to true the valid and supported bits will be shown
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void CFarmCommon::sas_Head_int_Data(JSONNODE* Node, const std::string& title, int movement, uint64_t calculation, uint64_t* value, uint64_t heads, bool showStatusBits, bool showStatic)
+{
+	if (showStatic)
+	{
+		sas_Head_int_Node_Data(Node, title, movement, calculation, value, heads, showStatusBits);
+	}
+	else
+	{
+		Sas_Head_int_Array_Data(Node, title, movement, calculation, value, heads, showStatusBits);
+	}
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn sas_Head_int_Node_Data()
+//
+//! \brief
+//!   Description:  get the static or dynamic build of the data for int64_t as int information
+//
+//  Entry:
+//! \param Node - JSON Node to add the array of information to
+//! \param title  =  string information for that attribute 
+//! \param movement = the amount to move inorder to check the status of the value
+//! \param calculation = tell the function which word from the value it need to use for the information
+//! \param value = pointer to the frame attribute uint64_t
+//! \param heads = the total number of heads
+//! \param showStatusBits = when set to true the valid and supported bits will be shown
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void CFarmCommon::sas_Head_int_Node_Data(JSONNODE* Node, const std::string& title, int movement, uint64_t calculation, uint64_t* value, uint64_t heads, bool showStatusBits)
+{
+	std::ostringstream temp;
+	for (uint32_t loopCount = 0; loopCount < heads; ++loopCount)
+	{
+		temp.str(""); temp.clear();
+		temp << title.c_str() << " by Head " << std::dec << loopCount;                    // write out the title plus the Head count
+		int32_t number = 0;
+		if (movement == WORDINT0 || movement == WORD0)
+		{
+			number = static_cast<int32_t>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(value[loopCount])), 16) * calculation);
+		}
+		else
+		{
+			number = static_cast<int32_t>(check_for_signed_int(M_DoubleWordInt0(check_Status_Strip_Status(value[loopCount])), 32) * calculation);
+		}
+		set_json_int_Check_Status(Node, temp.str().c_str(), static_cast<long long>(number), value[loopCount], showStatusBits);
+	}
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn Sas_Head_int_Array_Data()
+//
+//! \brief
+//!   Description:  get the static or dynamic build of the data for int64_t array as int information
+//
+//  Entry:
+//! \param Node - JSON Node to add the array of information to
+//! \param title  =  string information for that attribute 
+//! \param movement = the amount to move inorder to check the status of the value
+//! \param calculation = tell the function which word from the value it need to use for the information
+//! \param value = pointer to the frame attribute uint64_t
+//! \param heads = the total number of heads
+//! \param showStatusBits = when set to true the valid and supported bits will be shown
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void CFarmCommon::Sas_Head_int_Array_Data(JSONNODE* Node, const std::string& title, int movement, uint64_t calculation, uint64_t* value, uint64_t heads, bool showStatusBits)
+{
+	JSONNODE* headerror = json_new(JSON_ARRAY);
+	json_set_name(headerror, title.c_str());
+	for (uint32_t loopCount = 0; loopCount < heads; ++loopCount)
+	{
+		int32_t number = 0;
+		if (movement == WORDINT0 || movement == WORD0)
+		{
+			number = static_cast<int32_t>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(value[loopCount])), 16) * calculation);
+		}
+		else
+		{
+			number = static_cast<int32_t>(check_for_signed_int(M_DoubleWordInt0(check_Status_Strip_Status(value[loopCount])), 32) * calculation);
+		}
+
+		set_json_int_Check_Status(headerror, title, static_cast<long long>(number), value[loopCount], showStatusBits);
+
+
+	}
+	json_push_back(Node, headerror);
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn sas_Head_Double_Float_Data()
+//
+//! \brief
+//!   Description:  get the static or dynamic build of the data for uint64_t array as float information
+//
+//  Entry:
+//! \param Node - JSON Node to add the array of information to
+//! \param title  =  string information for that attribute 
+//! \param value = pointer to the frame attribute uint64_t
+//! \param track = get the data for the inner outer middle of the the array data for the uint64_t
+//! \param heads = the total number of heads
+//! \param showStatusBits = when set to true the valid and supported bits will be shown
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void CFarmCommon::sas_Head_Double_Float_Data(JSONNODE* Node, const std::string& title, uint64_t* value, uint64_t heads, bool showStatusBits, bool showStatic)
+{
+	if (showStatic)
+	{
+		sas_Head_Double_Float_Node_Data(Node, title, value, heads, showStatusBits);
+	}
+	else
+	{
+		sas_Head_Double_Float_Array_Data(Node, title, value, heads, showStatusBits);
+	}
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn sas_Head_Double_Float_Node_Data()
+//
+//! \brief
+//!   Description:  get the static build of the data for uint64_t array as float information
+//
+//  Entry:
+//! \param Node - JSON Node to add the array of information to
+//! \param title  =  string information for that attribute 
+//! \param value = pointer to the frame attribute uint64_t
+//! \param heads = the total number of heads
+//! \param showStatusBits = when set to true the valid and supported bits will be shown
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void CFarmCommon::sas_Head_Double_Float_Node_Data(JSONNODE* Node, const std::string& title, uint64_t* value, uint64_t heads, bool showStatusBits)
+{
+	std::ostringstream temp;
+	for (uint32_t loopCount = 0; loopCount < heads; ++loopCount)
+	{
+		temp.str(""); temp.clear();
+		temp << title.c_str() << " by Head " << std::dec << loopCount;                    // write out the title plus the Head count
+		uint64_t dsHead = 0;
+		int16_t whole = 0;						// get 5:4 whole part of the float
+		double decimal = 0.0;                   // get 3:0 for the Deciaml Part of the float
+		double number = 0.0;
+
+		dsHead = check_Status_Strip_Status(value[loopCount]);
+		whole = M_WordInt2(dsHead);
+		decimal = static_cast<double>(M_DoubleWordInt0(dsHead));
+
+		if (whole >= 0)
+		{
+			number = static_cast<double>(whole) + (decimal * .0001);
+		}
+		else
+		{
+			number = static_cast<double>(whole) - (decimal * .0001);
+		}
+		set_json_float_With_Status(Node, temp.str().c_str(), number, value[loopCount], showStatusBits);
+	}
+
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn sflyHeight_Float_Array_Data()
+//
+//! \brief
+//!   Description:  get the dynamic build of the data for uint64_t array as float information
+//
+//  Entry:
+//! \param Node - JSON Node to add the array of information to
+//! \param title  =  string information for that attribute 
+//! \param value = pointer to the frame attribute uint64_t
+//! \param heads = the total number of heads
+//! \param showStatusBits = when set to true the valid and supported bits will be shown
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void CFarmCommon::sas_Head_Double_Float_Array_Data(JSONNODE* Node, const std::string& title, uint64_t* value, uint64_t heads, bool showStatusBits)
+{
+	JSONNODE* valueNode = json_new(JSON_ARRAY);
+	json_set_name(valueNode, title.c_str());
+	for (uint32_t loopCount = 0; loopCount < heads; ++loopCount)
+	{
+		uint64_t dsHead = 0;
+		int16_t whole = 0;						// get 5:4 whole part of the float
+		double decimal = 0.0;                   // get 3:0 for the Deciaml Part of the float
+		double number = 0.0;
+		dsHead = check_Status_Strip_Status(value[loopCount]);
+		whole = M_WordInt2(dsHead);
+		decimal = static_cast<double>(M_DoubleWordInt0(dsHead));
+
+		if (whole >= 0)
+		{
+			number = static_cast<double>(whole) + (decimal * .0001);
+		}
+		else
+		{
+			number = static_cast<double>(whole) - (decimal * .0001);
+		}
+		set_json_float_With_Status(valueNode, title, number, value[loopCount], showStatusBits);
+	}
+	json_push_back(Node, valueNode);
+}
+
