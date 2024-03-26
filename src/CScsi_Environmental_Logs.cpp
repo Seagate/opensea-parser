@@ -2,7 +2,7 @@
 // CScsi_Environmental_Logs.cpp  Implementation of CScsi Environmental Log class
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2023 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -31,12 +31,13 @@ using namespace opensea_parser;
 //---------------------------------------------------------------------------
 CScsiEnvironmentLog::CScsiEnvironmentLog()
 	: CScsiTemperatureLog()
+	, m_Page(NULL)
 	, m_EvnName("Environmnetal Log")
 	, m_EnvStatus(IN_PROGRESS)
 	, m_PageLength(0)
 	, m_SubPage(0)
 {
-	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+	if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
 		printf("%s \n", m_EvnName.c_str());
 	}
@@ -58,21 +59,21 @@ CScsiEnvironmentLog::CScsiEnvironmentLog()
 //---------------------------------------------------------------------------
 CScsiEnvironmentLog::CScsiEnvironmentLog(uint8_t *bufferData, size_t bufferSize, uint8_t subPage, JSONNODE *masterData)
 	:CScsiTemperatureLog(&bufferData[4], bufferSize)
+	, m_Page(NULL)
 	, m_EvnName("Environmnetal Log")
 	, m_EnvStatus(IN_PROGRESS)
 	, m_PageLength(0)
 	, m_SubPage(subPage)
 {
-	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+	if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
 		printf("%s \n", m_EvnName.c_str());
 	}
 	if (bufferData != NULL)
 	{
-		pData = bufferData;
+		//pData = bufferData;
 		m_Page = reinterpret_cast<sLogPageStruct *>(bufferData);				// set a buffer to the point to the log page info
 		m_PageLength = m_Page->pageLength;
-		//byte_Swap_16(&m_PageLength);						// get the length of the page and byte swap it
 		m_EnvStatus = figureout_What_Log_To_Parsed(masterData);					// init the data for getting the log  
 	}
 	else

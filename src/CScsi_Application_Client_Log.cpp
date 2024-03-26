@@ -2,7 +2,7 @@
 // CScsi_Application_Client_Log.cpp  Definition of Application Client Log where clients store information
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2023 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -39,7 +39,7 @@ CScsiApplicationLog::CScsiApplicationLog()
 	, m_bufferLength()
 	, m_App(0)
 {
-	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+	if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
 		printf("%s \n", m_ApplicationName.c_str());
 	}
@@ -67,7 +67,7 @@ CScsiApplicationLog::CScsiApplicationLog(uint8_t * buffer, size_t bufferSize, ui
 	, m_bufferLength(bufferSize)
 	, m_App(0)
 {
-	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+	if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
 		printf("%s \n", m_ApplicationName.c_str());
 	}
@@ -139,7 +139,7 @@ void CScsiApplicationLog::process_Client_Data(JSONNODE *appData)
     json_push_back(appInfo, json_new_a("Application Client Length ", temp.str().c_str()));
     
     // format to show the buffer data.
-    if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+    if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
         uint32_t lineNumber = 0;
         uint32_t offset = 0;
