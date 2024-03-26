@@ -3,7 +3,7 @@
 //
 // Do NOT modify or remove this copyright and license
 //
-//Copyright (c) 2014 - 2023 Seagate Technology LLC and/or its Affiliates
+//Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -49,7 +49,7 @@ typedef struct _sDriveInfo
     uint64_t        resetCount;                                 //!< Hardware Reset Count
     uint64_t        spinUpTime;                                 //!< SMART Spin-Up time in milliseconds
     uint64_t        reserved;                                   //!< Reserved
-    uint64_t        timeAvailable;                              //!< Time Available to Save User Data to Media Over Last Power Cycle (in 100us)
+    uint64_t        reserved1;                                  //!< reserved 1
     uint64_t        timeStamp1;                                 //!< Timestamp of most recent SMART Summary Frame in Power-On Hours Milliseconds
     uint64_t        timeStamp2;                                 //!< Timestamp of last SMART Summary Frame in Power-On Hours Milliseconds
     uint64_t        timeToReady;                                //!< time to ready of the last power cycle
@@ -69,7 +69,7 @@ typedef struct _sDriveInfo
         deviceInterface(0), deviceCapacity(0), psecSize(0), lsecSize(0), deviceBufferSize(0), heads(0), factor(0),
         rotationRate(0), firmware(0), firmwareRev(0), security(0), featuresSupported(0), featuresEnabled(0),
         poh(0), spoh(0), headFlightHoursAct0(0), headLoadEventsAct0(0), powerCycleCount(0), resetCount(0),
-        spinUpTime(0), reserved(0), timeAvailable(0), timeStamp1(0), timeStamp2(0), timeToReady(0), timeHeld(0),
+        spinUpTime(0), reserved(0), reserved1(0), timeStamp1(0), timeStamp2(0), timeToReady(0), timeHeld(0),
 #if defined __cplusplus && __cplusplus >= 201103L
         modelNumber{ 0 },
 #endif
