@@ -1812,7 +1812,7 @@ void CFarmCommon::int_Cal_Byte_Node_Data(JSONNODE* Node, const std::string& titl
 	{
 		myStr.str(""); myStr.clear();
 		myStr << title.c_str() << " by Head " << std::dec << loopCount;                    // write out the title plus the Head count
-		set_json_int_Check_Status(Node, myStr.str().c_str(), (static_cast<int64_t>(M_Byte0(param[loopCount])) * calculation), param[loopCount], showStatusBits);
+		set_json_int_Check_Status(Node, myStr.str().c_str(), (static_cast<int64_t>(M_ByteInt0(param[loopCount])) * calculation), param[loopCount], showStatusBits);
 	}
 }
 //-----------------------------------------------------------------------------
@@ -1840,7 +1840,7 @@ void CFarmCommon::int_Cal_Byte_Array_Data(JSONNODE* Node, const std::string& tit
 	json_set_name(cal, title.c_str());
 	for (uint32_t loopCount = 0; loopCount < heads; ++loopCount)
 	{
-		set_json_int_Check_Status(cal, title,  static_cast<int64_t>(M_Byte0(param[loopCount])) * calculation, param[loopCount], showStatusBits);
+		set_json_int_Check_Status(cal, title,  static_cast<int64_t>(M_ByteInt0(param[loopCount])) * calculation, param[loopCount], showStatusBits);
 	}
 	json_push_back(Node, cal);
 }
