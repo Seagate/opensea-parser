@@ -13,6 +13,7 @@
 #include "Opensea_Parser_Helper.h"
 
 eVerbosity_open     g_verbosity = eVerbosity_open::VERBOSITY_DEFAULT;
+eDataFormat         g_dataformat = JSON_DATA;
 bool                g_parseUnknown = true;
 bool                g_parseNULL = false;
 time_t              g_currentTime;

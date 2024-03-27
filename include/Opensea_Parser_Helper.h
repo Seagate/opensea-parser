@@ -46,6 +46,7 @@ enum class eVerbosity_open
 };
 
 extern eVerbosity_open g_verbosity;
+extern eDataFormat g_dataformat;
 extern bool	g_parseUnknown;
 extern bool g_parseNULL;
 extern time_t g_currentTime;
