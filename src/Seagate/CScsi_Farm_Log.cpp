@@ -1879,8 +1879,8 @@ eReturnValues CSCSI_Farm_Log::print_Header(JSONNODE *masterData)
     set_json_64_bit_With_Status(pageInfo, "Minor Revision", vFarmFrame.at(page).farmHeader.farmHeader.minorRev, false, m_showStatusBits);
     set_json_64_bit_With_Status(pageInfo, "Pages Supported", vFarmFrame.at(page).farmHeader.farmHeader.pagesSupported, false, m_showStatusBits);
     set_json_64_bit_With_Status(pageInfo, "Log Size", vFarmFrame.at(page).farmHeader.farmHeader.logSize, false, m_showStatusBits);
-    if (m_MajorRev < MAJORVERSION4)
-    {
+        if (m_MajorRev < MAJORVERSION4 && m_showStatic == false)
+        {
         set_json_64_bit_With_Status(pageInfo, "Page Size", vFarmFrame.at(page).farmHeader.farmHeader.pageSize, false, m_showStatusBits);
     }
     set_json_64_bit_With_Status(pageInfo, "Heads Supported", vFarmFrame.at(page).farmHeader.farmHeader.headsSupported, false, m_showStatusBits);
@@ -2165,13 +2165,13 @@ eReturnValues CSCSI_Farm_Log::print_General_Drive_Information_Continued(JSONNODE
 
     set_json_64_bit_With_Status(pageInfo, "Max Number of Available Sectors for Reassignment", vFarmFrame.at(page).gDPage06.maxNumAvaliableSectors, false, m_showStatusBits);          //!< Max Number of Available Sectors for Reassignment � Value in disc sectors(started in 3.3 )
 
-    double tempValue = (static_cast<float>(M_Word0(vFarmFrame.at(page).gDPage06.timeToReady)) * .001);
+    double tempValue = (static_cast<double>(M_Word0(vFarmFrame.at(page).gDPage06.timeToReady)) * .001F);
     set_json_float_With_Status(pageInfo, "Time to ready of the last power cycle (sec)", tempValue, vFarmFrame.at(page).gDPage06.timeToReady, m_showStatusBits);			//!< time to ready of the last power cycle
 
-    tempValue =(static_cast<float>(M_Word0(vFarmFrame.at(page).gDPage06.holdTime)) * .001);
+    tempValue =(static_cast<double>(M_Word0(vFarmFrame.at(page).gDPage06.holdTime)) * .001F);
     set_json_float_With_Status(pageInfo, "Time drive is held in staggered spin (sec)", tempValue, vFarmFrame.at(page).gDPage06.holdTime, m_showStatusBits);                //!< time drive is held in staggered spin during the last power on sequence
 
-    tempValue = (static_cast<float>(M_Word0(vFarmFrame.at(page).gDPage06.servoSpinUpTime)) * .001);
+    tempValue = (static_cast<double>(M_Word0(vFarmFrame.at(page).gDPage06.servoSpinUpTime)) * .001F);
     set_json_float_With_Status(pageInfo, "Last Servo Spin up Time (sec)", tempValue, vFarmFrame.at(page).gDPage06.servoSpinUpTime, m_showStatusBits);			//!< time to ready of the last power cycle
 
     set_json_bool_With_Status(pageInfo, "HAMR Write Protect", vFarmFrame.at(page).gDPage06.writeProtect, m_showStatusBits);
@@ -2262,7 +2262,7 @@ eReturnValues CSCSI_Farm_Log::print_WorkLoad(JSONNODE *masterData, uint32_t page
     set_json_64_bit_With_Status(pageInfo, "Logical Sectors Written", vFarmFrame.at(page).workLoadPage.workLoad.logicalSecWritten, false, m_showStatusBits);      //!< Logical Sectors Written                    
     set_json_64_bit_With_Status(pageInfo, "Logical Sectors Read", vFarmFrame.at(page).workLoadPage.workLoad.logicalSecRead, false, m_showStatusBits);      //!< Logical Sectors Read
     // found a log where the length of the workload log does not match the spec. Need to check for the 0x50 length
-    if (vFarmFrame.at(page).workLoadPage.PageHeader.paramLength > 0x50)
+    if (vFarmFrame.at(page).workLoadPage.PageHeader.paramLength > 0x50 || m_showStatic == true)
     {
         set_json_64_bit_With_Status(pageInfo, "Read commands from 0-3.125% of LBA space", vFarmFrame.at(page).workLoadPage.workLoad.totalReadCmdsFromFrames1, false, m_showStatusBits);		//!< Number of Read commands from 0-3.125% of LBA space for last 3 SMART Summary Frames
         set_json_64_bit_With_Status(pageInfo, "Read commands from 3.125-25% of LBA space", vFarmFrame.at(page).workLoadPage.workLoad.totalReadCmdsFromFrames2, false, m_showStatusBits);		//!< Number of Read commands from 3.125-25% of LBA space for last 3 SMART Summary Frames
@@ -2275,7 +2275,7 @@ eReturnValues CSCSI_Farm_Log::print_WorkLoad(JSONNODE *masterData, uint32_t page
     }
 
     // 4.21
-    if (m_MajorRev >= 4 && m_MinorRev >= 19)
+    if (m_MajorRev >= 4 && m_MinorRev >= 19 || m_showStatic == true)
     {
         set_json_64_bit_With_Status(pageInfo, "Read Commands of transfer length <4kb", vFarmFrame.at(page).workLoadPage.workLoad.numReadTransferSmall, false, m_showStatusBits);
         set_json_64_bit_With_Status(pageInfo, "Read Commands of transfer length (4kb - 16kb)", vFarmFrame.at(page).workLoadPage.workLoad.numReadTransferMid1, false, m_showStatusBits);
@@ -2416,38 +2416,38 @@ eReturnValues CSCSI_Farm_Log::print_Enviroment_Information(JSONNODE *masterData,
     }
     
     json_set_name(pageInfo, header.c_str());
-    double TempValue = static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).environmentPage.curentTemp))) * 0.10;
+    double TempValue = static_cast<double>(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).environmentPage.curentTemp))) * 0.10F;
     set_json_float_With_Status(pageInfo, "Current Temperature (Celsius)", TempValue, vFarmFrame.at(page).environmentPage.curentTemp, m_showStatusBits);
-    TempValue = static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).environmentPage.highestTemp))) * 0.10;
+    TempValue = static_cast<double>(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).environmentPage.highestTemp))) * 0.10F;
     set_json_float_With_Status(pageInfo, "Highest Temperature", TempValue, vFarmFrame.at(page).environmentPage.highestTemp, m_showStatusBits);
-    TempValue = static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).environmentPage.lowestTemp))) * 0.10;
+    TempValue = static_cast<double>(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).environmentPage.lowestTemp))) * 0.10F;
     set_json_float_With_Status(pageInfo, "Lowest Temperature", TempValue, vFarmFrame.at(page).environmentPage.lowestTemp, m_showStatusBits);
-    TempValue = static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).environmentPage.maxTemp))) * 1.00;
+    TempValue = static_cast<double>(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).environmentPage.maxTemp))) * 1.00F;
     set_json_float_With_Status(pageInfo, "Specified Max Operating Temperature", TempValue, vFarmFrame.at(page).environmentPage.maxTemp, m_showStatusBits);
-    TempValue = static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).environmentPage.minTemp))) * 1.00;
+    TempValue = static_cast<double>(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).environmentPage.minTemp))) * 1.00F;
     set_json_float_With_Status(pageInfo, "Specified Min Operating Temperature", TempValue, vFarmFrame.at(page).environmentPage.minTemp, m_showStatusBits);
-    TempValue = (static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).environmentPage.humidity)) * 0.1));							//!< Current Relative Humidity (in units of .1%)
+    TempValue = (static_cast<double>(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).environmentPage.humidity)) * 0.1F));							//!< Current Relative Humidity (in units of .1%)
     set_json_float_With_Status(pageInfo, "Current Relative Humidity", TempValue, vFarmFrame.at(page).environmentPage.humidity, m_showStatusBits);
     set_json_64_bit_With_Status(pageInfo, "Current Motor Power",  vFarmFrame.at(page).environmentPage.currentMotorPower,false, m_showStatusBits);					    //!< Current Motor Power, value from most recent SMART Summary Frame6
 
-    if (m_MajorRev >= 4)
-    {
-        TempValue = static_cast<float>(M_DoubleWordInt0(check_Status_Strip_Status(vFarmFrame.at(page).environmentPage.average12v))) * 0.001;
-        set_json_float_With_Status(pageInfo, "12V Power Average", TempValue, vFarmFrame.at(page).environmentPage.average12v, m_showStatusBits);
-        if (m_MinorRev <= 9)
+        if (m_MajorRev >= 4 || m_showStatic == true)
         {
-            TempValue = static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).environmentPage.min12v))) * 0.001;
+        TempValue = static_cast<double>(M_DoubleWordInt0(check_Status_Strip_Status(vFarmFrame.at(page).environmentPage.average12v))) * 0.001F;
+        set_json_float_With_Status(pageInfo, "12V Power Average", TempValue, vFarmFrame.at(page).environmentPage.average12v, m_showStatusBits);
+            if (m_MinorRev >= 9 || m_showStatic == true)
+        {
+            TempValue = static_cast<double>(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).environmentPage.min12v))) * 0.001F;
             set_json_float_With_Status(pageInfo, "12V Power Minimum", TempValue, vFarmFrame.at(page).environmentPage.min12v, m_showStatusBits);
-            TempValue = static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).environmentPage.max12v))) * 0.001;
+            TempValue = static_cast<double>(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).environmentPage.max12v))) * 0.001F;
             set_json_float_With_Status(pageInfo, "12V Power Maximum", TempValue, vFarmFrame.at(page).environmentPage.max12v, m_showStatusBits);
         }
-        TempValue = static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).environmentPage.average5v))) * 0.001;
+        TempValue = static_cast<double>(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).environmentPage.average5v))) * 0.001F;
         set_json_float_With_Status(pageInfo, "5V Power Average", TempValue, vFarmFrame.at(page).environmentPage.average5v, m_showStatusBits);
-        if (m_MinorRev <= 9)
+            if (m_MinorRev >= 9 || m_showStatic == true)
         {
-            TempValue = static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).environmentPage.min5v))) * 0.001;
+            TempValue = static_cast<double>(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).environmentPage.min5v))) * 0.001F;
             set_json_float_With_Status(pageInfo, "5V Power Minimum", TempValue, vFarmFrame.at(page).environmentPage.min5v, m_showStatusBits);
-            TempValue = static_cast<float>(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).environmentPage.max5v))) * 0.001;
+            TempValue = static_cast<double>(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).environmentPage.max5v))) * 0.001F;
             set_json_float_With_Status(pageInfo, "5V Power Maximum", TempValue, vFarmFrame.at(page).environmentPage.max5v, m_showStatusBits);
         }
     }
@@ -2503,22 +2503,22 @@ eReturnValues CSCSI_Farm_Log::print_Enviroment_Statistics_Page_07(JSONNODE *mast
     }
     json_set_name(pageInfo, temp.str().c_str());
 
-    double TempValue = static_cast<float>(M_Word0(check_Status_Strip_Status(vFarmFrame.at(page).envStatPage07.average12v)) * 0.001);
+    double TempValue = static_cast<double>(M_Word0(check_Status_Strip_Status(vFarmFrame.at(page).envStatPage07.average12v)) * 0.001F);
     set_json_float_With_Status(pageInfo, "Current 12 volts", TempValue, vFarmFrame.at(page).envStatPage07.average12v, m_showStatusBits);
     if (m_MinorRev > 9 || m_showStatic == true)
     {
-        TempValue = static_cast<float>(M_Word0(check_Status_Strip_Status(vFarmFrame.at(page).envStatPage07.min12v)) * 0.001);
+        TempValue = static_cast<double>(M_Word0(check_Status_Strip_Status(vFarmFrame.at(page).envStatPage07.min12v)) * 0.001F);
         set_json_float_With_Status(pageInfo, "Minimum 12 volts", TempValue, vFarmFrame.at(page).envStatPage07.min12v, m_showStatusBits);
-        TempValue = static_cast<float>(M_Word0(check_Status_Strip_Status(vFarmFrame.at(page).envStatPage07.max12v)) * 0.001);
+        TempValue = static_cast<double>(M_Word0(check_Status_Strip_Status(vFarmFrame.at(page).envStatPage07.max12v)) * 0.001F);
         set_json_float_With_Status(pageInfo, "Maximum 12 volts", TempValue, vFarmFrame.at(page).envStatPage07.max12v, m_showStatusBits);
     }
-    TempValue = static_cast<float>(M_Word0(check_Status_Strip_Status(vFarmFrame.at(page).envStatPage07.average5v)) * 0.001);
+    TempValue = static_cast<double>(M_Word0(check_Status_Strip_Status(vFarmFrame.at(page).envStatPage07.average5v)) * 0.001F);
     set_json_float_With_Status(pageInfo, "Current 5 volts", TempValue, vFarmFrame.at(page).envStatPage07.average5v, m_showStatusBits);
     if (m_MinorRev > 9 || m_showStatic == true)
     {
-        TempValue = static_cast<float>(M_Word0(check_Status_Strip_Status(vFarmFrame.at(page).envStatPage07.min5v)) * 0.001);
+        TempValue = static_cast<double>(M_Word0(check_Status_Strip_Status(vFarmFrame.at(page).envStatPage07.min5v)) * 0.001F);
         set_json_float_With_Status(pageInfo, "Minimum 5 volts", TempValue, vFarmFrame.at(page).envStatPage07.min5v, m_showStatusBits);
-        TempValue = static_cast<float>(M_Word0(check_Status_Strip_Status(vFarmFrame.at(page).envStatPage07.max5v)) * 0.001);
+        TempValue = static_cast<double>(M_Word0(check_Status_Strip_Status(vFarmFrame.at(page).envStatPage07.max5v)) * 0.001F);
         set_json_float_With_Status(pageInfo, "Maximum 5 volts", TempValue, vFarmFrame.at(page).envStatPage07.max5v, m_showStatusBits);
     }
 
@@ -2725,11 +2725,11 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSON
                         double number = 0.0;
                         if (whole >= 0 && ((vFarmFrame.at(page).mrHeadResistanceByHead.headValue[loopCount] & BIT49) != BIT49))
                         {
-                            number = static_cast<double>(whole) + (decimal * .0001);
+                            number = static_cast<double>(whole) + (decimal * .0001F);
                         }
                         else
                         {
-                            number = static_cast<double>(whole) - (decimal * .0001);
+                            number = static_cast<double>(whole) - (decimal * .0001F);
                         }
                         printf("\tMR Head Resistance percentage for Head %2" PRIu32":                    %.4lf \n", loopCount, number);       //!< [24] MR Head Resistance from most recent SMART Summary Frame by Head9,10
                     }
@@ -2843,7 +2843,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSON
             {
                 for (loopCount = 0; loopCount < m_heads; ++loopCount)
                 {
-                    printf("\tCurrent H2SAT trimmed mean bits in error Zone 0 for Head %2" PRIu32":   %0.3f \n", loopCount, static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).currentH2STTrimmedbyHeadZone0.headValue[loopCount])), 16)* 0.10));
+                    printf("\tCurrent H2SAT trimmed mean bits in error Zone 0 for Head %2" PRIu32":   %0.3f \n", loopCount, static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).currentH2STTrimmedbyHeadZone0.headValue[loopCount])), 16)* 0.10F));
                 }
             }
             sas_Head_Float_Data(headPage, "Current H2SAT trimmed mean bits in error Zone 0", WORD0, 0.10, vFarmFrame.at(page).currentH2STTrimmedbyHeadZone0.headValue, m_heads, m_showStatusBits, m_showStatic);
@@ -2853,7 +2853,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSON
             {
                 for (loopCount = 0; loopCount < m_heads; ++loopCount)
                 {
-                    printf("\tCurrent H2SAT trimmed mean bits in error Zone 1 for Head %2" PRIu32":   %0.3f \n", loopCount, static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).currentH2STTrimmedbyHeadZone1.headValue[loopCount])), 16) * 0.10));
+                    printf("\tCurrent H2SAT trimmed mean bits in error Zone 1 for Head %2" PRIu32":   %0.3f \n", loopCount, static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).currentH2STTrimmedbyHeadZone1.headValue[loopCount])), 16) * 0.10F));
                 }
             }
             sas_Head_Float_Data(headPage, "Current H2SAT trimmed mean bits in error Zone 1", WORD0, 0.10, vFarmFrame.at(page).currentH2STTrimmedbyHeadZone1.headValue, m_heads, m_showStatusBits, m_showStatic);
@@ -2863,7 +2863,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSON
             {
                 for (loopCount = 0; loopCount < m_heads; ++loopCount)
                 {
-                    printf("\tCurrent H2SAT trimmed mean bits in error Zone 2 for Head %2" PRIu32":   %0.3f \n", loopCount, static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).currentH2STTrimmedbyHeadZone2.headValue[loopCount])), 16) * 0.10));
+                    printf("\tCurrent H2SAT trimmed mean bits in error Zone 2 for Head %2" PRIu32":   %0.3f \n", loopCount, static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).currentH2STTrimmedbyHeadZone2.headValue[loopCount])), 16) * 0.10F));
                 }
             }
             sas_Head_Float_Data(headPage, "Current H2SAT trimmed mean bits in error Zone 2", WORD0, 0.10, vFarmFrame.at(page).currentH2STTrimmedbyHeadZone2.headValue, m_heads, m_showStatusBits, m_showStatic);
@@ -2873,7 +2873,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSON
             {
                 for (loopCount = 0; loopCount < m_heads; ++loopCount)
                 {
-                    printf("\tCurrent H2SAT iterations to converge Test Zone 0 for Head %2" PRIu32":  %0.3f \n", loopCount, static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).currentH2STIterationsByHeadZone0.headValue[loopCount])), 16) * 0.10));
+                    printf("\tCurrent H2SAT iterations to converge Test Zone 0 for Head %2" PRIu32":  %0.3f \n", loopCount, static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).currentH2STIterationsByHeadZone0.headValue[loopCount])), 16) * 0.10F));
                 }
             }
             sas_Head_Float_Data(headPage, "Current H2SAT iterations to converge Test Zone 0", WORD0, 0.10, vFarmFrame.at(page).currentH2STIterationsByHeadZone0.headValue, m_heads, m_showStatusBits, m_showStatic);
@@ -2883,7 +2883,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSON
             {
                 for (loopCount = 0; loopCount < m_heads; ++loopCount)
                 {
-                    printf("\tCurrent H2SAT iterations to converge Test Zone 1 for Head %2" PRIu32":  %0.3f \n", loopCount, static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).currentH2STIterationsByHeadZone1.headValue[loopCount])), 16) * 0.10));
+                    printf("\tCurrent H2SAT iterations to converge Test Zone 1 for Head %2" PRIu32":  %0.3f \n", loopCount, static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).currentH2STIterationsByHeadZone1.headValue[loopCount])), 16) * 0.10F));
                 }
             }
             sas_Head_Float_Data(headPage, "Current H2SAT iterations to converge Test Zone 1", WORD0, 0.10, vFarmFrame.at(page).currentH2STIterationsByHeadZone1.headValue, m_heads, m_showStatusBits, m_showStatic);
@@ -2893,7 +2893,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSON
             {
                 for (loopCount = 0; loopCount < m_heads; ++loopCount)
                 {
-                    printf("\tCurrent H2SAT iterations to converge Test Zone 2 for Head %2" PRIu32":  %0.3f \n", loopCount, static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).currentH2STIterationsByHeadZone2.headValue[loopCount])), 16) * 0.10));
+                    printf("\tCurrent H2SAT iterations to converge Test Zone 2 for Head %2" PRIu32":  %0.3f \n", loopCount, static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).currentH2STIterationsByHeadZone2.headValue[loopCount])), 16) * 0.10F));
                 }
             }
             sas_Head_Float_Data(headPage, "Current H2SAT iterations to converge Test Zone 2", WORD0, 0.10, vFarmFrame.at(page).currentH2STIterationsByHeadZone2.headValue, m_heads, m_showStatusBits, m_showStatic);
