@@ -946,18 +946,18 @@ eReturnValues CATA_Farm_Log::print_Enviroment_Information(JSONNODE *masterData, 
         printf("\tSpecified Min Operating Temperature:                          %" PRIu64" \n", vFarmFrame.at(page).environmentPage.minTemp & UINT64_C(0x00FFFFFFFFFFFFFF));          //!< Specified Min Operating Temperature
         printf("\tCurrent Relative Humidity:                                    %" PRIu64" \n", vFarmFrame.at(page).environmentPage.humidity & UINT64_C(0x00FFFFFFFFFFFFFF));         //!< Current Relative Humidity (in units of .1%)
         printf("\tCurrent Motor Power:                                          %" PRIu64" \n", vFarmFrame.at(page).environmentPage.currentMotorPower & UINT64_C(0x00FFFFFFFFFFFFFF)); //!< Current Motor Power, value from most recent SMART Summary Frame6 
-        printf("\tCurrent 12 volts:                                             %2.3f \n", static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.current12v)) * .001F);
-        printf("\tMinimum 12 volts:                                             %2.3f \n", static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.min12v)) * .001F);
-        printf("\tMaximum 12 volts:                                             %2.3f \n", static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.max12v)) * .001F);
-        printf("\tCurrent 5 volts:                                              %2.3f \n", static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.current5v)) * .001F);
-        printf("\tMinimum 5 volts:                                              %2.3f \n", static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.min5v)) * .001F);
-        printf("\tMaximum 5 volts:                                              %2.3f \n", static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.max5v)) * .001F);
-        printf("\t12V Power Average:                                            %2.3f \n", static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.powerAvg12v)) * .001F);
-        printf("\t12V Power Minimum:                                            %2.3f \n", static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.powerMin12v)) * .001F);
-        printf("\t12V Power Maximum:                                            %2.3f \n", static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.powerMax12v)) * .001F);
-        printf("\t5V Power Average:                                             %2.3f \n", static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.powerAvg5v)) * .001F);
-        printf("\t5V Power Minimum:                                             %2.3f \n", static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.powerMin5v)) * .001F);
-        printf("\t5V Power Maximum:                                             %2.3f \n", static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.powerMax5v)) * .001F);
+        printf("\tCurrent 12 volts:                                             %2.3lf \n", static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.current12v)) * static_cast<double>(.001F));
+        printf("\tMinimum 12 volts:                                             %2.3lf \n", static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.min12v)) * static_cast<double>(.001F));
+        printf("\tMaximum 12 volts:                                             %2.3lf \n", static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.max12v)) * static_cast<double>(.001F));
+        printf("\tCurrent 5 volts:                                              %2.3lf \n", static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.current5v)) * static_cast<double>(.001F));
+        printf("\tMinimum 5 volts:                                              %2.3lf \n", static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.min5v)) * static_cast<double>(.001F));
+        printf("\tMaximum 5 volts:                                              %2.3lf \n", static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.max5v)) * static_cast<double>(.001F));
+        printf("\t12V Power Average:                                            %2.3lf \n", static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.powerAvg12v)) * static_cast<double>(.001L));
+        printf("\t12V Power Minimum:                                            %2.3lf \n", static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.powerMin12v)) * static_cast<double>(.001L));
+        printf("\t12V Power Maximum:                                            %2.3lf \n", static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.powerMax12v)) * static_cast<double>(.001L));
+        printf("\t5V Power Average:                                             %2.3lf \n", static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.powerAvg5v)) * static_cast<double>(.001L));
+        printf("\t5V Power Minimum:                                             %2.3lf \n", static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.powerMin5v)) * static_cast<double>(.001L));
+        printf("\t5V Power Maximum:                                             %2.3lf \n", static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.powerMax5v)) * static_cast<double>(.001L));
 
     }
     std::ostringstream temp;
@@ -973,61 +973,61 @@ eReturnValues CATA_Farm_Log::print_Enviroment_Information(JSONNODE *masterData, 
 
     temp.str("");temp.clear();
 
-    double TempValue = static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.curentTemp)) * 1.00F;                                                                                      //!< Current Temperature in Celsius
+    double TempValue = static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.curentTemp)) * static_cast<double>(1.00F);                                                                                      //!< Current Temperature in Celsius
     set_json_float_With_Status(pageInfo, "Current Temperature (Celsius)", TempValue, vFarmFrame.at(page).environmentPage.curentTemp, m_showStatusBits);
-    TempValue = static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.highestTemp)) * 1.00F;
+    TempValue = static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.highestTemp)) * static_cast<double>(1.00F);
     set_json_float_With_Status(pageInfo, "Highest Temperature", TempValue, vFarmFrame.at(page).environmentPage.highestTemp, m_showStatusBits);                                       //!< Highest Temperature in Celsius                             
-    TempValue = static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.lowestTemp)) * 1.00F;
+    TempValue = static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.lowestTemp)) * static_cast<double>(1.00F);
     set_json_float_With_Status(pageInfo, "Lowest Temperature", TempValue, vFarmFrame.at(page).environmentPage.lowestTemp, m_showStatusBits);                                        //!< Lowest Temperature
-    TempValue = static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.averageTemp)) * 1.00F;
+    TempValue = static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.averageTemp)) * static_cast<double>(1.00F);
     set_json_float_With_Status(pageInfo, "Average Short Term Temperature", TempValue, vFarmFrame.at(page).environmentPage.averageTemp, m_showStatusBits);                           //!< Average Short Term Temperature
-    TempValue = static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.averageLongTemp)) * 1.00F;
+    TempValue = static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.averageLongTemp)) * static_cast<double>(1.00F);
     set_json_float_With_Status(pageInfo, "Average Long Term Temperature", TempValue, vFarmFrame.at(page).environmentPage.averageLongTemp, m_showStatusBits);                        //!< Average Long Term Temperature 
-    TempValue = static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.highestShortTemp)) * 1.00F;
+    TempValue = static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.highestShortTemp)) * static_cast<double>(1.00F);
     set_json_float_With_Status(pageInfo, "Highest Average Short Term Temperature", TempValue, vFarmFrame.at(page).environmentPage.highestShortTemp, m_showStatusBits);              //!< Highest Average Short Term Temperature      
-    TempValue = static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.lowestShortTemp)) * 1.00F;
+    TempValue = static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.lowestShortTemp)) * static_cast<double>(1.00F);
     set_json_float_With_Status(pageInfo, "Lowest Average Short Term Temperature", TempValue, vFarmFrame.at(page).environmentPage.lowestShortTemp, m_showStatusBits);                //!< Lowest Average Short Term Temperature     
-    TempValue = static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.highestLongTemp)) * 1.00F;
+    TempValue = static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.highestLongTemp)) * static_cast<double>(1.00F);
     set_json_float_With_Status(pageInfo, "Highest Average Long Term Temperature", TempValue, vFarmFrame.at(page).environmentPage.highestLongTemp, m_showStatusBits);                 //!< Highest Average Long Term Temperature       
-    TempValue = static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.lowestLongTemp)) * 1.00F;
+    TempValue = static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.lowestLongTemp)) * static_cast<double>(1.00F);
     set_json_float_With_Status(pageInfo, "Lowest Average Long Term Temperature", TempValue, vFarmFrame.at(page).environmentPage.lowestLongTemp, m_showStatusBits);                   //!< Lowest Average Long Term Temperature
 
     set_json_int_With_Status(pageInfo, "Time In Over Temperature", vFarmFrame.at(page).environmentPage.overTempTime, m_showStatusBits);                                                //!< Time In Over Temperature
     set_json_int_With_Status(pageInfo, "Time In Under Temperature", vFarmFrame.at(page).environmentPage.underTempTime, m_showStatusBits);                                              //!< Time In Under Temperature
               
-    TempValue = static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.maxTemp)) * 1.00F;
+    TempValue = static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.maxTemp)) * static_cast<double>(1.00F);
     set_json_float_With_Status(pageInfo, "Specified Max Operating Temperature", TempValue, vFarmFrame.at(page).environmentPage.maxTemp, m_showStatusBits);                          //!< Specified Max Operating Temperature        
-    TempValue = static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.minTemp)) * 1.00F;
+    TempValue = static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.minTemp)) * static_cast<double>(1.00F);
     set_json_float_With_Status(pageInfo, "Specified Min Operating Temperature", TempValue, vFarmFrame.at(page).environmentPage.minTemp, m_showStatusBits);                          //!< Specified Min Operating Temperature
 
     temp.str("");temp.clear();
-    temp << std::fixed << std::setprecision(2) << std::setfill('0') << (check_Status_Strip_Status(vFarmFrame.at(page).environmentPage.humidity))*0.1;                                                    //!< Current Relative Humidity (in units of .1%)
+    temp << std::fixed << std::setprecision(2) << std::setfill('0') << (check_Status_Strip_Status(vFarmFrame.at(page).environmentPage.humidity)) * 0.1F;                                                    //!< Current Relative Humidity (in units of .1%)
     set_json_string_With_Status(pageInfo, "Current Relative Humidity", temp.str().c_str(), vFarmFrame.at(page).environmentPage.humidity, m_showStatusBits);
     set_json_int_With_Status(pageInfo, "Current Motor Power", vFarmFrame.at(page).environmentPage.currentMotorPower, m_showStatusBits);                                                //!< Current Motor Power, value from most recent SMART Summary Frame6
     double volts = 0.0;
-    volts = static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.current12v)) *.001F;
+    volts = static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.current12v)) *static_cast<double>(.001F);
     set_json_float_With_Status(pageInfo, "Current 12 volts", volts, vFarmFrame.at(page).environmentPage.current12v, m_showStatusBits);
-    volts = static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.min12v)) * .001F;
+    volts = static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.min12v)) * static_cast<double>(.001F);
     set_json_float_With_Status(pageInfo, "Minimum 12 volts", volts, vFarmFrame.at(page).environmentPage.min12v, m_showStatusBits);
-    volts = static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.max12v)) * .001F;
+    volts = static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.max12v)) * static_cast<double>(.001F);
     set_json_float_With_Status(pageInfo, "Maximum 12 volts", volts, vFarmFrame.at(page).environmentPage.max12v, m_showStatusBits);
-    volts = static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.current5v)) * .001F;
+    volts = static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.current5v)) * static_cast<double>(.001F);
     set_json_float_With_Status(pageInfo, "Current 5 volts", volts, vFarmFrame.at(page).environmentPage.current5v, m_showStatusBits);
-    volts = static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.min5v)) * .001F;
+    volts = static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.min5v)) * static_cast<double>(.001F);
     set_json_float_With_Status(pageInfo, "Minimum 5 volts", volts, vFarmFrame.at(page).environmentPage.min5v, m_showStatusBits);
-    volts = static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.max5v)) * .001F;
+    volts = static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.max5v)) * static_cast<double>(.001F);
     set_json_float_With_Status(pageInfo, "Maximum 5 volts", volts, vFarmFrame.at(page).environmentPage.max5v, m_showStatusBits);
-    volts = static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.powerAvg12v)) * .001F;
+    volts = static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.powerAvg12v)) * static_cast<double>(.001F);
     set_json_float_With_Status(pageInfo, "12V Power Average", volts, vFarmFrame.at(page).environmentPage.powerAvg12v, m_showStatusBits);
-    volts = static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.powerMin12v)) * .001F;
+    volts = static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.powerMin12v)) * static_cast<double>(.001F);
     set_json_float_With_Status(pageInfo, "12V Power Minimum", volts, vFarmFrame.at(page).environmentPage.powerMin12v, m_showStatusBits);
-    volts = static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.powerMax12v)) * .001F;
+    volts = static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.powerMax12v)) * static_cast<double>(.001F);
     set_json_float_With_Status(pageInfo, "12V Power Maximum", volts, vFarmFrame.at(page).environmentPage.powerMax12v, m_showStatusBits);
-    volts = static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.powerAvg5v)) * .001F;
+    volts = static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.powerAvg5v)) * static_cast<double>(.001F);
     set_json_float_With_Status(pageInfo, "5V Power Average", volts, vFarmFrame.at(page).environmentPage.powerAvg5v, m_showStatusBits);  
-    volts = static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.powerMin5v)) * .001F;
+    volts = static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.powerMin5v)) * static_cast<double>(.001F);
     set_json_float_With_Status(pageInfo, "5V Power Minimum", volts, vFarmFrame.at(page).environmentPage.powerMin5v, m_showStatusBits);
-    volts = static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.powerMax5v)) * .001F;
+    volts = static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.powerMax5v)) * static_cast<double>(.001F);
     set_json_float_With_Status(pageInfo, "5V Power Maximum", volts, vFarmFrame.at(page).environmentPage.powerMax5v, m_showStatusBits);
 
     json_push_back(masterData, pageInfo);
@@ -1186,11 +1186,11 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
                 double number = 0.0;
                 if (whole >= 0 && ((vFarmFrame.at(page).reliPage.MRHeadResistance[loopCount] & BIT49) != BIT49))
                 {
-                    number = static_cast<double>(whole) + (decimal * .0001F);
+                    number = static_cast<double>(whole) + (decimal * static_cast<double>(.0001F));
                 }
                 else
                 {
-                    number = static_cast<double>(whole) - (decimal * .0001F);
+                    number = static_cast<double>(whole) - (decimal * static_cast<double>(.0001F));
                 }
                 printf("\tMR Head Resistance percentage for Head %2" PRIu32":                    %.4lf \n", loopCount, number);       //!< [24] MR Head Resistance from most recent SMART Summary Frame by Head9,10
             }

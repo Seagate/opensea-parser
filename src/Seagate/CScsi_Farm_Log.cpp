@@ -1114,7 +1114,7 @@ bool CSCSI_Farm_Log::get_sFarmHeader(sScsiFarmHeader* fh, uint8_t* pData, uint64
     fh->farmHeader.pageSize = M_BytesTo8ByteValue(pData[offset + 40], pData[offset + 41], pData[offset + 42], pData[offset + 43], pData[offset + 44], pData[offset + 45], pData[offset + 46], pData[offset + 47]);
     fh->farmHeader.headsSupported = M_BytesTo8ByteValue(pData[offset + 48], pData[offset + 49], pData[offset + 50], pData[offset + 51], pData[offset + 52], pData[offset + 53], pData[offset + 54], pData[offset + 55]);
     fh->farmHeader.reserved = M_BytesTo8ByteValue(pData[offset + 56], pData[offset + 57], pData[offset + 58], pData[offset + 59], pData[offset + 60], pData[offset + 61], pData[offset + 62], pData[offset + 63]);
-    if (position + 64 <= m_logSize && m_logSize != 0 && m_logSize != UINT64_C(0x00FFFFFFFFFFFFFF))
+    if (position + 64 <= m_logSize && m_logSize != 0 && m_logSize != UINT16_C(0x00FF))
     {
         fh->farmHeader.reasonForFrameCapture = M_BytesTo8ByteValue(pData[offset + 64], pData[offset + 65], pData[offset + 66], pData[offset + 67], pData[offset + 68], pData[offset + 69], pData[offset + 70], pData[offset + 71]);
     }
@@ -2165,13 +2165,13 @@ eReturnValues CSCSI_Farm_Log::print_General_Drive_Information_Continued(JSONNODE
 
     set_json_64_bit_With_Status(pageInfo, "Max Number of Available Sectors for Reassignment", vFarmFrame.at(page).gDPage06.maxNumAvaliableSectors, false, m_showStatusBits);          //!< Max Number of Available Sectors for Reassignment � Value in disc sectors(started in 3.3 )
 
-    double tempValue = (static_cast<double>(M_Word0(vFarmFrame.at(page).gDPage06.timeToReady)) * .001F);
+    double tempValue = (static_cast<double>(M_Word0(vFarmFrame.at(page).gDPage06.timeToReady)) * static_cast<double>(.001F));
     set_json_float_With_Status(pageInfo, "Time to ready of the last power cycle (sec)", tempValue, vFarmFrame.at(page).gDPage06.timeToReady, m_showStatusBits);			//!< time to ready of the last power cycle
 
-    tempValue =(static_cast<double>(M_Word0(vFarmFrame.at(page).gDPage06.holdTime)) * .001F);
+    tempValue =(static_cast<double>(M_Word0(vFarmFrame.at(page).gDPage06.holdTime)) * static_cast<double>(.001F));
     set_json_float_With_Status(pageInfo, "Time drive is held in staggered spin (sec)", tempValue, vFarmFrame.at(page).gDPage06.holdTime, m_showStatusBits);                //!< time drive is held in staggered spin during the last power on sequence
 
-    tempValue = (static_cast<double>(M_Word0(vFarmFrame.at(page).gDPage06.servoSpinUpTime)) * .001F);
+    tempValue = (static_cast<double>(M_Word0(vFarmFrame.at(page).gDPage06.servoSpinUpTime)) * static_cast<double>(.001F));
     set_json_float_With_Status(pageInfo, "Last Servo Spin up Time (sec)", tempValue, vFarmFrame.at(page).gDPage06.servoSpinUpTime, m_showStatusBits);			//!< time to ready of the last power cycle
 
     set_json_bool_With_Status(pageInfo, "HAMR Write Protect", vFarmFrame.at(page).gDPage06.writeProtect, m_showStatusBits);
@@ -2275,7 +2275,7 @@ eReturnValues CSCSI_Farm_Log::print_WorkLoad(JSONNODE *masterData, uint32_t page
     }
 
     // 4.21
-    if (m_MajorRev >= 4 && m_MinorRev >= 19 || m_showStatic == true)
+    if ((m_MajorRev >= 4 && m_MinorRev >= 19) || m_showStatic == true)
     {
         set_json_64_bit_With_Status(pageInfo, "Read Commands of transfer length <4kb", vFarmFrame.at(page).workLoadPage.workLoad.numReadTransferSmall, false, m_showStatusBits);
         set_json_64_bit_With_Status(pageInfo, "Read Commands of transfer length (4kb - 16kb)", vFarmFrame.at(page).workLoadPage.workLoad.numReadTransferMid1, false, m_showStatusBits);
@@ -2416,38 +2416,38 @@ eReturnValues CSCSI_Farm_Log::print_Enviroment_Information(JSONNODE *masterData,
     }
     
     json_set_name(pageInfo, header.c_str());
-    double TempValue = static_cast<double>(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).environmentPage.curentTemp))) * 0.10F;
+    double TempValue = static_cast<double>(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).environmentPage.curentTemp))) * static_cast<double>(0.10F);
     set_json_float_With_Status(pageInfo, "Current Temperature (Celsius)", TempValue, vFarmFrame.at(page).environmentPage.curentTemp, m_showStatusBits);
-    TempValue = static_cast<double>(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).environmentPage.highestTemp))) * 0.10F;
+    TempValue = static_cast<double>(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).environmentPage.highestTemp))) * static_cast<double>(0.10F);
     set_json_float_With_Status(pageInfo, "Highest Temperature", TempValue, vFarmFrame.at(page).environmentPage.highestTemp, m_showStatusBits);
-    TempValue = static_cast<double>(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).environmentPage.lowestTemp))) * 0.10F;
+    TempValue = static_cast<double>(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).environmentPage.lowestTemp))) * static_cast<double>(0.10F);
     set_json_float_With_Status(pageInfo, "Lowest Temperature", TempValue, vFarmFrame.at(page).environmentPage.lowestTemp, m_showStatusBits);
-    TempValue = static_cast<double>(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).environmentPage.maxTemp))) * 1.00F;
+    TempValue = static_cast<double>(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).environmentPage.maxTemp))) * static_cast<double>(1.00F);
     set_json_float_With_Status(pageInfo, "Specified Max Operating Temperature", TempValue, vFarmFrame.at(page).environmentPage.maxTemp, m_showStatusBits);
-    TempValue = static_cast<double>(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).environmentPage.minTemp))) * 1.00F;
+    TempValue = static_cast<double>(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).environmentPage.minTemp))) * static_cast<double>(1.00F);
     set_json_float_With_Status(pageInfo, "Specified Min Operating Temperature", TempValue, vFarmFrame.at(page).environmentPage.minTemp, m_showStatusBits);
-    TempValue = (static_cast<double>(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).environmentPage.humidity)) * 0.1F));							//!< Current Relative Humidity (in units of .1%)
+    TempValue = (static_cast<double>(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).environmentPage.humidity)) * static_cast<double>(0.1F)));							//!< Current Relative Humidity (in units of .1%)
     set_json_float_With_Status(pageInfo, "Current Relative Humidity", TempValue, vFarmFrame.at(page).environmentPage.humidity, m_showStatusBits);
     set_json_64_bit_With_Status(pageInfo, "Current Motor Power",  vFarmFrame.at(page).environmentPage.currentMotorPower,false, m_showStatusBits);					    //!< Current Motor Power, value from most recent SMART Summary Frame6
 
         if (m_MajorRev >= 4 || m_showStatic == true)
         {
-        TempValue = static_cast<double>(M_DoubleWordInt0(check_Status_Strip_Status(vFarmFrame.at(page).environmentPage.average12v))) * 0.001F;
+        TempValue = static_cast<double>(M_DoubleWordInt0(check_Status_Strip_Status(vFarmFrame.at(page).environmentPage.average12v))) * static_cast<double>(0.001F);
         set_json_float_With_Status(pageInfo, "12V Power Average", TempValue, vFarmFrame.at(page).environmentPage.average12v, m_showStatusBits);
             if (m_MinorRev >= 9 || m_showStatic == true)
         {
-            TempValue = static_cast<double>(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).environmentPage.min12v))) * 0.001F;
+            TempValue = static_cast<double>(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).environmentPage.min12v))) * static_cast<double>(0.001F);
             set_json_float_With_Status(pageInfo, "12V Power Minimum", TempValue, vFarmFrame.at(page).environmentPage.min12v, m_showStatusBits);
-            TempValue = static_cast<double>(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).environmentPage.max12v))) * 0.001F;
+            TempValue = static_cast<double>(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).environmentPage.max12v))) * static_cast<double>(0.001F);
             set_json_float_With_Status(pageInfo, "12V Power Maximum", TempValue, vFarmFrame.at(page).environmentPage.max12v, m_showStatusBits);
         }
-        TempValue = static_cast<double>(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).environmentPage.average5v))) * 0.001F;
+        TempValue = static_cast<double>(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).environmentPage.average5v))) * static_cast<double>(0.001F);
         set_json_float_With_Status(pageInfo, "5V Power Average", TempValue, vFarmFrame.at(page).environmentPage.average5v, m_showStatusBits);
             if (m_MinorRev >= 9 || m_showStatic == true)
         {
-            TempValue = static_cast<double>(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).environmentPage.min5v))) * 0.001F;
+            TempValue = static_cast<double>(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).environmentPage.min5v))) * static_cast<double>(0.001F);
             set_json_float_With_Status(pageInfo, "5V Power Minimum", TempValue, vFarmFrame.at(page).environmentPage.min5v, m_showStatusBits);
-            TempValue = static_cast<double>(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).environmentPage.max5v))) * 0.001F;
+            TempValue = static_cast<double>(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).environmentPage.max5v))) * static_cast<double>(0.001F);
             set_json_float_With_Status(pageInfo, "5V Power Maximum", TempValue, vFarmFrame.at(page).environmentPage.max5v, m_showStatusBits);
         }
     }
@@ -2503,22 +2503,22 @@ eReturnValues CSCSI_Farm_Log::print_Enviroment_Statistics_Page_07(JSONNODE *mast
     }
     json_set_name(pageInfo, temp.str().c_str());
 
-    double TempValue = static_cast<double>(M_Word0(check_Status_Strip_Status(vFarmFrame.at(page).envStatPage07.average12v)) * 0.001F);
+    double TempValue = static_cast<double>(M_Word0(check_Status_Strip_Status(vFarmFrame.at(page).envStatPage07.average12v)) * static_cast<double>(0.001F));
     set_json_float_With_Status(pageInfo, "Current 12 volts", TempValue, vFarmFrame.at(page).envStatPage07.average12v, m_showStatusBits);
     if (m_MinorRev > 9 || m_showStatic == true)
     {
-        TempValue = static_cast<double>(M_Word0(check_Status_Strip_Status(vFarmFrame.at(page).envStatPage07.min12v)) * 0.001F);
+        TempValue = static_cast<double>(M_Word0(check_Status_Strip_Status(vFarmFrame.at(page).envStatPage07.min12v)) * static_cast<double>(0.001F));
         set_json_float_With_Status(pageInfo, "Minimum 12 volts", TempValue, vFarmFrame.at(page).envStatPage07.min12v, m_showStatusBits);
-        TempValue = static_cast<double>(M_Word0(check_Status_Strip_Status(vFarmFrame.at(page).envStatPage07.max12v)) * 0.001F);
+        TempValue = static_cast<double>(M_Word0(check_Status_Strip_Status(vFarmFrame.at(page).envStatPage07.max12v)) * static_cast<double>(0.001F));
         set_json_float_With_Status(pageInfo, "Maximum 12 volts", TempValue, vFarmFrame.at(page).envStatPage07.max12v, m_showStatusBits);
     }
-    TempValue = static_cast<double>(M_Word0(check_Status_Strip_Status(vFarmFrame.at(page).envStatPage07.average5v)) * 0.001F);
+    TempValue = static_cast<double>(M_Word0(check_Status_Strip_Status(vFarmFrame.at(page).envStatPage07.average5v)) * static_cast<double>(0.001F));
     set_json_float_With_Status(pageInfo, "Current 5 volts", TempValue, vFarmFrame.at(page).envStatPage07.average5v, m_showStatusBits);
     if (m_MinorRev > 9 || m_showStatic == true)
     {
-        TempValue = static_cast<double>(M_Word0(check_Status_Strip_Status(vFarmFrame.at(page).envStatPage07.min5v)) * 0.001F);
+        TempValue = static_cast<double>(M_Word0(check_Status_Strip_Status(vFarmFrame.at(page).envStatPage07.min5v)) * static_cast<double>(0.001F));
         set_json_float_With_Status(pageInfo, "Minimum 5 volts", TempValue, vFarmFrame.at(page).envStatPage07.min5v, m_showStatusBits);
-        TempValue = static_cast<double>(M_Word0(check_Status_Strip_Status(vFarmFrame.at(page).envStatPage07.max5v)) * 0.001F);
+        TempValue = static_cast<double>(M_Word0(check_Status_Strip_Status(vFarmFrame.at(page).envStatPage07.max5v)) * static_cast<double>(0.001F));
         set_json_float_With_Status(pageInfo, "Maximum 5 volts", TempValue, vFarmFrame.at(page).envStatPage07.max5v, m_showStatusBits);
     }
 
@@ -2545,7 +2545,7 @@ eReturnValues CSCSI_Farm_Log::print_Enviroment_Statistics_Page_07(JSONNODE *mast
 //---------------------------------------------------------------------------
 eReturnValues CSCSI_Farm_Log::print_Workload_Statistics_Page_08(JSONNODE *masterData, uint32_t page)
 {
-    if (m_MajorRev >= 4 && m_MinorRev >= 19 || m_showStatic == true)
+    if ((m_MajorRev >= 4 && m_MinorRev >= 19) || m_showStatic == true)
     {
         JSONNODE *pageInfo = json_new(JSON_NODE);
 
@@ -2725,11 +2725,11 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSON
                         double number = 0.0;
                         if (whole >= 0 && ((vFarmFrame.at(page).mrHeadResistanceByHead.headValue[loopCount] & BIT49) != BIT49))
                         {
-                            number = static_cast<double>(whole) + (decimal * .0001F);
+                            number = static_cast<double>(whole) + (decimal * static_cast<double>(.0001F));
                         }
                         else
                         {
-                            number = static_cast<double>(whole) - (decimal * .0001F);
+                            number = static_cast<double>(whole) - (decimal * static_cast<double>(.0001F));
                         }
                         printf("\tMR Head Resistance percentage for Head %2" PRIu32":                    %.4lf \n", loopCount, number);       //!< [24] MR Head Resistance from most recent SMART Summary Frame by Head9,10
                     }

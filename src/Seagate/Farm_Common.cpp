@@ -667,12 +667,16 @@ void CFarmCommon::sflyHeight_Node_Data(JSONNODE* Node, const std::string& title,
 			{
 			case WORD0:
 				number = static_cast<double>(M_Word0(value[loopCount].inner) * calculation);
+                break;
 			case WORDINT0:
 				number = static_cast<double>(M_WordInt0(value[loopCount].inner) * calculation);
+                break;
 			case DWORD0:
 				number = static_cast<double>(M_DoubleWord0(value[loopCount].inner) * calculation);
+                break;
 			default:
 				number = static_cast<double>(M_WordInt0(value[loopCount].inner) * calculation);
+                break;
 			}
 			set_json_float_With_Status(Node, temp.str().c_str(), number, value[loopCount].inner, showStatusBits);
 			break;
@@ -681,12 +685,16 @@ void CFarmCommon::sflyHeight_Node_Data(JSONNODE* Node, const std::string& title,
 			{
 			case WORD0:
 				number = static_cast<double>(M_Word0(value[loopCount].outer) * calculation);
+                break;
 			case WORDINT0:
 				number = static_cast<double>(M_WordInt0(value[loopCount].outer) * calculation);
+                break;
 			case DWORD0:
 				number = static_cast<double>(M_DoubleWord0(value[loopCount].outer) * calculation);
+                break;
 			default:
 				number = static_cast<double>(M_WordInt0(value[loopCount].outer) * calculation);
+                break;
 			}
 			set_json_float_With_Status(Node, temp.str().c_str(), number, value[loopCount].outer, showStatusBits);
 			break;
@@ -695,12 +703,16 @@ void CFarmCommon::sflyHeight_Node_Data(JSONNODE* Node, const std::string& title,
 			{
 			case WORD0:
 				number = static_cast<double>(M_Word0(value[loopCount].middle) * calculation);
+                break;
 			case WORDINT0:
 				number = static_cast<double>(M_WordInt0(value[loopCount].middle) * calculation);
+                break;
 			case DWORD0:
 				number = static_cast<double>(M_DoubleWord0(value[loopCount].middle) * calculation);
+                break;
 			default:
 				number = static_cast<double>(M_WordInt0(value[loopCount].middle) * calculation);
+                break;
 			}
 			set_json_float_With_Status(Node, temp.str().c_str(), number, value[loopCount].middle, showStatusBits);
 			break;
@@ -746,12 +758,16 @@ void CFarmCommon::sflyHeight_Array_Data(JSONNODE* Node, const std::string& title
 			{
 			case WORD0:
 				number = static_cast<double>(M_Word0(value[loopCount].inner) * calculation);
+                break;
 			case WORDINT0:
 				number = static_cast<double>(M_WordInt0(value[loopCount].inner) * calculation);
+                break;
 			case DWORD0:
 				number = static_cast<double>(M_DoubleWord0(value[loopCount].inner) * calculation);
+                break;
 			default:
 				number = static_cast<double>(M_WordInt0(value[loopCount].inner) * calculation);
+                break;
 			}
 			set_json_float_With_Status(headerror, title, number, value[loopCount].inner, showStatusBits);
 			break;
@@ -760,12 +776,16 @@ void CFarmCommon::sflyHeight_Array_Data(JSONNODE* Node, const std::string& title
 			{
 			case WORD0:
 				number = static_cast<double>(M_Word0(value[loopCount].outer) * calculation);
+                break;
 			case WORDINT0:
 				number = static_cast<double>(M_WordInt0(value[loopCount].outer) * calculation);
+                break;
 			case DWORD0:
 				number = static_cast<double>(M_DoubleWord0(value[loopCount].outer) * calculation);
+                break;
 			default:
 				number = static_cast<double>(M_WordInt0(value[loopCount].outer) * calculation);
+                break;
 			}
 			set_json_float_With_Status(headerror, title, number, value[loopCount].outer, showStatusBits);
 			break;
@@ -774,12 +794,16 @@ void CFarmCommon::sflyHeight_Array_Data(JSONNODE* Node, const std::string& title
 			{
 			case WORD0:
 				number = static_cast<double>(M_Word0(value[loopCount].middle) * calculation);
+                break;
 			case WORDINT0:
 				number = static_cast<double>(M_WordInt0(value[loopCount].middle) * calculation);
+                break;
 			case DWORD0:
 				number = static_cast<double>(M_DoubleWord0(value[loopCount].middle) * calculation);
+                break;
 			default:
 				number = static_cast<double>(M_WordInt0(value[loopCount].middle) * calculation);
+                break;
 			}
 			set_json_float_With_Status(headerror, title, number, value[loopCount].middle, showStatusBits);
 			break;
