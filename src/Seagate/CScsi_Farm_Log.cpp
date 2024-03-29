@@ -2843,7 +2843,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSON
             {
                 for (loopCount = 0; loopCount < m_heads; ++loopCount)
                 {
-                    printf("\tCurrent H2SAT trimmed mean bits in error Zone 0 for Head %2" PRIu32":   %0.3f \n", loopCount, static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).currentH2STTrimmedbyHeadZone0.headValue[loopCount])), 16)* 0.10F));
+                    printf("\tCurrent H2SAT trimmed mean bits in error Zone 0 for Head %2" PRIu32":   %0.3f \n", loopCount, static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).currentH2STTrimmedbyHeadZone0.headValue[loopCount])), 16)) * 0.10F);
                 }
             }
             sas_Head_Float_Data(headPage, "Current H2SAT trimmed mean bits in error Zone 0", WORD0, 0.10, vFarmFrame.at(page).currentH2STTrimmedbyHeadZone0.headValue, m_heads, m_showStatusBits, m_showStatic);
@@ -2853,7 +2853,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSON
             {
                 for (loopCount = 0; loopCount < m_heads; ++loopCount)
                 {
-                    printf("\tCurrent H2SAT trimmed mean bits in error Zone 1 for Head %2" PRIu32":   %0.3f \n", loopCount, static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).currentH2STTrimmedbyHeadZone1.headValue[loopCount])), 16) * 0.10F));
+                    printf("\tCurrent H2SAT trimmed mean bits in error Zone 1 for Head %2" PRIu32":   %0.3f \n", loopCount, static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).currentH2STTrimmedbyHeadZone1.headValue[loopCount])), 16)) * 0.10F);
                 }
             }
             sas_Head_Float_Data(headPage, "Current H2SAT trimmed mean bits in error Zone 1", WORD0, 0.10, vFarmFrame.at(page).currentH2STTrimmedbyHeadZone1.headValue, m_heads, m_showStatusBits, m_showStatic);
@@ -2863,7 +2863,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSON
             {
                 for (loopCount = 0; loopCount < m_heads; ++loopCount)
                 {
-                    printf("\tCurrent H2SAT trimmed mean bits in error Zone 2 for Head %2" PRIu32":   %0.3f \n", loopCount, static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).currentH2STTrimmedbyHeadZone2.headValue[loopCount])), 16) * 0.10F));
+                    printf("\tCurrent H2SAT trimmed mean bits in error Zone 2 for Head %2" PRIu32":   %0.3f \n", loopCount, static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).currentH2STTrimmedbyHeadZone2.headValue[loopCount])), 16)) * 0.10F);
                 }
             }
             sas_Head_Float_Data(headPage, "Current H2SAT trimmed mean bits in error Zone 2", WORD0, 0.10, vFarmFrame.at(page).currentH2STTrimmedbyHeadZone2.headValue, m_heads, m_showStatusBits, m_showStatic);
@@ -2873,7 +2873,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSON
             {
                 for (loopCount = 0; loopCount < m_heads; ++loopCount)
                 {
-                    printf("\tCurrent H2SAT iterations to converge Test Zone 0 for Head %2" PRIu32":  %0.3f \n", loopCount, static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).currentH2STIterationsByHeadZone0.headValue[loopCount])), 16) * 0.10F));
+                    printf("\tCurrent H2SAT iterations to converge Test Zone 0 for Head %2" PRIu32":  %0.3f \n", loopCount, static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).currentH2STIterationsByHeadZone0.headValue[loopCount])), 16)) * 0.10F);
                 }
             }
             sas_Head_Float_Data(headPage, "Current H2SAT iterations to converge Test Zone 0", WORD0, 0.10, vFarmFrame.at(page).currentH2STIterationsByHeadZone0.headValue, m_heads, m_showStatusBits, m_showStatic);
@@ -2883,7 +2883,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSON
             {
                 for (loopCount = 0; loopCount < m_heads; ++loopCount)
                 {
-                    printf("\tCurrent H2SAT iterations to converge Test Zone 1 for Head %2" PRIu32":  %0.3f \n", loopCount, static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).currentH2STIterationsByHeadZone1.headValue[loopCount])), 16) * 0.10F));
+                    printf("\tCurrent H2SAT iterations to converge Test Zone 1 for Head %2" PRIu32":  %0.3f \n", loopCount, static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).currentH2STIterationsByHeadZone1.headValue[loopCount])), 16)) * 0.10F);
                 }
             }
             sas_Head_Float_Data(headPage, "Current H2SAT iterations to converge Test Zone 1", WORD0, 0.10, vFarmFrame.at(page).currentH2STIterationsByHeadZone1.headValue, m_heads, m_showStatusBits, m_showStatic);
@@ -2893,7 +2893,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSON
             {
                 for (loopCount = 0; loopCount < m_heads; ++loopCount)
                 {
-                    printf("\tCurrent H2SAT iterations to converge Test Zone 2 for Head %2" PRIu32":  %0.3f \n", loopCount, static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).currentH2STIterationsByHeadZone2.headValue[loopCount])), 16) * 0.10F));
+                    printf("\tCurrent H2SAT iterations to converge Test Zone 2 for Head %2" PRIu32":  %0.3f \n", loopCount, static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).currentH2STIterationsByHeadZone2.headValue[loopCount])), 16)) * 0.10F);
                 }
             }
             sas_Head_Float_Data(headPage, "Current H2SAT iterations to converge Test Zone 2", WORD0, 0.10, vFarmFrame.at(page).currentH2STIterationsByHeadZone2.headValue, m_heads, m_showStatusBits, m_showStatic);
