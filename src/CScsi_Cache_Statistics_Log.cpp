@@ -2,7 +2,7 @@
 // CScsi_Cache_Statistics_Log.cpp  Definition of Cache Statistics page for SAS
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2023 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -38,7 +38,7 @@ CScsiCacheLog::CScsiCacheLog()
     , m_Value(0)
     , m_cache()
 {
-    if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+    if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
         printf("%s \n", m_CacheName.c_str());
     }
@@ -67,7 +67,7 @@ CScsiCacheLog::CScsiCacheLog(uint8_t * buffer, size_t bufferSize, uint16_t pageL
     , m_Value(0)
     , m_cache()
 {
-    if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+    if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
         printf("%s \n", m_CacheName.c_str());
     }

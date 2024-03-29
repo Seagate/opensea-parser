@@ -3,7 +3,7 @@
 //
 // Do NOT modify or remove this copyright and license
 //
-//Copyright (c) 2014 - 2023 Seagate Technology LLC and/or its Affiliates
+//Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -20,12 +20,12 @@
 
 
 namespace opensea_parser {
-#pragma pack(push,1)
-    typedef enum _eSASLogPageTypes
+
+    enum class eSASLogPageTypes
     {
-        FARM_HEADER_PARAMETER,
-        GENERAL_DRIVE_INFORMATION_PARAMETER,
-        WORKLOAD_STATISTICS_PARAMETER,
+        FARM_HEADER_PARAMETER = 0,
+        GENERAL_DRIVE_INFORMATION_PARAMETER = 1,
+        WORKLOAD_STATISTICS_PARAMETER = 2,
         ERROR_STATISTICS_PARAMETER,
         ENVIRONMENTAL_STATISTICS_PARAMETER,
         RELIABILITY_STATISTICS_PARAMETER,
@@ -170,9 +170,29 @@ namespace opensea_parser {
         RESERVED_FOR_FUTURE_EXPANSION_112,
         RESERVED_FOR_FUTURE_EXPANSION_113,
         RESERVED_FOR_FUTURE_EXPANSION_114,
-        RESERVED_FOR_FUTURE_EXPANSION,
-    }eSASLogPageTypes;
-#pragma pack(pop)
+        RESERVED_FOR_FUTURE_EXPANSION_115,
+        RESERVED_FOR_FUTURE_EXPANSION_116,
+        RESERVED_FOR_FUTURE_EXPANSION_117,
+        RESERVED_FOR_FUTURE_EXPANSION_118,  //150
+        RESERVED_FOR_FUTURE_EXPANSION_119,
+        LIFETIME_TERABYTES_WRITTEN = 0x0100,
+        RESERVED_FOR_FUTURE_EXPANSION_120,
+        RESERVED_FOR_FUTURE_EXPANSION_121,
+        RESERVED_FOR_FUTURE_EXPANSION_122,
+        RESERVED_FOR_FUTURE_EXPANSION_123,
+        RESERVED_FOR_FUTURE_EXPANSION_124,
+        RESERVED_FOR_FUTURE_EXPANSION_125,
+        RESERVED_FOR_FUTURE_EXPANSION_126,
+        RESERVED_FOR_FUTURE_EXPANSION_127,
+        RESERVED_FOR_FUTURE_EXPANSION_128,
+        RESERVED_FOR_FUTURE_EXPANSION_129,
+        RESERVED_FOR_FUTURE_EXPANSION_130,
+        RESERVED_FOR_FUTURE_EXPANSION_131,
+        RESERVED_FOR_FUTURE_EXPANSION_132,
+        RESERVED_FOR_FUTURE_EXPANSION_133,
+        RESERVED_FOR_FUTURE_EXPANSION_134,
+        MAX_RESERVED_FOR_FUTURE_EXPANSION
+    };
 
 #pragma pack(push, 1)
     typedef struct _sScsiFarmHeader
@@ -590,7 +610,7 @@ namespace opensea_parser {
 
         std::vector<eSASLogPageTypes>   vFramesFound;
 
-        _sScsiFarmFrame() : vFramesFound(FARM_HEADER_PARAMETER) {};
+        //_sScsiFarmFrame() : vFramesFound(eSASLogPageTypes::FARM_HEADER_PARAMETER) {};
 
     }sScsiFarmFrame;
 

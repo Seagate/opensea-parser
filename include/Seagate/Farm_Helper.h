@@ -3,7 +3,7 @@
 //
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2023 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -58,7 +58,7 @@ namespace opensea_parser {
 				if (hexPrint)
 				{
 					std::ostringstream temp;
-					temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(8) << static_cast<int32_t>(M_DoubleWord0(value));
+					temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(8) << static_cast<int32_t>(M_DoubleWord0(value));	
 					json_push_back(nowNode, json_new_a(myStr.c_str(), temp.str().c_str()));
 				}
 				else
@@ -412,7 +412,15 @@ namespace opensea_parser {
 			}
 			else
 			{
-				set_Json_Bool(nowNode, myStr, false);
+				// if parseNull and the status bits are not set then set it to NULL
+				if (g_parseNULL && !check_For_Active_Status(&value))
+				{
+					json_push_back(nowNode, json_new_a(myStr.c_str(), "NULL"));
+				}
+				else
+				{
+					set_Json_Bool(nowNode, myStr, false);
+				}
 			}
 		}
 	}

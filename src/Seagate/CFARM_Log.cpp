@@ -2,7 +2,7 @@
 // CFARM_Log.cpp   Implementation of class CFARMLog
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2023 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -34,6 +34,7 @@ CFARMLog::CFARMLog()
     , m_bufferdelete(false)
 	, m_LogSize(0)
 	, m_showStatusBytes(false)
+	, m_showStatic(false)
 {
 
 }
@@ -52,12 +53,13 @@ CFARMLog::CFARMLog()
 //!   \return 
 //
 //---------------------------------------------------------------------------
-CFARMLog::CFARMLog(const std::string& fileName, bool showStatus)
+CFARMLog::CFARMLog(const std::string& fileName, bool showStatus, bool showStatic)
 	: m_FARMstatus(IN_PROGRESS)
 	, bufferData()
     , m_bufferdelete(true)
 	, m_LogSize(0)
 	, m_showStatusBytes(showStatus)
+	, m_showStatic(showStatic)
 {
 	CLog *cCLog;
 	cCLog = new CLog(fileName);
@@ -106,6 +108,7 @@ CFARMLog::CFARMLog(const std::string & fileName)
     , m_bufferdelete(true)
 	, m_LogSize(0)
 	, m_showStatusBytes(false)
+	, m_showStatic(false)
 {
 	CLog *cCLog;
 	cCLog = new CLog(fileName);
@@ -150,12 +153,13 @@ CFARMLog::CFARMLog(const std::string & fileName)
 //!   \return 
 //
 //---------------------------------------------------------------------------
-CFARMLog::CFARMLog(uint8_t *farmbufferData, size_t bufferSize, bool showStatus)
+CFARMLog::CFARMLog(uint8_t *farmbufferData, size_t bufferSize, bool showStatus, bool showStatic)
 	: m_FARMstatus(IN_PROGRESS)
 	, bufferData(farmbufferData)
     , m_bufferdelete(false)
 	, m_LogSize(bufferSize)
 	, m_showStatusBytes(showStatus)
+	, m_showStatic(showStatic)
 {
 	if (farmbufferData != NULL)
 	{
@@ -212,11 +216,19 @@ eReturnValues CFARMLog::parse_Device_Farm_Log(JSONNODE *masterJson)
 	{
 		uint8_t subpage = bufferData[1];
 		CSCSI_Farm_Log* pCFarm;
-		pCFarm = new CSCSI_Farm_Log(bufferData, m_LogSize, subpage, false, m_showStatusBytes);
+		pCFarm = new CSCSI_Farm_Log(bufferData, m_LogSize, subpage, false, m_showStatusBytes, m_showStatic);
 		if (pCFarm->get_Log_Status() == SUCCESS)
 		{
-			pCFarm->print_All_Pages(masterJson);
-			retStatus = SUCCESS;
+			try
+			{
+				pCFarm->print_All_Pages(masterJson);
+				retStatus = SUCCESS;
+			}
+			catch (...)
+			{
+				delete (pCFarm);
+				return MEMORY_FAILURE;
+			}
 		}
 		else
 		{
@@ -227,7 +239,7 @@ eReturnValues CFARMLog::parse_Device_Farm_Log(JSONNODE *masterJson)
 	else
 	{
 		CATA_Farm_Log* pCFarm;
-		pCFarm = new CATA_Farm_Log(bufferData, m_LogSize, m_showStatusBytes);
+		pCFarm = new CATA_Farm_Log(bufferData, m_LogSize, m_showStatusBytes, m_showStatic);
 		if (pCFarm->get_Log_Status() == IN_PROGRESS)
 		{
 			try
@@ -245,6 +257,10 @@ eReturnValues CFARMLog::parse_Device_Farm_Log(JSONNODE *masterJson)
 				return MEMORY_FAILURE;
 			}
 
+		}
+		else
+		{
+			retStatus = pCFarm->get_Log_Status();
 		}
 		delete (pCFarm);
 	}

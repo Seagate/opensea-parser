@@ -39,7 +39,7 @@ CScsiCacheMemStatLog::CScsiCacheMemStatLog()
     , m_TimeIntervalDescriptorParam(NULL)
     , m_Value(0)
 {
-    if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+    if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
         printf("%s \n", m_CacheMemName.c_str());
     }
@@ -69,7 +69,7 @@ CScsiCacheMemStatLog::CScsiCacheMemStatLog(uint8_t * buffer, size_t bufferSize, 
     , m_TimeIntervalDescriptorParam(NULL)
     , m_Value(0)
 {
-    if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+    if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
         printf("%s \n", m_CacheMemName.c_str());
     }

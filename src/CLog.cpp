@@ -1,6 +1,6 @@
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2023 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -194,7 +194,7 @@ eReturnValues CLog::read_In_Buffer()
         return FILE_OPEN_ERROR;
     }
 
-    if (VERBOSITY_DEFAULT < g_verbosity)
+    if (eVerbosity_open::VERBOSITY_DEFAULT < g_verbosity)
     {
         printf("\nLoadbinbuf read %zd bytes into buffer.\n", m_size);
     }

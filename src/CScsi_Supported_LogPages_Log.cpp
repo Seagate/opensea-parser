@@ -2,7 +2,7 @@
 // CScsi_Supported_LogPages_Log.cpp Definition for parsing the supported log pages 
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2023 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -40,7 +40,7 @@ CScsiSupportedLog::CScsiSupportedLog()
 	, m_ShowSubPage(false)
     , m_ShowSupportedPagesOnce(true)
 {
-	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+	if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
 		printf("%s \n", m_SupportedName.c_str());
 	}
@@ -72,7 +72,7 @@ CScsiSupportedLog::CScsiSupportedLog(uint8_t * buffer, size_t bufferSize, uint16
 	, m_ShowSubPage(subPage)
     , m_ShowSupportedPagesOnce(true)
 {
-	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+	if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
 		printf("%s \n", m_SupportedName.c_str());
 	}

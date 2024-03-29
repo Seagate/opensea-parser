@@ -2,7 +2,7 @@
 // CScsi_Protocol_Specific_Port_Log.h   Definition of Protocol-Specific Port log page for SAS
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2023 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -35,8 +35,11 @@ CScsiProtocolPortLog::CScsiProtocolPortLog()
 	, m_PSPStatus(IN_PROGRESS)
 	, m_PageLength(0)
 	, m_bufferLength(0)
+	, m_List(NULL)
+	, m_Descriptor(NULL)
+	, m_Event(NULL)
 {
-	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+	if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
 		printf("%s \n", m_PSPName.c_str());
 	}
@@ -64,7 +67,7 @@ CScsiProtocolPortLog::CScsiProtocolPortLog(uint8_t *buffer, size_t bufferSize)
 	, m_Descriptor(NULL)
 	, m_Event(NULL)
 {
-	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+	if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
 		printf("%s \n", m_PSPName.c_str());
 	}
@@ -419,14 +422,7 @@ void CScsiProtocolPortLog::process_Event_Description(std::string* source, uint8_
 	}
 	case 0x2e:
 	{
-		if (g_dataformat == PREPYTHON_DATA)
-		{
-			*source = "peak connection time";
-		}
-		else
-		{
-			*source = "peak connection time pvd the peak duration, in microseconds, of any connection in which the phy was involved";
-		}
+		*source = "peak connection time pvd the peak duration, in microseconds, of any connection in which the phy was involved";
 		break;
 	}
 	case 0x2f:
