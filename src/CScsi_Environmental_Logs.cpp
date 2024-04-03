@@ -33,11 +33,11 @@ CScsiEnvironmentLog::CScsiEnvironmentLog()
 	: CScsiTemperatureLog()
 	, m_Page(NULL)
 	, m_EvnName("Environmnetal Log")
-	, m_EnvStatus(IN_PROGRESS)
+	, m_EnvStatus(eReturnValues::IN_PROGRESS)
 	, m_PageLength(0)
 	, m_SubPage(0)
 {
-	if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+	if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
 		printf("%s \n", m_EvnName.c_str());
 	}
@@ -61,11 +61,11 @@ CScsiEnvironmentLog::CScsiEnvironmentLog(uint8_t *bufferData, size_t bufferSize,
 	:CScsiTemperatureLog(&bufferData[4], bufferSize)
 	, m_Page(NULL)
 	, m_EvnName("Environmnetal Log")
-	, m_EnvStatus(IN_PROGRESS)
+	, m_EnvStatus(eReturnValues::IN_PROGRESS)
 	, m_PageLength(0)
 	, m_SubPage(subPage)
 {
-	if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+	if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
 		printf("%s \n", m_EvnName.c_str());
 	}
@@ -78,7 +78,7 @@ CScsiEnvironmentLog::CScsiEnvironmentLog(uint8_t *bufferData, size_t bufferSize,
 	}
 	else
 	{
-		m_EnvStatus = FAILURE;
+		m_EnvStatus = eReturnValues::FAILURE;
 	}
 
 }
@@ -117,7 +117,7 @@ CScsiEnvironmentLog::~CScsiEnvironmentLog()
 //---------------------------------------------------------------------------
 eReturnValues CScsiEnvironmentLog::figureout_What_Log_To_Parsed(JSONNODE *masterData)
 {
-	eReturnValues retStatus = IN_PROGRESS;
+	eReturnValues retStatus = eReturnValues::IN_PROGRESS;
 	if (m_SubPage == 0x00)			// Temperature 
 	{
 		set_Temp_Page_Length(m_PageLength);

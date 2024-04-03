@@ -32,12 +32,12 @@ using namespace opensea_parser;
 CScsiInformationalExeptionsLog::CScsiInformationalExeptionsLog()
 	: pData()
 	, m_infoName("Informational Exceptions Log")
-	, m_infoStatus(IN_PROGRESS)
+	, m_infoStatus(eReturnValues::IN_PROGRESS)
 	, m_PageLength(0)
 	, m_bufferLength()
 	, m_Exeptions()
 {
-	if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+	if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
 		printf("%s \n", m_infoName.c_str());
 	}
@@ -60,12 +60,12 @@ CScsiInformationalExeptionsLog::CScsiInformationalExeptionsLog()
 CScsiInformationalExeptionsLog::CScsiInformationalExeptionsLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength)
 	: pData(NULL)
 	, m_infoName("Informational Exceptions Log")
-	, m_infoStatus(IN_PROGRESS)
+	, m_infoStatus(eReturnValues::IN_PROGRESS)
 	, m_PageLength(pageLength)
 	, m_bufferLength(bufferSize)
 	, m_Exeptions()
 {
-	if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+	if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
 		printf("%s \n", m_infoName.c_str());
 	}
@@ -77,11 +77,11 @@ CScsiInformationalExeptionsLog::CScsiInformationalExeptionsLog(uint8_t * buffer,
 #endif
 	if (pData != NULL)
 	{
-		m_infoStatus = IN_PROGRESS;
+		m_infoStatus = eReturnValues::IN_PROGRESS;
 	}
 	else
 	{
-		m_infoStatus = FAILURE;
+		m_infoStatus = eReturnValues::FAILURE;
 	}
 
 }
@@ -171,7 +171,7 @@ void CScsiInformationalExeptionsLog::process_Informational_Exceptions_Data(JSONN
 //---------------------------------------------------------------------------
 eReturnValues CScsiInformationalExeptionsLog::get_Informational_Exceptions_Data(JSONNODE *masterData)
 {
-	eReturnValues retStatus = IN_PROGRESS;
+	eReturnValues retStatus = eReturnValues::IN_PROGRESS;
 	if (pData != NULL)
 	{
 		JSONNODE* pageInfo;
@@ -191,16 +191,16 @@ eReturnValues CScsiInformationalExeptionsLog::get_Informational_Exceptions_Data(
 			}
 			else
 			{
-				return BAD_PARAMETER;
+				return eReturnValues::BAD_PARAMETER;
 			}
 
 		}
 		json_push_back(masterData, pageInfo);
-		retStatus = SUCCESS;
+		retStatus = eReturnValues::SUCCESS;
 	}
 	else
 	{
-		retStatus = MEMORY_FAILURE;
+		retStatus = eReturnValues::MEMORY_FAILURE;
 	}
 	return retStatus;
 }

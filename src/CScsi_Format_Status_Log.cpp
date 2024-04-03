@@ -1,5 +1,5 @@
 //
-// CScsi_Format_Status_Log.cpp  Format Status log page reports information about the most recent successful format operation
+// CScsi_Format_Status_Log.cpp  Format Status log page reports information about the most recent eReturnValues::SUCCESSful format operation
 // Do NOT modify or remove this copyright and license
 //
 // Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
@@ -10,7 +10,7 @@
 //
 // ******************************************************************************************
 
-// \file CScsi_Format_Status_Log.cpp  Format Status log page reports information about the most recent successful format operation
+// \file CScsi_Format_Status_Log.cpp  Format Status log page reports information about the most recent eReturnValues::SUCCESSful format operation
 //
 #include "CScsi_Format_Status_Log.h"
 
@@ -32,14 +32,14 @@ using namespace opensea_parser;
 CScsiFormatStatusLog::CScsiFormatStatusLog()
     : pData()
     , m_FormatName("Format Status Log")
-    , m_FormatStatus(IN_PROGRESS)
+    , m_FormatStatus(eReturnValues::IN_PROGRESS)
     , m_PageLength(0)
     , m_bufferLength()
     , m_Value(0)
     , m_Format()
     , m_FormatDataOutParamValue()
 {
-    if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+    if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
         printf("%s \n", m_FormatName.c_str());
     }
@@ -62,24 +62,24 @@ CScsiFormatStatusLog::CScsiFormatStatusLog()
 CScsiFormatStatusLog::CScsiFormatStatusLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength)
     : pData(buffer)
     , m_FormatName("Format Status Log")
-    , m_FormatStatus(IN_PROGRESS)
+    , m_FormatStatus(eReturnValues::IN_PROGRESS)
     , m_PageLength(pageLength)
     , m_bufferLength(bufferSize)
     , m_Value(0)
     , m_Format()
     , m_FormatDataOutParamValue()
 {
-    if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+    if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
         printf("%s \n", m_FormatName.c_str());
     }
     if (buffer != NULL)
     {
-        m_FormatStatus = IN_PROGRESS;
+        m_FormatStatus = eReturnValues::IN_PROGRESS;
     }
     else
     {
-        m_FormatStatus = FAILURE;
+        m_FormatStatus = eReturnValues::FAILURE;
     }
 
 }
@@ -285,7 +285,7 @@ void CScsiFormatStatusLog::process_Format_Status_Data_Variable_Length(JSONNODE *
 //---------------------------------------------------------------------------
 eReturnValues CScsiFormatStatusLog::get_Format_Status_Data(JSONNODE *masterData)
 {
-    eReturnValues retStatus = IN_PROGRESS;
+    eReturnValues retStatus = eReturnValues::IN_PROGRESS;
 
     if (pData != NULL)
     {
@@ -310,7 +310,7 @@ eReturnValues CScsiFormatStatusLog::get_Format_Status_Data(JSONNODE *masterData)
                     else
                     {
                         //json_push_back(masterData, pageInfo);
-                        return BAD_PARAMETER;
+                        return eReturnValues::BAD_PARAMETER;
                     }
                 }
                 else
@@ -327,7 +327,7 @@ eReturnValues CScsiFormatStatusLog::get_Format_Status_Data(JSONNODE *masterData)
                         else
                         {
                             //json_push_back(masterData, pageInfo);
-                            return BAD_PARAMETER;
+                            return eReturnValues::BAD_PARAMETER;
                         }
                         break;
                     }
@@ -341,7 +341,7 @@ eReturnValues CScsiFormatStatusLog::get_Format_Status_Data(JSONNODE *masterData)
                         else
                         {
                             //json_push_back(masterData, pageInfo);
-                            return BAD_PARAMETER;
+                            return eReturnValues::BAD_PARAMETER;
                         }
                         break;
                     }
@@ -355,7 +355,7 @@ eReturnValues CScsiFormatStatusLog::get_Format_Status_Data(JSONNODE *masterData)
                         else
                         {
                             //json_push_back(masterData, pageInfo);
-                            return BAD_PARAMETER;
+                            return eReturnValues::BAD_PARAMETER;
                         }
                         break;
                     }
@@ -369,14 +369,14 @@ eReturnValues CScsiFormatStatusLog::get_Format_Status_Data(JSONNODE *masterData)
                         else
                         {
                             //json_push_back(masterData, pageInfo);
-                            return BAD_PARAMETER;
+                            return eReturnValues::BAD_PARAMETER;
                         }
                         break;
                     }
                     default:
                     {
                         //json_push_back(masterData, pageInfo);
-                        return BAD_PARAMETER;
+                        return eReturnValues::BAD_PARAMETER;
                     }
                     }
                     process_Format_Status_Data(pageInfo);
@@ -385,16 +385,16 @@ eReturnValues CScsiFormatStatusLog::get_Format_Status_Data(JSONNODE *masterData)
             else
             {
                 //json_push_back(masterData, pageInfo);
-                return BAD_PARAMETER;
+                return eReturnValues::BAD_PARAMETER;
             }
         }
 
         json_push_back(masterData, pageInfo);
-        retStatus = SUCCESS;
+        retStatus = eReturnValues::SUCCESS;
     }
     else
     {
-        retStatus = MEMORY_FAILURE;
+        retStatus = eReturnValues::MEMORY_FAILURE;
     }
     return retStatus;
 }

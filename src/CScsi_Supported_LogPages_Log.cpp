@@ -32,7 +32,7 @@ using namespace opensea_parser;
 CScsiSupportedLog::CScsiSupportedLog()
 	: pData()
 	, m_SupportedName("Supported Log Pages Logs")
-	, m_SupportedStatus(IN_PROGRESS)
+	, m_SupportedStatus(eReturnValues::IN_PROGRESS)
 	, m_PageLength(0)
 	, m_bufferLength(0)
 	, m_SubPage(0)
@@ -40,7 +40,7 @@ CScsiSupportedLog::CScsiSupportedLog()
 	, m_ShowSubPage(false)
     , m_ShowSupportedPagesOnce(true)
 {
-	if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+	if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
 		printf("%s \n", m_SupportedName.c_str());
 	}
@@ -64,7 +64,7 @@ CScsiSupportedLog::CScsiSupportedLog()
 CScsiSupportedLog::CScsiSupportedLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength, bool subPage)
 	: pData(buffer)
 	, m_SupportedName("Supported Log Pages Logs")
-	, m_SupportedStatus(IN_PROGRESS)
+	, m_SupportedStatus(eReturnValues::IN_PROGRESS)
 	, m_PageLength(pageLength)
 	, m_bufferLength(bufferSize)
 	, m_SubPage(0)
@@ -72,17 +72,17 @@ CScsiSupportedLog::CScsiSupportedLog(uint8_t * buffer, size_t bufferSize, uint16
 	, m_ShowSubPage(subPage)
     , m_ShowSupportedPagesOnce(true)
 {
-	if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+	if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
 		printf("%s \n", m_SupportedName.c_str());
 	}
 	if (buffer != NULL)
 	{
-		m_SupportedStatus = IN_PROGRESS;
+		m_SupportedStatus = eReturnValues::IN_PROGRESS;
 	}
 	else
 	{
-		m_SupportedStatus = FAILURE;
+		m_SupportedStatus = eReturnValues::FAILURE;
 	}
 
 }
@@ -305,7 +305,7 @@ void CScsiSupportedLog::process_Supported_Data(JSONNODE *SupportData)
 //---------------------------------------------------------------------------
 eReturnValues CScsiSupportedLog::get_Supported_Log_Data(JSONNODE *masterData)
 {
-	eReturnValues retStatus = IN_PROGRESS;
+	eReturnValues retStatus = eReturnValues::IN_PROGRESS;
 	if (pData != NULL)
 	{
 		JSONNODE *pageInfo = json_new(JSON_NODE);
@@ -335,16 +335,16 @@ eReturnValues CScsiSupportedLog::get_Supported_Log_Data(JSONNODE *masterData)
 			else
 			{
 				json_push_back(masterData, pageInfo);
-				return BAD_PARAMETER;
+				return eReturnValues::BAD_PARAMETER;
 			}
 		}
 
 		json_push_back(masterData, pageInfo);
-		retStatus = SUCCESS;
+		retStatus = eReturnValues::SUCCESS;
 	}
 	else
 	{
-		retStatus = MEMORY_FAILURE;
+		retStatus = eReturnValues::MEMORY_FAILURE;
 	}
 	return retStatus;
 }

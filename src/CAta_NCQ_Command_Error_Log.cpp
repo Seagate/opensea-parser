@@ -29,7 +29,7 @@ using namespace opensea_parser;
 //---------------------------------------------------------------------------
 CAta_NCQ_Command_Error_Log::CAta_NCQ_Command_Error_Log()
     : m_name("ATA NCQ Command Error Log")
-    , m_status(IN_PROGRESS)
+    , m_status(eReturnValues::IN_PROGRESS)
 {
 
 }
@@ -48,11 +48,11 @@ CAta_NCQ_Command_Error_Log::CAta_NCQ_Command_Error_Log()
 //---------------------------------------------------------------------------
 CAta_NCQ_Command_Error_Log::CAta_NCQ_Command_Error_Log(const std::string & fileName)
     : m_name("ATA NCQ Command Error Log")
-    , m_status(IN_PROGRESS)
+    , m_status(eReturnValues::IN_PROGRESS)
 {
 	CLog *cCLog;
 	cCLog = new CLog(fileName);
-	if (cCLog->get_Log_Status() == SUCCESS)
+	if (cCLog->get_Log_Status() == eReturnValues::SUCCESS)
 	{
 		if (cCLog->get_Buffer() != NULL)
 		{
@@ -77,18 +77,18 @@ CAta_NCQ_Command_Error_Log::CAta_NCQ_Command_Error_Log(const std::string & fileN
                     offset += sizeof(sNCQError);
                     pNCQError = NULL;
                 }
-				m_status = IN_PROGRESS;
+				m_status = eReturnValues::IN_PROGRESS;
 			}
 			else
 			{
-				m_status = BAD_PARAMETER;
+				m_status = eReturnValues::BAD_PARAMETER;
 			}
             delete [] pBuf;
 		}
 		else
 		{
 
-			m_status = FAILURE;
+			m_status = eReturnValues::FAILURE;
 		}
 	}
 	else
@@ -112,7 +112,7 @@ CAta_NCQ_Command_Error_Log::CAta_NCQ_Command_Error_Log(const std::string & fileN
 //---------------------------------------------------------------------------
 CAta_NCQ_Command_Error_Log::CAta_NCQ_Command_Error_Log(uint8_t *buffer, size_t length)
     : m_name("ATA NCQ Command Error Log")
-    , m_status(IN_PROGRESS)
+    , m_status(eReturnValues::IN_PROGRESS)
 {	
     
     if (buffer != NULL)
@@ -125,11 +125,11 @@ CAta_NCQ_Command_Error_Log::CAta_NCQ_Command_Error_Log(uint8_t *buffer, size_t l
             offset += sizeof(sNCQError);
             pNCQError = NULL;
         }
-        m_status = IN_PROGRESS;
+        m_status = eReturnValues::IN_PROGRESS;
     }
     else
     {
-        m_status = FAILURE;
+        m_status = eReturnValues::FAILURE;
     }
 }
 //-----------------------------------------------------------------------------
@@ -248,6 +248,6 @@ eReturnValues CAta_NCQ_Command_Error_Log::get_NCQ_Command_Error_Log(JSONNODE *ma
         json_push_back(NCQInfo, json_new_a("Empty NCQ Command Error Log", "data has not yet been gathered"));
     }
     json_push_back(masterData, NCQInfo);
-    m_status = SUCCESS;
+    m_status = eReturnValues::SUCCESS;
     return m_status;
 }
