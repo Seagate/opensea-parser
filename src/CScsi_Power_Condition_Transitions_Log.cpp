@@ -125,39 +125,39 @@ CScsiPowerConditiontLog::~CScsiPowerConditiontLog()
 bool CScsiPowerConditiontLog::get_Power_Mode_Type(std::string *power, uint16_t code)
 {
     bool typeFound = false;
-	switch (code)
+	switch (static_cast<eTransitionsTypes>(code))
 	{
-		case ACTIVE:
+	case eTransitionsTypes::ACTIVE:
 		{
 			power->assign("Accumulated transitions to active");
             typeFound = true;
 			break;
 		}
-		case IDLE_A:
+		case eTransitionsTypes::IDLE_A:
 		{
             power->assign("Accumulated transitions to idle_a");
             typeFound = true;
 			break;
 		}
-		case IDLE_B:
+		case eTransitionsTypes::IDLE_B:
 		{
             power->assign("Accumulated transitions to idle_b");
             typeFound = true;
 			break;
 		}
-		case IDLE_C:
+		case eTransitionsTypes::IDLE_C:
 		{
             power->assign("Accumulated transitions to idle_c");
             typeFound = true;
 			break;
 		}
-		case STANDZ:
+		case eTransitionsTypes::STANDZ:
 		{
             power->assign("Accumulated transitions to standby_z");
             typeFound = true;
 			break;
 		}
-		case STANDY:
+		case eTransitionsTypes::STANDY:
 		{
             power->assign("Accumulated transitions to standby_y");
             typeFound = true;

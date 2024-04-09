@@ -156,9 +156,9 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 		byte_Swap_16(&lpStruct->pageLength);
 		if (IsScsiLogPage(lpStruct->pageLength , M_GETBITRANGE(lpStruct->pageCode, 5, 0)) == true)
 		{
-			switch (M_GETBITRANGE(lpStruct->pageCode, 5, 0))
+			switch (static_cast<eLogPageNames>(M_GETBITRANGE(lpStruct->pageCode, 5, 0)))
 			{
-			case SUPPORTED_LOG_PAGES:
+			case eLogPageNames::SUPPORTED_LOG_PAGES:
 			{
 				if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 				{
@@ -197,7 +197,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				delete(cSupport);
 			}
 			break;
-			case WRITE_ERROR_COUNTER:
+			case eLogPageNames::WRITE_ERROR_COUNTER:
 			{
 				if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 				{
@@ -229,7 +229,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				delete(cWriteError);
 			}
 			break;
-			case READ_ERROR_COUNTER:
+			case eLogPageNames::READ_ERROR_COUNTER:
 			{
 				if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 				{
@@ -261,7 +261,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				delete(cReadError);
 			}
 			break;
-			case VERIFY_ERROR_COUNTER:
+			case eLogPageNames::VERIFY_ERROR_COUNTER:
 			{
 				if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 				{
@@ -293,7 +293,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				delete(cVerifyError);
 			}
 			break;
-			case NON_MEDIUM_ERROR:
+			case eLogPageNames::NON_MEDIUM_ERROR:
 			{
 				if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 				{
@@ -325,7 +325,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				delete(cNonMedium);
 			}
 			break;
-			case FORMAT_STATUS:
+			case eLogPageNames::FORMAT_STATUS:
 			{
 				if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 				{
@@ -358,7 +358,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				delete(cFormat);
 			}
 			break;
-			case LOGICAL_BLOCK_PROVISIONING:
+			case eLogPageNames::LOGICAL_BLOCK_PROVISIONING:
 			{
 				if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 				{
@@ -390,7 +390,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				delete(cLBA);
 			}
 			break;
-			case ENVIRONMENTAL:
+			case eLogPageNames::ENVIRONMENTAL:
 			{
 				if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 				{
@@ -402,7 +402,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				delete (cEPA);
 			}
 			break;
-			case START_STOP_CYCLE_COUNTER:
+			case eLogPageNames::START_STOP_CYCLE_COUNTER:
 			{
 				if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 				{
@@ -414,7 +414,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				delete(cSS);
 			}
 			break;
-			case APPLICATION_CLIENT:
+			case eLogPageNames::APPLICATION_CLIENT:
 			{
 				if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 				{
@@ -446,7 +446,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				delete(cApplicationClient);
 			}
 			break;
-			case SELF_TEST_RESULTS:
+			case eLogPageNames::SELF_TEST_RESULTS:
 			{
 				if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 				{
@@ -458,7 +458,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				delete(cSelfTest);
 			}
 			break;
-            case SOLID_STATE_MEDIA:
+            case eLogPageNames::SOLID_STATE_MEDIA:
             {
                 if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
                 {
@@ -490,7 +490,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
                 delete(cSSD);
             }
             break;
-            case ZONED_DEVICE_STATISTICS:
+            case eLogPageNames::ZONED_DEVICE_STATISTICS:
             {
                 if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
                 {
@@ -522,7 +522,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
                 delete(cZDS);
             }
             break;
-			case BACKGROUND_SCAN:
+			case eLogPageNames::BACKGROUND_SCAN:
 			{
 				if (lpStruct->subPage == 0x00)        // Background Scan
 				{
@@ -607,7 +607,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				}
 			}
 			break;
-			case PROTOCOL_SPECIFIC_PORT:
+			case eLogPageNames::PROTOCOL_SPECIFIC_PORT:
 			{
 
 				if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
@@ -642,7 +642,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				delete (cPSP);
 			}
 			break;
-			case CACHE_MEMORY_STATISTICES:
+			case eLogPageNames::CACHE_MEMORY_STATISTICES:
 			{
 				if (lpStruct->subPage == SAS_SUBPAGE_20)        // Cache Memory Statistics 5.2.7
 				{
@@ -708,7 +708,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				}
 			}
 			break;
-			case POWER_CONDITION_TRANSITIONS:
+			case eLogPageNames::POWER_CONDITION_TRANSITIONS:
 			{
 				if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 				{
@@ -740,7 +740,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				delete(cPower);
 			}
 			break;
-			case INFORMATIONAL_EXCEPTIONS:
+			case eLogPageNames::INFORMATIONAL_EXCEPTIONS:
 			{
 				if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 				{
@@ -772,7 +772,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				delete(cInfo);
 			}
 			break;
-			case CACHE_STATISTICS:
+			case eLogPageNames::CACHE_STATISTICS:
 			{
 				if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 				{
@@ -803,7 +803,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				delete (cCache);
 			}
 			break;
-			case SEAGATE_SPECIFIC_LOG:
+			case eLogPageNames::SEAGATE_SPECIFIC_LOG:
 			{
 				if (lpStruct->subPage == FARM_LOG_PAGE)   // Farm Log
 				{
@@ -892,7 +892,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				}
 			}
 			break;
-			case FACTORY_LOG:
+			case eLogPageNames::FACTORY_LOG:
 			{
 				if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 				{

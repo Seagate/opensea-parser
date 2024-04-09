@@ -22,7 +22,7 @@ namespace opensea_parser {
 #ifndef SCSISTARTSTOPLOG
 #define SCSISTARTSTOPLOG
 #pragma pack(push, 1)
-	typedef enum _eSSMLogParams
+	enum class eSSMLogParams
 	{
 		manufactureDate = 0x0001,
 		accountingDate = 0x0002,
@@ -30,7 +30,7 @@ namespace opensea_parser {
 		accumulated = 0x0004,
 		loadUnload = 0x0005,
 		accumulatedLU = 0x0006,
-	}eSSMLogParams;
+	};
 	typedef struct _sStartStopStruct
 	{
 		uint16_t			manufatureParamCode;			//<! Data of Manufacture parameter code for the log 
