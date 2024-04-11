@@ -27,7 +27,7 @@ namespace opensea_parser {
     class CAta_Ext_DST_Log 
     {
     protected:
-        enum m_DST_Enum { DST_HAS_NOT_BEEN_RUN, DST_HAS_BEEN_RUN, DST_INCOMPLETE, DST_HAS_FAILED, DST_HAS_TIMEDOUT };
+        //enum class mDSTEnum { DST_HAS_NOT_BEEN_RUN, DST_HAS_BEEN_RUN, DST_INCOMPLETE, DST_HAS_FAILED, DST_HAS_TIMEDOUT };
         std::string                 m_name;                                         //!< name of the class
 		uint8_t						*pData;											//!< pointer the the data
         size_t						m_logSize;                                      //!< log size in bytes                             

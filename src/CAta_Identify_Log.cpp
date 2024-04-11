@@ -80,7 +80,7 @@ inline bool check_For_Active_Status(const uint64_t *value)
 CAta_Identify_log::CAta_Identify_log()
     : m_name("ATA Identify Log")
     , pData(NULL)
-    , m_status(IN_PROGRESS)
+    , m_status(eReturnValues::IN_PROGRESS)
     , m_sDriveInfo()
 {
     //m_sDriveInfo = {};
@@ -104,17 +104,17 @@ CAta_Identify_log::CAta_Identify_log()
 CAta_Identify_log::CAta_Identify_log(uint8_t *buffer)
     : m_name("ATA Identify Log")
     , pData(buffer)
-    , m_status(IN_PROGRESS)
+    , m_status(eReturnValues::IN_PROGRESS)
     , m_sDriveInfo()
 {
     if (pData != NULL)
     {
         parse_Device_Info();
-        m_status = IN_PROGRESS;
+        m_status = eReturnValues::IN_PROGRESS;
     }
     else
     {
-        m_status = FAILURE;
+        m_status = eReturnValues::FAILURE;
     }
 }
 //-----------------------------------------------------------------------------
@@ -135,12 +135,12 @@ CAta_Identify_log::CAta_Identify_log(uint8_t *buffer)
 CAta_Identify_log::CAta_Identify_log(const std::string & fileName)
     : m_name("ATA Identify Log")
     , pData(NULL)
-    , m_status(IN_PROGRESS)
+    , m_status(eReturnValues::IN_PROGRESS)
     , m_sDriveInfo()
 {
     CLog *cCLog;
     cCLog = new CLog(fileName);
-    if (cCLog->get_Log_Status() == SUCCESS)
+    if (cCLog->get_Log_Status() == eReturnValues::SUCCESS)
     {
         if (cCLog->get_Buffer() != NULL)
         {
@@ -166,18 +166,18 @@ CAta_Identify_log::CAta_Identify_log(const std::string & fileName)
                 memcpy_s(pData, (bufferSize - 0x200), cCLog->get_Buffer_Offset(0x200), (bufferSize - 0x200));// copy the buffer data to the class member pBuf
 #endif
                 parse_Device_Info();
-                m_status = IN_PROGRESS;
+                m_status = eReturnValues::IN_PROGRESS;
                 delete[] pData;
             }
             else
             {
-                m_status = BAD_PARAMETER;
+                m_status = eReturnValues::BAD_PARAMETER;
             }
             delete [] idCheckBuf;
         }
         else
         {
-            m_status = FAILURE;
+            m_status = eReturnValues::FAILURE;
         }
     }
     else
@@ -697,7 +697,7 @@ eReturnValues CAta_Identify_log::parse_Device_Info()
             m_sDriveInfo.sSecurityInfo.enabled = true;
         }
     }
-    return SUCCESS;
+    return eReturnValues::SUCCESS;
 }
 //-----------------------------------------------------------------------------
 //
@@ -711,7 +711,7 @@ eReturnValues CAta_Identify_log::parse_Device_Info()
 //! \param 
 //
 //  Exit:
-//!   \return SUCCESS or FAILURE
+//!   \return eReturnValues::SUCCESS or FAILURE
 //
 //---------------------------------------------------------------------------
 eReturnValues CAta_Identify_log::print_Identify_Information(JSONNODE *masterData)
@@ -1037,7 +1037,7 @@ eReturnValues CAta_Identify_log::print_Identify_Information(JSONNODE *masterData
     }
 
     json_push_back(masterData, identifyInfo);
-    return SUCCESS;
+    return eReturnValues::SUCCESS;
 }
 // *******************************************************************************
 //-----------------------------------------------------------------------------
@@ -1055,19 +1055,19 @@ eReturnValues CAta_Identify_log::print_Identify_Information(JSONNODE *masterData
 //---------------------------------------------------------------------------
 CAta_Identify_Log_00::CAta_Identify_Log_00(uint8_t *Buffer)
     : m_name("ATA Identify Log Page 00")
-    , m_status(IN_PROGRESS)
+    , m_status(eReturnValues::IN_PROGRESS)
     , m_pLog0()
 {
     pData = Buffer;
     if (pData != NULL)
     {
         m_pLog0 = reinterpret_cast<sLogPage00 *>(pData);
-        m_status = SUCCESS;
+        m_status = eReturnValues::SUCCESS;
     }
     else
     {
         printf(" create the Log00 class -> NULL \n");
-        m_status = FAILURE;
+        m_status = eReturnValues::FAILURE;
     }
 }
 //-----------------------------------------------------------------------------
@@ -1138,7 +1138,7 @@ eReturnValues CAta_Identify_Log_00::get_Log_Page00(JSONNODE *masterData)
 #define LOG_PAGE_00   0x0000
     uint16_t pageNumber = 0;
     uint16_t revision = 0;
-    eReturnValues retStatus = IN_PROGRESS;
+    eReturnValues retStatus = eReturnValues::IN_PROGRESS;
 
     pageNumber = M_Word1(m_pLog0->header);
     revision = M_Word0(m_pLog0->header);
@@ -1168,11 +1168,11 @@ eReturnValues CAta_Identify_Log_00::get_Log_Page00(JSONNODE *masterData)
         }
 
         json_push_back(masterData, pageInfo);
-        retStatus = SUCCESS;
+        retStatus = eReturnValues::SUCCESS;
     }
     else
     {
-        retStatus = FAILURE;
+        retStatus = eReturnValues::FAILURE;
     }
     return retStatus;
 }
@@ -1194,16 +1194,16 @@ eReturnValues CAta_Identify_Log_00::get_Log_Page00(JSONNODE *masterData)
 CAta_Identify_Log_02::CAta_Identify_Log_02(uint8_t *Buffer)
     : m_name("ATA Identify Log Page 02")
     , pData(Buffer)
-    , m_status(IN_PROGRESS)
+    , m_status(eReturnValues::IN_PROGRESS)
     , pCapacity()
 {
     if (pData != NULL)
     {
-        m_status = SUCCESS;
+        m_status = eReturnValues::SUCCESS;
     }
     else
     {
-        m_status = FAILURE;
+        m_status = eReturnValues::FAILURE;
     }
 }
 //-----------------------------------------------------------------------------
@@ -1369,7 +1369,7 @@ bool CAta_Identify_Log_02::get_Sector_Size(JSONNODE *sectorData)
 eReturnValues CAta_Identify_Log_02::get_Log_Page02(uint8_t *lp2pData, JSONNODE *masterData)
 {
 #define LOG_PAGE_02   0x0002
-    eReturnValues retStatus = IN_PROGRESS;
+    eReturnValues retStatus = eReturnValues::IN_PROGRESS;
     sLogPage02 logPage02;
     pCapacity = &logPage02;
     pCapacity = reinterpret_cast<sLogPage02*>(&lp2pData[0]);
@@ -1398,11 +1398,11 @@ eReturnValues CAta_Identify_Log_02::get_Log_Page02(uint8_t *lp2pData, JSONNODE *
 
 
         json_push_back(masterData, pageInfo);
-        retStatus = SUCCESS;
+        retStatus = eReturnValues::SUCCESS;
     }
     else
     {
-        retStatus = FAILURE;
+        retStatus = eReturnValues::FAILURE;
     }
     return retStatus;
 }
@@ -1425,7 +1425,7 @@ eReturnValues CAta_Identify_Log_02::get_Log_Page02(uint8_t *lp2pData, JSONNODE *
 CAta_Identify_Log_03::CAta_Identify_Log_03(uint8_t *Buffer)
     : m_name("ATA Identify Log Page 03")
     , pData(Buffer)
-    , m_status(IN_PROGRESS)
+    , m_status(eReturnValues::IN_PROGRESS)
     , m_pCap()
     , m_sSupported()
     , m_sDownloadMicrocode()
@@ -1433,11 +1433,11 @@ CAta_Identify_Log_03::CAta_Identify_Log_03(uint8_t *Buffer)
 {
     if (pData != NULL)
     {
-        m_status = SUCCESS;
+        m_status = eReturnValues::SUCCESS;
     }
     else
     {
-        m_status = FAILURE;
+        m_status = eReturnValues::FAILURE;
     }
 }
 //-----------------------------------------------------------------------------
@@ -2685,7 +2685,7 @@ bool CAta_Identify_Log_03::get_Depopulation_Execution_Time(JSONNODE *depop)
 eReturnValues CAta_Identify_Log_03::get_Log_Page03(uint8_t *lp3pData, JSONNODE *masterData)
 {
 #define LOG_PAGE_03   0x0003
-    eReturnValues retStatus = IN_PROGRESS;
+    eReturnValues retStatus = eReturnValues::IN_PROGRESS;
     sLogPage03 logPage03;
     m_pCap = &logPage03;
     m_pCap = reinterpret_cast<sLogPage03 *>(&lp3pData[0]);
@@ -2729,11 +2729,11 @@ eReturnValues CAta_Identify_Log_03::get_Log_Page03(uint8_t *lp3pData, JSONNODE *
         get_Depopulation_Execution_Time(pageInfo);
 
         json_push_back(masterData, pageInfo);
-        retStatus = SUCCESS;
+        retStatus = eReturnValues::SUCCESS;
     }
     else
     {
-        retStatus = FAILURE;
+        retStatus = eReturnValues::FAILURE;
     }
     return retStatus;
 }
@@ -2755,7 +2755,7 @@ eReturnValues CAta_Identify_Log_03::get_Log_Page03(uint8_t *lp3pData, JSONNODE *
 CAta_Identify_Log_04::CAta_Identify_Log_04(uint8_t *Buffer)
     : m_name("Log Page 04")
     , pData()
-    , m_status(IN_PROGRESS)
+    , m_status(eReturnValues::IN_PROGRESS)
     , pLog()
     , m_CS()
     , m_FS()
@@ -2763,11 +2763,11 @@ CAta_Identify_Log_04::CAta_Identify_Log_04(uint8_t *Buffer)
     pData = Buffer;
     if (pData != NULL)
     {
-        m_status = SUCCESS;
+        m_status = eReturnValues::SUCCESS;
     }
     else
     {
-        m_status = FAILURE;
+        m_status = eReturnValues::FAILURE;
     }
 }
 //-----------------------------------------------------------------------------
@@ -3333,7 +3333,7 @@ bool CAta_Identify_Log_04::get_Device_Maintenance_Schedule(JSONNODE *maintenaceD
 eReturnValues CAta_Identify_Log_04::get_Log_Page04(uint8_t *lp4pData, JSONNODE *masterData)
 {
 #define LOG_PAGE_04   0x0004
-    eReturnValues retStatus = IN_PROGRESS;
+    eReturnValues retStatus = eReturnValues::IN_PROGRESS;
     sLogPage04 logPage;
     pLog = &logPage;
     memset(pLog, 0, sizeof(sLogPage04));
@@ -3369,11 +3369,11 @@ eReturnValues CAta_Identify_Log_04::get_Log_Page04(uint8_t *lp4pData, JSONNODE *
         get_Device_Maintenance_Schedule(pageInfo);
 
         json_push_back(masterData, pageInfo);
-        retStatus = SUCCESS;
+        retStatus = eReturnValues::SUCCESS;
     }
     else
     {
-        retStatus = FAILURE;
+        retStatus = eReturnValues::FAILURE;
     }
     return retStatus;
 }
@@ -3395,18 +3395,18 @@ eReturnValues CAta_Identify_Log_04::get_Log_Page04(uint8_t *lp4pData, JSONNODE *
 //---------------------------------------------------------------------------
 CAta_Identify_Log_05::CAta_Identify_Log_05(uint8_t *Buffer)
     : m_name("ATA Identify Log Page 05")
-    , m_status(IN_PROGRESS)
+    , m_status(eReturnValues::IN_PROGRESS)
     , m_pLog()
     , m_pPrintable()
 {
     pData = Buffer;
     if (pData != NULL)
     {
-        m_status = SUCCESS;
+        m_status = eReturnValues::SUCCESS;
     }
     else
     {
-        m_status = FAILURE;
+        m_status = eReturnValues::FAILURE;
     }
 }
 //-----------------------------------------------------------------------------
@@ -3622,7 +3622,7 @@ bool CAta_Identify_Log_05::get_printables(JSONNODE *pageInfo)
 eReturnValues CAta_Identify_Log_05::get_Log_Page05(uint8_t *lp5pData, JSONNODE *masterData)
 {
 #define LOG_PAGE_05   0x0005
-    eReturnValues retStatus = IN_PROGRESS;
+    eReturnValues retStatus = eReturnValues::IN_PROGRESS;
     sLogPage05 logPage;
     m_pLog = &logPage;
     memset(m_pLog, 0, sizeof(sLogPage05));
@@ -3653,11 +3653,11 @@ eReturnValues CAta_Identify_Log_05::get_Log_Page05(uint8_t *lp5pData, JSONNODE *
 
 
         json_push_back(masterData, pageInfo);
-        retStatus = SUCCESS;
+        retStatus = eReturnValues::SUCCESS;
     }
     else
     {
-        retStatus = FAILURE;
+        retStatus = eReturnValues::FAILURE;
     }
     return retStatus;
 }
@@ -3680,7 +3680,7 @@ eReturnValues CAta_Identify_Log_05::get_Log_Page05(uint8_t *lp5pData, JSONNODE *
 //---------------------------------------------------------------------------
 CAta_Identify_Log_06::CAta_Identify_Log_06(uint8_t *Buffer)
     : m_name("ATA Identify Log Page 06")
-    , m_status(IN_PROGRESS)
+    , m_status(eReturnValues::IN_PROGRESS)
     , m_pLog()
     , m_sSCapabilities()
     , m_sSInformation()
@@ -3688,11 +3688,11 @@ CAta_Identify_Log_06::CAta_Identify_Log_06(uint8_t *Buffer)
     pData = Buffer;
     if (pData != NULL)
     {
-        m_status = SUCCESS;
+        m_status = eReturnValues::SUCCESS;
     }
     else
     {
-        m_status = FAILURE;
+        m_status = eReturnValues::FAILURE;
     }
 }
 //-----------------------------------------------------------------------------
@@ -4076,7 +4076,7 @@ bool CAta_Identify_Log_06::get_Security_Capabilities(JSONNODE *sCap)
 eReturnValues CAta_Identify_Log_06::get_Log_Page06(uint8_t *lp6pData, JSONNODE *masterData)
 {
 #define LOG_PAGE_06   0x0006
-    eReturnValues retStatus = IN_PROGRESS;
+    eReturnValues retStatus = eReturnValues::IN_PROGRESS;
     sLogPage06 logPage;
     m_pLog = &logPage;
     memset(m_pLog, 0, sizeof(sLogPage06));
@@ -4109,11 +4109,11 @@ eReturnValues CAta_Identify_Log_06::get_Log_Page06(uint8_t *lp6pData, JSONNODE *
         get_Trusted_Computing_Feature_Set(pageInfo);
         get_Security_Capabilities(pageInfo);
         json_push_back(masterData, pageInfo);
-        retStatus = SUCCESS;
+        retStatus = eReturnValues::SUCCESS;
     }
     else
     {
-        retStatus = FAILURE;
+        retStatus = eReturnValues::FAILURE;
     }
     return retStatus;
 }
@@ -4135,7 +4135,7 @@ eReturnValues CAta_Identify_Log_06::get_Log_Page06(uint8_t *lp6pData, JSONNODE *
 //---------------------------------------------------------------------------
 CAta_Identify_Log_07::CAta_Identify_Log_07(uint8_t *Buffer)
     : m_name("ATA Identify Log Page 07")
-    , m_status(IN_PROGRESS)
+    , m_status(eReturnValues::IN_PROGRESS)
     , m_pLog()
     , m_ATACap()
     , m_hardwareRR()
@@ -4143,11 +4143,11 @@ CAta_Identify_Log_07::CAta_Identify_Log_07(uint8_t *Buffer)
     pData = Buffer;
     if (pData != NULL)
     {
-        m_status = SUCCESS;
+        m_status = eReturnValues::SUCCESS;
     }
     else
     {
-        m_status = FAILURE;
+        m_status = eReturnValues::FAILURE;
     }
 }
 //-----------------------------------------------------------------------------
@@ -4183,7 +4183,7 @@ CAta_Identify_Log_07::~CAta_Identify_Log_07()
 eReturnValues CAta_Identify_Log_07::get_Log_Page07(uint8_t *lp7pData, JSONNODE *masterData)
 {
 #define LOG_PAGE_07   0x0007
-    eReturnValues retStatus = IN_PROGRESS;
+    eReturnValues retStatus = eReturnValues::IN_PROGRESS;
     sLogPage07 logPage;
     m_pLog = &logPage;
     memset(m_pLog, 0, sizeof(sLogPage07));
@@ -4211,11 +4211,11 @@ eReturnValues CAta_Identify_Log_07::get_Log_Page07(uint8_t *lp7pData, JSONNODE *
 
 
         json_push_back(masterData, pageInfo);
-        retStatus = SUCCESS;
+        retStatus = eReturnValues::SUCCESS;
     }
     else
     {
-        retStatus = FAILURE;
+        retStatus = eReturnValues::FAILURE;
     }
     return retStatus;
 }
@@ -4237,7 +4237,7 @@ eReturnValues CAta_Identify_Log_07::get_Log_Page07(uint8_t *lp7pData, JSONNODE *
 //---------------------------------------------------------------------------
 CAta_Identify_Log_08::CAta_Identify_Log_08(uint8_t *Buffer)
     :m_name("ATA Identify Log Page 08")
-    , m_status(IN_PROGRESS)
+    , m_status(eReturnValues::IN_PROGRESS)
     , m_pLog(NULL)
     , m_SATACap()
     , m_CurrentSet()
@@ -4246,11 +4246,11 @@ CAta_Identify_Log_08::CAta_Identify_Log_08(uint8_t *Buffer)
     pData = Buffer;
     if (pData != NULL)
     {
-        m_status = SUCCESS;
+        m_status = eReturnValues::SUCCESS;
     }
     else
     {
-        m_status = FAILURE;
+        m_status = eReturnValues::FAILURE;
     }
 }
 //-----------------------------------------------------------------------------
@@ -4708,7 +4708,7 @@ void CAta_Identify_Log_08::get_Device_Sleep_Timing_Variables(JSONNODE *sleep)
 eReturnValues CAta_Identify_Log_08::get_Log_Page08(uint8_t *lp8pData, JSONNODE *masterData)
 {
 #define LOG_PAGE_08   0x0008
-    eReturnValues retStatus = IN_PROGRESS;
+    eReturnValues retStatus = eReturnValues::IN_PROGRESS;
     sLogPage08 logPage;
     m_pLog = &logPage;
     memset(m_pLog, 0, sizeof(sLogPage08));
@@ -4741,11 +4741,11 @@ eReturnValues CAta_Identify_Log_08::get_Log_Page08(uint8_t *lp8pData, JSONNODE *
         get_Device_Sleep_Timing_Variables(pageInfo);
 
         json_push_back(masterData, pageInfo);
-        retStatus = SUCCESS;
+        retStatus = eReturnValues::SUCCESS;
     }
     else
     {
-        retStatus = FAILURE;
+        retStatus = eReturnValues::FAILURE;
     }
     return retStatus;
 }
@@ -4767,15 +4767,15 @@ eReturnValues CAta_Identify_Log_08::get_Log_Page08(uint8_t *lp8pData, JSONNODE *
 CAta_Identify_Log_30::CAta_Identify_Log_30(uint8_t *pBufferData)
     :pData(pBufferData)
     , m_name("log page 30")
-    , m_status(IN_PROGRESS)
+    , m_status(eReturnValues::IN_PROGRESS)
 {
     if (pData != NULL)
     {
-        m_status = SUCCESS;
+        m_status = eReturnValues::SUCCESS;
     }
     else
     {
-        m_status = BAD_PARAMETER;
+        m_status = eReturnValues::BAD_PARAMETER;
     }
 }
 //-----------------------------------------------------------------------------
@@ -4794,11 +4794,11 @@ CAta_Identify_Log_30::CAta_Identify_Log_30(uint8_t *pBufferData)
 CAta_Identify_Log_30::CAta_Identify_Log_30(const std::string & fileName)
     :pData()
     , m_name("log page 30")
-    , m_status(IN_PROGRESS)
+    , m_status(eReturnValues::IN_PROGRESS)
 {
     CLog *cCLog;
     cCLog = new CLog(fileName);
-    if (cCLog->get_Log_Status() == SUCCESS)
+    if (cCLog->get_Log_Status() == eReturnValues::SUCCESS)
     {
         if (cCLog->get_Buffer() != NULL)
         {
@@ -4814,17 +4814,17 @@ CAta_Identify_Log_30::CAta_Identify_Log_30(const std::string & fileName)
             byte_Swap_16(&idCheck->pageLength);
             if (IsScsiLogPage(idCheck->pageLength, idCheck->pageCode) == false)
             {
-                m_status = IN_PROGRESS;
+                m_status = eReturnValues::IN_PROGRESS;
             }
             else
             {
-                m_status = BAD_PARAMETER;
+                m_status = eReturnValues::BAD_PARAMETER;
             }
         }
         else
         {
 
-            m_status = FAILURE;
+            m_status = eReturnValues::FAILURE;
         }
     }
     else
@@ -4894,7 +4894,7 @@ CAta_Identify_Log_30::~CAta_Identify_Log_30()
         interfaceType = "unknown";
     }
 
-    return SUCCESS;
+    return eReturnValues::SUCCESS;
 }*/
 
 eReturnValues CAta_Identify_Log_30::parse_Identify_Log_30(JSONNODE *masterData)
@@ -4971,6 +4971,6 @@ eReturnValues CAta_Identify_Log_30::parse_Identify_Log_30(JSONNODE *masterData)
     //get_Interface_Type();
 
     delete (cLogPage00);
-    return SUCCESS;
+    return eReturnValues::SUCCESS;
 };
 

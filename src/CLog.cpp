@@ -31,7 +31,7 @@ CLog::CLog()
     , m_fileName("")
     , m_size(0)
 	, m_bufferData()
-    , m_logStatus(UNKNOWN)
+    , m_logStatus(eReturnValues::UNKNOWN)
 {
 
 }
@@ -54,7 +54,7 @@ CLog::CLog(const std::string &fileName)
     , m_fileName(fileName)
     , m_size(0)
 	, m_bufferData()
-    , m_logStatus(IN_PROGRESS)
+    , m_logStatus(eReturnValues::IN_PROGRESS)
 {
     get_CLog();
 }
@@ -64,7 +64,7 @@ CLog::CLog(const uint8_t * pBuf, uint32_t logSize)
 	, m_fileName("")
     , m_size(logSize)
 	, m_bufferData()
-    , m_logStatus(IN_PROGRESS)
+    , m_logStatus(eReturnValues::IN_PROGRESS)
 {
     get_CLog(pBuf, logSize);
 }
@@ -105,7 +105,7 @@ CLog::~CLog()
 //---------------------------------------------------------------------------
 void CLog::get_CLog()
 {
-    m_logStatus = IN_PROGRESS;
+    m_logStatus = eReturnValues::IN_PROGRESS;
     std::ifstream fb(m_fileName.c_str(), std::ios::in | std::ios::binary);
     if (fb.is_open())
     {
@@ -116,11 +116,11 @@ void CLog::get_CLog()
     }
     else
     {
-        m_logStatus = FILE_OPEN_ERROR;
+        m_logStatus = eReturnValues::FILE_OPEN_ERROR;
     }
     m_bufferData = static_cast<char*>(calloc(m_size, sizeof(char)));
 
-    if (m_size != 0 && m_logStatus != FILE_OPEN_ERROR)
+    if (m_size != 0 && m_logStatus != eReturnValues::FILE_OPEN_ERROR)
     {
         m_logStatus = read_In_Buffer();
     }
@@ -141,7 +141,7 @@ void CLog::get_CLog()
 //---------------------------------------------------------------------------
 void CLog::get_CLog(const uint8_t * pBuf, uint32_t logSize)
 {
-	m_logStatus = FILE_OPEN_ERROR;
+	m_logStatus = eReturnValues::FILE_OPEN_ERROR;
 
 	if (pBuf != NULL)
 	{
@@ -153,7 +153,7 @@ void CLog::get_CLog(const uint8_t * pBuf, uint32_t logSize)
 #else
 			memcpy_s(m_bufferData, logSize, pBuf, logSize);
 #endif
-			m_logStatus = IN_PROGRESS;
+			m_logStatus = eReturnValues::IN_PROGRESS;
 		}			
 	}
 }
@@ -173,9 +173,9 @@ void CLog::get_CLog(const uint8_t * pBuf, uint32_t logSize)
 //---------------------------------------------------------------------------
 eReturnValues CLog::read_In_Buffer()
 {
-    if (m_logStatus == FILE_OPEN_ERROR)
+    if (m_logStatus == eReturnValues::FILE_OPEN_ERROR)
     {
-        return FILE_OPEN_ERROR;
+        return eReturnValues::FILE_OPEN_ERROR;
     }
     char * pData = &m_bufferData[0];
     std::fstream logFile(m_fileName.c_str(), std::ios::in | std::ios::binary);//only allow reading as a binary file
@@ -190,16 +190,16 @@ eReturnValues CLog::read_In_Buffer()
     }
     else
     {
-        m_logStatus = FILE_OPEN_ERROR;
-        return FILE_OPEN_ERROR;
+        m_logStatus = eReturnValues::FILE_OPEN_ERROR;
+        return eReturnValues::FILE_OPEN_ERROR;
     }
 
-    if (eVerbosity_open::VERBOSITY_DEFAULT < g_verbosity)
+    if (eVerbosityLevels::VERBOSITY_DEFAULT < g_verbosity)
     {
         printf("\nLoadbinbuf read %zd bytes into buffer.\n", m_size);
     }
 
-    return SUCCESS;
+    return eReturnValues::SUCCESS;
 }
 //-----------------------------------------------------------------------------
 //
@@ -216,7 +216,7 @@ eReturnValues CLog::read_In_Buffer()
 //---------------------------------------------------------------------------
 void CLog::read_In_Log()
 {
-    m_logStatus = IN_PROGRESS;
+    m_logStatus = eReturnValues::IN_PROGRESS;
 
     //open the file and see what the size is first
     std::ifstream fb(m_fileName.c_str(), std::ios::in);
@@ -229,13 +229,13 @@ void CLog::read_In_Log()
     }
     else
     {
-        m_logStatus = FILE_OPEN_ERROR;
+        m_logStatus = eReturnValues::FILE_OPEN_ERROR;
     }
     //set the size of the buffer
     m_bufferData = static_cast<char*>(calloc(m_size, sizeof(char)));
 
     // now we need to read in the buffer 
-    if (m_size != 0 && m_logStatus != FILE_OPEN_ERROR)
+    if (m_size != 0 && m_logStatus != eReturnValues::FILE_OPEN_ERROR)
     {
         char* pData = &m_bufferData[0];
         std::fstream logFile(m_fileName.c_str(), std::ios::in );
@@ -243,15 +243,21 @@ void CLog::read_In_Log()
         {
             logFile.read(pData, static_cast<std::streamsize>(m_size));
             logFile.close();
+
             m_logStatus = SUCCESS;
             if (m_bufferData != NULL)
             {
                 v_Buff.insert(v_Buff.end(), &m_bufferData[0], &m_bufferData[m_size]);
             }
+
+            m_logStatus = eReturnValues::SUCCESS;
         }
         else
         {
-            m_logStatus = FILE_OPEN_ERROR;
+            m_logStatus = eReturnValues::FILE_OPEN_ERROR;
+
         }
     }
+
+
 }

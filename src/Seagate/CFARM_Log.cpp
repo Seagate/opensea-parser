@@ -29,7 +29,7 @@ using namespace opensea_parser;
 //
 //---------------------------------------------------------------------------
 CFARMLog::CFARMLog()
-	:m_FARMstatus(IN_PROGRESS)
+	:m_FARMstatus(eReturnValues::IN_PROGRESS)
 	, bufferData()
     , m_bufferdelete(false)
 	, m_LogSize(0)
@@ -54,7 +54,7 @@ CFARMLog::CFARMLog()
 //
 //---------------------------------------------------------------------------
 CFARMLog::CFARMLog(const std::string& fileName, bool showStatus, bool showStatic)
-	: m_FARMstatus(IN_PROGRESS)
+	: m_FARMstatus(eReturnValues::IN_PROGRESS)
 	, bufferData()
     , m_bufferdelete(true)
 	, m_LogSize(0)
@@ -63,7 +63,7 @@ CFARMLog::CFARMLog(const std::string& fileName, bool showStatus, bool showStatic
 {
 	CLog *cCLog;
 	cCLog = new CLog(fileName);
-	if (cCLog->get_Log_Status() == SUCCESS)
+	if (cCLog->get_Log_Status() == eReturnValues::SUCCESS)
 	{
 		if (cCLog->get_Buffer() != NULL)
 		{
@@ -74,12 +74,12 @@ CFARMLog::CFARMLog(const std::string& fileName, bool showStatus, bool showStatic
 #else
 			memcpy_s(bufferData, m_LogSize, cCLog->get_Buffer(), m_LogSize);// copy the buffer data to the class member pBuf
 #endif
-			m_FARMstatus = IN_PROGRESS;
+			m_FARMstatus = eReturnValues::IN_PROGRESS;
 		}
 		else
 		{
 
-			m_FARMstatus = FAILURE;
+			m_FARMstatus = eReturnValues::FAILURE;
 		}
 	}
 	else
@@ -103,7 +103,7 @@ CFARMLog::CFARMLog(const std::string& fileName, bool showStatus, bool showStatic
 //
 //---------------------------------------------------------------------------
 CFARMLog::CFARMLog(const std::string & fileName)
-	:m_FARMstatus(IN_PROGRESS)
+	:m_FARMstatus(eReturnValues::IN_PROGRESS)
 	, bufferData()
     , m_bufferdelete(true)
 	, m_LogSize(0)
@@ -112,7 +112,7 @@ CFARMLog::CFARMLog(const std::string & fileName)
 {
 	CLog *cCLog;
 	cCLog = new CLog(fileName);
-	if (cCLog->get_Log_Status() == SUCCESS)
+	if (cCLog->get_Log_Status() == eReturnValues::SUCCESS)
 	{
 		if (cCLog->get_Buffer() != NULL)
 		{
@@ -123,12 +123,12 @@ CFARMLog::CFARMLog(const std::string & fileName)
 #else
 			memcpy_s(bufferData, m_LogSize, cCLog->get_Buffer(), m_LogSize);// copy the buffer data to the class member pBuf
 #endif
-			m_FARMstatus = IN_PROGRESS;
+			m_FARMstatus = eReturnValues::IN_PROGRESS;
 		}
 		else
 		{
 
-			m_FARMstatus = FAILURE;
+			m_FARMstatus = eReturnValues::FAILURE;
 		}
 	}
 	else
@@ -154,7 +154,7 @@ CFARMLog::CFARMLog(const std::string & fileName)
 //
 //---------------------------------------------------------------------------
 CFARMLog::CFARMLog(uint8_t *farmbufferData, size_t bufferSize, bool showStatus, bool showStatic)
-	: m_FARMstatus(IN_PROGRESS)
+	: m_FARMstatus(eReturnValues::IN_PROGRESS)
 	, bufferData(farmbufferData)
     , m_bufferdelete(false)
 	, m_LogSize(bufferSize)
@@ -163,12 +163,12 @@ CFARMLog::CFARMLog(uint8_t *farmbufferData, size_t bufferSize, bool showStatus, 
 {
 	if (farmbufferData != NULL)
 	{
-		m_FARMstatus = IN_PROGRESS;
+		m_FARMstatus = eReturnValues::IN_PROGRESS;
 }
 	else
 	{
 
-		m_FARMstatus = FAILURE;
+		m_FARMstatus = eReturnValues::FAILURE;
 	}
 }
 //-----------------------------------------------------------------------------
@@ -205,29 +205,29 @@ CFARMLog::~CFARMLog()
 //! \param pData - pointer to the buffer
 //
 //  Exit:
-//!   \return SUCCESS or FAILURE
+//!   \return eReturnValues::SUCCESS or FAILURE
 //
 //---------------------------------------------------------------------------
 eReturnValues CFARMLog::parse_Device_Farm_Log(JSONNODE *masterJson)
 {
-	eReturnValues retStatus = SUCCESS; // MEMORY_FAILURE;
+	eReturnValues retStatus = eReturnValues::SUCCESS; // MEMORY_FAILURE;
 
 	if (is_Device_Scsi(bufferData[0], bufferData[1]))
 	{
 		uint8_t subpage = bufferData[1];
 		CSCSI_Farm_Log* pCFarm;
 		pCFarm = new CSCSI_Farm_Log(bufferData, m_LogSize, subpage, false, m_showStatusBytes, m_showStatic);
-		if (pCFarm->get_Log_Status() == SUCCESS)
+		if (pCFarm->get_Log_Status() == eReturnValues::SUCCESS)
 		{
 			try
 			{
 				pCFarm->print_All_Pages(masterJson);
-				retStatus = SUCCESS;
+				retStatus = eReturnValues::SUCCESS;
 			}
 			catch (...)
 			{
 				delete (pCFarm);
-				return MEMORY_FAILURE;
+				return eReturnValues::MEMORY_FAILURE;
 			}
 		}
 		else
@@ -240,21 +240,21 @@ eReturnValues CFARMLog::parse_Device_Farm_Log(JSONNODE *masterJson)
 	{
 		CATA_Farm_Log* pCFarm;
 		pCFarm = new CATA_Farm_Log(bufferData, m_LogSize, m_showStatusBytes, m_showStatic);
-		if (pCFarm->get_Log_Status() == IN_PROGRESS)
+		if (pCFarm->get_Log_Status() == eReturnValues::IN_PROGRESS)
 		{
 			try
 			{
 				retStatus = pCFarm->parse_Farm_Log();
-				if (retStatus == IN_PROGRESS)
+				if (retStatus == eReturnValues::IN_PROGRESS)
 				{
 					pCFarm->print_All_Pages(masterJson);
-					retStatus = SUCCESS;
+					retStatus = eReturnValues::SUCCESS;
 				}
 			}
 			catch (...)
 			{
 				delete (pCFarm);
-				return MEMORY_FAILURE;
+				return eReturnValues::MEMORY_FAILURE;
 			}
 
 		}

@@ -36,7 +36,7 @@ CATA_Farm_Log::CATA_Farm_Log()
     , m_heads(0)
     , m_MaxHeads(0)
     , m_copies(0)
-    , m_status(IN_PROGRESS)
+    , m_status(eReturnValues::IN_PROGRESS)
     , m_showStatusBits(false)
     , m_pHeader()
     , pBuf()
@@ -71,7 +71,7 @@ CATA_Farm_Log::CATA_Farm_Log(uint8_t *bufferData, size_t bufferSize, bool showSt
     , m_heads(0)
     , m_MaxHeads(0)
     , m_copies(0)
-    , m_status(IN_PROGRESS)
+    , m_status(eReturnValues::IN_PROGRESS)
     , m_showStatusBits(showStatus)
     , m_pHeader()
     , pBuf()
@@ -92,7 +92,7 @@ CATA_Farm_Log::CATA_Farm_Log(uint8_t *bufferData, size_t bufferSize, bool showSt
         if (bufferSize < sizeof(sFarmHeader) || bufferSize < sizeof(sFarmFrame))
         {
 
-            m_status = BAD_PARAMETER;
+            m_status = eReturnValues::BAD_PARAMETER;
         }
         else
         {
@@ -103,7 +103,7 @@ CATA_Farm_Log::CATA_Farm_Log(uint8_t *bufferData, size_t bufferSize, bool showSt
             m_heads = m_pHeader->headsSupported & UINT64_C(0x00FFFFFFFFFFFFFF);
             m_MaxHeads = m_pHeader->headsSupported & UINT64_C(0x00FFFFFFFFFFFFFF);
             m_copies = m_pHeader->reserved & UINT64_C(0x00FFFFFFFFFFFFFF);
-            m_status = IN_PROGRESS;
+            m_status = eReturnValues::IN_PROGRESS;
             m_MajorRev = M_DoubleWord0(m_pHeader->majorRev);
             m_MinorRev = M_DoubleWord0(m_pHeader->minorRev);
             m_FrameReason = M_Byte0(m_pHeader->reasonForFrameCapture);
@@ -111,7 +111,7 @@ CATA_Farm_Log::CATA_Farm_Log(uint8_t *bufferData, size_t bufferSize, bool showSt
     }
     else
     {
-        m_status = FAILURE;
+        m_status = eReturnValues::FAILURE;
     }
 }
 
@@ -151,7 +151,7 @@ CATA_Farm_Log::~CATA_Farm_Log()
 //! \param page - the number that the page should be
 //
 //  Exit:
-//!   \return SUCCESS or FAILURE
+//!   \return eReturnValues::SUCCESS or FAILURE
 //
 //---------------------------------------------------------------------------
 bool CATA_Farm_Log::Check_Page_number(uint64_t page, uint16_t pageNumber)
@@ -160,7 +160,7 @@ bool CATA_Farm_Log::Check_Page_number(uint64_t page, uint16_t pageNumber)
         return true;
     else
     {
-        if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+        if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
         {
             printf("\n page number did not match pointer information.\n");
         }
@@ -178,12 +178,12 @@ bool CATA_Farm_Log::Check_Page_number(uint64_t page, uint16_t pageNumber)
 //! \param pData - pointer to the buffer
 //
 //  Exit:
-//!   \return SUCCESS or FAILURE
+//!   \return eReturnValues::SUCCESS or FAILURE
 //
 //---------------------------------------------------------------------------
 eReturnValues CATA_Farm_Log::parse_Farm_Log()
 {
-    eReturnValues retStatus = FAILURE;
+    eReturnValues retStatus = eReturnValues::FAILURE;
     uint64_t offset = m_pageSize;                                                 // the first page starts at 1* the page size
     if (pBuf == NULL)
     {
@@ -194,7 +194,7 @@ eReturnValues CATA_Farm_Log::parse_Farm_Log()
     // TODO:   Add in a check for time series that has all FFFF's even for the signature - show as empty 
     if (signature == FARMSIGNATURE || signature == FACTORYCOPY)                                     // check the head to see if it has the farm signature else fail
     {
-        retStatus = IN_PROGRESS;
+        retStatus = eReturnValues::IN_PROGRESS;
         for (uint32_t index = 0; index <= m_copies; ++index)                       // loop for the number of copies. I don't think it's zero base as of now
         {
             sDriveInfo *idInfo = reinterpret_cast<sDriveInfo*>(&pBuf[offset]);                   // get the id drive information at the time.
@@ -215,7 +215,7 @@ eReturnValues CATA_Farm_Log::parse_Farm_Log()
             }
             if (!Check_Page_number(idInfo->pageNumber, 1))
             {
-                retStatus = VALIDATION_FAILURE;
+                retStatus = eReturnValues::VALIDATION_FAILURE;
             }
 
             offset += m_pageSize;
@@ -224,7 +224,7 @@ eReturnValues CATA_Farm_Log::parse_Farm_Log()
             memcpy(&pFarmFrame->workLoadPage, pworkLoad, sizeof(sWorkLoadStat));
             if (!Check_Page_number(pworkLoad->pageNumber, 2))
             {
-                retStatus = VALIDATION_FAILURE;
+                retStatus = eReturnValues::VALIDATION_FAILURE;
             }
             offset += m_pageSize;
 
@@ -232,7 +232,7 @@ eReturnValues CATA_Farm_Log::parse_Farm_Log()
             memcpy(&pFarmFrame->errorPage, pError, sizeof(sErrorStat));
             if (!Check_Page_number(pError->pageNumber, 3))
             {
-                retStatus = VALIDATION_FAILURE;
+                retStatus = eReturnValues::VALIDATION_FAILURE;
             }
             offset += m_pageSize;
 
@@ -240,7 +240,7 @@ eReturnValues CATA_Farm_Log::parse_Farm_Log()
             memcpy(&pFarmFrame->environmentPage, pEnvironment, sizeof(sEnvironementStat));
             if (!Check_Page_number(pEnvironment->pageNumber, 4))
             {
-                retStatus = VALIDATION_FAILURE;
+                retStatus = eReturnValues::VALIDATION_FAILURE;
             }
             offset += m_pageSize;
 
@@ -248,7 +248,7 @@ eReturnValues CATA_Farm_Log::parse_Farm_Log()
             memcpy(&pFarmFrame->reliPage, pReli, sizeof(sAtaReliabilityStat));
             if (!Check_Page_number(pReli->pageNumber, 5))
             {
-                retStatus = VALIDATION_FAILURE;
+                retStatus = eReturnValues::VALIDATION_FAILURE;
             }
             offset += m_pageSize;                                                  // add another page size. I think there is only on header
             vFarmFrame.push_back(*pFarmFrame);                                   // push the data to the vector
@@ -257,7 +257,7 @@ eReturnValues CATA_Farm_Log::parse_Farm_Log()
     }
     if (signature == FARMEMPTYSIGNATURE || signature == FARMPADDINGSIGNATURE)                                     // checking for an empty log aka all FFFF's
     {
-        retStatus = IN_PROGRESS;
+        retStatus = eReturnValues::IN_PROGRESS;
     }
     delete (pFarmFrame);
     return retStatus;
@@ -274,7 +274,7 @@ eReturnValues CATA_Farm_Log::parse_Farm_Log()
 //! \param masterData - pointer to the json data that will be printed or passed on
 //
 //  Exit:
-//!   \return SUCCESS
+//!   \return eReturnValues::SUCCESS
 //
 //---------------------------------------------------------------------------
 eReturnValues CATA_Farm_Log::print_Header(JSONNODE* masterData)
@@ -282,7 +282,7 @@ eReturnValues CATA_Farm_Log::print_Header(JSONNODE* masterData)
     JSONNODE* pageInfo = json_new(JSON_NODE);
     sFarmHeader* header = reinterpret_cast<sFarmHeader*>(&pBuf[0]);                                                                                    // pointer to the header to get the signature
 
-    if (g_verbosity >= eVerbosity_open::VERBOSITY_COMMAND_VERBOSE)
+    if (g_verbosity >= eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE)
     {
         printf("\n\nFARM Log Header \n");
         printf("\tLog Signature:                                                0x%" PRIX64" \n", header->signature & UINT64_C(0x00FFFFFFFFFFFFFF));                      //!< Log Signature = 0x00004641524D4552
@@ -313,7 +313,7 @@ eReturnValues CATA_Farm_Log::print_Header(JSONNODE* masterData)
 
     json_push_back(masterData, pageInfo);
 
-    return SUCCESS;
+    return eReturnValues::SUCCESS;
 }
 
 //-----------------------------------------------------------------------------
@@ -328,7 +328,7 @@ eReturnValues CATA_Farm_Log::print_Header(JSONNODE* masterData)
 //! \param page  = the page copy number of the data we want to print. 
 //
 //  Exit:
-//!   \return SUCCESS
+//!   \return eReturnValues::SUCCESS
 //
 //---------------------------------------------------------------------------
 eReturnValues CATA_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint32_t page)
@@ -337,7 +337,7 @@ eReturnValues CATA_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint3
     std::ostringstream myStr;
     JSONNODE *pageInfo = json_new(JSON_NODE);
 
-    if (g_verbosity >= eVerbosity_open::VERBOSITY_COMMAND_VERBOSE)
+    if (g_verbosity >= eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE)
     {
         if (vFarmFrame.at(page).driveInfo.copyNumber == FACTORYCOPY)
         {
@@ -492,7 +492,7 @@ eReturnValues CATA_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint3
 
     json_push_back(masterData, pageInfo);
 
-    return SUCCESS;
+    return eReturnValues::SUCCESS;
 }
 
 //-----------------------------------------------------------------------------
@@ -507,14 +507,14 @@ eReturnValues CATA_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint3
 //! \param page  = the page copy number of the data we want to print. 
 //
 //  Exit:
-//!   \return SUCCESS
+//!   \return eReturnValues::SUCCESS
 //
 //---------------------------------------------------------------------------
 eReturnValues CATA_Farm_Log::print_Work_Load(JSONNODE *masterData, uint32_t page)
 {
     JSONNODE *pageInfo = json_new(JSON_NODE);
 
-    if (g_verbosity >= eVerbosity_open::VERBOSITY_COMMAND_VERBOSE)
+    if (g_verbosity >= eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE)
     {
         if (vFarmFrame.at(page).workLoadPage.copyNumber == FACTORYCOPY)
         {
@@ -622,7 +622,7 @@ eReturnValues CATA_Farm_Log::print_Work_Load(JSONNODE *masterData, uint32_t page
 
     json_push_back(masterData, pageInfo);
 
-    return SUCCESS;
+    return eReturnValues::SUCCESS;
 }
 
 //-----------------------------------------------------------------------------
@@ -637,7 +637,7 @@ eReturnValues CATA_Farm_Log::print_Work_Load(JSONNODE *masterData, uint32_t page
 //! \param page  = the page copy number of the data we want to print. 
 //
 //  Exit:
-//!   \return SUCCESS
+//!   \return eReturnValues::SUCCESS
 //
 //---------------------------------------------------------------------------
 eReturnValues CATA_Farm_Log::print_Error_Information(JSONNODE *masterData, uint32_t page)
@@ -647,7 +647,7 @@ eReturnValues CATA_Farm_Log::print_Error_Information(JSONNODE *masterData, uint3
     uint32_t loopCount = 0;
     JSONNODE *pageInfo = json_new(JSON_NODE);
 
-    if (g_verbosity >= eVerbosity_open::VERBOSITY_COMMAND_VERBOSE)
+    if (g_verbosity >= eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE)
     {
         if (vFarmFrame.at(page).errorPage.copyNumber == FACTORYCOPY)
         {
@@ -898,7 +898,7 @@ eReturnValues CATA_Farm_Log::print_Error_Information(JSONNODE *masterData, uint3
 
     json_push_back(masterData, pageInfo);
 
-    return SUCCESS;
+    return eReturnValues::SUCCESS;
 }
 
 //-----------------------------------------------------------------------------
@@ -913,14 +913,14 @@ eReturnValues CATA_Farm_Log::print_Error_Information(JSONNODE *masterData, uint3
 //! \param page  = the page copy number of the data we want to print. 
 //
 //  Exit:
-//!   \return SUCCESS
+//!   \return eReturnValues::SUCCESS
 //
 //---------------------------------------------------------------------------
 eReturnValues CATA_Farm_Log::print_Enviroment_Information(JSONNODE *masterData, uint32_t page)
 {
     JSONNODE *pageInfo = json_new(JSON_NODE);
 
-    if (g_verbosity >= eVerbosity_open::VERBOSITY_COMMAND_VERBOSE)
+    if (g_verbosity >= eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE)
     {
         if (vFarmFrame.at(page).environmentPage.copyNumber == FACTORYCOPY)
         {
@@ -1032,7 +1032,7 @@ eReturnValues CATA_Farm_Log::print_Enviroment_Information(JSONNODE *masterData, 
 
     json_push_back(masterData, pageInfo);
 
-    return SUCCESS;
+    return eReturnValues::SUCCESS;
 }
 
 //-----------------------------------------------------------------------------
@@ -1047,7 +1047,7 @@ eReturnValues CATA_Farm_Log::print_Enviroment_Information(JSONNODE *masterData, 
 //! \param page  = the page copy number of the data we want to print. 
 //
 //  Exit:
-//!   \return SUCCESS
+//!   \return eReturnValues::SUCCESS
 //
 //---------------------------------------------------------------------------
 eReturnValues CATA_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint32_t page)
@@ -1055,7 +1055,7 @@ eReturnValues CATA_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint32
     std::string myStr;
     JSONNODE *pageInfo = json_new(JSON_NODE);
 
-    if (g_verbosity >= eVerbosity_open::VERBOSITY_COMMAND_VERBOSE)
+    if (g_verbosity >= eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE)
     {
 
         if (vFarmFrame.at(page).reliPage.copyNumber == FACTORYCOPY)
@@ -1114,7 +1114,7 @@ eReturnValues CATA_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint32
     set_json_64_bit_With_Status(pageInfo, "Primary Super Parity Coverage Percentage SMR SWR - Actuator 1", vFarmFrame.at(page).reliPage.superParityCoveragePercentageAct1, false, m_showStatusBits);
   
     json_push_back(masterData, pageInfo);
-    return SUCCESS;
+    return eReturnValues::SUCCESS;
 }
 //-----------------------------------------------------------------------------
 //
@@ -1128,14 +1128,14 @@ eReturnValues CATA_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint32
 //! \param page  = the page copy number of the data we want to print. 
 //
 //  Exit:
-//!   \return SUCCESS
+//!   \return eReturnValues::SUCCESS
 //
 //---------------------------------------------------------------------------
 eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32_t page)
 {
     std::string myHeader;
     JSONNODE *headInfo = json_new(JSON_NODE);
-    if (g_verbosity >= eVerbosity_open::VERBOSITY_COMMAND_VERBOSE)
+    if (g_verbosity >= eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE)
     {
         //double remander = 0;
         uint32_t loopCount = 0;
@@ -1332,7 +1332,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
 	int_Data(headInfo, "Second MR Head Resistance", vFarmFrame.at(page).reliPage.secondMRHeadResistance, m_heads, m_showStatusBits, m_showStatic);
 
     json_push_back(masterData, headInfo);
-    return SUCCESS;
+    return eReturnValues::SUCCESS;
 }
 //-----------------------------------------------------------------------------
 //

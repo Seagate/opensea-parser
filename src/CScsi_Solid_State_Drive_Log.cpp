@@ -32,13 +32,13 @@ using namespace opensea_parser;
 CScsiSolidStateDriveLog::CScsiSolidStateDriveLog()
     : pData()
     , m_SSDName("Solid State Drive Log")
-    , m_SSDStatus(IN_PROGRESS)
+    , m_SSDStatus(eReturnValues::IN_PROGRESS)
     , m_PageLength(0)
     , m_bufferLength(0)
     , m_SSDValue(0)
     , m_SSDParam()
 {
-    if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+    if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
         printf("%s \n", m_SSDName.c_str());
     }
@@ -61,23 +61,23 @@ CScsiSolidStateDriveLog::CScsiSolidStateDriveLog()
 CScsiSolidStateDriveLog::CScsiSolidStateDriveLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength)
     : pData(buffer)
     , m_SSDName("Solid State Drive Log")
-    , m_SSDStatus(IN_PROGRESS)
+    , m_SSDStatus(eReturnValues::IN_PROGRESS)
     , m_PageLength(pageLength)
     , m_bufferLength(bufferSize)
     , m_SSDValue(0)
     , m_SSDParam()
 {
-    if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+    if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
         printf("%s \n", m_SSDName.c_str());
     }
     if (buffer != NULL)
     {
-        m_SSDStatus = IN_PROGRESS;
+        m_SSDStatus = eReturnValues::IN_PROGRESS;
     }
     else
     {
-        m_SSDStatus = FAILURE;
+        m_SSDStatus = eReturnValues::FAILURE;
     }
 }
 //-----------------------------------------------------------------------------
@@ -210,7 +210,7 @@ void CScsiSolidStateDriveLog::process_Solid_State_Drive_Data(JSONNODE *ssdData)
 //---------------------------------------------------------------------------
 eReturnValues CScsiSolidStateDriveLog::get_Solid_State_Drive_Data(JSONNODE *masterData)
 {
-    eReturnValues retStatus = IN_PROGRESS;
+    eReturnValues retStatus = eReturnValues::IN_PROGRESS;
     if (pData != NULL)
     {
         JSONNODE *pageInfo = json_new(JSON_NODE);
@@ -234,7 +234,7 @@ eReturnValues CScsiSolidStateDriveLog::get_Solid_State_Drive_Data(JSONNODE *mast
                     else
                     {
                         json_push_back(masterData, pageInfo);
-                        return BAD_PARAMETER;
+                        return eReturnValues::BAD_PARAMETER;
                     }
                     break;
                 }
@@ -248,7 +248,7 @@ eReturnValues CScsiSolidStateDriveLog::get_Solid_State_Drive_Data(JSONNODE *mast
                     else
                     {
                         json_push_back(masterData, pageInfo);
-                        return BAD_PARAMETER;
+                        return eReturnValues::BAD_PARAMETER;
                     }
                     break;
                 }
@@ -262,7 +262,7 @@ eReturnValues CScsiSolidStateDriveLog::get_Solid_State_Drive_Data(JSONNODE *mast
                     else
                     {
                         json_push_back(masterData, pageInfo);
-                        return BAD_PARAMETER;
+                        return eReturnValues::BAD_PARAMETER;
                     }
                     break;
                 }
@@ -276,14 +276,14 @@ eReturnValues CScsiSolidStateDriveLog::get_Solid_State_Drive_Data(JSONNODE *mast
                     else
                     {
                         json_push_back(masterData, pageInfo);
-                        return BAD_PARAMETER;
+                        return eReturnValues::BAD_PARAMETER;
                     }
                     break;
                 }
                 default:
                 {
                     json_push_back(masterData, pageInfo);
-                    return BAD_PARAMETER;
+                    return eReturnValues::BAD_PARAMETER;
                 }
                 }
                 process_Solid_State_Drive_Data(pageInfo);
@@ -291,16 +291,16 @@ eReturnValues CScsiSolidStateDriveLog::get_Solid_State_Drive_Data(JSONNODE *mast
             else
             {
                 json_push_back(masterData, pageInfo);
-                return BAD_PARAMETER;
+                return eReturnValues::BAD_PARAMETER;
             }
         }
 
         json_push_back(masterData, pageInfo);
-        retStatus = SUCCESS;
+        retStatus = eReturnValues::SUCCESS;
     }
     else
     {
-        retStatus = MEMORY_FAILURE;
+        retStatus = eReturnValues::MEMORY_FAILURE;
     }
     return retStatus;
 }

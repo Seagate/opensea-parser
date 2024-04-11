@@ -30,16 +30,16 @@ using namespace opensea_parser;
 //
 //---------------------------------------------------------------------------
 CScsiScanLog::CScsiScanLog()
-	: v_Data()
+	: pData()
 	, m_ScanName("Background Scan Log")
-	, m_ScanStatus(IN_PROGRESS)
+	, m_ScanStatus(eReturnValues::IN_PROGRESS)
 	, m_PageLength(0)
 	, m_bufferLength()
 	, m_ScanParam()
 	, m_defect()
     , m_ParamHeader()
 {
-	if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+	if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
 		printf("%s \n", m_ScanName.c_str());
 	}
@@ -60,27 +60,32 @@ CScsiScanLog::CScsiScanLog()
 //
 //---------------------------------------------------------------------------
 CScsiScanLog::CScsiScanLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength)
-	: v_Data(&buffer[0], &buffer[bufferSize])
+	: pData(NULL)
 	, m_ScanName("Background Scan Log")
-	, m_ScanStatus(IN_PROGRESS)
+	, m_ScanStatus(eReturnValues::IN_PROGRESS)
 	, m_PageLength(pageLength)
 	, m_bufferLength(bufferSize)
 	, m_ScanParam()
 	, m_defect()
     , m_ParamHeader()
 {
-	if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+	if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
 		printf("%s \n", m_ScanName.c_str());
 	}
-
-	if (v_Data.size() != 0)
+    pData = new uint8_t[pageLength];								// new a buffer to the point				
+#ifndef __STDC_SECURE_LIB__
+    memcpy(pData, buffer, pageLength);
+#else
+    memcpy_s(pData, bufferSize, buffer, pageLength);// copy the buffer data to the class member pBuf
+#endif
+	if (pData != NULL)
 	{
-		m_ScanStatus = IN_PROGRESS;
+		m_ScanStatus = eReturnValues::IN_PROGRESS;
 	}
 	else
 	{
-		m_ScanStatus = FAILURE;
+		m_ScanStatus = eReturnValues::FAILURE;
 	}
 
 }
@@ -101,7 +106,11 @@ CScsiScanLog::CScsiScanLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLen
 //---------------------------------------------------------------------------
 CScsiScanLog::~CScsiScanLog()
 {
-
+    if (pData != NULL)
+    {
+        delete[] pData;
+        pData = NULL;
+    }
 }
 //-----------------------------------------------------------------------------
 //
@@ -415,12 +424,12 @@ void CScsiScanLog::process_other_param_data(JSONNODE *scanData, size_t offset)
 //---------------------------------------------------------------------------
 eReturnValues CScsiScanLog::get_Scan_Data(JSONNODE *masterData)
 {
-	eReturnValues retStatus = IN_PROGRESS;
-	if (v_Data.size() != 0)
+	eReturnValues retStatus = eReturnValues::IN_PROGRESS;
+	if (pData != NULL)
 	{
 		JSONNODE *pageInfo = json_new(JSON_NODE);
 		json_set_name(pageInfo, "Background Scan Log - 15h");
-        m_ScanParam = reinterpret_cast<sScanStatusParams*>(&v_Data.at(0));
+        m_ScanParam = reinterpret_cast<sScanStatusParams*>(&pData[0]);
 		process_Scan_Status_Data(pageInfo);
         if ((m_ScanParam->paramLength + 4) < m_PageLength)
         {
@@ -428,17 +437,17 @@ eReturnValues CScsiScanLog::get_Scan_Data(JSONNODE *masterData)
             {
                 if (offset < m_bufferLength && offset < UINT16_MAX)
                 {
-                    uint16_t paramCode = *(reinterpret_cast<uint16_t*>(&v_Data.at(offset)));
+                    uint16_t paramCode = *(reinterpret_cast<uint16_t*>(&pData[offset]));
                     byte_Swap_16(&paramCode);
                     if (paramCode >= 0x0001 && paramCode <= 0x0800)
                     {
-                        m_defect = reinterpret_cast<sScanFindingsParams*>(&v_Data.at(offset));
+                        m_defect = reinterpret_cast<sScanFindingsParams*>(&pData[offset]);
                         process_Defect_Data(pageInfo);
                         offset += static_cast<size_t>(m_defect->paramLength) + PARAMSIZE;
                     }
                     else 
                     {
-                        m_ParamHeader = reinterpret_cast<sBackgroundScanParamHeader*>(&v_Data.at(offset));
+                        m_ParamHeader = reinterpret_cast<sBackgroundScanParamHeader*>(&pData[offset]);
                         process_other_param_data(pageInfo, offset);
                         offset += static_cast<size_t>(m_ParamHeader->paramLength) + PARAMSIZE;
                     }
@@ -446,18 +455,18 @@ eReturnValues CScsiScanLog::get_Scan_Data(JSONNODE *masterData)
                 else
                 {
                     json_push_back(masterData, pageInfo);
-                    return BAD_PARAMETER;
+                    return eReturnValues::BAD_PARAMETER;
                 }
 
             }
         }
 
 		json_push_back(masterData, pageInfo);
-		retStatus = SUCCESS;
+		retStatus = eReturnValues::SUCCESS;
 	}
 	else
 	{
-		retStatus = MEMORY_FAILURE;
+		retStatus = eReturnValues::MEMORY_FAILURE;
 	}
 	return retStatus;
 }

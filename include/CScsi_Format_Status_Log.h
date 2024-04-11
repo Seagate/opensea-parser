@@ -1,4 +1,4 @@
-// CScsi_Format_Status_Log.h  Format Status log page reports information about the most recent successful format operation
+// CScsi_Format_Status_Log.h  Format Status log page reports information about the most recent eReturnValues::SUCCESSful format operation
 //
 // Do NOT modify or remove this copyright and license
 //
@@ -10,7 +10,7 @@
 //
 // ******************************************************************************************
 
-// \file CScsi_Format_Status_Log.h  Format Status log page reports information about the most recent successful format operation
+// \file CScsi_Format_Status_Log.h  Format Status log page reports information about the most recent eReturnValues::SUCCESSful format operation
 #pragma once
 #include <string>
 #include "common.h"

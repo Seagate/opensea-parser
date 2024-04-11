@@ -32,13 +32,13 @@ using namespace opensea_parser;
 CScsiZonedDeviceStatisticsLog::CScsiZonedDeviceStatisticsLog()
     : pData()
     , m_ZDSName("Zoned Device Statistics Log")
-    , m_ZDSStatus(IN_PROGRESS)
+    , m_ZDSStatus(eReturnValues::IN_PROGRESS)
     , m_PageLength(0)
     , m_bufferLength(0)
     , m_ZDSValue(0)
     , m_ZDSParam()
 {
-    if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+    if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
         printf("%s \n", m_ZDSName.c_str());
     }
@@ -62,23 +62,23 @@ CScsiZonedDeviceStatisticsLog::CScsiZonedDeviceStatisticsLog()
 CScsiZonedDeviceStatisticsLog::CScsiZonedDeviceStatisticsLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength)
     : pData(buffer)
     , m_ZDSName("Zoned Device Statistics Log")
-    , m_ZDSStatus(IN_PROGRESS)
+    , m_ZDSStatus(eReturnValues::IN_PROGRESS)
     , m_PageLength(pageLength)
     , m_bufferLength(bufferSize)
     , m_ZDSValue(0)
     , m_ZDSParam()
 {
-    if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+    if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
         printf("%s \n", m_ZDSName.c_str());
     }
     if (buffer != NULL)
     {
-        m_ZDSStatus = IN_PROGRESS;
+        m_ZDSStatus = eReturnValues::IN_PROGRESS;
     }
     else
     {
-        m_ZDSStatus = FAILURE;
+        m_ZDSStatus = eReturnValues::FAILURE;
     }
 }
 //-----------------------------------------------------------------------------
@@ -273,7 +273,7 @@ void CScsiZonedDeviceStatisticsLog::process_Zoned_Device_Statistics_Data(JSONNOD
 //---------------------------------------------------------------------------
 eReturnValues CScsiZonedDeviceStatisticsLog::get_Zoned_Device_Statistics_Data(JSONNODE *masterData)
 {
-    eReturnValues retStatus = IN_PROGRESS;
+    eReturnValues retStatus = eReturnValues::IN_PROGRESS;
     if (pData != NULL)
     {
         JSONNODE *pageInfo = json_new(JSON_NODE);
@@ -297,7 +297,7 @@ eReturnValues CScsiZonedDeviceStatisticsLog::get_Zoned_Device_Statistics_Data(JS
                     else
                     {
                         json_push_back(masterData, pageInfo);
-                        return BAD_PARAMETER;
+                        return eReturnValues::BAD_PARAMETER;
                     }
                     break;
                 }
@@ -311,7 +311,7 @@ eReturnValues CScsiZonedDeviceStatisticsLog::get_Zoned_Device_Statistics_Data(JS
                     else
                     {
                         json_push_back(masterData, pageInfo);
-                        return BAD_PARAMETER;
+                        return eReturnValues::BAD_PARAMETER;
                     }
                     break;
                 }
@@ -325,7 +325,7 @@ eReturnValues CScsiZonedDeviceStatisticsLog::get_Zoned_Device_Statistics_Data(JS
                     else
                     {
                         json_push_back(masterData, pageInfo);
-                        return BAD_PARAMETER;
+                        return eReturnValues::BAD_PARAMETER;
                     }
                     break;
                 }
@@ -339,14 +339,14 @@ eReturnValues CScsiZonedDeviceStatisticsLog::get_Zoned_Device_Statistics_Data(JS
                     else
                     {
                         json_push_back(masterData, pageInfo);
-                        return BAD_PARAMETER;
+                        return eReturnValues::BAD_PARAMETER;
                     }
                     break;
                 }
                 default:
                 {
                     json_push_back(masterData, pageInfo);
-                    return BAD_PARAMETER;
+                    return eReturnValues::BAD_PARAMETER;
                 }
                 }
                 process_Zoned_Device_Statistics_Data(pageInfo);
@@ -354,16 +354,16 @@ eReturnValues CScsiZonedDeviceStatisticsLog::get_Zoned_Device_Statistics_Data(JS
             else
             {
                 json_push_back(masterData, pageInfo);
-                return BAD_PARAMETER;
+                return eReturnValues::BAD_PARAMETER;
             }
         }
 
         json_push_back(masterData, pageInfo);
-        retStatus = SUCCESS;
+        retStatus = eReturnValues::SUCCESS;
     }
     else
     {
-        retStatus = MEMORY_FAILURE;
+        retStatus = eReturnValues::MEMORY_FAILURE;
     }
     return retStatus;
 }

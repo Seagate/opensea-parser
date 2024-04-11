@@ -32,7 +32,7 @@ CAta_SMART_Log_Dir::CAta_SMART_Log_Dir()
     : m_name("ATA SMART Log Directory")
     , pData(NULL)
     , m_logSize(0)
-    , m_status(IN_PROGRESS)
+    , m_status(eReturnValues::IN_PROGRESS)
     , m_freeBuffer(false)
     , m_hasHostSpecific(false)
     , m_hasVendorSpecific(false)
@@ -56,14 +56,14 @@ CAta_SMART_Log_Dir::CAta_SMART_Log_Dir(const std::string &fileName)
     : m_name("ATA SMART Log Directory")
     , pData(NULL)
     , m_logSize(0)
-    , m_status(IN_PROGRESS)
+    , m_status(eReturnValues::IN_PROGRESS)
     , m_freeBuffer(false)
     , m_hasHostSpecific(false)
     , m_hasVendorSpecific(false)
 {
     CLog *cCLog;
     cCLog = new CLog(fileName);
-    if (cCLog->get_Log_Status() == SUCCESS)
+    if (cCLog->get_Log_Status() == eReturnValues::SUCCESS)
     {
         if (cCLog->get_Buffer() != NULL)
         {
@@ -80,7 +80,7 @@ CAta_SMART_Log_Dir::CAta_SMART_Log_Dir(const std::string &fileName)
         }
         else
         {
-            m_status = FAILURE;
+            m_status = eReturnValues::FAILURE;
         }
     }
     else
@@ -107,7 +107,7 @@ CAta_SMART_Log_Dir::CAta_SMART_Log_Dir(uint8_t *bufferData, size_t logSize)
     : m_name("ATA SMART Log Directory")
     , pData(bufferData)
     , m_logSize(logSize)
-    , m_status(IN_PROGRESS)
+    , m_status(eReturnValues::IN_PROGRESS)
     , m_freeBuffer(false)
     , m_hasHostSpecific(false)
     , m_hasVendorSpecific(false)
@@ -118,7 +118,7 @@ CAta_SMART_Log_Dir::CAta_SMART_Log_Dir(uint8_t *bufferData, size_t logSize)
     }
     else
     {
-        m_status = FAILURE;
+        m_status = eReturnValues::FAILURE;
     }
 }
 //-----------------------------------------------------------------------------
@@ -162,7 +162,7 @@ CAta_SMART_Log_Dir::~CAta_SMART_Log_Dir()
 //---------------------------------------------------------------------------
 eReturnValues CAta_SMART_Log_Dir::parse_SMART_Log_Dir()
 {
-    eReturnValues ret = SUCCESS;
+    eReturnValues ret = eReturnValues::SUCCESS;
 
     for (uint16_t offset = 2; offset < m_logSize; offset += 2)
     {
@@ -258,5 +258,5 @@ eReturnValues CAta_SMART_Log_Dir::print_SMART_Log_Dir(JSONNODE *masterData)
 
     json_push_back(masterData, dirInfo);
 
-    return SUCCESS;
+    return eReturnValues::SUCCESS;
 }
