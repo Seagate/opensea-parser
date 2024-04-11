@@ -121,9 +121,9 @@ CScsiSupportedLog::~CScsiSupportedLog()
 //---------------------------------------------------------------------------
 void CScsiSupportedLog::get_Supported_And_Subpage_Description(std::string *description)
 {
-	switch (m_Page)
+	switch (static_cast<eLogPageNames>(m_Page))
 	{
-		case SUPPORTED_LOG_PAGES:
+	case eLogPageNames::SUPPORTED_LOG_PAGES:
 		{
             if (m_ShowSupportedPagesOnce)
             {
@@ -139,37 +139,37 @@ void CScsiSupportedLog::get_Supported_And_Subpage_Description(std::string *descr
             }
 			break;
 		}
-		case WRITE_ERROR_COUNTER:
+		case eLogPageNames::WRITE_ERROR_COUNTER:
 		{
             description->assign("Write Error Counter");
 			break;
 		}
-		case READ_ERROR_COUNTER:
+		case eLogPageNames::READ_ERROR_COUNTER:
 		{
             description->assign("Read Error Counter");
 			break;
 		}
-		case VERIFY_ERROR_COUNTER:
+		case eLogPageNames::VERIFY_ERROR_COUNTER:
 		{
             description->assign("Verify Error Counter");
 			break;
 		}
-		case NON_MEDIUM_ERROR:
+		case eLogPageNames::NON_MEDIUM_ERROR:
 		{
             description->assign("Non-Medium Error");
 			break;
 		}
-		case FORMAT_STATUS:
+		case eLogPageNames::FORMAT_STATUS:
 		{
             description->assign("Format Status");
 			break;
 		}
-		case LOGICAL_BLOCK_PROVISIONING:
+		case eLogPageNames::LOGICAL_BLOCK_PROVISIONING:
 		{
             description->assign("Logical Block Provisioning");
 			break;
 		}
-		case ENVIRONMENTAL:
+		case eLogPageNames::ENVIRONMENTAL:
 		{
 			if (m_ShowSubPage && m_SubPage == 0x00)
 			{
@@ -189,32 +189,32 @@ void CScsiSupportedLog::get_Supported_And_Subpage_Description(std::string *descr
 			}
 			break;
 		}
-		case START_STOP_CYCLE_COUNTER:
+		case eLogPageNames::START_STOP_CYCLE_COUNTER:
 		{
             description->assign("Start-Stop Cycle Counter");
 			break;
 		}
-		case APPLICATION_CLIENT:
+		case eLogPageNames::APPLICATION_CLIENT:
 		{
             description->assign("Application Client");
 			break;
 		}
-		case SELF_TEST_RESULTS:
+		case eLogPageNames::SELF_TEST_RESULTS:
 		{
             description->assign("Self-Test Results");
 			break;
 		}
-		case SOLID_STATE_MEDIA:
+		case eLogPageNames::SOLID_STATE_MEDIA:
 		{
             description->assign("Solid State Media");
 			break;
 		}
-        case ZONED_DEVICE_STATISTICS:
+        case eLogPageNames::ZONED_DEVICE_STATISTICS:
         {
             description->assign("Zoned Device Statistics");
             break;
         }
-		case BACKGROUND_SCAN:
+		case eLogPageNames::BACKGROUND_SCAN:
 		{
 			if (m_ShowSubPage && m_SubPage == 0x02)
 			{
@@ -226,27 +226,27 @@ void CScsiSupportedLog::get_Supported_And_Subpage_Description(std::string *descr
 			}
 			break;
 		}
-		case PROTOCOL_SPECIFIC_PORT:
+		case eLogPageNames::PROTOCOL_SPECIFIC_PORT:
 		{
             description->assign("SAS Protocol Log Page");
 			break;
 		}
-		case POWER_CONDITION_TRANSITIONS:
+		case eLogPageNames::POWER_CONDITION_TRANSITIONS:
 		{
             description->assign("Protocol Specific Port");
 			break;
 		}
-		case INFORMATIONAL_EXCEPTIONS:
+		case eLogPageNames::INFORMATIONAL_EXCEPTIONS:
 		{
             description->assign("Informational Exceptions");
 			break;
 		}
-		case CACHE_STATISTICS:
+		case eLogPageNames::CACHE_STATISTICS:
 		{
             description->assign("Cache Statistics");
 			break;
 		}
-		case FACTORY_LOG:
+		case eLogPageNames::FACTORY_LOG:
 		{
             description->assign("Factory Log");
 			break;

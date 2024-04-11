@@ -228,7 +228,7 @@ CSCSI_Farm_Log::~CSCSI_Farm_Log()
 //! None
 //
 //  Exit:
-//!   \return eReturnValues - MEMORY_FAILURE - if the buffer is NULL
+//!   \return eReturnValues - eReturnValues::MEMORY_FAILURE - if the buffer is NULL
 //
 //---------------------------------------------------------------------------
 eReturnValues CSCSI_Farm_Log::init_Header_Data(size_t bufferSize)

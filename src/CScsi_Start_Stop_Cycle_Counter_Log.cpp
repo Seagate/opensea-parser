@@ -138,7 +138,7 @@ eReturnValues CScsiStartStop::parse_Start_Stop_Log(JSONNODE *masterData)
     JSONNODE *pageInfo = json_new(JSON_NODE);
     json_set_name(pageInfo, "Scsi Start Stop Cycle Counter Log - Eh");
     byte_Swap_16(&m_Page->manufatureParamCode);
-    if (manufactureDate == m_Page->manufatureParamCode)
+    if (static_cast<uint16_t>(eSSMLogParams::manufactureDate) == m_Page->manufatureParamCode)
     {
         retStatus = week_Year_Print(pageInfo, m_Page->manufatureParamCode, m_Page->paramLength1, m_Page->paramControlByte1, m_Page->year, m_Page->week, "Date of Manufacture", "Year of Manufacture", "Week of Manufacture");
     }
@@ -150,7 +150,7 @@ eReturnValues CScsiStartStop::parse_Start_Stop_Log(JSONNODE *masterData)
     if (retStatus == eReturnValues::SUCCESS)
     {
         byte_Swap_16(&m_Page->accountParamCode);
-        if (accountingDate == m_Page->accountParamCode)
+        if (static_cast<uint16_t>(eSSMLogParams::accountingDate) == m_Page->accountParamCode)
         {
             retStatus = week_Year_Print(pageInfo, m_Page->accountParamCode, m_Page->paramLength2, m_Page->paramControlByte2, m_Page->accYear, m_Page->accWeek, "Accounting Date", "Accounting Year", "Accounting Week");
         }
@@ -161,7 +161,7 @@ eReturnValues CScsiStartStop::parse_Start_Stop_Log(JSONNODE *masterData)
         if (retStatus == eReturnValues::SUCCESS)
         {
             byte_Swap_16(&m_Page->specCycleParamCode);
-            if (specLifetime == m_Page->specCycleParamCode)
+            if (static_cast<uint16_t>(eSSMLogParams::specLifetime) == m_Page->specCycleParamCode)
             {
                 retStatus = get_Count(pageInfo, m_Page->specCycleParamCode, m_Page->paramLength3, m_Page->paramControlByte3, m_Page->specLifeTime, "Specified Cycle Count", "Specified Cycle Count Over Device Lifetime");
             }
@@ -172,7 +172,7 @@ eReturnValues CScsiStartStop::parse_Start_Stop_Log(JSONNODE *masterData)
             if (retStatus == eReturnValues::SUCCESS)
             {
                 byte_Swap_16(&m_Page->AccumulatedParamCode);
-                if (accumulated == m_Page->AccumulatedParamCode)
+                if (static_cast<uint16_t>(eSSMLogParams::accumulated) == m_Page->AccumulatedParamCode)
                 {
                     retStatus = get_Count(pageInfo, m_Page->AccumulatedParamCode, m_Page->paramLength4, m_Page->paramControlByte4, m_Page->accumulatedCycles, "Accumulated Start-Stop Count", "Accumulated Start-Stop Over Device Lifetime");
                 }
@@ -183,7 +183,7 @@ eReturnValues CScsiStartStop::parse_Start_Stop_Log(JSONNODE *masterData)
                 if (retStatus == eReturnValues::SUCCESS)
                 {
                     byte_Swap_16(&m_Page->loadUnloadParamCode);
-                    if (loadUnload == m_Page->loadUnloadParamCode)
+                    if (static_cast<uint16_t>(eSSMLogParams::loadUnload) == m_Page->loadUnloadParamCode)
                     {
                         retStatus = get_Count(pageInfo, m_Page->loadUnloadParamCode, m_Page->paramLength5, m_Page->paramControlByte5, m_Page->loadUnloadCount, "Load - Unload Count", "Specified Load-Unload Count Over Device Lifetime");
                     }
@@ -194,7 +194,7 @@ eReturnValues CScsiStartStop::parse_Start_Stop_Log(JSONNODE *masterData)
                     if (retStatus == eReturnValues::SUCCESS)
                     {
                         byte_Swap_16(&m_Page->accLoadUnloadParamCode);
-                        if (accumulatedLU == m_Page->accLoadUnloadParamCode)
+                        if (static_cast<uint16_t>(eSSMLogParams::accumulatedLU) == m_Page->accLoadUnloadParamCode)
                         {
                             retStatus = get_Count(pageInfo, m_Page->accLoadUnloadParamCode, m_Page->paramLength6, m_Page->paramControlByte6, m_Page->accloadUnloadCount, "Accumulated Load - Unload Count", "Specified Load-Unload Count Over Device Lifetime");
                         }
