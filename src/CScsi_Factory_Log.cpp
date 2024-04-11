@@ -32,13 +32,13 @@ using namespace opensea_parser;
 CScsiFactoryLog::CScsiFactoryLog()
     : pData()
     , m_FactoryName("Factory Log Page")
-    , m_FactoryStatus(IN_PROGRESS)
+    , m_FactoryStatus(eReturnValues::IN_PROGRESS)
     , m_PageLength(0)
     , m_bufferLength()
     , m_Value(0)
     , m_factory()
 {
-    if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+    if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
         printf("%s \n", m_FactoryName.c_str());
     }
@@ -61,23 +61,23 @@ CScsiFactoryLog::CScsiFactoryLog()
 CScsiFactoryLog::CScsiFactoryLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength)
     : pData(buffer)
     , m_FactoryName("Factory Log Page")
-    , m_FactoryStatus(IN_PROGRESS)
+    , m_FactoryStatus(eReturnValues::IN_PROGRESS)
     , m_PageLength(pageLength)
     , m_bufferLength(bufferSize)
     , m_Value(0)
     , m_factory()
 {
-    if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+    if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
         printf("%s \n", m_FactoryName.c_str());
     }
     if (buffer != NULL)
     {
-        m_FactoryStatus = IN_PROGRESS;
+        m_FactoryStatus = eReturnValues::IN_PROGRESS;
     }
     else
     {
-        m_FactoryStatus = FAILURE;
+        m_FactoryStatus = eReturnValues::FAILURE;
     }
 
 }
@@ -166,7 +166,7 @@ void CScsiFactoryLog::process_Factorty_Data(JSONNODE *factoryData)
 //---------------------------------------------------------------------------
 eReturnValues CScsiFactoryLog::get_Factory_Data(JSONNODE *masterData)
 {
-    eReturnValues retStatus = IN_PROGRESS;
+    eReturnValues retStatus = eReturnValues::IN_PROGRESS;
     if (pData != NULL)
     {
         JSONNODE *pageInfo = json_new(JSON_NODE);
@@ -190,7 +190,7 @@ eReturnValues CScsiFactoryLog::get_Factory_Data(JSONNODE *masterData)
                     else
                     {
                         json_push_back(masterData, pageInfo);
-                        return BAD_PARAMETER;
+                        return eReturnValues::BAD_PARAMETER;
                     }
                     break;
                 }
@@ -204,7 +204,7 @@ eReturnValues CScsiFactoryLog::get_Factory_Data(JSONNODE *masterData)
                     else
                     {
                         json_push_back(masterData, pageInfo);
-                        return BAD_PARAMETER;
+                        return eReturnValues::BAD_PARAMETER;
                     }
                     break;
                 }
@@ -218,7 +218,7 @@ eReturnValues CScsiFactoryLog::get_Factory_Data(JSONNODE *masterData)
                     else
                     {
                         json_push_back(masterData, pageInfo);
-                        return BAD_PARAMETER;
+                        return eReturnValues::BAD_PARAMETER;
                     }
                     break;
                 }
@@ -232,14 +232,14 @@ eReturnValues CScsiFactoryLog::get_Factory_Data(JSONNODE *masterData)
                     else
                     {
                         json_push_back(masterData, pageInfo);
-                        return BAD_PARAMETER;
+                        return eReturnValues::BAD_PARAMETER;
                     }
                     break;
                 }
                 default:
                 {
                     json_push_back(masterData, pageInfo);
-                    return BAD_PARAMETER;
+                    return eReturnValues::BAD_PARAMETER;
                 }
                 }
                 process_Factorty_Data(pageInfo);
@@ -247,17 +247,17 @@ eReturnValues CScsiFactoryLog::get_Factory_Data(JSONNODE *masterData)
             else
             {
                 json_push_back(masterData, pageInfo);
-                return BAD_PARAMETER;
+                return eReturnValues::BAD_PARAMETER;
             }
 
         }
 
         json_push_back(masterData, pageInfo);
-        retStatus = SUCCESS;
+        retStatus = eReturnValues::SUCCESS;
     }
     else
     {
-        retStatus = MEMORY_FAILURE;
+        retStatus = eReturnValues::MEMORY_FAILURE;
     }
     return retStatus;
 }

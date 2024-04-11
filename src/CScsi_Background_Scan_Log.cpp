@@ -32,14 +32,14 @@ using namespace opensea_parser;
 CScsiScanLog::CScsiScanLog()
 	: pData()
 	, m_ScanName("Background Scan Log")
-	, m_ScanStatus(IN_PROGRESS)
+	, m_ScanStatus(eReturnValues::IN_PROGRESS)
 	, m_PageLength(0)
 	, m_bufferLength()
 	, m_ScanParam()
 	, m_defect()
     , m_ParamHeader()
 {
-	if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+	if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
 		printf("%s \n", m_ScanName.c_str());
 	}
@@ -62,14 +62,14 @@ CScsiScanLog::CScsiScanLog()
 CScsiScanLog::CScsiScanLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength)
 	: pData(NULL)
 	, m_ScanName("Background Scan Log")
-	, m_ScanStatus(IN_PROGRESS)
+	, m_ScanStatus(eReturnValues::IN_PROGRESS)
 	, m_PageLength(pageLength)
 	, m_bufferLength(bufferSize)
 	, m_ScanParam()
 	, m_defect()
     , m_ParamHeader()
 {
-	if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+	if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
 		printf("%s \n", m_ScanName.c_str());
 	}
@@ -81,11 +81,11 @@ CScsiScanLog::CScsiScanLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLen
 #endif
 	if (pData != NULL)
 	{
-		m_ScanStatus = IN_PROGRESS;
+		m_ScanStatus = eReturnValues::IN_PROGRESS;
 	}
 	else
 	{
-		m_ScanStatus = FAILURE;
+		m_ScanStatus = eReturnValues::FAILURE;
 	}
 
 }
@@ -424,7 +424,7 @@ void CScsiScanLog::process_other_param_data(JSONNODE *scanData, size_t offset)
 //---------------------------------------------------------------------------
 eReturnValues CScsiScanLog::get_Scan_Data(JSONNODE *masterData)
 {
-	eReturnValues retStatus = IN_PROGRESS;
+	eReturnValues retStatus = eReturnValues::IN_PROGRESS;
 	if (pData != NULL)
 	{
 		JSONNODE *pageInfo = json_new(JSON_NODE);
@@ -455,18 +455,18 @@ eReturnValues CScsiScanLog::get_Scan_Data(JSONNODE *masterData)
                 else
                 {
                     json_push_back(masterData, pageInfo);
-                    return BAD_PARAMETER;
+                    return eReturnValues::BAD_PARAMETER;
                 }
 
             }
         }
 
 		json_push_back(masterData, pageInfo);
-		retStatus = SUCCESS;
+		retStatus = eReturnValues::SUCCESS;
 	}
 	else
 	{
-		retStatus = MEMORY_FAILURE;
+		retStatus = eReturnValues::MEMORY_FAILURE;
 	}
 	return retStatus;
 }

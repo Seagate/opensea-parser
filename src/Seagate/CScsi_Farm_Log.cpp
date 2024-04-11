@@ -39,7 +39,7 @@ CSCSI_Farm_Log::CSCSI_Farm_Log()
     , m_MajorRev(0)
     , m_MinorRev(0)
     , pBuf()
-    , m_status(IN_PROGRESS)                                
+    , m_status(eReturnValues::IN_PROGRESS)                                
 	, m_logParam()   
 	, m_pageParam()
     , m_pHeader()
@@ -50,7 +50,7 @@ CSCSI_Farm_Log::CSCSI_Farm_Log()
     , m_farmSubPage(0)
     , m_showStatic(false)
 {                                                  
-	m_status = IN_PROGRESS;
+	m_status = eReturnValues::IN_PROGRESS;
 
 }
 //-----------------------------------------------------------------------------
@@ -80,7 +80,7 @@ CSCSI_Farm_Log::CSCSI_Farm_Log(uint8_t* bufferData, size_t bufferSize, uint8_t s
     , m_MajorRev(0)
     , m_MinorRev(0)
     , pBuf(NULL)
-    , m_status(IN_PROGRESS)
+    , m_status(eReturnValues::IN_PROGRESS)
     , m_logParam()
     , m_pageParam()
     , m_pHeader()
@@ -91,8 +91,8 @@ CSCSI_Farm_Log::CSCSI_Farm_Log(uint8_t* bufferData, size_t bufferSize, uint8_t s
     , m_farmSubPage(subPage)
     , m_showStatic(showStatic)
 {
-    m_status = IN_PROGRESS;
-    if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+    m_status = eReturnValues::IN_PROGRESS;
+    if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
         printf("SCSI FARM Log \n");
     }
@@ -106,18 +106,18 @@ CSCSI_Farm_Log::CSCSI_Farm_Log(uint8_t* bufferData, size_t bufferSize, uint8_t s
 #endif
     if (pBuf != NULL)
     {
-        if (init_Header_Data(bufferSize) == SUCCESS)							// init the data for getting the log
+        if (init_Header_Data(bufferSize) == eReturnValues::SUCCESS)							// init the data for getting the log
         {
             m_status = parse_Farm_Log();
         }
         else
         {
-            m_status = FAILURE;
+            m_status = eReturnValues::FAILURE;
         }
     }
     else
     {
-        m_status = FAILURE;
+        m_status = eReturnValues::FAILURE;
     }
     delete[] pBuf;
    
@@ -149,7 +149,7 @@ CSCSI_Farm_Log::CSCSI_Farm_Log( uint8_t *bufferData, size_t bufferSize, uint8_t 
     , m_MajorRev(0)
     , m_MinorRev(0)
     , pBuf(NULL)
-    , m_status(IN_PROGRESS)                                
+    , m_status(eReturnValues::IN_PROGRESS)                                
 	, m_logParam()
 	, m_pageParam()
     , m_pHeader()
@@ -160,8 +160,8 @@ CSCSI_Farm_Log::CSCSI_Farm_Log( uint8_t *bufferData, size_t bufferSize, uint8_t 
     , m_farmSubPage(subPage)
     , m_showStatic(showStatic)
 {
-    m_status = IN_PROGRESS;
-    if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+    m_status = eReturnValues::IN_PROGRESS;
+    if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
         printf("SCSI FARM Log \n");
     }
@@ -175,18 +175,18 @@ CSCSI_Farm_Log::CSCSI_Farm_Log( uint8_t *bufferData, size_t bufferSize, uint8_t 
 #endif
     if (pBuf != NULL)
     {
-        if (init_Header_Data(bufferSize) == SUCCESS)							// init the data for getting the log
+        if (init_Header_Data(bufferSize) == eReturnValues::SUCCESS)							// init the data for getting the log
         {
             m_status = parse_Farm_Log();
         }
         else
         {
-            m_status = FAILURE;
+            m_status = eReturnValues::FAILURE;
         }
     }
     else
     {
-        m_status = FAILURE;
+        m_status = eReturnValues::FAILURE;
     }
     delete[] pBuf;
     
@@ -235,7 +235,7 @@ eReturnValues CSCSI_Farm_Log::init_Header_Data(size_t bufferSize)
 {
     if (pBuf == NULL)
     {
-        return MEMORY_FAILURE;
+        return eReturnValues::MEMORY_FAILURE;
     }
     else
     {
@@ -269,7 +269,7 @@ eReturnValues CSCSI_Farm_Log::init_Header_Data(size_t bufferSize)
         }
         m_copies = M_DoubleWord0(m_pHeader->farmHeader.reserved);						// finish up with the number of copies (not supported "YET" in SAS)
     }
-    return SUCCESS;
+    return eReturnValues::SUCCESS;
 }
 //-----------------------------------------------------------------------------
 //
@@ -1375,7 +1375,7 @@ bool CSCSI_Farm_Log::get_Head_Info(sHeadInformation *phead, uint8_t *buffer)
 //! \param pData - pointer to the buffer
 //
 //  Exit:
-//!   \return SUCCESS or FAILURE
+//!   \return eReturnValues::SUCCESS or FAILURE
 //
 //---------------------------------------------------------------------------
 eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
@@ -1389,14 +1389,14 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
         offset = 4;
     }
 
-    if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+    if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
         printf("SCSI parse FARM Log\n");
     }
 
     if (pBuf == NULL)
     {
-        return FAILURE;
+        return eReturnValues::FAILURE;
     }
     uint64_t signature = m_pHeader->farmHeader.signature & UINT64_C(0x00FFFFFFFFFFFFFF);
     m_MajorRev = M_DoubleWord0(m_pHeader->farmHeader.majorRev);
@@ -1406,12 +1406,12 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
         if (signature == FARMEMPTYSIGNATURE || signature == FARMPADDINGSIGNATURE)
         {
             delete pFarmFrame;
-            return SUCCESS;
+            return eReturnValues::SUCCESS;
         }
         else
         {
             delete pFarmFrame;
-            return VALIDATION_FAILURE;
+            return eReturnValues::VALIDATION_FAILURE;
         }
     }
     if (signature == FARMSIGNATURE || signature == FACTORYCOPY)				// check the head to see if it has the farm signature else fail
@@ -1831,10 +1831,10 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
             vFarmFrame.push_back(*pFarmFrame);                                   // push the data to the vector
         }
 	    delete pFarmFrame;	
-        return SUCCESS;
+        return eReturnValues::SUCCESS;
     }
     delete pFarmFrame;
-    return FAILURE;
+    return eReturnValues::FAILURE;
 }
 
 
@@ -1849,13 +1849,13 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
 //! \param masterData - pointer to the json data that will be printed or passed on
 //
 //  Exit:
-//!   \return SUCCESS
+//!   \return eReturnValues::SUCCESS
 //
 //---------------------------------------------------------------------------
 eReturnValues CSCSI_Farm_Log::print_Header(JSONNODE *masterData)
 {
 	uint32_t page = 0;
-    if (g_verbosity >= eVerbosity_open::VERBOSITY_COMMAND_VERBOSE)
+    if (g_verbosity >= eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE)
     {
         printf("\tLog Signature:                                                0x%" PRIX64" \n", vFarmFrame.at(page).farmHeader.farmHeader.signature);                                  //!< Log Signature = 0x00004641524D4552
         printf("\tMajor Revision:                                               %" PRIu64"  \n", vFarmFrame.at(page).farmHeader.farmHeader.majorRev & UINT64_C(0x00FFFFFFFFFFFFFF));                                    //!< Log Major rev
@@ -1891,7 +1891,7 @@ eReturnValues CSCSI_Farm_Log::print_Header(JSONNODE *masterData)
     json_push_back(pageInfo, json_new_a("Reason meaning", meaning.c_str()));
     json_push_back(masterData, pageInfo);
 
-    return SUCCESS;
+    return eReturnValues::SUCCESS;
 }
 
 //-----------------------------------------------------------------------------
@@ -1906,14 +1906,14 @@ eReturnValues CSCSI_Farm_Log::print_Header(JSONNODE *masterData)
 //! \param page  = the page copy number of the data we want to print. 
 //
 //  Exit:
-//!   \return SUCCESS
+//!   \return eReturnValues::SUCCESS
 //
 //---------------------------------------------------------------------------
 
 eReturnValues CSCSI_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint32_t page)
 {
 #define  SHORTHEADS 20
-    if (g_verbosity >= eVerbosity_open::VERBOSITY_COMMAND_VERBOSE)
+    if (g_verbosity >= eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE)
     {
         if (vFarmFrame.at(page).driveInfo.copyNumber == FACTORYCOPY)
         {
@@ -2037,7 +2037,7 @@ eReturnValues CSCSI_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint
             }
         }
         json_push_back(masterData, pageInfo);
-        return SUCCESS;
+        return eReturnValues::SUCCESS;
     }
     
 
@@ -2053,12 +2053,12 @@ eReturnValues CSCSI_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint
 //! \param mask  = the 64 bit data for creating the bitmap 
 //
 //  Exit:
-//!   \return SUCCESS
+//!   \return eReturnValues::SUCCESS
 //
 //---------------------------------------------------------------------------
 eReturnValues CSCSI_Farm_Log::get_Regen_Head_Mask(JSONNODE* headMask, uint64_t mask)
 {
-    eReturnValues status = IN_PROGRESS;
+    eReturnValues status = eReturnValues::IN_PROGRESS;
     if (opensea_parser::check_For_Active_Status(&mask))
     {
         uint32_t tempHeadMask = M_DoubleWord0(mask);
@@ -2077,12 +2077,12 @@ eReturnValues CSCSI_Farm_Log::get_Regen_Head_Mask(JSONNODE* headMask, uint64_t m
             }
             tempHeadMask >>= 1;
         }
-        status = SUCCESS;
+        status = eReturnValues::SUCCESS;
     }
     else
     {
         set_json_string_With_Status(headMask, "HeadMask", "NULL", mask, m_showStatusBits);
-        status = NOT_SUPPORTED;
+        status = eReturnValues::NOT_SUPPORTED;
     }
     return status;
 }
@@ -2098,16 +2098,16 @@ eReturnValues CSCSI_Farm_Log::get_Regen_Head_Mask(JSONNODE* headMask, uint64_t m
 //! \param page  = the page copy number of the data we want to print. 
 //
 //  Exit:
-//!   \return SUCCESS
+//!   \return eReturnValues::SUCCESS
 //
 //---------------------------------------------------------------------------
 eReturnValues CSCSI_Farm_Log::print_General_Drive_Information_Continued(JSONNODE* masterData, uint32_t page)
 {
-    eReturnValues status = IN_PROGRESS;
+    eReturnValues status = eReturnValues::IN_PROGRESS;
     JSONNODE* pageInfo = json_new(JSON_NODE);
     std::ostringstream temp;
     std::string header;
-    if (g_verbosity >= eVerbosity_open::VERBOSITY_COMMAND_VERBOSE)
+    if (g_verbosity >= eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE)
     {
         if (vFarmFrame.at(page).driveInfo.copyNumber == FACTORYCOPY)
         {
@@ -2176,13 +2176,13 @@ eReturnValues CSCSI_Farm_Log::print_General_Drive_Information_Continued(JSONNODE
 
     set_json_bool_With_Status(pageInfo, "HAMR Write Protect", vFarmFrame.at(page).gDPage06.writeProtect, m_showStatusBits);
     status = get_Regen_Head_Mask(pageInfo, vFarmFrame.at(page).gDPage06.regenHeadMask);
-    if ((status == NOT_SUPPORTED) || (status == SUCCESS))
+    if ((status == eReturnValues::NOT_SUPPORTED) || (status == eReturnValues::SUCCESS))
     {
-        status = SUCCESS;
+        status = eReturnValues::SUCCESS;
     }
 
     json_push_back(masterData, pageInfo);
-    return SUCCESS;
+    return eReturnValues::SUCCESS;
 }
 //-----------------------------------------------------------------------------
 //
@@ -2196,12 +2196,12 @@ eReturnValues CSCSI_Farm_Log::print_General_Drive_Information_Continued(JSONNODE
 //! \param page  = the page copy number of the data we want to print. 
 //
 //  Exit:
-//!   \return SUCCESS
+//!   \return eReturnValues::SUCCESS
 //
 //---------------------------------------------------------------------------
 eReturnValues CSCSI_Farm_Log::print_WorkLoad(JSONNODE *masterData, uint32_t page)
 {
-    if (g_verbosity >= eVerbosity_open::VERBOSITY_COMMAND_VERBOSE)
+    if (g_verbosity >= eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE)
     {
         if (vFarmFrame.at(page).workLoadPage.workLoad.copyNumber == FACTORYCOPY)
         {
@@ -2288,7 +2288,7 @@ eReturnValues CSCSI_Farm_Log::print_WorkLoad(JSONNODE *masterData, uint32_t page
     }
 
     json_push_back(masterData, pageInfo);
-    return SUCCESS;
+    return eReturnValues::SUCCESS;
 }
 
 //-----------------------------------------------------------------------------
@@ -2303,12 +2303,12 @@ eReturnValues CSCSI_Farm_Log::print_WorkLoad(JSONNODE *masterData, uint32_t page
 //! \param page  = the page copy number of the data we want to print. 
 //
 //  Exit:
-//!   \return SUCCESS
+//!   \return eReturnValues::SUCCESS
 //
 //---------------------------------------------------------------------------
 eReturnValues CSCSI_Farm_Log::print_Error_Information(JSONNODE *masterData, uint32_t page)
 {
-    if (g_verbosity >= eVerbosity_open::VERBOSITY_COMMAND_VERBOSE)
+    if (g_verbosity >= eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE)
     {
         if (vFarmFrame.at(page).errorPage.copyNumber == FACTORYCOPY)
         {
@@ -2358,7 +2358,7 @@ eReturnValues CSCSI_Farm_Log::print_Error_Information(JSONNODE *masterData, uint
 
     json_push_back(masterData, pageInfo);
   
-    return SUCCESS;
+    return eReturnValues::SUCCESS;
 }
 //-----------------------------------------------------------------------------
 //
@@ -2372,12 +2372,12 @@ eReturnValues CSCSI_Farm_Log::print_Error_Information(JSONNODE *masterData, uint
 //! \param page  = the page copy number of the data we want to print. 
 //
 //  Exit:
-//!   \return SUCCESS
+//!   \return eReturnValues::SUCCESS
 //
 //---------------------------------------------------------------------------
 eReturnValues CSCSI_Farm_Log::print_Enviroment_Information(JSONNODE *masterData, uint32_t page)
 {
-    if (g_verbosity >= eVerbosity_open::VERBOSITY_COMMAND_VERBOSE)
+    if (g_verbosity >= eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE)
     {
         if (vFarmFrame.at(page).environmentPage.copyNumber == FACTORYCOPY)
         {
@@ -2454,7 +2454,7 @@ eReturnValues CSCSI_Farm_Log::print_Enviroment_Information(JSONNODE *masterData,
 
     json_push_back(masterData, pageInfo);
 
-    return SUCCESS;
+    return eReturnValues::SUCCESS;
 }
 //-----------------------------------------------------------------------------
 //
@@ -2468,12 +2468,12 @@ eReturnValues CSCSI_Farm_Log::print_Enviroment_Information(JSONNODE *masterData,
 //! \param page  = the page copy number of the data we want to print. 
 //
 //  Exit:
-//!   \return SUCCESS
+//!   \return eReturnValues::SUCCESS
 //
 //---------------------------------------------------------------------------
 eReturnValues CSCSI_Farm_Log::print_Enviroment_Statistics_Page_07(JSONNODE *masterData, uint32_t page)
 {
-    if (g_verbosity >= eVerbosity_open::VERBOSITY_COMMAND_VERBOSE)
+    if (g_verbosity >= eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE)
     {
         if (vFarmFrame.at(page).envStatPage07.copyNumber == FACTORYCOPY)
         {
@@ -2524,7 +2524,7 @@ eReturnValues CSCSI_Farm_Log::print_Enviroment_Statistics_Page_07(JSONNODE *mast
 
     json_push_back(masterData, pageInfo);
   
-    return SUCCESS;
+    return eReturnValues::SUCCESS;
 }
 
 
@@ -2540,7 +2540,7 @@ eReturnValues CSCSI_Farm_Log::print_Enviroment_Statistics_Page_07(JSONNODE *mast
 //! \param page  = the page copy number of the data we want to print. 
 //
 //  Exit:
-//!   \return SUCCESS
+//!   \return eReturnValues::SUCCESS
 //
 //---------------------------------------------------------------------------
 eReturnValues CSCSI_Farm_Log::print_Workload_Statistics_Page_08(JSONNODE *masterData, uint32_t page)
@@ -2549,7 +2549,7 @@ eReturnValues CSCSI_Farm_Log::print_Workload_Statistics_Page_08(JSONNODE *master
     {
         JSONNODE *pageInfo = json_new(JSON_NODE);
 
-        if (g_verbosity >= eVerbosity_open::VERBOSITY_COMMAND_VERBOSE)
+        if (g_verbosity >= eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE)
         {
             if (vFarmFrame.at(page).workloadStatPage08.copyNumber == FACTORYCOPY)
             {
@@ -2589,7 +2589,7 @@ eReturnValues CSCSI_Farm_Log::print_Workload_Statistics_Page_08(JSONNODE *master
         json_push_back(masterData, pageInfo);
 
     }
-    return SUCCESS;
+    return eReturnValues::SUCCESS;
 }
 
 //-----------------------------------------------------------------------------
@@ -2604,7 +2604,7 @@ eReturnValues CSCSI_Farm_Log::print_Workload_Statistics_Page_08(JSONNODE *master
 //! \param page  = the page copy number of the data we want to print. 
 //
 //  Exit:
-//!   \return SUCCESS
+//!   \return eReturnValues::SUCCESS
 //
 //---------------------------------------------------------------------------
 eReturnValues CSCSI_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint32_t page)
@@ -2612,7 +2612,7 @@ eReturnValues CSCSI_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint3
     JSONNODE* pageInfo = json_new(JSON_NODE);
     std::ostringstream temp;
     
-    if (g_verbosity >= eVerbosity_open::VERBOSITY_COMMAND_VERBOSE)
+    if (g_verbosity >= eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE)
     {
         if (vFarmFrame.at(page).reliPage.copyNumber == FACTORYCOPY)
         {
@@ -2642,7 +2642,7 @@ eReturnValues CSCSI_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint3
    
 
     json_push_back(masterData, pageInfo);
-    return SUCCESS;
+    return eReturnValues::SUCCESS;
 }
 //-----------------------------------------------------------------------------
 //
@@ -2656,7 +2656,7 @@ eReturnValues CSCSI_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint3
 //! \param page  = the page copy number of the data we want to print. 
 //
 //  Exit:
-//!   \return SUCCESS
+//!   \return eReturnValues::SUCCESS
 //
 //---------------------------------------------------------------------------
 eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSONNODE *headPage, uint32_t page)
@@ -2667,11 +2667,11 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSON
 
     if (set_Head_Header(myHeader, type) == false)
     {
-        return FAILURE;
+        return eReturnValues::FAILURE;
     }
     if (type != eSASLogPageTypes::MAX_RESERVED_FOR_FUTURE_EXPANSION)
     {
-        if (g_verbosity >= eVerbosity_open::VERBOSITY_COMMAND_VERBOSE)
+        if (g_verbosity >= eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE)
         {
             if (vFarmFrame.at(page).reliPage.copyNumber == FACTORYCOPY)
             {
@@ -2714,7 +2714,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSON
         case eSASLogPageTypes::MR_HEAD_RESISTANCE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD:
             if (vFarmFrame.at(page).mrHeadResistanceByHead.headValue[0] & BIT49)
             {
-                if (g_verbosity >= eVerbosity_open::VERBOSITY_COMMAND_VERBOSE)
+                if (g_verbosity >= eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE)
                 {
                     // version 4.34 MR Head Resistance became a percentage. Check bit 49 if set then it is a percentage
                     for (loopCount = 0; loopCount < m_heads; ++loopCount)
@@ -2738,7 +2738,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSON
             }
             else
             {
-                if (g_verbosity >= eVerbosity_open::VERBOSITY_COMMAND_VERBOSE)
+                if (g_verbosity >= eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE)
                 {
                     for (loopCount = 0; loopCount < m_heads; ++loopCount)
                     {
@@ -2755,7 +2755,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSON
             break;
         case eSASLogPageTypes::CURRENT_H2SAT_AMPLITUDE_BY_HEAD_AVERAGED_ACROSS_TEST_ZONES:
             {
-            if (g_verbosity >= eVerbosity_open::VERBOSITY_COMMAND_VERBOSE)
+            if (g_verbosity >= eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE)
             {
                 for (loopCount = 0; loopCount < m_heads; ++loopCount)
                 {
@@ -2766,7 +2766,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSON
             }
             break;
         case eSASLogPageTypes::CURRENT_H2SAT_ASYMMETRY_BY_HEAD_AVERAGED_ACROSS_TEST_ZONES:
-            if (g_verbosity >= eVerbosity_open::VERBOSITY_COMMAND_VERBOSE)
+            if (g_verbosity >= eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE)
             {
                 for (loopCount = 0; loopCount < m_heads; ++loopCount)
                 {
@@ -2776,7 +2776,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSON
             float_Cal_Word_Data(headPage, "Current H2SAT asymmetry", 0.10, reinterpret_cast<int64_t*>(vFarmFrame.at(page).currentH2STAsymmetryByHead.headValue), m_heads, m_showStatusBits, m_showStatic);
             break;
         case eSASLogPageTypes::NUMBER_OF_RESIDENT_GLIST_ENTRIES:
-            if (g_verbosity >= eVerbosity_open::VERBOSITY_COMMAND_VERBOSE)
+            if (g_verbosity >= eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE)
             {
                 for (loopCount = 0; loopCount < m_heads; ++loopCount)
                 {
@@ -2786,7 +2786,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSON
             int_Data(headPage, "Reallocated Sectors", reinterpret_cast<int64_t*>(vFarmFrame.at(page).ResidentGlistEntries.headValue), m_heads, m_showStatusBits, m_showStatic);
             break;
         case eSASLogPageTypes::NUMBER_OF_PENDING_ENTRIES:
-            if (g_verbosity >= eVerbosity_open::VERBOSITY_COMMAND_VERBOSE)
+            if (g_verbosity >= eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE)
             {
                 for (loopCount = 0; loopCount < m_heads; ++loopCount)
                 {
@@ -2800,7 +2800,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSON
         case eSASLogPageTypes::RESERVED_FOR_FUTURE_HEAD_17:
             break;
         case eSASLogPageTypes::WRITE_POWERON_HOURS_FROM_MOST_RECENT_SMART:
-            if (g_verbosity >= eVerbosity_open::VERBOSITY_COMMAND_VERBOSE)
+            if (g_verbosity >= eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE)
             {
                 for (loopCount = 0; loopCount < m_heads; ++loopCount)
                 {
@@ -2812,7 +2812,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSON
         case eSASLogPageTypes::RESERVED_FOR_FUTURE_HEAD_18:
             break;
         case eSASLogPageTypes::CUM_LIFETIME_UNRECOVERALBE_READ_REPET_PER_HEAD:
-            if (g_verbosity >= eVerbosity_open::VERBOSITY_COMMAND_VERBOSE)
+            if (g_verbosity >= eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE)
             {
                 for (loopCount = 0; loopCount < m_heads; ++loopCount)
                 {
@@ -2822,7 +2822,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSON
             int_Data(headPage, "Cum Lifetime Unrecoverable Read", reinterpret_cast<int64_t*>(vFarmFrame.at(page).cumECCReadRepeat.headValue), m_heads, m_showStatusBits, m_showStatic);
             break;
         case eSASLogPageTypes::CUM_LIFETIME_UNRECOVERABLE_READ_UNIQUE_PER_HEAD:
-            if (g_verbosity >= eVerbosity_open::VERBOSITY_COMMAND_VERBOSE)
+            if (g_verbosity >= eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE)
             {
                 for (loopCount = 0; loopCount < m_heads; ++loopCount)
                 {
@@ -2839,61 +2839,61 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSON
         case eSASLogPageTypes::RESERVED_FOR_FUTURE_HEAD_24:
             break;
         case eSASLogPageTypes::CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_0:
-            if (g_verbosity >= eVerbosity_open::VERBOSITY_COMMAND_VERBOSE)
+            if (g_verbosity >= eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE)
             {
                 for (loopCount = 0; loopCount < m_heads; ++loopCount)
                 {
-                    printf("\tCurrent H2SAT trimmed mean bits in error Zone 0 for Head %2" PRIu32":   %0.3f \n", loopCount, static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).currentH2STTrimmedbyHeadZone0.headValue[loopCount])), 16)) * 0.10F);
+                    printf("\tCurrent H2SAT trimmed mean bits in error Zone 0 for Head %2" PRIu32":   %0.3f \n", loopCount, static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).currentH2STTrimmedbyHeadZone0.headValue[loopCount])), 16) * 0.10F));
                 }
             }
             sas_Head_Float_Data(headPage, "Current H2SAT trimmed mean bits in error Zone 0", WORD0, 0.10, vFarmFrame.at(page).currentH2STTrimmedbyHeadZone0.headValue, m_heads, m_showStatusBits, m_showStatic);
             break;
         case eSASLogPageTypes::CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_1:
-            if (g_verbosity >= eVerbosity_open::VERBOSITY_COMMAND_VERBOSE)
+            if (g_verbosity >= eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE)
             {
                 for (loopCount = 0; loopCount < m_heads; ++loopCount)
                 {
-                    printf("\tCurrent H2SAT trimmed mean bits in error Zone 1 for Head %2" PRIu32":   %0.3f \n", loopCount, static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).currentH2STTrimmedbyHeadZone1.headValue[loopCount])), 16)) * 0.10F);
+                    printf("\tCurrent H2SAT trimmed mean bits in error Zone 1 for Head %2" PRIu32":   %0.3f \n", loopCount, static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).currentH2STTrimmedbyHeadZone1.headValue[loopCount])), 16) * 0.10F));
                 }
             }
             sas_Head_Float_Data(headPage, "Current H2SAT trimmed mean bits in error Zone 1", WORD0, 0.10, vFarmFrame.at(page).currentH2STTrimmedbyHeadZone1.headValue, m_heads, m_showStatusBits, m_showStatic);
             break;
         case eSASLogPageTypes::CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_2:
-            if (g_verbosity >= eVerbosity_open::VERBOSITY_COMMAND_VERBOSE)
+            if (g_verbosity >= eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE)
             {
                 for (loopCount = 0; loopCount < m_heads; ++loopCount)
                 {
-                    printf("\tCurrent H2SAT trimmed mean bits in error Zone 2 for Head %2" PRIu32":   %0.3f \n", loopCount, static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).currentH2STTrimmedbyHeadZone2.headValue[loopCount])), 16)) * 0.10F);
+                    printf("\tCurrent H2SAT trimmed mean bits in error Zone 2 for Head %2" PRIu32":   %0.3f \n", loopCount, static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).currentH2STTrimmedbyHeadZone2.headValue[loopCount])), 16) * 0.10F));
                 }
             }
             sas_Head_Float_Data(headPage, "Current H2SAT trimmed mean bits in error Zone 2", WORD0, 0.10, vFarmFrame.at(page).currentH2STTrimmedbyHeadZone2.headValue, m_heads, m_showStatusBits, m_showStatic);
             break;
         case eSASLogPageTypes::CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_0:
-            if (g_verbosity >= eVerbosity_open::VERBOSITY_COMMAND_VERBOSE)
+            if (g_verbosity >= eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE)
             {
                 for (loopCount = 0; loopCount < m_heads; ++loopCount)
                 {
-                    printf("\tCurrent H2SAT iterations to converge Test Zone 0 for Head %2" PRIu32":  %0.3f \n", loopCount, static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).currentH2STIterationsByHeadZone0.headValue[loopCount])), 16)) * 0.10F);
+                    printf("\tCurrent H2SAT iterations to converge Test Zone 0 for Head %2" PRIu32":  %0.3f \n", loopCount, static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).currentH2STIterationsByHeadZone0.headValue[loopCount])), 16) * 0.10F));
                 }
             }
             sas_Head_Float_Data(headPage, "Current H2SAT iterations to converge Test Zone 0", WORD0, 0.10, vFarmFrame.at(page).currentH2STIterationsByHeadZone0.headValue, m_heads, m_showStatusBits, m_showStatic);
             break;
         case eSASLogPageTypes::CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_1:
-            if (g_verbosity >= eVerbosity_open::VERBOSITY_COMMAND_VERBOSE)
+            if (g_verbosity >= eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE)
             {
                 for (loopCount = 0; loopCount < m_heads; ++loopCount)
                 {
-                    printf("\tCurrent H2SAT iterations to converge Test Zone 1 for Head %2" PRIu32":  %0.3f \n", loopCount, static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).currentH2STIterationsByHeadZone1.headValue[loopCount])), 16)) * 0.10F);
+                    printf("\tCurrent H2SAT iterations to converge Test Zone 1 for Head %2" PRIu32":  %0.3f \n", loopCount, static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).currentH2STIterationsByHeadZone1.headValue[loopCount])), 16) * 0.10F));
                 }
             }
             sas_Head_Float_Data(headPage, "Current H2SAT iterations to converge Test Zone 1", WORD0, 0.10, vFarmFrame.at(page).currentH2STIterationsByHeadZone1.headValue, m_heads, m_showStatusBits, m_showStatic);
             break;
         case eSASLogPageTypes::CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_2:
-            if (g_verbosity >= eVerbosity_open::VERBOSITY_COMMAND_VERBOSE)
+            if (g_verbosity >= eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE)
             {
                 for (loopCount = 0; loopCount < m_heads; ++loopCount)
                 {
-                    printf("\tCurrent H2SAT iterations to converge Test Zone 2 for Head %2" PRIu32":  %0.3f \n", loopCount, static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).currentH2STIterationsByHeadZone2.headValue[loopCount])), 16)) * 0.10F);
+                    printf("\tCurrent H2SAT iterations to converge Test Zone 2 for Head %2" PRIu32":  %0.3f \n", loopCount, static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).currentH2STIterationsByHeadZone2.headValue[loopCount])), 16) * 0.10F));
                 }
             }
             sas_Head_Float_Data(headPage, "Current H2SAT iterations to converge Test Zone 2", WORD0, 0.10, vFarmFrame.at(page).currentH2STIterationsByHeadZone2.headValue, m_heads, m_showStatusBits, m_showStatic);
@@ -2913,7 +2913,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSON
         case eSASLogPageTypes::RESERVED_FOR_FUTURE_HEAD_37:
             break;
         case eSASLogPageTypes::SECOND_MR_HEAD_RESISTANCE:
-            if (g_verbosity >= eVerbosity_open::VERBOSITY_COMMAND_VERBOSE)
+            if (g_verbosity >= eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE)
             {
                 for (loopCount = 0; loopCount < m_heads; ++loopCount)
                 {
@@ -3023,7 +3023,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSON
         }
     }
 
-    return SUCCESS;
+    return eReturnValues::SUCCESS;
 }
 //-----------------------------------------------------------------------------
 //
@@ -3037,7 +3037,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSON
 //! \param page  = the page copy number of the data we want to print. 
 //
 //  Exit:
-//!   \return SUCCESS
+//!   \return eReturnValues::SUCCESS
 //
 //---------------------------------------------------------------------------
 eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Information(JSONNODE *LUNData, uint32_t page, uint16_t actNum)
@@ -3053,7 +3053,7 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Information(JSONNODE *LUNData, 
     else
         pLUN = &vFarmFrame.at(page).vLUN50;
 
-    if (g_verbosity >= eVerbosity_open::VERBOSITY_COMMAND_VERBOSE)
+    if (g_verbosity >= eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE)
     {
         if (pLUN->copyNumber == FACTORYCOPY)
         {
@@ -3094,7 +3094,7 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Information(JSONNODE *LUNData, 
     set_json_64_bit_With_Status(pageInfo, "primary super parity coverage SMR",  pLUN->primarySPCovPercentageSMR, false, m_showStatusBits);
     json_push_back(LUNData, pageInfo);
     
-    return SUCCESS;
+    return eReturnValues::SUCCESS;
 }
 //-----------------------------------------------------------------------------
 //
@@ -3108,7 +3108,7 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Information(JSONNODE *LUNData, 
 //! \param page  = the page copy number of the data we want to print. 
 //
 //  Exit:
-//!   \return SUCCESS
+//!   \return eReturnValues::SUCCESS
 //
 //---------------------------------------------------------------------------
 eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_FLED_Info(JSONNODE *LUNFLED, uint32_t page,  uint16_t actNum)
@@ -3125,7 +3125,7 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_FLED_Info(JSONNODE *LUNFLED, ui
     else
         pFLED = &vFarmFrame.at(page).fled51;
 
-    if (g_verbosity >= eVerbosity_open::VERBOSITY_COMMAND_VERBOSE)
+    if (g_verbosity >= eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE)
     {
         if (pFLED->copyNumber == FACTORYCOPY)
         {
@@ -3201,7 +3201,7 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_FLED_Info(JSONNODE *LUNFLED, ui
 
     json_push_back(LUNFLED, pageInfo);
     
-    return SUCCESS;
+    return eReturnValues::SUCCESS;
 }
 
 //-----------------------------------------------------------------------------
@@ -3216,7 +3216,7 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_FLED_Info(JSONNODE *LUNFLED, ui
 //! \param page  = the page copy number of the data we want to print. 
 //
 //  Exit:
-//!   \return SUCCESS
+//!   \return eReturnValues::SUCCESS
 //
 //---------------------------------------------------------------------------
 eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Reallocation(JSONNODE* LUNNReallocation, uint32_t page, uint16_t actNum)
@@ -3231,7 +3231,7 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Reallocation(JSONNODE* LUNNReal
     else
         pReal = &vFarmFrame.at(page).reall52;
 
-    if (g_verbosity >= eVerbosity_open::VERBOSITY_COMMAND_VERBOSE)
+    if (g_verbosity >= eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE)
     {
         if (pReal->copyNumber == FACTORYCOPY)
         {
@@ -3266,7 +3266,7 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Reallocation(JSONNODE* LUNNReal
 
     json_push_back(LUNNReallocation, pageInfo);
     
-    return SUCCESS;
+    return eReturnValues::SUCCESS;
 }
 
 //-----------------------------------------------------------------------------

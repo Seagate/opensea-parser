@@ -32,12 +32,12 @@ using namespace opensea_parser;
 CScsiPowerConditiontLog::CScsiPowerConditiontLog()
 	: pData()
 	, m_PowerName("Power Condition Transitions Log")
-	, m_PowerStatus(IN_PROGRESS)
+	, m_PowerStatus(eReturnValues::IN_PROGRESS)
 	, m_PageLength(0)
 	, m_bufferLength()
 	, m_PowerParam(0)
 {
-	if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+	if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
 		printf("%s \n", m_PowerName.c_str());
 	}
@@ -59,12 +59,12 @@ CScsiPowerConditiontLog::CScsiPowerConditiontLog()
 CScsiPowerConditiontLog::CScsiPowerConditiontLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength)
 	: pData(NULL)
 	, m_PowerName("Power Condition Transitions Log")
-	, m_PowerStatus(IN_PROGRESS)
+	, m_PowerStatus(eReturnValues::IN_PROGRESS)
 	, m_PageLength(pageLength)
 	, m_bufferLength(bufferSize)
 	, m_PowerParam(0)
 {
-	if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+	if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
 		printf("%s \n", m_PowerName.c_str());
 	}
@@ -76,11 +76,11 @@ CScsiPowerConditiontLog::CScsiPowerConditiontLog(uint8_t * buffer, size_t buffer
 #endif
 	if (pData != NULL)
 	{
-		m_PowerStatus = IN_PROGRESS;
+		m_PowerStatus = eReturnValues::IN_PROGRESS;
 	}
 	else
 	{
-		m_PowerStatus = FAILURE;
+		m_PowerStatus = eReturnValues::FAILURE;
 	}
 
 }
@@ -232,7 +232,7 @@ void CScsiPowerConditiontLog::process_List_Information(JSONNODE *powerData)
 //---------------------------------------------------------------------------
 eReturnValues CScsiPowerConditiontLog::get_Data(JSONNODE *masterData)
 {
-	eReturnValues retStatus = IN_PROGRESS;
+	eReturnValues retStatus = eReturnValues::IN_PROGRESS;
 	if (pData != NULL)
 	{
 		JSONNODE *pageInfo = json_new(JSON_NODE);
@@ -249,16 +249,16 @@ eReturnValues CScsiPowerConditiontLog::get_Data(JSONNODE *masterData)
 			else
 			{
 				json_push_back(masterData, pageInfo);
-				return BAD_PARAMETER;
+				return eReturnValues::BAD_PARAMETER;
 			}
 		}
 
 		json_push_back(masterData, pageInfo);
-		retStatus = SUCCESS;
+		retStatus = eReturnValues::SUCCESS;
 	}
 	else
 	{
-		retStatus = MEMORY_FAILURE;
+		retStatus = eReturnValues::MEMORY_FAILURE;
 	}
 	return retStatus;
 }

@@ -41,7 +41,7 @@ using namespace std;
 CSAtaDevicStatisticsTempLogs::CSAtaDevicStatisticsTempLogs()
     :m_name("SCT Temp Log")
 	, m_logSize(0)
-	, m_status(IN_PROGRESS)
+	, m_status(eReturnValues::IN_PROGRESS)
     , m_tempData()
     , JsonData(NULL)
 {
@@ -62,7 +62,7 @@ CSAtaDevicStatisticsTempLogs::CSAtaDevicStatisticsTempLogs()
 CSAtaDevicStatisticsTempLogs::CSAtaDevicStatisticsTempLogs(uint8_t *buffer,JSONNODE *masterData)
     :m_name("SCT Temp Log")
 	, m_logSize(0)
-    , m_status(IN_PROGRESS)
+    , m_status(eReturnValues::IN_PROGRESS)
     , m_tempData()
     , JsonData(masterData)
 {
@@ -89,14 +89,14 @@ CSAtaDevicStatisticsTempLogs::CSAtaDevicStatisticsTempLogs(uint8_t *buffer,JSONN
 CSAtaDevicStatisticsTempLogs::CSAtaDevicStatisticsTempLogs(const std::string &fileName, JSONNODE *masterData)
     : m_name("SCT Temp Log")
 	, m_logSize(0)
-	, m_status(IN_PROGRESS)
+	, m_status(eReturnValues::IN_PROGRESS)
     , m_tempData()
     , JsonData(masterData)
 {
 
 	CLog *cCLog;
 	cCLog = new CLog(fileName);
-	if (cCLog->get_Log_Status() == SUCCESS)
+	if (cCLog->get_Log_Status() == eReturnValues::SUCCESS)
 	{
 		if (cCLog->get_Buffer() != NULL)
 		{
@@ -117,14 +117,14 @@ CSAtaDevicStatisticsTempLogs::CSAtaDevicStatisticsTempLogs(const std::string &fi
 			}
 			else
 			{
-				m_status = BAD_PARAMETER;
+				m_status = eReturnValues::BAD_PARAMETER;
 			}
             delete[] pData;
 		}
 		else
 		{
 
-			m_status = FAILURE;
+			m_status = eReturnValues::FAILURE;
 		}
 	}
 	else
@@ -161,7 +161,7 @@ CSAtaDevicStatisticsTempLogs::~CSAtaDevicStatisticsTempLogs()
 //
 //
 //  Exit:
-//!  \return eReturnValues SUCCESS
+//!  \return eReturnValues eReturnValues::SUCCESS
 //
 //---------------------------------------------------------------------------
 eReturnValues CSAtaDevicStatisticsTempLogs::parse_SCT_Temp_Log(uint8_t* pData)
@@ -177,7 +177,7 @@ eReturnValues CSAtaDevicStatisticsTempLogs::parse_SCT_Temp_Log(uint8_t* pData)
     m_tempData.CBSize = M_BytesTo2ByteValue(pData[31], pData[30]);
     m_tempData.CBIndex = M_BytesTo2ByteValue(pData[33], pData[32]);
     m_tempData.Temperature = pData[(34 + m_tempData.CBIndex)];
-    return SUCCESS;
+    return eReturnValues::SUCCESS;
 }
 
 eReturnValues CSAtaDevicStatisticsTempLogs::print_SCT_Temp_Log()
@@ -200,7 +200,7 @@ eReturnValues CSAtaDevicStatisticsTempLogs::print_SCT_Temp_Log()
     if (m_logSize > 0 && m_logSize < (static_cast<size_t>(m_tempData.CBIndex) + 34))   // check the size fo the data
     {
         json_push_back(JsonData, sctTemp);
-        return static_cast<eReturnValues>(INVALID_LENGTH);
+        return static_cast<eReturnValues>(eReturnValues::INVALID_LENGTH);
     }
 
 
@@ -221,7 +221,7 @@ eReturnValues CSAtaDevicStatisticsTempLogs::print_SCT_Temp_Log()
     json_push_back(sctTemp, json_new_a("Temp Log Temperature of CB Index (Celsius)", temp.str().c_str()));
     temp.str("");temp.clear();
     json_push_back(JsonData, sctTemp);
-    return SUCCESS;
+    return eReturnValues::SUCCESS;
 }
 //-----------------------------------------------------------------------------
 //
@@ -238,7 +238,7 @@ eReturnValues CSAtaDevicStatisticsTempLogs::print_SCT_Temp_Log()
 //---------------------------------------------------------------------------
 CAtaDeviceStatisticsLogs::CAtaDeviceStatisticsLogs()
     :m_name("Device Stat Log")
-    , m_status(IN_PROGRESS)
+    , m_status(eReturnValues::IN_PROGRESS)
     , pData(NULL)
     , m_deviceLogSize(0)
     , m_Response()
@@ -263,7 +263,7 @@ CAtaDeviceStatisticsLogs::CAtaDeviceStatisticsLogs()
 //---------------------------------------------------------------------------
 CAtaDeviceStatisticsLogs::CAtaDeviceStatisticsLogs(uint32_t logSize, JSONNODE *masterData, uint8_t *buffer)
     : m_name("Device Stat Log")
-    , m_status(IN_PROGRESS)
+    , m_status(eReturnValues::IN_PROGRESS)
     , pData(buffer)
     , m_deviceLogSize(logSize)
     , m_Response()
@@ -274,7 +274,7 @@ CAtaDeviceStatisticsLogs::CAtaDeviceStatisticsLogs(uint32_t logSize, JSONNODE *m
     }
     else
     {
-        m_status = FAILURE;
+        m_status = eReturnValues::FAILURE;
     }
 }
 //-----------------------------------------------------------------------------
@@ -294,14 +294,14 @@ CAtaDeviceStatisticsLogs::CAtaDeviceStatisticsLogs(uint32_t logSize, JSONNODE *m
 //---------------------------------------------------------------------------
 CAtaDeviceStatisticsLogs::CAtaDeviceStatisticsLogs(const std::string &fileName, JSONNODE *masterData)
     : m_name("Device Stat Log")
-	, m_status(IN_PROGRESS)
+	, m_status(eReturnValues::IN_PROGRESS)
 	, pData()
 	, m_deviceLogSize(0)
     , m_Response()
 {
 	CLog *cCLog;
 	cCLog = new CLog(fileName);
-	if (cCLog->get_Log_Status() == SUCCESS)
+	if (cCLog->get_Log_Status() == eReturnValues::SUCCESS)
 	{
 		if (cCLog->get_Buffer() != NULL)
 		{
@@ -322,13 +322,13 @@ CAtaDeviceStatisticsLogs::CAtaDeviceStatisticsLogs(const std::string &fileName, 
 			}
 			else
 			{
-				m_status = BAD_PARAMETER;
+				m_status = eReturnValues::BAD_PARAMETER;
 			}
 		}
 		else
 		{
 
-			m_status = FAILURE;
+			m_status = eReturnValues::FAILURE;
 		}
 	}
 	else
@@ -365,14 +365,14 @@ CAtaDeviceStatisticsLogs::~CAtaDeviceStatisticsLogs()
 //! \param masterData = The master Json Node that holds all of the data
 //
 //  Exit:
-//!  \return eReturnValues SUCCESS
+//!  \return eReturnValues eReturnValues::SUCCESS
 //
 //---------------------------------------------------------------------------
 eReturnValues CAtaDeviceStatisticsLogs::ParseSCTDeviceStatLog(JSONNODE *masterData)
 {
     sHeader *pDeviceHeader = NULL;
     uint64_t *pLogPage = NULL;
-    if (eVerbosity_open::VERBOSITY_DEFAULT < g_verbosity)
+    if (eVerbosityLevels::VERBOSITY_DEFAULT < g_verbosity)
     {
         printf("\nStarting Device Statistics Parsing \n");
     }                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
@@ -436,7 +436,7 @@ eReturnValues CAtaDeviceStatisticsLogs::ParseSCTDeviceStatLog(JSONNODE *masterDa
 
     }
     json_push_back(masterData, deviceData);
-    return SUCCESS;
+    return eReturnValues::SUCCESS;
 }
 //-----------------------------------------------------------------------------
 //

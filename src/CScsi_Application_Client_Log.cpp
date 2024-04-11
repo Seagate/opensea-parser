@@ -34,12 +34,12 @@ using namespace opensea_parser;
 CScsiApplicationLog::CScsiApplicationLog()
 	: pData()
 	, m_ApplicationName("Application Client Log")
-	, m_ApplicationStatus(IN_PROGRESS)
+	, m_ApplicationStatus(eReturnValues::IN_PROGRESS)
 	, m_PageLength(0)
 	, m_bufferLength()
 	, m_App(0)
 {
-	if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+	if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
 		printf("%s \n", m_ApplicationName.c_str());
 	}
@@ -62,22 +62,22 @@ CScsiApplicationLog::CScsiApplicationLog()
 CScsiApplicationLog::CScsiApplicationLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength)
 	: pData(buffer)
 	, m_ApplicationName("Application Client Log")
-	, m_ApplicationStatus(IN_PROGRESS)
+	, m_ApplicationStatus(eReturnValues::IN_PROGRESS)
 	, m_PageLength(pageLength)
 	, m_bufferLength(bufferSize)
 	, m_App(0)
 {
-	if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+	if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
 		printf("%s \n", m_ApplicationName.c_str());
 	}
 	if (buffer != NULL)
 	{
-		m_ApplicationStatus = IN_PROGRESS;
+		m_ApplicationStatus = eReturnValues::IN_PROGRESS;
 	}
 	else
 	{
-		m_ApplicationStatus = FAILURE;
+		m_ApplicationStatus = eReturnValues::FAILURE;
 	}
 
 }
@@ -139,7 +139,7 @@ void CScsiApplicationLog::process_Client_Data(JSONNODE *appData)
     json_push_back(appInfo, json_new_a("Application Client Length ", temp.str().c_str()));
     
     // format to show the buffer data.
-    if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+    if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
         uint32_t lineNumber = 0;
         uint32_t offset = 0;
@@ -186,7 +186,7 @@ void CScsiApplicationLog::process_Client_Data(JSONNODE *appData)
 //---------------------------------------------------------------------------
 eReturnValues CScsiApplicationLog::get_Client_Data(JSONNODE *masterData)
 {
-	eReturnValues retStatus = IN_PROGRESS;
+	eReturnValues retStatus = eReturnValues::IN_PROGRESS;
 	if (pData != NULL)
 	{
 		JSONNODE *pageInfo = json_new(JSON_NODE);
@@ -207,16 +207,16 @@ eReturnValues CScsiApplicationLog::get_Client_Data(JSONNODE *masterData)
 			else
 			{
 				json_push_back(masterData, pageInfo);
-				return BAD_PARAMETER;
+				return eReturnValues::BAD_PARAMETER;
 			}
 		}
 
 		json_push_back(masterData, pageInfo);
-		retStatus = SUCCESS;
+		retStatus = eReturnValues::SUCCESS;
 	}
 	else
 	{
-		retStatus = MEMORY_FAILURE;
+		retStatus = eReturnValues::MEMORY_FAILURE;
 	}
 	return retStatus;
 }

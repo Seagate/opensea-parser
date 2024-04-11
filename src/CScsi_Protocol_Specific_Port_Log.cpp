@@ -32,14 +32,14 @@ using namespace opensea_parser;
 CScsiProtocolPortLog::CScsiProtocolPortLog()
 	: pData()
 	, m_PSPName("Protocol Port Log")
-	, m_PSPStatus(IN_PROGRESS)
+	, m_PSPStatus(eReturnValues::IN_PROGRESS)
 	, m_PageLength(0)
 	, m_bufferLength(0)
 	, m_List(NULL)
 	, m_Descriptor(NULL)
 	, m_Event(NULL)
 {
-	if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+	if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
 		printf("%s \n", m_PSPName.c_str());
 	}
@@ -60,14 +60,14 @@ CScsiProtocolPortLog::CScsiProtocolPortLog()
 CScsiProtocolPortLog::CScsiProtocolPortLog(uint8_t *buffer, size_t bufferSize)
 	:pData()
 	, m_PSPName("Protocol Port Log")
-	, m_PSPStatus(IN_PROGRESS)
+	, m_PSPStatus(eReturnValues::IN_PROGRESS)
 	, m_PageLength(0)
 	, m_bufferLength(bufferSize)
 	, m_List(NULL)
 	, m_Descriptor(NULL)
 	, m_Event(NULL)
 {
-	if (eVerbosity_open::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+	if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
 		printf("%s \n", m_PSPName.c_str());
 	}
@@ -79,11 +79,11 @@ CScsiProtocolPortLog::CScsiProtocolPortLog(uint8_t *buffer, size_t bufferSize)
 #endif
 	if (pData != NULL)
 	{
-		m_PSPStatus = IN_PROGRESS;
+		m_PSPStatus = eReturnValues::IN_PROGRESS;
 	}
 	else
 	{
-		m_PSPStatus = FAILURE;
+		m_PSPStatus = eReturnValues::FAILURE;
 	}
 
 }
@@ -747,7 +747,7 @@ void CScsiProtocolPortLog::process_List_Information(JSONNODE *listData)
 //---------------------------------------------------------------------------
 eReturnValues CScsiProtocolPortLog::get_Data(JSONNODE *masterData)
 {
-	eReturnValues retStatus = IN_PROGRESS;
+	eReturnValues retStatus = eReturnValues::IN_PROGRESS;
 
 	if (pData != NULL)
 	{
@@ -792,7 +792,7 @@ eReturnValues CScsiProtocolPortLog::get_Data(JSONNODE *masterData)
 						json_push_back(listInfo, descInfo);
 						json_push_back(pageInfo, listInfo);
 						json_push_back(masterData, pageInfo);
-						return BAD_PARAMETER;
+						return eReturnValues::BAD_PARAMETER;
 					}
 				}
 				json_push_back(listInfo, descInfo);
@@ -801,17 +801,17 @@ eReturnValues CScsiProtocolPortLog::get_Data(JSONNODE *masterData)
 			{
 				json_push_back(pageInfo, listInfo);
 				json_push_back(masterData, pageInfo);
-				return BAD_PARAMETER;
+				return eReturnValues::BAD_PARAMETER;
 			}
 			json_push_back(pageInfo, listInfo);
 		}
 
 		json_push_back(masterData, pageInfo);
-		retStatus = SUCCESS;
+		retStatus = eReturnValues::SUCCESS;
 	}
 	else
 	{
-		retStatus = MEMORY_FAILURE;
+		retStatus = eReturnValues::MEMORY_FAILURE;
 	}
 	return retStatus;
 }
