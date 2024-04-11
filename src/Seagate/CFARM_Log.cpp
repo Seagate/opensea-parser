@@ -210,7 +210,7 @@ CFARMLog::~CFARMLog()
 //---------------------------------------------------------------------------
 eReturnValues CFARMLog::parse_Device_Farm_Log(JSONNODE *masterJson)
 {
-	eReturnValues retStatus = eReturnValues::SUCCESS; 
+	eReturnValues retStatus = eReturnValues::SUCCESS; // MEMORY_FAILURE;
 
 	if (is_Device_Scsi(bufferData[0], bufferData[1]))
 	{
