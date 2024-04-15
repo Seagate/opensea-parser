@@ -244,7 +244,6 @@ void CLog::read_In_Log()
             logFile.read(pData, static_cast<std::streamsize>(m_size));
             logFile.close();
 
-            m_logStatus = SUCCESS;
             if (m_bufferData != NULL)
             {
                 v_Buff.insert(v_Buff.end(), &m_bufferData[0], &m_bufferData[m_size]);
