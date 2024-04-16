@@ -230,11 +230,8 @@ typedef struct _sWorkLoadStat
         numReadTransferLarge(0), numWriteTransferSmall(0), numWriteTransferMid1(0), numWriteTransferMid2(0), numWriteTransferLarge(0),
         numWriteTransferMid1ATA(0), numWriteTransferMid2ATA(0), numWriteTransferLargeATA(0), cntQueueDepth1(0), cntQueueDepth2(0),
         cntQueueDepth3to4(0), cntQueueDepth5to8(0), cntQueueDepth9to16(0), cntQueueDepth17to32(0), cntQueueDepth33to64(0),
-        cntQueueDepthmorethan64(0), numDithEvtAct1(0), numRandWLDitherHoldOffAct1(0), numSequentialWLDitherHoldOffAct1(0)
-//#if defined __cplusplus && __cplusplus >= 201103L
-        ,reserved {0}
-//#endif
-    {};
+        cntQueueDepthmorethan64(0), numDithEvtAct1(0), numRandWLDitherHoldOffAct1(0), numSequentialWLDitherHoldOffAct1(0),
+        reserved {0} {};
 }sWorkLoadStat;
 
 

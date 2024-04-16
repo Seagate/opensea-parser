@@ -387,10 +387,7 @@ namespace opensea_parser {
         uint64_t            writeProtect;                                //!< HAMR Data Protect Status: 1 = Data Protect, 0 = No Data Protect
         uint64_t            regenHeadMask;                               //!< Regen Head Mask: bitmap where 1 = bad head, 0 = good head
 
-        _sGeneralDriveInformationpage06() : pageNumber(0), copyNumber(0), Depop(0),
-#if defined __cplusplus && __cplusplus >= 201103L
-            productID{ 0 },
-#endif
+        _sGeneralDriveInformationpage06() : pageNumber(0), copyNumber(0), Depop(0), productID{ 0 },
             driveType(0), isDepopped(0), maxNumAvaliableSectors(0), timeToReady(0),
             holdTime(0), servoSpinUpTime(0), writeProtect(0), regenHeadMask(0) {};
     }sGeneralDriveInfoPage06;
@@ -435,9 +432,7 @@ namespace opensea_parser {
         sLogParams          pageHeader;                                  //!<  header page parameters
         uint64_t            headValue[MAX_HEAD_COUNT];                   //!< head information
         
-#if defined __cplusplus && __cplusplus >= 201103L
         _sHeadInformation() : headValue{ 0 } {};
-#endif
            
     }sHeadInformation;
 
@@ -495,11 +490,8 @@ namespace opensea_parser {
         uint64_t            timestampForLED[8];                         //!< Universal Timestamp (us) of last 8 Flash LED (assert) Events, wrapping array 
         uint64_t            powerCycleOfLED[8];                        //<! Power Cycle of the last 8 Flash LED (assert) Events, wrapping array 
 
-        _sActuatorFLEDInfo() : pageNumber(0), copyNumber(0), actID(0), totalFLEDEvents(0), index(0)
-#if defined __cplusplus && __cplusplus >= 201103L
-            ,flashLEDArray{ 0 }, timestampForLED{ 0 }, powerCycleOfLED{ 0 }
-#endif 
-        {};
+        _sActuatorFLEDInfo() : pageNumber(0), copyNumber(0), actID(0), totalFLEDEvents(0), index(0),
+            flashLEDArray{ 0 }, timestampForLED{ 0 }, powerCycleOfLED{ 0 }  {};
     }sActuatorFLEDInfo;
 
     typedef struct _sActuatorReallocationData
@@ -512,11 +504,8 @@ namespace opensea_parser {
         uint64_t            numberReallocatedCandidates;                //!< Number of Reallocated Candidate Sectors
         uint64_t            reallocatedCauses[15];                      //!< Reallocated sectors by cause, see below.  This is a 15 element array, each element is 8 bytes
 
-        _sActuatorReallocationData() : pageNumber(0), copyNumber(0), actID(0), numberReallocatedSectors(0), numberReallocatedCandidates(0)
-#if defined __cplusplus && __cplusplus >= 201103L
-            , reallocatedCauses{ 0 }
-#endif 
-        {};
+        _sActuatorReallocationData() : pageNumber(0), copyNumber(0), actID(0), numberReallocatedSectors(0), numberReallocatedCandidates(0),
+            reallocatedCauses{ 0 }  {};
     }sActReallocationData;
 #pragma pack(pop)
     typedef struct _sScsiFarmFrame

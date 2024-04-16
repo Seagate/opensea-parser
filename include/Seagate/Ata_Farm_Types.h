@@ -70,11 +70,8 @@ typedef struct _sDriveInfo
         rotationRate(0), firmware(0), firmwareRev(0), security(0), featuresSupported(0), featuresEnabled(0),
         poh(0), spoh(0), headFlightHoursAct0(0), headLoadEventsAct0(0), powerCycleCount(0), resetCount(0),
         spinUpTime(0), reserved(0), reserved1(0), timeStamp1(0), timeStamp2(0), timeToReady(0), timeHeld(0),
-#if defined __cplusplus && __cplusplus >= 201103L
-        modelNumber{ 0 },
-#endif
-        driveRecordingType(0), depopped(0), maxNumberForReasign(0), dateOfAssembly(0), depopulationHeadMask(0), headFlightHoursAct1(0),
-        headLoadEventsAct1(0), HAMRProtectStatus(0), regenHeadMask(0) {};
+        modelNumber{ 0 }, driveRecordingType(0), depopped(0), maxNumberForReasign(0), dateOfAssembly(0), 
+        depopulationHeadMask(0), headFlightHoursAct1(0), headLoadEventsAct1(0), HAMRProtectStatus(0), regenHeadMask(0) {};
 }sDriveInfo;
 
 typedef struct _sErrorStat
@@ -124,18 +121,10 @@ typedef struct _sErrorStat
         totalMechanicalFails(0), totalReallocatedCanidates(0), totalASREvents(0), totalCRCErrors(0), attrSpinRetryCount(0),
         normalSpinRetryCount(0), worstSpinRretryCount(0), attrIOEDCErrors(0), attrCTOCount(0), overfiveSecCTO(0),
         oversevenSecCTO(0), totalFlashLED(0), indexFlashLED(0), uncorrectables(0), reserved1(0),
-#if defined __cplusplus && __cplusplus >= 201103L
         flashLEDArray{0}, readWriteRetry{ 0 }, reserved2{ 0 }, reserved3{ 0 }, timestampForLED{ 0 }, powerCycleOfLED{ 0 },
-#endif
-        cumLifeTimeECCReadDueErrorRecovery(0),
-#if defined __cplusplus && __cplusplus >= 201103L
-        cumLifeUnRecoveralbeReadByhead{ 0 }, cumLiveUnRecoveralbeReadUnique{ 0 },
-#endif
-        reallocSectorsAct1(0), reallocCandidatesAct1(0), totalFlashLEDEvents(0), lastIDXFLEDInfoAct1(0)
-#if defined __cplusplus && __cplusplus >= 201103L
-        ,last8FLEDEventsAct1{ 0 }, last8ReadWriteRetryEvts{ 0 }, reserved4{0}, last8FLEDEvtsAct1{ 0 }, last8FLEDEvtsPowerCycleAct1{ 0 }
-#endif 
-        {};
+        cumLifeTimeECCReadDueErrorRecovery(0), cumLifeUnRecoveralbeReadByhead{ 0 }, cumLiveUnRecoveralbeReadUnique{ 0 },
+        reallocSectorsAct1(0), reallocCandidatesAct1(0), totalFlashLEDEvents(0), lastIDXFLEDInfoAct1(0)  ,last8FLEDEventsAct1{ 0 }, 
+        last8ReadWriteRetryEvts{ 0 }, reserved4{0}, last8FLEDEvtsAct1{ 0 }, last8FLEDEvtsPowerCycleAct1{ 0 } {};
 }sErrorStat;
 
 typedef struct _sEnvironementStat
@@ -303,50 +292,20 @@ typedef struct _sAtaReliabilityStat
     uint64_t        superParityCoveragePercentageAct0;           //!< Primary Super Parity Coverage Percentage SMR/SWR, Actuator 0
     uint64_t        superParityCoveragePercentageAct1;           //!< Primary Super Parity Coverage Percentage SMR/SWR, Actuator 1
 
-    _sAtaReliabilityStat() : pageNumber(0), copyNumber(0), reserved(0), reserved1(0),
-#if defined __cplusplus && __cplusplus >= 201103L
-        reserved2{ 0 }, reserved3{ 0 },
-#endif
+    _sAtaReliabilityStat() : pageNumber(0), copyNumber(0), reserved(0), reserved1(0), reserved2{ 0 }, reserved3{ 0 },
         reserved4(0), reserved5(0), reserved6(0),reserved7(0), reserved8(0), reserved9(0), reserved10(0), reserved11(0),numberDOSScans(0), 
-        numberLBACorrect(0), reserved12(0),
-#if defined __cplusplus && __cplusplus >= 201103L
-        reserved13{ 0 },
-#endif
-        reserved14(0),
-#if defined __cplusplus && __cplusplus >= 201103L
+        numberLBACorrect(0), reserved12(0), reserved13{ 0 }, reserved14(0),
         DVGASkipWriteDetect{ 0 }, RVGASkipWriteDetect{ 0 }, FVGASkipWriteDetect{ 0 }, skipWriteDetectThresExceeded{ 0 },
-#endif
-        attrErrorRateRaw(0), attrErrorRateNormal(0), attrErrorRateWorst(0), attrSeekErrorRateRaw(0), attrSeekErrorRateNormal(0), \
-        attrSeekErrorRateWorst(0), attrUnloadEventsRaw(0), reserved15(0),     
-#if defined __cplusplus && __cplusplus >= 201103L   
-        reserved16{ 0 }, reserved17{ 0 }, reserved18{ 0 }, MRHeadResistance{ 0 }, reserved52{ 0 },
-        velocityObserver{ 0 }, numberOfVelocityObserver{ 0 }, currentH2SAT{ }, currentH2SATIterations{ }, currentH2SATPercentage{ 0 },
-        currentH2SATamplitude{ 0 }, currentH2SATasymmetry{ 0 }, flyHeightClearance{ },
-#endif
-        diskSlipRecalPerformed(0), 
-#if defined __cplusplus && __cplusplus >= 201103L  
-        gList{ 0 }, pendingEntries{ 0 },
-#endif
-        heliumPresureTrip(0), 
-#if defined __cplusplus && __cplusplus >= 201103L 
-        oughtDOS{ 0 }, needDOS{ 0 }, writeDOSFault{ 0 }, writePOH{ 0 },
-#endif
-        reserved19(0), reserved20(0), reserved21(0), 
-#if defined __cplusplus && __cplusplus >= 201103L
-
-        reserved22{ 0 }, secondMRHeadResistance{ 0 }, reserved23{ 0 }, reserved24{ 0 },
-        reserved25{ }, reserved26{ }, reserved27{ },
-#endif
-        numberLBACorrectedByParitySector(0), SuperParityCovPercent(0),
-#if defined __cplusplus && __cplusplus >= 201103L
-        reserved28{ 0 }, reserved29{ }, reserved30{ }, 
-#endif    
-        reserved31(0), reserved32(0), reserved33(0), reserved34(0), reserved35(0), reserved36(0), reserved37(0), 
+        attrErrorRateRaw(0), attrErrorRateNormal(0), attrErrorRateWorst(0), attrSeekErrorRateRaw(0), attrSeekErrorRateNormal(0), 
+        attrSeekErrorRateWorst(0), attrUnloadEventsRaw(0), reserved15(0), reserved16{ 0 }, reserved17{ 0 }, reserved18{ 0 }, 
+        MRHeadResistance{ 0 }, reserved52{ 0 }, velocityObserver{ 0 }, numberOfVelocityObserver{ 0 }, currentH2SAT{ },
+        currentH2SATIterations{ }, currentH2SATPercentage{ 0 }, currentH2SATamplitude{ 0 }, currentH2SATasymmetry{ 0 }, flyHeightClearance{ },
+        diskSlipRecalPerformed(0), gList{ 0 }, pendingEntries{ 0 }, heliumPresureTrip(0),  oughtDOS{ 0 }, needDOS{ 0 }, writeDOSFault{ 0 },
+        writePOH{ 0 }, reserved19(0), reserved20(0), reserved21(0), reserved22{ 0 }, secondMRHeadResistance{ 0 }, reserved23{ 0 }, reserved24{ 0 },
+        reserved25{ }, reserved26{ }, reserved27{ }, numberLBACorrectedByParitySector(0), SuperParityCovPercent(0), reserved28{ 0 }, reserved29{ }, 
+        reserved30{ },  reserved31(0), reserved32(0), reserved33(0), reserved34(0), reserved35(0), reserved36(0), reserved37(0), 
         reserved38(0), reserved39(0), reserved40(0), reserved41(0), correctedLBAsAct1(0), released42(0), numberLBACorrectedByParitySectorAct1(0),
-        released44(0), released45(0), released46(0), released47(0),
-#if defined __cplusplus && __cplusplus >= 201103L
-        released48{ 0 }, released49{ },released50{ }, released51{ },
-#endif
+        released44(0), released45(0), released46(0), released47(0), released48{ 0 }, released49{ },released50{ }, released51{ },
         superParityCoveragePercentageAct0(0), superParityCoveragePercentageAct1(0) {};
 }sAtaReliabilityStat;
 

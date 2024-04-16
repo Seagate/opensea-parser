@@ -60,7 +60,7 @@ CScsiScanLog::CScsiScanLog()
 //
 //---------------------------------------------------------------------------
 CScsiScanLog::CScsiScanLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength)
-	: v_Data(NULL)
+	: v_Data(&buffer[0], &buffer[bufferSize])
 	, m_ScanName("Background Scan Log")
 	, m_ScanStatus(eReturnValues::IN_PROGRESS)
 	, m_PageLength(pageLength)
