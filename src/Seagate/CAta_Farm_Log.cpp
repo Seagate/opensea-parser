@@ -381,6 +381,15 @@ eReturnValues CATA_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint3
         printf("\tDate of Assembly:                                             %" PRIu64" \n", (vFarmFrame.at(page).driveInfo.dateOfAssembly & UINT64_C(0x00FFFFFFFFFFFFFF)));
         printf("\tHAMR Data Protect Status:                                     %" PRIu64" \n", (vFarmFrame.at(page).driveInfo.HAMRProtectStatus & UINT64_C(0x00FFFFFFFFFFFFFF)));
         printf("\tRegen Head Mask:                                              %" PRIu64" \n", (vFarmFrame.at(page).driveInfo.regenHeadMask & UINT64_C(0x00FFFFFFFFFFFFFF)));
+        printf("\tPOH most recent FARM time series save:                        %" PRIu64" \n", (vFarmFrame.at(page).driveInfo.POHMostRecentSave & UINT64_C(0x00FFFFFFFFFFFFFF)));
+        printf("\tPOH second most recent FARM time series save:                 %" PRIu64" \n", (vFarmFrame.at(page).driveInfo.POHSecondMostRecentSave & UINT64_C(0x00FFFFFFFFFFFFFF)));
+        printf("\tSequential Read before required for active zone configuration:%" PRIu64" \n", (vFarmFrame.at(page).driveInfo.SeqActiveZone & UINT64_C(0x00FFFFFFFFFFFFFF)));
+        printf("\tSequential Write Required for active zone configuration:      %" PRIu64" \n", (vFarmFrame.at(page).driveInfo.SeqWriteActiveZone & UINT64_C(0x00FFFFFFFFFFFFFF)));
+        printf("\tNumber of LBAs (HSMR SWR capacity):                           %" PRIu64" \n", (vFarmFrame.at(page).driveInfo.numLBA & UINT64_C(0x00FFFFFFFFFFFFFF)));
+        for (uint32_t i = 0; i < MAX_HEAD_COUNT; i++)
+        {
+            printf("\tGet Physical Element Status for head %2" PRIu32":                     % " PRIi64" \n", i, (vFarmFrame.at(page).driveInfo.gpes[i] & INT64_C(0x00FFFFFFFFFFFFFF)));
+        }
     }
 
     std::ostringstream temp;
@@ -489,6 +498,12 @@ eReturnValues CATA_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint3
     set_json_64_bit_With_Status(pageInfo, "Head Load Events - Actuator 1", vFarmFrame.at(page).driveInfo.headLoadEventsAct1, false, m_showStatusBits);         //!< Head Load Events- Actuator 1
     set_json_bool_With_Status(pageInfo, "HAMR Data Protect Status", vFarmFrame.at(page).driveInfo.HAMRProtectStatus, m_showStatusBits);
     set_json_bool_With_Status(pageInfo, "Regen Head Mask", vFarmFrame.at(page).driveInfo.regenHeadMask, m_showStatusBits);
+    // version 4.41
+    set_json_64_bit_With_Status(pageInfo, "POH most recent FARM time series save", vFarmFrame.at(page).driveInfo.POHMostRecentSave, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "POH second most recent FARM time series save", vFarmFrame.at(page).driveInfo.POHSecondMostRecentSave, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Sequential Read Before Required for active zone configuration", vFarmFrame.at(page).driveInfo.SeqActiveZone, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Sequential Write Required for active zone configuration", vFarmFrame.at(page).driveInfo.SeqWriteActiveZone, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Number of LBAs (HSMR SWR capacity)", vFarmFrame.at(page).driveInfo.numLBA, false, m_showStatusBits);
 
     json_push_back(masterData, pageInfo);
 
@@ -709,6 +724,25 @@ eReturnValues CATA_Farm_Log::print_Error_Information(JSONNODE *masterData, uint3
             {
                 printf("\tRead/Write retry events # %2d - Actuator 1:                    0x%" PRIx64" \n", loopCount, vFarmFrame.at(page).errorPage.last8ReadWriteRetryEvts[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));
             }
+            // 4.41
+            printf("\tSATA PFA Attributes 1:                                        %" PRIu64" \n", vFarmFrame.at(page).errorPage.pfaAttribute1 & UINT64_C(0x00FFFFFFFFFFFFFF));
+            printf("\tSATA PFA Attributes 2:                                        %" PRIu64" \n", vFarmFrame.at(page).errorPage.pfaAttribute2 & UINT64_C(0x00FFFFFFFFFFFFFF));
+            printf("\tReallocated sectors last FARM Time series Frame save:         %" PRIu64" \n", vFarmFrame.at(page).errorPage.lastReallocatedSectorsAtc0 & UINT64_C(0x00FFFFFFFFFFFFFF));
+            printf("\tReallocated sectors between FARM time series Frame:           %" PRIu64" \n", vFarmFrame.at(page).errorPage.betweenReallocatedSectorsAct0 & UINT64_C(0x00FFFFFFFFFFFFFF));
+            printf("\tReallocation candidate sectors last FARM Time series Frame:   %" PRIu64" \n", vFarmFrame.at(page).errorPage.lastCandidateSectorsAct0 & UINT64_C(0x00FFFFFFFFFFFFFF));
+            printf("\tReallocation candidate sectors between FARM time series Frame:%" PRIu64" \n", vFarmFrame.at(page).errorPage.betweenCandidateSectorsAct0 & UINT64_C(0x00FFFFFFFFFFFFFF));
+            printf("\tReallocated sectors last FARM Time series save Actuator 1:    %" PRIu64" \n", vFarmFrame.at(page).errorPage.lastReallocatedSectorsAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));
+            printf("\tReallocated sectors between FARM time series Frame Actuator 1:%" PRIu64" \n", vFarmFrame.at(page).errorPage.betweenReallocatedSectorsAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));
+            printf("\tReallocation candidate sectors last FARM Time Actuator 1:     %" PRIu64" \n", vFarmFrame.at(page).errorPage.lastCandidateSectorsAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));
+            printf("\tReallocation candidate sectors between FARM time Actuator 1:  %" PRIu64" \n", vFarmFrame.at(page).errorPage.betweenCandidateSectorsAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));
+            for (loopCount = 0; loopCount < MAX_HEAD_COUNT; ++loopCount)
+            {
+                printf("\tUnique Unrecoverable sectors last Time series by Head %2" PRIu32":     %" PRIu64" \n", loopCount, vFarmFrame.at(page).errorPage.lastUniqueURE[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));      //!< Cumulative Lifetime Unrecoverable Read Repeating by head
+            }
+            for (loopCount = 0; loopCount < MAX_HEAD_COUNT; ++loopCount)
+            {
+                printf("\tUnique Unrecoverable sectors between time series by Head %2" PRIu32":  %" PRIu64" \n", loopCount, vFarmFrame.at(page).errorPage.betweenUniqueURE[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));      //!< Cumulative Lifetime Unrecoverable Read Repeating by head
+            }
             
         }
 
@@ -875,7 +909,7 @@ eReturnValues CATA_Farm_Log::print_Error_Information(JSONNODE *masterData, uint3
 
         temp.str(""); temp.clear();
         temp << "Power Cycle Event" << std::dec << loopCount;
-        set_json_64_bit_With_Status(eventInfoact1, temp.str().c_str(), vFarmFrame.at(page).errorPage.last8FLEDEvtsPowerCycleAct1[loopCount], false, m_showStatusBits);            //!< Power Cycle of the last 8 Flash LED (assert) Events, wrapping array- Actuator 1
+        set_json_64_bit_With_Status(eventInfoact1, temp.str().c_str(), vFarmFrame.at(page).errorPage.last8FLEDEvtsPowerCycleAct1[loopCount], false, m_showStatusBits);            //!< Power Cycle of the last 8 Flash LED (assert) Events, wrapping array
         temp.str(""); temp.clear();
 
         json_push_back(pageInfo, eventInfoact1);
@@ -895,7 +929,102 @@ eReturnValues CATA_Farm_Log::print_Error_Information(JSONNODE *masterData, uint3
 
         json_push_back(pageInfo, rwrInfo);
     }
+    if (((m_MajorRev >= 4) && (m_MinorRev > 34)) || m_showStatic)
+    {// 4.34
+        opensea_parser::set_json_64_bit_With_Status(pageInfo, "SATA PFA Attributes 1", vFarmFrame.at(page).errorPage.pfaAttribute1, false, m_showStatusBits);
+        if ((opensea_parser::check_For_Active_Status(&vFarmFrame.at(page).errorPage.pfaAttribute1)) && (((vFarmFrame.at(page).errorPage.pfaAttribute1 & UINT64_C(0x00FFFFFFFFFFFFFF)) != 0)) && (m_showStatic == false))
+        {
+            if (M_Byte0(vFarmFrame.at(page).errorPage.pfaAttribute1) == 0x01)
+            {
+                opensea_parser::set_Json_Bool(pageInfo, "SMART trip Attribute 0x01", true);
+            }
+            if (M_Byte1(vFarmFrame.at(page).errorPage.pfaAttribute1) == 0x03)
+            {
+                opensea_parser::set_Json_Bool(pageInfo, "SMART trip Attribute 0x03", true);
+            }
+            if (M_Byte2(vFarmFrame.at(page).errorPage.pfaAttribute1) == 0x05)
+            {
+                opensea_parser::set_Json_Bool(pageInfo, "SMART trip Attribute 0x05", true);
+            }
+            if (M_Byte3(vFarmFrame.at(page).errorPage.pfaAttribute1) == 0x07)
+            {
+                opensea_parser::set_Json_Bool(pageInfo, "SMART trip Attribute 0x07", true);
+            }
+            if (M_Byte4(vFarmFrame.at(page).errorPage.pfaAttribute1) == 0x10)
+            {
+                opensea_parser::set_Json_Bool(pageInfo, "SMART trip Attribute 0x10", true);
+            }
+            if (M_Byte5(vFarmFrame.at(page).errorPage.pfaAttribute1) == 0x12)
+            {
+                opensea_parser::set_Json_Bool(pageInfo, "SMART trip Attribute 0x12", true);
+            }
+        }
+        opensea_parser::set_json_64_bit_With_Status(pageInfo, "SATA PFA Attributes 2", vFarmFrame.at(page).errorPage.pfaAttribute2, false, m_showStatusBits);
+        if ((opensea_parser::check_For_Active_Status(&vFarmFrame.at(page).errorPage.pfaAttribute2)) && (((vFarmFrame.at(page).errorPage.pfaAttribute2 & UINT64_C(0x00FFFFFFFFFFFFFF)) != 0)) && (m_showStatic == false))
+        {
+            if (M_Byte0(vFarmFrame.at(page).errorPage.pfaAttribute2) == 0xc8)
+            {
+                opensea_parser::set_Json_Bool(pageInfo, "SMART trip Attribute 0xC8", true);
+            }
+        }
+        long long reallo = opensea_parser::check_for_signed_int(opensea_parser::check_Status_Strip_Status(static_cast<uint64_t>(vFarmFrame.at(page).errorPage.lastReallocatedSectorsAtc0)), 8);
+        opensea_parser::set_json_int_Check_Status(pageInfo, "Reallocated sectors since the last FARM Frame", reallo, vFarmFrame.at(page).errorPage.lastReallocatedSectorsAtc0, m_showStatusBits);
+        reallo = opensea_parser::check_for_signed_int(opensea_parser::check_Status_Strip_Status(static_cast<uint64_t>(vFarmFrame.at(page).errorPage.betweenReallocatedSectorsAct0)), 8);
+        opensea_parser::set_json_int_Check_Status(pageInfo, "Reallocated sectors Previous FARM Frame", reallo, vFarmFrame.at(page).errorPage.betweenReallocatedSectorsAct0, m_showStatusBits);
+        reallo = opensea_parser::check_for_signed_int(opensea_parser::check_Status_Strip_Status(static_cast<uint64_t>(vFarmFrame.at(page).errorPage.lastCandidateSectorsAct0)), 8);
+        opensea_parser::set_json_int_Check_Status(pageInfo, "Reallocation candidate sectors since the last FARM Frame", reallo, vFarmFrame.at(page).errorPage.lastCandidateSectorsAct0, m_showStatusBits);
+        reallo = opensea_parser::check_for_signed_int(opensea_parser::check_Status_Strip_Status(static_cast<uint64_t>(vFarmFrame.at(page).errorPage.betweenCandidateSectorsAct0)), 8);
+        opensea_parser::set_json_int_Check_Status(pageInfo, "Reallocation candidate sectors previous FARM Frame", reallo, vFarmFrame.at(page).errorPage.betweenCandidateSectorsAct0, m_showStatusBits);
+        if (m_ShowAct1)
+        {
+            reallo = opensea_parser::check_for_signed_int(opensea_parser::check_Status_Strip_Status(static_cast<uint64_t>(vFarmFrame.at(page).errorPage.lastReallocatedSectorsAct1)), 8);
+            opensea_parser::set_json_int_Check_Status(pageInfo, "Reallocated sectors since the last FARM Frame, Actuator 1", reallo, vFarmFrame.at(page).errorPage.lastReallocatedSectorsAct1, m_showStatusBits);
+            reallo = opensea_parser::check_for_signed_int(opensea_parser::check_Status_Strip_Status(static_cast<uint64_t>(vFarmFrame.at(page).errorPage.betweenReallocatedSectorsAct1)), 8);
+            opensea_parser::set_json_int_Check_Status(pageInfo, "Reallocated sectors previous FARM Frame, Actuator 1", reallo, vFarmFrame.at(page).errorPage.betweenReallocatedSectorsAct1, m_showStatusBits);
+            reallo = opensea_parser::check_for_signed_int(opensea_parser::check_Status_Strip_Status(static_cast<uint64_t>(vFarmFrame.at(page).errorPage.lastCandidateSectorsAct1)), 8);
+            opensea_parser::set_json_int_Check_Status(pageInfo, "Reallocation candidate sectors since the last FARM Frame, Actuator 1", reallo, vFarmFrame.at(page).errorPage.lastCandidateSectorsAct1, m_showStatusBits);
+            reallo = opensea_parser::check_for_signed_int(opensea_parser::check_Status_Strip_Status(static_cast<uint64_t>(vFarmFrame.at(page).errorPage.betweenCandidateSectorsAct1)), 8);
+            opensea_parser::set_json_int_Check_Status(pageInfo, "Reallocation candidate sectors previous FARM Frame, Actuator 1", reallo, vFarmFrame.at(page).errorPage.betweenCandidateSectorsAct1, m_showStatusBits);
+        }
 
+        if (m_showStatic)
+        {
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
+                temp.str(""); temp.clear();
+                temp << "Unique unrecoverable sectors since the last FARM Frame by Head " << std::dec << loopCount;
+                reallo = opensea_parser::check_for_signed_int(opensea_parser::check_Status_Strip_Status(static_cast<uint64_t>(vFarmFrame.at(page).errorPage.lastUniqueURE[loopCount])), 8);
+                opensea_parser::set_json_int_Check_Status(pageInfo, temp.str().c_str(), reallo, vFarmFrame.at(page).errorPage.lastUniqueURE[loopCount], m_showStatusBits);
+            }
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
+                temp.str(""); temp.clear();
+                temp << "Unique unrecoverable sectors previous FARM Frame by Head " << std::dec << loopCount;
+                reallo = opensea_parser::check_for_signed_int(opensea_parser::check_Status_Strip_Status(static_cast<uint64_t>(vFarmFrame.at(page).errorPage.betweenUniqueURE[loopCount])), 8);
+                opensea_parser::set_json_int_Check_Status(pageInfo, temp.str().c_str(), reallo, vFarmFrame.at(page).errorPage.betweenUniqueURE[loopCount], m_showStatusBits);
+            }
+        }
+        else
+        {
+            JSONNODE* last = json_new(JSON_ARRAY);
+            json_set_name(last, "Unique unrecoverable sectors since the last FARM Frame");
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
+                reallo = opensea_parser::check_for_signed_int(opensea_parser::check_Status_Strip_Status(static_cast<uint64_t>(vFarmFrame.at(page).errorPage.lastUniqueURE[loopCount])), 8);
+                opensea_parser::set_json_int_Check_Status(last, "Unique unrecoverable sectors since the last FARM Frame", reallo, vFarmFrame.at(page).errorPage.lastUniqueURE[loopCount], m_showStatusBits);
+            }
+            json_push_back(pageInfo, last);
+
+            JSONNODE* previous = json_new(JSON_ARRAY);
+            json_set_name(previous, "Unique unrecoverable sectors previous FARM Frame");
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
+                reallo = opensea_parser::check_for_signed_int(opensea_parser::check_Status_Strip_Status(static_cast<uint64_t>(vFarmFrame.at(page).errorPage.betweenUniqueURE[loopCount])), 8);
+                opensea_parser::set_json_int_Check_Status(previous, "Unique unrecoverable sectors previous FARM Frame", reallo, vFarmFrame.at(page).errorPage.betweenUniqueURE[loopCount], m_showStatusBits);
+            }
+            json_push_back(pageInfo, previous);
+        }
+    }
     json_push_back(masterData, pageInfo);
 
     return eReturnValues::SUCCESS;
@@ -1074,12 +1203,13 @@ eReturnValues CATA_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint32
         printf("\tSeek Error Rate (SMART Attr 7 Raw):                           0x%016" PRIx64" \n", vFarmFrame.at(page).reliPage.attrSeekErrorRateRaw & UINT64_C(0x00FFFFFFFFFFFFFF));             //!< Seek Error Rate (SMART Attribute 7 Raw)
         printf("\tSeek Error Rate (SMART Attr 7 Normalized):                    %" PRIu64" \n", vFarmFrame.at(page).reliPage.attrSeekErrorRateNormal & UINT64_C(0x00FFFFFFFFFFFFFF));               //!< Seek Error Rate (SMART Attribute 7 Normalized)
         printf("\tSeek Error Rate (SMART Attr 7 Worst):                         %" PRIu64" \n", vFarmFrame.at(page).reliPage.attrSeekErrorRateWorst & UINT64_C(0x00FFFFFFFFFFFFFF));                //!< Seek Error Rate (SMART Attribute 7 Worst)
-        printf("\tHigh Priority Unload Events (Raw) :                           %" PRIu64" \n", vFarmFrame.at(page).reliPage.attrUnloadEventsRaw & UINT64_C(0x00FFFFFFFFFFFFFF));              //!< High Priority Unload Events (SMART Attribute 192 Raw)
+        printf("\tHigh Priority Unload Events (Raw) :                           %" PRIu64" \n", vFarmFrame.at(page).reliPage.attrUnloadEventsRaw & UINT64_C(0x00FFFFFFFFFFFFFF));                   //!< High Priority Unload Events (SMART Attribute 192 Raw)
         printf("\tNumber of disc slip recalibrations performed:                 %" PRIu64" \n", vFarmFrame.at(page).reliPage.diskSlipRecalPerformed & UINT64_C(0x00FFFFFFFFFFFFFF));                //!< Number of disc slip recalibrations performed
         printf("\tHelium Pressure Threshold Trip:                               %" PRIu64" \n", vFarmFrame.at(page).reliPage.heliumPresureTrip & UINT64_C(0x00FFFFFFFFFFFFFF));                     //!< Helium Pressure Threshold Trip (1 – trip 0 – no trip)
         printf("\tNumber of LBAs Corrected by Parity Sector - Actuator 0:       %" PRIu64" \n", vFarmFrame.at(page).reliPage.numberLBACorrectedByParitySector & UINT64_C(0x00FFFFFFFFFFFFFF));      //!< Number of LBAs Corrected by Parity Sector
         printf("\tPrimary Super Parity Coverage Percentage - Actuator 0:        %" PRIu64" \n", vFarmFrame.at(page).reliPage.SuperParityCovPercent & UINT64_C(0x00FFFFFFFFFFFFFF));                 //!< Primary Super Parity Coverage Percentage
         printf("\tPrimary Super Parity Coverage Percentage SMR - Actuator 0:    %" PRIu64" \n", vFarmFrame.at(page).reliPage.superParityCoveragePercentageAct0 & UINT64_C(0x00FFFFFFFFFFFFFF));     //!< Primary Super Parity Coverage Percentage SMR/HSMR-SWR, Actuator 0
+        printf("\tNumber of DOS Scans Performed - Actuator 1:                   %" PRIu64" \n", vFarmFrame.at(page).reliPage.DOSScansAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));                          //!< Number of LBAs Corrected by Parity Sector
         printf("\tNumber of LBAs Corrected by ISP - Actuator 1:                 %" PRIu64" \n", vFarmFrame.at(page).reliPage.correctedLBAsAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));                     //!< Number of LBAs Corrected by ISP, Actuator 1
         printf("\tNumber of LBAs Corrected by Parity Sector - Actuator 1:       %" PRIu64" \n", vFarmFrame.at(page).reliPage.numberLBACorrectedByParitySectorAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));  //!< Number of LBAs Corrected by Parity Sector, Actuator 1 
         printf("\tPrimary Super Parity Coverage Percentage SMR - Actuator 1:    %" PRIu64" \n", vFarmFrame.at(page).reliPage.superParityCoveragePercentageAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));     //!< Primary Super Parity Coverage Percentage SMR/HSMR-SWR, Actuator 1
@@ -1109,6 +1239,7 @@ eReturnValues CATA_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint32
     set_json_64_bit_With_Status(pageInfo, "Number of LBAs Corrected by Parity Sector - Actuator 0", vFarmFrame.at(page).reliPage.numberLBACorrectedByParitySector, false, m_showStatusBits);
     set_json_64_bit_With_Status(pageInfo, "Primary Super Parity Coverage Percentage - Actuator 0", vFarmFrame.at(page).reliPage.SuperParityCovPercent, false, m_showStatusBits);
     set_json_64_bit_With_Status(pageInfo, "Primary Super Parity Coverage Percentage SMR SWR - Actuator 0", vFarmFrame.at(page).reliPage.superParityCoveragePercentageAct0, false, m_showStatusBits);           //!< Primary Super Parity Coverage Percentage SMR/SWR- Actuator 0
+    set_json_64_bit_With_Status(pageInfo, "Number of DOS Scans Performed - Actuator 1", vFarmFrame.at(page).reliPage.DOSScansAct1, false, m_showStatusBits);
     set_json_64_bit_With_Status(pageInfo, "Number of LBAs Corrected by ISP - Actuator 1", vFarmFrame.at(page).reliPage.correctedLBAsAct1, false, m_showStatusBits);
     set_json_64_bit_With_Status(pageInfo, "Number of LBAs Corrected by Parity Sector - Actuator 1", vFarmFrame.at(page).reliPage.numberLBACorrectedByParitySectorAct1, false, m_showStatusBits);
     set_json_64_bit_With_Status(pageInfo, "Primary Super Parity Coverage Percentage SMR SWR - Actuator 1", vFarmFrame.at(page).reliPage.superParityCoveragePercentageAct1, false, m_showStatusBits);
@@ -1283,6 +1414,10 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
         {
             printf("\tSecond MR Head Resistance by Head %2" PRIu32":                         %" PRIi64" \n", loopCount, vFarmFrame.at(page).reliPage.secondMRHeadResistance[loopCount] & INT64_C(0x00FFFFFFFFFFFFFF));
         }
+        for (loopCount = 0; loopCount < m_heads; ++loopCount)
+        {
+            printf("\tLifetime Terabytes Written per Head %2" PRIu32":                       %" PRIi64" \n", loopCount, vFarmFrame.at(page).reliPage.lifetimeWrites[loopCount] & INT64_C(0x00FFFFFFFFFFFFFF));
+        }
         printf("\n\n");
     }
     std::ostringstream temp;
@@ -1330,6 +1465,8 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
     int_Data(headInfo, "DOS write Fault scans", vFarmFrame.at(page).reliPage.writeDOSFault, m_heads, m_showStatusBits, m_showStatic);
     float_Cal_DoubleWord_Data(headInfo, "Write Power On (hrs)", 3600, vFarmFrame.at(page).reliPage.writePOH, m_heads, m_showStatusBits, m_showStatic);
 	int_Data(headInfo, "Second MR Head Resistance", vFarmFrame.at(page).reliPage.secondMRHeadResistance, m_heads, m_showStatusBits, m_showStatic);
+    uint_Data(headInfo, "Lifetime Terabytes Written", vFarmFrame.at(page).reliPage.lifetimeWrites, m_heads, m_showStatusBits, m_showStatic);
+    int_Dword_Data(headInfo, "Get Physical Element Status", vFarmFrame.at(page).driveInfo.gpes, m_heads, m_showStatusBits, m_showStatic);
 
     json_push_back(masterData, headInfo);
     return eReturnValues::SUCCESS;
