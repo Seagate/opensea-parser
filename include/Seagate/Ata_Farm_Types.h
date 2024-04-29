@@ -64,6 +64,12 @@ typedef struct _sDriveInfo
     uint64_t        headLoadEventsAct1;                         //!< Head Load Events, Actuator 1
     uint64_t        HAMRProtectStatus;                          //!< HAMR Data Protect Status: 1 = Data Protect, 0 = No Data Protect
     uint64_t        regenHeadMask;                              //!< Regen Head Mask: bitmap where 1 = bad head, 0 = good head
+    uint64_t        POHMostRecentSave;                          //!< Power-on Hours of the most recent FARM Time series frame save
+    uint64_t        POHSecondMostRecentSave;                    //!< Power-on Hours of the second most recent FARM Time series frame save
+    uint64_t        SeqActiveZone;                              //!< Sequential Or Before Required for active zone configuration
+    uint64_t        SeqWriteActiveZone;                         //!< Sequential Write Required for active zone configuration
+    uint64_t        numLBA;                                     //!< Number of LBAs ( HSMR SWR capacity )
+    int64_t         gpes[MAX_HEAD_COUNT];                       //!< Get Physical Element Status (GPES) by head
 
     _sDriveInfo() : pageNumber(0), copyNumber(0), serialNumber(0), serialNumber2(0), worldWideName(0), worldWideName2(0),
         deviceInterface(0), deviceCapacity(0), psecSize(0), lsecSize(0), deviceBufferSize(0), heads(0), factor(0),
@@ -74,7 +80,12 @@ typedef struct _sDriveInfo
         modelNumber{ 0 },
 #endif
         driveRecordingType(0), depopped(0), maxNumberForReasign(0), dateOfAssembly(0), depopulationHeadMask(0), headFlightHoursAct1(0),
-        headLoadEventsAct1(0), HAMRProtectStatus(0), regenHeadMask(0) {};
+        headLoadEventsAct1(0), HAMRProtectStatus(0), regenHeadMask(0), POHMostRecentSave(0), POHSecondMostRecentSave(0),
+        SeqActiveZone(0), SeqWriteActiveZone(0), numLBA(0)
+#if defined __cplusplus && __cplusplus >= 201103L
+        ,gpes{ 0 } 
+#endif
+        {};
 }sDriveInfo;
 
 typedef struct _sErrorStat
@@ -100,25 +111,38 @@ typedef struct _sErrorStat
     uint64_t         indexFlashLED;                             //!< index of the last Flash LED of the array
     uint64_t         uncorrectables;                            //!< uncorrecatables errors (sata only)
     uint64_t         reserved1;                                 //!< reserved
-    uint64_t         flashLEDArray[8];                          //!< Info on the last 8 Flash LED events Wrapping array. (added 2.7)
-    uint64_t         readWriteRetry[8];                         //!< Info on the last 8 read/write Retry events (added 2.7)
+    uint64_t         flashLEDArray[FLASH_EVENTS];               //!< Info on the last 8 Flash LED events Wrapping array. (added 2.7)
+    uint64_t         readWriteRetry[FLASH_EVENTS];              //!< Info on the last 8 read/write Retry events (added 2.7)
     uint64_t         reserved2[2];                              //!< reserved [2] (added 3.0)
     uint64_t         reserved3[15];                             //!< reserved [15] (open spec)
-    uint64_t         timestampForLED[8];                        //!< Universal Timestamp (us) of last 8 Flash LED (assert) Events, wrapping array (added 4.7)
-    uint64_t         powerCycleOfLED[8];                        //<! Power Cycle of the last 8 Flash LED (assert) Events, wrapping array (added 4.7)
+    uint64_t         timestampForLED[FLASH_EVENTS];             //!< Universal Timestamp (us) of last 8 Flash LED (assert) Events, wrapping array (added 4.7)
+    uint64_t         powerCycleOfLED[FLASH_EVENTS];             //<! Power Cycle of the last 8 Flash LED (assert) Events, wrapping array (added 4.7)
     uint64_t         cumLifeTimeECCReadDueErrorRecovery;        //<! Cumulative Lifetime Unrecoverable Read errors due to Error Recovery Control 
-    uint64_t         cumLifeUnRecoveralbeReadByhead[24];        //<! Cumulative Lifetime Unrecoverable Read Repeating by head
-    uint64_t         cumLiveUnRecoveralbeReadUnique[24];        //<! Cumulative Lifetime Unrecoverable Read Unique by head
+    uint64_t         cumLifeUnRecoveralbeReadByhead[MAX_HEAD_COUNT];        //<! Cumulative Lifetime Unrecoverable Read Repeating by head
+    uint64_t         cumLiveUnRecoveralbeReadUnique[MAX_HEAD_COUNT];        //<! Cumulative Lifetime Unrecoverable Read Unique by head
 //version 4.21
     uint64_t         reallocSectorsAct1;                        //!< Number of Reallocated sectors, Actuator 1
     uint64_t         reallocCandidatesAct1;                     //!< Number of Reallocation Candidate Sectors, Actuator 1
     uint64_t         totalFlashLEDEvents;                       //!< Total Flash LED (Assert) Events, Actuator 1 
     uint64_t         lastIDXFLEDInfoAct1;                       //!< Index of last entry in FLED Info array below, in case the array wraps, Actuator 1
-    uint64_t         last8FLEDEventsAct1[8];                    //!< Info on the last 8 Flash LED (assert) Events, wrapping array, Actuator 1
-    uint64_t         last8ReadWriteRetryEvts[8];                //!< Info on the last 8 Read/Write Retry events, wrapping array, Actuator 1
+    uint64_t         last8FLEDEventsAct1[FLASH_EVENTS];         //!< Info on the last 8 Flash LED (assert) Events, wrapping array, Actuator 1
+    uint64_t         last8ReadWriteRetryEvts[FLASH_EVENTS];     //!< Info on the last 8 Read/Write Retry events, wrapping array, Actuator 1
     uint64_t         reserved4[15];                             //!< Reserved [15] added open spec
-    uint64_t         last8FLEDEvtsAct1[8];                      //!< Universal Timestamp (us) of last 8 Flash LED (assert) Events, wrapping array, Actuator 1
-    uint64_t         last8FLEDEvtsPowerCycleAct1[8];            //!< Power Cycle of the last 8 Flash LED (assert) Events, wrapping array, Actuator 1
+    uint64_t         last8FLEDEvtsAct1[FLASH_EVENTS];           //!< Universal Timestamp (us) of last 8 Flash LED (assert) Events, wrapping array, Actuator 1
+    uint64_t         last8FLEDEvtsPowerCycleAct1[FLASH_EVENTS]; //!< Power Cycle of the last 8 Flash LED (assert) Events, wrapping array, Actuator 1
+//version 4.41
+    uint64_t         pfaAttribute1;                             //!< SATA PFA Attributes 1
+    uint64_t         pfaAttribute2;                             //!< SATA PFA Attributes 2
+    uint64_t         lastReallocatedSectorsAtc0;                //!< Number of reallocated sectors since the last FARM Time series Frame save
+    int64_t          betweenReallocatedSectorsAct0;             //!< Number of reallocated sectors between FARM time series Frame N and N-1
+    uint64_t         lastCandidateSectorsAct0;                  //!< Number of reallocation candidate sectors since the last FARM Time series Frame save
+    uint64_t         betweenCandidateSectorsAct0;               //!< Number of reallocation candidate sectors between FARM time series Frame N and N-1
+    uint64_t         lastReallocatedSectorsAct1;                //!< Number of reallocated sectors since the last FARM Time series Frame save, Actuator 1
+    uint64_t         betweenReallocatedSectorsAct1;             //!< Number of reallocated sectors between FARM time series Frame N and N-1, Actuator 1
+    uint64_t         lastCandidateSectorsAct1;                  //!< Number of reallocation candidate sectors since the last FARM Time series Frame save, Actuator 1
+    uint64_t         betweenCandidateSectorsAct1;               //!< Number of reallocation candidate sectors between FARM time series Frame N and N-1, Actuator 1
+    uint64_t         lastUniqueURE[MAX_HEAD_COUNT];             //!< Number of Unique Unrecoverable sectors since the last FARM Time series Frame, by head
+    uint64_t         betweenUniqueURE[MAX_HEAD_COUNT];          //!< Number of Unique Unrecoverable sectors between FARM time series Frame N and N-1, by head
 
     _sErrorStat() : pageNumber(0), copyNumber(0), totalReadECC(0), totalWriteECC(0), totalReallocations(0), totalReadRecoveryAttepts(0),
         totalMechanicalFails(0), totalReallocatedCanidates(0), totalASREvents(0), totalCRCErrors(0), attrSpinRetryCount(0),
@@ -135,7 +159,13 @@ typedef struct _sErrorStat
 #if defined __cplusplus && __cplusplus >= 201103L
         ,last8FLEDEventsAct1{ 0 }, last8ReadWriteRetryEvts{ 0 }, reserved4{0}, last8FLEDEvtsAct1{ 0 }, last8FLEDEvtsPowerCycleAct1{ 0 }
 #endif 
-        {};
+        ,pfaAttribute1(0), pfaAttribute2(0), lastReallocatedSectorsAtc0(0), betweenReallocatedSectorsAct0(0), lastCandidateSectorsAct0(0),
+        betweenCandidateSectorsAct0(0), lastReallocatedSectorsAct1(0), betweenReallocatedSectorsAct1(0), lastCandidateSectorsAct1(0), 
+        betweenCandidateSectorsAct1(0)
+#if defined __cplusplus && __cplusplus >= 201103L
+        , lastUniqueURE{ 0 }, betweenUniqueURE{ 0 } 
+#endif
+            {};
 }sErrorStat;
 
 typedef struct _sEnvironementStat
@@ -288,7 +318,7 @@ typedef struct _sAtaReliabilityStat
     uint64_t        reserved38;                                     //!< reserved 38
     uint64_t        reserved39;                                     //!< reserved 39
     uint64_t        reserved40;                                     //!< reserved 40
-    uint64_t        reserved41;                                     //!< reserved 41
+    uint64_t        DOSScansAct1;                                   //!< Number of DOS Scans Performed, Actuator 1
     uint64_t        correctedLBAsAct1;                              //!< Number of LBAs Corrected by ISP, Acuator 1
     uint64_t        released42;                                     //!< released 42
     uint64_t        numberLBACorrectedByParitySectorAct1;           //!< Number of LBAs Corrected by Parity Sector, Actuator 1
@@ -300,14 +330,16 @@ typedef struct _sAtaReliabilityStat
     H2SAT           released49[MAX_HEAD_COUNT];                     //!< Qword[24][3]	released 49
     H2SAT           released50[MAX_HEAD_COUNT];                     //!< Qword[24][3]	released 50
     H2SAT           released51[MAX_HEAD_COUNT];                     //!< Qword[24][3]	released 51
-    uint64_t        superParityCoveragePercentageAct0;           //!< Primary Super Parity Coverage Percentage SMR/SWR, Actuator 0
-    uint64_t        superParityCoveragePercentageAct1;           //!< Primary Super Parity Coverage Percentage SMR/SWR, Actuator 1
+    uint64_t        superParityCoveragePercentageAct0;              //!< Primary Super Parity Coverage Percentage SMR/SWR, Actuator 0
+    uint64_t        superParityCoveragePercentageAct1;              //!< Primary Super Parity Coverage Percentage SMR/SWR, Actuator 1
+    //4.41
+    uint64_t        lifetimeWrites[MAX_HEAD_COUNT];                 //!< Lifetime Terabytes Written per head
 
     _sAtaReliabilityStat() : pageNumber(0), copyNumber(0), reserved(0), reserved1(0),
 #if defined __cplusplus && __cplusplus >= 201103L
         reserved2{ 0 }, reserved3{ 0 },
 #endif
-        reserved4(0), reserved5(0), reserved6(0),reserved7(0), reserved8(0), reserved9(0), reserved10(0), reserved11(0),numberDOSScans(0), 
+        reserved4(0), reserved5(0), reserved6(0), reserved7(0), reserved8(0), reserved9(0), reserved10(0), reserved11(0), numberDOSScans(0),
         numberLBACorrect(0), reserved12(0),
 #if defined __cplusplus && __cplusplus >= 201103L
         reserved13{ 0 },
@@ -317,21 +349,21 @@ typedef struct _sAtaReliabilityStat
         DVGASkipWriteDetect{ 0 }, RVGASkipWriteDetect{ 0 }, FVGASkipWriteDetect{ 0 }, skipWriteDetectThresExceeded{ 0 },
 #endif
         attrErrorRateRaw(0), attrErrorRateNormal(0), attrErrorRateWorst(0), attrSeekErrorRateRaw(0), attrSeekErrorRateNormal(0), \
-        attrSeekErrorRateWorst(0), attrUnloadEventsRaw(0), reserved15(0),     
+        attrSeekErrorRateWorst(0), attrUnloadEventsRaw(0), reserved15(0),
 #if defined __cplusplus && __cplusplus >= 201103L   
         reserved16{ 0 }, reserved17{ 0 }, reserved18{ 0 }, MRHeadResistance{ 0 }, reserved52{ 0 },
         velocityObserver{ 0 }, numberOfVelocityObserver{ 0 }, currentH2SAT{ }, currentH2SATIterations{ }, currentH2SATPercentage{ 0 },
         currentH2SATamplitude{ 0 }, currentH2SATasymmetry{ 0 }, flyHeightClearance{ },
 #endif
-        diskSlipRecalPerformed(0), 
+        diskSlipRecalPerformed(0),
 #if defined __cplusplus && __cplusplus >= 201103L  
         gList{ 0 }, pendingEntries{ 0 },
 #endif
-        heliumPresureTrip(0), 
+        heliumPresureTrip(0),
 #if defined __cplusplus && __cplusplus >= 201103L 
         oughtDOS{ 0 }, needDOS{ 0 }, writeDOSFault{ 0 }, writePOH{ 0 },
 #endif
-        reserved19(0), reserved20(0), reserved21(0), 
+        reserved19(0), reserved20(0), reserved21(0),
 #if defined __cplusplus && __cplusplus >= 201103L
 
         reserved22{ 0 }, secondMRHeadResistance{ 0 }, reserved23{ 0 }, reserved24{ 0 },
@@ -339,15 +371,19 @@ typedef struct _sAtaReliabilityStat
 #endif
         numberLBACorrectedByParitySector(0), SuperParityCovPercent(0),
 #if defined __cplusplus && __cplusplus >= 201103L
-        reserved28{ 0 }, reserved29{ }, reserved30{ }, 
+        reserved28{ 0 }, reserved29{ }, reserved30{ },
 #endif    
-        reserved31(0), reserved32(0), reserved33(0), reserved34(0), reserved35(0), reserved36(0), reserved37(0), 
-        reserved38(0), reserved39(0), reserved40(0), reserved41(0), correctedLBAsAct1(0), released42(0), numberLBACorrectedByParitySectorAct1(0),
+        reserved31(0), reserved32(0), reserved33(0), reserved34(0), reserved35(0), reserved36(0), reserved37(0),
+        reserved38(0), reserved39(0), reserved40(0), DOSScansAct1(0), correctedLBAsAct1(0), released42(0), numberLBACorrectedByParitySectorAct1(0),
         released44(0), released45(0), released46(0), released47(0),
 #if defined __cplusplus && __cplusplus >= 201103L
-        released48{ 0 }, released49{ },released50{ }, released51{ },
+        released48{ 0 }, released49{ }, released50{ }, released51{ },
 #endif
-        superParityCoveragePercentageAct0(0), superParityCoveragePercentageAct1(0) {};
+        superParityCoveragePercentageAct0(0), superParityCoveragePercentageAct1(0)
+#if defined __cplusplus && __cplusplus >= 201103L
+        , lifetimeWrites{ 0 }
+#endif
+        {};
 }sAtaReliabilityStat;
 
 typedef struct _sFarmFrame
