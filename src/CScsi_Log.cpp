@@ -2,7 +2,7 @@
 // CScsiLog.cpp  Implementation of Base class CScsiLog
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2023 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -55,7 +55,7 @@ CScsiLog::CScsiLog()
     : bufferData(NULL)
     , m_LogSize(0)
     , m_name("SCSI Log")
-    , m_ScsiStatus(IN_PROGRESS)
+    , m_ScsiStatus(eReturnValues::IN_PROGRESS)
     , m_Page()
 {
 
@@ -77,13 +77,13 @@ CScsiLog::CScsiLog(const std::string &fileName, JSONNODE *masterData)
     : bufferData(NULL)
     , m_LogSize(0)
     , m_name("SCSI Log")
-    , m_ScsiStatus(IN_PROGRESS)
+    , m_ScsiStatus(eReturnValues::IN_PROGRESS)
 	, m_Page()
 
 {
     CLog *cCLog;
     cCLog = new CLog(fileName);
-    if (cCLog->get_Log_Status() == SUCCESS)
+    if (cCLog->get_Log_Status() == eReturnValues::SUCCESS)
     {
         if (cCLog->get_Buffer() != NULL)
         {
@@ -99,7 +99,7 @@ CScsiLog::CScsiLog(const std::string &fileName, JSONNODE *masterData)
         else
         {
 
-            m_ScsiStatus = FAILURE;
+            m_ScsiStatus = eReturnValues::FAILURE;
         }
     }
     else
@@ -146,7 +146,7 @@ CScsiLog::~CScsiLog()
 //---------------------------------------------------------------------------
 eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 {
-	eReturnValues retStatus = IN_PROGRESS;
+	eReturnValues retStatus = eReturnValues::IN_PROGRESS;
 	if (bufferData != NULL)
 	{
 		sLogPageStruct myStr;
@@ -156,11 +156,11 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 		byte_Swap_16(&lpStruct->pageLength);
 		if (IsScsiLogPage(lpStruct->pageLength , M_GETBITRANGE(lpStruct->pageCode, 5, 0)) == true)
 		{
-			switch (M_GETBITRANGE(lpStruct->pageCode, 5, 0))
+			switch (static_cast<eLogPageNames>(M_GETBITRANGE(lpStruct->pageCode, 5, 0)))
 			{
-			case SUPPORTED_LOG_PAGES:
+			case eLogPageNames::SUPPORTED_LOG_PAGES:
 			{
-				if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+				if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 				{
 					std::cout << "Supported Log Pages Found" << std::endl;
 				}
@@ -174,7 +174,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 					cSupport = new CScsiSupportedLog(&bufferData[4], m_LogSize, lpStruct->pageLength, true);
 				}
 				retStatus = cSupport->get_Log_Status();
-				if (retStatus == IN_PROGRESS)
+				if (retStatus == eReturnValues::IN_PROGRESS)
 				{
 					try
 					{
@@ -184,9 +184,9 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 					{
 						retStatus = cSupport->get_Log_Status();
 						delete(cSupport);
-						if (retStatus == SUCCESS || retStatus == IN_PROGRESS)
+						if (retStatus == eReturnValues::SUCCESS || retStatus == eReturnValues::IN_PROGRESS)
 						{
-							return PARSE_FAILURE;
+							return eReturnValues::PARSE_FAILURE;
 						}
 						else
 						{
@@ -197,16 +197,16 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				delete(cSupport);
 			}
 			break;
-			case WRITE_ERROR_COUNTER:
+			case eLogPageNames::WRITE_ERROR_COUNTER:
 			{
-				if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+				if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 				{
 					std::cout << "Write Error Counter Log Pages Found" << std::endl;
 				}
 				CScsiErrorCounterLog *cWriteError;
 				cWriteError = new CScsiErrorCounterLog(&bufferData[4], m_LogSize, lpStruct->pageLength, lpStruct->pageCode);
 				retStatus = cWriteError->get_Log_Status();
-				if (retStatus == IN_PROGRESS)
+				if (retStatus == eReturnValues::IN_PROGRESS)
 				{
 					try
 					{
@@ -216,9 +216,9 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 					{
 						retStatus = cWriteError->get_Log_Status();
 						delete(cWriteError);
-						if (retStatus == SUCCESS || retStatus == IN_PROGRESS)
+						if (retStatus == eReturnValues::SUCCESS || retStatus == eReturnValues::IN_PROGRESS)
 						{
-							return PARSE_FAILURE;
+							return eReturnValues::PARSE_FAILURE;
 						}
 						else
 						{
@@ -229,16 +229,16 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				delete(cWriteError);
 			}
 			break;
-			case READ_ERROR_COUNTER:
+			case eLogPageNames::READ_ERROR_COUNTER:
 			{
-				if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+				if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 				{
 					std::cout << "Read Error Counter Log Pages Found" << std::endl;
 				}
 				CScsiErrorCounterLog *cReadError;
 				cReadError = new CScsiErrorCounterLog(&bufferData[4], m_LogSize, lpStruct->pageLength, lpStruct->pageCode);
 				retStatus = cReadError->get_Log_Status();
-				if (retStatus == IN_PROGRESS)
+				if (retStatus == eReturnValues::IN_PROGRESS)
 				{
 					try
 					{
@@ -248,9 +248,9 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 					{
 						retStatus = cReadError->get_Log_Status();
 						delete(cReadError);
-						if (retStatus == SUCCESS || retStatus == IN_PROGRESS)
+						if (retStatus == eReturnValues::SUCCESS || retStatus == eReturnValues::IN_PROGRESS)
 						{
-							return PARSE_FAILURE;
+							return eReturnValues::PARSE_FAILURE;
 						}
 						else
 						{
@@ -261,16 +261,16 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				delete(cReadError);
 			}
 			break;
-			case VERIFY_ERROR_COUNTER:
+			case eLogPageNames::VERIFY_ERROR_COUNTER:
 			{
-				if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+				if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 				{
 					std::cout << "Verify Error Counter Log Pages Found" << std::endl;
 				}
 				CScsiErrorCounterLog *cVerifyError;
 				cVerifyError = new CScsiErrorCounterLog(&bufferData[4], m_LogSize, lpStruct->pageLength, lpStruct->pageCode);
 				retStatus = cVerifyError->get_Log_Status();
-				if (retStatus == IN_PROGRESS)
+				if (retStatus == eReturnValues::IN_PROGRESS)
 				{
 					try
 					{
@@ -280,9 +280,9 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 					{
 						retStatus = cVerifyError->get_Log_Status();
 						delete(cVerifyError);
-						if (retStatus == SUCCESS || retStatus == IN_PROGRESS)
+						if (retStatus == eReturnValues::SUCCESS || retStatus == eReturnValues::IN_PROGRESS)
 						{
-							return PARSE_FAILURE;
+							return eReturnValues::PARSE_FAILURE;
 						}
 						else
 						{
@@ -293,16 +293,16 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				delete(cVerifyError);
 			}
 			break;
-			case NON_MEDIUM_ERROR:
+			case eLogPageNames::NON_MEDIUM_ERROR:
 			{
-				if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+				if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 				{
 					std::cout << "Non-Medium Error Log Pages Found" << std::endl;
 				}
 				CScsiNonMediumErrorCountLog *cNonMedium;
 				cNonMedium = new CScsiNonMediumErrorCountLog(&bufferData[4], m_LogSize, lpStruct->pageLength);
 				retStatus = cNonMedium->get_Log_Status();
-				if (retStatus == IN_PROGRESS)
+				if (retStatus == eReturnValues::IN_PROGRESS)
 				{
 					try
 					{
@@ -312,9 +312,9 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 					{
 						retStatus = cNonMedium->get_Log_Status();
 						delete(cNonMedium);
-						if (retStatus == SUCCESS || retStatus == IN_PROGRESS)
+						if (retStatus == eReturnValues::SUCCESS || retStatus == eReturnValues::IN_PROGRESS)
 						{
-							return PARSE_FAILURE;
+							return eReturnValues::PARSE_FAILURE;
 						}
 						else
 						{
@@ -325,9 +325,9 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				delete(cNonMedium);
 			}
 			break;
-			case FORMAT_STATUS:
+			case eLogPageNames::FORMAT_STATUS:
 			{
-				if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+				if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 				{
 					std::cout << "Format Status Log Pages Found" << std::endl;
 				}
@@ -335,7 +335,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				CScsiFormatStatusLog *cFormat;
 				cFormat = new CScsiFormatStatusLog(&bufferData[4], m_LogSize, lpStruct->pageLength);
 				retStatus = cFormat->get_Log_Status();
-				if (retStatus == IN_PROGRESS)
+				if (retStatus == eReturnValues::IN_PROGRESS)
 				{
 					try
 					{
@@ -345,9 +345,9 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 					{
 						retStatus = cFormat->get_Log_Status();
 						delete(cFormat);
-						if (retStatus == SUCCESS || retStatus == IN_PROGRESS)
+						if (retStatus == eReturnValues::SUCCESS || retStatus == eReturnValues::IN_PROGRESS)
 						{
-							return PARSE_FAILURE;
+							return eReturnValues::PARSE_FAILURE;
 						}
 						else
 						{
@@ -358,16 +358,16 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				delete(cFormat);
 			}
 			break;
-			case LOGICAL_BLOCK_PROVISIONING:
+			case eLogPageNames::LOGICAL_BLOCK_PROVISIONING:
 			{
-				if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+				if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 				{
 					std::cout << "Logical Block Provisioning Log Pages Found" << std::endl;
 				}
 				CScsiLBAProvisionLog *cLBA;
 				cLBA = new CScsiLBAProvisionLog(&bufferData[4], m_LogSize, lpStruct->pageLength);
 				retStatus = cLBA->get_Log_Status();
-				if (retStatus == IN_PROGRESS)
+				if (retStatus == eReturnValues::IN_PROGRESS)
 				{
 					try
 					{
@@ -377,9 +377,9 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 					{
 						retStatus = cLBA->get_Log_Status();
 						delete(cLBA);
-						if (retStatus == SUCCESS || retStatus == IN_PROGRESS)
+						if (retStatus == eReturnValues::SUCCESS || retStatus == eReturnValues::IN_PROGRESS)
 						{
-							return PARSE_FAILURE;
+							return eReturnValues::PARSE_FAILURE;
 						}
 						else
 						{
@@ -390,9 +390,9 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				delete(cLBA);
 			}
 			break;
-			case ENVIRONMENTAL:
+			case eLogPageNames::ENVIRONMENTAL:
 			{
-				if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+				if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 				{
 					std::cout << "Environmental Log Found" << std::endl;
 				}
@@ -402,9 +402,9 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				delete (cEPA);
 			}
 			break;
-			case START_STOP_CYCLE_COUNTER:
+			case eLogPageNames::START_STOP_CYCLE_COUNTER:
 			{
-				if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+				if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 				{
 					std::cout << "Start Stop Cycle Log Found" << std::endl;
 				}
@@ -414,16 +414,16 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				delete(cSS);
 			}
 			break;
-			case APPLICATION_CLIENT:
+			case eLogPageNames::APPLICATION_CLIENT:
 			{
-				if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+				if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 				{
 					std::cout << "Application Client Log Pages Found" << std::endl;
 				}
 				CScsiApplicationLog *cApplicationClient;
 				cApplicationClient = new CScsiApplicationLog(&bufferData[4], m_LogSize, lpStruct->pageLength);
 				retStatus = cApplicationClient->get_Log_Status();
-				if (retStatus == IN_PROGRESS)
+				if (retStatus == eReturnValues::IN_PROGRESS)
 				{
 					try
 					{
@@ -433,9 +433,9 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 					{
 						retStatus = cApplicationClient->get_Log_Status();
 						delete(cApplicationClient);
-						if (retStatus == SUCCESS || retStatus == IN_PROGRESS)
+						if (retStatus == eReturnValues::SUCCESS || retStatus == eReturnValues::IN_PROGRESS)
 						{
-							return PARSE_FAILURE;
+							return eReturnValues::PARSE_FAILURE;
 						}
 						else
 						{
@@ -446,9 +446,9 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				delete(cApplicationClient);
 			}
 			break;
-			case SELF_TEST_RESULTS:
+			case eLogPageNames::SELF_TEST_RESULTS:
 			{
-				if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+				if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 				{
 					std::cout << "Self Test Log Found" << std::endl;
 				}
@@ -458,16 +458,16 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				delete(cSelfTest);
 			}
 			break;
-            case SOLID_STATE_MEDIA:
+            case eLogPageNames::SOLID_STATE_MEDIA:
             {
-                if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+                if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
                 {
                     std::cout << "Solid State Drive Log Pages Found" << std::endl;
                 }
                 CScsiSolidStateDriveLog *cSSD;
                 cSSD = new CScsiSolidStateDriveLog(&bufferData[4], m_LogSize, lpStruct->pageLength);
                 retStatus = cSSD->get_Solid_State_Drive_Log_Status();
-                if (retStatus == IN_PROGRESS)
+                if (retStatus == eReturnValues::IN_PROGRESS)
                 {
 					try
 					{
@@ -477,9 +477,9 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 					{
 						retStatus = cSSD->get_Solid_State_Drive_Log_Status();
 						delete(cSSD);
-						if (retStatus == SUCCESS || retStatus == IN_PROGRESS)
+						if (retStatus == eReturnValues::SUCCESS || retStatus == eReturnValues::IN_PROGRESS)
 						{
-							return PARSE_FAILURE;
+							return eReturnValues::PARSE_FAILURE;
 						}
 						else
 						{
@@ -490,16 +490,16 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
                 delete(cSSD);
             }
             break;
-            case ZONED_DEVICE_STATISTICS:
+            case eLogPageNames::ZONED_DEVICE_STATISTICS:
             {
-                if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+                if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
                 {
                     std::cout << "Zoned Device Statistics Log Pages Found" << std::endl;
                 }
                 CScsiZonedDeviceStatisticsLog *cZDS;
                 cZDS = new CScsiZonedDeviceStatisticsLog(&bufferData[4], m_LogSize, lpStruct->pageLength);
                 retStatus = cZDS->get_Zoned_Device_Statistics_Log_Status();
-                if (retStatus == IN_PROGRESS)
+                if (retStatus == eReturnValues::IN_PROGRESS)
                 {
 					try
 					{
@@ -509,9 +509,9 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 					{
 						retStatus = cZDS->get_Zoned_Device_Statistics_Log_Status();
 						delete(cZDS);
-						if (retStatus == SUCCESS || retStatus == IN_PROGRESS)
+						if (retStatus == eReturnValues::SUCCESS || retStatus == eReturnValues::IN_PROGRESS)
 						{
-							return PARSE_FAILURE;
+							return eReturnValues::PARSE_FAILURE;
 						}
 						else
 						{
@@ -522,14 +522,14 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
                 delete(cZDS);
             }
             break;
-			case BACKGROUND_SCAN:
+			case eLogPageNames::BACKGROUND_SCAN:
 			{
 				if (lpStruct->subPage == 0x00)        // Background Scan
 				{
 					CScsiScanLog *cScan;
 					cScan = new CScsiScanLog(&bufferData[4], m_LogSize, lpStruct->pageLength);
 					retStatus = cScan->get_Log_Status();
-					if (retStatus == IN_PROGRESS)
+					if (retStatus == eReturnValues::IN_PROGRESS)
 					{
 						try
 						{
@@ -539,9 +539,9 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 						{
 							retStatus = cScan->get_Log_Status();
 							delete(cScan);
-							if (retStatus == SUCCESS || retStatus == IN_PROGRESS)
+							if (retStatus == eReturnValues::SUCCESS || retStatus == eReturnValues::IN_PROGRESS)
 							{
-								return PARSE_FAILURE;
+								return eReturnValues::PARSE_FAILURE;
 							}
 							else
 							{
@@ -556,7 +556,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 					CScsiPendingDefectsLog *cPlist;
 					cPlist = new CScsiPendingDefectsLog(&bufferData[4], m_LogSize, lpStruct->pageLength);
 					retStatus = cPlist->get_Log_Status();
-					if (retStatus == IN_PROGRESS)
+					if (retStatus == eReturnValues::IN_PROGRESS)
 					{
 						try
 						{
@@ -566,9 +566,9 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 						{
 							retStatus = cPlist->get_Log_Status();
 							delete(cPlist);
-							if (retStatus == SUCCESS || retStatus == IN_PROGRESS)
+							if (retStatus == eReturnValues::SUCCESS || retStatus == eReturnValues::IN_PROGRESS)
 							{
-								return PARSE_FAILURE;
+								return eReturnValues::PARSE_FAILURE;
 							}
 							else
 							{
@@ -583,7 +583,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 					CScsiOperationLog *cOperation;
 					cOperation = new CScsiOperationLog(&bufferData[4], m_LogSize, lpStruct->pageLength);
 					retStatus = cOperation->get_Log_Status();
-					if (retStatus == IN_PROGRESS)
+					if (retStatus == eReturnValues::IN_PROGRESS)
 					{
 						try
 						{
@@ -593,9 +593,9 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 						{
 							retStatus = cOperation->get_Log_Status();
 							delete(cOperation);
-							if (retStatus == SUCCESS || retStatus == IN_PROGRESS)
+							if (retStatus == eReturnValues::SUCCESS || retStatus == eReturnValues::IN_PROGRESS)
 							{
-								return PARSE_FAILURE;
+								return eReturnValues::PARSE_FAILURE;
 							}
 							else
 							{
@@ -607,10 +607,10 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				}
 			}
 			break;
-			case PROTOCOL_SPECIFIC_PORT:
+			case eLogPageNames::PROTOCOL_SPECIFIC_PORT:
 			{
 
-				if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+				if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 				{
 					std::cout << "Protocol Specific Port Log Pages Found" << std::endl;
 				}
@@ -618,7 +618,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				cPSP = new CScsiProtocolPortLog(&bufferData[4], m_LogSize);
 				//uint16_t l_pageLength = *(reinterpret_cast<uint16_t*>(&bufferData[2]));
 				retStatus = cPSP->get_Log_Status();
-				if (retStatus == IN_PROGRESS)
+				if (retStatus == eReturnValues::IN_PROGRESS)
 				{
 					try
 					{
@@ -629,9 +629,9 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 					{
 						retStatus = cPSP->get_Log_Status();
 						delete(cPSP);
-						if (retStatus == SUCCESS || retStatus == IN_PROGRESS)
+						if (retStatus == eReturnValues::SUCCESS || retStatus == eReturnValues::IN_PROGRESS)
 						{
-							return PARSE_FAILURE;
+							return eReturnValues::PARSE_FAILURE;
 						}
 						else
 						{
@@ -642,18 +642,18 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				delete (cPSP);
 			}
 			break;
-			case CACHE_MEMORY_STATISTICES:
+			case eLogPageNames::CACHE_MEMORY_STATISTICES:
 			{
 				if (lpStruct->subPage == SAS_SUBPAGE_20)        // Cache Memory Statistics 5.2.7
 				{
-					if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+					if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 					{
 						std::cout << "Cache Memory Statisitics Log Page Found" << std::endl;
 					}
 					CScsiCacheMemStatLog* cCacheLog;
 					cCacheLog = new CScsiCacheMemStatLog(&bufferData[4], m_LogSize, lpStruct->pageLength);
 					retStatus = cCacheLog->get_Cache_Memory_Statistics_Log_Status();
-					if (retStatus == IN_PROGRESS)
+					if (retStatus == eReturnValues::IN_PROGRESS)
 					{
 						try
 						{
@@ -663,9 +663,9 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 						{
 							retStatus = cCacheLog->get_Cache_Memory_Statistics_Log_Status();
 							delete(cCacheLog);
-							if (retStatus == SUCCESS || retStatus == IN_PROGRESS)
+							if (retStatus == eReturnValues::SUCCESS || retStatus == eReturnValues::IN_PROGRESS)
 							{
-								return PARSE_FAILURE;
+								return eReturnValues::PARSE_FAILURE;
 							}
 							else
 							{
@@ -677,14 +677,14 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 					}
 				else if (lpStruct->subPage == SAS_SUBPAGE_21)        // Command Duration Limits Statistics 5.2.8
 				{
-					if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+					if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 					{
 						std::cout << "Command Duration Limits Statisitics Log Found" << std::endl;
 					}
 					CScsiCmdDurationLimitsLog* cLimitsLog;
 					cLimitsLog = new CScsiCmdDurationLimitsLog(&bufferData[4], m_LogSize, lpStruct->pageLength);
 					retStatus = cLimitsLog->get_Limits_Log_Status();
-					if (retStatus == IN_PROGRESS)
+					if (retStatus == eReturnValues::IN_PROGRESS)
 					{
 						try
 						{
@@ -694,9 +694,9 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 						{
 							retStatus = cLimitsLog->get_Limits_Log_Status();
 							delete(cLimitsLog);
-							if (retStatus == SUCCESS || retStatus == IN_PROGRESS)
+							if (retStatus == eReturnValues::SUCCESS || retStatus == eReturnValues::IN_PROGRESS)
 							{
-								return PARSE_FAILURE;
+								return eReturnValues::PARSE_FAILURE;
 							}
 							else
 							{
@@ -708,16 +708,16 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				}
 			}
 			break;
-			case POWER_CONDITION_TRANSITIONS:
+			case eLogPageNames::POWER_CONDITION_TRANSITIONS:
 			{
-				if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+				if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 				{
 					std::cout << "Power Condition Transitions Log Pages Found" << std::endl;
 				}
 				CScsiPowerConditiontLog *cPower;
 				cPower = new CScsiPowerConditiontLog(&bufferData[4], m_LogSize, lpStruct->pageLength);
 				retStatus = cPower->get_Log_Status();
-				if (retStatus == IN_PROGRESS)
+				if (retStatus == eReturnValues::IN_PROGRESS)
 				{
 					try
 					{
@@ -727,9 +727,9 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 					{
 						retStatus = cPower->get_Log_Status();
 						delete(cPower);
-						if (retStatus == SUCCESS || retStatus == IN_PROGRESS)
+						if (retStatus == eReturnValues::SUCCESS || retStatus == eReturnValues::IN_PROGRESS)
 						{
-							return PARSE_FAILURE;
+							return eReturnValues::PARSE_FAILURE;
 						}
 						else
 						{
@@ -740,16 +740,16 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				delete(cPower);
 			}
 			break;
-			case INFORMATIONAL_EXCEPTIONS:
+			case eLogPageNames::INFORMATIONAL_EXCEPTIONS:
 			{
-				if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+				if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 				{
 					std::cout << "Informational Exceptions Log Pages Found" << std::endl;
 				}
 				CScsiInformationalExeptionsLog *cInfo;
 				cInfo = new CScsiInformationalExeptionsLog(&bufferData[4], m_LogSize, lpStruct->pageLength);
 				retStatus = cInfo->get_Log_Status();
-				if (retStatus == IN_PROGRESS)
+				if (retStatus == eReturnValues::IN_PROGRESS)
 				{
 					try
 					{
@@ -759,9 +759,9 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 					{
 						retStatus = cInfo->get_Log_Status();
 						delete(cInfo);
-						if (retStatus == SUCCESS || retStatus == IN_PROGRESS)
+						if (retStatus == eReturnValues::SUCCESS || retStatus == eReturnValues::IN_PROGRESS)
 						{
-							return PARSE_FAILURE;
+							return eReturnValues::PARSE_FAILURE;
 						}
 						else
 						{
@@ -772,15 +772,15 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				delete(cInfo);
 			}
 			break;
-			case CACHE_STATISTICS:
+			case eLogPageNames::CACHE_STATISTICS:
 			{
-				if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+				if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 				{
 					std::cout << "Cache Statistics Log Pages Found" << std::endl;
 				}
 				CScsiCacheLog *cCache;
 				cCache = new CScsiCacheLog(&bufferData[4], m_LogSize, lpStruct->pageLength);
-				if (cCache->get_Log_Status() == SUCCESS)
+				if (cCache->get_Log_Status() == eReturnValues::SUCCESS)
 				{
 					try
 					{
@@ -790,9 +790,9 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 					{
 						retStatus = cCache->get_Log_Status();
 						delete(cCache);
-						if (retStatus == SUCCESS || retStatus == IN_PROGRESS)
+						if (retStatus == eReturnValues::SUCCESS || retStatus == eReturnValues::IN_PROGRESS)
 						{
-							return PARSE_FAILURE;
+							return eReturnValues::PARSE_FAILURE;
 						}
 						else
 						{
@@ -803,13 +803,13 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				delete (cCache);
 			}
 			break;
-			case SEAGATE_SPECIFIC_LOG:
+			case eLogPageNames::SEAGATE_SPECIFIC_LOG:
 			{
 				if (lpStruct->subPage == FARM_LOG_PAGE)   // Farm Log
 				{
 					CSCSI_Farm_Log* pCFarm;
-					pCFarm = new CSCSI_Farm_Log(bufferData, static_cast<size_t>(lpStruct->pageLength + 4), lpStruct->subPage,false);
-					if (pCFarm->get_Log_Status() == SUCCESS)
+					pCFarm = new CSCSI_Farm_Log(bufferData, (static_cast<size_t>(lpStruct->pageLength) + sizeof(sLogPageStruct)), lpStruct->subPage,false,false);
+					if (pCFarm->get_Log_Status() == eReturnValues::SUCCESS)
 					{
 						try
 						{
@@ -820,9 +820,9 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 						{
 							retStatus = pCFarm->get_Log_Status();
 							delete(pCFarm);
-							if (retStatus == SUCCESS || retStatus == IN_PROGRESS)
+							if (retStatus == eReturnValues::SUCCESS || retStatus == eReturnValues::IN_PROGRESS)
 							{
-								return PARSE_FAILURE;
+								return eReturnValues::PARSE_FAILURE;
 							}
 							else
 							{
@@ -835,8 +835,8 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				else if (lpStruct->subPage == FARM_FACTORY_LOG_PAGE)   // Farm Log
 				{
 					CSCSI_Farm_Log* pCFarm;
-					pCFarm = new CSCSI_Farm_Log(bufferData, static_cast<size_t>(lpStruct->pageLength + 4), lpStruct->subPage,false);
-					if (pCFarm->get_Log_Status() == SUCCESS)
+					pCFarm = new CSCSI_Farm_Log(bufferData, (static_cast<size_t>(lpStruct->pageLength) + sizeof(sLogPageStruct)), lpStruct->subPage,false,false);
+					if (pCFarm->get_Log_Status() == eReturnValues::SUCCESS)
 					{
 						try
 						{
@@ -847,9 +847,9 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 						{
 							retStatus = pCFarm->get_Log_Status();
 							delete(pCFarm);
-							if (retStatus == SUCCESS || retStatus == IN_PROGRESS)
+							if (retStatus == eReturnValues::SUCCESS || retStatus == eReturnValues::IN_PROGRESS)
 							{
-								return PARSE_FAILURE;
+								return eReturnValues::PARSE_FAILURE;
 							}
 							else
 							{
@@ -862,11 +862,11 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				else if (lpStruct->subPage >= FARM_TIME_SERIES_0 && lpStruct->subPage <= FARM_TEMP_TRIGGER_LOG_PAGE)   // FARM log when Temperature exceeds 70 c
 				{
 					CSCSI_Farm_Log* pCFarm;
-					pCFarm = new CSCSI_Farm_Log(bufferData, static_cast<size_t>(lpStruct->pageLength + 4), lpStruct->subPage,false);  // issue with the log bufer size
-					if (pCFarm->get_Log_Status() == SUCCESS)
+					pCFarm = new CSCSI_Farm_Log(bufferData, (static_cast<size_t>(lpStruct->pageLength) + sizeof(sLogPageStruct)), lpStruct->subPage,false,false);  // issue with the log bufer size
+					if (pCFarm->get_Log_Status() == eReturnValues::SUCCESS)
 					{
 						retStatus = pCFarm->get_Log_Status();
-						if (retStatus == SUCCESS)
+						if (retStatus == eReturnValues::SUCCESS)
 						{
 							try
 							{
@@ -877,9 +877,9 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 							{
 								retStatus = pCFarm->get_Log_Status();
 								delete(pCFarm);
-								if (retStatus == SUCCESS || retStatus == IN_PROGRESS)
+								if (retStatus == eReturnValues::SUCCESS || retStatus == eReturnValues::IN_PROGRESS)
 								{
-									return PARSE_FAILURE;
+									return eReturnValues::PARSE_FAILURE;
 								}
 								else
 								{
@@ -892,16 +892,16 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				}
 			}
 			break;
-			case FACTORY_LOG:
+			case eLogPageNames::FACTORY_LOG:
 			{
-				if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+				if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 				{
 					std::cout << "Factory Log Pages Found" << std::endl;
 				}
 				CScsiFactoryLog *cFactory;
 				cFactory = new CScsiFactoryLog(&bufferData[4], m_LogSize, lpStruct->pageLength);
 				retStatus = cFactory->get_Log_Status();
-				if (retStatus == IN_PROGRESS)
+				if (retStatus == eReturnValues::IN_PROGRESS)
 				{
 					try
 					{
@@ -911,9 +911,9 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 					{
 						retStatus = cFactory->get_Log_Status();
 						delete(cFactory);
-						if (retStatus == SUCCESS || retStatus == IN_PROGRESS)
+						if (retStatus == eReturnValues::SUCCESS || retStatus == eReturnValues::IN_PROGRESS)
 						{
-							return PARSE_FAILURE;
+							return eReturnValues::PARSE_FAILURE;
 						}
 						else
 						{
@@ -926,29 +926,29 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 			break;
 			default:
 			{
-				if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+				if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 				{
 					std::cout << "Not Found" << std::endl;
 				}
 				std::cout << "not supported" << std::endl;
-				retStatus = static_cast<eReturnValues>(NOT_SUPPORTED);
+				retStatus = static_cast<eReturnValues>(eReturnValues::NOT_SUPPORTED);
 			}
 			break;
 			}
 		}
 		else
 		{
-			if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+			if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 			{
 				std::cout << "Not Found" << std::endl;
 			}
 			std::cout << "not supported    check --logType" << std::endl;
-			retStatus = static_cast<eReturnValues>(NOT_SUPPORTED);
+			retStatus = static_cast<eReturnValues>(eReturnValues::NOT_SUPPORTED);
 		}
 	}
 	else
 	{
-		retStatus = FAILURE;
+		retStatus = eReturnValues::FAILURE;
 	}
 	return retStatus;
 }

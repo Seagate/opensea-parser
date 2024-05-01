@@ -29,7 +29,7 @@ CExtComp::CExtComp()
     :pData()
     , m_logSize(0)
     , m_name("Ext Comp Log")
-    , m_status(IN_PROGRESS)
+    , m_status(eReturnValues::IN_PROGRESS)
     , m_fileName(false)
 {
 
@@ -47,18 +47,18 @@ CExtComp::CExtComp(uint8_t *buffer, size_t logSize, JSONNODE *masterData)
     :pData(buffer)
     , m_logSize(logSize)
     , m_name("Ext Comp Log")
-    , m_status(IN_PROGRESS)
+    , m_status(eReturnValues::IN_PROGRESS)
     , m_fileName(false)
 {
 
     if (buffer != NULL)                           // if the buffer is null then exit something did go right
     {
-        m_status = IN_PROGRESS;
+        m_status = eReturnValues::IN_PROGRESS;
         m_status = parse_Ext_Comp_Log(masterData);
     }
     else
     {
-        m_status = FAILURE;
+        m_status = eReturnValues::FAILURE;
     }
 
 }
@@ -75,12 +75,12 @@ CExtComp::CExtComp(const std::string &fileName, JSONNODE *masterData)
     :pData()
     , m_logSize()
     , m_name("Ext Comp Log")
-    , m_status(IN_PROGRESS)
+    , m_status(eReturnValues::IN_PROGRESS)
     , m_fileName(true)
 {
     CLog *cCLog;
     cCLog = new CLog(fileName);
-    if (cCLog->get_Log_Status() == SUCCESS)
+    if (cCLog->get_Log_Status() == eReturnValues::SUCCESS)
     {
         if (cCLog->get_Buffer() != NULL)
         {
@@ -98,17 +98,17 @@ CExtComp::CExtComp(const std::string &fileName, JSONNODE *masterData)
             {
                 byte_Swap_16(&idCheck->pageLength);  // now that we know it's not scsi we need to flip the bytes back
                 m_status = parse_Ext_Comp_Log(masterData);
-                m_status = SUCCESS;
+                m_status = eReturnValues::SUCCESS;
             }
             else
             {
-                m_status = BAD_PARAMETER;
+                m_status = eReturnValues::BAD_PARAMETER;
             }
         }
         else
         {
 
-            m_status = FAILURE;
+            m_status = eReturnValues::FAILURE;
         }
     }
     else
@@ -148,7 +148,7 @@ CExtComp::~CExtComp()
 //! \param state = parsed out state
 //
 //  Exit:
-//!   \return eReturnValues success
+//!   \return eReturnValues eReturnValues::SUCCESS
 //
 //---------------------------------------------------------------------------
 eReturnValues CExtComp::get_State_Meaning(std::string *stateMeaning, uint8_t state)
@@ -183,7 +183,7 @@ eReturnValues CExtComp::get_State_Meaning(std::string *stateMeaning, uint8_t sta
     }
 
     }
-    return SUCCESS;
+    return eReturnValues::SUCCESS;
 }
 //-----------------------------------------------------------------------------
 //
@@ -196,7 +196,7 @@ eReturnValues CExtComp::get_State_Meaning(std::string *stateMeaning, uint8_t sta
 //! \param mansterData = Json Node that holds all of the data 
 //
 //  Exit:
-//!   \return eReturnValues success
+//!   \return eReturnValues eReturnValues::SUCCESS
 //
 //---------------------------------------------------------------------------
 eReturnValues CExtComp::parse_Ext_Comp_Structure(uint32_t structNumber, uint32_t sector, JSONNODE *structureData)
@@ -361,7 +361,7 @@ eReturnValues CExtComp::parse_Ext_Comp_Structure(uint32_t structNumber, uint32_t
     
     json_push_back(structureData, EComp);
 
-    return SUCCESS;
+    return eReturnValues::SUCCESS;
 }
 //-----------------------------------------------------------------------------
 //
@@ -374,12 +374,12 @@ eReturnValues CExtComp::parse_Ext_Comp_Structure(uint32_t structNumber, uint32_t
 //! \param mansterData = Json Node that holds all of the data 
 //
 //  Exit:
-//!   \return eReturnValues success
+//!   \return eReturnValues eReturnValues::SUCCESS
 //
 //---------------------------------------------------------------------------
 eReturnValues CExtComp::parse_Ext_Comp_Log(JSONNODE *masterData)
 {
-    eReturnValues retStatus = IN_PROGRESS;
+    eReturnValues retStatus = eReturnValues::IN_PROGRESS;
     uint32_t sectorNumber = 0;
     JSONNODE *ExtCompData = json_new(JSON_NODE);
     json_set_name(ExtCompData, "Extended Comperhensive SMART Error Log");
@@ -387,7 +387,7 @@ eReturnValues CExtComp::parse_Ext_Comp_Log(JSONNODE *masterData)
     {
         // call the structure for each sector(512) of data
         retStatus = parse_Ext_Comp_Structure(sectorNumber, sector, ExtCompData);
-        if (retStatus != SUCCESS)
+        if (retStatus != eReturnValues::SUCCESS)
         {
             break;
         }

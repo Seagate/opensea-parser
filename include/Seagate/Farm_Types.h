@@ -3,7 +3,7 @@
 //
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2023 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -107,9 +107,9 @@ typedef struct _sFarmHeader
     uint64_t        logSize;                                    //!< log size in bytes
     uint64_t        pageSize;                                   //!< page size in bytes
     uint64_t        headsSupported;                             //!< Maximum Drive Heads Supported
-    uint64_t        copies;                                     //!< Number of Historical Copies
+    uint64_t        reserved;                                   //!< Reserved
     uint64_t        reasonForFrameCapture;                      //!< Reason for Frame Capture (added 4.14)
-    _sFarmHeader() : signature(0), majorRev(0), minorRev(0), pagesSupported(0), logSize(0), pageSize(0), headsSupported(0), copies(0), reasonForFrameCapture(0) {};
+    _sFarmHeader() : signature(0), majorRev(0), minorRev(0), pagesSupported(0), logSize(0), pageSize(0), headsSupported(0), reserved(0), reasonForFrameCapture(0) {};
 }sFarmHeader;
 
 typedef struct _sWorkLoadStat

@@ -3,7 +3,7 @@
 //
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2023 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -30,11 +30,11 @@ CAta_Ext_DST_Log::CAta_Ext_DST_Log(const std::string &fileName, JSONNODE *master
     :m_name("Ext DST Log")                                         //!< name of the class
     , pData()
     , m_logSize(0)
-    , m_status(IN_PROGRESS)
+    , m_status(eReturnValues::IN_PROGRESS)
 {
     CLog *cCLog;
     cCLog = new CLog(fileName);
-    if (cCLog->get_Log_Status() == SUCCESS)
+    if (cCLog->get_Log_Status() == eReturnValues::SUCCESS)
     {
         if (cCLog->get_Buffer() != NULL)
         {
@@ -58,7 +58,7 @@ CAta_Ext_DST_Log::CAta_Ext_DST_Log(const std::string &fileName, JSONNODE *master
     }
     else
     {
-        m_status = IN_PROGRESS;
+        m_status = eReturnValues::IN_PROGRESS;
         m_logSize = 0;
     }
     delete (cCLog);
@@ -77,7 +77,7 @@ CAta_Ext_DST_Log::CAta_Ext_DST_Log(const std::string &fileName, JSONNODE *master
 //---------------------------------------------------------------------------
 CAta_Ext_DST_Log::CAta_Ext_DST_Log(uint8_t *pBufferData, JSONNODE *masterData)
     :m_name("Ext DST Log")                                         //!< name of the class
-    , m_status(IN_PROGRESS)
+    , m_status(eReturnValues::IN_PROGRESS)
 {
     pData = pBufferData;
     m_logSize = 0;
@@ -112,7 +112,7 @@ CAta_Ext_DST_Log::~CAta_Ext_DST_Log()
 //! \param status - the status to fill in the meaing 
 //
 //  Exit:
-//!   \return eReturnValues success
+//!   \return eReturnValues eReturnValues::SUCCESS
 //
 //---------------------------------------------------------------------------
 void CAta_Ext_DST_Log::Get_Status_Meaning(std::string &meaning, uint8_t status)
@@ -177,7 +177,7 @@ void CAta_Ext_DST_Log::Get_Status_Meaning(std::string &meaning, uint8_t status)
 //! \param pData  pointer to the buffer data
 //
 //  Exit:
-//!   \return eReturnValues success
+//!   \return eReturnValues eReturnValues::SUCCESS
 //
 //---------------------------------------------------------------------------
 eReturnValues CAta_Ext_DST_Log::parse_Ext_Self_Test_Log(JSONNODE *masterData)
@@ -230,7 +230,7 @@ eReturnValues CAta_Ext_DST_Log::parse_Ext_Self_Test_Log(JSONNODE *masterData)
 
     json_push_back(masterData, DstJson);
 
-    return SUCCESS;
+    return eReturnValues::SUCCESS;
 
 }
 

@@ -4,7 +4,7 @@
 //
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2023 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -27,7 +27,7 @@ namespace opensea_parser {
     class CAta_Ext_DST_Log 
     {
     protected:
-        enum m_DST_Enum { DST_HAS_NOT_BEEN_RUN, DST_HAS_BEEN_RUN, DST_INCOMPLETE, DST_HAS_FAILED, DST_HAS_TIMEDOUT };
+        //enum class mDSTEnum { DST_HAS_NOT_BEEN_RUN, DST_HAS_BEEN_RUN, DST_INCOMPLETE, DST_HAS_FAILED, DST_HAS_TIMEDOUT };
         std::string                 m_name;                                         //!< name of the class
 		uint8_t						*pData;											//!< pointer the the data
         size_t						m_logSize;                                      //!< log size in bytes                             

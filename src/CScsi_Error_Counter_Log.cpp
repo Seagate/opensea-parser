@@ -2,7 +2,7 @@
 // CScsi_Error_Counter_Log.cpp  Definition of Error Counter for READ WRITE VERIFY ERRORS
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2023 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -32,14 +32,14 @@ using namespace opensea_parser;
 CScsiErrorCounterLog::CScsiErrorCounterLog()
     : pData()
     , m_ErrorName("Error Counter Log")
-    , m_ErrorStatus(IN_PROGRESS)
+    , m_ErrorStatus(eReturnValues::IN_PROGRESS)
     , m_PageLength(0)
     , m_bufferLength(0)
     , m_ErrorValue(0)
     , m_Error()
     , m_pageType(WRITE)
 {
-    if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+    if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
         printf("%s \n", m_ErrorName.c_str());
     }
@@ -63,14 +63,14 @@ CScsiErrorCounterLog::CScsiErrorCounterLog()
 CScsiErrorCounterLog::CScsiErrorCounterLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength, uint8_t type)
     : pData(buffer)
     , m_ErrorName("Error Counter Log")
-    , m_ErrorStatus(IN_PROGRESS)
+    , m_ErrorStatus(eReturnValues::IN_PROGRESS)
     , m_PageLength(pageLength)
     , m_bufferLength(bufferSize)
     , m_ErrorValue(0)
     , m_Error()
     , m_pageType(type)
 {
-    if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+    if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
         printf("%s \n", m_ErrorName.c_str());
     }
@@ -78,16 +78,16 @@ CScsiErrorCounterLog::CScsiErrorCounterLog(uint8_t * buffer, size_t bufferSize, 
     {
         if (m_pageType == WRITE || m_pageType == READ || m_pageType == VERIFY)
         {
-            m_ErrorStatus = IN_PROGRESS;
+            m_ErrorStatus = eReturnValues::IN_PROGRESS;
         }
         else
         {
-            m_ErrorStatus = BAD_PARAMETER;
+            m_ErrorStatus = eReturnValues::BAD_PARAMETER;
         }
     }
     else
     {
-        m_ErrorStatus = FAILURE;
+        m_ErrorStatus = eReturnValues::FAILURE;
     }
 
 }
@@ -343,7 +343,7 @@ eReturnValues CScsiErrorCounterLog::get_Error_Counter_Data(JSONNODE *masterData)
 {
     std::string myStr = "";
     std::string headerStr = "";
-    eReturnValues retStatus = IN_PROGRESS;
+    eReturnValues retStatus = eReturnValues::IN_PROGRESS;
     if (pData != NULL)
     {
         set_Master_String(&headerStr, "Error Counter Log");
@@ -369,7 +369,7 @@ eReturnValues CScsiErrorCounterLog::get_Error_Counter_Data(JSONNODE *masterData)
                     else
                     {
                         json_push_back(masterData, pageInfo);
-                        return BAD_PARAMETER;
+                        return eReturnValues::BAD_PARAMETER;
                     }
                     break;
                 }
@@ -383,7 +383,7 @@ eReturnValues CScsiErrorCounterLog::get_Error_Counter_Data(JSONNODE *masterData)
                     else
                     {
                         json_push_back(masterData, pageInfo);
-                        return BAD_PARAMETER;
+                        return eReturnValues::BAD_PARAMETER;
                     }
                     break;
                 }
@@ -397,7 +397,7 @@ eReturnValues CScsiErrorCounterLog::get_Error_Counter_Data(JSONNODE *masterData)
                     else
                     {
                         json_push_back(masterData, pageInfo);
-                        return BAD_PARAMETER;
+                        return eReturnValues::BAD_PARAMETER;
                     }
                     break;
                 }
@@ -411,14 +411,14 @@ eReturnValues CScsiErrorCounterLog::get_Error_Counter_Data(JSONNODE *masterData)
                     else
                     {
                         json_push_back(masterData, pageInfo);
-                        return BAD_PARAMETER;
+                        return eReturnValues::BAD_PARAMETER;
                     }
                     break;
                 }
                 default:
                 {
                     json_push_back(masterData, pageInfo);
-                    return BAD_PARAMETER;
+                    return eReturnValues::BAD_PARAMETER;
                 }
                 }
                 process_Error_Data(pageInfo);
@@ -426,17 +426,17 @@ eReturnValues CScsiErrorCounterLog::get_Error_Counter_Data(JSONNODE *masterData)
             else
             {
                 json_push_back(masterData, pageInfo);
-                return BAD_PARAMETER;
+                return eReturnValues::BAD_PARAMETER;
             }
 
         }
 
         json_push_back(masterData, pageInfo);
-        retStatus = SUCCESS;
+        retStatus = eReturnValues::SUCCESS;
     }
     else
     {
-        retStatus = MEMORY_FAILURE;
+        retStatus = eReturnValues::MEMORY_FAILURE;
     }
     return retStatus;
 }

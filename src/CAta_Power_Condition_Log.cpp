@@ -2,7 +2,7 @@
 // CAta_Power_Conditions_Log.cpp   Implementation of Base class CAtaLog
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2023 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -42,7 +42,7 @@ CAtaPowerConditionsLog::CAtaPowerConditionsLog()
     : m_powerConditionLog(NULL)
     , m_powerFlags(NULL)
     , Buffer()
-    , m_status(IN_PROGRESS)
+    , m_status(eReturnValues::IN_PROGRESS)
     , m_myJSON()
     , m_idleAPowerConditions(NULL), m_idleBPowerConditions(NULL), m_idleCPowerConditions(NULL)
     , m_standbyYPowerConditions(NULL), m_standbyZPowerConditions(NULL)
@@ -68,7 +68,7 @@ CAtaPowerConditionsLog::CAtaPowerConditionsLog(std::string &filename)
     : m_powerConditionLog(NULL)
     , m_powerFlags(NULL)
     , Buffer()
-    , m_status(IN_PROGRESS)
+    , m_status(eReturnValues::IN_PROGRESS)
     , m_myJSON()
     , m_idleAPowerConditions(NULL), m_idleBPowerConditions(NULL), m_idleCPowerConditions(NULL)
     , m_standbyYPowerConditions(NULL), m_standbyZPowerConditions(NULL)
@@ -78,7 +78,7 @@ CAtaPowerConditionsLog::CAtaPowerConditionsLog(std::string &filename)
 
     CLog *cCLog;
     cCLog = new CLog(filename);
-    if (cCLog->get_Log_Status() == SUCCESS)
+    if (cCLog->get_Log_Status() == eReturnValues::SUCCESS)
     {
         if (cCLog->get_Buffer() != NULL)
         {
@@ -97,17 +97,17 @@ CAtaPowerConditionsLog::CAtaPowerConditionsLog(std::string &filename)
                 byte_Swap_16(&idCheck->pageLength);  // now that we know it's not scsi we need to flip the bytes back
                 m_conditionFlags = &conditionFlags;
                 get_Power_Condition_Log();
-                m_status = IN_PROGRESS;
+                m_status = eReturnValues::IN_PROGRESS;
             }
             else
             {
-                m_status = BAD_PARAMETER;
+                m_status = eReturnValues::BAD_PARAMETER;
             }
         }
         else
         {
 
-            m_status = FAILURE;
+            m_status = eReturnValues::FAILURE;
         }
     }
     else
@@ -134,7 +134,7 @@ CAtaPowerConditionsLog::CAtaPowerConditionsLog(tDataPtr pData, JSONNODE *masterD
     : m_powerConditionLog(NULL)
     , m_powerFlags(NULL)
     , Buffer()
-    , m_status(IN_PROGRESS)
+    , m_status(eReturnValues::IN_PROGRESS)
     , m_myJSON(masterData)
     , m_idleAPowerConditions(NULL), m_idleBPowerConditions(NULL), m_idleCPowerConditions(NULL)
     , m_standbyYPowerConditions(NULL), m_standbyZPowerConditions(NULL)
@@ -153,11 +153,11 @@ CAtaPowerConditionsLog::CAtaPowerConditionsLog(tDataPtr pData, JSONNODE *masterD
         m_conditionFlags = &conditionFlags;
         get_Power_Condition_Log();
         printPowerConditionLog(masterData);
-        m_status = SUCCESS;
+        m_status = eReturnValues::SUCCESS;
     }
     else
     {
-        m_status = FAILURE;
+        m_status = eReturnValues::FAILURE;
     }
 
 }
@@ -194,7 +194,7 @@ CAtaPowerConditionsLog::~CAtaPowerConditionsLog()
 //!
 //
 //  Exit:
-//!   \return SUCCESS 
+//!   \return eReturnValues::SUCCESS 
 //
 //---------------------------------------------------------------------------
 eReturnValues CAtaPowerConditionsLog::get_Power_Condition_Log()
@@ -215,7 +215,7 @@ eReturnValues CAtaPowerConditionsLog::get_Power_Condition_Log()
     //get the standby_z power condition descriptor
     m_standbyZPowerConditions = reinterpret_cast<sPowerLogDescriptor*>(&m_powerConditionLog[OFFSET_STANDBY_Z]);
 
-    return SUCCESS;
+    return eReturnValues::SUCCESS;
 }
 
 //-----------------------------------------------------------------------------
@@ -230,12 +230,12 @@ eReturnValues CAtaPowerConditionsLog::get_Power_Condition_Log()
 //!   \param readFlags - Power Condition Flags data.
 //
 //  Exit:
-//!   \return SUCCESS 
+//!   \return eReturnValues::SUCCESS 
 //
 //---------------------------------------------------------------------------
 eReturnValues CAtaPowerConditionsLog::get_Power_Condition_Flags(uint8_t readFlags)
 {
-    eReturnValues ret = NOT_SUPPORTED;
+    eReturnValues ret = eReturnValues::NOT_SUPPORTED;
     m_conditionFlags->powerSupportBit = false;
     m_conditionFlags->powerSaveableBit = false;
     m_conditionFlags->powerChangeableBit = false;
@@ -248,37 +248,37 @@ eReturnValues CAtaPowerConditionsLog::get_Power_Condition_Flags(uint8_t readFlag
     if (readFlags & BIT7)
     {
         m_conditionFlags->powerSupportBit = true;
-        ret = SUCCESS;
+        ret = eReturnValues::SUCCESS;
     }
     if (readFlags & BIT6)
     {
         m_conditionFlags->powerSaveableBit = true;
-        ret = SUCCESS;
+        ret = eReturnValues::SUCCESS;
     }
     if (readFlags & BIT5)
     {
         m_conditionFlags->powerChangeableBit = true;
-        ret = SUCCESS;
+        ret = eReturnValues::SUCCESS;
     }
     if (readFlags & BIT4)
     {
         m_conditionFlags->defaultTimerBit = true;
-        ret = SUCCESS;
+        ret = eReturnValues::SUCCESS;
     }
     if (readFlags & BIT3)
     {
         m_conditionFlags->savedTimmerBit = true;
-        ret = SUCCESS;
+        ret = eReturnValues::SUCCESS;
     }
     if (readFlags & BIT2)
     {
         m_conditionFlags->currentTimmerBit = true;
-        ret = SUCCESS;
+        ret = eReturnValues::SUCCESS;
     }
     if (readFlags & BIT1)
     {
         m_conditionFlags->holdPowerConditionBit = true;
-        ret = SUCCESS;
+        ret = eReturnValues::SUCCESS;
     }
     if (readFlags & BIT0)
     {
@@ -298,7 +298,7 @@ eReturnValues CAtaPowerConditionsLog::get_Power_Condition_Flags(uint8_t readFlag
 //!   \param masterData - opointer to the json data that will be printed or passed on
 //
 //  Exit:
-//!   \return SUCCESS 
+//!   \return eReturnValues::SUCCESS 
 //
 //---------------------------------------------------------------------------
 eReturnValues CAtaPowerConditionsLog::printPowerConditionLog(JSONNODE *masterData)
@@ -332,7 +332,7 @@ eReturnValues CAtaPowerConditionsLog::printPowerConditionLog(JSONNODE *masterDat
     json_push_back(m_myJSON, standByZConditionInfo);
     json_push_back(masterData, m_myJSON);
 
-    return SUCCESS;
+    return eReturnValues::SUCCESS;
 }
 
 //-----------------------------------------------------------------------------
@@ -347,7 +347,7 @@ eReturnValues CAtaPowerConditionsLog::printPowerConditionLog(JSONNODE *masterDat
 //!   \param logDescriptor - pointer to the power condition log offset
 //
 //  Exit:
-//!   \return SUCCESS 
+//!   \return eReturnValues::SUCCESS 
 //
 //---------------------------------------------------------------------------
 eReturnValues CAtaPowerConditionsLog::printPowerLogDescriptor(JSONNODE *masterData, sPowerLogDescriptor *logDescriptor)
@@ -379,7 +379,7 @@ eReturnValues CAtaPowerConditionsLog::printPowerLogDescriptor(JSONNODE *masterDa
 
 		//json_push_back(masterData, json_new_a("Reserved :", "Reserved"));
         std::ostringstream temp;
-        temp << std::hex << logDescriptor->bitFlags;
+        temp << std::hex << static_cast<uint16_t>(logDescriptor->bitFlags);
 		json_push_back(masterData, json_new_a("Power Condition Flags", temp.str().c_str()));
 		printPowerConditionFlag(masterData);
 		//json_push_back(masterData, json_new_a("Reserved :", "Reserved"));
@@ -394,10 +394,10 @@ eReturnValues CAtaPowerConditionsLog::printPowerLogDescriptor(JSONNODE *masterDa
 	else
 	{
 		printf("\tNo Data Found \n");
-		return NOT_SUPPORTED;
+		return eReturnValues::NOT_SUPPORTED;
 	}
 	
-	return SUCCESS;
+	return eReturnValues::SUCCESS;
 }
 
 //-----------------------------------------------------------------------------

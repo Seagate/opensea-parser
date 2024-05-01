@@ -3,7 +3,7 @@
 //
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2023 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -25,10 +25,10 @@
 #include "Scsi_Farm_Types.h"
 
 namespace opensea_parser {
+#define SIZEPARAM   8
+
 #ifndef SCSIFARM
 #define SCSIFARM
-
-#define SIZEPARAM   8
 
     class CSCSI_Farm_Log : public CFarmCommon
     {
@@ -54,11 +54,11 @@ namespace opensea_parser {
 		bool						m_showStatusBits;								  //!< show the status bits of each entry
         bool                        m_fromScsiLogPages;                               //!< bool if passed from scsi log pages set as true. We will be off by 4 bytes
         uint8_t                     m_farmSubPage;                                    //!< the subpage for the farm so we know which one it is
-
+        bool                        m_showStatic;                       //!< set to true to show all data statically 
 		
         
-        bool strip_Active_Status(uint64_t *value);
-        bool swap_Bytes_sFarmHeader(sScsiFarmHeader *fh, uint8_t* pData);
+        
+        bool get_sFarmHeader(sScsiFarmHeader* fh, uint8_t* pData, uint64_t position);
         bool Get_sDriveInfo(sScsiDriveInfo *di, uint64_t offset);
         bool Get_sDrive_Info_Page_06(sGeneralDriveInfoPage06 *gd,uint64_t offset);
         bool Get_sWorkLoadStat(sScsiWorkLoadStat *wl, uint64_t offset);
@@ -73,9 +73,10 @@ namespace opensea_parser {
         bool get_Head_Info(sHeadInformation *phead, uint8_t *buffer);
         bool set_Head_Header(std::string &headerName, eSASLogPageTypes index);
 		
-		eReturnValues init_Header_Data();
+		eReturnValues init_Header_Data(size_t bufferSize);
         eReturnValues print_Header(JSONNODE *masterData);
         eReturnValues print_Drive_Information(JSONNODE *masterData, uint32_t page);
+        eReturnValues get_Regen_Head_Mask(JSONNODE* headMask, uint64_t mask);
         eReturnValues print_General_Drive_Information_Continued(JSONNODE *masterData, uint32_t page);
         eReturnValues print_WorkLoad(JSONNODE *masterData, uint32_t page);
         eReturnValues print_Error_Information(JSONNODE *masterData, uint32_t page);
@@ -90,9 +91,10 @@ namespace opensea_parser {
   
     public:
         CSCSI_Farm_Log();
-        CSCSI_Farm_Log(uint8_t* bufferData, size_t bufferSize, uint8_t subPage, bool m_fromScsiLogPages);
-        CSCSI_Farm_Log(uint8_t *bufferData, size_t bufferSize, uint8_t subpage, bool m_fromScsiLogPages, bool showStatus);
+        CSCSI_Farm_Log(uint8_t* bufferData, size_t bufferSize, uint8_t subPage, bool m_fromScsiLogPages, bool showStatic);
+        CSCSI_Farm_Log(uint8_t *bufferData, size_t bufferSize, uint8_t subpage, bool m_fromScsiLogPages, bool showStatus, bool showStatic);
         virtual ~CSCSI_Farm_Log();
+        bool strip_Active_Status(uint64_t* value);
         eReturnValues parse_Farm_Log();
         void print_All_Pages(JSONNODE *masterData);
         //void print_Page(JSONNODE *masterData, uint32_t page);

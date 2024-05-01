@@ -1,8 +1,8 @@
-// CScsi_Format_Status_Log.h  Format Status log page reports information about the most recent successful format operation
+// CScsi_Format_Status_Log.h  Format Status log page reports information about the most recent eReturnValues::SUCCESSful format operation
 //
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2023 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -10,7 +10,7 @@
 //
 // ******************************************************************************************
 
-// \file CScsi_Format_Status_Log.h  Format Status log page reports information about the most recent successful format operation
+// \file CScsi_Format_Status_Log.h  Format Status log page reports information about the most recent eReturnValues::SUCCESSful format operation
 #pragma once
 #include <string>
 #include "common.h"

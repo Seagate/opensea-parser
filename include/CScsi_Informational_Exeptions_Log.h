@@ -2,7 +2,7 @@
 //
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2023 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -52,7 +52,7 @@ namespace opensea_parser {
 		size_t						m_bufferLength;			    //<! length of the buffer from reading in the log
 		sExeptionsParams			*m_Exeptions;				//<! Information Exeptions structure 
 
-		void process_Informational_Exceptions_Data(JSONNODE *exeptionData, uint16_t count, uint16_t offset);
+		void process_Informational_Exceptions_Data(JSONNODE *exeptionData, uint16_t count);
 		eReturnValues get_Informational_Exceptions_Data(JSONNODE *masterData);
 	public:
 		CScsiInformationalExeptionsLog();

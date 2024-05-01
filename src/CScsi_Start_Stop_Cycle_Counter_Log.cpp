@@ -2,7 +2,7 @@
 // CScsi_Start_Stop_Counter_Log.cpp  Implementation of CScsi start stop cycle counter Log class
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2023 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -34,7 +34,7 @@ using namespace opensea_parser;
 CScsiStartStop::CScsiStartStop()
     : pData(NULL)
     , m_SSName("Start Stop Log")
-    , m_StartStatus(IN_PROGRESS)
+    , m_StartStatus(eReturnValues::IN_PROGRESS)
     , m_PageLength(0)
     , m_SubPage(0)
     , m_Page(0)
@@ -58,7 +58,7 @@ CScsiStartStop::CScsiStartStop()
 CScsiStartStop::CScsiStartStop(uint8_t * buffer, size_t bufferSize, JSONNODE *masterData)
     : pData(NULL)
     , m_SSName("Start Stop Log")
-    , m_StartStatus(IN_PROGRESS)
+    , m_StartStatus(eReturnValues::IN_PROGRESS)
     , m_PageLength(0)
     , m_SubPage(0)
     , m_Page(0)
@@ -80,17 +80,17 @@ CScsiStartStop::CScsiStartStop(uint8_t * buffer, size_t bufferSize, JSONNODE *ma
             }
             else
             {
-                m_StartStatus = static_cast<eReturnValues>(INVALID_LENGTH);
+                m_StartStatus = static_cast<eReturnValues>(eReturnValues::INVALID_LENGTH);
             }
         }
         else
         {
-            m_StartStatus = MEMORY_FAILURE;
+            m_StartStatus = eReturnValues::MEMORY_FAILURE;
         }
     }
     else
     {
-        m_StartStatus = FAILURE;
+        m_StartStatus = eReturnValues::FAILURE;
     }
 
 }
@@ -133,74 +133,74 @@ CScsiStartStop::~CScsiStartStop()
 //---------------------------------------------------------------------------
 eReturnValues CScsiStartStop::parse_Start_Stop_Log(JSONNODE *masterData)
 {
-    eReturnValues status = IN_PROGRESS;
-    eReturnValues retStatus = IN_PROGRESS;
+    eReturnValues status = eReturnValues::IN_PROGRESS;
+    eReturnValues retStatus = eReturnValues::IN_PROGRESS;
     JSONNODE *pageInfo = json_new(JSON_NODE);
     json_set_name(pageInfo, "Scsi Start Stop Cycle Counter Log - Eh");
     byte_Swap_16(&m_Page->manufatureParamCode);
-    if (manufactureDate == m_Page->manufatureParamCode)
+    if (static_cast<uint16_t>(eSSMLogParams::manufactureDate) == m_Page->manufatureParamCode)
     {
         retStatus = week_Year_Print(pageInfo, m_Page->manufatureParamCode, m_Page->paramLength1, m_Page->paramControlByte1, m_Page->year, m_Page->week, "Date of Manufacture", "Year of Manufacture", "Week of Manufacture");
     }
     else
     {
-        retStatus = BAD_PARAMETER;
+        retStatus = eReturnValues::BAD_PARAMETER;
     }
 
-    if (retStatus == SUCCESS)
+    if (retStatus == eReturnValues::SUCCESS)
     {
         byte_Swap_16(&m_Page->accountParamCode);
-        if (accountingDate == m_Page->accountParamCode)
+        if (static_cast<uint16_t>(eSSMLogParams::accountingDate) == m_Page->accountParamCode)
         {
             retStatus = week_Year_Print(pageInfo, m_Page->accountParamCode, m_Page->paramLength2, m_Page->paramControlByte2, m_Page->accYear, m_Page->accWeek, "Accounting Date", "Accounting Year", "Accounting Week");
         }
         else
         {
-            retStatus = BAD_PARAMETER;
+            retStatus = eReturnValues::BAD_PARAMETER;
         }
-        if (retStatus == SUCCESS)
+        if (retStatus == eReturnValues::SUCCESS)
         {
             byte_Swap_16(&m_Page->specCycleParamCode);
-            if (specLifetime == m_Page->specCycleParamCode)
+            if (static_cast<uint16_t>(eSSMLogParams::specLifetime) == m_Page->specCycleParamCode)
             {
                 retStatus = get_Count(pageInfo, m_Page->specCycleParamCode, m_Page->paramLength3, m_Page->paramControlByte3, m_Page->specLifeTime, "Specified Cycle Count", "Specified Cycle Count Over Device Lifetime");
             }
             else
             {
-                retStatus = BAD_PARAMETER;
+                retStatus = eReturnValues::BAD_PARAMETER;
             }
-            if (retStatus == SUCCESS)
+            if (retStatus == eReturnValues::SUCCESS)
             {
                 byte_Swap_16(&m_Page->AccumulatedParamCode);
-                if (accumulated == m_Page->AccumulatedParamCode)
+                if (static_cast<uint16_t>(eSSMLogParams::accumulated) == m_Page->AccumulatedParamCode)
                 {
                     retStatus = get_Count(pageInfo, m_Page->AccumulatedParamCode, m_Page->paramLength4, m_Page->paramControlByte4, m_Page->accumulatedCycles, "Accumulated Start-Stop Count", "Accumulated Start-Stop Over Device Lifetime");
                 }
                 else
                 {
-                    retStatus = BAD_PARAMETER;
+                    retStatus = eReturnValues::BAD_PARAMETER;
                 }
-                if (retStatus == SUCCESS)
+                if (retStatus == eReturnValues::SUCCESS)
                 {
                     byte_Swap_16(&m_Page->loadUnloadParamCode);
-                    if (loadUnload == m_Page->loadUnloadParamCode)
+                    if (static_cast<uint16_t>(eSSMLogParams::loadUnload) == m_Page->loadUnloadParamCode)
                     {
                         retStatus = get_Count(pageInfo, m_Page->loadUnloadParamCode, m_Page->paramLength5, m_Page->paramControlByte5, m_Page->loadUnloadCount, "Load - Unload Count", "Specified Load-Unload Count Over Device Lifetime");
                     }
                     else
                     {
-                        retStatus = BAD_PARAMETER;
+                        retStatus = eReturnValues::BAD_PARAMETER;
                     }
-                    if (retStatus == SUCCESS)
+                    if (retStatus == eReturnValues::SUCCESS)
                     {
                         byte_Swap_16(&m_Page->accLoadUnloadParamCode);
-                        if (accumulatedLU == m_Page->accLoadUnloadParamCode)
+                        if (static_cast<uint16_t>(eSSMLogParams::accumulatedLU) == m_Page->accLoadUnloadParamCode)
                         {
                             retStatus = get_Count(pageInfo, m_Page->accLoadUnloadParamCode, m_Page->paramLength6, m_Page->paramControlByte6, m_Page->accloadUnloadCount, "Accumulated Load - Unload Count", "Specified Load-Unload Count Over Device Lifetime");
                         }
                         else
                         {
-                            retStatus = BAD_PARAMETER;
+                            retStatus = eReturnValues::BAD_PARAMETER;
                         }
                     }
                 }
@@ -209,13 +209,13 @@ eReturnValues CScsiStartStop::parse_Start_Stop_Log(JSONNODE *masterData)
     }
     json_push_back(masterData, pageInfo);
 
-    if (retStatus == BAD_PARAMETER || retStatus == IN_PROGRESS)
+    if (retStatus == eReturnValues::BAD_PARAMETER || retStatus == eReturnValues::IN_PROGRESS)
     {
-        status = BAD_PARAMETER;
+        status = eReturnValues::BAD_PARAMETER;
     }
     else
     {
-        status = SUCCESS;
+        status = eReturnValues::SUCCESS;
     }
     return status;
 }
@@ -251,7 +251,7 @@ eReturnValues CScsiStartStop::week_Year_Print(JSONNODE *data, uint16_t param, ui
 	JSONNODE *dateInfo = json_new(JSON_NODE);
 	json_set_name(dateInfo, strHeader.c_str());
 	
-    if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+    if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
         std::ostringstream temp;
 
@@ -325,7 +325,7 @@ eReturnValues CScsiStartStop::week_Year_Print(JSONNODE *data, uint16_t param, ui
 	json_push_back(dateInfo, json_new_a(strWeek.c_str(), myStr.c_str()));
 
     json_push_back(data, dateInfo);
-    return SUCCESS;
+    return eReturnValues::SUCCESS;
 }
 //-----------------------------------------------------------------------------
 //
@@ -346,7 +346,7 @@ eReturnValues CScsiStartStop::get_Count(JSONNODE *countData, uint16_t param, uin
 	JSONNODE *countInfo = json_new(JSON_NODE);
 	json_set_name(countInfo, strHeader.c_str());
 
-    if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+    if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
         std::ostringstream temp;
         temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << param;
@@ -362,5 +362,5 @@ eReturnValues CScsiStartStop::get_Count(JSONNODE *countData, uint16_t param, uin
 	json_push_back(countInfo, json_new_i(strCount.c_str(),  count )); 
 
 	json_push_back(countData, countInfo);
-	return SUCCESS;
+	return eReturnValues::SUCCESS;
 }

@@ -2,7 +2,7 @@
 // CScsi_Temperature_Log.cpp  Implementation of CScsi Temperature Log class
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2023 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -34,10 +34,10 @@ CScsiTemperatureLog::CScsiTemperatureLog()
 	, m_pDataSize(0)
 	, m_Page()
 	, m_TempName("Temperature Log")
-	, m_TempStatus(IN_PROGRESS)
+	, m_TempStatus(eReturnValues::IN_PROGRESS)
 	, m_PageLength(0)
 {
-	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+	if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
 		printf("%s \n", m_TempName.c_str());
 	}
@@ -60,10 +60,10 @@ CScsiTemperatureLog::CScsiTemperatureLog(uint8_t * buffer, size_t bufferSize)
 	, m_pDataSize(bufferSize)
 	, m_Page()
 	, m_TempName("Temperature Log")
-	, m_TempStatus(IN_PROGRESS)
+	, m_TempStatus(eReturnValues::IN_PROGRESS)
 	, m_PageLength(0)
 {
-	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+	if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
 		printf("%s \n", m_TempName.c_str());
 	}
@@ -71,11 +71,11 @@ CScsiTemperatureLog::CScsiTemperatureLog(uint8_t * buffer, size_t bufferSize)
 	{
 		pData = buffer;
 		m_Page = reinterpret_cast<sTempLogPageStruct *>(buffer);				// set a buffer to the point to the log page info
-		m_TempStatus = SUCCESS;
+		m_TempStatus = eReturnValues::SUCCESS;
 	}
 	else
 	{
-		m_TempStatus = FAILURE;
+		m_TempStatus = eReturnValues::FAILURE;
 	}
 
 }
@@ -151,7 +151,7 @@ void CScsiTemperatureLog::get_Temp(JSONNODE *tempData)
 //---------------------------------------------------------------------------
 eReturnValues CScsiTemperatureLog::get_Data(JSONNODE *masterData)
 {
-	eReturnValues retStatus = IN_PROGRESS;
+	eReturnValues retStatus = eReturnValues::IN_PROGRESS;
 
 	size_t tempSize = sizeof(sTempLogPageStruct);
 	if (pData != NULL)
@@ -166,7 +166,7 @@ eReturnValues CScsiTemperatureLog::get_Data(JSONNODE *masterData)
 			if (((param + (2* tempSize) + sizeof(sLogPageStruct)) > m_pDataSize && param + tempSize < m_PageLength) || param > UINT32_MAX)
 			{
 				json_push_back(masterData, pageInfo);
-				return BAD_PARAMETER;
+				return eReturnValues::BAD_PARAMETER;
 			}
 			else if (param + tempSize < m_PageLength)
 			{
@@ -179,11 +179,11 @@ eReturnValues CScsiTemperatureLog::get_Data(JSONNODE *masterData)
 		}
 
 		json_push_back(masterData, pageInfo);
-		retStatus = SUCCESS;
+		retStatus = eReturnValues::SUCCESS;
 	}
 	else
 	{
-		retStatus = FAILURE;
+		retStatus = eReturnValues::FAILURE;
 	}
 	return retStatus;
 }

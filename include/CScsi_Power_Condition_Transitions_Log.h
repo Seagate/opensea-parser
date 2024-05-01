@@ -3,7 +3,7 @@
 //
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2023 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -22,7 +22,7 @@ namespace opensea_parser {
 #ifndef SCSIPOWERLOG
 #define SCSIPOWERLOG
 #pragma pack(push, 1)
-	typedef enum _eTransitionsTypes
+	enum class eTransitionsTypes
 	{
 		ACTIVE = 0x0001,
 		IDLE_A = 0x0002,
@@ -30,7 +30,7 @@ namespace opensea_parser {
 		IDLE_C = 0x0004,
 		STANDZ = 0x0008,
 		STANDY = 0x0009
-	}eTransitionsTypes;
+	};
 	typedef struct _sPowerConditionTransisionsParameters
 	{
 		uint16_t		paramCode;							//<! The PARAMETER CODE field is defined

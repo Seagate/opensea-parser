@@ -2,7 +2,7 @@
 // CScsi_Self_Test_Results_Log.cpp  Implementation of DST Results log 
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2023 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -31,12 +31,12 @@ using namespace opensea_parser;
 //---------------------------------------------------------------------------
 CScsi_DST_Results::CScsi_DST_Results()
 	: m_DSTName("Self Test Log")
-	, m_DSTStatus(IN_PROGRESS)
+	, m_DSTStatus(eReturnValues::IN_PROGRESS)
 	, m_PageLength(0)
     , m_SubPage(0)
 	, m_DST()
 {
-	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+	if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
 		printf("%s \n", m_DSTName.c_str());
 	}
@@ -57,12 +57,12 @@ CScsi_DST_Results::CScsi_DST_Results()
 //---------------------------------------------------------------------------
 CScsi_DST_Results::CScsi_DST_Results(uint8_t * buffer, size_t bufferSize, JSONNODE *masterData)
 	: m_DSTName("Self Test Log")
-	, m_DSTStatus(IN_PROGRESS)
+	, m_DSTStatus(eReturnValues::IN_PROGRESS)
 	, m_PageLength(0)
     , m_SubPage(0)
 	, m_DST(0)
 {
-	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+	if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
 		printf("%s \n", m_DSTName.c_str());
 	}
@@ -72,7 +72,7 @@ CScsi_DST_Results::CScsi_DST_Results(uint8_t * buffer, size_t bufferSize, JSONNO
 	}
 	else
 	{
-		m_DSTStatus = FAILURE;
+		m_DSTStatus = eReturnValues::FAILURE;
 	}
 
 }
@@ -107,12 +107,12 @@ CScsi_DST_Results::~CScsi_DST_Results()
 //! \param masterData - json node for all the data
 //
 //  Exit:
-//!   \return eReturnValues success
+//!   \return eReturnValues eReturnValues::SUCCESS
 //
 //---------------------------------------------------------------------------
 eReturnValues CScsi_DST_Results::get_Self_Test_Log(uint8_t *buffer, size_t bufferSize, JSONNODE *masterJson)
 {
-	eReturnValues retStatus = IN_PROGRESS;
+	eReturnValues retStatus = eReturnValues::IN_PROGRESS;
 	JSONNODE *DstJson = json_new(JSON_NODE);
 	json_set_name(DstJson, "Self Test Results Log - 10h");
 	m_DST = reinterpret_cast<sSelfTest *>(buffer);
@@ -124,25 +124,25 @@ eReturnValues CScsi_DST_Results::get_Self_Test_Log(uint8_t *buffer, size_t buffe
 			print_Self_Test_Log(DstJson, i);
 			if (i == 20)
 			{
-				retStatus = SUCCESS;
+				retStatus = eReturnValues::SUCCESS;
 			}
 			else
 			{
 				if ( ((static_cast<size_t>(i)+1) * sizeof(sSelfTest) ) <= bufferSize )
 				{
 					m_DST++;
-					retStatus = IN_PROGRESS;
+					retStatus = eReturnValues::IN_PROGRESS;
 				}
 				else
 				{
 					json_push_back(masterJson, DstJson);
-					return BAD_PARAMETER;
+					return eReturnValues::BAD_PARAMETER;
 				}
 			}
 		}
 		else
 		{
-			retStatus = BAD_PARAMETER;
+			retStatus = eReturnValues::BAD_PARAMETER;
 			break;
 		}
 	}
@@ -173,7 +173,7 @@ void CScsi_DST_Results::print_Self_Test_Log(JSONNODE *dstNode, uint16_t run)
     std::ostringstream temp;
     temp << "Entry " << std::setw(3) << run;   // changed the run# to Entry per Paul
 	json_set_name(runInfo, temp.str().c_str());
-	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+	if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
         temp.str("");temp.clear();
         temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << m_DST->paramCode;

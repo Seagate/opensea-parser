@@ -2,7 +2,7 @@
 // CScsi_Background_Operation_Log.cpp  Definition of Background Operation log page reports parameters that are specific to background operations.
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2023 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -32,12 +32,12 @@ using namespace opensea_parser;
 CScsiOperationLog::CScsiOperationLog()
 	: pData()
 	, m_OperationName("Background Operation Log")
-	, m_OperationsStatus(IN_PROGRESS)
+	, m_OperationsStatus(eReturnValues::IN_PROGRESS)
 	, m_PageLength(0)
 	, m_bufferLength()
 	, m_Operation()
 {
-	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+	if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
 		printf("%s \n", m_OperationName.c_str());
 	}
@@ -60,12 +60,12 @@ CScsiOperationLog::CScsiOperationLog()
 CScsiOperationLog::CScsiOperationLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength)
 	: pData(NULL)
 	, m_OperationName("Background Operation Log")
-	, m_OperationsStatus(IN_PROGRESS)
+	, m_OperationsStatus(eReturnValues::IN_PROGRESS)
 	, m_PageLength(pageLength)
 	, m_bufferLength(bufferSize)
 	, m_Operation()
 {
-	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+	if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
 		printf("%s \n", m_OperationName.c_str());
 	}
@@ -77,11 +77,11 @@ CScsiOperationLog::CScsiOperationLog(uint8_t * buffer, size_t bufferSize, uint16
 #endif
 	if (pData != NULL)
 	{
-		m_OperationsStatus = IN_PROGRESS;
+		m_OperationsStatus = eReturnValues::IN_PROGRESS;
 	}
 	else
 	{
-		m_OperationsStatus = FAILURE;
+		m_OperationsStatus = eReturnValues::FAILURE;
 	}
 
 }
@@ -209,7 +209,7 @@ void CScsiOperationLog::process_Background_Operations_Data(JSONNODE *operationDa
 //---------------------------------------------------------------------------
 eReturnValues CScsiOperationLog::get_Background_Operations_Data(JSONNODE *masterData)
 {
-	eReturnValues retStatus = IN_PROGRESS;
+	eReturnValues retStatus = eReturnValues::IN_PROGRESS;
 	if (pData != NULL)
 	{
 		JSONNODE *pageInfo = json_new(JSON_NODE);
@@ -226,17 +226,17 @@ eReturnValues CScsiOperationLog::get_Background_Operations_Data(JSONNODE *master
 			else
 			{
 				json_push_back(masterData, pageInfo);
-				return BAD_PARAMETER;
+				return eReturnValues::BAD_PARAMETER;
 			}
 
 		}
 
 		json_push_back(masterData, pageInfo);
-		retStatus = SUCCESS;
+		retStatus = eReturnValues::SUCCESS;
 	}
 	else
 	{
-		retStatus = MEMORY_FAILURE;
+		retStatus = eReturnValues::MEMORY_FAILURE;
 	}
 	return retStatus;
 }

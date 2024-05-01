@@ -2,7 +2,7 @@
 // CScsi_Non_Medium_Error_Count_Log.cpp Definition of the Non-Medium Error Count Log
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2023 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -33,13 +33,13 @@ using namespace opensea_parser;
 CScsiNonMediumErrorCountLog::CScsiNonMediumErrorCountLog()
 	: pData()
 	, m_NMECName("Non-Medium Error Count Log")
-	, m_NMECStatus(IN_PROGRESS)
+	, m_NMECStatus(eReturnValues::IN_PROGRESS)
 	, m_PageLength(0)
 	, m_bufferLength()
 	, m_Value(0)
 	, m_CountErrors()
 {
-	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+	if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
 		printf("%s \n", m_NMECName.c_str());
 	}
@@ -62,23 +62,23 @@ CScsiNonMediumErrorCountLog::CScsiNonMediumErrorCountLog()
 CScsiNonMediumErrorCountLog::CScsiNonMediumErrorCountLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength)
 	: pData(buffer)
 	, m_NMECName("Non-Medium Error Count Log")
-	, m_NMECStatus(IN_PROGRESS)
+	, m_NMECStatus(eReturnValues::IN_PROGRESS)
 	, m_PageLength(pageLength)
 	, m_bufferLength(bufferSize)
 	, m_Value(0)
 	, m_CountErrors()
 {
-	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+	if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
 		printf("%s \n", m_NMECName.c_str());
 	}
 	if (buffer != NULL)
 	{
-		m_NMECStatus = IN_PROGRESS;
+		m_NMECStatus = eReturnValues::IN_PROGRESS;
 	}
 	else
 	{
-		m_NMECStatus = FAILURE;
+		m_NMECStatus = eReturnValues::FAILURE;
 	}
 
 }
@@ -162,7 +162,7 @@ void CScsiNonMediumErrorCountLog::process_Non_Medium_Error_Count_Data(JSONNODE* 
 //---------------------------------------------------------------------------
 eReturnValues CScsiNonMediumErrorCountLog::get_Non_Medium_Error_Count_Data(JSONNODE *masterData)
 {
-	eReturnValues retStatus = IN_PROGRESS;
+	eReturnValues retStatus = eReturnValues::IN_PROGRESS;
 	if (pData != NULL)
 	{
 		JSONNODE *pageInfo = json_new(JSON_NODE);
@@ -185,7 +185,7 @@ eReturnValues CScsiNonMediumErrorCountLog::get_Non_Medium_Error_Count_Data(JSONN
 					else
 					{
 						json_push_back(masterData, pageInfo);
-						return BAD_PARAMETER;
+						return eReturnValues::BAD_PARAMETER;
 					}
 					break;
 				}
@@ -199,7 +199,7 @@ eReturnValues CScsiNonMediumErrorCountLog::get_Non_Medium_Error_Count_Data(JSONN
 					else
 					{
 						json_push_back(masterData, pageInfo);
-						return BAD_PARAMETER;
+						return eReturnValues::BAD_PARAMETER;
 					}
 					break;
 				}
@@ -213,7 +213,7 @@ eReturnValues CScsiNonMediumErrorCountLog::get_Non_Medium_Error_Count_Data(JSONN
 					else
 					{
 						json_push_back(masterData, pageInfo);
-						return BAD_PARAMETER;
+						return eReturnValues::BAD_PARAMETER;
 					}
 					break;
 				}
@@ -227,14 +227,14 @@ eReturnValues CScsiNonMediumErrorCountLog::get_Non_Medium_Error_Count_Data(JSONN
 					else
 					{
 						json_push_back(masterData, pageInfo);
-						return BAD_PARAMETER;
+						return eReturnValues::BAD_PARAMETER;
 					}
 					break;
 				}
 				default:
 				{
 					json_push_back(masterData, pageInfo);
-					return BAD_PARAMETER;
+					return eReturnValues::BAD_PARAMETER;
 				}
 				}
 				process_Non_Medium_Error_Count_Data(pageInfo);
@@ -242,15 +242,15 @@ eReturnValues CScsiNonMediumErrorCountLog::get_Non_Medium_Error_Count_Data(JSONN
 			else
 			{
 				json_push_back(masterData, pageInfo);
-				return BAD_PARAMETER;
+				return eReturnValues::BAD_PARAMETER;
 			}
 		}
 		json_push_back(masterData, pageInfo);
-		retStatus = SUCCESS;
+		retStatus = eReturnValues::SUCCESS;
 	}
 	else
 	{
-		retStatus = MEMORY_FAILURE;
+		retStatus = eReturnValues::MEMORY_FAILURE;
 	}
 	return retStatus;
 }

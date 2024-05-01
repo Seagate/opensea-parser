@@ -1,7 +1,7 @@
 // CScsi_Pending_Defects_Log..cpp  Definition for parsing the pending defecs
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2023 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -32,14 +32,14 @@ using namespace opensea_parser;
 CScsiPendingDefectsLog::CScsiPendingDefectsLog()
 	: pData()
 	, m_PlistName("Pending Defect Log")
-	, m_PlistStatus(IN_PROGRESS)
+	, m_PlistStatus(eReturnValues::IN_PROGRESS)
 	, m_PageLength(0)
 	, m_bufferLength(0)
 	, m_PListCountParam()
 	, m_PlistDefect()
 	, m_count(0)
 {
-	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+	if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
 		printf("%s \n", m_PlistName.c_str());
 	}
@@ -62,14 +62,14 @@ CScsiPendingDefectsLog::CScsiPendingDefectsLog()
 CScsiPendingDefectsLog::CScsiPendingDefectsLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength)
 	: pData(NULL)
 	, m_PlistName("Pending Defect Log")
-	, m_PlistStatus(IN_PROGRESS)
+	, m_PlistStatus(eReturnValues::IN_PROGRESS)
 	, m_PageLength(pageLength)
 	, m_bufferLength(bufferSize)
 	, m_PListCountParam()
 	, m_PlistDefect()
 	, m_count(0)
 {
-	if (VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+	if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
 		printf("%s \n", m_PlistName.c_str());
 	}
@@ -81,11 +81,11 @@ CScsiPendingDefectsLog::CScsiPendingDefectsLog(uint8_t * buffer, size_t bufferSi
 #endif
 	if (pData != NULL)
 	{
-		m_PlistStatus = IN_PROGRESS;
+		m_PlistStatus = eReturnValues::IN_PROGRESS;
 	}
 	else
 	{
-		m_PlistStatus = FAILURE;
+		m_PlistStatus = eReturnValues::FAILURE;
 	}
 
 }
@@ -211,7 +211,7 @@ void CScsiPendingDefectsLog::process_PList_Count(JSONNODE *pendingCount)
 //---------------------------------------------------------------------------
 eReturnValues CScsiPendingDefectsLog::get_Plist_Data(JSONNODE *masterData)
 {
-	eReturnValues retStatus = IN_PROGRESS;
+	eReturnValues retStatus = eReturnValues::IN_PROGRESS;
 	if (pData != NULL)
 	{
 		JSONNODE *pageInfo = json_new(JSON_NODE);
@@ -232,16 +232,16 @@ eReturnValues CScsiPendingDefectsLog::get_Plist_Data(JSONNODE *masterData)
 				else
 				{
 					json_push_back(masterData, pageInfo);
-					return BAD_PARAMETER;
+					return eReturnValues::BAD_PARAMETER;
 				}
 			}
 		}
 		json_push_back(masterData, pageInfo);
-		retStatus = SUCCESS;
+		retStatus = eReturnValues::SUCCESS;
 	}
 	else
 	{
-		retStatus = MEMORY_FAILURE;
+		retStatus = eReturnValues::MEMORY_FAILURE;
 	}
 	return retStatus;
 }

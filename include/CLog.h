@@ -3,7 +3,7 @@
 //
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2023 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -49,6 +49,7 @@ namespace opensea_parser {
         inline std::string get_File_Name() const { return m_fileName; }
         inline size_t get_Size() const { return m_size; }
         inline uint8_t *get_Buffer(){ return reinterpret_cast<uint8_t *>(m_bufferData); };
+        inline uint8_t *get_Buffer_Offset(uint32_t offset){ return reinterpret_cast<uint8_t*>(&m_bufferData[offset]); };
         char * get_log() { return m_bufferData; };
         inline eReturnValues get_Log_Status(){ return m_logStatus; };
         inline void set_Log_Status(eReturnValues status){ m_logStatus = status; };
