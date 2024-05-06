@@ -3245,6 +3245,10 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Reallocation(JSONNODE* LUNNReal
         printf("\tActuator ID:                                                  %" PRIu64" \n", pReal->actID & UINT64_C(0x00FFFFFFFFFFFFFF));                        //!< Actuator ID  
         printf("\tNumber of Reallocated Sectors:                                %" PRIu64" \n", pReal->numberReallocatedSectors & UINT64_C(0x00FFFFFFFFFFFFFF));              //!< Total Flash LED Events
         printf("\tNumber of Reallocated Candidate Sectors:                      %" PRIu64" \n", pReal->numberReallocatedCandidates & UINT64_C(0x00FFFFFFFFFFFFFF));
+        printf("\tReallocated sectors since the last FARM Time series Frame:    %" PRIu64" \n", pReal->numReallocatedSince & UINT64_C(0x00FFFFFFFFFFFFFF));
+        printf("\tReallocated sectors between FARM time series Frame:           %" PRIu64" \n", pReal->numReallocatedBetween & UINT64_C(0x00FFFFFFFFFFFFFF));
+        printf("\tReallocation candidate since the last FARM Time series Frame: %" PRIu64" \n", pReal->numCandidateSince & UINT64_C(0x00FFFFFFFFFFFFFF));
+        printf("\tReallocation candidate between FARM time series Frame:        %" PRIu64" \n", pReal->numCandidateBetween & UINT64_C(0x00FFFFFFFFFFFFFF));
     }
  
     JSONNODE* pageInfo = json_new(JSON_NODE);
@@ -3263,6 +3267,10 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Reallocation(JSONNODE* LUNNReal
     set_json_64_bit_With_Status(pageInfo, "Actuator ID", pReal->actID, true, m_showStatusBits);						                                        //!< LUN ID 
     set_json_64_bit_With_Status(pageInfo, "Number of Reallocated Sectors", pReal->numberReallocatedSectors, false, m_showStatusBits);						//!< Head Load Events 
     set_json_64_bit_With_Status(pageInfo, "Number of Reallocated Candidate Sectors", pReal->numberReallocatedCandidates, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Reallocated sectors since the last FARM Time series Frame", pReal->numReallocatedSince, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Reallocated sectors between FARM time series Frame", pReal->numReallocatedBetween, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Reallocation candidate since the last FARM Time series Frame", pReal->numCandidateSince, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Reallocation candidate between FARM time series Frame", pReal->numCandidateBetween, false, m_showStatusBits);
 
     json_push_back(LUNNReallocation, pageInfo);
     
