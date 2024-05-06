@@ -503,9 +503,13 @@ namespace opensea_parser {
         uint64_t            numberReallocatedSectors;                   //!< Number of Reallocated Sectors
         uint64_t            numberReallocatedCandidates;                //!< Number of Reallocated Candidate Sectors
         uint64_t            reallocatedCauses[15];                      //!< Reallocated sectors by cause, see below.  This is a 15 element array, each element is 8 bytes
+        uint64_t            numReallocatedSince;                        //!< 164 - 171 Number of reallocated sectors since the last FARM Time series Frame save
+        uint64_t            numReallocatedBetween;                      //!< 172 - 179 Number of reallocated sectors between FARM time series Frame N and N - 1
+        uint64_t            numCandidateSince;                          //!< 180 - 187 Number of reallocation candidate sectors since the last FARM Time series Frame save
+        uint64_t            numCandidateBetween;                        //!< 188 - 195 Number of reallocation candidate sectors between FARM time series Frame N and N - 1
 
         _sActuatorReallocationData() : pageNumber(0), copyNumber(0), actID(0), numberReallocatedSectors(0), numberReallocatedCandidates(0),
-            reallocatedCauses{ 0 }  {};
+            reallocatedCauses{ 0 }, numReallocatedSince(0), numReallocatedBetween(0), numCandidateSince(0), numCandidateBetween(0) {};
     }sActReallocationData;
 #pragma pack(pop)
     typedef struct _sScsiFarmFrame
