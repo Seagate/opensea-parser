@@ -49,10 +49,10 @@ namespace opensea_parser {
         RESERVED_FOR_FUTURE_HEAD_8,
         RESERVED_FOR_FUTURE_HEAD_9,
         RESERVED_FOR_FUTURE_HEAD_10,
-        MR_HEAD_RESISTANCE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD,  //0x001A
-        RESERVED_FOR_FUTURE_HEAD_11,
-        RESERVED_FOR_FUTURE_HEAD_12,
-        RESERVED_FOR_FUTURE_HEAD_13,
+        MR_HEAD_RESISTANCE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD,        //0x001A
+        NUMBER_OF_TMD_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD,                 // 4.41 0x001B
+        VELOCITY_OBSERVER_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD,             // 4.41 0x001C
+        NUMBER_OF_VELOCITY_OBSERVER_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD,   // 4.41 0x001D
         RESERVED_FOR_FUTURE_HEAD_14,
         CURRENT_H2SAT_AMPLITUDE_BY_HEAD_AVERAGED_ACROSS_TEST_ZONES, //0x001F
         CURRENT_H2SAT_ASYMMETRY_BY_HEAD_AVERAGED_ACROSS_TEST_ZONES, //0x0020
@@ -182,8 +182,8 @@ namespace opensea_parser {
         RESERVED_FOR_FUTURE_EXPANSION_123,
         RESERVED_FOR_FUTURE_EXPANSION_124,
         RESERVED_FOR_FUTURE_EXPANSION_125,
-        RESERVED_FOR_FUTURE_EXPANSION_126,
-        RESERVED_FOR_FUTURE_EXPANSION_127,
+        UNIQUE_UNRECOVERABLES_SINCE = 0x0107,
+        UNIQUE_UNRECOVERALBES_BETWEEN = 0x0108,
         RESERVED_FOR_FUTURE_EXPANSION_128,
         RESERVED_FOR_FUTURE_EXPANSION_129,
         RESERVED_FOR_FUTURE_EXPANSION_130,
@@ -260,7 +260,7 @@ namespace opensea_parser {
         uint64_t            copyNumber;									//!< Copy Number
         uint64_t            totalReadECC;								//!< Number of Unrecoverable Read Errors
         uint64_t            totalWriteECC;								//!< Number of Unrecoverable Write Errors
-        uint64_t            reserved;							        //!< reserved
+        uint64_t            readRecoveryAtt;							//!< read Recovery Attempts
         uint64_t            reserved1;									//!< Reserved
         uint64_t            totalMechanicalFails;						//!< Number of Mechanical Start Failures
         uint64_t            reserved2;					                //!< reserved
@@ -272,8 +272,16 @@ namespace opensea_parser {
         uint64_t            reserved8;							        //!< Reserved
         uint64_t            reserved9;									//!< Reserved
         uint64_t            reserved10;									//!< Reserved
-        uint64_t            reserved11;									//!< Reserved
-        uint64_t            reserved12;								    //!< reserved
+        union
+        {
+            uint64_t            reserved11;								//!< Reserved
+            uint64_t            smartTripParam1;						//!< SMART Trip Parameter 1   added 4.30
+        };
+        union
+        {
+            uint64_t            reserved12;								//!< Reserved
+            uint64_t            smartTripParam2;						//!< SMART Trip Parameter 2  added 4.30
+        };
         uint64_t            reserved13;									//!< Reserved
         uint64_t            reserved14;									//!< Reserved
         uint64_t            FRUCode;									//!< FRU code if smart trip from most recent SMART Frame (SAS only) 
@@ -286,10 +294,10 @@ namespace opensea_parser {
         uint64_t            portAPhyResetProblem;                       //!< Phy Reset Problem (Port A)
         uint64_t            portBPhyResetProblem;                       //!< Phy Reset Problem (Port B()
 
-        _sScsiErrorFrame() : pageNumber(0), copyNumber(0), totalReadECC(0), totalWriteECC(0), reserved(0), reserved1(0),
+        _sScsiErrorFrame() : pageNumber(0), copyNumber(0), totalReadECC(0), totalWriteECC(0), readRecoveryAtt(0), reserved1(0),
             totalMechanicalFails(0), reserved2(0), reserved3(0), reserved4(0), reserved5(0), reserved6(0),
-            reserved7(0), reserved8(0), reserved9(0), reserved10(0), reserved11(0), reserved12(0),
-             reserved13(0), reserved14(0), FRUCode(0), portAInvalidDwordCount(0), portBInvalidDwordCount(0),
+            reserved7(0), reserved8(0), reserved9(0), reserved10(0), smartTripParam1(0),smartTripParam2(0), 
+            reserved13(0), reserved14(0), FRUCode(0), portAInvalidDwordCount(0), portBInvalidDwordCount(0),
             portADisparityErrorCount(0), portBDisparityErrorCount(0), portALossDwordSync(0),
             portBLossDwordSync(0), portAPhyResetProblem(0), portBPhyResetProblem(0) {};
     }sScsiErrorFrame;
@@ -355,9 +363,13 @@ namespace opensea_parser {
         uint64_t            reserved15;									 //!< Reserved
         uint64_t            reserved16;									 //!< Reserved
         uint64_t            reserved17;									 //!< Reserved
-        uint64_t            reserved18;									 //!< Reserved
+        union
+        {
+            uint64_t            reserved18;								 //!< Reserved
+            uint64_t            unloadEvents;							 //!< High Priority Unload Events (Emergency Retracts)   added 4.30
+        };
         uint64_t            reserved19;                                  //!< reserved
-        uint64_t            reserved20;                                  //!< reserved
+        uint64_t            diskSlipRecalPerformed;                      //!< Number of disc slip recalibrations performed
         uint64_t            heliumPressuretThreshold;                    //!< helium Pressure Threshold Trip
         uint64_t            reserved21;                                  //!< reserved
         uint64_t            reserved22;                                  //!< reserved
@@ -366,7 +378,7 @@ namespace opensea_parser {
         _sScsiReliablility() : pageNumber(0), copyNumber(0), reserved(0), reserved1(0), reserved2(0), reserved3(0),
             reserved4(0), reserved5(0), reserved6(0), reserved7(0), reserved8(0), reserved9(0), reserved10(0), 
             reserved11(0), reserved12(0), numberRAWops(0), cumECCDueToERC(0),reserved13(0), reserved14(0), 
-            reserved15(0), reserved16(0), reserved17(0), reserved18(0), reserved19(0), reserved20(0), 
+            reserved15(0), reserved16(0), reserved17(0), unloadEvents(0), reserved19(0), diskSlipRecalPerformed(0),
             heliumPressuretThreshold(0), reserved21(0), reserved22(0), reserved23(0) {};
 
     }sScsiReliablility;
@@ -386,10 +398,12 @@ namespace opensea_parser {
         uint64_t            servoSpinUpTime;                             //!< The last servo spin up time in milliseconds
         uint64_t            writeProtect;                                //!< HAMR Data Protect Status: 1 = Data Protect, 0 = No Data Protect
         uint64_t            regenHeadMask;                               //!< Regen Head Mask: bitmap where 1 = bad head, 0 = good head
+        uint64_t            pohFirst;                                    //!< Power - on Hours of the most recent FARM Time series frame save
+        uint64_t            pohSecond;                                   //!< Power - on Hours of the second most recent FARM Time series frame save
 
         _sGeneralDriveInformationpage06() : pageNumber(0), copyNumber(0), Depop(0), productID{ 0 },
             driveType(0), isDepopped(0), maxNumAvaliableSectors(0), timeToReady(0),
-            holdTime(0), servoSpinUpTime(0), writeProtect(0), regenHeadMask(0) {};
+            holdTime(0), servoSpinUpTime(0), writeProtect(0), regenHeadMask(0), pohFirst(0), pohSecond(0) {};
     }sGeneralDriveInfoPage06;
 
     typedef struct _sScsiEnvironmentStatPage07
@@ -504,12 +518,13 @@ namespace opensea_parser {
         uint64_t            numberReallocatedCandidates;                //!< Number of Reallocated Candidate Sectors
         uint64_t            reallocatedCauses[15];                      //!< Reallocated sectors by cause, see below.  This is a 15 element array, each element is 8 bytes
         uint64_t            numReallocatedSince;                        //!< 164 - 171 Number of reallocated sectors since the last FARM Time series Frame save
-        uint64_t            numReallocatedBetween;                      //!< 172 - 179 Number of reallocated sectors between FARM time series Frame N and N - 1
+        int64_t             numReallocatedBetween;                      //!< 172 - 179 Number of reallocated sectors between FARM time series Frame N and N - 1
         uint64_t            numCandidateSince;                          //!< 180 - 187 Number of reallocation candidate sectors since the last FARM Time series Frame save
-        uint64_t            numCandidateBetween;                        //!< 188 - 195 Number of reallocation candidate sectors between FARM time series Frame N and N - 1
+        int64_t             numCandidateBetween;                        //!< 188 - 195 Number of reallocation candidate sectors between FARM time series Frame N and N - 1
 
         _sActuatorReallocationData() : pageNumber(0), copyNumber(0), actID(0), numberReallocatedSectors(0), numberReallocatedCandidates(0),
             reallocatedCauses{ 0 }, numReallocatedSince(0), numReallocatedBetween(0), numCandidateSince(0), numCandidateBetween(0) {};
+
     }sActReallocationData;
 #pragma pack(pop)
     typedef struct _sScsiFarmFrame
@@ -600,6 +615,9 @@ namespace opensea_parser {
         sLUNStruct              vLUN80;
         sActuatorFLEDInfo       fled81;
         sActReallocationData    reall82;
+        sHeadInformation        lifeTimeWritten;
+        sHeadInformation        uniqueURESince;
+        sHeadInformation        uniqueUREBetween;
 
         std::vector<eSASLogPageTypes>   vFramesFound;
 

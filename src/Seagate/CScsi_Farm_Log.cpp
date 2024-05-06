@@ -345,9 +345,15 @@ bool CSCSI_Farm_Log::set_Head_Header(std::string &headerName, eSASLogPageTypes i
     case eSASLogPageTypes::MR_HEAD_RESISTANCE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD:
         headerName = "MR Head Resistance from most recent SMART Summary Frame";
         break;
-    case eSASLogPageTypes::RESERVED_FOR_FUTURE_HEAD_11:
-    case eSASLogPageTypes::RESERVED_FOR_FUTURE_HEAD_12:
-    case eSASLogPageTypes::RESERVED_FOR_FUTURE_HEAD_13:
+    case eSASLogPageTypes::NUMBER_OF_TMD_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD:
+        headerName = "Number of TMD over last 3 SMART Summary Frame";
+        break;
+    case eSASLogPageTypes::VELOCITY_OBSERVER_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD:
+        headerName = "Velocity Observer over last 3 SMART Summary Frame";
+        break;
+    case eSASLogPageTypes::NUMBER_OF_VELOCITY_OBSERVER_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD:
+        headerName = "Number of Velocity Observer over last 3 SMART SummaryFrame";
+        break;
     case eSASLogPageTypes::RESERVED_FOR_FUTURE_HEAD_14:
         break;
     case eSASLogPageTypes::CURRENT_H2SAT_AMPLITUDE_BY_HEAD_AVERAGED_ACROSS_TEST_ZONES:
@@ -502,6 +508,35 @@ bool CSCSI_Farm_Log::set_Head_Header(std::string &headerName, eSASLogPageTypes i
     case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_112:
     case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_113:
     case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_114:
+    case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_115:
+    case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_116:
+    case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_117:
+    case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_118:
+    case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_119:
+    case eSASLogPageTypes::LIFETIME_TERABYTES_WRITTEN:
+        headerName = "Lifetime Terabytes Written";
+        break;
+    case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_120:
+    case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_121:
+    case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_122:
+    case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_123:
+    case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_124:
+    case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_125:
+        headerName = "Future Expansion";
+        break;
+    case eSASLogPageTypes::UNIQUE_UNRECOVERABLES_SINCE:
+        headerName = "Unique unrecoverable sectors since the last FARM Frame";
+        break;
+    case eSASLogPageTypes::UNIQUE_UNRECOVERALBES_BETWEEN:
+        headerName = "Unique unrecoverable sectors between FARM Frame";
+        break;
+    case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_128:
+    case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_129:
+    case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_130:
+    case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_131:
+    case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_132:
+    case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_133:
+    case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_134:
     case eSASLogPageTypes::MAX_RESERVED_FOR_FUTURE_EXPANSION:
         headerName = "Future Expansion";
         break;
@@ -661,6 +696,16 @@ bool CSCSI_Farm_Log::Get_sDrive_Info_Page_06(sGeneralDriveInfoPage06* gd, uint64
         gd->regenHeadMask = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
         offset += SIZEPARAM;
     }
+    if (offset <= gd->pPageHeader.paramLength)
+    {
+        gd->pohFirst = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+    }
+    if (offset <= gd->pPageHeader.paramLength)
+    {
+        gd->pohSecond = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+    }
     return true;
 }
 
@@ -781,7 +826,7 @@ bool CSCSI_Farm_Log::Get_sErrorStat(sScsiErrorFrame * es, uint64_t offset)
     offset += SIZEPARAM;
     es->totalWriteECC = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
     offset += SIZEPARAM;
-    es->reserved = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    es->readRecoveryAtt = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
     offset += SIZEPARAM; //reserved
     es->reserved1 = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
     offset += SIZEPARAM; // reserved1
@@ -805,10 +850,10 @@ bool CSCSI_Farm_Log::Get_sErrorStat(sScsiErrorFrame * es, uint64_t offset)
     offset += SIZEPARAM; // reserved9
     es->reserved10 = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
     offset += SIZEPARAM; //reserved10
-    es->reserved11 = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-    offset += SIZEPARAM; // reserved11
-    es->reserved12 = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
-    offset += SIZEPARAM; //reserved12
+    es->smartTripParam1 = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM; // smartTripParam1
+    es->smartTripParam2 = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    offset += SIZEPARAM; //smartTripParam2
     es->reserved13 = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
     offset += SIZEPARAM; // reserved13
     es->reserved14 = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
@@ -1071,11 +1116,11 @@ bool CSCSI_Farm_Log::Get_sScsiReliabilityStat(sScsiReliablility *ss, uint64_t of
     offset += SIZEPARAM; //reserved
     ss->reserved17 = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
     offset += SIZEPARAM; //reserved
-    ss->reserved18 = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    ss->unloadEvents = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
     offset += SIZEPARAM; //reserved
     ss->reserved19 = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
     offset += SIZEPARAM; //reserved
-    ss->reserved20 = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+    ss->diskSlipRecalPerformed = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
     offset += SIZEPARAM; //reserved
     ss->heliumPressuretThreshold = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
     offset += SIZEPARAM;
@@ -1337,6 +1382,27 @@ bool CSCSI_Farm_Log::Get_Reallocation_Data(sActReallocationData *real, uint64_t 
         real->reallocatedCauses[i] = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
         offset += SIZEPARAM;
     }
+    if (offset <= real->pageHeader.paramLength)
+    {
+        real->numReallocatedSince = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+    }
+    if (offset <= real->pageHeader.paramLength)
+    {
+        real->numReallocatedBetween = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+    }
+    if (offset <= real->pageHeader.paramLength)
+    {
+        real->numCandidateSince = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+    }
+    if (offset <= real->pageHeader.paramLength)
+    {
+        real->numCandidateBetween = M_BytesTo8ByteValue(pBuf[offset], pBuf[offset + 1], pBuf[offset + 2], pBuf[offset + 3], pBuf[offset + 4], pBuf[offset + 5], pBuf[offset + 6], pBuf[offset + 7]);
+        offset += SIZEPARAM;
+    }
+
     return true;
 }
 //-----------------------------------------------------------------------------
@@ -1543,10 +1609,34 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     delete pHeadInfo;  
                 }
                 break;
-                case eSASLogPageTypes::RESERVED_FOR_FUTURE_HEAD_11:
-                case eSASLogPageTypes::RESERVED_FOR_FUTURE_HEAD_12:
-                case eSASLogPageTypes::RESERVED_FOR_FUTURE_HEAD_13:
+                case eSASLogPageTypes::NUMBER_OF_TMD_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD:
+                {
+                    opensea_parser::sHeadInformation* pHeadInfo = new opensea_parser::sHeadInformation();
+                    get_Head_Info(pHeadInfo, &pBuf[offset]);
+                    memcpy(&pFarmFrame->numberOfTMDByHead, pHeadInfo, sizeof(opensea_parser::sHeadInformation));
+                    offset += static_cast<size_t>((pHeadInfo->pageHeader.paramLength) + sizeof(opensea_parser::sLogParams));
+                    delete pHeadInfo;
+                }
+                break;
+                case eSASLogPageTypes::VELOCITY_OBSERVER_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD:
+                {
+                    opensea_parser::sHeadInformation* pHeadInfo = new opensea_parser::sHeadInformation();
+                    get_Head_Info(pHeadInfo, &pBuf[offset]);
+                    memcpy(&pFarmFrame->velocityObserverByHead, pHeadInfo, sizeof(opensea_parser::sHeadInformation));
+                    offset += static_cast<size_t>((pHeadInfo->pageHeader.paramLength) + sizeof(opensea_parser::sLogParams));
+                    delete pHeadInfo;
+                }
+                break;
+                case eSASLogPageTypes::NUMBER_OF_VELOCITY_OBSERVER_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD:
+                {
+                    opensea_parser::sHeadInformation* pHeadInfo = new opensea_parser::sHeadInformation();
+                    get_Head_Info(pHeadInfo, &pBuf[offset]);
+                    memcpy(&pFarmFrame->numberOfVelocityObservedByHead, pHeadInfo, sizeof(opensea_parser::sHeadInformation));
+                    offset += static_cast<size_t>((pHeadInfo->pageHeader.paramLength) + sizeof(opensea_parser::sLogParams));
+                    delete pHeadInfo;
+                }
                 case eSASLogPageTypes::RESERVED_FOR_FUTURE_HEAD_14:
+                    break;
                 case eSASLogPageTypes::CURRENT_H2SAT_AMPLITUDE_BY_HEAD_AVERAGED_ACROSS_TEST_ZONES:
                 {
                     sHeadInformation *pHeadInfo = new sHeadInformation(); 
@@ -1584,8 +1674,11 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                 }
                 break;
                 case eSASLogPageTypes::RESERVED_FOR_FUTURE_HEAD_15:
+                    break;
                 case eSASLogPageTypes::RESERVED_FOR_FUTURE_HEAD_16:
+                    break;
                 case eSASLogPageTypes::RESERVED_FOR_FUTURE_HEAD_17:
+                    break;
                 case eSASLogPageTypes::WRITE_POWERON_HOURS_FROM_MOST_RECENT_SMART:
                 {
                     sHeadInformation *pHeadInfo = new sHeadInformation();
@@ -1620,6 +1713,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                 case eSASLogPageTypes::RESERVED_FOR_FUTURE_HEAD_22:
                 case eSASLogPageTypes::RESERVED_FOR_FUTURE_HEAD_23:
                 case eSASLogPageTypes::RESERVED_FOR_FUTURE_HEAD_24:
+                    break;
                 case eSASLogPageTypes::CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_0:
                 {
                     sHeadInformation *pHeadInfo = new sHeadInformation();
@@ -1687,6 +1781,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                 case eSASLogPageTypes::RESERVED_FOR_FUTURE_HEAD_35:
                 case eSASLogPageTypes::RESERVED_FOR_FUTURE_HEAD_36:
                 case eSASLogPageTypes::RESERVED_FOR_FUTURE_HEAD_37:
+                    break;
                 case eSASLogPageTypes::SECOND_MR_HEAD_RESISTANCE:
                 {
                     sHeadInformation *pHeadInfo = new sHeadInformation();
@@ -1708,6 +1803,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                 case eSASLogPageTypes::RESERVED_FOR_FUTURE_HEAD_47:
                 case eSASLogPageTypes::RESERVED_FOR_FUTURE_HEAD_48:
                 case eSASLogPageTypes::RESERVED_FOR_FUTURE_HEAD_49:
+                    break;
                 case eSASLogPageTypes::LUN_0_ACTUATOR:
                 {
                     Get_sLUNStruct(&pFarmFrame->vLUN50,offset);
@@ -1741,6 +1837,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                 case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_52:
                 case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_53:
                 case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_54:
+                    break;
                 case eSASLogPageTypes::LUN_1_ACTUATOR:
                 {
                     Get_sLUNStruct(&pFarmFrame->vLUN60,offset);
@@ -1773,6 +1870,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                 case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_72:
                 case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_73:
                 case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_74:
+                    break;
                 case eSASLogPageTypes::LUN_2_ACTUATOR:
                 {
                     Get_sLUNStruct(&pFarmFrame->vLUN70,offset);
@@ -1805,6 +1903,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                 case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_92:
                 case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_93:
                 case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_94:
+                    break;
                 case eSASLogPageTypes::LUN_3_ACTUATOR:
                 {
                     Get_sLUNStruct(&pFarmFrame->vLUN80,offset);
@@ -1821,6 +1920,37 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                 {
                     Get_Reallocation_Data(&pFarmFrame->reall82, offset);
                     offset += (pFarmFrame->reall82.pageHeader.paramLength + sizeof(sLogParams));
+                }
+                break;
+                case eSASLogPageTypes::LIFETIME_TERABYTES_WRITTEN:           // LIFETIME_TERABYTES_WRITTEN
+                {
+                    opensea_parser::sHeadInformation* pHeadInfo = new opensea_parser::sHeadInformation();
+                    get_Head_Info(pHeadInfo, &pBuf[offset]);
+                    memcpy(&pFarmFrame->lifeTimeWritten, pHeadInfo, sizeof(opensea_parser::sHeadInformation));
+                    offset += static_cast<size_t>((pHeadInfo->pageHeader.paramLength) + sizeof(opensea_parser::sLogParams));
+                    delete pHeadInfo;
+                    //new
+                    offset += m_logSize;
+                    break;
+                }
+                case eSASLogPageTypes::UNIQUE_UNRECOVERABLES_SINCE:
+                {
+                    opensea_parser::sHeadInformation* pHeadInfo = new opensea_parser::sHeadInformation();
+                    get_Head_Info(pHeadInfo, &pBuf[offset]);
+                    memcpy(&pFarmFrame->uniqueURESince, pHeadInfo, sizeof(opensea_parser::sHeadInformation));
+                    offset += static_cast<size_t>((pHeadInfo->pageHeader.paramLength) + sizeof(opensea_parser::sLogParams));
+                    delete pHeadInfo;
+                    offset += m_logSize;
+                }
+                break;
+                case eSASLogPageTypes::UNIQUE_UNRECOVERALBES_BETWEEN:
+                {
+                    opensea_parser::sHeadInformation* pHeadInfo = new opensea_parser::sHeadInformation();
+                    get_Head_Info(pHeadInfo, &pBuf[offset]);
+                    memcpy(&pFarmFrame->uniqueUREBetween, pHeadInfo, sizeof(opensea_parser::sHeadInformation));
+                    offset += static_cast<size_t>((pHeadInfo->pageHeader.paramLength) + sizeof(opensea_parser::sLogParams));
+                    delete pHeadInfo;
+                    offset += m_logSize;
                 }
                 break;
                 default:
@@ -2126,6 +2256,8 @@ eReturnValues CSCSI_Farm_Log::print_General_Drive_Information_Continued(JSONNODE
         printf("\tLast Servo Spin up Time (sec):                                %0.3f       \n", (vFarmFrame.at(page).gDPage06.servoSpinUpTime & UINT64_C(0x00FFFFFFFFFFFFFF)) * 0.001);
         printf("\tHAMR Write Protect:                                           0x%" PRIx64"  \n", vFarmFrame.at(page).gDPage06.writeProtect & UINT64_C(0x00FFFFFFFFFFFFFF));
         printf("\tRegen Head Mask bitmap:                                       0x%" PRIx64"  \n", vFarmFrame.at(page).gDPage06.regenHeadMask & UINT64_C(0x00FFFFFFFFFFFFFF));
+        printf("\tPower on Hours most recent FARM Time series frame             0x%" PRIx64"  \n", vFarmFrame.at(page).gDPage06.pohFirst & UINT64_C(0x00FFFFFFFFFFFFFF));
+        printf("\tPower on Hours of second FARM Time series frame               0x%" PRIx64"  \n", vFarmFrame.at(page).gDPage06.pohSecond & UINT64_C(0x00FFFFFFFFFFFFFF));
 
     }
     if (vFarmFrame.at(page).driveInfo.copyNumber == FACTORYCOPY)
@@ -2180,6 +2312,8 @@ eReturnValues CSCSI_Farm_Log::print_General_Drive_Information_Continued(JSONNODE
     {
         status = eReturnValues::SUCCESS;
     }
+    opensea_parser::set_json_bool_With_Status(pageInfo, "Power on Hours most recent FARM Time series frame", vFarmFrame.at(page).gDPage06.pohFirst, m_showStatusBits);
+    opensea_parser::set_json_bool_With_Status(pageInfo, "Power on Hours of second FARM Time series frame", vFarmFrame.at(page).gDPage06.pohSecond, m_showStatusBits);
 
     json_push_back(masterData, pageInfo);
     return eReturnValues::SUCCESS;
@@ -2320,6 +2454,12 @@ eReturnValues CSCSI_Farm_Log::print_Error_Information(JSONNODE *masterData, uint
         }
         printf("\tUnrecoverable Read Errors:                                    %" PRIu64" \n", vFarmFrame.at(page).errorPage.totalReadECC & UINT64_C(0x00FFFFFFFFFFFFFF));				//!< Number of Unrecoverable Read Errors
         printf("\tUnrecoverable Write Errors:                                   %" PRIu64" \n", vFarmFrame.at(page).errorPage.totalWriteECC & UINT64_C(0x00FFFFFFFFFFFFFF));				//!< Number of Unrecoverable Write Errors
+        printf("\tRead Recovery Attempts:                                       %" PRIu64" \n", vFarmFrame.at(page).errorPage.readRecoveryAtt & UINT64_C(0x00FFFFFFFFFFFFFF));
+        if (m_MajorRev >= 4 && m_MinorRev >= 33)
+        {
+            printf("\tSMART Trip Parameter 1 :                                      %" PRIu64" \n", vFarmFrame.at(page).errorPage.smartTripParam1 & UINT64_C(0x00FFFFFFFFFFFFFF));
+            printf("\tSMART Trip Parameter 2 :                                      %" PRIu64" \n", vFarmFrame.at(page).errorPage.smartTripParam2 & UINT64_C(0x00FFFFFFFFFFFFFF));
+        }
         printf("\tSMART Trip FRU code:                                          %" PRIu64" \n", vFarmFrame.at(page).errorPage.FRUCode & UINT64_C(0x00FFFFFFFFFFFFFF));
         printf("\tInvalid DWord Count Port A                                    %" PRIu64" \n", vFarmFrame.at(page).errorPage.portAInvalidDwordCount & UINT64_C(0x00FFFFFFFFFFFFFF));
         printf("\tInvalid DWord Count Port B                                    %" PRIu64" \n", vFarmFrame.at(page).errorPage.portBInvalidDwordCount & UINT64_C(0x00FFFFFFFFFFFFFF));
@@ -2345,8 +2485,68 @@ eReturnValues CSCSI_Farm_Log::print_Error_Information(JSONNODE *masterData, uint
 
     set_json_64_bit_With_Status(pageInfo, "Unrecoverable Read Errors", vFarmFrame.at(page).errorPage.totalReadECC, false, m_showStatusBits);							//!< Number of Unrecoverable Read Errors
     set_json_64_bit_With_Status(pageInfo, "Unrecoverable Write Errors", vFarmFrame.at(page).errorPage.totalWriteECC, false, m_showStatusBits);							//!< Number of Unrecoverable Write Errors
-    set_json_64_bit_With_Status(pageInfo, "Mechanical Start Failures", vFarmFrame.at(page).errorPage.totalMechanicalFails, false, m_showStatusBits);			//!< Number of Mechanical Start Failures
-    set_json_64_bit_With_Status(pageInfo, "SMART Trip FRU code", vFarmFrame.at(page).errorPage.FRUCode, false, m_showStatusBits);		//!< FRU code if smart trip from most recent SMART Frame
+    set_json_64_bit_With_Status(pageInfo, "Read Recovery Attempts", vFarmFrame.at(page).errorPage.readRecoveryAtt, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Mechanical Start Failures", vFarmFrame.at(page).errorPage.totalMechanicalFails, false, m_showStatusBits);			        //!< Number of Mechanical Start Failures
+    if ((m_MajorRev >= 4 && m_MinorRev >= 30) || m_showStatic == true)
+    {
+        set_json_64_bit_With_Status(pageInfo, "SMART Trip Parameter 1", vFarmFrame.at(page).errorPage.smartTripParam1, false, m_showStatusBits);
+        if ((opensea_parser::check_For_Active_Status(&vFarmFrame.at(page).errorPage.smartTripParam1)) && (((vFarmFrame.at(page).errorPage.smartTripParam1 & UINT64_C(0x00FFFFFFFFFFFFFF)) != 0)) && (m_showStatic == false))
+        {
+            if (M_Byte0(vFarmFrame.at(page).errorPage.smartTripParam1) == 0x05)
+            {
+                opensea_parser::set_Json_Bool(pageInfo, "SMART trip Attribute 0x05", true);
+            }
+            if (M_Byte1(vFarmFrame.at(page).errorPage.smartTripParam1) == 0x10)
+            {
+                opensea_parser::set_Json_Bool(pageInfo, "SMART trip Attribute 0x10", true);
+            }
+            if (M_Byte2(vFarmFrame.at(page).errorPage.smartTripParam1) == 0x12)
+            {
+                opensea_parser::set_Json_Bool(pageInfo, "SMART trip Attribute 0x12", true);
+            }
+            if (M_Byte3(vFarmFrame.at(page).errorPage.smartTripParam1) == 0x14)
+            {
+                opensea_parser::set_Json_Bool(pageInfo, "SMART trip Attribute 0x14", true);
+            }
+            if (M_Byte4(vFarmFrame.at(page).errorPage.smartTripParam1) == 0x16)
+            {
+                opensea_parser::set_Json_Bool(pageInfo, "SMART trip Attribute 0x16", true);
+            }
+            if (M_Byte5(vFarmFrame.at(page).errorPage.smartTripParam1) == 0x30)
+            {
+                opensea_parser::set_Json_Bool(pageInfo, "SMART trip Attribute 0x30", true);
+            }
+            if (M_Byte6(vFarmFrame.at(page).errorPage.smartTripParam1) == 0x32)
+            {
+                opensea_parser::set_Json_Bool(pageInfo, "SMART trip Attribute 0x32", true);
+            }
+        }
+        set_json_64_bit_With_Status(pageInfo, "SMART Trip Parameter 2", vFarmFrame.at(page).errorPage.smartTripParam2, false, m_showStatusBits);
+        if ((opensea_parser::check_For_Active_Status(&vFarmFrame.at(page).errorPage.smartTripParam2)) && (((vFarmFrame.at(page).errorPage.smartTripParam2 & UINT64_C(0x00FFFFFFFFFFFFFF)) != 0)) && (m_showStatic == false))
+        {
+            if (M_Byte0(vFarmFrame.at(page).errorPage.smartTripParam2) == 0x42)
+            {
+                opensea_parser::set_Json_Bool(pageInfo, "SMART trip Attribute 0x42", true);
+            }
+            if (M_Byte1(vFarmFrame.at(page).errorPage.smartTripParam2) == 0x43)
+            {
+                opensea_parser::set_Json_Bool(pageInfo, "SMART trip Attribute 0x43", true);
+            }
+            if (M_Byte2(vFarmFrame.at(page).errorPage.smartTripParam2) == 0x5B)
+            {
+                opensea_parser::set_Json_Bool(pageInfo, "SMART trip Attribute 0x5B", true);
+            }
+            if (M_Byte3(vFarmFrame.at(page).errorPage.smartTripParam2) == 0x92)
+            {
+                opensea_parser::set_Json_Bool(pageInfo, "SMART trip Attribute 0x92", true);
+            }
+            if (M_Byte4(vFarmFrame.at(page).errorPage.smartTripParam2) == 0x93)
+            {
+                opensea_parser::set_Json_Bool(pageInfo, "SMART trip Attribute 0x93", true);
+            }
+        }
+    }
+    set_json_64_bit_With_Status(pageInfo, "SMART Trip FRU code", vFarmFrame.at(page).errorPage.FRUCode, false, m_showStatusBits);		                                //!< FRU code if smart trip from most recent SMART Frame
     set_json_64_bit_With_Status(pageInfo, "Invalid DWord Count Port A ", vFarmFrame.at(page).errorPage.portAInvalidDwordCount, false, m_showStatusBits);
     set_json_64_bit_With_Status(pageInfo, "Invalid DWord Count Port B", vFarmFrame.at(page).errorPage.portBInvalidDwordCount, false, m_showStatusBits);
     set_json_64_bit_With_Status(pageInfo, "Disparity Error Count Port A", vFarmFrame.at(page).errorPage.portADisparityErrorCount, false, m_showStatusBits);
@@ -2578,14 +2778,15 @@ eReturnValues CSCSI_Farm_Log::print_Workload_Statistics_Page_08(JSONNODE *master
             temp << "Workload Information Continued From Farm ";
         }
         json_set_name(pageInfo, temp.str().c_str());
-            opensea_parser::set_json_int_With_Status(pageInfo, "Queue Depth bin = 1", vFarmFrame.at(page).workloadStatPage08.countQueDepth1, m_showStatusBits);
-            opensea_parser::set_json_int_With_Status(pageInfo, "Queue Depth bin = 2", vFarmFrame.at(page).workloadStatPage08.countQueDepth2, m_showStatusBits);
-            opensea_parser::set_json_int_With_Status(pageInfo, "Queue Depth bin 3-4", vFarmFrame.at(page).workloadStatPage08.countQueDepth3_4, m_showStatusBits);
-            opensea_parser::set_json_int_With_Status(pageInfo, "Queue Depth bin 5-8", vFarmFrame.at(page).workloadStatPage08.countQueDepth5_8, m_showStatusBits);
-            opensea_parser::set_json_int_With_Status(pageInfo, "Queue Depth bin 9-16", vFarmFrame.at(page).workloadStatPage08.countQueDepth9_16, m_showStatusBits);
-            opensea_parser::set_json_int_With_Status(pageInfo, "Queue Depth bin 17-32", vFarmFrame.at(page).workloadStatPage08.countQueDepth17_32, m_showStatusBits);
-            opensea_parser::set_json_int_With_Status(pageInfo, "Queue Depth bin 33-64", vFarmFrame.at(page).workloadStatPage08.countQueDepth33_64, m_showStatusBits);
-            opensea_parser::set_json_int_With_Status(pageInfo, "Queue Depth bin > 64", vFarmFrame.at(page).workloadStatPage08.countQueDepth_gt_64, m_showStatusBits);
+        set_json_int_With_Status(pageInfo, "Queue Depth bin = 1", vFarmFrame.at(page).workloadStatPage08.countQueDepth1, m_showStatusBits);
+        set_json_int_With_Status(pageInfo, "Queue Depth bin = 2", vFarmFrame.at(page).workloadStatPage08.countQueDepth2, m_showStatusBits);
+        set_json_int_With_Status(pageInfo, "Queue Depth bin 3-4", vFarmFrame.at(page).workloadStatPage08.countQueDepth3_4, m_showStatusBits);
+        set_json_int_With_Status(pageInfo, "Queue Depth bin 5-8", vFarmFrame.at(page).workloadStatPage08.countQueDepth5_8, m_showStatusBits);
+        set_json_int_With_Status(pageInfo, "Queue Depth bin 9-16", vFarmFrame.at(page).workloadStatPage08.countQueDepth9_16, m_showStatusBits);
+        set_json_int_With_Status(pageInfo, "Queue Depth bin 17-32", vFarmFrame.at(page).workloadStatPage08.countQueDepth17_32, m_showStatusBits);
+        set_json_int_With_Status(pageInfo, "Queue Depth bin 33-64", vFarmFrame.at(page).workloadStatPage08.countQueDepth33_64, m_showStatusBits);
+        set_json_int_With_Status(pageInfo, "Queue Depth bin > 64", vFarmFrame.at(page).workloadStatPage08.countQueDepth_gt_64, m_showStatusBits);
+        
         json_push_back(masterData, pageInfo);
 
     }
@@ -2624,6 +2825,8 @@ eReturnValues CSCSI_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint3
         }
         printf("\tNumbert of RAW ops:                                           %" PRIu64" \n", vFarmFrame.at(page).reliPage.numberRAWops & UINT64_C(0x00FFFFFFFFFFFFFF));						
         printf("\tCumulative Lifetime ECC due to ERC:                           %" PRIu64" \n", vFarmFrame.at(page).reliPage.cumECCDueToERC & UINT64_C(0x00FFFFFFFFFFFFFF));					
+        printf("\tHigh Priority Unload Events:                                  %" PRIu64" \n", vFarmFrame.at(page).reliPage.unloadEvents & UINT64_C(0x00FFFFFFFFFFFFFF));
+        printf("\t# of Disc Slip Recalibrations Performed :                     %" PRIu64" \n", vFarmFrame.at(page).reliPage.diskSlipRecalPerformed & UINT64_C(0x00FFFFFFFFFFFFFF));			//!< Number of disc slip recalibrations performed
         printf("\tHelium Pressure Threshold Trip:                               %" PRIu64" \n", vFarmFrame.at(page).reliPage.heliumPressuretThreshold & UINT64_C(0x00FFFFFFFFFFFFFF));			//!< helium Pressure Threshold Trip		               
     }
     if (vFarmFrame.at(page).reliPage.copyNumber == FACTORYCOPY)
@@ -2638,6 +2841,8 @@ eReturnValues CSCSI_Farm_Log::print_Reli_Information(JSONNODE *masterData, uint3
 
     set_json_64_bit_With_Status(pageInfo, "Number of RAW Operations", vFarmFrame.at(page).reliPage.numberRAWops, false, m_showStatusBits);								//!< Number of RAW Operations
     set_json_64_bit_With_Status(pageInfo, "Cumulative Lifetime ECC due to ERC", vFarmFrame.at(page).reliPage.cumECCDueToERC, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "High Priority Unload Events", vFarmFrame.at(page).reliPage.unloadEvents, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Number of Disc Slip Recalibrations Performed", vFarmFrame.at(page).reliPage.diskSlipRecalPerformed, false, m_showStatusBits);//!< Number of disc slip recalibrations performed
     set_json_64_bit_With_Status(pageInfo, "Helium Pressure Threshold Tripped", vFarmFrame.at(page).reliPage.heliumPressuretThreshold, false, m_showStatusBits);			//!< helium Pressure Threshold Trip
    
 
@@ -2748,20 +2953,47 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSON
                 int_Data(headPage, "MR Head Resistance", reinterpret_cast<int64_t*>(vFarmFrame.at(page).mrHeadResistanceByHead.headValue), m_heads, m_showStatusBits, m_showStatic);
             }
             break;
-        case eSASLogPageTypes::RESERVED_FOR_FUTURE_HEAD_11:
-        case eSASLogPageTypes::RESERVED_FOR_FUTURE_HEAD_12:
-        case eSASLogPageTypes::RESERVED_FOR_FUTURE_HEAD_13:
-        case eSASLogPageTypes::RESERVED_FOR_FUTURE_HEAD_14:
-            break;
-        case eSASLogPageTypes::CURRENT_H2SAT_AMPLITUDE_BY_HEAD_AVERAGED_ACROSS_TEST_ZONES:
-            {
+        case eSASLogPageTypes::NUMBER_OF_TMD_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD:
             if (g_verbosity >= eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE)
             {
                 for (loopCount = 0; loopCount < m_heads; ++loopCount)
                 {
-                    printf("\tCurrent H2SAT amplitude for Head %2" PRIu32":                           %" PRIu64" \n", loopCount, vFarmFrame.at(page).currentH2STAmplituedByHead.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));       
+                    printf("\tServo No Timing Mark Detect for Head %2" PRIu32":                      %" PRIu64" \n", loopCount, vFarmFrame.at(page).numberOfTMDByHead.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));
                 }
             }
+            int_Data(headPage, "Servo No Timing Mark Detect", reinterpret_cast<int64_t*>(vFarmFrame.at(page).numberOfTMDByHead.headValue), m_heads, m_showStatusBits, m_showStatic);
+            break;
+        case eSASLogPageTypes::VELOCITY_OBSERVER_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD:
+            if (g_verbosity >= eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE)
+            {
+                for (loopCount = 0; loopCount < m_heads; ++loopCount)
+                {
+                    printf("\tVelocity Observer for Head %2" PRIu32":                                %" PRIu64" \n", loopCount, vFarmFrame.at(page).velocityObserverByHead.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));
+                }
+            }
+            int_Data(headPage, "Velocity Observer", reinterpret_cast<int64_t*>(vFarmFrame.at(page).velocityObserverByHead.headValue), m_heads, m_showStatusBits, m_showStatic);
+            break;
+        case eSASLogPageTypes::NUMBER_OF_VELOCITY_OBSERVER_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD:
+            if (g_verbosity >= eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE)
+            {
+                for (loopCount = 0; loopCount < m_heads; ++loopCount)
+                {
+                    printf("\tServo Velocity No Timing Mark Detect for Head %2" PRIu32":             %" PRIu64" \n", loopCount, vFarmFrame.at(page).numberOfVelocityObservedByHead.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));
+                }
+            }
+            int_Data(headPage, "Servo Velocity No Timing Mark Detect", reinterpret_cast<int64_t*>(vFarmFrame.at(page).numberOfVelocityObservedByHead.headValue), m_heads, m_showStatusBits, m_showStatic);
+            break;
+        case eSASLogPageTypes::RESERVED_FOR_FUTURE_HEAD_14:
+            break;
+        case eSASLogPageTypes::CURRENT_H2SAT_AMPLITUDE_BY_HEAD_AVERAGED_ACROSS_TEST_ZONES:
+            {
+                if (g_verbosity >= eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE)
+                {
+                    for (loopCount = 0; loopCount < m_heads; ++loopCount)
+                    {
+                        printf("\tCurrent H2SAT amplitude for Head %2" PRIu32":                           %" PRIu64" \n", loopCount, vFarmFrame.at(page).currentH2STAmplituedByHead.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));       
+                    }
+                }
             int_Data(headPage, "Current H2SAT amplitude", reinterpret_cast<int64_t*>(vFarmFrame.at(page).currentH2STAmplituedByHead.headValue), m_heads, m_showStatusBits, m_showStatic);
             }
             break;
@@ -2843,7 +3075,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSON
             {
                 for (loopCount = 0; loopCount < m_heads; ++loopCount)
                 {
-                    printf("\tCurrent H2SAT trimmed mean bits in error Zone 0 for Head %2" PRIu32":   %0.3f \n", loopCount, static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).currentH2STTrimmedbyHeadZone0.headValue[loopCount])), 16) * 0.10F));
+                    printf("\tCurrent H2SAT trimmed mean bits in error Zone 0 for Head %2" PRIu32":   %0.3f \n", loopCount, static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).currentH2STTrimmedbyHeadZone0.headValue[loopCount])), 16)) * 0.10F);
                 }
             }
             sas_Head_Float_Data(headPage, "Current H2SAT trimmed mean bits in error Zone 0", WORD0, 0.10, vFarmFrame.at(page).currentH2STTrimmedbyHeadZone0.headValue, m_heads, m_showStatusBits, m_showStatic);
@@ -2853,7 +3085,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSON
             {
                 for (loopCount = 0; loopCount < m_heads; ++loopCount)
                 {
-                    printf("\tCurrent H2SAT trimmed mean bits in error Zone 1 for Head %2" PRIu32":   %0.3f \n", loopCount, static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).currentH2STTrimmedbyHeadZone1.headValue[loopCount])), 16) * 0.10F));
+                    printf("\tCurrent H2SAT trimmed mean bits in error Zone 1 for Head %2" PRIu32":   %0.3f \n", loopCount, static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).currentH2STTrimmedbyHeadZone1.headValue[loopCount])), 16)) * 0.10F);
                 }
             }
             sas_Head_Float_Data(headPage, "Current H2SAT trimmed mean bits in error Zone 1", WORD0, 0.10, vFarmFrame.at(page).currentH2STTrimmedbyHeadZone1.headValue, m_heads, m_showStatusBits, m_showStatic);
@@ -2863,7 +3095,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSON
             {
                 for (loopCount = 0; loopCount < m_heads; ++loopCount)
                 {
-                    printf("\tCurrent H2SAT trimmed mean bits in error Zone 2 for Head %2" PRIu32":   %0.3f \n", loopCount, static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).currentH2STTrimmedbyHeadZone2.headValue[loopCount])), 16) * 0.10F));
+                    printf("\tCurrent H2SAT trimmed mean bits in error Zone 2 for Head %2" PRIu32":   %0.3f \n", loopCount, static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).currentH2STTrimmedbyHeadZone2.headValue[loopCount])), 16)) * 0.10F);
                 }
             }
             sas_Head_Float_Data(headPage, "Current H2SAT trimmed mean bits in error Zone 2", WORD0, 0.10, vFarmFrame.at(page).currentH2STTrimmedbyHeadZone2.headValue, m_heads, m_showStatusBits, m_showStatic);
@@ -2873,7 +3105,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSON
             {
                 for (loopCount = 0; loopCount < m_heads; ++loopCount)
                 {
-                    printf("\tCurrent H2SAT iterations to converge Test Zone 0 for Head %2" PRIu32":  %0.3f \n", loopCount, static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).currentH2STIterationsByHeadZone0.headValue[loopCount])), 16) * 0.10F));
+                    printf("\tCurrent H2SAT iterations to converge Test Zone 0 for Head %2" PRIu32":  %0.3f \n", loopCount, static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).currentH2STIterationsByHeadZone0.headValue[loopCount])), 16) )* 0.10F);
                 }
             }
             sas_Head_Float_Data(headPage, "Current H2SAT iterations to converge Test Zone 0", WORD0, 0.10, vFarmFrame.at(page).currentH2STIterationsByHeadZone0.headValue, m_heads, m_showStatusBits, m_showStatic);
@@ -2883,7 +3115,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSON
             {
                 for (loopCount = 0; loopCount < m_heads; ++loopCount)
                 {
-                    printf("\tCurrent H2SAT iterations to converge Test Zone 1 for Head %2" PRIu32":  %0.3f \n", loopCount, static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).currentH2STIterationsByHeadZone1.headValue[loopCount])), 16) * 0.10F));
+                    printf("\tCurrent H2SAT iterations to converge Test Zone 1 for Head %2" PRIu32":  %0.3f \n", loopCount, static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).currentH2STIterationsByHeadZone1.headValue[loopCount])), 16)) * 0.10F);
                 }
             }
             sas_Head_Float_Data(headPage, "Current H2SAT iterations to converge Test Zone 1", WORD0, 0.10, vFarmFrame.at(page).currentH2STIterationsByHeadZone1.headValue, m_heads, m_showStatusBits, m_showStatic);
@@ -2893,7 +3125,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSON
             {
                 for (loopCount = 0; loopCount < m_heads; ++loopCount)
                 {
-                    printf("\tCurrent H2SAT iterations to converge Test Zone 2 for Head %2" PRIu32":  %0.3f \n", loopCount, static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).currentH2STIterationsByHeadZone2.headValue[loopCount])), 16) * 0.10F));
+                    printf("\tCurrent H2SAT iterations to converge Test Zone 2 for Head %2" PRIu32":  %0.3f \n", loopCount, static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).currentH2STIterationsByHeadZone2.headValue[loopCount])), 16))* 0.10F);
                 }
             }
             sas_Head_Float_Data(headPage, "Current H2SAT iterations to converge Test Zone 2", WORD0, 0.10, vFarmFrame.at(page).currentH2STIterationsByHeadZone2.headValue, m_heads, m_showStatusBits, m_showStatic);
@@ -2996,7 +3228,14 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSON
         case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_119:
             break;
         case eSASLogPageTypes::LIFETIME_TERABYTES_WRITTEN:
-            //int_Data(headPage, "Lifetime Terabytes Writtens", reinterpret_cast<int64_t*>(vFarmFrame.at(page).lifeTimeWritten.headValue), m_heads, m_showStatusBits, m_showStatic);
+            if (g_verbosity >= eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE)
+            {
+                for (loopCount = 0; loopCount < m_heads; ++loopCount)
+                {
+                    printf("\tLifetime Terabytes Writtens for Head %2" PRIu32":                         %" PRIu64" \n", loopCount, vFarmFrame.at(page).lifeTimeWritten.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));       //!< [24] MR Head Resistance from most recent SMART Summary Frame by Head9,10
+                }
+            }
+            int_Data(headPage, "Lifetime Terabytes Writtens", reinterpret_cast<int64_t*>(vFarmFrame.at(page).lifeTimeWritten.headValue), m_heads, m_showStatusBits, m_showStatic);
             break;
         case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_120:
         case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_121:
@@ -3004,8 +3243,26 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSON
         case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_123:
         case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_124:
         case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_125:
-        case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_126:
-        case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_127:
+        case eSASLogPageTypes::UNIQUE_UNRECOVERABLES_SINCE:
+            if (g_verbosity >= eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE)
+            {
+                for (loopCount = 0; loopCount < m_heads; ++loopCount)
+                {
+                    printf("\tUnique unrecoverable sectors since the last FARM Frame for Head %2" PRIu32":                         %" PRIu64" \n", loopCount, vFarmFrame.at(page).uniqueURESince.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));       //!< [24] MR Head Resistance from most recent SMART Summary Frame by Head9,10
+                }
+            }
+            int_Data(headPage, "Unique unrecoverable sectors since the last FARM Frame", reinterpret_cast<int64_t*>(vFarmFrame.at(page).uniqueURESince.headValue), m_heads, m_showStatusBits, m_showStatic);
+            break;
+        case eSASLogPageTypes::UNIQUE_UNRECOVERALBES_BETWEEN:
+            if (g_verbosity >= eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE)
+            {
+                for (loopCount = 0; loopCount < m_heads; ++loopCount)
+                {
+                    printf("\tUnique unrecoverable sectors previous FARM Frame for Head %2" PRIu32":                         %" PRIu64" \n", loopCount, vFarmFrame.at(page).uniqueURESince.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));       //!< [24] MR Head Resistance from most recent SMART Summary Frame by Head9,10
+                }
+            }
+            int_Data(headPage, "Unique unrecoverable sectors previous FARM Frame", reinterpret_cast<int64_t*>(vFarmFrame.at(page).uniqueUREBetween.headValue), m_heads, m_showStatusBits, m_showStatic);
+            break;
         case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_128:
         case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_129:
         case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_130:
@@ -3241,14 +3498,14 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Reallocation(JSONNODE* LUNNReal
         {
             printf("\nLUN Actuator 0x%" PRIx16" Reallocation From Farm Log \n", M_Word0(pReal->actID));
         }
-        printf("\tPage Number:                                                  0x%" PRIx64" \n", pReal->pageNumber & UINT64_C(0x00FFFFFFFFFFFFFF));                   //!< Page Number 
-        printf("\tActuator ID:                                                  %" PRIu64" \n", pReal->actID & UINT64_C(0x00FFFFFFFFFFFFFF));                        //!< Actuator ID  
-        printf("\tNumber of Reallocated Sectors:                                %" PRIu64" \n", pReal->numberReallocatedSectors & UINT64_C(0x00FFFFFFFFFFFFFF));              //!< Total Flash LED Events
+        printf("\tPage Number:                                                  0x%" PRIx64" \n", pReal->pageNumber & UINT64_C(0x00FFFFFFFFFFFFFF));                    //!< Page Number 
+        printf("\tActuator ID:                                                  %" PRIu64" \n", pReal->actID & UINT64_C(0x00FFFFFFFFFFFFFF));                           //!< Actuator ID  
+        printf("\tNumber of Reallocated Sectors:                                %" PRIu64" \n", pReal->numberReallocatedSectors & UINT64_C(0x00FFFFFFFFFFFFFF));        //!< Total Flash LED Events
         printf("\tNumber of Reallocated Candidate Sectors:                      %" PRIu64" \n", pReal->numberReallocatedCandidates & UINT64_C(0x00FFFFFFFFFFFFFF));
         printf("\tReallocated sectors since the last FARM Time series Frame:    %" PRIu64" \n", pReal->numReallocatedSince & UINT64_C(0x00FFFFFFFFFFFFFF));
-        printf("\tReallocated sectors between FARM time series Frame:           %" PRIu64" \n", pReal->numReallocatedBetween & UINT64_C(0x00FFFFFFFFFFFFFF));
+        printf("\tReallocated sectors between FARM time series Frame:           %" PRIi64" \n", pReal->numReallocatedBetween & UINT64_C(0x00FFFFFFFFFFFFFF));
         printf("\tReallocation candidate since the last FARM Time series Frame: %" PRIu64" \n", pReal->numCandidateSince & UINT64_C(0x00FFFFFFFFFFFFFF));
-        printf("\tReallocation candidate between FARM time series Frame:        %" PRIu64" \n", pReal->numCandidateBetween & UINT64_C(0x00FFFFFFFFFFFFFF));
+        printf("\tReallocation candidate between FARM time series Frame:        %" PRIi64" \n", pReal->numCandidateBetween & UINT64_C(0x00FFFFFFFFFFFFFF));
     }
  
     JSONNODE* pageInfo = json_new(JSON_NODE);
@@ -3267,10 +3524,14 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Reallocation(JSONNODE* LUNNReal
     set_json_64_bit_With_Status(pageInfo, "Actuator ID", pReal->actID, true, m_showStatusBits);						                                        //!< LUN ID 
     set_json_64_bit_With_Status(pageInfo, "Number of Reallocated Sectors", pReal->numberReallocatedSectors, false, m_showStatusBits);						//!< Head Load Events 
     set_json_64_bit_With_Status(pageInfo, "Number of Reallocated Candidate Sectors", pReal->numberReallocatedCandidates, false, m_showStatusBits);
-    set_json_64_bit_With_Status(pageInfo, "Reallocated sectors since the last FARM Time series Frame", pReal->numReallocatedSince, false, m_showStatusBits);
-    set_json_64_bit_With_Status(pageInfo, "Reallocated sectors between FARM time series Frame", pReal->numReallocatedBetween, false, m_showStatusBits);
-    set_json_64_bit_With_Status(pageInfo, "Reallocation candidate since the last FARM Time series Frame", pReal->numCandidateSince, false, m_showStatusBits);
-    set_json_64_bit_With_Status(pageInfo, "Reallocation candidate between FARM time series Frame", pReal->numCandidateBetween, false, m_showStatusBits);
+    long long reallo = check_for_signed_int(check_Status_Strip_Status(pReal->numReallocatedSince), 8);
+    set_json_int_Check_Status(pageInfo, "Reallocated sectors since the last FARM Time series Frame", reallo, pReal->numReallocatedSince, m_showStatusBits);
+    reallo = check_for_signed_int(check_Status_Strip_Status(static_cast<uint64_t>(pReal->numReallocatedBetween)), 8);
+    set_json_int_Check_Status(pageInfo, "Reallocated sectors between FARM time series Frame", pReal->numReallocatedBetween, false, m_showStatusBits);
+    reallo = check_for_signed_int(check_Status_Strip_Status(pReal->numCandidateSince), 8);
+    set_json_int_Check_Status(pageInfo, "Reallocation candidate since the last FARM Time series Frame", pReal->numCandidateSince, false, m_showStatusBits);
+    reallo = check_for_signed_int(check_Status_Strip_Status(static_cast<uint64_t>(pReal->numCandidateBetween)), 8);
+    set_json_int_Check_Status(pageInfo, "Reallocation candidate between FARM time series Frame", pReal->numCandidateBetween, false, m_showStatusBits);
 
     json_push_back(LUNNReallocation, pageInfo);
     
@@ -3356,9 +3617,11 @@ void CSCSI_Farm_Log::print_All_Pages(JSONNODE *masterData)
                 case eSASLogPageTypes::MR_HEAD_RESISTANCE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD:
                     print_Head_Information(vFarmFrame.at(index).vFramesFound.at(pramCode), headPage, index);
                     break;
-                case eSASLogPageTypes::RESERVED_FOR_FUTURE_HEAD_11:
-                case eSASLogPageTypes::RESERVED_FOR_FUTURE_HEAD_12:
-                case eSASLogPageTypes::RESERVED_FOR_FUTURE_HEAD_13:
+                case eSASLogPageTypes::NUMBER_OF_TMD_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD:
+                case eSASLogPageTypes::VELOCITY_OBSERVER_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD:
+                case eSASLogPageTypes::NUMBER_OF_VELOCITY_OBSERVER_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD:
+                    print_Head_Information(vFarmFrame.at(index).vFramesFound.at(pramCode), headPage, index);
+                    break;
                 case eSASLogPageTypes::RESERVED_FOR_FUTURE_HEAD_14:
                     break;
                 case eSASLogPageTypes::CURRENT_H2SAT_AMPLITUDE_BY_HEAD_AVERAGED_ACROSS_TEST_ZONES:
@@ -3531,8 +3794,12 @@ void CSCSI_Farm_Log::print_All_Pages(JSONNODE *masterData)
                 case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_123:
                 case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_124:
                 case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_125:
-                case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_126:
-                case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_127:
+                case eSASLogPageTypes::UNIQUE_UNRECOVERABLES_SINCE:
+                    print_Head_Information(vFarmFrame.at(index).vFramesFound.at(pramCode), headPage, index);
+                    break;
+                case eSASLogPageTypes::UNIQUE_UNRECOVERALBES_BETWEEN:
+                    print_Head_Information(vFarmFrame.at(index).vFramesFound.at(pramCode), headPage, index);
+                    break;
                 case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_128:
                 case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_129:
                 case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_130:
