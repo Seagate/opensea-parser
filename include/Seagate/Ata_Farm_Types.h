@@ -148,6 +148,7 @@ typedef struct _sErrorStat
         totalMechanicalFails(0), totalReallocatedCanidates(0), totalASREvents(0), totalCRCErrors(0), attrSpinRetryCount(0),
         normalSpinRetryCount(0), worstSpinRretryCount(0), attrIOEDCErrors(0), attrCTOCount(0), overfiveSecCTO(0),
         oversevenSecCTO(0), totalFlashLED(0), indexFlashLED(0), uncorrectables(0), reserved1(0),
+#if defined __cplusplus && __cplusplus >= 201103L
         flashLEDArray{0}, readWriteRetry{ 0 }, reserved2{ 0 }, reserved3{ 0 }, timestampForLED{ 0 }, powerCycleOfLED{ 0 },
 #endif
         cumLifeTimeECCReadDueErrorRecovery(0),
