@@ -401,7 +401,10 @@ namespace opensea_parser {
         uint64_t            pohFirst;                                    //!< Power - on Hours of the most recent FARM Time series frame save
         uint64_t            pohSecond;                                   //!< Power - on Hours of the second most recent FARM Time series frame save
 
-        _sGeneralDriveInformationpage06() : pageNumber(0), copyNumber(0), Depop(0), productID{ 0 },
+        _sGeneralDriveInformationpage06() : pageNumber(0), copyNumber(0), Depop(0),
+#if defined __cplusplus && __cplusplus >= 201103L
+            productID{ 0 },
+#endif
             driveType(0), isDepopped(0), maxNumAvaliableSectors(0), timeToReady(0),
             holdTime(0), servoSpinUpTime(0), writeProtect(0), regenHeadMask(0), pohFirst(0), pohSecond(0) {};
     }sGeneralDriveInfoPage06;
@@ -446,7 +449,9 @@ namespace opensea_parser {
         sLogParams          pageHeader;                                  //!<  header page parameters
         uint64_t            headValue[MAX_HEAD_COUNT];                   //!< head information
         
+#if defined __cplusplus && __cplusplus >= 201103L
         _sHeadInformation() : headValue{ 0 } {};
+#endif
            
     }sHeadInformation;
 
@@ -504,8 +509,11 @@ namespace opensea_parser {
         uint64_t            timestampForLED[8];                         //!< Universal Timestamp (us) of last 8 Flash LED (assert) Events, wrapping array 
         uint64_t            powerCycleOfLED[8];                        //<! Power Cycle of the last 8 Flash LED (assert) Events, wrapping array 
 
-        _sActuatorFLEDInfo() : pageNumber(0), copyNumber(0), actID(0), totalFLEDEvents(0), index(0),
-            flashLEDArray{ 0 }, timestampForLED{ 0 }, powerCycleOfLED{ 0 }  {};
+        _sActuatorFLEDInfo() : pageNumber(0), copyNumber(0), actID(0), totalFLEDEvents(0), index(0)
+#if defined __cplusplus && __cplusplus >= 201103L
+            ,flashLEDArray{ 0 }, timestampForLED{ 0 }, powerCycleOfLED{ 0 }
+#endif 
+        {};
     }sActuatorFLEDInfo;
 
     typedef struct _sActuatorReallocationData
@@ -522,9 +530,11 @@ namespace opensea_parser {
         uint64_t            numCandidateSince;                          //!< 180 - 187 Number of reallocation candidate sectors since the last FARM Time series Frame save
         int64_t             numCandidateBetween;                        //!< 188 - 195 Number of reallocation candidate sectors between FARM time series Frame N and N - 1
 
-        _sActuatorReallocationData() : pageNumber(0), copyNumber(0), actID(0), numberReallocatedSectors(0), numberReallocatedCandidates(0),
-            reallocatedCauses{ 0 }, numReallocatedSince(0), numReallocatedBetween(0), numCandidateSince(0), numCandidateBetween(0) {};
-
+        _sActuatorReallocationData() : pageNumber(0), copyNumber(0), actID(0), numberReallocatedSectors(0), numberReallocatedCandidates(0)
+#if defined __cplusplus && __cplusplus >= 201103L
+            , reallocatedCauses{ 0 }
+#endif 
+       , numReallocatedSince(0), numReallocatedBetween(0), numCandidateSince(0), numCandidateBetween(0) {};
     }sActReallocationData;
 #pragma pack(pop)
     typedef struct _sScsiFarmFrame
