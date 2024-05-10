@@ -227,10 +227,6 @@ eReturnValues CLog::read_In_Buffer()
     {
         logFile.read(pData, static_cast<std::streamsize>(m_size));
         logFile.close();
-        //if (pData != NULL)
-        //{
-        //    v_Buff.insert(v_Buff.end(), &pData[0], &pData[m_size]);
-        //}
     }
     else
     {
@@ -277,7 +273,6 @@ void CLog::read_In_Log()
     }
     //set the size of the buffer
     m_bufferData = static_cast<char*>(calloc(m_size, sizeof(char)));
-    //v_Buff = std::vector<uint8_t>(m_size);
 
     // now we need to read in the buffer 
     if (m_size != 0 && m_logStatus != eReturnValues::FILE_OPEN_ERROR)
