@@ -324,6 +324,7 @@ CAtaDeviceStatisticsLogs::CAtaDeviceStatisticsLogs(const std::string &fileName, 
 			{
 				m_status = eReturnValues::BAD_PARAMETER;
 			}
+            delete[] pData;
 		}
 		else
 		{
