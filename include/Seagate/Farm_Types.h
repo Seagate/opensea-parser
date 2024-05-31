@@ -55,6 +55,8 @@
 #define FARM_DRAM_COPY_FARME                    0x0D  //sata only
 #define FARM_DRAM_COPY_DIAG_FRAME               0x0E  
 #define FARM_UDS_COPY_FRAME                     0x0F
+#define FARM_NEURAL_NETWORK                     0x10
+#define FARM_AFTER_REGEN                        0x11
 #define FARM_EMPTY_FRAME                        0xff
 
 // SAS log page information

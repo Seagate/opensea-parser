@@ -475,6 +475,12 @@ void CFarmCommon::Get_FARM_Reason_For_Capture(std::string* reason, uint8_t flag)
 	case FARM_UDS_COPY_FRAME:
 		*reason = "FARM log via UDS";
 		break;
+	case FARM_NEURAL_NETWORK:
+		*reason = "FARM Neural Network Data";
+		break;
+	case FARM_AFTER_REGEN:
+		*reason = "FARM saved after a successful Regen";
+		break;
 	case FARM_EMPTY_FRAME:
 		*reason = "Empty FARM Log";
 		break;

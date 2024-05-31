@@ -311,7 +311,7 @@ namespace opensea_parser {
         }
         else
         {
-            if ((M_IGETBITRANGE(statusValue, 63, 56) == 0) && check_For_Active_Status(&value) == true)
+            if ((M_IGETBITRANGE(statusValue, 63, 59) == 0) && check_For_Active_Status(&value) == true)
             {
                 json_push_back(nowNode, json_new_i(myStr.c_str(), static_cast<json_int_t>(statusValue)));
             }
@@ -323,7 +323,7 @@ namespace opensea_parser {
 				}
 				else
 				{
-					// if the value is greater then a unsigned 48 bit number print it as a string
+					// if the value is greater then a unsigned 56 bit number print it as a string
 					temp << std::dec << statusValue;
 					json_push_back(nowNode, json_new_a(myStr.c_str(), temp.str().c_str()));
 				}
@@ -358,13 +358,13 @@ namespace opensea_parser {
         }
         else
         {
-            if (M_IGETBITRANGE(value,63,48) == 0)
+            if (M_IGETBITRANGE(value,63,59) == 0)
             {
                 json_push_back(nowNode, json_new_i(myStr.c_str(), static_cast<json_int_t>(value)));
             }
             else
             {
-                // if the vale is greater then a unsigned 32 bit number print it as a string
+                // if the vale is greater then a unsigned 59 bit number print it as a string
                 temp << std::dec << value;
                 json_push_back(nowNode, json_new_a(myStr.c_str(), temp.str().c_str()));
             }
