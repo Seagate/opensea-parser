@@ -490,7 +490,12 @@ eReturnValues CATA_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint3
         json_push_back(pageInfo, json_new_a("Year of Assembled", "00"));
         json_push_back(pageInfo, json_new_a("Week of Assembled", "00"));
     }
-    set_json_64_bit_With_Status(pageInfo, "Depopulation Head Mask", vFarmFrame.at(page).driveInfo.depopulationHeadMask, false, m_showStatusBits);              //!< Depopulation Head Mask
+
+    // customer wanted to see data in hex
+    temp.str(""); temp.clear();
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(8) << M_DoubleWord0(opensea_parser::check_Status_Strip_Status(vFarmFrame.at(page).driveInfo.depopulationHeadMask));
+    set_json_string_With_Status(pageInfo, "Depopulation Head Mask", temp.str().c_str(), vFarmFrame.at(page).driveInfo.depopulationHeadMask, m_showStatusBits);
+
 
     //version 4.21
 
