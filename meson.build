@@ -25,6 +25,19 @@ cxx_flags = ['-Wall', '-Wextra', '-Werror=old-style-cast', '-Wshadow', '-Wmaybe-
 cxx_flags += ['-pic', '-std=c++11', '-I.']
 
 
+if cc.get_id().contains('gcc')
+  if cc.version().version_compare('<5.0')
+    if cc.has_argument('-std=gnu++11')
+      # Add this argument to the list since C++11 is a minimum required C++ compiler standard
+      add_project_arguments('-std=gnu++11', language: 'cpp')
+    else
+      error('C++11/GNU++11 standard is required but was not able to be set!')
+    endif
+  endif
+endif
+
+
+
 lib_src_files = files(
    opensea_src_dir+ 'Opensea_Parser_Helper.cpp', opensea_src_dir + 'CLog.cpp' , opensea_src_dir + 'CAta_Ext_DST_Log.cpp', opensea_src_dir + 'CAta_Device_Stat_Log.cpp', opensea_src_dir + 'CAta_Ext_Comprehensive_Log.cpp' , opensea_src_dir + 'CAta_Identify_Log.cpp', opensea_src_dir + 'CAta_Power_Condition_Log.cpp' , 
 
