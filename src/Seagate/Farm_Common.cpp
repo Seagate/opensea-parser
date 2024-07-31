@@ -428,7 +428,7 @@ void CFarmCommon::Get_FARM_Reason_For_Capture(std::string* reason, uint8_t flag)
 	switch (flag)
 	{
 	case CURRENT_FRAME:
-		*reason = "current FARM log";
+		*reason = "DRAM Copy";
 		break;
 	case TIME_SERIES_FRAME:
 		*reason = "time series frame";
@@ -542,21 +542,24 @@ void CFarmCommon::floatHeadData(JSONNODE* Node, const std::string& title, uint64
 void CFarmCommon::float_NODE_Data(JSONNODE* Node, const std::string& title, uint64_t* value, uint64_t heads, bool showStatusBits)
 {
 	std::ostringstream temp;
+	double number = 0.0;
 	for (uint32_t loopCount = 0; loopCount < heads; ++loopCount)
 	{
 		temp.str(""); temp.clear();
-		temp << title.c_str() << " by Head " << std::dec << loopCount;                    // write out the title plus the Head count
+		temp << title.c_str() << " by Head " << std::dec << loopCount;                  // write out the title plus the Head count
 		uint64_t dsHead = check_Status_Strip_Status(value[loopCount]);
-		int16_t whole = M_WordInt2(dsHead);							                      // get 5:4 whole part of the float
-		double decimal = static_cast<double>(M_DoubleWordInt0(dsHead));                   // get 3:0 for the Deciaml Part of the float
-		double number = 0.0;
-		if (whole >= 0)
+		uint8_t negCheck = M_Byte6(value[loopCount]);									// get 6 or checking for negitive number
+		int16_t whole = M_WordInt2(dsHead);							                    // get 5:4 whole part of the float
+		double decimal = static_cast<double>(M_DoubleWord0(dsHead));					// get 3:0 for the Deciaml Part of the float
+		number = 0.0;
+		// check bit 1 of Byte 6 for negitive number
+		if (negCheck & BIT1)
 		{
-			number = static_cast<double>(whole) + (decimal * .0001);
+			number = static_cast<double>(whole) - (decimal * .0001);
 		}
 		else
 		{
-			number = static_cast<double>(whole) - (decimal * .0001);
+			number = static_cast<double>(whole) + (decimal * .0001);
 		}
 		set_json_float_With_Status(Node, temp.str().c_str(), number, value[loopCount], showStatusBits);
 	}
@@ -582,22 +585,26 @@ void CFarmCommon::float_NODE_Data(JSONNODE* Node, const std::string& title, uint
 //---------------------------------------------------------------------------
 void CFarmCommon::float_Array_Data(JSONNODE* Node, const std::string& title, uint64_t* value, uint64_t heads, bool showStatusBits)
 {
+	double number = 0.0;
 	JSONNODE* header = json_new(JSON_ARRAY);
 	json_set_name(header, title.c_str());
 	for (uint32_t loopCount = 0; loopCount < heads; ++loopCount)
 	{
 		uint64_t dsHead = check_Status_Strip_Status(value[loopCount]);
-		int16_t whole = M_WordInt2(dsHead);							                      // get 5:4 whole part of the float
-		double decimal = static_cast<double>(M_DoubleWordInt0(dsHead));                   // get 3:0 for the Deciaml Part of the float
-		double number = 0.0;
-		if (whole >= 0)
-		{
-			number = static_cast<double>(whole) + (decimal * .0001);
-		}
-		else
+		uint8_t negCheck = M_Byte6(value[loopCount]);										// get 6 or checking for negitive number
+		int16_t whole = M_WordInt2(dsHead);													// get 5:4 whole part of the float
+		double decimal = static_cast<double>(M_DoubleWord0(dsHead));						// get 3:0 for the Deciaml Part of the float
+		number = 0.0;						
+		// check bit 1 of Byte 6 for negitive number
+		if (negCheck & BIT1)
 		{
 			number = static_cast<double>(whole) - (decimal * .0001);
 		}
+		else
+		{
+			number = static_cast<double>(whole) + (decimal * .0001);
+		}
+
 		set_json_float_With_Status(header, title, number, value[loopCount], showStatusBits);
 	}
 	json_push_back(Node, header);
@@ -873,40 +880,51 @@ void CFarmCommon::sflyHeight_Float_Data(JSONNODE* Node, const std::string& title
 void CFarmCommon::sflyHeight_Float_Node_Data(JSONNODE* Node, const std::string& title, sflyHeight* value, int track, uint64_t heads, bool showStatusBits)
 {
 	std::ostringstream temp;
+	uint8_t negCheck = 0;												// check byte 6 bit 1 for negitive value
+	uint64_t dsHead = 0;
+	int16_t whole = 0;													// get 5:4 whole part of the float
+	double decimal = 0.0;												// get 3:0 for the Deciaml Part of the float
+	double number = 0.0;
 	for (uint32_t loopCount = 0; loopCount < heads; ++loopCount)
 	{
 		temp.str(""); temp.clear();
 		temp << title.c_str() << " by Head " << std::dec << loopCount;                    // write out the title plus the Head count
-		uint64_t dsHead = 0;
-		int16_t whole = 0;							                      // get 5:4 whole part of the float
-		double decimal = 0.0;                   // get 3:0 for the Deciaml Part of the float
-		double number = 0.0;
+		negCheck = 0;													// check byte 6 bit 1 for negitive value
+		dsHead = 0;
+		whole = 0;														// get 5:4 whole part of the float
+		decimal = 0.0;													// get 3:0 for the Deciaml Part of the float
+		number = 0.0;
 
 		switch (track)
 		{
 		case INNER:
 			dsHead = check_Status_Strip_Status(value[loopCount].inner);
+			negCheck = M_Byte6(value[loopCount].inner);
 			whole = M_WordInt2(dsHead);
-			decimal = static_cast<double>(M_DoubleWordInt0(dsHead));
+			decimal = static_cast<double>(M_DoubleWord0(dsHead));
 			break;
 		case OUTER:
 			dsHead = check_Status_Strip_Status(value[loopCount].outer);
+			negCheck = M_Byte6(value[loopCount].outer);
 			whole = M_WordInt2(dsHead);
-			decimal = static_cast<double>(M_DoubleWordInt0(dsHead));
+			decimal = static_cast<double>(M_DoubleWord0(dsHead));
 			break;
 		case MIDDLE:
 			dsHead = check_Status_Strip_Status(value[loopCount].middle);
+			negCheck = M_Byte6(value[loopCount].middle);
 			whole = M_WordInt2(dsHead);
-			decimal = static_cast<double>(M_DoubleWordInt0(dsHead));
+			decimal = static_cast<double>(M_DoubleWord0(dsHead));
 			break;
 		}
-		if (whole >= 0)
+
+		// if bit 1 is set number should be negitive
+		if (negCheck & BIT1 || whole <= 0)
 		{
-			number = static_cast<double>(whole) + (decimal * .0001);
+			number = static_cast<double>(whole) - (decimal * .0001);
 		}
 		else
 		{
-			number = static_cast<double>(whole) - (decimal * .0001);
+			number = static_cast<double>(whole) + (decimal * .0001);
 		}
 		switch (track)
 		{
@@ -947,39 +965,51 @@ void CFarmCommon::sflyHeight_Float_Array_Data(JSONNODE* Node, const std::string&
 {
 	JSONNODE* valueNode = json_new(JSON_ARRAY);
 	json_set_name(valueNode, title.c_str());
+	uint8_t negCheck = 0;												// check byte 6 bit 1 for negitive value
+	uint64_t dsHead = 0;
+	int16_t whole = 0;													// get 5:4 whole part of the float
+	double decimal = 0.0;												// get 3:0 for the Deciaml Part of the float
+	double number = 0.0;
 	for (uint32_t loopCount = 0; loopCount < heads; ++loopCount)
 	{
-		uint64_t dsHead = 0;
-		int16_t whole = 0;							                      // get 5:4 whole part of the float
-		double decimal = 0.0;                   // get 3:0 for the Deciaml Part of the float
-		double number = 0.0;
+		negCheck = 0;
+		dsHead = 0;
+		whole = 0;													// get 5:4 whole part of the float
+		decimal = 0.0;												// get 3:0 for the Deciaml Part of the float
+		number = 0.0;
 
 		switch (track)
 		{
 		case INNER:
 			dsHead = check_Status_Strip_Status(value[loopCount].inner);
+			negCheck = M_Byte6(value[loopCount].inner);
 			whole = M_WordInt2(dsHead);
-			decimal = static_cast<double>(M_DoubleWordInt0(dsHead));
+			decimal = static_cast<double>(M_DoubleWord0(dsHead));
 			break;
 		case OUTER:
 			dsHead = check_Status_Strip_Status(value[loopCount].outer);
+			negCheck = M_Byte6(value[loopCount].outer);
 			whole = M_WordInt2(dsHead);
-			decimal = static_cast<double>(M_DoubleWordInt0(dsHead));
+			decimal = static_cast<double>(M_DoubleWord0(dsHead));
 			break;
 		case MIDDLE:
 			dsHead = check_Status_Strip_Status(value[loopCount].middle);
+			negCheck = M_Byte6(value[loopCount].middle);
 			whole = M_WordInt2(dsHead);
-			decimal = static_cast<double>(M_DoubleWordInt0(dsHead));
+			decimal = static_cast<double>(M_DoubleWord0(dsHead));
 			break;
 		}
-		if (whole >= 0)
-		{
-			number = static_cast<double>(whole) + (decimal * .0001);
-		}
-		else
+
+		// check bit 1 to see if the number should be negitive
+		if (negCheck & BIT1 || whole <= 0)
 		{
 			number = static_cast<double>(whole) - (decimal * .0001);
 		}
+		else
+		{
+			number = static_cast<double>(whole) + (decimal * .0001);
+		}
+
 		switch (track)
 		{
 		case INNER:
@@ -1405,40 +1435,61 @@ void CFarmCommon::h2sat_Float_Dword_Data(JSONNODE* Node, const std::string& titl
 void CFarmCommon::h2sat_Float_Dword_Node_Data(JSONNODE* Node, const std::string& title, H2SAT* value, int track, uint64_t heads, bool showStatusBits)
 {
 	std::ostringstream myStr;
+	uint64_t dsHead = 0;
+	uint8_t negCheck = 0;										// get 6 byte to check for negitive number
+	int16_t whole = 0;							                // get 5:4 whole part of the float
+	double decimal = 0.0;										// get 3:0 for the Deciaml Part of the float
+	double number = 0.0;
 	for (uint32_t loopCount = 0; loopCount < heads; ++loopCount)
 	{
-		myStr.str(""); myStr.clear();
-		myStr << title.c_str() << " by Head " << std::dec << loopCount;                    // write out the title plus the Head count
-		uint64_t dsHead = 0;
-		int16_t whole = 0;							                      // get 5:4 whole part of the float
-		double decimal = 0.0;                   // get 3:0 for the Deciaml Part of the float
-		double number = 0.0;
+		
+		dsHead = 0;
+		negCheck = 0;
+		whole = 0;							                    // get 5:4 whole part of the float
+		decimal = 0.0;											// get 3:0 for the Deciaml Part of the float
+		number = 0.0;
 
 		switch (track)
 		{
 		case ZONE0:
 			dsHead = check_Status_Strip_Status(value[loopCount].zone0);
+			negCheck = M_Byte6(value[loopCount].zone0);
 			whole = M_WordInt2(dsHead);
-			decimal = static_cast<double>(M_DoubleWordInt0(dsHead));
+			decimal = static_cast<double>(M_DoubleWord0(dsHead));
 			break;
 		case ZONE1:
 			dsHead = check_Status_Strip_Status(value[loopCount].zone1);
+			negCheck = M_Byte6(value[loopCount].zone1);
 			whole = M_WordInt2(dsHead);
-			decimal = static_cast<double>(M_DoubleWordInt0(dsHead));
+			decimal = static_cast<double>(M_DoubleWord0(dsHead));
 			break;
 		case ZONE2:
 			dsHead = check_Status_Strip_Status(value[loopCount].zone2);
+			negCheck = M_Byte6(value[loopCount].zone2);
 			whole = M_WordInt2(dsHead);
-			decimal = static_cast<double>(M_DoubleWordInt0(dsHead));
+			decimal = static_cast<double>(M_DoubleWord0(dsHead));
 			break;
 		}
-		if (whole >= 0)
+
+		// check to see if byte6 bit 1 is set. If set then set number to a negitive number
+		if (negCheck & BIT1 || whole <= 0)
 		{
-			number = static_cast<double>(whole) + (decimal * .0001);
+			number = static_cast<double>(whole) - (decimal * .0001);
 		}
 		else
 		{
-			number = static_cast<double>(whole) - (decimal * .0001);
+			number = static_cast<double>(whole) + (decimal * .0001);
+		}
+		// check if byte6 bit 0 is set then the data is a percentage
+		if (negCheck & BIT0)
+		{
+			myStr.str(""); myStr.clear();
+			myStr << title.c_str() << " percentage" << " by Head " << std::dec << loopCount;                    // write out the title plus the Head count
+		}
+		else
+		{
+			myStr.str(""); myStr.clear();
+			myStr << title.c_str() << " by Head " << std::dec << loopCount;                    // write out the title plus the Head count
 		}
 		switch (track)
 		{
@@ -1476,41 +1527,85 @@ void CFarmCommon::h2sat_Float_Dword_Node_Data(JSONNODE* Node, const std::string&
 //---------------------------------------------------------------------------
 void CFarmCommon::h2sat_Float_Dword_Array_Data(JSONNODE* Node, const std::string& title, H2SAT* value, int track, uint64_t heads, bool showStatusBits)
 {
+	std::ostringstream myStr;
+	uint8_t negCheck = 0;										// get 6 byte to check for negitive number
+	uint64_t dsHead = 0;
+	int16_t whole = 0;							                // get 5:4 whole part of the float
+	double decimal = 0.0;										// get 3:0 for the Deciaml Part of the float
+	double number = 0.0;
+	switch (track)
+	{
+	case ZONE0:
+		negCheck = M_Byte6(value->zone0);
+		break;
+	case ZONE1:
+		negCheck = M_Byte6(value->zone1);
+		break;
+	case ZONE2:
+		negCheck = M_Byte6(value->zone2);
+		break;
+	default:
+		negCheck = M_Byte6(value->zone0);
+		break;
+	}
 	JSONNODE* valueNode = json_new(JSON_ARRAY);
+	if (negCheck & BIT0)
+	{
+		myStr.str(""); myStr.clear();
+		myStr << title.c_str() << " percentage" ;                    
+	}
+	else
+	{
+		myStr.str(""); myStr.clear();
+		myStr << title.c_str();                   
+	}
 	json_set_name(valueNode, title.c_str());
 	for (uint32_t loopCount = 0; loopCount < heads; ++loopCount)
 	{
-		uint64_t dsHead = 0;
-		int16_t whole = 0;							                      // get 5:4 whole part of the float
-		double decimal = 0.0;                   // get 3:0 for the Deciaml Part of the float
-		double number = 0.0;
+		negCheck = 0;
+		dsHead = 0;
+		whole = 0;							                     
+		decimal = 0.0;                  
+		number = 0.0;
 
 		switch (track)
 		{
 		case ZONE0:
 			dsHead = check_Status_Strip_Status(value[loopCount].zone0);
+			negCheck = M_Byte6(value[loopCount].zone0);
 			whole = M_WordInt2(dsHead);
-			decimal = static_cast<double>(M_DoubleWordInt0(dsHead));
+			decimal = static_cast<double>(M_DoubleWord0(dsHead));
 			break;
 		case ZONE1:
 			dsHead = check_Status_Strip_Status(value[loopCount].zone1);
+			negCheck = M_Byte6(value[loopCount].zone1);
 			whole = M_WordInt2(dsHead);
-			decimal = static_cast<double>(M_DoubleWordInt0(dsHead));
+			decimal = static_cast<double>(M_DoubleWord0(dsHead));
 			break;
 		case ZONE2:
 			dsHead = check_Status_Strip_Status(value[loopCount].zone2);
+			negCheck = M_Byte6(value[loopCount].zone1);
 			whole = M_WordInt2(dsHead);
-			decimal = static_cast<double>(M_DoubleWordInt0(dsHead));
+			decimal = static_cast<double>(M_DoubleWord0(dsHead));
+			break;
+		default:
+			dsHead = check_Status_Strip_Status(value[loopCount].zone0);
+			negCheck = M_Byte6(value[loopCount].zone0);
+			whole = M_WordInt2(dsHead);
+			decimal = static_cast<double>(M_DoubleWord0(dsHead));
 			break;
 		}
-		if (whole >= 0)
-		{
-			number = static_cast<double>(whole) + (decimal * .0001);
-		}
-		else
+
+		// Check byte 6 bit 1 to see if the value should be negitivbe
+		if (negCheck & BIT1 || whole <= 0)
 		{
 			number = static_cast<double>(whole) - (decimal * .0001);
 		}
+		else
+		{
+			number = static_cast<double>(whole) + (decimal * .0001);
+		}
+
 		switch (track)
 		{
 		case ZONE0:
@@ -1925,22 +2020,28 @@ void CFarmCommon::int_Percent_Dword_Node_Data(JSONNODE* Node, const std::string&
 {
 	std::ostringstream myStr;
 	int16_t whole = 0;
+	int64_t delta = 0;
+	uint8_t negCheck = 0;								// check bit 1 of 6, if set then value is negitive
+	double decimal = 0.0;								// get 3:0 for the Deciaml Part of the float
+	double number = 0.0;
 	for (uint32_t loopCount = 0; loopCount < heads; ++loopCount)
 	{
 		myStr.str(""); myStr.clear();
 		myStr << title.c_str() << " for Head " << std::dec << loopCount;                    // write out the title plus the Head count
-		int64_t delta = M_IGETBITRANGE((opensea_parser::check_Status_Strip_Status(param[loopCount])), 48, 0);
-		whole = M_WordInt2(delta);							                      // get 5:4 whole part of the float
-		double decimal = static_cast<double>(M_DoubleWordInt0(delta));                   // get 3:0 for the Deciaml Part of the float
-		double number = 0.0;
-		if (whole >= 0 && ((param[loopCount] & BIT49) != BIT49))
-		{
-			number = static_cast<double>(whole) + (decimal * .0001);
-		}
-		else
+		delta = M_IGETBITRANGE((opensea_parser::check_Status_Strip_Status(param[loopCount])), 47, 0);
+		negCheck = M_Byte6(param[loopCount]);									// check bit 1 of 6, if set then value is negitive
+		whole = M_WordInt2(delta);												// get 5:4 whole part of the float
+		decimal = static_cast<double>(M_DoubleWord0(delta));					// get 3:0 for the Deciaml Part of the float
+		// check byte6 bit 1 for the number to be negitive
+		if (negCheck & BIT1 || whole <= 0)
 		{
 			number = static_cast<double>(whole) - (decimal * .0001);
 		}
+		else
+		{
+			number = static_cast<double>(whole) + (decimal * .0001);
+		}
+
 		std::ostringstream value;
 		if ((param[loopCount] & BIT63) == BIT63 && (param[loopCount] & BIT62) == BIT62)
 		{
@@ -1977,20 +2078,26 @@ void CFarmCommon::int_Percent_Dword_Array_Data(JSONNODE* Node, const std::string
 	JSONNODE* cal = json_new(JSON_ARRAY);
 	json_set_name(cal, title.c_str());
 	int16_t whole = 0;
+	int64_t delta = 0;
+	uint8_t negCheck = 0;								// check bit 1 of 6, if set then value is negitive
+	double decimal = 0.0;								// get 3:0 for the Deciaml Part of the float
+	double number = 0.0;
 	for (uint32_t loopCount = 0; loopCount < heads; ++loopCount)
 	{
-		int64_t delta = M_IGETBITRANGE((check_Status_Strip_Status(param[loopCount])), 48, 0);
-		whole = M_WordInt2(delta);							                      // get 5:4 whole part of the float
-		double decimal = static_cast<double>(M_DoubleWordInt0(delta));                   // get 3:0 for the Deciaml Part of the float
-		double number = 0.0;
-		if (whole >= 0 && (param[loopCount] & BIT49) != BIT49)
-		{
-			number = static_cast<double>(whole) + (decimal * .0001);
-		}
-		else
+		delta = M_IGETBITRANGE((check_Status_Strip_Status(param[loopCount])), 47, 0);
+		negCheck = M_Byte6(param[loopCount]);								// check bit 1 of 6, if set then value is negitive
+		whole = M_WordInt2(delta);											// get 5:4 whole part of the float
+		decimal = static_cast<double>(M_DoubleWord0(delta));				// get 3:0 for the Deciaml Part of the float
+		// check byte 6 bit 1 for a negitive number
+		if (negCheck & BIT1 || whole <= 0)
 		{
 			number = static_cast<double>(whole) - (decimal * .0001);
 		}
+		else
+		{
+			number = static_cast<double>(whole) + (decimal * .0001);
+		}
+
 		std::ostringstream value;
 		if ((param[loopCount] & BIT63) == BIT63 && (param[loopCount] & BIT62) == BIT62)
 		{
@@ -2456,26 +2563,27 @@ void CFarmCommon::sas_Head_Double_Float_Data(JSONNODE* Node, const std::string& 
 void CFarmCommon::sas_Head_Double_Float_Node_Data(JSONNODE* Node, const std::string& title, uint64_t* value, uint64_t heads, bool showStatusBits)
 {
 	std::ostringstream temp;
+	uint64_t dsHead = 0;
+	uint8_t negCheck = 0;					// check bit 1 of 6, if set then value is negitive
+	int16_t whole = 0;						// get 5:4 whole part of the float
+	double decimal = 0.0;                   // get 3:0 for the Deciaml Part of the float
+	double number = 0.0;
 	for (uint32_t loopCount = 0; loopCount < heads; ++loopCount)
 	{
 		temp.str(""); temp.clear();
 		temp << title.c_str() << " by Head " << std::dec << loopCount;                    // write out the title plus the Head count
-		uint64_t dsHead = 0;
-		int16_t whole = 0;						// get 5:4 whole part of the float
-		double decimal = 0.0;                   // get 3:0 for the Deciaml Part of the float
-		double number = 0.0;
 
 		dsHead = check_Status_Strip_Status(value[loopCount]);
+		negCheck = M_Byte6(dsHead);
 		whole = M_WordInt2(dsHead);
-		decimal = static_cast<double>(M_DoubleWordInt0(dsHead));
-
-		if (whole >= 0)
+		decimal = static_cast<double>(M_DoubleWord0(dsHead));
+		if (negCheck & BIT1 || whole <= 0)
 		{
-			number = static_cast<double>(whole) + (decimal * .0001);
+			number = static_cast<double>(whole) - (decimal * .0001);
 		}
 		else
 		{
-			number = static_cast<double>(whole) - (decimal * .0001);
+			number = static_cast<double>(whole) + (decimal * .0001);
 		}
 		set_json_float_With_Status(Node, temp.str().c_str(), number, value[loopCount], showStatusBits);
 	}
@@ -2503,24 +2611,26 @@ void CFarmCommon::sas_Head_Double_Float_Array_Data(JSONNODE* Node, const std::st
 {
 	JSONNODE* valueNode = json_new(JSON_ARRAY);
 	json_set_name(valueNode, title.c_str());
+	uint64_t dsHead = 0;
+	uint8_t negCheck = 0;					// check bit 1 of 6, if set then value is negitive
+	int16_t whole = 0;						// get 5:4 whole part of the float
+	double decimal = 0.0;                   // get 3:0 for the Deciaml Part of the float
+	double number = 0.0;
 	for (uint32_t loopCount = 0; loopCount < heads; ++loopCount)
 	{
-		uint64_t dsHead = 0;
-		int16_t whole = 0;						// get 5:4 whole part of the float
-		double decimal = 0.0;                   // get 3:0 for the Deciaml Part of the float
-		double number = 0.0;
 		dsHead = check_Status_Strip_Status(value[loopCount]);
+		negCheck = M_Byte6(dsHead);
 		whole = M_WordInt2(dsHead);
-		decimal = static_cast<double>(M_DoubleWordInt0(dsHead));
-
-		if (whole >= 0)
-		{
-			number = static_cast<double>(whole) + (decimal * .0001);
-		}
-		else
+		decimal = static_cast<double>(M_DoubleWord0(dsHead));
+		if (negCheck & BIT1 || whole <= 0)
 		{
 			number = static_cast<double>(whole) - (decimal * .0001);
 		}
+		else
+		{
+			number = static_cast<double>(whole) + (decimal * .0001);
+		}
+
 		set_json_float_With_Status(valueNode, title, number, value[loopCount], showStatusBits);
 	}
 	json_push_back(Node, valueNode);
