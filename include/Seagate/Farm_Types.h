@@ -111,7 +111,9 @@ typedef struct _sFarmHeader
     uint64_t        headsSupported;                             //!< Maximum Drive Heads Supported
     uint64_t        reserved;                                   //!< Reserved
     uint64_t        reasonForFrameCapture;                      //!< Reason for Frame Capture (added 4.14)
-    _sFarmHeader() : signature(0), majorRev(0), minorRev(0), pagesSupported(0), logSize(0), pageSize(0), headsSupported(0), reserved(0), reasonForFrameCapture(0) {};
+    uint64_t        historicalFrames;                           //!< Number of Historical frames (added 4.43)
+    _sFarmHeader() : signature(0), majorRev(0), minorRev(0), pagesSupported(0), logSize(0), pageSize(0), headsSupported(0), reserved(0), 
+        reasonForFrameCapture(0), historicalFrames(0) {};
 }sFarmHeader;
 
 typedef struct _sWorkLoadStat
