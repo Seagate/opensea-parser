@@ -2920,24 +2920,24 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSON
         case eSASLogPageTypes::RESERVED_FOR_FUTURE_HEAD_10:
             break;
         case eSASLogPageTypes::MR_HEAD_RESISTANCE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD:
-            if (vFarmFrame.at(page).mrHeadResistanceByHead.headValue[0] & BIT49)
+            if (vFarmFrame.at(page).mrHeadResistanceByHead.headValue[0] & BIT48)
             {
                 if (g_verbosity >= eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE)
                 {
-                    // version 4.34 MR Head Resistance became a percentage. Check bit 49 if set then it is a percentage
+                    // version 4.34 MR Head Resistance became a percentage. Check bit 48 if set then it is a percentage
                     for (loopCount = 0; loopCount < m_heads; ++loopCount)
                     {
-                        int64_t delta = M_IGETBITRANGE((check_Status_Strip_Status(vFarmFrame.at(page).mrHeadResistanceByHead.headValue[loopCount])), 48, 0);
+                        int64_t delta = M_IGETBITRANGE((check_Status_Strip_Status(vFarmFrame.at(page).mrHeadResistanceByHead.headValue[loopCount])), 47, 0);
                         whole = M_WordInt2(delta);							                             // get 5:4 whole part of the float
                         double decimal = static_cast<double>(M_DoubleWordInt0(delta));                   // get 3:0 for the Deciaml Part of the float
                         double number = 0.0;
-                        if (whole >= 0 && ((vFarmFrame.at(page).mrHeadResistanceByHead.headValue[loopCount] & BIT49) != BIT49))
+                        if ((vFarmFrame.at(page).mrHeadResistanceByHead.headValue[loopCount] & BIT49) && (whole <= 0))
                         {
-                            number = static_cast<double>(whole) + (decimal * static_cast<double>(.0001F));
+                            number = static_cast<double>(whole) - (decimal * static_cast<double>(.0001F));
                         }
                         else
                         {
-                            number = static_cast<double>(whole) - (decimal * static_cast<double>(.0001F));
+                            number = static_cast<double>(whole) + (decimal * static_cast<double>(.0001F));
                         }
                         printf("\tMR Head Resistance percentage for Head %2" PRIu32":                    %.4lf \n", loopCount, number);       //!< [24] MR Head Resistance from most recent SMART Summary Frame by Head9,10
                     }
@@ -3148,14 +3148,42 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSON
         case eSASLogPageTypes::RESERVED_FOR_FUTURE_HEAD_37:
             break;
         case eSASLogPageTypes::SECOND_MR_HEAD_RESISTANCE:
-            if (g_verbosity >= eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE)
+            if (vFarmFrame.at(page).mrHeadResistanceByHead.headValue[0] & BIT48)
             {
-                for (loopCount = 0; loopCount < m_heads; ++loopCount)
+                if (g_verbosity >= eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE)
                 {
-                    printf("\tSecond MR Head Resistance for Head %2" PRIu32":                         %" PRIu64" \n", loopCount, vFarmFrame.at(page).secondMRHeadResistanceByHead.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));       //!< [24] MR Head Resistance from most recent SMART Summary Frame by Head9,10
+                    // version 4.34 MR Head Resistance became a percentage. Check bit 48 if set then it is a percentage
+                    for (loopCount = 0; loopCount < m_heads; ++loopCount)
+                    {
+                        int64_t delta = M_IGETBITRANGE((check_Status_Strip_Status(vFarmFrame.at(page).secondMRHeadResistanceByHead.headValue[loopCount])), 47, 0);
+                        whole = M_WordInt2(delta);							                             // get 5:4 whole part of the float
+                        double decimal = static_cast<double>(M_DoubleWordInt0(delta));                   // get 3:0 for the Deciaml Part of the float
+                        double number = 0.0;
+                        // check bit 49 and whole being less then 0
+                        if ((vFarmFrame.at(page).secondMRHeadResistanceByHead.headValue[loopCount] & BIT49) || (whole <= 0))
+                        {
+                            number = static_cast<double>(whole) - (decimal * static_cast<double>(.0001F));
+                        }
+                        else
+                        {
+                            number = static_cast<double>(whole) + (decimal * static_cast<double>(.0001F));
+                        }
+                        printf("\tSecond MR Head Resistance percentage for Head %2" PRIu32":                    %.4lf \n", loopCount, number);       //!< [24] MR Head Resistance from most recent SMART Summary Frame by Head9,10
+                    }
                 }
+                int_Percent_Dword_Data(headPage, "Second MR Head Resistance Percentage", reinterpret_cast<int64_t*>(vFarmFrame.at(page).secondMRHeadResistanceByHead.headValue), m_heads, m_showStatusBits, m_showStatic);
             }
-            int_Data(headPage, "Second MR Head Resistance", reinterpret_cast<int64_t*>(vFarmFrame.at(page).secondMRHeadResistanceByHead.headValue), m_heads, m_showStatusBits, m_showStatic);
+            else
+            {
+                if (g_verbosity >= eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE)
+                {
+                    for (loopCount = 0; loopCount < m_heads; ++loopCount)
+                    {
+                        printf("\tSecond MR Head Resistance for Head %2" PRIu32":                         %" PRIu64" \n", loopCount, vFarmFrame.at(page).secondMRHeadResistanceByHead.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));       //!< [24] MR Head Resistance from most recent SMART Summary Frame by Head9,10
+                    }
+                }
+                int_Data(headPage, "Second MR Head Resistance", reinterpret_cast<int64_t*>(vFarmFrame.at(page).secondMRHeadResistanceByHead.headValue), m_heads, m_showStatusBits, m_showStatic);
+            }
             break;
         case eSASLogPageTypes::LUN_0_ACTUATOR:
         case eSASLogPageTypes::LUN_0_FLASH_LED:
