@@ -553,7 +553,7 @@ void CFarmCommon::float_NODE_Data(JSONNODE* Node, const std::string& title, uint
 		double decimal = static_cast<double>(M_DoubleWord0(dsHead));					// get 3:0 for the Deciaml Part of the float
 		number = 0.0;
 		// check bit 1 of Byte 6 for negitive number
-		if (negCheck & BIT1)
+		if ((negCheck & BIT1) || (whole <= 0))
 		{
 			number = static_cast<double>(whole) - (decimal * .0001);
 		}
@@ -596,7 +596,7 @@ void CFarmCommon::float_Array_Data(JSONNODE* Node, const std::string& title, uin
 		double decimal = static_cast<double>(M_DoubleWord0(dsHead));						// get 3:0 for the Deciaml Part of the float
 		number = 0.0;						
 		// check bit 1 of Byte 6 for negitive number
-		if (negCheck & BIT1)
+		if ((negCheck & BIT1) || (whole <= 0))
 		{
 			number = static_cast<double>(whole) - (decimal * .0001);
 		}
@@ -889,10 +889,6 @@ void CFarmCommon::sflyHeight_Float_Node_Data(JSONNODE* Node, const std::string& 
 	{
 		temp.str(""); temp.clear();
 		temp << title.c_str() << " by Head " << std::dec << loopCount;                    // write out the title plus the Head count
-		negCheck = 0;													// check byte 6 bit 1 for negitive value
-		dsHead = 0;
-		whole = 0;														// get 5:4 whole part of the float
-		decimal = 0.0;													// get 3:0 for the Deciaml Part of the float
 		number = 0.0;
 
 		switch (track)
@@ -918,7 +914,7 @@ void CFarmCommon::sflyHeight_Float_Node_Data(JSONNODE* Node, const std::string& 
 		}
 
 		// if bit 1 is set number should be negitive
-		if (negCheck & BIT1 || whole <= 0)
+		if ((negCheck & BIT1) || (whole <= 0))
 		{
 			number = static_cast<double>(whole) - (decimal * .0001);
 		}
@@ -972,10 +968,6 @@ void CFarmCommon::sflyHeight_Float_Array_Data(JSONNODE* Node, const std::string&
 	double number = 0.0;
 	for (uint32_t loopCount = 0; loopCount < heads; ++loopCount)
 	{
-		negCheck = 0;
-		dsHead = 0;
-		whole = 0;													// get 5:4 whole part of the float
-		decimal = 0.0;												// get 3:0 for the Deciaml Part of the float
 		number = 0.0;
 
 		switch (track)
@@ -1001,7 +993,7 @@ void CFarmCommon::sflyHeight_Float_Array_Data(JSONNODE* Node, const std::string&
 		}
 
 		// check bit 1 to see if the number should be negitive
-		if (negCheck & BIT1 || whole <= 0)
+		if ((negCheck & BIT1) || (whole <= 0))
 		{
 			number = static_cast<double>(whole) - (decimal * .0001);
 		}
@@ -1442,13 +1434,7 @@ void CFarmCommon::h2sat_Float_Dword_Node_Data(JSONNODE* Node, const std::string&
 	double number = 0.0;
 	for (uint32_t loopCount = 0; loopCount < heads; ++loopCount)
 	{
-		
-		dsHead = 0;
-		negCheck = 0;
-		whole = 0;							                    // get 5:4 whole part of the float
-		decimal = 0.0;											// get 3:0 for the Deciaml Part of the float
 		number = 0.0;
-
 		switch (track)
 		{
 		case ZONE0:
@@ -1472,7 +1458,7 @@ void CFarmCommon::h2sat_Float_Dword_Node_Data(JSONNODE* Node, const std::string&
 		}
 
 		// check to see if byte6 bit 1 is set. If set then set number to a negitive number
-		if (negCheck & BIT1 || whole <= 0)
+		if ((negCheck & BIT1) || (whole <= 0))
 		{
 			number = static_cast<double>(whole) - (decimal * .0001);
 		}
@@ -1597,7 +1583,7 @@ void CFarmCommon::h2sat_Float_Dword_Array_Data(JSONNODE* Node, const std::string
 		}
 
 		// Check byte 6 bit 1 to see if the value should be negitivbe
-		if (negCheck & BIT1 || whole <= 0)
+		if ((negCheck & BIT1) || (whole <= 0))
 		{
 			number = static_cast<double>(whole) - (decimal * .0001);
 		}
@@ -2033,7 +2019,7 @@ void CFarmCommon::int_Percent_Dword_Node_Data(JSONNODE* Node, const std::string&
 		whole = M_WordInt2(delta);												// get 5:4 whole part of the float
 		decimal = static_cast<double>(M_DoubleWord0(delta));					// get 3:0 for the Deciaml Part of the float
 		// check byte6 bit 1 for the number to be negitive
-		if (negCheck & BIT1 || whole <= 0)
+		if ((negCheck & BIT1) || (whole <= 0))
 		{
 			number = static_cast<double>(whole) - (decimal * .0001);
 		}
@@ -2089,7 +2075,7 @@ void CFarmCommon::int_Percent_Dword_Array_Data(JSONNODE* Node, const std::string
 		whole = M_WordInt2(delta);											// get 5:4 whole part of the float
 		decimal = static_cast<double>(M_DoubleWord0(delta));				// get 3:0 for the Deciaml Part of the float
 		// check byte 6 bit 1 for a negitive number
-		if (negCheck & BIT1 || whole <= 0)
+		if ((negCheck & BIT1) || (whole <= 0))
 		{
 			number = static_cast<double>(whole) - (decimal * .0001);
 		}
@@ -2577,7 +2563,7 @@ void CFarmCommon::sas_Head_Double_Float_Node_Data(JSONNODE* Node, const std::str
 		negCheck = M_Byte6(dsHead);
 		whole = M_WordInt2(dsHead);
 		decimal = static_cast<double>(M_DoubleWord0(dsHead));
-		if (negCheck & BIT1 || whole <= 0)
+		if ((negCheck & BIT1) || (whole <= 0))
 		{
 			number = static_cast<double>(whole) - (decimal * .0001);
 		}
@@ -2622,7 +2608,7 @@ void CFarmCommon::sas_Head_Double_Float_Array_Data(JSONNODE* Node, const std::st
 		negCheck = M_Byte6(dsHead);
 		whole = M_WordInt2(dsHead);
 		decimal = static_cast<double>(M_DoubleWord0(dsHead));
-		if (negCheck & BIT1 || whole <= 0)
+		if ((negCheck & BIT1) || (whole <= 0))
 		{
 			number = static_cast<double>(whole) - (decimal * .0001);
 		}
