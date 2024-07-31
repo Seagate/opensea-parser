@@ -1304,7 +1304,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
         {
             printf("\tSkip Write Detect Threshold Exceeded by Head %2" PRIu32":              %" PRIu64" \n", loopCount, vFarmFrame.at(page).reliPage.skipWriteDetectThresExceeded[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));  //!< [24] Skip Write Detect Threshold Exceeded Count by Head7
         }
-        if (vFarmFrame.at(page).reliPage.MRHeadResistance[0] & BIT49)
+        if (vFarmFrame.at(page).reliPage.MRHeadResistance[0] & BIT48)
         {
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
@@ -1316,17 +1316,17 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
             // version 4.34 MR Head Resistance became a percentage. Check bit 49 if set then it is a percentage
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
-                int64_t delta = M_IGETBITRANGE((check_Status_Strip_Status(vFarmFrame.at(page).reliPage.MRHeadResistance[loopCount])), 48, 0);
+                int64_t delta = M_IGETBITRANGE((check_Status_Strip_Status(vFarmFrame.at(page).reliPage.MRHeadResistance[loopCount])), 47, 0);
                 whole = M_WordInt2(delta);							                             // get 5:4 whole part of the float
                 double decimal = static_cast<double>(M_DoubleWordInt0(delta));                   // get 3:0 for the Deciaml Part of the float
                 double number = 0.0;
-                if (whole >= 0 && ((vFarmFrame.at(page).reliPage.MRHeadResistance[loopCount] & BIT49) != BIT49))
+                if ((vFarmFrame.at(page).reliPage.MRHeadResistance[loopCount] & BIT49) || (whole <= 0))
                 {
                     number = static_cast<double>(whole) + (decimal * static_cast<double>(.0001F));
                 }
                 else
                 {
-                    number = static_cast<double>(whole) - (decimal * static_cast<double>(.0001F));
+                    number = (static_cast<double>(whole) + (decimal * static_cast<double>(.0001F)) * -1);
                 }
                 printf("\tMR Head Resistance percentage for Head %2" PRIu32":                    %.4lf \n", loopCount, number);       //!< [24] MR Head Resistance from most recent SMART Summary Frame by Head9,10
             }
@@ -1415,10 +1415,34 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
         {
             printf("\tWrite POS On (hrs) by Head %2" PRIu32":                                %0.04lf \n", loopCount, static_cast<double>(M_DoubleWord0(vFarmFrame.at(page).reliPage.writePOH[loopCount])) /3600.0);             //!< [24] write POS in sec value from most recent SMART Frame by head
         }
-        for (loopCount = 0; loopCount < m_heads; ++loopCount)
+        if (vFarmFrame.at(page).reliPage.MRHeadResistance[0] & BIT48)
         {
-            printf("\tSecond MR Head Resistance by Head %2" PRIu32":                         %" PRIi64" \n", loopCount, vFarmFrame.at(page).reliPage.secondMRHeadResistance[loopCount] & INT64_C(0x00FFFFFFFFFFFFFF));
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
+                printf("\tSecond MR Head Resistance by Head %2" PRIu32":                         %" PRIi64" \n", loopCount, vFarmFrame.at(page).reliPage.secondMRHeadResistance[loopCount] & INT64_C(0x00FFFFFFFFFFFFFF));
+            }
         }
+        else
+        {
+            // version 4.34 MR Head Resistance became a percentage. Check bit 49 if set then it is a percentage
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
+                int64_t delta = M_IGETBITRANGE((check_Status_Strip_Status(vFarmFrame.at(page).reliPage.secondMRHeadResistance[loopCount])), 47, 0);
+                whole = M_WordInt2(delta);							                             // get 5:4 whole part of the float
+                double decimal = static_cast<double>(M_DoubleWordInt0(delta));                   // get 3:0 for the Deciaml Part of the float
+                double number = 0.0;
+                if ((vFarmFrame.at(page).reliPage.secondMRHeadResistance[loopCount] & BIT49) || (whole <= 0))
+                {
+                    number = static_cast<double>(whole) + (decimal * static_cast<double>(.0001F));
+                }
+                else
+                {
+                    number = (static_cast<double>(whole) + (decimal * static_cast<double>(.0001F)) * -1);
+                }
+                printf("\tSecond MR Head Resistance percentage for Head %2" PRIu32":                    %.4lf \n", loopCount, number);       //!< [24] MR Head Resistance from most recent SMART Summary Frame by Head9,10
+            }
+        }
+
         for (loopCount = 0; loopCount < m_heads; ++loopCount)
         {
             printf("\tLifetime Terabytes Written per Head %2" PRIu32":                       %" PRIi64" \n", loopCount, vFarmFrame.at(page).reliPage.lifetimeWrites[loopCount] & INT64_C(0x00FFFFFFFFFFFFFF));
@@ -1440,8 +1464,8 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
     int_Data(headInfo, "RVGA Skip Write Detect", vFarmFrame.at(page).reliPage.RVGASkipWriteDetect, m_heads, m_showStatusBits, m_showStatic);
     int_Data(headInfo, "FVGA Skip Write Detect", vFarmFrame.at(page).reliPage.FVGASkipWriteDetect, m_heads, m_showStatusBits, m_showStatic);
     int_Data(headInfo, "Skip Write Detect Threshold Exceeded", vFarmFrame.at(page).reliPage.skipWriteDetectThresExceeded, m_heads, m_showStatusBits, m_showStatic);
-    // version 4.34 MR Head Resistance became a percentage. Check bit 49 if set then it is a percentage
-    if (vFarmFrame.at(page).reliPage.MRHeadResistance[0] & BIT49)
+    // version 4.34 MR Head Resistance became a percentage. Check bit 48 if set then it is a percentage
+    if (vFarmFrame.at(page).reliPage.MRHeadResistance[0] & BIT48)
     {
         int_Data(headInfo, "MR Head Resistance", vFarmFrame.at(page).reliPage.MRHeadResistance, m_heads, m_showStatusBits);
     }
@@ -1469,7 +1493,14 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
     int_Data(headInfo, "DOS needs to scans count", vFarmFrame.at(page).reliPage.needDOS, m_heads, m_showStatusBits, m_showStatic);
     int_Data(headInfo, "DOS write Fault scans", vFarmFrame.at(page).reliPage.writeDOSFault, m_heads, m_showStatusBits, m_showStatic);
     float_Cal_DoubleWord_Data(headInfo, "Write Power On (hrs)", 3600, vFarmFrame.at(page).reliPage.writePOH, m_heads, m_showStatusBits, m_showStatic);
-	int_Data(headInfo, "Second MR Head Resistance", vFarmFrame.at(page).reliPage.secondMRHeadResistance, m_heads, m_showStatusBits, m_showStatic);
+    if (vFarmFrame.at(page).reliPage.secondMRHeadResistance[0] & BIT48)
+    {
+        int_Data(headInfo, "Second MR Head Resistance", vFarmFrame.at(page).reliPage.secondMRHeadResistance, m_heads, m_showStatusBits, m_showStatic);
+    }
+    else
+    {
+        int_Percent_Dword_Data(headInfo, "Second MR Head Resistance Percentage", vFarmFrame.at(page).reliPage.secondMRHeadResistance, m_heads, m_showStatusBits, m_showStatic);
+    }
     uint_Data(headInfo, "Lifetime Terabytes Written", vFarmFrame.at(page).reliPage.lifetimeWrites, m_heads, m_showStatusBits, m_showStatic);
     int_Dword_Data(headInfo, "Get Physical Element Status", vFarmFrame.at(page).driveInfo.gpes, m_heads, m_showStatusBits, m_showStatic);
 
