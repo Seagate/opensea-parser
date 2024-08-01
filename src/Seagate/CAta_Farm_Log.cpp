@@ -1326,7 +1326,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
                 }
                 else
                 {
-                    number = (static_cast<double>(whole) + (decimal * static_cast<double>(.0001F)) * -1);
+                    number = static_cast<double>(whole) + (decimal * static_cast<double>(.0001F));
                 }
                 printf("\tMR Head Resistance percentage for Head %2" PRIu32":                    %.4lf \n", loopCount, number);       //!< [24] MR Head Resistance from most recent SMART Summary Frame by Head9,10
             }
@@ -1437,7 +1437,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
                 }
                 else
                 {
-                    number = (static_cast<double>(whole) + (decimal * static_cast<double>(.0001F)) * -1);
+                    number = static_cast<double>(whole) + (decimal * static_cast<double>(.0001F));
                 }
                 printf("\tSecond MR Head Resistance percentage for Head %2" PRIu32":                    %.4lf \n", loopCount, number);       //!< [24] MR Head Resistance from most recent SMART Summary Frame by Head9,10
             }
