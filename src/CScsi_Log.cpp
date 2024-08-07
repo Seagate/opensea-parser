@@ -154,9 +154,9 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 
 		lpStruct = reinterpret_cast<sLogPageStruct *>(bufferData);				// set a buffer to the point to the log page info
 		byte_Swap_16(&lpStruct->pageLength);
-		if (IsScsiLogPage(lpStruct->pageLength , M_GETBITRANGE(lpStruct->pageCode, 5, 0)) == true)
+		if (IsScsiLogPage(lpStruct->pageLength, get_bit_range_int8(lpStruct->pageCode, 5, 0)) == true)
 		{
-			switch (static_cast<eLogPageNames>(M_GETBITRANGE(lpStruct->pageCode, 5, 0)))
+			switch (static_cast<eLogPageNames>(get_bit_range_int8(lpStruct->pageCode, 5, 0)))
 			{
 			case eLogPageNames::SUPPORTED_LOG_PAGES:
 			{

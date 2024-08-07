@@ -252,7 +252,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>opensea-common.lib</AdditionalDependencies>
+      <AdditionalDependencies>opensea-common.lib;</AdditionalDependencies>
     </Lib>
     <Lib>
       <AdditionalLibraryDirectories>..\..\..\..\..\opensea-common\Make\VS.2019\opensea-common\$(Platform)\$(Configuration);..\..\..\..\..\opensea-operations\Make\VS.2019\opensea-operations\$(Platform)\$(Configuration)\LIB</AdditionalLibraryDirectories>
@@ -277,7 +277,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>opensea-common.lib</AdditionalDependencies>
+      <AdditionalDependencies>opensea-common.lib;</AdditionalDependencies>
     </Lib>
     <Lib>
       <AdditionalLibraryDirectories>..\..\..\..\..\opensea-common\Make\VS.2019\opensea-common\$(Platform)\$(Configuration);..\..\..\..\..\opensea-operations\Make\VS.2019\opensea-operations\$(Platform)\$(Configuration)\LIB</AdditionalLibraryDirectories>
@@ -302,7 +302,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>opensea-common.lib</AdditionalDependencies>
+      <AdditionalDependencies>opensea-common.lib;</AdditionalDependencies>
     </Lib>
     <Lib>
       <AdditionalLibraryDirectories>..\..\..\..\..\opensea-common\Make\VS.2019\opensea-common\$(Platform)\$(Configuration);..\..\..\..\..\opensea-operations\Make\VS.2019\opensea-operations\$(Platform)\$(Configuration)\LIB</AdditionalLibraryDirectories>
@@ -327,7 +327,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>opensea-common.lib</AdditionalDependencies>
+      <AdditionalDependencies>opensea-common.lib;</AdditionalDependencies>
     </Lib>
     <Lib>
       <AdditionalLibraryDirectories>..\..\..\..\..\opensea-common\Make\VS.2019\opensea-common\$(Platform)\$(Configuration);..\..\..\..\..\opensea-operations\Make\VS.2019\opensea-operations\$(Platform)\$(Configuration)\LIB</AdditionalLibraryDirectories>
@@ -350,7 +350,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>opensea-common.lib</AdditionalDependencies>
+      <AdditionalDependencies>opensea-common.lib;</AdditionalDependencies>
     </Lib>
     <Lib>
       <AdditionalLibraryDirectories>..\..\..\..\..\opensea-common\Make\VS.2019\opensea-common\$(Platform)\$(Configuration)</AdditionalLibraryDirectories>
@@ -371,7 +371,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>opensea-common.lib</AdditionalDependencies>
+      <AdditionalDependencies>opensea-common.lib;</AdditionalDependencies>
     </Lib>
     <Lib>
       <AdditionalLibraryDirectories>..\..\..\..\..\opensea-common\Make\VS.2019\opensea-common\$(Platform)\$(Configuration);..\..\..\..\..\opensea-operations\Make\VS.2019\opensea-operations\$(Platform)\$(Configuration)\LIB</AdditionalLibraryDirectories>
@@ -395,7 +395,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>opensea-common.lib</AdditionalDependencies>
+      <AdditionalDependencies>opensea-common.lib;</AdditionalDependencies>
     </Lib>
     <Lib>
       <AdditionalLibraryDirectories>..\..\..\..\..\opensea-common\Make\VS.2019\opensea-common\$(Platform)\$(Configuration);..\..\..\..\..\opensea-operations\Make\VS.2019\opensea-operations\$(Platform)\$(Configuration)\LIB</AdditionalLibraryDirectories>
@@ -419,7 +419,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>opensea-common.lib</AdditionalDependencies>
+      <AdditionalDependencies>opensea-common.lib;</AdditionalDependencies>
     </Lib>
     <Lib>
       <AdditionalLibraryDirectories>..\..\..\..\..\opensea-common\Make\VS.2019\opensea-common\$(Platform)\$(Configuration);..\..\..\..\..\opensea-operations\Make\VS.2019\opensea-operations\$(Platform)\$(Configuration)\LIB</AdditionalLibraryDirectories>
@@ -444,7 +444,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>opensea-common.lib</AdditionalDependencies>
+      <AdditionalDependencies>opensea-common.lib;</AdditionalDependencies>
     </Lib>
     <Lib>
       <AdditionalLibraryDirectories>..\..\..\..\..\opensea-common\Make\VS.2019\opensea-common\$(Platform)\$(Configuration);..\..\..\..\..\opensea-operations\Make\VS.2019\opensea-operations\$(Platform)\$(Configuration)\LIB</AdditionalLibraryDirectories>
@@ -469,7 +469,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>opensea-common.lib</AdditionalDependencies>
+      <AdditionalDependencies>opensea-common.lib;</AdditionalDependencies>
     </Lib>
     <Lib>
       <AdditionalLibraryDirectories>..\..\..\..\..\opensea-common\Make\VS.2019\opensea-common\$(Platform)\$(Configuration);..\..\..\..\..\opensea-operations\Make\VS.2019\opensea-operations\$(Platform)\$(Configuration)\LIB</AdditionalLibraryDirectories>
@@ -493,7 +493,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>opensea-common.lib</AdditionalDependencies>
+      <AdditionalDependencies>opensea-common.lib;</AdditionalDependencies>
     </Lib>
     <Lib>
       <AdditionalLibraryDirectories>..\..\..\..\..\opensea-common\Make\VS.2019\opensea-common\$(Platform)\$(Configuration);..\..\..\..\..\opensea-operations\Make\VS.2019\opensea-operations\$(Platform)\$(Configuration)\LIB</AdditionalLibraryDirectories>
@@ -520,7 +520,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>opensea-common.lib</AdditionalDependencies>
+      <AdditionalDependencies>opensea-common.lib;</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\..\..\opensea-common\Make\VS.2019\opensea-common\$(Platform)\$(Configuration);..\..\..\..\..\opensea-operations\Make\VS.2019\opensea-operations\$(Platform)\$(Configuration)\LIB</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>

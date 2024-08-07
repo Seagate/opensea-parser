@@ -14,7 +14,8 @@
 // \file CAta_Power_Conditions_Log.h
 // \brief Defines the function calls and structures for pulling Seagate logs
 #pragma once
-#include "common.h"
+#include "common_types.h"
+#include "bit_manip.h"
 #include "CLog.h"
 #include "libjson.h"
 

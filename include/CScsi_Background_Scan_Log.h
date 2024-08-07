@@ -13,7 +13,8 @@
 // \file CScsi_Background_Scan_Log.h  Definition of Background Scan Log Page
 #pragma once
 #include <string>
-#include "common.h"
+#include "common_types.h"
+#include "bit_manip.h"
 #include "libjson.h"
 #include <vector>
 #include "Opensea_Parser_Helper.h"

@@ -13,7 +13,7 @@
 // \file CScsi_Solid_State_Drive_Log.h  Definition of Solid State Drive Log
 #pragma once
 #include <string>
-#include "common.h"
+#include "common_types.h"
 #include "libjson.h"
 #include "Opensea_Parser_Helper.h"
 

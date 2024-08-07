@@ -470,7 +470,7 @@ eReturnValues CAta_Identify_log::parse_Device_Info()
     }
     else
     {
-        m_sDriveInfo.sTrans.transportType = M_GETBITRANGE(identWordPtr[222], 15, 12);
+        m_sDriveInfo.sTrans.transportType = get_8bit_range_uint16(identWordPtr[222], 15, 12);
         m_sDriveInfo.sTrans.transportCounter = 0;
         m_sDriveInfo.sTrans.transportBits = static_cast<uint16_t>(identWordPtr[222] & UINT16_C(0x0FFF));
         for (m_sDriveInfo.sTrans.transportCounter = 0; m_sDriveInfo.sTrans.transportCounter < 11; m_sDriveInfo.sTrans.transportCounter++)

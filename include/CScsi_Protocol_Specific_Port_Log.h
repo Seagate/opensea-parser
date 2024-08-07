@@ -13,7 +13,7 @@
 // \file CScsi_Protocol_Specific_Port_Log.h   Definition of Protocol-Specific Port log page for SAS
 #pragma once
 #include <string>
-#include "common.h"
+#include "common_types.h"
 #include "libjson.h"
 #include "Opensea_Parser_Helper.h"
 

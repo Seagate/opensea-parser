@@ -16,7 +16,9 @@
 
 #pragma once
 #include <string>
-#include "common.h"
+#include "common_types.h"
+#include "bit_manip.h"
+#include "memory_safety.h"
 #include <cstddef>
 #include <iostream>
 #include <fstream>

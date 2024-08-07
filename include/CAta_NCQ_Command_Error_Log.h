@@ -14,7 +14,8 @@
 // \brief
 #pragma once
 #include <vector>
-#include "common.h"
+#include "common_types.h"
+#include "bit_manip.h"
 #include "CLog.h"
 #include "libjson.h"
 #include "Opensea_Parser_Helper.h"

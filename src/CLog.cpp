@@ -129,7 +129,7 @@ CLog::CLog(const uint8_t * pBuf, size_t logSize)
 CLog::~CLog()
 {
     if (m_bufferData != NULL) {
-        safe_Free(m_bufferData);
+        safe_Free(C_CAST(void**,m_bufferData));
     }
 }
 //-----------------------------------------------------------------------------
@@ -154,7 +154,7 @@ void CLog::get_CLog()
     if (fb.is_open())
     {
         fb.seekg(0, std::ios::end);
-        m_size = static_cast<size_t>(fb.tellg());
+        m_size = C_CAST(size_t,fb.tellg());
         fb.seekg(0, std::ios::beg);			//set back to beginning of the file now that we know the size
         fb.close();
     }
@@ -162,7 +162,7 @@ void CLog::get_CLog()
     {
         m_logStatus = eReturnValues::FILE_OPEN_ERROR;
     }
-    m_bufferData = static_cast<char*>(calloc(m_size, sizeof(char)));
+    m_bufferData = C_CAST(char*, calloc(m_size, sizeof(char)));
 
     if (m_size != 0 && m_logStatus != eReturnValues::FILE_OPEN_ERROR)
     {
@@ -189,7 +189,7 @@ void CLog::get_CLog(const uint8_t * pBuf, size_t logSize)
 
 	if (pBuf != NULL)
 	{
-		m_bufferData = static_cast<char*>(calloc(logSize, sizeof(char)));
+		m_bufferData = C_CAST(char*, calloc(logSize, sizeof(char)));
 		if (m_bufferData)
 		{
 #ifndef __STDC_SECURE_LIB__ 
@@ -263,7 +263,7 @@ void CLog::read_In_Log()
     if (fb.is_open())
     {
         fb.seekg(0, std::ios::end);
-        m_size = static_cast<size_t>(fb.tellg());
+        m_size = C_CAST(size_t, fb.tellg());
         fb.seekg(0, std::ios::beg);			//set back to beginning of the file now that we know the size
         fb.close();
     }
@@ -272,7 +272,7 @@ void CLog::read_In_Log()
         m_logStatus = eReturnValues::FILE_OPEN_ERROR;
     }
     //set the size of the buffer
-    m_bufferData = static_cast<char*>(calloc(m_size, sizeof(char)));
+    m_bufferData = C_CAST(char*, calloc(m_size, sizeof(char)));
 
     // now we need to read in the buffer 
     if (m_size != 0 && m_logStatus != eReturnValues::FILE_OPEN_ERROR)
@@ -297,7 +297,7 @@ void CLog::read_In_Log()
 
         }
         if (m_bufferData != NULL) {
-            safe_Free(m_bufferData);
+            safe_Free(C_CAST(void**,m_bufferData));
         }
     }
 

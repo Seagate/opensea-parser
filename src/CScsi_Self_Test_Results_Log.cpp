@@ -198,7 +198,7 @@ void CScsi_DST_Results::print_Self_Test_Log(JSONNODE *dstNode, uint16_t run)
 	else
 	{
 		std::string myStr;
-		get_Self_Test_Results_String(myStr, M_GETBITRANGE(m_DST->stCode, 3, 0));
+		get_Self_Test_Results_String(myStr, get_bit_range_uint8(m_DST->stCode, 3, 0));
 		json_push_back(runInfo, json_new_a("Self Test Results Meaning", myStr.c_str()));
 	}
 	json_push_back(runInfo, json_new_i("Self Test Number", static_cast<uint32_t>(m_DST->stNumber)));

@@ -167,7 +167,7 @@ bool CAta_NCQ_Command_Error_Log::get_Bit_Name_Info(JSONNODE *NCQInfo , sNCQError
 {
     bool validNCQ = true;
     bool idleCmd = false;
-    uint8_t ncqTag = M_GETBITRANGE(ncqError->NCQbit, 4, 0);
+    uint8_t ncqTag = get_bit_range_uint8(ncqError->NCQbit, 4, 0);
     if (ncqError->NCQbit & BIT7)  // if bit7 is set then it is NOT valid ncq command
     {
         validNCQ = false;

@@ -643,14 +643,14 @@ void CScsiProtocolPortLog::process_Descriptor_Information(JSONNODE *descData)
     temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Descriptor->attached);
 	json_push_back(descData, json_new_a("Attached Device Type and Reason", temp.str().c_str()));
     temp.str("");temp.clear();
-	get_Device_Type_Field(&myStr,M_GETBITRANGE(m_Descriptor->attached, 6, 4));
+	get_Device_Type_Field(&myStr, get_bit_range_uint8(m_Descriptor->attached, 6, 4));
 	json_push_back(descData, json_new_a("Attached Device Type Meaning", myStr.c_str()));
-	get_Reason_Field(&myStr, M_GETBITRANGE(m_Descriptor->attached, 3, 0));
+	get_Reason_Field(&myStr, get_bit_range_uint8(m_Descriptor->attached, 3, 0));
 	json_push_back(descData, json_new_a("Attached Reason Meaning", myStr.c_str()));
     temp.str("");temp.clear();
     temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Descriptor->reason);
 	json_push_back(descData, json_new_a("Attached Rate", temp.str().c_str()));
-	get_Negotiated_Logical_Link_Rate(&myStr, M_GETBITRANGE(m_Descriptor->reason, 3, 0));
+	get_Negotiated_Logical_Link_Rate(&myStr, get_bit_range_uint8(m_Descriptor->reason, 3, 0));
 	json_push_back(descData, json_new_a("Attached Rate Meaning", myStr.c_str()));
     temp.str("");temp.clear();
     temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_Descriptor->initiatorPort);

@@ -14,7 +14,9 @@
 // \file CAta_Identify_log.h
 // \brief Defines the function calls and structures for pulling Seagate logs
 
-#include "common.h"
+#include "common_types.h"
+#include "bit_manip.h"
+#include "unit_conversion.h"
 #include "CLog.h"
 #include "libjson.h"
 #include <string>

@@ -16,7 +16,8 @@
 
 #include <vector>
 
-#include "common.h"
+#include "common_types.h"
+#include "bit_manip.h"
 #include "libjson.h"
 #include "CLog.h"
 

@@ -15,7 +15,8 @@
 #pragma once
 
 #include <inttypes.h>
-#include "common.h"
+#include "common_types.h"
+#include "bit_manip.h"
 #include "libjson.h"
 #include "Opensea_Parser_Helper.h"
 #include <sstream>

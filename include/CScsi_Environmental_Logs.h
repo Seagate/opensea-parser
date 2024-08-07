@@ -14,7 +14,7 @@
 // \file CScsi_Environmental_Logs.h  Definition of the Temperature Classes 
 #pragma once
 #include <string>
-#include "common.h"
+#include "common_types.h"
 #include "libjson.h"
 #include "CScsi_Temperature_Log.h"
 

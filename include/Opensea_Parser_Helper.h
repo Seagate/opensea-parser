@@ -26,7 +26,9 @@
 
 #include <inttypes.h>
 #include <time.h>
-#include "common.h"
+#include "common_types.h"
+#include "bit_manip.h"
+#include "math_utils.h"
 #include "libjson.h"
 #include <limits.h>
 
