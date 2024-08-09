@@ -391,8 +391,8 @@ namespace opensea_parser {
         uint64_t            Depop;                                       //!< Depopulation Head Mask
         uint64_t            productID[4];                                //!< Model Number [3 0]   Product ID
         uint64_t            driveType;                                   //!< Drive Recording Type
-        uint64_t            isDepopped;                                  //!< Is drive currently depopped – 1 = depopped, 0 = not depopped
-        uint64_t            maxNumAvaliableSectors;                      //!< Max Number of Available Sectors for Reassignment – Value in disc sectors	
+        uint64_t            isDepopped;                                  //!< Is drive currently depopped - 1 = depopped, 0 = not depopped
+        uint64_t            maxNumAvaliableSectors;                      //!< Max Number of Available Sectors for Reassignment - Value in disc sectors	
         uint64_t            timeToReady;                                 //!< Time to Ready of the last power cycle in milliseconds 
         uint64_t            holdTime;                                    //!< Time the drive is held in staggered spin in milliseconds
         uint64_t            servoSpinUpTime;                             //!< The last servo spin up time in milliseconds
