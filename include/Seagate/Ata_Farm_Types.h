@@ -58,7 +58,7 @@ typedef struct _sDriveInfo
     uint64_t        driveRecordingType;                         //!< 0 for SMR and 1 for CMR (started support in 2.15 )
     uint64_t        depopped;                                   //!< has the drive been depopped  - 1 = depopped and 0 = not depopped(started support in 2.15 )
     uint64_t        maxNumberForReasign;                        //!< Max Number of Available Sectors for Reassignment - Value in disc sectors(started in 3.3 )
-    uint64_t        dateOfAssembly;                             //!< Date of Assembly in ASCII “YYWW” where YY is the year and WW is the calendar week(started in 4.2)
+    uint64_t        dateOfAssembly;                             //!< Date of Assembly in ASCII "YYWW" where YY is the year and WW is the week(started in 4.2)
     uint64_t        depopulationHeadMask;                       //!< Depopulation Head Mask(started in 4.7)
     uint64_t        headFlightHoursAct1;                        //!< Head Flight Hours, Actuator1
     uint64_t        headLoadEventsAct1;                         //!< Head Load Events, Actuator 1

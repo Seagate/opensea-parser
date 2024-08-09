@@ -238,7 +238,7 @@ namespace opensea_parser {
         uint64_t            timeAvailable;                              //!< Time Available to Save User Data to Media Over Last Power Cycle (in 100us)
         uint64_t            firstTimeStamp;                             //!< Timestamp of first SMART Summary Frame in Power-On Hours Milliseconds
         uint64_t            lastTimeStamp;                              //!< Timestamp of latest SMART Summary Frame in Power-On Hours Milliseconds
-        uint64_t            dateOfAssembly;                             //!< Date of Assembly in ASCII “YYWW” where YY is the year and WW is the calendar week
+        uint64_t            dateOfAssembly;                             //!< Date of Assembly in ASCII "YYWW" where YY is the year and WW is the week
         _sScsiDriveInfo() :pageNumber(0), copyNumber(0), serialNumber(0), serialNumber2(0), worldWideName(0), 
             worldWideName2(0), deviceInterface(0), deviceCapacity(0),  psecSize(0), lsecSize(0), deviceBufferSize(0),
             heads(0), factor(0), rotationRate(0), firmware(0), firmwareRev(0), reserved(0), reserved1(0), reserved2(0), 
