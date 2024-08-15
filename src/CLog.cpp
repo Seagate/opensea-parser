@@ -129,7 +129,7 @@ CLog::CLog(const uint8_t * pBuf, size_t logSize)
 CLog::~CLog()
 {
     if (m_bufferData != NULL) {
-        safe_Free(reinterpret_cast<void**>(m_bufferData));
+        safe_Free(reinterpret_cast<void**>(&m_bufferData));
     }
 }
 //-----------------------------------------------------------------------------
@@ -189,7 +189,8 @@ void CLog::get_CLog(const uint8_t * pBuf, size_t logSize)
 
 	if (pBuf != NULL)
 	{
-		m_bufferData = static_cast<char*>( calloc(logSize, sizeof(char)));
+		//m_bufferData = static_cast<char*>( calloc(logSize, sizeof(char)));
+        m_bufferData = static_cast<char*>(safe_calloc(logSize, sizeof(char)));
 		if (m_bufferData)
 		{
 #ifndef __STDC_SECURE_LIB__ 
@@ -297,7 +298,7 @@ void CLog::read_In_Log()
 
         }
         if (m_bufferData != NULL) {
-            safe_Free(reinterpret_cast<void**>(m_bufferData));
+            safe_Free(reinterpret_cast<void**>(&m_bufferData));
         }
     }
 
