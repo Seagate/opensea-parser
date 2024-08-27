@@ -2032,7 +2032,7 @@ void CFarmCommon::int_Percent_Dword_Node_Data(JSONNODE* Node, const std::string&
 		if ((param[loopCount] & BIT63) == BIT63 && (param[loopCount] & BIT62) == BIT62)
 		{
 			value.str(""); value.clear();
-			value << std::setfill('0') << std::setprecision(4) << ROUNDF(number, 10000);
+			value << std::setfill('0') << std::setprecision(4) << number;
 		}
 		else
 		{
@@ -2087,7 +2087,7 @@ void CFarmCommon::int_Percent_Dword_Array_Data(JSONNODE* Node, const std::string
 		std::ostringstream value;
 		if ((param[loopCount] & BIT63) == BIT63 && (param[loopCount] & BIT62) == BIT62)
 		{
-			set_json_float_With_Status(cal, title, ROUNDF(number, 10000), param[loopCount], showStatusBits);
+			set_json_float_With_Status(cal, title, number, param[loopCount], showStatusBits);
 		}
 		else
 		{
