@@ -3476,9 +3476,8 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_FLED_Info(JSONNODE *LUNFLED, ui
             temp.str("");
             temp.clear();
             temp << "TimeStamp of Event(hours) " << std::dec << i;
-            std::ostringstream time;
-            time << std::setprecision(3) << (static_cast<double>(M_DoubleWord0(opensea_parser::check_Status_Strip_Status(pFLED->timestampForLED[i])) / 3600000) * .001);
-            opensea_parser::set_json_string_With_Status(eventInfo, temp.str().c_str(), time.str().c_str(), pFLED->timestampForLED[i], m_showStatusBits);//!< Universal Timestamp (us) of last 8 Flash LED (assert) Events, wrapping array
+            double timestamp = static_cast<double>(opensea_parser::check_Status_Strip_Status(pFLED->timestampForLED[i]) / 3600000) * .001;
+            opensea_parser::set_json_float_With_Status(eventInfo, temp.str().c_str(), timestamp, pFLED->timestampForLED[i], m_showStatusBits);//!< Universal Timestamp (us) of last 8 Flash LED (assert) Events, wrapping array
             temp.str("");
             temp.clear();
             temp << "Power Cycle Event " << std::dec << i;

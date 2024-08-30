@@ -800,9 +800,8 @@ eReturnValues CATA_Farm_Log::print_Error_Information(JSONNODE *masterData, uint3
 
         temp.str("");temp.clear();
         temp << "TimeStamp of Event(hours) " << std::dec << loopCount;
-        std::ostringstream temp1;
-        temp1 << std::setprecision(3) << std::setfill('0') << static_cast<double>(M_DoubleWord0(check_Status_Strip_Status(vFarmFrame.at(page).errorPage.timestampForLED[loopCount])) / 3600000) *.001;
-        set_json_string_With_Status(eventInfo, temp.str().c_str(), temp1.str().c_str(), vFarmFrame.at(page).errorPage.timestampForLED[loopCount], m_showStatusBits);//!< Universal Timestamp (us) of last 8 Flash LED (assert) Events, wrapping array
+        double timeStamp = static_cast<double>(check_Status_Strip_Status(vFarmFrame.at(page).errorPage.timestampForLED[loopCount]) / 3600000) * .001;
+        set_json_float_With_Status(eventInfo, temp.str().c_str(), timeStamp, vFarmFrame.at(page).errorPage.timestampForLED[loopCount], m_showStatusBits);//!< Universal Timestamp (us) of last 8 Flash LED (assert) Events, wrapping array
 
         temp.str("");temp.clear();
         temp << "Power Cycle Event " << std::dec << loopCount;
@@ -908,9 +907,8 @@ eReturnValues CATA_Farm_Log::print_Error_Information(JSONNODE *masterData, uint3
 
         temp.str(""); temp.clear();
         temp << "TimeStamp Event (hours)" << std::dec << loopCount;
-        std::ostringstream temp1;
-        temp1 << std::setprecision(3) << std::setfill('0') << static_cast<double>(M_DoubleWord0(check_Status_Strip_Status(vFarmFrame.at(page).errorPage.last8FLEDEvtsAct1[loopCount])) / 3600000) * .001;
-        set_json_string_With_Status(eventInfoact1, temp.str().c_str(), temp1.str().c_str(), vFarmFrame.at(page).errorPage.last8FLEDEvtsAct1[loopCount], m_showStatusBits);        //!< Universal Timestamp (us) of last 8 Flash LED (assert) Events, wrapping array- Actuator 1
+        double timestamp = static_cast<double>(check_Status_Strip_Status(vFarmFrame.at(page).errorPage.last8FLEDEvtsAct1[loopCount]) / 3600000) * .001;
+        set_json_float_With_Status(eventInfoact1, temp.str().c_str(), timestamp, vFarmFrame.at(page).errorPage.last8FLEDEvtsAct1[loopCount], m_showStatusBits);        //!< Universal Timestamp (us) of last 8 Flash LED (assert) Events, wrapping array- Actuator 1
 
         temp.str(""); temp.clear();
         temp << "Power Cycle Event" << std::dec << loopCount;
