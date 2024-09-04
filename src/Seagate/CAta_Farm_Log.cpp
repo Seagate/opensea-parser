@@ -1465,7 +1465,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
     // version 4.34 MR Head Resistance became a percentage. Check bit 48 if set then it is a percentage
     if (vFarmFrame.at(page).reliPage.MRHeadResistance[0] & BIT48)
     {
-        int_Data(headInfo, "MR Head Resistance", vFarmFrame.at(page).reliPage.MRHeadResistance, m_heads, m_showStatusBits);
+        int_Data(headInfo, "MR Head Resistance", vFarmFrame.at(page).reliPage.MRHeadResistance, m_heads, m_showStatusBits, m_showStatic);
     }
     else
     {
