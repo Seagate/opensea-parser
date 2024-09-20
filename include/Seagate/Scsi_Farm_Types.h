@@ -438,10 +438,29 @@ namespace opensea_parser {
         uint64_t            countQueDepth17_32;                         //!< Count of Queue Depth 17-32 at 30s intervals for last 3 SMART Summary Frames
         uint64_t            countQueDepth33_64;                         //!< Count of Queue Depth 33-64 at 30s intervals for last 3 SMART Summary Frames
         uint64_t            countQueDepth_gt_64;                        //!< Count of Queue Depth greater than 64 at 30s intervals for last 3 SMART Summary Frames
+        uint64_t            readCmdBin0;                                //!< Count of Read Commands of transfer length bin 0 space for last 3 SMART Summary Frames  
+        uint64_t            readCmdBin1;                                //!< Count of Read Commands of transfer length bin 1 space for last 3 SMART Summary Frames  
+        uint64_t            readCmdBin2;                                //!< Count of Read Commands of transfer length bin 2 space for last 3 SMART Summary Frames  
+        uint64_t            readCmdBin3;                                //!< Count of Read Commands of transfer length bin 3 space for last 3 SMART Summary Frames  
+        uint64_t            readCmdBin4;                                //!< Count of Read Commands of transfer length bin 4 space for last 3 SMART Summary Frames  
+        uint64_t            readCmdBin5;                                //!< Count of Read Commands of transfer length bin 5 space for last 3 SMART Summary Frames
+        uint64_t            readCmdBin6;                                //!< Count of Read Commands of transfer length bin 6 space for last 3 SMART Summary Frames
+        uint64_t            readCmdBin7;                                //!< Count of Read Commands of transfer length bin 7 space for last 3 SMART Summary Frames
+        uint64_t            writeCmdBin0;                               //!< Count of Write Commands of transfer length bin 0 for last 3 SMART Summary Frames
+        uint64_t            writeCmdBin1;                               //!< Count of Write Commands of transfer length bin 1 for last 3 SMART Summary Frames
+        uint64_t            writeCmdBin2;                               //!< Count of Write Commands of transfer length bin 2 for last 3 SMART Summary Frames
+        uint64_t            writeCmdBin3;                               //!< Count of Write Commands of transfer length bin 3 for last 3 SMART Summary Frames
+        uint64_t            writeCmdBin4;                               //!< Count of Write Commands of transfer length bin 4 for last 3 SMART Summary Frames
+        uint64_t            writeCmdBin5;                               //!< Count of Write Commands of transfer length bin 5 for last 3 SMART Summary Frames
+        uint64_t            writeCmdBin6;                               //!< Count of Write Commands of transfer length bin 6 for last 3 SMART Summary Frames
+        uint64_t            writeCmdBin7;                               //!< Count of Write Commands of transfer length bin 7 for last 3 SMART Summary Frames
 
         _sScsiWorkloadStatPage08() : pageNumber(0), copyNumber(0), countQueDepth1(0), countQueDepth2(0), 
             countQueDepth3_4(0), countQueDepth5_8(0), countQueDepth9_16(0), countQueDepth17_32(0), 
-            countQueDepth33_64(0), countQueDepth_gt_64(0) {};
+            countQueDepth33_64(0), countQueDepth_gt_64(0), readCmdBin0(0), readCmdBin1(0), readCmdBin2(0),
+            readCmdBin3(0), readCmdBin4(0), readCmdBin5(0), readCmdBin6(0), readCmdBin7(0), writeCmdBin0(0),
+            writeCmdBin1(0), writeCmdBin2(0), writeCmdBin3(0), writeCmdBin4(0), writeCmdBin5(0), writeCmdBin6(0),
+            writeCmdBin7(0) {};
     }sScsiWorkloadStatPage08;
 
     typedef struct _sHeadInformation
