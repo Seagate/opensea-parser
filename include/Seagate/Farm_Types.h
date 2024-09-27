@@ -37,6 +37,7 @@
 #define FARM_WLDTR              0x574f524b4c445443                      //<! "WORKLDTR"
 #define FARM_SAVE               0x4641524d53415645                      //<! "FARMSAVE"
 #define FARM_LONG_SAVE          0x4641524d4c4f4e47                      //<! "FARMLONG"
+#define FARM_NNW                0x52454d52414600c0                      //<! "FARMER  "
 
 // Frame Type Identification  0x0 - 0xF
 #define CURRENT_FRAME                           0x00
