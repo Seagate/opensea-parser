@@ -28,9 +28,8 @@ using namespace opensea_parser;
 //---------------------------------------------------------------------------
 CLog::CLog()
     : m_name("CLog")
-    , m_fileName("")
-    , m_size(0)
 	, m_bufferData()
+    , m_log(M_NULLPTR)
     , m_logStatus(eReturnValues::UNKNOWN)
 {
 
@@ -51,11 +50,12 @@ CLog::CLog()
 //---------------------------------------------------------------------------
 CLog::CLog(const std::string &fileName)
     :m_name("CLog")
-    , m_fileName(fileName)
-    , m_size(0)
 	, m_bufferData()
+    , m_log()
     , m_logStatus(eReturnValues::IN_PROGRESS)
 {
+    m_log = new eFileParams();
+    m_log->fileName = fileName;
     get_CLog();
 }
 //-----------------------------------------------------------------------------
@@ -74,11 +74,11 @@ CLog::CLog(const std::string &fileName)
 //---------------------------------------------------------------------------
 CLog::CLog(const std::string& fileName,bool useV_Buff)
     :m_name("CLog")
-    , m_fileName(fileName)
-    , m_size(0)
     , m_bufferData()
     , m_logStatus(eReturnValues::IN_PROGRESS)
 {
+    m_log = new eFileParams();
+    m_log->fileName = fileName;
     if (useV_Buff)
     {
         read_In_Log();
@@ -105,11 +105,11 @@ CLog::CLog(const std::string& fileName,bool useV_Buff)
 //---------------------------------------------------------------------------
 CLog::CLog(const uint8_t * pBuf, size_t logSize)
 	:m_name("CLog")
-	, m_fileName("")
-    , m_size(logSize)
 	, m_bufferData()
     , m_logStatus(eReturnValues::IN_PROGRESS)
 {
+    m_log = new eFileParams();
+    m_log->secure->fileSize = logSize;
     get_CLog(pBuf, logSize);
 }
 //-----------------------------------------------------------------------------
@@ -149,25 +149,21 @@ CLog::~CLog()
 //---------------------------------------------------------------------------
 void CLog::get_CLog()
 {
-    m_logStatus = eReturnValues::IN_PROGRESS;
-    std::ifstream fb(m_fileName.c_str(), std::ios::in | std::ios::binary);
-    if (fb.is_open())
-    {
-        fb.seekg(0, std::ios::end);
-        m_size = static_cast<size_t>(fb.tellg());
-        fb.seekg(0, std::ios::beg);			//set back to beginning of the file now that we know the size
-        fb.close();
-    }
-    else
+    //m_log->secure = M_NULLPTR;
+    m_log->secure = secure_Open_File(m_log->fileName.c_str(),"rb", M_NULLPTR, M_NULLPTR, M_NULLPTR);
+
+    if (m_log->secure->error != eSecureFileError::SEC_FILE_SUCCESS)
     {
         m_logStatus = eReturnValues::FILE_OPEN_ERROR;
     }
-    //m_bufferData = static_cast<char*>( calloc(m_size, sizeof(char)));
-    m_bufferData = static_cast<char*>(safe_calloc(m_size, sizeof(char)));
-
-    if (m_size != 0 && m_logStatus != eReturnValues::FILE_OPEN_ERROR)
+    if (m_logStatus == eReturnValues::IN_PROGRESS)
     {
-        m_logStatus = read_In_Buffer();
+        m_bufferData = static_cast<char*>(safe_calloc(m_log->secure->fileSize, sizeof(char)));
+
+        if (m_log->secure->fileSize != 0 && m_logStatus != eReturnValues::FILE_OPEN_ERROR)
+        {
+            m_logStatus = read_In_Buffer();
+        }
     }
 }
 
@@ -224,21 +220,18 @@ eReturnValues CLog::read_In_Buffer()
         return eReturnValues::FILE_OPEN_ERROR;
     }
     char * pData = &m_bufferData[0];
-    std::fstream logFile(m_fileName.c_str(), std::ios::in | std::ios::binary);//only allow reading as a binary file
-    if (logFile.is_open())
+    if (m_logStatus == eReturnValues::IN_PROGRESS)
     {
-        logFile.read(pData, static_cast<std::streamsize>(m_size));
-        logFile.close();
+        if (secure_Read_File(m_log->secure, pData, m_log->secure->fileSize, 
+            sizeof(char), m_log->secure->fileSize / sizeof(char), 0) != eSecureFileError::SEC_FILE_SUCCESS)
+        {
+            m_logStatus = eReturnValues::FILE_OPEN_ERROR;
+            return eReturnValues::FILE_OPEN_ERROR;
+        }
     }
-    else
-    {
-        m_logStatus = eReturnValues::FILE_OPEN_ERROR;
-        return eReturnValues::FILE_OPEN_ERROR;
-    }
-
     if (eVerbosityLevels::VERBOSITY_DEFAULT < g_verbosity)
     {
-        printf("\nLoadbinbuf read %zd bytes into buffer.\n", m_size);
+        printf("\nLoadbinbuf read %zd bytes into buffer.\n", m_log->secure->fileSize);
     }
 
     return eReturnValues::SUCCESS;
@@ -261,48 +254,31 @@ void CLog::read_In_Log()
     m_logStatus = eReturnValues::IN_PROGRESS;
 
     //open the file and see what the size is first
-    std::ifstream fb(m_fileName.c_str(), std::ios::in);
-    if (fb.is_open())
-    {
-        fb.seekg(0, std::ios::end);
-        m_size = static_cast<size_t>( fb.tellg());
-        fb.seekg(0, std::ios::beg);			//set back to beginning of the file now that we know the size
-        fb.close();
-    }
-    else
-    {
-        m_logStatus = eReturnValues::FILE_OPEN_ERROR;
-    }
+    m_log->secure = secure_Open_File(m_log->fileName.c_str(), "rb", M_NULLPTR, M_NULLPTR, M_NULLPTR);
+
     //set the size of the buffer
-    //m_bufferData = static_cast<char*>( calloc(m_size, sizeof(char)));
-    m_bufferData = static_cast<char*>(safe_calloc(m_size, sizeof(char)));
-
+    m_bufferData = static_cast<char*>(safe_calloc(m_log->secure->fileSize, sizeof(char)));
     // now we need to read in the buffer 
-    if (m_size != 0 && m_logStatus != eReturnValues::FILE_OPEN_ERROR)
+    if (m_log->secure->fileSize != 0 && m_logStatus != eReturnValues::FILE_OPEN_ERROR)
     {
-        char* pData = &m_bufferData[0];
-        std::fstream logFile(m_fileName.c_str(), std::ios::in | std::ios::binary);//only allow reading as a binary file
-        if (logFile.is_open())
+        //only allow reading as a binary file
+        if (secure_Read_File(m_log->secure, m_bufferData, m_log->secure->fileSize,
+            sizeof(char), m_log->secure->fileSize / sizeof(char), 0) != eSecureFileError::SEC_FILE_SUCCESS)
         {
-            logFile.read(pData, static_cast<std::streamsize>(m_size));
-            logFile.close();
-
-            if (m_bufferData != NULL)
-            {
-                v_Buff.insert(v_Buff.end(), &m_bufferData[0], &m_bufferData[m_size]);
-            }
-
-            m_logStatus = eReturnValues::SUCCESS;
+            m_logStatus = eReturnValues::INSECURE_PATH;
         }
         else
         {
-            m_logStatus = eReturnValues::FILE_OPEN_ERROR;
-
+            if (m_bufferData != NULL)
+            {
+                v_Buff.insert(v_Buff.end(), &m_bufferData[0], &m_bufferData[m_log->secure->fileSize]);
+                if (v_Buff.size() == 0)
+                {
+                    m_logStatus = eReturnValues::INVALID_LENGTH;
+                }
+            }
         }
-        //if (m_bufferData != NULL) {
         safe_free(&m_bufferData);
-        //}
     }
-
 
 }
