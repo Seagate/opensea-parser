@@ -1570,7 +1570,7 @@ void CFarmCommon::h2sat_Float_Dword_Array_Data(JSONNODE* Node, const std::string
 			break;
 		case ZONE2:
 			dsHead = check_Status_Strip_Status(value[loopCount].zone2);
-			negCheck = M_Byte6(value[loopCount].zone1);
+			negCheck = M_Byte6(value[loopCount].zone2);
 			whole = M_WordInt2(dsHead);
 			decimal = static_cast<double>(M_DoubleWord0(dsHead));
 			break;
