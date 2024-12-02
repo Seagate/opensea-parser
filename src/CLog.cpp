@@ -159,11 +159,13 @@ eReturnValues CLog::get_Log()
         if (m_log->secure->fileSize != 0 && m_logStatus != eReturnValues::FILE_OPEN_ERROR)
         {
             retStatus = read_In_Buffer();
+            secure_Close_File(m_log->secure);
             m_logStatus = retStatus;
         }
     }
     else
     {
+        free_Secure_File_Info(&m_log->secure);   // also use on the closing of the file    eSecureFileError secure_Close_File(secureFileInfo* fileInfo);
         retStatus = eReturnValues::FILE_OPEN_ERROR;
         m_logStatus = retStatus;
     }
