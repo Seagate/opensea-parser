@@ -56,7 +56,7 @@ CLog::CLog(const std::string &fileName)
 {
     m_log = new eFileParams();
     m_log->fileName = fileName;
-    get_CLog();
+    get_Log();
 }
 //-----------------------------------------------------------------------------
 //
@@ -85,7 +85,7 @@ CLog::CLog(const std::string& fileName,bool useV_Buff)
     }
     else
     {
-        get_CLog();
+        get_Log();
     }
 }
 //-----------------------------------------------------------------------------
@@ -147,24 +147,27 @@ CLog::~CLog()
 //!   \return eReturnValues
 //
 //---------------------------------------------------------------------------
-void CLog::get_CLog()
+eReturnValues CLog::get_Log()
 {
-    //m_log->secure = M_NULLPTR;
+    eReturnValues retStatus = eReturnValues::SUCCESS;
     m_log->secure = secure_Open_File(m_log->fileName.c_str(),"rb", M_NULLPTR, M_NULLPTR, M_NULLPTR);
 
-    if (m_log->secure->error != eSecureFileError::SEC_FILE_SUCCESS)
-    {
-        m_logStatus = eReturnValues::FILE_OPEN_ERROR;
-    }
-    if (m_logStatus == eReturnValues::IN_PROGRESS)
+    if (m_log->secure->error == eSecureFileError::SEC_FILE_SUCCESS)
     {
         m_bufferData = static_cast<char*>(safe_calloc(m_log->secure->fileSize, sizeof(char)));
 
         if (m_log->secure->fileSize != 0 && m_logStatus != eReturnValues::FILE_OPEN_ERROR)
         {
-            m_logStatus = read_In_Buffer();
+            retStatus = read_In_Buffer();
+            m_logStatus = retStatus;
         }
     }
+    else
+    {
+        retStatus = eReturnValues::FILE_OPEN_ERROR;
+        m_logStatus = retStatus;
+    }
+    return retStatus;
 }
 
 //-----------------------------------------------------------------------------
