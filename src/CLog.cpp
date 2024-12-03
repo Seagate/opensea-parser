@@ -160,6 +160,7 @@ eReturnValues CLog::get_Log()
         {
             retStatus = read_In_Buffer();
             secure_Close_File(m_log->secure);
+            free_Secure_File_Info(&m_log->secure);
             m_logStatus = retStatus;
         }
     }
