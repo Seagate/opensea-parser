@@ -128,8 +128,12 @@ CLog::CLog(const uint8_t * pBuf, size_t logSize)
 //---------------------------------------------------------------------------
 CLog::~CLog()
 {
-    if (m_bufferData != NULL) {
+    if (m_bufferData != M_NULLPTR) {
         safe_free(&m_bufferData);
+    }
+    if (m_log->secure != M_NULLPTR)
+    {
+        free_Secure_File_Info(&m_log->secure);
     }
 }
 //-----------------------------------------------------------------------------
@@ -159,8 +163,11 @@ eReturnValues CLog::get_Log()
         if (m_log->secure->fileSize != 0 && m_logStatus != eReturnValues::FILE_OPEN_ERROR)
         {
             retStatus = read_In_Buffer();
-            secure_Close_File(m_log->secure);
-            free_Secure_File_Info(&m_log->secure);
+            m_log->secure->error = secure_Close_File(m_log->secure);
+            if (m_log->secure->error != eSecureFileError::SEC_FILE_SUCCESS)
+            {
+                retStatus = eReturnValues::FILE_OPEN_ERROR;
+            }
             m_logStatus = retStatus;
         }
     }
