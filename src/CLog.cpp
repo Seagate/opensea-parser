@@ -29,8 +29,8 @@ using namespace opensea_parser;
 CLog::CLog()
     : m_name("CLog")
 	, m_bufferData()
-    , m_log(M_NULLPTR)
     , m_logStatus(eReturnValues::UNKNOWN)
+    , m_log(M_NULLPTR)
 {
 
 }
@@ -51,8 +51,8 @@ CLog::CLog()
 CLog::CLog(const std::string &fileName)
     :m_name("CLog")
 	, m_bufferData()
-    , m_log()
     , m_logStatus(eReturnValues::IN_PROGRESS)
+    , m_log()
 {
     m_log = new eFileParams();
     m_log->fileName = fileName;
@@ -76,6 +76,7 @@ CLog::CLog(const std::string& fileName,bool useV_Buff)
     :m_name("CLog")
     , m_bufferData()
     , m_logStatus(eReturnValues::IN_PROGRESS)
+    , m_log()
 {
     m_log = new eFileParams();
     m_log->fileName = fileName;
@@ -110,7 +111,8 @@ CLog::CLog(const uint8_t * pBuf, size_t logSize)
 {
     m_log = new eFileParams();
     m_log->secure->fileSize = logSize;
-    get_CLog(pBuf, logSize);
+    //get_CLog(pBuf, logSize);
+    read_In_Buffer();
 }
 //-----------------------------------------------------------------------------
 //
@@ -131,7 +133,7 @@ CLog::~CLog()
     if (m_bufferData != M_NULLPTR) {
         safe_free(&m_bufferData);
     }
-    if (m_log->secure != M_NULLPTR)
+    if (m_log != M_NULLPTR)
     {
         free_Secure_File_Info(&m_log->secure);
     }
@@ -179,39 +181,6 @@ eReturnValues CLog::get_Log()
         m_logStatus = retStatus;
     }
     return retStatus;
-}
-
-//-----------------------------------------------------------------------------
-//
-//! \fn get_CLog()
-//
-//! \brief
-//!   Description: Function to read in the buffer to internal buffer data. 
-//
-//  Entry:
-//
-//  Exit:
-//!   \return eReturnValues
-//
-//---------------------------------------------------------------------------
-void CLog::get_CLog(const uint8_t * pBuf, size_t logSize)
-{
-	m_logStatus = eReturnValues::FILE_OPEN_ERROR;
-
-	if (pBuf != NULL)
-	{
-		//m_bufferData = static_cast<char*>( calloc(logSize, sizeof(char)));
-        m_bufferData = static_cast<char*>(safe_calloc(logSize, sizeof(char)));
-		if (m_bufferData)
-		{
-#ifndef __STDC_SECURE_LIB__ 
-            memcpy(m_bufferData, pBuf, logSize);
-#else
-			memcpy_s(m_bufferData, logSize, pBuf, logSize);
-#endif
-			m_logStatus = eReturnValues::IN_PROGRESS;
-		}			
-	}
 }
 
 //-----------------------------------------------------------------------------
@@ -269,20 +238,24 @@ void CLog::read_In_Log()
 
     //open the file and see what the size is first
     m_log->secure = secure_Open_File(m_log->fileName.c_str(), "rb", M_NULLPTR, M_NULLPTR, M_NULLPTR);
-
-    //set the size of the buffer
-    m_bufferData = static_cast<char*>(safe_calloc(m_log->secure->fileSize, sizeof(char)));
-    // now we need to read in the buffer 
-    if (m_log->secure->fileSize != 0 && m_logStatus != eReturnValues::FILE_OPEN_ERROR)
+    if (m_log->secure->error == eSecureFileError::SEC_FILE_SUCCESS)
     {
-        //only allow reading as a binary file
-        if (secure_Read_File(m_log->secure, m_bufferData, m_log->secure->fileSize,
-            sizeof(char), m_log->secure->fileSize / sizeof(char), 0) != eSecureFileError::SEC_FILE_SUCCESS)
+        //set the size of the buffer
+        m_bufferData = static_cast<char*>(safe_calloc(m_log->secure->fileSize, sizeof(char)));
+        // now we need to read in the buffer 
+        if (m_log->secure->fileSize != 0 && m_logStatus != eReturnValues::FILE_OPEN_ERROR)
         {
-            m_logStatus = eReturnValues::INSECURE_PATH;
-        }
-        else
-        {
+            //only allow reading as a binary file
+            if (secure_Read_File(m_log->secure, m_bufferData, m_log->secure->fileSize,
+                sizeof(char), m_log->secure->fileSize / sizeof(char), 0) != eSecureFileError::SEC_FILE_SUCCESS)
+            {
+                m_logStatus = eReturnValues::INSECURE_PATH;
+            }
+            else
+            {
+                m_logStatus = eReturnValues::SUCCESS;
+            }
+
             if (m_bufferData != NULL)
             {
                 v_Buff.insert(v_Buff.end(), &m_bufferData[0], &m_bufferData[m_log->secure->fileSize]);
@@ -290,9 +263,18 @@ void CLog::read_In_Log()
                 {
                     m_logStatus = eReturnValues::INVALID_LENGTH;
                 }
+                else
+                {
+                    m_logStatus = eReturnValues::SUCCESS;
+                }
             }
-        }
-        safe_free(&m_bufferData);
-    }
 
+            safe_free(&m_bufferData);
+        }
+    }
+    else
+    {
+        free_Secure_File_Info(&m_log->secure);   // also use on the closing of the file    eSecureFileError secure_Close_File(secureFileInfo* fileInfo);
+        m_logStatus = eReturnValues::FILE_OPEN_ERROR;
+    }
 }

@@ -57,7 +57,6 @@ namespace opensea_parser {
         virtual ~CLog();
 
         eReturnValues get_Log();
-		void get_CLog(const uint8_t * pBuf, size_t logSize);
         inline eReturnValues read_In_Buffer();
         void read_In_Log();
         inline std::string get_Name() const { return m_name; }
