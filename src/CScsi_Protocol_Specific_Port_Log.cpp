@@ -35,9 +35,9 @@ CScsiProtocolPortLog::CScsiProtocolPortLog()
 	, m_PSPStatus(eReturnValues::IN_PROGRESS)
 	, m_PageLength(0)
 	, m_bufferLength(0)
-	, m_List(NULL)
-	, m_Descriptor(NULL)
-	, m_Event(NULL)
+	, m_List(M_NULLPTR)
+	, m_Descriptor(M_NULLPTR)
+	, m_Event(M_NULLPTR)
 {
 	if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
@@ -63,9 +63,9 @@ CScsiProtocolPortLog::CScsiProtocolPortLog(uint8_t *buffer, size_t bufferSize)
 	, m_PSPStatus(eReturnValues::IN_PROGRESS)
 	, m_PageLength(0)
 	, m_bufferLength(bufferSize)
-	, m_List(NULL)
-	, m_Descriptor(NULL)
-	, m_Event(NULL)
+	, m_List(M_NULLPTR)
+	, m_Descriptor(M_NULLPTR)
+	, m_Event(M_NULLPTR)
 {
 	if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
@@ -77,7 +77,7 @@ CScsiProtocolPortLog::CScsiProtocolPortLog(uint8_t *buffer, size_t bufferSize)
 #else
     memcpy_s(pData, bufferSize, buffer, bufferSize);           // copy the buffer data to the class member pBuf
 #endif
-	if (pData != NULL)
+	if (pData != M_NULLPTR)
 	{
 		m_PSPStatus = eReturnValues::IN_PROGRESS;
 	}
@@ -104,10 +104,10 @@ CScsiProtocolPortLog::CScsiProtocolPortLog(uint8_t *buffer, size_t bufferSize)
 //---------------------------------------------------------------------------
 CScsiProtocolPortLog::~CScsiProtocolPortLog()
 {
-    if (pData != NULL)
+    if (pData != M_NULLPTR)
     {
         delete[] pData;
-        pData = NULL;
+        pData = M_NULLPTR;
     }
 }
 //-----------------------------------------------------------------------------
@@ -749,7 +749,7 @@ eReturnValues CScsiProtocolPortLog::get_Data(JSONNODE *masterData)
 {
 	eReturnValues retStatus = eReturnValues::IN_PROGRESS;
 
-	if (pData != NULL)
+	if (pData != M_NULLPTR)
 	{
 		JSONNODE *pageInfo = json_new(JSON_NODE);
 		json_set_name(pageInfo, "Protocol-Specific Port Log Page - 18h");

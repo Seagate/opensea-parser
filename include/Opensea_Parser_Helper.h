@@ -168,7 +168,7 @@ namespace opensea_parser {
 		explicit _sLogPageStruct() : pageCode(0), subPage(0), pageLength(0) {};
         _sLogPageStruct(uint8_t* buffer)
         {
-            if (buffer != NULL)
+            if (buffer != M_NULLPTR)
             {
                 pageCode = buffer[OFFSETZERO];
                 subPage = buffer[OFFSETONE];

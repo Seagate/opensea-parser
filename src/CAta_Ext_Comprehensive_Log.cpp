@@ -51,7 +51,7 @@ CExtComp::CExtComp(uint8_t *buffer, size_t logSize, JSONNODE *masterData)
     , m_fileName(false)
 {
 
-    if (buffer != NULL)                           // if the buffer is null then exit something did go right
+    if (buffer != M_NULLPTR)                           // if the buffer is null then exit something did go right
     {
         m_status = eReturnValues::IN_PROGRESS;
         m_status = parse_Ext_Comp_Log(masterData);
@@ -82,7 +82,7 @@ CExtComp::CExtComp(const std::string &fileName, JSONNODE *masterData)
     cCLog = new CLog(fileName);
     if (cCLog->get_Log_Status() == eReturnValues::SUCCESS)
     {
-        if (cCLog->get_Buffer() != NULL)
+        if (cCLog->get_Buffer() != M_NULLPTR)
         {
             m_logSize = cCLog->get_Size();
             pData = new uint8_t[m_logSize];								// new a buffer to the point				
@@ -130,7 +130,7 @@ CExtComp::~CExtComp()
 {
     if (m_fileName)
     {
-        if (pData != NULL)
+        if (pData != M_NULLPTR)
         {
             delete[] pData;
         }

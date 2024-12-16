@@ -54,7 +54,7 @@ CAta_NCQ_Command_Error_Log::CAta_NCQ_Command_Error_Log(const std::string & fileN
 	cCLog = new CLog(fileName);
 	if (cCLog->get_Log_Status() == eReturnValues::SUCCESS)
 	{
-		if (cCLog->get_Buffer() != NULL)
+		if (cCLog->get_Buffer() != M_NULLPTR)
 		{
 			size_t logSize = cCLog->get_Size();
 			uint8_t *pBuf = new uint8_t[logSize];								// new a buffer to the point				
@@ -75,7 +75,7 @@ CAta_NCQ_Command_Error_Log::CAta_NCQ_Command_Error_Log(const std::string & fileN
                     pNCQError = reinterpret_cast<sNCQError*>(&pBuf[offset]);
                     vNCQFrame.push_back(*pNCQError);
                     offset += sizeof(sNCQError);
-                    pNCQError = NULL;
+                    pNCQError = M_NULLPTR;
                 }
 				m_status = eReturnValues::IN_PROGRESS;
 			}
@@ -115,7 +115,7 @@ CAta_NCQ_Command_Error_Log::CAta_NCQ_Command_Error_Log(uint8_t *buffer, size_t l
     , m_status(eReturnValues::IN_PROGRESS)
 {	
     
-    if (buffer != NULL)
+    if (buffer != M_NULLPTR)
     {
         sNCQError* pNCQError;
         for (size_t offset = 0; (offset + sizeof(sNCQError)) <= length;)
@@ -123,7 +123,7 @@ CAta_NCQ_Command_Error_Log::CAta_NCQ_Command_Error_Log(uint8_t *buffer, size_t l
             pNCQError = reinterpret_cast<sNCQError*>(&buffer[offset]);
             vNCQFrame.push_back(*pNCQError);
             offset += sizeof(sNCQError);
-            pNCQError = NULL;
+            pNCQError = M_NULLPTR;
         }
         m_status = eReturnValues::IN_PROGRESS;
     }

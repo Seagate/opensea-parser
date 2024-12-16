@@ -36,7 +36,7 @@ CScsiCacheMemStatLog::CScsiCacheMemStatLog()
     , m_PageLength(0)
     , m_bufferLength(0)
     , m_CacheMemLog()
-    , m_TimeIntervalDescriptorParam(NULL)
+    , m_TimeIntervalDescriptorParam(M_NULLPTR)
     , m_Value(0)
 {
     if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
@@ -66,14 +66,14 @@ CScsiCacheMemStatLog::CScsiCacheMemStatLog(uint8_t * buffer, size_t bufferSize, 
     , m_PageLength(pageLength)
     , m_bufferLength(bufferSize)
     , m_CacheMemLog()
-    , m_TimeIntervalDescriptorParam(NULL)
+    , m_TimeIntervalDescriptorParam(M_NULLPTR)
     , m_Value(0)
 {
     if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
         printf("%s \n", m_CacheMemName.c_str());
     }
-    if (buffer != NULL)
+    if (buffer != M_NULLPTR)
     {
         m_LogStatus = eReturnValues::IN_PROGRESS;
     }
@@ -266,7 +266,7 @@ eReturnValues CScsiCacheMemStatLog::get_Cache_Memory_Statistics_Data(JSONNODE *m
     std::string myStr;
     std::string headerStr;
     eReturnValues retStatus = eReturnValues::IN_PROGRESS;
-    if (pData != NULL)
+    if (pData != M_NULLPTR)
     {
         headerStr = "Cache Memory Statistics Log - 19h";
         JSONNODE* pageInfo = json_new(JSON_NODE);

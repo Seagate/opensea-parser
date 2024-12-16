@@ -39,14 +39,14 @@ using namespace opensea_parser;
 //
 //---------------------------------------------------------------------------
 CAtaPowerConditionsLog::CAtaPowerConditionsLog()
-    : m_powerConditionLog(NULL)
-    , m_powerFlags(NULL)
+    : m_powerConditionLog(M_NULLPTR)
+    , m_powerFlags(M_NULLPTR)
     , Buffer()
     , m_status(eReturnValues::IN_PROGRESS)
     , m_myJSON()
-    , m_idleAPowerConditions(NULL), m_idleBPowerConditions(NULL), m_idleCPowerConditions(NULL)
-    , m_standbyYPowerConditions(NULL), m_standbyZPowerConditions(NULL)
-    , m_conditionFlags(NULL)
+    , m_idleAPowerConditions(M_NULLPTR), m_idleBPowerConditions(M_NULLPTR), m_idleCPowerConditions(M_NULLPTR)
+    , m_standbyYPowerConditions(M_NULLPTR), m_standbyZPowerConditions(M_NULLPTR)
+    , m_conditionFlags(M_NULLPTR)
     , conditionFlags()
 {
 
@@ -65,14 +65,14 @@ CAtaPowerConditionsLog::CAtaPowerConditionsLog()
 //
 //---------------------------------------------------------------------------
 CAtaPowerConditionsLog::CAtaPowerConditionsLog(std::string &filename)
-    : m_powerConditionLog(NULL)
-    , m_powerFlags(NULL)
+    : m_powerConditionLog(M_NULLPTR)
+    , m_powerFlags(M_NULLPTR)
     , Buffer()
     , m_status(eReturnValues::IN_PROGRESS)
     , m_myJSON()
-    , m_idleAPowerConditions(NULL), m_idleBPowerConditions(NULL), m_idleCPowerConditions(NULL)
-    , m_standbyYPowerConditions(NULL), m_standbyZPowerConditions(NULL)
-    , m_conditionFlags(NULL)
+    , m_idleAPowerConditions(M_NULLPTR), m_idleBPowerConditions(M_NULLPTR), m_idleCPowerConditions(M_NULLPTR)
+    , m_standbyYPowerConditions(M_NULLPTR), m_standbyZPowerConditions(M_NULLPTR)
+    , m_conditionFlags(M_NULLPTR)
     , conditionFlags()
 {
 
@@ -80,7 +80,7 @@ CAtaPowerConditionsLog::CAtaPowerConditionsLog(std::string &filename)
     cCLog = new CLog(filename);
     if (cCLog->get_Log_Status() == eReturnValues::SUCCESS)
     {
-        if (cCLog->get_Buffer() != NULL)
+        if (cCLog->get_Buffer() != M_NULLPTR)
         {
             size_t logSize = cCLog->get_Size();
             m_powerConditionLog = new uint8_t[logSize];								// new a buffer to the point				
@@ -131,14 +131,14 @@ CAtaPowerConditionsLog::CAtaPowerConditionsLog(std::string &filename)
 //
 //---------------------------------------------------------------------------
 CAtaPowerConditionsLog::CAtaPowerConditionsLog(tDataPtr pData, JSONNODE *masterData)
-    : m_powerConditionLog(NULL)
-    , m_powerFlags(NULL)
+    : m_powerConditionLog(M_NULLPTR)
+    , m_powerFlags(M_NULLPTR)
     , Buffer()
     , m_status(eReturnValues::IN_PROGRESS)
     , m_myJSON(masterData)
-    , m_idleAPowerConditions(NULL), m_idleBPowerConditions(NULL), m_idleCPowerConditions(NULL)
-    , m_standbyYPowerConditions(NULL), m_standbyZPowerConditions(NULL)
-    , m_conditionFlags(NULL)
+    , m_idleAPowerConditions(M_NULLPTR), m_idleBPowerConditions(M_NULLPTR), m_idleCPowerConditions(M_NULLPTR)
+    , m_standbyYPowerConditions(NULL), m_standbyZPowerConditions(M_NULLPTR)
+    , m_conditionFlags(M_NULLPTR)
     , conditionFlags()
 {
     m_powerConditionLog = new uint8_t[pData.DataLen];								// new a buffer to the point				
@@ -148,7 +148,7 @@ CAtaPowerConditionsLog::CAtaPowerConditionsLog(tDataPtr pData, JSONNODE *masterD
     memcpy_s(m_powerConditionLog, pData.DataLen, static_cast<uint8_t*>(pData.pData), pData.DataLen);// copy the buffer data to the class member pBuf
 #endif
 
-    if (m_powerConditionLog != NULL)
+    if (m_powerConditionLog != M_NULLPTR)
     {
         m_conditionFlags = &conditionFlags;
         get_Power_Condition_Log();
@@ -176,7 +176,7 @@ CAtaPowerConditionsLog::CAtaPowerConditionsLog(tDataPtr pData, JSONNODE *masterD
 //---------------------------------------------------------------------------
 CAtaPowerConditionsLog::~CAtaPowerConditionsLog()
 {
-    if (m_powerConditionLog != NULL)
+    if (m_powerConditionLog != M_NULLPTR)
     {
         delete[] m_powerConditionLog;
     }
@@ -353,7 +353,7 @@ eReturnValues CAtaPowerConditionsLog::printPowerConditionLog(JSONNODE *masterDat
 eReturnValues CAtaPowerConditionsLog::printPowerLogDescriptor(JSONNODE *masterData, sPowerLogDescriptor *logDescriptor)
 {
     get_Power_Condition_Flags(logDescriptor->bitFlags);
-    if (logDescriptor != NULL)
+    if (logDescriptor != M_NULLPTR)
     {
 #if defined _DEBUG
         printf("\nReserved \n");
@@ -416,7 +416,7 @@ eReturnValues CAtaPowerConditionsLog::printPowerLogDescriptor(JSONNODE *masterDa
 void CAtaPowerConditionsLog::printPowerConditionFlag(JSONNODE *masterData)
 {
 
-    if (m_conditionFlags != NULL)
+    if (m_conditionFlags != M_NULLPTR)
     {
 
 #if defined _DEBUG

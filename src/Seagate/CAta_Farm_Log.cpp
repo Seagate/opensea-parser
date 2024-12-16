@@ -87,7 +87,7 @@ CATA_Farm_Log::CATA_Farm_Log(uint8_t *bufferData, size_t bufferSize, bool showSt
 #else
     memcpy_s(pBuf, bufferSize, bufferData, bufferSize);         // copy the buffer data to the class member pBuf
 #endif
-    if (pBuf != NULL)
+    if (pBuf != M_NULLPTR)
     {
         if (bufferSize < sizeof(sFarmHeader) || bufferSize < sizeof(sFarmFrame))
         {
@@ -135,7 +135,7 @@ CATA_Farm_Log::~CATA_Farm_Log()
     {
         vFarmFrame.clear();                                    // clear the vector
     }
-    if (pBuf != NULL)
+    if (pBuf != M_NULLPTR)
     {
         delete[] pBuf;
     }
@@ -185,7 +185,7 @@ eReturnValues CATA_Farm_Log::parse_Farm_Log()
 {
     eReturnValues retStatus = eReturnValues::FAILURE;
     uint64_t offset = m_pageSize;                                                 // the first page starts at 1* the page size
-    if (pBuf == NULL)
+    if (pBuf == M_NULLPTR)
     {
         return retStatus;
     }

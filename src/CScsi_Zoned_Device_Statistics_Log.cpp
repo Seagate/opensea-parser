@@ -72,7 +72,7 @@ CScsiZonedDeviceStatisticsLog::CScsiZonedDeviceStatisticsLog(uint8_t * buffer, s
     {
         printf("%s \n", m_ZDSName.c_str());
     }
-    if (buffer != NULL)
+    if (buffer != M_NULLPTR)
     {
         m_ZDSStatus = eReturnValues::IN_PROGRESS;
     }
@@ -274,7 +274,7 @@ void CScsiZonedDeviceStatisticsLog::process_Zoned_Device_Statistics_Data(JSONNOD
 eReturnValues CScsiZonedDeviceStatisticsLog::get_Zoned_Device_Statistics_Data(JSONNODE *masterData)
 {
     eReturnValues retStatus = eReturnValues::IN_PROGRESS;
-    if (pData != NULL)
+    if (pData != M_NULLPTR)
     {
         JSONNODE *pageInfo = json_new(JSON_NODE);
         json_set_name(pageInfo, "Zoned Device Statistics Log - 14h");

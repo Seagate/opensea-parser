@@ -71,7 +71,7 @@ CScsiCacheLog::CScsiCacheLog(uint8_t * buffer, size_t bufferSize, uint16_t pageL
     {
         printf("%s \n", m_CacheName.c_str());
     }
-    if (buffer != NULL)
+    if (buffer != M_NULLPTR)
     {
         m_CacheStatus = eReturnValues::IN_PROGRESS;
     }
@@ -221,7 +221,7 @@ void CScsiCacheLog::process_Cache_Event_Data(JSONNODE *cacheData)
 eReturnValues CScsiCacheLog::get_Cache_Data(JSONNODE *masterData)
 {
     eReturnValues retStatus = eReturnValues::IN_PROGRESS;
-    if (pData != NULL)
+    if (pData != M_NULLPTR)
     {
         JSONNODE *pageInfo = json_new(JSON_NODE);
         json_set_name(pageInfo, "Cache Statistics Log - 37h");

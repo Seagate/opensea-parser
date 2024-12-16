@@ -31,7 +31,7 @@ using namespace opensea_parser;
 //---------------------------------------------------------------------------
 CScsiEnvironmentLog::CScsiEnvironmentLog()
 	: CScsiTemperatureLog()
-	, m_Page(NULL)
+	, m_Page(M_NULLPTR)
 	, m_EvnName("Environmnetal Log")
 	, m_EnvStatus(eReturnValues::IN_PROGRESS)
 	, m_PageLength(0)
@@ -59,7 +59,7 @@ CScsiEnvironmentLog::CScsiEnvironmentLog()
 //---------------------------------------------------------------------------
 CScsiEnvironmentLog::CScsiEnvironmentLog(uint8_t *bufferData, size_t bufferSize, uint8_t subPage, JSONNODE *masterData)
 	:CScsiTemperatureLog(&bufferData[4], bufferSize)
-	, m_Page(NULL)
+	, m_Page(M_NULLPTR)
 	, m_EvnName("Environmnetal Log")
 	, m_EnvStatus(eReturnValues::IN_PROGRESS)
 	, m_PageLength(0)
@@ -69,7 +69,7 @@ CScsiEnvironmentLog::CScsiEnvironmentLog(uint8_t *bufferData, size_t bufferSize,
 	{
 		printf("%s \n", m_EvnName.c_str());
 	}
-	if (bufferData != NULL)
+	if (bufferData != M_NULLPTR)
 	{
 		//pData = bufferData;
 		m_Page = reinterpret_cast<sLogPageStruct *>(bufferData);				// set a buffer to the point to the log page info

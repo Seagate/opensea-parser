@@ -71,7 +71,7 @@ CScsiFactoryLog::CScsiFactoryLog(uint8_t * buffer, size_t bufferSize, uint16_t p
     {
         printf("%s \n", m_FactoryName.c_str());
     }
-    if (buffer != NULL)
+    if (buffer != M_NULLPTR)
     {
         m_FactoryStatus = eReturnValues::IN_PROGRESS;
     }
@@ -167,7 +167,7 @@ void CScsiFactoryLog::process_Factorty_Data(JSONNODE *factoryData)
 eReturnValues CScsiFactoryLog::get_Factory_Data(JSONNODE *masterData)
 {
     eReturnValues retStatus = eReturnValues::IN_PROGRESS;
-    if (pData != NULL)
+    if (pData != M_NULLPTR)
     {
         JSONNODE *pageInfo = json_new(JSON_NODE);
         json_set_name(pageInfo, "Factory Log - 3Eh");

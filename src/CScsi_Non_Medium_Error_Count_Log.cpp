@@ -72,7 +72,7 @@ CScsiNonMediumErrorCountLog::CScsiNonMediumErrorCountLog(uint8_t * buffer, size_
 	{
 		printf("%s \n", m_NMECName.c_str());
 	}
-	if (buffer != NULL)
+	if (buffer != M_NULLPTR)
 	{
 		m_NMECStatus = eReturnValues::IN_PROGRESS;
 	}
@@ -163,7 +163,7 @@ void CScsiNonMediumErrorCountLog::process_Non_Medium_Error_Count_Data(JSONNODE* 
 eReturnValues CScsiNonMediumErrorCountLog::get_Non_Medium_Error_Count_Data(JSONNODE *masterData)
 {
 	eReturnValues retStatus = eReturnValues::IN_PROGRESS;
-	if (pData != NULL)
+	if (pData != M_NULLPTR)
 	{
 		JSONNODE *pageInfo = json_new(JSON_NODE);
 		json_set_name(pageInfo, "Non-Medium Error Count Log - 6h");

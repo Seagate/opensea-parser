@@ -52,7 +52,7 @@ using namespace opensea_parser;
 //
 //---------------------------------------------------------------------------
 CScsiLog::CScsiLog()
-    : bufferData(NULL)
+    : bufferData(M_NULLPTR)
     , m_LogSize(0)
     , m_name("SCSI Log")
     , m_ScsiStatus(eReturnValues::IN_PROGRESS)
@@ -74,7 +74,7 @@ CScsiLog::CScsiLog()
 //
 //---------------------------------------------------------------------------
 CScsiLog::CScsiLog(const std::string &fileName, JSONNODE *masterData)
-    : bufferData(NULL)
+    : bufferData(M_NULLPTR)
     , m_LogSize(0)
     , m_name("SCSI Log")
     , m_ScsiStatus(eReturnValues::IN_PROGRESS)
@@ -85,7 +85,7 @@ CScsiLog::CScsiLog(const std::string &fileName, JSONNODE *masterData)
     cCLog = new CLog(fileName);
     if (cCLog->get_Log_Status() == eReturnValues::SUCCESS)
     {
-        if (cCLog->get_Buffer() != NULL)
+        if (cCLog->get_Buffer() != M_NULLPTR)
         {
             m_LogSize = cCLog->get_Size();
             bufferData = new uint8_t[m_LogSize];								// new a buffer to the point				
@@ -125,7 +125,7 @@ CScsiLog::CScsiLog(const std::string &fileName, JSONNODE *masterData)
 //---------------------------------------------------------------------------
 CScsiLog::~CScsiLog()
 {
-    if (bufferData != NULL)
+    if (bufferData != M_NULLPTR)
     {
         delete[] bufferData;
     }
@@ -147,7 +147,7 @@ CScsiLog::~CScsiLog()
 eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 {
 	eReturnValues retStatus = eReturnValues::IN_PROGRESS;
-	if (bufferData != NULL)
+	if (bufferData != M_NULLPTR)
 	{
 		sLogPageStruct myStr;
 		sLogPageStruct* lpStruct = &myStr;

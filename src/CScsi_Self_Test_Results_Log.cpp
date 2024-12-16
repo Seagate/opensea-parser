@@ -66,7 +66,7 @@ CScsi_DST_Results::CScsi_DST_Results(uint8_t * buffer, size_t bufferSize, JSONNO
 	{
 		printf("%s \n", m_DSTName.c_str());
 	}
-	if (buffer != NULL)
+	if (buffer != M_NULLPTR)
 	{
 		m_DSTStatus = parse_Self_Test_Log(buffer, bufferSize, masterData);
 	}

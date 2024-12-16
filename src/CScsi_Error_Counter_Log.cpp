@@ -74,7 +74,7 @@ CScsiErrorCounterLog::CScsiErrorCounterLog(uint8_t * buffer, size_t bufferSize, 
     {
         printf("%s \n", m_ErrorName.c_str());
     }
-    if (buffer != NULL)
+    if (buffer != M_NULLPTR)
     {
         if (m_pageType == WRITE || m_pageType == READ || m_pageType == VERIFY)
         {
@@ -344,7 +344,7 @@ eReturnValues CScsiErrorCounterLog::get_Error_Counter_Data(JSONNODE *masterData)
     std::string myStr = "";
     std::string headerStr = "";
     eReturnValues retStatus = eReturnValues::IN_PROGRESS;
-    if (pData != NULL)
+    if (pData != M_NULLPTR)
     {
         set_Master_String(&headerStr, "Error Counter Log");
         append_Error_Log_Page_Number(&myStr, headerStr);

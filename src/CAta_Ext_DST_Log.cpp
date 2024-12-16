@@ -36,7 +36,7 @@ CAta_Ext_DST_Log::CAta_Ext_DST_Log(const std::string &fileName, JSONNODE *master
     cCLog = new CLog(fileName);
     if (cCLog->get_Log_Status() == eReturnValues::SUCCESS)
     {
-        if (cCLog->get_Buffer() != NULL)
+        if (cCLog->get_Buffer() != M_NULLPTR)
         {
             m_logSize = cCLog->get_Size();
             pData = new uint8_t[m_logSize];								// new a buffer to the point				
@@ -82,7 +82,7 @@ CAta_Ext_DST_Log::CAta_Ext_DST_Log(uint8_t *pBufferData, JSONNODE *masterData)
     pData = pBufferData;
     m_logSize = 0;
     m_status = parse_Ext_Self_Test_Log(masterData);
-    pData = NULL;
+    pData = M_NULLPTR;
 }
 //-----------------------------------------------------------------------------
 //

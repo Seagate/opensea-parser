@@ -57,7 +57,7 @@ CScsiPowerConditiontLog::CScsiPowerConditiontLog()
 //
 //---------------------------------------------------------------------------
 CScsiPowerConditiontLog::CScsiPowerConditiontLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength)
-	: pData(NULL)
+	: pData(M_NULLPTR)
 	, m_PowerName("Power Condition Transitions Log")
 	, m_PowerStatus(eReturnValues::IN_PROGRESS)
 	, m_PageLength(pageLength)
@@ -74,7 +74,7 @@ CScsiPowerConditiontLog::CScsiPowerConditiontLog(uint8_t * buffer, size_t buffer
 #else
     memcpy_s(pData, pageLength, buffer, pageLength);// copy the buffer data to the class member pBuf
 #endif
-	if (pData != NULL)
+	if (pData != M_NULLPTR)
 	{
 		m_PowerStatus = eReturnValues::IN_PROGRESS;
 	}
@@ -101,10 +101,10 @@ CScsiPowerConditiontLog::CScsiPowerConditiontLog(uint8_t * buffer, size_t buffer
 //---------------------------------------------------------------------------
 CScsiPowerConditiontLog::~CScsiPowerConditiontLog()
 {
-    if (pData != NULL)
+    if (pData != M_NULLPTR)
     {
         delete[] pData;
-        pData = NULL;
+        pData = M_NULLPTR;
     }
 }
 //-----------------------------------------------------------------------------
@@ -233,7 +233,7 @@ void CScsiPowerConditiontLog::process_List_Information(JSONNODE *powerData)
 eReturnValues CScsiPowerConditiontLog::get_Data(JSONNODE *masterData)
 {
 	eReturnValues retStatus = eReturnValues::IN_PROGRESS;
-	if (pData != NULL)
+	if (pData != M_NULLPTR)
 	{
 		JSONNODE *pageInfo = json_new(JSON_NODE);
 		json_set_name(pageInfo, "Power Conditions Tranistions Log - 1Ah");

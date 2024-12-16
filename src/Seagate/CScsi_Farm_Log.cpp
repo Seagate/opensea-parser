@@ -79,7 +79,7 @@ CSCSI_Farm_Log::CSCSI_Farm_Log(uint8_t* bufferData, size_t bufferSize, uint8_t s
     , m_copies(0)
     , m_MajorRev(0)
     , m_MinorRev(0)
-    , pBuf(NULL)
+    , pBuf(M_NULLPTR)
     , m_status(eReturnValues::IN_PROGRESS)
     , m_logParam()
     , m_pageParam()
@@ -104,7 +104,7 @@ CSCSI_Farm_Log::CSCSI_Farm_Log(uint8_t* bufferData, size_t bufferSize, uint8_t s
 #else
     memcpy_s(pBuf, bufferSize, bufferData, bufferSize);// copy the buffer data to the class member pBuf
 #endif
-    if (pBuf != NULL)
+    if (pBuf != M_NULLPTR)
     {
         if (init_Header_Data(bufferSize) == eReturnValues::SUCCESS)							// init the data for getting the log
         {
@@ -148,7 +148,7 @@ CSCSI_Farm_Log::CSCSI_Farm_Log( uint8_t *bufferData, size_t bufferSize, uint8_t 
 	, m_copies(0)
     , m_MajorRev(0)
     , m_MinorRev(0)
-    , pBuf(NULL)
+    , pBuf(M_NULLPTR)
     , m_status(eReturnValues::IN_PROGRESS)                                
 	, m_logParam()
 	, m_pageParam()
@@ -173,7 +173,7 @@ CSCSI_Farm_Log::CSCSI_Farm_Log( uint8_t *bufferData, size_t bufferSize, uint8_t 
 #else
     memcpy_s(pBuf, bufferSize, bufferData, bufferSize);// copy the buffer data to the class member pBuf
 #endif
-    if (pBuf != NULL)
+    if (pBuf != M_NULLPTR)
     {
         if (init_Header_Data(bufferSize) == eReturnValues::SUCCESS)							// init the data for getting the log
         {
@@ -211,7 +211,7 @@ CSCSI_Farm_Log::~CSCSI_Farm_Log()
     {
         vFarmFrame.clear();                                    // clear the vector
     }
-    if (m_pHeader != NULL)
+    if (m_pHeader != M_NULLPTR)
     {
         delete m_pHeader;
     }
@@ -233,7 +233,7 @@ CSCSI_Farm_Log::~CSCSI_Farm_Log()
 //---------------------------------------------------------------------------
 eReturnValues CSCSI_Farm_Log::init_Header_Data(size_t bufferSize)
 {
-    if (pBuf == NULL)
+    if (pBuf == M_NULLPTR)
     {
         return eReturnValues::MEMORY_FAILURE;
     }
@@ -1460,7 +1460,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
         printf("SCSI parse FARM Log\n");
     }
 
-    if (pBuf == NULL)
+    if (pBuf == M_NULLPTR)
     {
         return eReturnValues::FAILURE;
     }

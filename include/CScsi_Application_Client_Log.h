@@ -37,7 +37,7 @@ namespace opensea_parser {
             paramCode = 0;
             paramControlByte = 0;
             paramLength = 0;
-            data = NULL;
+            data = M_NULLPTR;
         }
         _sApplicationClientParameters(uint8_t* buffer)
         {

@@ -65,7 +65,7 @@ CFARMLog::CFARMLog(const std::string& fileName, bool showStatus, bool showStatic
 	cCLog = new CLog(fileName);
 	if (cCLog->get_Log_Status() == eReturnValues::SUCCESS)
 	{
-		if (cCLog->get_Buffer() != NULL)
+		if (cCLog->get_Buffer() != M_NULLPTR)
 		{
 			m_LogSize = cCLog->get_Size();
 			bufferData = new uint8_t[m_LogSize];								// new a buffer to the point				
@@ -114,7 +114,7 @@ CFARMLog::CFARMLog(const std::string & fileName)
 	cCLog = new CLog(fileName);
 	if (cCLog->get_Log_Status() == eReturnValues::SUCCESS)
 	{
-		if (cCLog->get_Buffer() != NULL)
+		if (cCLog->get_Buffer() != M_NULLPTR)
 		{
 			m_LogSize = cCLog->get_Size();
 			bufferData = new uint8_t[m_LogSize];								// new a buffer to the point				
@@ -161,7 +161,7 @@ CFARMLog::CFARMLog(uint8_t *farmbufferData, size_t bufferSize, bool showStatus, 
 	, m_showStatusBytes(showStatus)
 	, m_showStatic(showStatic)
 {
-	if (farmbufferData != NULL)
+	if (farmbufferData != M_NULLPTR)
 	{
 		m_FARMstatus = eReturnValues::IN_PROGRESS;
 }
@@ -188,7 +188,7 @@ CFARMLog::~CFARMLog()
 {
     if (m_bufferdelete)
     {
-        if (bufferData != NULL)
+        if (bufferData != M_NULLPTR)
         {
             delete[] bufferData;
         }

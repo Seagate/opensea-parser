@@ -35,8 +35,8 @@ CScsiCmdDurationLimitsLog::CScsiCmdDurationLimitsLog()
     , m_LogStatus(eReturnValues::IN_PROGRESS)
     , m_PageLength(0)
     , m_bufferLength(0)
-    , m_commandLog(NULL)
-    , m_limitsLog(NULL)
+    , m_commandLog(M_NULLPTR)
+    , m_limitsLog(M_NULLPTR)
     , m_Value(0)
 {
     if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
@@ -65,15 +65,15 @@ CScsiCmdDurationLimitsLog::CScsiCmdDurationLimitsLog(uint8_t * buffer, size_t bu
     , m_LogStatus(eReturnValues::IN_PROGRESS)
     , m_PageLength(pageLength)
     , m_bufferLength(bufferSize)
-    , m_commandLog(NULL)
-    , m_limitsLog(NULL)
+    , m_commandLog(M_NULLPTR)
+    , m_limitsLog(M_NULLPTR)
     , m_Value(0)
 {
     if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
     {
         printf("%s \n", m_CMDLimitsName.c_str());
     }
-    if (buffer != NULL)
+    if (buffer != M_NULLPTR)
     {
         m_LogStatus = eReturnValues::IN_PROGRESS;
     }

@@ -256,7 +256,7 @@ void CLog::read_In_Log()
                 m_logStatus = eReturnValues::SUCCESS;
             }
 
-            if (m_bufferData != NULL)
+            if (m_bufferData != M_NULLPTR)
             {
                 v_Buff.insert(v_Buff.end(), &m_bufferData[0], &m_bufferData[m_log->secure->fileSize]);
                 if (v_Buff.size() == 0)
