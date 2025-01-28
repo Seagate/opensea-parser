@@ -74,23 +74,11 @@ namespace opensea_parser {
 		if (showStatusBits)
 		{
             JSONNODE *bigBit = json_new(JSON_NODE);
+			if (!bigBit) return; // Check for allocation failure
+
             json_set_name(bigBit, myStr.c_str());
-			if ((value & BIT63) == BIT63)
-			{
-				set_Json_Bool(bigBit, "Field Supported", true);
-			}
-			else
-			{
-				set_Json_Bool(bigBit, "Field Supported", false);
-			}
-			if ((value & BIT62) == BIT62)
-			{
-				set_Json_Bool(bigBit, "Field Valid", true);
-			}
-			else
-			{
-				set_Json_Bool(bigBit, "Field Valid", false);
-			}
+			set_Json_Bool(bigBit, "Field Supported", (value & BIT63) == BIT63);
+			set_Json_Bool(bigBit, "Field Valid", (value & BIT62) == BIT62);
             set_json_64bit_With_Check_Status(bigBit, myStr, value, hexPrint);
 			json_push_back(nowNode, bigBit);
 		}
@@ -122,23 +110,13 @@ namespace opensea_parser {
 		if (showStatusBits)
 		{
 			JSONNODE *bigBit = json_new(JSON_NODE);
+			if (!bigBit) return; // Check for allocation failure
+
 			json_set_name(bigBit, myStr.c_str());
-			if ((value & BIT63) == BIT63)
-			{
-				set_Json_Bool(bigBit, "Field Supported", true);
-			}
-			else
-			{
-				set_Json_Bool(bigBit, "Field Supported", false);
-			}
-			if ((value & BIT62) == BIT62)
-			{
-				set_Json_Bool(bigBit, "Field Valid", true);
-			}
-			else
-			{
-				set_Json_Bool(bigBit, "Field Valid", false);
-			}
+
+			set_Json_Bool(bigBit, "Field Supported", (value & BIT63) == BIT63);
+			set_Json_Bool(bigBit, "Field Valid", (value & BIT62) == BIT62);
+
 			value = check_Status_Strip_Status(static_cast<uint64_t>(value));
 			json_push_back(bigBit, json_new_i(myStr.c_str(), value));
 			json_push_back(nowNode, bigBit);
@@ -179,23 +157,10 @@ namespace opensea_parser {
 		if (showStatusBits)
 		{
 			JSONNODE* bigBit = json_new(JSON_NODE);
+			if (!bigBit) return; // Check for allocation failure
 			json_set_name(bigBit, myStr.c_str());
-			if ((value & BIT63) == BIT63)
-			{
-				set_Json_Bool(bigBit, "Field Supported", true);
-			}
-			else
-			{
-				set_Json_Bool(bigBit, "Field Supported", false);
-			}
-			if ((value & BIT62) == BIT62)
-			{
-				set_Json_Bool(bigBit, "Field Valid", true);
-			}
-			else
-			{
-				set_Json_Bool(bigBit, "Field Valid", false);
-			}
+			set_Json_Bool(bigBit, "Field Supported", (value & BIT63) == BIT63);
+			set_Json_Bool(bigBit, "Field Valid", (value & BIT62) == BIT62);
 			json_push_back(bigBit, json_new_a(myStr.c_str(), strValue.c_str()));
 			json_push_back(nowNode, bigBit);
 		}
@@ -241,23 +206,10 @@ namespace opensea_parser {
 		if (showStatusBits)
 		{
 			JSONNODE* statusBit = json_new(JSON_NODE);
+			if (!statusBit) return; // Check for allocation failure
 			json_set_name(statusBit, myStr.c_str());
-			if ((fullValue & BIT63) == BIT63)
-			{
-				set_Json_Bool(statusBit, "Field Supported", true);
-			}
-			else
-			{
-				set_Json_Bool(statusBit, "Field Supported", false);
-			}
-			if ((fullValue & BIT62) == BIT62)
-			{
-				set_Json_Bool(statusBit, "Field Valid", true);
-			}
-			else
-			{
-				set_Json_Bool(statusBit, "Field Valid", false);
-			}
+			set_Json_Bool(statusBit, "Field Supported", (fullValue & BIT63) == BIT63);
+			set_Json_Bool(statusBit, "Field Valid", (fullValue & BIT62) == BIT62);
 			if (!check_For_Active_Status(&fullValue))
 			{
 				json_push_back(statusBit, json_new_f(myStr.c_str(), 0.0));
@@ -310,23 +262,10 @@ namespace opensea_parser {
 		if (showStatusBits)
 		{
 			JSONNODE* statusBit = json_new(JSON_NODE);
+			if (!statusBit) return; // Check for allocation failure
 			json_set_name(statusBit, myStr.c_str());
-			if ((fullValue & BIT63) == BIT63)
-			{
-				set_Json_Bool(statusBit, "Field Supported", true);
-			}
-			else
-			{
-				set_Json_Bool(statusBit, "Field Supported", false);
-			}
-			if ((fullValue & BIT62) == BIT62)
-			{
-				set_Json_Bool(statusBit, "Field Valid", true);
-			}
-			else
-			{
-				set_Json_Bool(statusBit, "Field Valid", false);
-			}
+			set_Json_Bool(statusBit, "Field Supported", (fullValue & BIT63) == BIT63);
+			set_Json_Bool(statusBit, "Field Valid", (fullValue & BIT62) == BIT62);
 			if (!check_For_Active_Status(&fullValue))
 			{
 				json_push_back(statusBit, json_new_i(myStr.c_str(), 0));
@@ -378,23 +317,11 @@ namespace opensea_parser {
 		if (showStatusBits)
 		{
 			JSONNODE* bigBit = json_new(JSON_NODE);
+			if (!bigBit) return; // Check for allocation failure
+
 			json_set_name(bigBit, myStr.c_str());
-			if ((value & BIT63) == BIT63)
-			{
-				set_Json_Bool(bigBit, "Field Supported", true);
-			}
-			else
-			{
-				set_Json_Bool(bigBit, "Field Supported", false);
-			}
-			if ((value & BIT62) == BIT62)
-			{
-				set_Json_Bool(bigBit, "Field Valid", true);
-			}
-			else
-			{
-				set_Json_Bool(bigBit, "Field Valid", false);
-			}
+			set_Json_Bool(bigBit, "Field Supported", (value & BIT63) == BIT63);
+			set_Json_Bool(bigBit, "Field Valid", (value & BIT62) == BIT62);
 			if (check_Status_Strip_Status(value) != 0)
 			{
 				set_Json_Bool(bigBit, myStr, true);
