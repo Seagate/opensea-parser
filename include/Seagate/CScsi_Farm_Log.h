@@ -76,7 +76,7 @@ namespace opensea_parser {
 		eReturnValues init_Header_Data(size_t bufferSize);
         eReturnValues print_Header(JSONNODE *masterData);
         eReturnValues print_Drive_Information(JSONNODE *masterData, uint32_t page);
-        eReturnValues get_Regen_Head_Mask(JSONNODE* headMask, uint64_t mask);
+        eReturnValues get_Regen_Head_Mask(JSONNODE* headMask, uint64_t mask, bool showStatus);
         eReturnValues print_General_Drive_Information_Continued(JSONNODE *masterData, uint32_t page);
         eReturnValues print_WorkLoad(JSONNODE *masterData, uint32_t page);
         eReturnValues print_Error_Information(JSONNODE *masterData, uint32_t page);
