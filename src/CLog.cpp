@@ -54,6 +54,11 @@ CLog::CLog(const std::string &fileName)
     , m_logStatus(eReturnValues::IN_PROGRESS)
     , m_log()
 {
+    fileExt exts[] = {
+       { "bin", false },
+       { M_NULLPTR, false } //must always end with this
+    };
+    m_Ext = &exts[0];
     m_log = new eFileParams();
     m_log->fileName = fileName;
     get_Log();
@@ -78,6 +83,11 @@ CLog::CLog(const std::string& fileName,bool useV_Buff)
     , m_logStatus(eReturnValues::IN_PROGRESS)
     , m_log()
 {
+    fileExt exts[] = {
+       { "bin", false },
+       { M_NULLPTR, false } //must always end with this
+    };
+    m_Ext = &exts[0];
     m_log = new eFileParams();
     m_log->fileName = fileName;
     if (useV_Buff)
@@ -109,9 +119,14 @@ CLog::CLog(const uint8_t * pBuf, size_t logSize)
 	, m_bufferData()
     , m_logStatus(eReturnValues::IN_PROGRESS)
 {
+    fileExt exts[] = {
+       { "bin", false },
+       { M_NULLPTR, false } //must always end with this
+    };
+    m_Ext = &exts[0];
     m_log = new eFileParams();
     m_log->secure->fileSize = logSize;
-    //get_CLog(pBuf, logSize);
+    //get_log(pBuf, logSize);
     read_In_Buffer();
 }
 //-----------------------------------------------------------------------------
@@ -157,7 +172,7 @@ CLog::~CLog()
 eReturnValues CLog::get_Log()
 {
     eReturnValues retStatus = eReturnValues::SUCCESS;
-    m_log->secure = secure_Open_File(m_log->fileName.c_str(),"rb", M_NULLPTR, M_NULLPTR, M_NULLPTR);
+    m_log->secure = secure_Open_File(m_log->fileName.c_str(),"rb", m_Ext, M_NULLPTR, M_NULLPTR);
 
     if (m_log->secure->error == eSecureFileError::SEC_FILE_SUCCESS)
     {
@@ -237,7 +252,7 @@ void CLog::read_In_Log()
     m_logStatus = eReturnValues::IN_PROGRESS;
 
     //open the file and see what the size is first
-    m_log->secure = secure_Open_File(m_log->fileName.c_str(), "rb", M_NULLPTR, M_NULLPTR, M_NULLPTR);
+    m_log->secure = secure_Open_File(m_log->fileName.c_str(), "rb", m_Ext, M_NULLPTR, M_NULLPTR);
     if (m_log->secure->error == eSecureFileError::SEC_FILE_SUCCESS)
     {
         //set the size of the buffer

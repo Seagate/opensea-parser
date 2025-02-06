@@ -46,7 +46,8 @@ namespace opensea_parser {
 		std::string             m_name;                         //!< name of the class
         char                    *m_bufferData;                  //!< the buffer that the file will be read into
         eReturnValues           m_logStatus;                    //!< the log status.
-        eFileParams*            m_log;
+        eFileParams*            m_log;                          //!< log file params for security
+        fileExt*                m_Ext;                          //!< file extentions pointer for the file params for security
         std::vector<uint8_t>    v_Buff;                         //!< vector for holding the buffer data
 
 	public:
