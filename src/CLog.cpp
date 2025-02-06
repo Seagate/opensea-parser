@@ -31,6 +31,7 @@ CLog::CLog()
 	, m_bufferData()
     , m_logStatus(eReturnValues::UNKNOWN)
     , m_log(M_NULLPTR)
+    , m_Ext(M_NULLPTR)
 {
 
 }
@@ -53,6 +54,7 @@ CLog::CLog(const std::string &fileName)
 	, m_bufferData()
     , m_logStatus(eReturnValues::IN_PROGRESS)
     , m_log()
+    , m_Ext(M_NULLPTR)
 {
     fileExt exts[] = {
        { "bin", false },
@@ -82,6 +84,7 @@ CLog::CLog(const std::string& fileName,bool useV_Buff)
     , m_bufferData()
     , m_logStatus(eReturnValues::IN_PROGRESS)
     , m_log()
+    , m_Ext(M_NULLPTR)
 {
     fileExt exts[] = {
        { "bin", false },
@@ -118,6 +121,8 @@ CLog::CLog(const uint8_t * pBuf, size_t logSize)
 	:m_name("CLog")
 	, m_bufferData()
     , m_logStatus(eReturnValues::IN_PROGRESS)
+    , m_log()
+    , m_Ext(M_NULLPTR)
 {
     fileExt exts[] = {
        { "bin", false },
