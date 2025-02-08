@@ -201,6 +201,17 @@ namespace opensea_parser {
 		eLogPageNames::PROTOCOL_SPECIFIC_PORT, eLogPageNames::POWER_CONDITION_TRANSITIONS , eLogPageNames::INFORMATIONAL_EXCEPTIONS,
 		eLogPageNames::CACHE_STATISTICS, eLogPageNames::SEAGATE_SPECIFIC_LOG, eLogPageNames::FACTORY_LOG,};
 
+	M_NODISCARD static M_INLINE int16_t b_swap_int16(int16_t value)
+	{
+#if defined(HAVE_BUILTIN_BSWAP)
+		return __builtin_bswap16(value);
+#elif defined(HAVE_WIN_BSWAP)
+		return _byteswap_ushort(value);
+#else
+		return (((value & INT16_C(0x00FF)) << 8) | ((value & INT16_C(0xFF00)) >> 8));
+#endif
+	}
+
 	//-----------------------------------------------------------------------------
 	//
 	//! \fn check_For_Active_Status()
