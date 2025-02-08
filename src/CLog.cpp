@@ -177,7 +177,7 @@ CLog::~CLog()
 eReturnValues CLog::get_Log()
 {
     eReturnValues retStatus = eReturnValues::SUCCESS;
-    m_log->secure = secure_Open_File(m_log->fileName.c_str(),"rb", m_Ext, M_NULLPTR, M_NULLPTR);
+    m_log->secure = secure_Open_File(m_log->fileName.c_str(),"rb", M_NULLPTR, M_NULLPTR, M_NULLPTR);
 
     if (m_log->secure->error == eSecureFileError::SEC_FILE_SUCCESS)
     {
@@ -257,7 +257,7 @@ void CLog::read_In_Log()
     m_logStatus = eReturnValues::IN_PROGRESS;
 
     //open the file and see what the size is first
-    m_log->secure = secure_Open_File(m_log->fileName.c_str(), "rb", m_Ext, M_NULLPTR, M_NULLPTR);
+    m_log->secure = secure_Open_File(m_log->fileName.c_str(), "rb", M_NULLPTR, M_NULLPTR, M_NULLPTR);
     if (m_log->secure->error == eSecureFileError::SEC_FILE_SUCCESS)
     {
         //set the size of the buffer
