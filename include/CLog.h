@@ -43,7 +43,7 @@ namespace opensea_parser {
 	{
 	private:
     protected:
-		std::string             m_name;                         //!< name of the class
+        std::string             m_name;                         //!< name of the class
         char                    *m_bufferData;                  //!< the buffer that the file will be read into
         eReturnValues           m_logStatus;                    //!< the log status.
         eFileParams*            m_log;                          //!< log file params for security
@@ -57,7 +57,8 @@ namespace opensea_parser {
 		CLog(const uint8_t * pBuf, size_t logSize);
         virtual ~CLog();
 
-        eReturnValues get_Log();
+        eReturnValues get_CLog();
+        void get_CLog(const uint8_t* pBuf, size_t logSize);
         inline eReturnValues read_In_Buffer();
         void read_In_Log();
         inline std::string get_Name() const { return m_name; }

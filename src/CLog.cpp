@@ -63,7 +63,7 @@ CLog::CLog(const std::string &fileName)
     m_Ext = &exts[0];
     m_log = new eFileParams();
     m_log->fileName = fileName;
-    get_Log();
+    get_CLog();
 }
 //-----------------------------------------------------------------------------
 //
@@ -99,7 +99,7 @@ CLog::CLog(const std::string& fileName,bool useV_Buff)
     }
     else
     {
-        get_Log();
+        get_CLog();
     }
 }
 //-----------------------------------------------------------------------------
@@ -118,21 +118,20 @@ CLog::CLog(const std::string& fileName,bool useV_Buff)
 //
 //---------------------------------------------------------------------------
 CLog::CLog(const uint8_t * pBuf, size_t logSize)
-	:m_name("CLog")
-	, m_bufferData()
+    :m_name("CLog")
+    , m_bufferData()
     , m_logStatus(eReturnValues::IN_PROGRESS)
     , m_log()
     , m_Ext(M_NULLPTR)
 {
     fileExt exts[] = {
-       { "bin", false },
        { M_NULLPTR, false } //must always end with this
     };
     m_Ext = &exts[0];
     m_log = new eFileParams();
     m_log->secure->fileSize = logSize;
-    //get_log(pBuf, logSize);
-    read_In_Buffer();
+    get_CLog(pBuf, logSize);
+    //read_In_Buffer();
 }
 //-----------------------------------------------------------------------------
 //
@@ -174,7 +173,7 @@ CLog::~CLog()
 //!   \return eReturnValues
 //
 //---------------------------------------------------------------------------
-eReturnValues CLog::get_Log()
+eReturnValues CLog::get_CLog()
 {
     eReturnValues retStatus = eReturnValues::SUCCESS;
     m_log->secure = secure_Open_File(m_log->fileName.c_str(),"rb", M_NULLPTR, M_NULLPTR, M_NULLPTR);
@@ -202,7 +201,38 @@ eReturnValues CLog::get_Log()
     }
     return retStatus;
 }
+//-----------------------------------------------------------------------------
+//
+//! \fn get_CLog()
+//
+//! \brief
+//!   Description: Function to read in the buffer to internal buffer data. 
+//
+//  Entry:
+//
+//  Exit:
+//!   \return eReturnValues
+//
+//---------------------------------------------------------------------------
+void CLog::get_CLog(const uint8_t* pBuf, size_t logSize)
+{
+    m_logStatus = eReturnValues::FILE_OPEN_ERROR;
 
+    if (pBuf != NULL)
+    {
+        //m_bufferData = static_cast<char*>( calloc(logSize, sizeof(char)));
+        m_bufferData = static_cast<char*>(safe_calloc(logSize, sizeof(char)));
+        if (m_bufferData)
+        {
+#ifndef __STDC_SECURE_LIB__ 
+            memcpy(m_bufferData, pBuf, logSize);
+#else
+            memcpy_s(m_bufferData, logSize, pBuf, logSize);
+#endif
+            m_logStatus = eReturnValues::IN_PROGRESS;
+        }
+    }
+}
 //-----------------------------------------------------------------------------
 //
 //! \fn read_In_Buffer()
@@ -222,10 +252,10 @@ eReturnValues CLog::read_In_Buffer()
     {
         return eReturnValues::FILE_OPEN_ERROR;
     }
-    char * pData = &m_bufferData[0];
+    //char * pData = &m_bufferData[0];
     if (m_logStatus == eReturnValues::IN_PROGRESS)
     {
-        if (secure_Read_File(m_log->secure, pData, m_log->secure->fileSize, 
+        if (secure_Read_File(m_log->secure, m_bufferData, m_log->secure->fileSize,
             sizeof(char), m_log->secure->fileSize / sizeof(char), 0) != eSecureFileError::SEC_FILE_SUCCESS)
         {
             m_logStatus = eReturnValues::FILE_OPEN_ERROR;
