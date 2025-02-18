@@ -587,7 +587,7 @@ void CFarmCommon::float_Array_Data(JSONNODE* Node, const std::string& title, uin
 {
 	double number = 0.0;
 	JSONNODE* header = json_new(JSON_ARRAY);
-	json_set_name(header, title.c_str());
+	opensea_parser::set_Json_name(header, title.c_str());
 	for (uint32_t loopCount = 0; loopCount < heads; ++loopCount)
 	{
 		uint64_t dsHead = check_Status_Strip_Status(value[loopCount]);
@@ -760,7 +760,7 @@ void CFarmCommon::sflyHeight_Node_Data(JSONNODE* Node, const std::string& title,
 void CFarmCommon::sflyHeight_Array_Data(JSONNODE* Node, const std::string& title, double calculation, sflyHeight* value, int track, int sizeAmount, uint64_t heads, bool showStatusBits)
 {
 	JSONNODE* headerror = json_new(JSON_ARRAY);
-	json_set_name(headerror, title.c_str());
+	opensea_parser::set_Json_name(headerror, title.c_str());
 	for (uint32_t loopCount = 0; loopCount < heads; ++loopCount)
 	{
 		double number = 0;
@@ -960,7 +960,7 @@ void CFarmCommon::sflyHeight_Float_Node_Data(JSONNODE* Node, const std::string& 
 void CFarmCommon::sflyHeight_Float_Array_Data(JSONNODE* Node, const std::string& title, sflyHeight* value, int track, uint64_t heads, bool showStatusBits)
 {
 	JSONNODE* valueNode = json_new(JSON_ARRAY);
-	json_set_name(valueNode, title.c_str());
+	opensea_parser::set_Json_name(valueNode, title.c_str());
 	uint8_t negCheck = 0;												// check byte 6 bit 1 for negitive value
 	uint64_t dsHead = 0;
 	int16_t whole = 0;													// get 5:4 whole part of the float
@@ -1145,7 +1145,7 @@ void CFarmCommon::h2sat_Node_Data(JSONNODE* Node, const std::string& title, int 
 void CFarmCommon::h2sat_Array_Data(JSONNODE* Node, const std::string& title, int movement, H2SAT* value, int track, uint64_t heads, bool showStatusBits)
 {
 	JSONNODE* headerror = json_new(JSON_ARRAY);
-	json_set_name(headerror, title.c_str());
+	opensea_parser::set_Json_name(headerror, title.c_str());
 	for (uint32_t loopCount = 0; loopCount < heads; ++loopCount)
 	{
 		int16_t number = 0;
@@ -1325,7 +1325,7 @@ void CFarmCommon::h2sat_Float_Node_Data(JSONNODE* Node, const std::string& title
 void CFarmCommon::h2sat_Float_Array_Data(JSONNODE* Node, const std::string& title, int movement, double calculation, H2SAT* value, int track, uint64_t heads, bool showStatusBits)
 {
 	JSONNODE* headerror = json_new(JSON_ARRAY);
-	json_set_name(headerror, title.c_str());
+	opensea_parser::set_Json_name(headerror, title.c_str());
 	for (uint32_t loopCount = 0; loopCount < heads; ++loopCount)
 	{
 		double number = 0;
@@ -1545,7 +1545,7 @@ void CFarmCommon::h2sat_Float_Dword_Array_Data(JSONNODE* Node, const std::string
 		myStr.str(""); myStr.clear();
 		myStr << title.c_str();                   
 	}
-	json_set_name(valueNode, title.c_str());
+	opensea_parser::set_Json_name(valueNode, title.c_str());
 	for (uint32_t loopCount = 0; loopCount < heads; ++loopCount)
 	{
 		negCheck = 0;
@@ -1686,7 +1686,7 @@ void CFarmCommon::uint_Node_Data(JSONNODE* Node, const std::string& title, uint6
 void CFarmCommon::uint_Array_Data(JSONNODE* Node, const std::string& title, uint64_t* value, uint64_t heads, bool showStatusBits)
 {
 	JSONNODE* headInt = json_new(JSON_ARRAY);
-	json_set_name(headInt, title.c_str());
+	opensea_parser::set_Json_name(headInt, title.c_str());
 	for (uint32_t loopCount = 0; loopCount < heads; ++loopCount)
 	{
 		set_json_int_With_Status(headInt, title, value[loopCount], showStatusBits);
@@ -1771,7 +1771,7 @@ void  CFarmCommon::int_Node_Data(JSONNODE* Node, const std::string& title, int64
 void CFarmCommon::int_Array_Data(JSONNODE* Node, const std::string& title, int64_t* value, uint64_t heads, bool showStatusBits)
 {
 	JSONNODE* headInt = json_new(JSON_ARRAY);
-	json_set_name(headInt, title.c_str());
+	opensea_parser::set_Json_name(headInt, title.c_str());
 	for (uint32_t loopCount = 0; loopCount < heads; ++loopCount)
 	{
 		set_json_int_With_Status(headInt, title, value[loopCount], showStatusBits);
@@ -1858,7 +1858,7 @@ void CFarmCommon::int_Dword_Node_Data(JSONNODE* Node, const std::string& title, 
 void CFarmCommon::int_Dword_Array_Data(JSONNODE* Node, const std::string& title, int64_t* value, uint64_t heads, bool showStatusBits)
 {
 	JSONNODE* headInt = json_new(JSON_ARRAY);
-	json_set_name(headInt, title.c_str());
+	opensea_parser::set_Json_name(headInt, title.c_str());
 	for (uint32_t loopCount = 0; loopCount < heads; ++loopCount)
 	{
 		// valid number is a int32_t need to strip off all the upper bits and check if negitive
@@ -1948,7 +1948,7 @@ void CFarmCommon::int_Cal_Byte_Node_Data(JSONNODE* Node, const std::string& titl
 void CFarmCommon::int_Cal_Byte_Array_Data(JSONNODE* Node, const std::string& title, int16_t calculation, int64_t* param, uint64_t heads, bool showStatusBits)
 {
 	JSONNODE* cal = json_new(JSON_ARRAY);
-	json_set_name(cal, title.c_str());
+	opensea_parser::set_Json_name(cal, title.c_str());
 	for (uint32_t loopCount = 0; loopCount < heads; ++loopCount)
 	{
 		set_json_int_Check_Status(cal, title,  static_cast<int64_t>(M_ByteInt0(param[loopCount])) * calculation, param[loopCount], showStatusBits);
@@ -2062,7 +2062,7 @@ void CFarmCommon::int_Percent_Dword_Node_Data(JSONNODE* Node, const std::string&
 void CFarmCommon::int_Percent_Dword_Array_Data(JSONNODE* Node, const std::string& title, int64_t* param, uint64_t heads, bool showStatusBits)
 {
 	JSONNODE* cal = json_new(JSON_ARRAY);
-	json_set_name(cal, title.c_str());
+	opensea_parser::set_Json_name(cal, title.c_str());
 	int16_t whole = 0;
 	int64_t delta = 0;
 	uint8_t negCheck = 0;								// check bit 1 of 6, if set then value is negitive
@@ -2179,7 +2179,7 @@ void CFarmCommon::float_Cal_Word_Node_Data(JSONNODE* Node, const std::string& ti
 void CFarmCommon::float_Cal_Word_Array_Data(JSONNODE* Node, const std::string& title, double calculation, int64_t* param, uint64_t heads, bool showStatusBits)
 {
 	JSONNODE* cal = json_new(JSON_ARRAY);
-	json_set_name(cal, title.c_str());
+	opensea_parser::set_Json_name(cal, title.c_str());
 	for (uint32_t loopCount = 0; loopCount < heads; ++loopCount)
 	{
 		set_json_float_With_Status(cal, title, (static_cast<double>(M_WordInt0(param[loopCount])) * calculation), param[loopCount], showStatusBits);
@@ -2267,7 +2267,7 @@ void CFarmCommon::float_Cal_DoubleWord_Node_Data(JSONNODE* Node, const std::stri
 void CFarmCommon::float_Cal_DoubleWord_Array_Data(JSONNODE* Node, const std::string& title, double calculation, int64_t* param, uint64_t heads, bool showStatusBits)
 {
 	JSONNODE* cal = json_new(JSON_ARRAY);
-	json_set_name(cal, title.c_str());
+	opensea_parser::set_Json_name(cal, title.c_str());
 	for (uint32_t loopCount = 0; loopCount < heads; ++loopCount)
 	{
 		set_json_float_With_Status(cal, title, (static_cast<double>(M_DoubleWord0(param[loopCount])) / calculation), param[loopCount], showStatusBits);
@@ -2367,7 +2367,7 @@ void CFarmCommon::sas_Head_Float_Node_Data(JSONNODE* Node, const std::string& ti
 void CFarmCommon::Sas_Head_Float_Array_Data(JSONNODE* Node, const std::string& title, int movement, double calculation, uint64_t* value, uint64_t heads, bool showStatusBits)
 {
 	JSONNODE* headerror = json_new(JSON_ARRAY);
-	json_set_name(headerror, title.c_str());
+	opensea_parser::set_Json_name(headerror, title.c_str());
 	for (uint32_t loopCount = 0; loopCount < heads; ++loopCount)
 	{
 		double number = 0;
@@ -2479,7 +2479,7 @@ void CFarmCommon::sas_Head_int_Node_Data(JSONNODE* Node, const std::string& titl
 void CFarmCommon::Sas_Head_int_Array_Data(JSONNODE* Node, const std::string& title, int movement, uint64_t calculation, uint64_t* value, uint64_t heads, bool showStatusBits)
 {
 	JSONNODE* headerror = json_new(JSON_ARRAY);
-	json_set_name(headerror, title.c_str());
+	opensea_parser::set_Json_name(headerror, title.c_str());
 	for (uint32_t loopCount = 0; loopCount < heads; ++loopCount)
 	{
 		int32_t number = 0;
@@ -2596,7 +2596,7 @@ void CFarmCommon::sas_Head_Double_Float_Node_Data(JSONNODE* Node, const std::str
 void CFarmCommon::sas_Head_Double_Float_Array_Data(JSONNODE* Node, const std::string& title, uint64_t* value, uint64_t heads, bool showStatusBits)
 {
 	JSONNODE* valueNode = json_new(JSON_ARRAY);
-	json_set_name(valueNode, title.c_str());
+	opensea_parser::set_Json_name(valueNode, title.c_str());
 	uint64_t dsHead = 0;
 	uint8_t negCheck = 0;					// check bit 1 of 6, if set then value is negitive
 	int16_t whole = 0;						// get 5:4 whole part of the float

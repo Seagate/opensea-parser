@@ -36,7 +36,7 @@ namespace opensea_parser {
 	//
 	//  Entry:
 	//! \param  nowNode = the Json node that the data will be added to
-	//! \param  myStr = the string data what will be adding to
+	//! \param  header = the string data what will be adding to
 	//! \param value  =  64 bit value to check to see if the bit is set or not
 	//! \param hexPrint =  if true then print the data in a hex format
 	//! \param showStatusBits = flag to force showing the status bits on the value
@@ -45,8 +45,14 @@ namespace opensea_parser {
 	//!   \return void
 	//
 	//-----------------------------------------------------------------------------
-	inline void set_json_64_bit_With_Status(JSONNODE *nowNode, const std::string & myStr, uint64_t value, bool hexPrint, bool showStatusBits)
+	inline void set_json_64_bit_With_Status(JSONNODE *nowNode, const std::string & header, uint64_t value, bool hexPrint, bool showStatusBits)
 	{
+		std::string myStr = header;
+		if (g_convertHeaderToLowercase)
+		{
+			opensea_parser::std_replace_spaces_with_underscore(myStr);
+			opensea_parser::std_string_to_lowercase(myStr);
+		}
 		// if the 31 bit is set it will turn the value to a negitive number
         if (!showStatusBits  && (M_GETBITRANGE(value, 63, 31) == 0))
 		{
@@ -97,7 +103,7 @@ namespace opensea_parser {
 	//
 	//  Entry:
 	//! \param  nowNode = the Json node that the data will be added to
-	//! \param  myStr = the string data what will be adding to
+	//! \param  header = the string data what will be adding to
 	//! \param value  =  64 bit value to check to see if the bit is set or not
 	//! \param showStatusBits = flag to force showing the status bits on the value
 	//
@@ -105,8 +111,14 @@ namespace opensea_parser {
 	//!   \return void
 	//
 	//-----------------------------------------------------------------------------
-	inline void set_json_int_With_Status(JSONNODE *nowNode, const std::string & myStr, int64_t value, bool showStatusBits)
+	inline void set_json_int_With_Status(JSONNODE *nowNode, const std::string & header, int64_t value, bool showStatusBits)
 	{
+		std::string myStr = header;
+		if (g_convertHeaderToLowercase)
+		{
+			opensea_parser::std_replace_spaces_with_underscore(myStr);
+			opensea_parser::std_string_to_lowercase(myStr);
+		}
 		if (showStatusBits)
 		{
 			JSONNODE *bigBit = json_new(JSON_NODE);
@@ -143,8 +155,8 @@ namespace opensea_parser {
 	//
 	//  Entry:
 	//! \param  nowNode = the Json node that the data will be added to
-	//! \param  myStr = the string data what will be adding to
-	//! \param  myStr = value in a string format
+	//! \param  header = the string data what will be adding to
+	//! \param  strValue = value in a string format
 	//! \param value  =  64 bit value to check to see if the bit is set or not
 	//! \param showStatusBits = flag to force showing the status bits on the value
 	//
@@ -152,8 +164,15 @@ namespace opensea_parser {
 	//!   \return void
 	//
 	//-----------------------------------------------------------------------------
-	inline void set_json_string_With_Status(JSONNODE* nowNode, const std::string& myStr, const std::string& strValue, uint64_t value, bool showStatusBits)
+	inline void set_json_string_With_Status(JSONNODE* nowNode, const std::string& header, const std::string& strValue, uint64_t value, bool showStatusBits)
 	{
+		if (!nowNode) return;  // check for NULL
+		std::string myStr = header;
+		if (g_convertHeaderToLowercase)
+		{
+			opensea_parser::std_replace_spaces_with_underscore(myStr);
+			opensea_parser::std_string_to_lowercase(myStr);
+		}
 		if (showStatusBits)
 		{
 			JSONNODE* bigBit = json_new(JSON_NODE);
@@ -192,7 +211,7 @@ namespace opensea_parser {
 	//
 	//  Entry:
 	//! \param  nowNode = the Json node that the data will be added to
-	//! \param  myStr = the string data what will be adding to
+	//! \param  header = the string data what will be adding to
 	//! \param value  =  double for pushing to the float
 	//! \param value  =  64 bit value to check to see if the bit is set or not
 	//! \param showStatusBits = flag to force showing the status bits on the value
@@ -201,8 +220,14 @@ namespace opensea_parser {
 	//!   \return void
 	//
 	//-----------------------------------------------------------------------------
-	inline void set_json_float_With_Status(JSONNODE* nowNode, const std::string& myStr, double value, uint64_t fullValue, bool showStatusBits)
+	inline void set_json_float_With_Status(JSONNODE* nowNode, const std::string& header, double value, uint64_t fullValue, bool showStatusBits)
 	{
+		std::string myStr = header;
+		if (g_convertHeaderToLowercase)
+		{
+			opensea_parser::std_replace_spaces_with_underscore(myStr);
+			opensea_parser::std_string_to_lowercase(myStr);
+		}
 		if (showStatusBits)
 		{
 			JSONNODE* statusBit = json_new(JSON_NODE);
@@ -248,7 +273,7 @@ namespace opensea_parser {
 	//
 	//  Entry:
 	//! \param  nowNode = the Json node that the data will be added to
-	//! \param  myStr = the string data what will be adding to
+	//! \param  header = the string data what will be adding to
 	//! \param value  =  int value that would have already been calculated.
 	//! \param value  =  64 bit value to check to see if the bit is set or not
 	//! \param showStatusBits = flag to force showing the status bits on the value
@@ -257,8 +282,14 @@ namespace opensea_parser {
 	//!   \return void
 	//
 	//-----------------------------------------------------------------------------
-	inline void set_json_int_Check_Status(JSONNODE* nowNode, const std::string& myStr, long long value, uint64_t fullValue, bool showStatusBits)
+	inline void set_json_int_Check_Status(JSONNODE* nowNode, const std::string& header, long long value, uint64_t fullValue, bool showStatusBits)
 	{
+		std::string myStr = header;
+		if (g_convertHeaderToLowercase)
+		{
+			opensea_parser::std_replace_spaces_with_underscore(myStr);
+			opensea_parser::std_string_to_lowercase(myStr);
+		}
 		if (showStatusBits)
 		{
 			JSONNODE* statusBit = json_new(JSON_NODE);
@@ -312,8 +343,14 @@ namespace opensea_parser {
 	//!   \return void
 	//
 	//-----------------------------------------------------------------------------
-	inline void set_json_bool_With_Status(JSONNODE* nowNode, const std::string& myStr, uint64_t value, bool showStatusBits)
+	inline void set_json_bool_With_Status(JSONNODE* nowNode, const std::string& header, uint64_t value, bool showStatusBits)
 	{
+		std::string myStr = header;
+		if (g_convertHeaderToLowercase)
+		{
+			opensea_parser::std_replace_spaces_with_underscore(myStr);
+			opensea_parser::std_string_to_lowercase(myStr);
+		}
 		if (showStatusBits)
 		{
 			JSONNODE* bigBit = json_new(JSON_NODE);
