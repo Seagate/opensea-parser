@@ -308,8 +308,9 @@ void CLog::read_In_Log()
 
             if (m_bufferData != M_NULLPTR)
             {
-                v_Buff.insert(v_Buff.end(), &m_bufferData[0], &m_bufferData[m_log->secure->fileSize]);
-                if (v_Buff.size() == 0)
+                //v_Buff.insert(v_Buff.end(), &m_bufferData[0], &m_bufferData[m_log->secure->fileSize]);
+                v_Buff.assign(m_bufferData, m_bufferData + m_log->secure->fileSize);
+                if (v_Buff.empty())
                 {
                     m_logStatus = eReturnValues::INVALID_LENGTH;
                 }

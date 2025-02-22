@@ -69,11 +69,7 @@ namespace opensea_parser {
         inline bool get_vBuffer(std::vector<uint8_t>& buff)
         {
             buff = v_Buff;
-            if (buff.size() == 0)
-            {
-                return false;
-            }
-            return true;
+            return !buff.empty(); // Return true if the vector is not empty
         };
         char * get_log() { return m_bufferData; };
         inline eReturnValues get_Log_Status(){ return m_logStatus; };
