@@ -129,8 +129,9 @@ namespace opensea_parser {
 			set_Json_Bool(bigBit, "Field Supported", (value & BIT63) == BIT63);
 			set_Json_Bool(bigBit, "Field Valid", (value & BIT62) == BIT62);
 
-			value = check_Status_Strip_Status(static_cast<uint64_t>(value));
-			json_push_back(bigBit, json_new_i(myStr.c_str(), value));
+			//value = check_Status_Strip_Status(static_cast<uint64_t>(value));
+			int64_t reallo = check_for_signed_int(check_Status_Strip_Status(static_cast<uint64_t>(value)), 8);
+			json_push_back(bigBit, json_new_i(myStr.c_str(), reallo));
 			json_push_back(nowNode, bigBit);
 		}
 		else
@@ -141,8 +142,9 @@ namespace opensea_parser {
 			}
 			else
 			{
-				value = check_Status_Strip_Status(static_cast<uint64_t>(value));
-				json_push_back(nowNode, json_new_i(myStr.c_str(), value));
+				//value = check_Status_Strip_Status(static_cast<uint64_t>(value));
+				int64_t reallo = check_for_signed_int(check_Status_Strip_Status(static_cast<uint64_t>(value)), 8);
+				json_push_back(nowNode, json_new_i(myStr.c_str(), reallo));
 			}
 		}
 	}
