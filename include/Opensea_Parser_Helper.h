@@ -292,7 +292,14 @@ namespace opensea_parser {
 	{
 		if (check_For_Active_Status(&value))
 		{
-			value = value & UINT64_C(0x00FFFFFFFFFFFFFF);
+			if (M_Byte7(value) != UINT8_C(0xFF))
+			{
+				value = value & UINT64_C(0x00FFFFFFFFFFFFFF);
+			}
+			else
+			{
+				value = 0;
+			}
 		}
 		else
 		{
@@ -404,6 +411,10 @@ namespace opensea_parser {
             {
                 json_push_back(nowNode, json_new_i(myStr.c_str(), static_cast<json_int_t>(statusValue)));
             }
+			else if ((M_IGETBITRANGE(statusValue, 63, 59) == 0) && check_Status_Strip_Status(value) == 0)
+			{
+				json_push_back(nowNode, json_new_i(myStr.c_str(), static_cast<json_int_t>(statusValue)));
+			}
             else
             {
 				if (g_parseNULL && check_For_Active_Status(&value) == false)
