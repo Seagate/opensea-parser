@@ -79,7 +79,7 @@ inline bool check_For_Active_Status(const uint64_t *value)
 // *****************************************************************************
 CAta_Identify_log::CAta_Identify_log()
     : m_name("ATA Identify Log")
-    , pData(NULL)
+    , pData(M_NULLPTR)
     , m_status(eReturnValues::IN_PROGRESS)
     , m_sDriveInfo()
 {
@@ -107,7 +107,7 @@ CAta_Identify_log::CAta_Identify_log(uint8_t *buffer)
     , m_status(eReturnValues::IN_PROGRESS)
     , m_sDriveInfo()
 {
-    if (pData != NULL)
+    if (pData != M_NULLPTR)
     {
         parse_Device_Info();
         m_status = eReturnValues::IN_PROGRESS;
@@ -134,7 +134,7 @@ CAta_Identify_log::CAta_Identify_log(uint8_t *buffer)
 //---------------------------------------------------------------------------
 CAta_Identify_log::CAta_Identify_log(const std::string & fileName)
     : m_name("ATA Identify Log")
-    , pData(NULL)
+    , pData(M_NULLPTR)
     , m_status(eReturnValues::IN_PROGRESS)
     , m_sDriveInfo()
 {
@@ -142,7 +142,7 @@ CAta_Identify_log::CAta_Identify_log(const std::string & fileName)
     cCLog = new CLog(fileName);
     if (cCLog->get_Log_Status() == eReturnValues::SUCCESS)
     {
-        if (cCLog->get_Buffer() != NULL)
+        if (cCLog->get_Buffer() != M_NULLPTR)
         {
             // create a buffer for the first part of the buffer to check to make sure it is not a sas log
             uint8_t* idCheckBuf = new uint8_t[sizeof(sLogPageStruct)];
@@ -470,7 +470,7 @@ eReturnValues CAta_Identify_log::parse_Device_Info()
     }
     else
     {
-        m_sDriveInfo.sTrans.transportType = M_GETBITRANGE(identWordPtr[222], 15, 12);
+        m_sDriveInfo.sTrans.transportType = get_8bit_range_uint16(identWordPtr[222], 15, 12);
         m_sDriveInfo.sTrans.transportCounter = 0;
         m_sDriveInfo.sTrans.transportBits = static_cast<uint16_t>(identWordPtr[222] & UINT16_C(0x0FFF));
         for (m_sDriveInfo.sTrans.transportCounter = 0; m_sDriveInfo.sTrans.transportCounter < 11; m_sDriveInfo.sTrans.transportCounter++)
@@ -1059,7 +1059,7 @@ CAta_Identify_Log_00::CAta_Identify_Log_00(uint8_t *Buffer)
     , m_pLog0()
 {
     pData = Buffer;
-    if (pData != NULL)
+    if (pData != M_NULLPTR)
     {
         m_pLog0 = reinterpret_cast<sLogPage00 *>(pData);
         m_status = eReturnValues::SUCCESS;
@@ -1197,7 +1197,7 @@ CAta_Identify_Log_02::CAta_Identify_Log_02(uint8_t *Buffer)
     , m_status(eReturnValues::IN_PROGRESS)
     , pCapacity()
 {
-    if (pData != NULL)
+    if (pData != M_NULLPTR)
     {
         m_status = eReturnValues::SUCCESS;
     }
@@ -1431,7 +1431,7 @@ CAta_Identify_Log_03::CAta_Identify_Log_03(uint8_t *Buffer)
     , m_sDownloadMicrocode()
     , m_sSCTCap()
 {
-    if (pData != NULL)
+    if (pData != M_NULLPTR)
     {
         m_status = eReturnValues::SUCCESS;
     }
@@ -2761,7 +2761,7 @@ CAta_Identify_Log_04::CAta_Identify_Log_04(uint8_t *Buffer)
     , m_FS()
 {
     pData = Buffer;
-    if (pData != NULL)
+    if (pData != M_NULLPTR)
     {
         m_status = eReturnValues::SUCCESS;
     }
@@ -3400,7 +3400,7 @@ CAta_Identify_Log_05::CAta_Identify_Log_05(uint8_t *Buffer)
     , m_pPrintable()
 {
     pData = Buffer;
-    if (pData != NULL)
+    if (pData != M_NULLPTR)
     {
         m_status = eReturnValues::SUCCESS;
     }
@@ -3442,7 +3442,7 @@ CAta_Identify_Log_05::~CAta_Identify_Log_05()
 
 bool CAta_Identify_Log_05::create_Serial_Number()
 {
-    if (m_pLog->serialNumber != NULL)
+    if (m_pLog->serialNumber != M_NULLPTR)
     {
         m_pPrintable->serialStr.assign(reinterpret_cast<const char*>(&m_pLog->serialNumber), LOG5_SERIAL_NUMBER);
         byte_swap_std_string(m_pPrintable->serialStr);
@@ -3471,7 +3471,7 @@ bool CAta_Identify_Log_05::create_Serial_Number()
 
 bool CAta_Identify_Log_05::create_Firmware_Rev()
 {
-    if (m_pLog->firmwareRev != NULL)
+    if (m_pLog->firmwareRev != M_NULLPTR)
     {
         m_pPrintable->firmwareStr.assign(reinterpret_cast<const char*>(&m_pLog->firmwareRev), LOG5_FIRMWARE_REV);
         byte_swap_std_string(m_pPrintable->firmwareStr);
@@ -3501,7 +3501,7 @@ bool CAta_Identify_Log_05::create_Firmware_Rev()
 
 bool CAta_Identify_Log_05::create_Model_Number()
 {
-    if (m_pLog->modelNumber != NULL)
+    if (m_pLog->modelNumber != M_NULLPTR)
     {
         m_pPrintable->modelNumberStr.assign(reinterpret_cast<const char*>(&m_pLog->modelNumber), LOG5_MODEL_NUMBER);
         byte_swap_std_string(m_pPrintable->modelNumberStr);
@@ -3530,7 +3530,7 @@ bool CAta_Identify_Log_05::create_Model_Number()
 //---------------------------------------------------------------------------
 bool CAta_Identify_Log_05::create_Product_string()
 {
-    if (m_pLog->productInformation != NULL)
+    if (m_pLog->productInformation != M_NULLPTR)
     {
         m_pPrintable->productStr.assign(reinterpret_cast<const char*>(&m_pLog->productInformation), LOG5_PRODUCT_INFO);
         byte_swap_std_string(m_pPrintable->productStr);
@@ -3563,7 +3563,7 @@ bool CAta_Identify_Log_05::get_printables(JSONNODE *pageInfo)
     printf("Device String Page \n");
 
 #endif
-    if (m_pLog != NULL)
+    if (m_pLog != M_NULLPTR)
     {
         if (!create_Serial_Number())
         {
@@ -3686,7 +3686,7 @@ CAta_Identify_Log_06::CAta_Identify_Log_06(uint8_t *Buffer)
     , m_sSInformation()
 {
     pData = Buffer;
-    if (pData != NULL)
+    if (pData != M_NULLPTR)
     {
         m_status = eReturnValues::SUCCESS;
     }
@@ -4141,7 +4141,7 @@ CAta_Identify_Log_07::CAta_Identify_Log_07(uint8_t *Buffer)
     , m_hardwareRR()
 {
     pData = Buffer;
-    if (pData != NULL)
+    if (pData != M_NULLPTR)
     {
         m_status = eReturnValues::SUCCESS;
     }
@@ -4238,13 +4238,13 @@ eReturnValues CAta_Identify_Log_07::get_Log_Page07(uint8_t *lp7pData, JSONNODE *
 CAta_Identify_Log_08::CAta_Identify_Log_08(uint8_t *Buffer)
     :m_name("ATA Identify Log Page 08")
     , m_status(eReturnValues::IN_PROGRESS)
-    , m_pLog(NULL)
+    , m_pLog(M_NULLPTR)
     , m_SATACap()
     , m_CurrentSet()
 {
 
     pData = Buffer;
-    if (pData != NULL)
+    if (pData != M_NULLPTR)
     {
         m_status = eReturnValues::SUCCESS;
     }
@@ -4769,7 +4769,7 @@ CAta_Identify_Log_30::CAta_Identify_Log_30(uint8_t *pBufferData)
     , m_name("log page 30")
     , m_status(eReturnValues::IN_PROGRESS)
 {
-    if (pData != NULL)
+    if (pData != M_NULLPTR)
     {
         m_status = eReturnValues::SUCCESS;
     }
@@ -4800,7 +4800,7 @@ CAta_Identify_Log_30::CAta_Identify_Log_30(const std::string & fileName)
     cCLog = new CLog(fileName);
     if (cCLog->get_Log_Status() == eReturnValues::SUCCESS)
     {
-        if (cCLog->get_Buffer() != NULL)
+        if (cCLog->get_Buffer() != M_NULLPTR)
         {
             size_t bufferSize = cCLog->get_Size();
             pData = new uint8_t[cCLog->get_Size()];								// new a buffer to the point				
@@ -4848,7 +4848,7 @@ CAta_Identify_Log_30::CAta_Identify_Log_30(const std::string & fileName)
 //-------------------------------------------------------------------------
 CAta_Identify_Log_30::~CAta_Identify_Log_30()
 {
-    if (pData != NULL)
+    if (pData != M_NULLPTR)
     {
         delete[] pData;
     }

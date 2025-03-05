@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\seagate">
+      <UniqueIdentifier>{232d6676-53ad-4d53-8393-390f85909456}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\seagate">
+      <UniqueIdentifier>{a2f8b53e-4396-4e43-8ea6-4e69d06cdb6e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -37,18 +43,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\include\Opensea_Parser_Helper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\include\Seagate\CAta_Farm_Log.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\include\Seagate\CFARM_Log.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\include\Seagate\CScsi_Farm_Log.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\include\Seagate\Farm_Types.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\include\CAta_Ext_Comprehensive_Log.h">
@@ -114,15 +108,6 @@
     <ClInclude Include="..\..\..\..\include\CScsi_Application_Client_Log.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\include\Seagate\Farm_Helper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\include\Seagate\Ata_Farm_Types.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\include\Seagate\Scsi_Farm_Types.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\include\Identify_Log_Types.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -135,14 +120,35 @@
     <ClInclude Include="..\..\..\..\include\CAta_SMART_Log_Dir.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\include\Seagate\Farm_Common.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\include\CScsi_Page_19h_Cache_Memory_Statistics_Log.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\include\CScsi_Page_19h_Command_Duration_Limits_Log.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\include\Seagate\Ata_Farm_Types.h">
+      <Filter>Header Files\seagate</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\include\Seagate\CAta_Farm_Log.h">
+      <Filter>Header Files\seagate</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\include\Seagate\CFARM_Log.h">
+      <Filter>Header Files\seagate</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\include\Seagate\CScsi_Farm_Log.h">
+      <Filter>Header Files\seagate</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\include\Seagate\Farm_Common.h">
+      <Filter>Header Files\seagate</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\include\Seagate\Farm_Helper.h">
+      <Filter>Header Files\seagate</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\include\Seagate\Farm_Types.h">
+      <Filter>Header Files\seagate</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\include\Seagate\Scsi_Farm_Types.h">
+      <Filter>Header Files\seagate</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -162,12 +168,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\src\CScsi_Log.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\src\Seagate\CAta_Farm_Log.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\src\Seagate\CFARM_Log.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\src\CAta_Ext_Comprehensive_Log.cpp">
@@ -233,9 +233,6 @@
     <ClCompile Include="..\..\..\..\src\Opensea_Parser_Helper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\src\Seagate\CScsi_Farm_Log.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\src\CScsi_Solid_State_Drive_Log.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -245,14 +242,23 @@
     <ClCompile Include="..\..\..\..\src\CAta_SMART_Log_Dir.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\src\Seagate\Farm_Common.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\src\CScsi_Page_19h_Cache_Memory_Statistics_Log.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\src\CScsi_Page_19h_Command_Duration_Limits_Log.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\Seagate\CAta_Farm_Log.cpp">
+      <Filter>Source Files\seagate</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\Seagate\CFARM_Log.cpp">
+      <Filter>Source Files\seagate</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\Seagate\CScsi_Farm_Log.cpp">
+      <Filter>Source Files\seagate</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\Seagate\Farm_Common.cpp">
+      <Filter>Source Files\seagate</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

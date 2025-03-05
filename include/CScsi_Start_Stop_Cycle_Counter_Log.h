@@ -14,7 +14,8 @@
 // \file CScsi_Start_Stop_Cycle_Counter_Log.h  Definition of Start Stop counter log 
 #pragma once
 #include <string>
-#include "common.h"
+#include "common_types.h"
+#include "string_utils.h"
 #include "libjson.h"
 #include "Opensea_Parser_Helper.h"
 

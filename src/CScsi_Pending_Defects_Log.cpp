@@ -60,7 +60,7 @@ CScsiPendingDefectsLog::CScsiPendingDefectsLog()
 //
 //---------------------------------------------------------------------------
 CScsiPendingDefectsLog::CScsiPendingDefectsLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength)
-	: pData(NULL)
+	: pData(M_NULLPTR)
 	, m_PlistName("Pending Defect Log")
 	, m_PlistStatus(eReturnValues::IN_PROGRESS)
 	, m_PageLength(pageLength)
@@ -79,7 +79,7 @@ CScsiPendingDefectsLog::CScsiPendingDefectsLog(uint8_t * buffer, size_t bufferSi
 #else
     memcpy_s(pData, pageLength, buffer, pageLength);// copy the buffer data to the class member pBuf
 #endif
-	if (pData != NULL)
+	if (pData != M_NULLPTR)
 	{
 		m_PlistStatus = eReturnValues::IN_PROGRESS;
 	}
@@ -106,10 +106,10 @@ CScsiPendingDefectsLog::CScsiPendingDefectsLog(uint8_t * buffer, size_t bufferSi
 //---------------------------------------------------------------------------
 CScsiPendingDefectsLog::~CScsiPendingDefectsLog()
 {
-    if (pData != NULL)
+    if (pData != M_NULLPTR)
     {
         delete[] pData;
-        pData = NULL;
+        pData = M_NULLPTR;
     }
 }
 //-----------------------------------------------------------------------------

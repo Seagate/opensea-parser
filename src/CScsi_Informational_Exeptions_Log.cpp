@@ -58,7 +58,7 @@ CScsiInformationalExeptionsLog::CScsiInformationalExeptionsLog()
 //
 //---------------------------------------------------------------------------
 CScsiInformationalExeptionsLog::CScsiInformationalExeptionsLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength)
-	: pData(NULL)
+	: pData(M_NULLPTR)
 	, m_infoName("Informational Exceptions Log")
 	, m_infoStatus(eReturnValues::IN_PROGRESS)
 	, m_PageLength(pageLength)
@@ -75,7 +75,7 @@ CScsiInformationalExeptionsLog::CScsiInformationalExeptionsLog(uint8_t * buffer,
 #else
     memcpy_s(pData, bufferSize, buffer, bufferSize);// copy the buffer data to the class member pBuf
 #endif
-	if (pData != NULL)
+	if (pData != M_NULLPTR)
 	{
 		m_infoStatus = eReturnValues::IN_PROGRESS;
 	}
@@ -102,10 +102,10 @@ CScsiInformationalExeptionsLog::CScsiInformationalExeptionsLog(uint8_t * buffer,
 //---------------------------------------------------------------------------
 CScsiInformationalExeptionsLog::~CScsiInformationalExeptionsLog()
 {
-    if (pData != NULL)
+    if (pData != M_NULLPTR)
     {
         delete[] pData;
-        pData = NULL;
+        pData = M_NULLPTR;
     }
 }
 //-----------------------------------------------------------------------------
@@ -172,7 +172,7 @@ void CScsiInformationalExeptionsLog::process_Informational_Exceptions_Data(JSONN
 eReturnValues CScsiInformationalExeptionsLog::get_Informational_Exceptions_Data(JSONNODE *masterData)
 {
 	eReturnValues retStatus = eReturnValues::IN_PROGRESS;
-	if (pData != NULL)
+	if (pData != M_NULLPTR)
 	{
 		JSONNODE* pageInfo;
 

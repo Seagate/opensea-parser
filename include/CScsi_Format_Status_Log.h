@@ -13,7 +13,8 @@
 // \file CScsi_Format_Status_Log.h  Format Status log page reports information about the most recent eReturnValues::SUCCESSful format operation
 #pragma once
 #include <string>
-#include "common.h"
+#include "common_types.h"
+#include "bit_manip.h"
 #include "libjson.h"
 #include "Opensea_Parser_Helper.h"
 

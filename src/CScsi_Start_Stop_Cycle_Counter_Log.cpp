@@ -32,7 +32,7 @@ using namespace opensea_parser;
 //
 //---------------------------------------------------------------------------
 CScsiStartStop::CScsiStartStop()
-    : pData(NULL)
+    : pData(M_NULLPTR)
     , m_SSName("Start Stop Log")
     , m_StartStatus(eReturnValues::IN_PROGRESS)
     , m_PageLength(0)
@@ -56,14 +56,14 @@ CScsiStartStop::CScsiStartStop()
 //
 //---------------------------------------------------------------------------
 CScsiStartStop::CScsiStartStop(uint8_t * buffer, size_t bufferSize, JSONNODE *masterData)
-    : pData(NULL)
+    : pData(M_NULLPTR)
     , m_SSName("Start Stop Log")
     , m_StartStatus(eReturnValues::IN_PROGRESS)
     , m_PageLength(0)
     , m_SubPage(0)
     , m_Page(0)
 {
-    if (buffer != NULL)
+    if (buffer != M_NULLPTR)
     {
         pData = new uint8_t[bufferSize];								// new a buffer to the point				
 #ifndef __STDC_SECURE_LIB__
@@ -71,7 +71,7 @@ CScsiStartStop::CScsiStartStop(uint8_t * buffer, size_t bufferSize, JSONNODE *ma
 #else
         memcpy_s(pData, bufferSize, buffer, bufferSize);// copy the buffer data to the class member pBuf
 #endif
-        if (pData != NULL)
+        if (pData != M_NULLPTR)
         {
             if (bufferSize >= sizeof(sStartStopStruct))				// check for invaid log size < need to add in the size of the log page header
             {
@@ -111,10 +111,10 @@ CScsiStartStop::CScsiStartStop(uint8_t * buffer, size_t bufferSize, JSONNODE *ma
 //---------------------------------------------------------------------------
 CScsiStartStop::~CScsiStartStop()
 {
-    if (pData != NULL)
+    if (pData != M_NULLPTR)
     {
         delete[] pData;
-        pData = NULL;
+        pData = M_NULLPTR;
     }
 }
 //-----------------------------------------------------------------------------

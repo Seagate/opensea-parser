@@ -13,7 +13,7 @@
 // \file CScsi_Zoned_Device_Statistics_Log.h  Definition of Zoned Device Statistics Log
 #pragma once
 #include <string>
-#include "common.h"
+#include "common_types.h"
 #include "libjson.h"
 #include "Opensea_Parser_Helper.h"
 

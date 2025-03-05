@@ -58,7 +58,7 @@ CScsiOperationLog::CScsiOperationLog()
 //
 //---------------------------------------------------------------------------
 CScsiOperationLog::CScsiOperationLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength)
-	: pData(NULL)
+	: pData(M_NULLPTR)
 	, m_OperationName("Background Operation Log")
 	, m_OperationsStatus(eReturnValues::IN_PROGRESS)
 	, m_PageLength(pageLength)
@@ -75,7 +75,7 @@ CScsiOperationLog::CScsiOperationLog(uint8_t * buffer, size_t bufferSize, uint16
 #else
     memcpy_s(pData, pageLength, buffer, pageLength);// copy the buffer data to the class member pBuf
 #endif
-	if (pData != NULL)
+	if (pData != M_NULLPTR)
 	{
 		m_OperationsStatus = eReturnValues::IN_PROGRESS;
 	}
@@ -102,10 +102,10 @@ CScsiOperationLog::CScsiOperationLog(uint8_t * buffer, size_t bufferSize, uint16
 //---------------------------------------------------------------------------
 CScsiOperationLog::~CScsiOperationLog()
 {
-    if (pData != NULL)
+    if (pData != M_NULLPTR)
     {
         delete[] pData;
-        pData = NULL;
+        pData = M_NULLPTR;
     }
 }
 //-----------------------------------------------------------------------------
@@ -210,7 +210,7 @@ void CScsiOperationLog::process_Background_Operations_Data(JSONNODE *operationDa
 eReturnValues CScsiOperationLog::get_Background_Operations_Data(JSONNODE *masterData)
 {
 	eReturnValues retStatus = eReturnValues::IN_PROGRESS;
-	if (pData != NULL)
+	if (pData != M_NULLPTR)
 	{
 		JSONNODE *pageInfo = json_new(JSON_NODE);
 		json_set_name(pageInfo, "Background Operation Log - 15h");

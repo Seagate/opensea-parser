@@ -37,6 +37,7 @@
 #define FARM_WLDTR              0x574f524b4c445443                      //<! "WORKLDTR"
 #define FARM_SAVE               0x4641524d53415645                      //<! "FARMSAVE"
 #define FARM_LONG_SAVE          0x4641524d4c4f4e47                      //<! "FARMLONG"
+#define FARM_NNW                0x52454d52414600c0                      //<! "FARMER  "
 
 // Frame Type Identification  0x0 - 0xF
 #define CURRENT_FRAME                           0x00
@@ -55,6 +56,8 @@
 #define FARM_DRAM_COPY_FARME                    0x0D  //sata only
 #define FARM_DRAM_COPY_DIAG_FRAME               0x0E  
 #define FARM_UDS_COPY_FRAME                     0x0F
+#define FARM_NEURAL_NETWORK                     0x10
+#define FARM_AFTER_REGEN                        0x11
 #define FARM_EMPTY_FRAME                        0xff
 
 // SAS log page information
@@ -109,7 +112,9 @@ typedef struct _sFarmHeader
     uint64_t        headsSupported;                             //!< Maximum Drive Heads Supported
     uint64_t        reserved;                                   //!< Reserved
     uint64_t        reasonForFrameCapture;                      //!< Reason for Frame Capture (added 4.14)
-    _sFarmHeader() : signature(0), majorRev(0), minorRev(0), pagesSupported(0), logSize(0), pageSize(0), headsSupported(0), reserved(0), reasonForFrameCapture(0) {};
+    uint64_t        historicalFrames;                           //!< Number of Historical frames (added 4.43)
+    _sFarmHeader() : signature(0), majorRev(0), minorRev(0), pagesSupported(0), logSize(0), pageSize(0), headsSupported(0), reserved(0), 
+        reasonForFrameCapture(0), historicalFrames(0) {};
 }sFarmHeader;
 
 typedef struct _sWorkLoadStat
@@ -172,12 +177,12 @@ typedef struct _sWorkLoadStat
     union
     {
         uint64_t        numberOfWriteCmds3;                         //!< ATA - Number of Write commands from 25-50% of LBA space for last 3 SMART Summary Frames (added 4.4)
-        uint64_t        numReadTransferMid1;                      //!< SCSI - Number of Read Commands of transfer length (16KB – 512KB] for last 3 SMART Summary Frames
+        uint64_t        numReadTransferMid1;                      //!< SCSI - Number of Read Commands of transfer length (16KB - 512KB] for last 3 SMART Summary Frames
     };
     union
     {
         uint64_t        numberOfWriteCmds4;                         //!< ATA - Number of Write commands from 50-100% of LBA space for last 3 SMART Summary Frames (added 4.4)
-        uint64_t        numReadTransferMid2;                      //!< SCSI - Number of read Commands of transfer length (512KB – 2MB] for last 3 SMART Summary Frames
+        uint64_t        numReadTransferMid2;                      //!< SCSI - Number of read Commands of transfer length (512KB - 2MB] for last 3 SMART Summary Frames
     };
     union 
     {
@@ -188,16 +193,16 @@ typedef struct _sWorkLoadStat
     union 
     {
         uint64_t        numWriteTransferSmall;                      //!< SCSI - Number of Write Commands of transfer length <=16KB for last 3 SMART Summary Frames
-        uint64_t        numReadTransferMid1ATA;                      //!< ATA - Number of Read Commands of transfer length (16KB – 512KB] for last 3 SMART Summary Frames    
+        uint64_t        numReadTransferMid1ATA;                      //!< ATA - Number of Read Commands of transfer length (16KB - 512KB] for last 3 SMART Summary Frames    
     };
     union 
     {
-        uint64_t        numWriteTransferMid1;                       //!< SCSI - Number of Write Commands of transfer length (16KB – 512KB] for last 3 SMART Summary Frames
-        uint64_t        numReadTransferMid2ATA;                      //!< ATA - Number of Read Commands of transfer length (512KB – 2MB] for last 3 SMART Summary Frames
+        uint64_t        numWriteTransferMid1;                       //!< SCSI - Number of Write Commands of transfer length (16KB - 512KB] for last 3 SMART Summary Frames
+        uint64_t        numReadTransferMid2ATA;                      //!< ATA - Number of Read Commands of transfer length (512KB - 2MB] for last 3 SMART Summary Frames
     };
     union 
     {
-        uint64_t        numWriteTransferMid2;                       //!< SCSI - Number of Write Commands of transfer length (512KB – 2MB] for last 3 SMART Summary Frames
+        uint64_t        numWriteTransferMid2;                       //!< SCSI - Number of Write Commands of transfer length (512KB - 2MB] for last 3 SMART Summary Frames
         uint64_t        numReadTransferLargeATA;                      //!< ATA - Number of Read Commands of transfer length > 2MB for last 3 SMART Summary Frames    };
     };
     union 
@@ -206,8 +211,8 @@ typedef struct _sWorkLoadStat
         uint64_t        numWriteTransferSmallATA;                      //!< ATA - Number of Write Commands of transfer length <=16KB for last 3 SMART Summary Frames
     };
 
-    uint64_t        numWriteTransferMid1ATA;                      //!< ATA - Number of Read Commands of transfer length (16KB – 512KB] for last 3 SMART Summary Frames
-    uint64_t        numWriteTransferMid2ATA;                      //!< ATA - Number of Read Commands of transfer length (512KB – 2MB] for last 3 SMART Summary Frames
+    uint64_t        numWriteTransferMid1ATA;                      //!< ATA - Number of Read Commands of transfer length (16KB - 512KB] for last 3 SMART Summary Frames
+    uint64_t        numWriteTransferMid2ATA;                      //!< ATA - Number of Read Commands of transfer length (512KB - 2MB] for last 3 SMART Summary Frames
     uint64_t        numWriteTransferLargeATA;                     //!< ATA - Number of Read Commands of transfer length > 2MB for last 3 SMART Summary Frames 
     uint64_t        cntQueueDepth1;                               //!< ATA - Count of Queue Depth =1 at 30s intervals for last 3 SMART Summary Frames
     uint64_t        cntQueueDepth2;                               //!< ATA - Count of Queue Depth =2 at 30s intervals for last 3 SMART Summary Frames

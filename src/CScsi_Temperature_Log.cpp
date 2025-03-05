@@ -67,7 +67,7 @@ CScsiTemperatureLog::CScsiTemperatureLog(uint8_t * buffer, size_t bufferSize)
 	{
 		printf("%s \n", m_TempName.c_str());
 	}
-	if (buffer != NULL)
+	if (buffer != M_NULLPTR)
 	{
 		pData = buffer;
 		m_Page = reinterpret_cast<sTempLogPageStruct *>(buffer);				// set a buffer to the point to the log page info
@@ -154,7 +154,7 @@ eReturnValues CScsiTemperatureLog::get_Data(JSONNODE *masterData)
 	eReturnValues retStatus = eReturnValues::IN_PROGRESS;
 
 	size_t tempSize = sizeof(sTempLogPageStruct);
-	if (pData != NULL)
+	if (pData != M_NULLPTR)
 	{
 		JSONNODE *pageInfo = json_new(JSON_NODE);
 		json_set_name(pageInfo, "Temperature Log Page - Dh");

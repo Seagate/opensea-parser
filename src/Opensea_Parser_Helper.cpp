@@ -16,6 +16,7 @@ eVerbosityLevels     g_verbosity = eVerbosityLevels::VERBOSITY_DEFAULT;
 eDataFormat         g_dataformat = eDataFormat::JSON_DATA;
 bool                g_parseUnknown = true;
 bool                g_parseNULL = false;
+bool                g_convertHeaderToLowercase = false;
 time_t              g_currentTime;
 char                g_currentTimeString[64];
 char                *g_currentTimeStringPtr = g_currentTimeString;

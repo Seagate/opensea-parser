@@ -13,7 +13,7 @@
 // \file CScsi_Supported_LogPages_Log.h Definition for parsing the supported log pages 
 #pragma once
 #include <string>
-#include "common.h"
+#include "common_types.h"
 #include "libjson.h"
 #include "Opensea_Parser_Helper.h"
 

@@ -13,7 +13,7 @@
 // \file CScsi_Pending_Defects_Log.h  Definition for parsing the pending defecs
 #pragma once
 #include <string>
-#include "common.h"
+#include "common_types.h"
 #include "libjson.h"
 #include "Opensea_Parser_Helper.h"
 

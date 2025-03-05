@@ -79,7 +79,7 @@ CSCSI_Farm_Log::CSCSI_Farm_Log(uint8_t* bufferData, size_t bufferSize, uint8_t s
     , m_copies(0)
     , m_MajorRev(0)
     , m_MinorRev(0)
-    , pBuf(NULL)
+    , pBuf(M_NULLPTR)
     , m_status(eReturnValues::IN_PROGRESS)
     , m_logParam()
     , m_pageParam()
@@ -104,7 +104,7 @@ CSCSI_Farm_Log::CSCSI_Farm_Log(uint8_t* bufferData, size_t bufferSize, uint8_t s
 #else
     memcpy_s(pBuf, bufferSize, bufferData, bufferSize);// copy the buffer data to the class member pBuf
 #endif
-    if (pBuf != NULL)
+    if (pBuf != M_NULLPTR)
     {
         if (init_Header_Data(bufferSize) == eReturnValues::SUCCESS)							// init the data for getting the log
         {
@@ -148,7 +148,7 @@ CSCSI_Farm_Log::CSCSI_Farm_Log( uint8_t *bufferData, size_t bufferSize, uint8_t 
 	, m_copies(0)
     , m_MajorRev(0)
     , m_MinorRev(0)
-    , pBuf(NULL)
+    , pBuf(M_NULLPTR)
     , m_status(eReturnValues::IN_PROGRESS)                                
 	, m_logParam()
 	, m_pageParam()
@@ -173,7 +173,7 @@ CSCSI_Farm_Log::CSCSI_Farm_Log( uint8_t *bufferData, size_t bufferSize, uint8_t 
 #else
     memcpy_s(pBuf, bufferSize, bufferData, bufferSize);// copy the buffer data to the class member pBuf
 #endif
-    if (pBuf != NULL)
+    if (pBuf != M_NULLPTR)
     {
         if (init_Header_Data(bufferSize) == eReturnValues::SUCCESS)							// init the data for getting the log
         {
@@ -211,7 +211,7 @@ CSCSI_Farm_Log::~CSCSI_Farm_Log()
     {
         vFarmFrame.clear();                                    // clear the vector
     }
-    if (m_pHeader != NULL)
+    if (m_pHeader != M_NULLPTR)
     {
         delete m_pHeader;
     }
@@ -233,7 +233,7 @@ CSCSI_Farm_Log::~CSCSI_Farm_Log()
 //---------------------------------------------------------------------------
 eReturnValues CSCSI_Farm_Log::init_Header_Data(size_t bufferSize)
 {
-    if (pBuf == NULL)
+    if (pBuf == M_NULLPTR)
     {
         return eReturnValues::MEMORY_FAILURE;
     }
@@ -1460,7 +1460,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
         printf("SCSI parse FARM Log\n");
     }
 
-    if (pBuf == NULL)
+    if (pBuf == M_NULLPTR)
     {
         return eReturnValues::FAILURE;
     }
@@ -2186,7 +2186,7 @@ eReturnValues CSCSI_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint
 //!   \return eReturnValues::SUCCESS
 //
 //---------------------------------------------------------------------------
-eReturnValues CSCSI_Farm_Log::get_Regen_Head_Mask(JSONNODE* headMask, uint64_t mask)
+eReturnValues CSCSI_Farm_Log::get_Regen_Head_Mask(JSONNODE* headMask, uint64_t mask, bool showStatus)
 {
     eReturnValues status = eReturnValues::IN_PROGRESS;
     if (opensea_parser::check_For_Active_Status(&mask))
@@ -2196,14 +2196,14 @@ eReturnValues CSCSI_Farm_Log::get_Regen_Head_Mask(JSONNODE* headMask, uint64_t m
         for (uint32_t i = 0; i <= m_MaxHeads; i++)
         {
             temp.str(""); temp.clear();
-            temp << "head " << std::dec << i;
+            temp << "Regen Head Mask " << std::dec << i;
             if (tempHeadMask & BIT0)
             {
-                set_json_string_With_Status(headMask, temp.str().c_str(), "bad", mask, m_showStatusBits);
+                set_json_string_With_Status(headMask, temp.str().c_str(), "bad", mask, showStatus);
             }
             else
             {
-                set_json_string_With_Status(headMask, temp.str().c_str(), "good", mask, m_showStatusBits);
+                set_json_string_With_Status(headMask, temp.str().c_str(), "good", mask, showStatus);
             }
             tempHeadMask >>= 1;
         }
@@ -2211,7 +2211,7 @@ eReturnValues CSCSI_Farm_Log::get_Regen_Head_Mask(JSONNODE* headMask, uint64_t m
     }
     else
     {
-        set_json_string_With_Status(headMask, "HeadMask", "NULL", mask, m_showStatusBits);
+        set_json_string_With_Status(headMask, "Regen Head Mask", "", mask, showStatus);
         status = eReturnValues::NOT_SUPPORTED;
     }
     return status;
@@ -2271,7 +2271,10 @@ eReturnValues CSCSI_Farm_Log::print_General_Drive_Information_Continued(JSONNODE
     }
     json_set_name(pageInfo, header.c_str());
 
-    set_json_64_bit_With_Status(pageInfo, "Depopulation Head Mask", vFarmFrame.at(page).gDPage06.Depop, false, m_showStatusBits);                                   //!< Depopulation Head Mask
+    // customer wanted to see data in hex
+    temp.str(""); temp.clear();
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(8) << M_DoubleWord0(opensea_parser::check_Status_Strip_Status(vFarmFrame.at(page).gDPage06.Depop));
+    set_json_string_With_Status(pageInfo, "Depopulation Head Mask", temp.str().c_str(), vFarmFrame.at(page).gDPage06.Depop, m_showStatusBits);
 
     std::string type = "not supported";
     uint64_t pageDriveType = vFarmFrame.at(page).gDPage06.driveType;
@@ -2307,7 +2310,7 @@ eReturnValues CSCSI_Farm_Log::print_General_Drive_Information_Continued(JSONNODE
     set_json_float_With_Status(pageInfo, "Last Servo Spin up Time (sec)", tempValue, vFarmFrame.at(page).gDPage06.servoSpinUpTime, m_showStatusBits);			//!< time to ready of the last power cycle
 
     set_json_bool_With_Status(pageInfo, "HAMR Write Protect", vFarmFrame.at(page).gDPage06.writeProtect, m_showStatusBits);
-    status = get_Regen_Head_Mask(pageInfo, vFarmFrame.at(page).gDPage06.regenHeadMask);
+    status = get_Regen_Head_Mask(pageInfo, vFarmFrame.at(page).gDPage06.regenHeadMask, m_showStatusBits);
     if ((status == eReturnValues::NOT_SUPPORTED) || (status == eReturnValues::SUCCESS))
     {
         status = eReturnValues::SUCCESS;
@@ -2632,22 +2635,22 @@ eReturnValues CSCSI_Farm_Log::print_Enviroment_Information(JSONNODE *masterData,
 
         if (m_MajorRev >= 4 || m_showStatic == true)
         {
-        TempValue = static_cast<double>(M_DoubleWordInt0(check_Status_Strip_Status(vFarmFrame.at(page).environmentPage.average12v))) * static_cast<double>(0.001F);
+        TempValue = static_cast<double>(M_DoubleWord0(check_Status_Strip_Status(vFarmFrame.at(page).environmentPage.average12v))) * static_cast<double>(0.001F);
         set_json_float_With_Status(pageInfo, "12V Power Average", TempValue, vFarmFrame.at(page).environmentPage.average12v, m_showStatusBits);
             if (m_MinorRev >= 9 || m_showStatic == true)
         {
-            TempValue = static_cast<double>(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).environmentPage.min12v))) * static_cast<double>(0.001F);
+            TempValue = static_cast<double>(M_Word0(check_Status_Strip_Status(vFarmFrame.at(page).environmentPage.min12v))) * static_cast<double>(0.001F);
             set_json_float_With_Status(pageInfo, "12V Power Minimum", TempValue, vFarmFrame.at(page).environmentPage.min12v, m_showStatusBits);
-            TempValue = static_cast<double>(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).environmentPage.max12v))) * static_cast<double>(0.001F);
+            TempValue = static_cast<double>(M_Word0(check_Status_Strip_Status(vFarmFrame.at(page).environmentPage.max12v))) * static_cast<double>(0.001F);
             set_json_float_With_Status(pageInfo, "12V Power Maximum", TempValue, vFarmFrame.at(page).environmentPage.max12v, m_showStatusBits);
         }
-        TempValue = static_cast<double>(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).environmentPage.average5v))) * static_cast<double>(0.001F);
+        TempValue = static_cast<double>(M_Word0(check_Status_Strip_Status(vFarmFrame.at(page).environmentPage.average5v))) * static_cast<double>(0.001F);
         set_json_float_With_Status(pageInfo, "5V Power Average", TempValue, vFarmFrame.at(page).environmentPage.average5v, m_showStatusBits);
             if (m_MinorRev >= 9 || m_showStatic == true)
         {
-            TempValue = static_cast<double>(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).environmentPage.min5v))) * static_cast<double>(0.001F);
+            TempValue = static_cast<double>(M_Word0(check_Status_Strip_Status(vFarmFrame.at(page).environmentPage.min5v))) * static_cast<double>(0.001F);
             set_json_float_With_Status(pageInfo, "5V Power Minimum", TempValue, vFarmFrame.at(page).environmentPage.min5v, m_showStatusBits);
-            TempValue = static_cast<double>(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).environmentPage.max5v))) * static_cast<double>(0.001F);
+            TempValue = static_cast<double>(M_Word0(check_Status_Strip_Status(vFarmFrame.at(page).environmentPage.max5v))) * static_cast<double>(0.001F);
             set_json_float_With_Status(pageInfo, "5V Power Maximum", TempValue, vFarmFrame.at(page).environmentPage.max5v, m_showStatusBits);
         }
     }
@@ -2703,22 +2706,22 @@ eReturnValues CSCSI_Farm_Log::print_Enviroment_Statistics_Page_07(JSONNODE *mast
     }
     json_set_name(pageInfo, temp.str().c_str());
 
-    double TempValue = static_cast<double>(M_Word0(check_Status_Strip_Status(vFarmFrame.at(page).envStatPage07.average12v)) * static_cast<double>(0.001F));
+    double TempValue = static_cast<double>(M_Word0(check_Status_Strip_Status(vFarmFrame.at(page).envStatPage07.average12v)) * 0.001L);
     set_json_float_With_Status(pageInfo, "Current 12 volts", TempValue, vFarmFrame.at(page).envStatPage07.average12v, m_showStatusBits);
     if (m_MinorRev > 9 || m_showStatic == true)
     {
-        TempValue = static_cast<double>(M_Word0(check_Status_Strip_Status(vFarmFrame.at(page).envStatPage07.min12v)) * static_cast<double>(0.001F));
+        TempValue = static_cast<double>(M_Word0(check_Status_Strip_Status(vFarmFrame.at(page).envStatPage07.min12v)) * 0.001L);
         set_json_float_With_Status(pageInfo, "Minimum 12 volts", TempValue, vFarmFrame.at(page).envStatPage07.min12v, m_showStatusBits);
-        TempValue = static_cast<double>(M_Word0(check_Status_Strip_Status(vFarmFrame.at(page).envStatPage07.max12v)) * static_cast<double>(0.001F));
+        TempValue = static_cast<double>(M_Word0(check_Status_Strip_Status(vFarmFrame.at(page).envStatPage07.max12v)) * 0.001L);
         set_json_float_With_Status(pageInfo, "Maximum 12 volts", TempValue, vFarmFrame.at(page).envStatPage07.max12v, m_showStatusBits);
     }
-    TempValue = static_cast<double>(M_Word0(check_Status_Strip_Status(vFarmFrame.at(page).envStatPage07.average5v)) * static_cast<double>(0.001F));
+    TempValue = static_cast<double>(M_Word0(check_Status_Strip_Status(vFarmFrame.at(page).envStatPage07.average5v)) * 0.001L);
     set_json_float_With_Status(pageInfo, "Current 5 volts", TempValue, vFarmFrame.at(page).envStatPage07.average5v, m_showStatusBits);
     if (m_MinorRev > 9 || m_showStatic == true)
     {
-        TempValue = static_cast<double>(M_Word0(check_Status_Strip_Status(vFarmFrame.at(page).envStatPage07.min5v)) * static_cast<double>(0.001F));
+        TempValue = static_cast<double>(M_Word0(check_Status_Strip_Status(vFarmFrame.at(page).envStatPage07.min5v)) * 0.001L);
         set_json_float_With_Status(pageInfo, "Minimum 5 volts", TempValue, vFarmFrame.at(page).envStatPage07.min5v, m_showStatusBits);
-        TempValue = static_cast<double>(M_Word0(check_Status_Strip_Status(vFarmFrame.at(page).envStatPage07.max5v)) * static_cast<double>(0.001F));
+        TempValue = static_cast<double>(M_Word0(check_Status_Strip_Status(vFarmFrame.at(page).envStatPage07.max5v)) * 0.001L);
         set_json_float_With_Status(pageInfo, "Maximum 5 volts", TempValue, vFarmFrame.at(page).envStatPage07.max5v, m_showStatusBits);
     }
 
@@ -2917,24 +2920,24 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSON
         case eSASLogPageTypes::RESERVED_FOR_FUTURE_HEAD_10:
             break;
         case eSASLogPageTypes::MR_HEAD_RESISTANCE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD:
-            if (vFarmFrame.at(page).mrHeadResistanceByHead.headValue[0] & BIT49)
+            if (vFarmFrame.at(page).mrHeadResistanceByHead.headValue[0] & BIT48)
             {
                 if (g_verbosity >= eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE)
                 {
-                    // version 4.34 MR Head Resistance became a percentage. Check bit 49 if set then it is a percentage
+                    // version 4.34 MR Head Resistance became a percentage. Check bit 48 if set then it is a percentage
                     for (loopCount = 0; loopCount < m_heads; ++loopCount)
                     {
-                        int64_t delta = M_IGETBITRANGE((check_Status_Strip_Status(vFarmFrame.at(page).mrHeadResistanceByHead.headValue[loopCount])), 48, 0);
+                        int64_t delta = M_IGETBITRANGE((check_Status_Strip_Status(vFarmFrame.at(page).mrHeadResistanceByHead.headValue[loopCount])), 47, 0);
                         whole = M_WordInt2(delta);							                             // get 5:4 whole part of the float
                         double decimal = static_cast<double>(M_DoubleWordInt0(delta));                   // get 3:0 for the Deciaml Part of the float
                         double number = 0.0;
-                        if (whole >= 0 && ((vFarmFrame.at(page).mrHeadResistanceByHead.headValue[loopCount] & BIT49) != BIT49))
+                        if ((vFarmFrame.at(page).mrHeadResistanceByHead.headValue[loopCount] & BIT49) && (whole <= 0))
                         {
-                            number = static_cast<double>(whole) + (decimal * static_cast<double>(.0001F));
+                            number = static_cast<double>(whole) - (decimal * static_cast<double>(.0001F));
                         }
                         else
                         {
-                            number = static_cast<double>(whole) - (decimal * static_cast<double>(.0001F));
+                            number = static_cast<double>(whole) + (decimal * static_cast<double>(.0001F));
                         }
                         printf("\tMR Head Resistance percentage for Head %2" PRIu32":                    %.4lf \n", loopCount, number);       //!< [24] MR Head Resistance from most recent SMART Summary Frame by Head9,10
                     }
@@ -3075,7 +3078,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSON
             {
                 for (loopCount = 0; loopCount < m_heads; ++loopCount)
                 {
-                    printf("\tCurrent H2SAT trimmed mean bits in error Zone 0 for Head %2" PRIu32":   %0.3f \n", loopCount, static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).currentH2STTrimmedbyHeadZone0.headValue[loopCount])), 16)) * 0.10F);
+                    printf("\tCurrent H2SAT trimmed mean bits in error Zone 0 for Head %2" PRIu32":   %0.3f \n", loopCount, static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).currentH2STTrimmedbyHeadZone0.headValue[loopCount])), 16)) * 0.10);
                 }
             }
             sas_Head_Float_Data(headPage, "Current H2SAT trimmed mean bits in error Zone 0", WORD0, 0.10, vFarmFrame.at(page).currentH2STTrimmedbyHeadZone0.headValue, m_heads, m_showStatusBits, m_showStatic);
@@ -3085,7 +3088,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSON
             {
                 for (loopCount = 0; loopCount < m_heads; ++loopCount)
                 {
-                    printf("\tCurrent H2SAT trimmed mean bits in error Zone 1 for Head %2" PRIu32":   %0.3f \n", loopCount, static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).currentH2STTrimmedbyHeadZone1.headValue[loopCount])), 16)) * 0.10F);
+                    printf("\tCurrent H2SAT trimmed mean bits in error Zone 1 for Head %2" PRIu32":   %0.3f \n", loopCount, static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).currentH2STTrimmedbyHeadZone1.headValue[loopCount])), 16)) * 0.10);
                 }
             }
             sas_Head_Float_Data(headPage, "Current H2SAT trimmed mean bits in error Zone 1", WORD0, 0.10, vFarmFrame.at(page).currentH2STTrimmedbyHeadZone1.headValue, m_heads, m_showStatusBits, m_showStatic);
@@ -3095,7 +3098,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSON
             {
                 for (loopCount = 0; loopCount < m_heads; ++loopCount)
                 {
-                    printf("\tCurrent H2SAT trimmed mean bits in error Zone 2 for Head %2" PRIu32":   %0.3f \n", loopCount, static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).currentH2STTrimmedbyHeadZone2.headValue[loopCount])), 16)) * 0.10F);
+                    printf("\tCurrent H2SAT trimmed mean bits in error Zone 2 for Head %2" PRIu32":   %0.3f \n", loopCount, static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).currentH2STTrimmedbyHeadZone2.headValue[loopCount])), 16)) * 0.10);
                 }
             }
             sas_Head_Float_Data(headPage, "Current H2SAT trimmed mean bits in error Zone 2", WORD0, 0.10, vFarmFrame.at(page).currentH2STTrimmedbyHeadZone2.headValue, m_heads, m_showStatusBits, m_showStatic);
@@ -3105,7 +3108,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSON
             {
                 for (loopCount = 0; loopCount < m_heads; ++loopCount)
                 {
-                    printf("\tCurrent H2SAT iterations to converge Test Zone 0 for Head %2" PRIu32":  %0.3f \n", loopCount, static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).currentH2STIterationsByHeadZone0.headValue[loopCount])), 16) )* 0.10F);
+                    printf("\tCurrent H2SAT iterations to converge Test Zone 0 for Head %2" PRIu32":  %0.3f \n", loopCount, static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).currentH2STIterationsByHeadZone0.headValue[loopCount])), 16) )* 0.10);
                 }
             }
             sas_Head_Float_Data(headPage, "Current H2SAT iterations to converge Test Zone 0", WORD0, 0.10, vFarmFrame.at(page).currentH2STIterationsByHeadZone0.headValue, m_heads, m_showStatusBits, m_showStatic);
@@ -3115,7 +3118,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSON
             {
                 for (loopCount = 0; loopCount < m_heads; ++loopCount)
                 {
-                    printf("\tCurrent H2SAT iterations to converge Test Zone 1 for Head %2" PRIu32":  %0.3f \n", loopCount, static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).currentH2STIterationsByHeadZone1.headValue[loopCount])), 16)) * 0.10F);
+                    printf("\tCurrent H2SAT iterations to converge Test Zone 1 for Head %2" PRIu32":  %0.3f \n", loopCount, static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).currentH2STIterationsByHeadZone1.headValue[loopCount])), 16)) * 0.10);
                 }
             }
             sas_Head_Float_Data(headPage, "Current H2SAT iterations to converge Test Zone 1", WORD0, 0.10, vFarmFrame.at(page).currentH2STIterationsByHeadZone1.headValue, m_heads, m_showStatusBits, m_showStatic);
@@ -3125,7 +3128,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSON
             {
                 for (loopCount = 0; loopCount < m_heads; ++loopCount)
                 {
-                    printf("\tCurrent H2SAT iterations to converge Test Zone 2 for Head %2" PRIu32":  %0.3f \n", loopCount, static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).currentH2STIterationsByHeadZone2.headValue[loopCount])), 16))* 0.10F);
+                    printf("\tCurrent H2SAT iterations to converge Test Zone 2 for Head %2" PRIu32":  %0.3f \n", loopCount, static_cast<double>(check_for_signed_int(M_WordInt0(check_Status_Strip_Status(vFarmFrame.at(page).currentH2STIterationsByHeadZone2.headValue[loopCount])), 16))* 0.10);
                 }
             }
             sas_Head_Float_Data(headPage, "Current H2SAT iterations to converge Test Zone 2", WORD0, 0.10, vFarmFrame.at(page).currentH2STIterationsByHeadZone2.headValue, m_heads, m_showStatusBits, m_showStatic);
@@ -3145,14 +3148,42 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSON
         case eSASLogPageTypes::RESERVED_FOR_FUTURE_HEAD_37:
             break;
         case eSASLogPageTypes::SECOND_MR_HEAD_RESISTANCE:
-            if (g_verbosity >= eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE)
+            if (vFarmFrame.at(page).mrHeadResistanceByHead.headValue[0] & BIT48)
             {
-                for (loopCount = 0; loopCount < m_heads; ++loopCount)
+                if (g_verbosity >= eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE)
                 {
-                    printf("\tSecond MR Head Resistance for Head %2" PRIu32":                         %" PRIu64" \n", loopCount, vFarmFrame.at(page).secondMRHeadResistanceByHead.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));       //!< [24] MR Head Resistance from most recent SMART Summary Frame by Head9,10
+                    // version 4.34 MR Head Resistance became a percentage. Check bit 48 if set then it is a percentage
+                    for (loopCount = 0; loopCount < m_heads; ++loopCount)
+                    {
+                        int64_t delta = M_IGETBITRANGE((check_Status_Strip_Status(vFarmFrame.at(page).secondMRHeadResistanceByHead.headValue[loopCount])), 47, 0);
+                        whole = M_WordInt2(delta);							                             // get 5:4 whole part of the float
+                        double decimal = static_cast<double>(M_DoubleWordInt0(delta));                   // get 3:0 for the Deciaml Part of the float
+                        double number = 0.0;
+                        // check bit 49 and whole being less then 0
+                        if ((vFarmFrame.at(page).secondMRHeadResistanceByHead.headValue[loopCount] & BIT49) || (whole <= 0))
+                        {
+                            number = static_cast<double>(whole) - (decimal * static_cast<double>(.0001F));
+                        }
+                        else
+                        {
+                            number = static_cast<double>(whole) + (decimal * static_cast<double>(.0001F));
+                        }
+                        printf("\tSecond MR Head Resistance percentage for Head %2" PRIu32":                    %.4lf \n", loopCount, number);       //!< [24] MR Head Resistance from most recent SMART Summary Frame by Head9,10
+                    }
                 }
+                int_Percent_Dword_Data(headPage, "Second MR Head Resistance Percentage", reinterpret_cast<int64_t*>(vFarmFrame.at(page).secondMRHeadResistanceByHead.headValue), m_heads, m_showStatusBits, m_showStatic);
             }
-            int_Data(headPage, "Second MR Head Resistance", reinterpret_cast<int64_t*>(vFarmFrame.at(page).secondMRHeadResistanceByHead.headValue), m_heads, m_showStatusBits, m_showStatic);
+            else
+            {
+                if (g_verbosity >= eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE)
+                {
+                    for (loopCount = 0; loopCount < m_heads; ++loopCount)
+                    {
+                        printf("\tSecond MR Head Resistance for Head %2" PRIu32":                         %" PRIu64" \n", loopCount, vFarmFrame.at(page).secondMRHeadResistanceByHead.headValue[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));       //!< [24] MR Head Resistance from most recent SMART Summary Frame by Head9,10
+                    }
+                }
+                int_Data(headPage, "Second MR Head Resistance", reinterpret_cast<int64_t*>(vFarmFrame.at(page).secondMRHeadResistanceByHead.headValue), m_heads, m_showStatusBits, m_showStatic);
+            }
             break;
         case eSASLogPageTypes::LUN_0_ACTUATOR:
         case eSASLogPageTypes::LUN_0_FLASH_LED:
@@ -3445,9 +3476,8 @@ eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_FLED_Info(JSONNODE *LUNFLED, ui
             temp.str("");
             temp.clear();
             temp << "TimeStamp of Event(hours) " << std::dec << i;
-            std::ostringstream time;
-            time << std::setprecision(3) << (static_cast<double>(M_DoubleWord0(opensea_parser::check_Status_Strip_Status(pFLED->timestampForLED[i])) / 3600000) * .001);
-            opensea_parser::set_json_string_With_Status(eventInfo, temp.str().c_str(), time.str().c_str(), pFLED->timestampForLED[i], m_showStatusBits);//!< Universal Timestamp (us) of last 8 Flash LED (assert) Events, wrapping array
+            double timestamp = static_cast<double>(opensea_parser::check_Status_Strip_Status(pFLED->timestampForLED[i]) / 3600000) * .001;
+            opensea_parser::set_json_float_With_Status(eventInfo, temp.str().c_str(), timestamp, pFLED->timestampForLED[i], m_showStatusBits);//!< Universal Timestamp (us) of last 8 Flash LED (assert) Events, wrapping array
             temp.str("");
             temp.clear();
             temp << "Power Cycle Event " << std::dec << i;

@@ -13,7 +13,8 @@
 // \file CScsi_Informational_Exeptions_Log.h  Definition of the Informational Exceptions Log page provides a place for reporting detail about exceptions.
 #pragma once
 #include <string>
-#include "common.h"
+#include "common_types.h"
+#include "bit_manip.h"
 #include "libjson.h"
 #include "Opensea_Parser_Helper.h"
 

@@ -13,7 +13,8 @@
 // \file CScsi_Background_Operation_Log.h  Definition of Background Operation log page reports parameters that are specific to background operations.
 #pragma once
 #include <string>
-#include "common.h"
+#include "common_types.h"
+#include "bit_manip.h"
 #include "libjson.h"
 #include "Opensea_Parser_Helper.h"
 

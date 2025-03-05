@@ -13,7 +13,8 @@
 // \file CScsi_Factory_Log.h  Definition of Factory Log page for SAS
 #pragma once
 #include <string>
-#include "common.h"
+#include "common_types.h"
+#include "bit_manip.h"
 #include "libjson.h"
 #include "Opensea_Parser_Helper.h"
 

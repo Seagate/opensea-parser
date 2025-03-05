@@ -87,7 +87,7 @@ CATA_Farm_Log::CATA_Farm_Log(uint8_t *bufferData, size_t bufferSize, bool showSt
 #else
     memcpy_s(pBuf, bufferSize, bufferData, bufferSize);         // copy the buffer data to the class member pBuf
 #endif
-    if (pBuf != NULL)
+    if (pBuf != M_NULLPTR)
     {
         if (bufferSize < sizeof(sFarmHeader) || bufferSize < sizeof(sFarmFrame))
         {
@@ -135,7 +135,7 @@ CATA_Farm_Log::~CATA_Farm_Log()
     {
         vFarmFrame.clear();                                    // clear the vector
     }
-    if (pBuf != NULL)
+    if (pBuf != M_NULLPTR)
     {
         delete[] pBuf;
     }
@@ -185,7 +185,7 @@ eReturnValues CATA_Farm_Log::parse_Farm_Log()
 {
     eReturnValues retStatus = eReturnValues::FAILURE;
     uint64_t offset = m_pageSize;                                                 // the first page starts at 1* the page size
-    if (pBuf == NULL)
+    if (pBuf == M_NULLPTR)
     {
         return retStatus;
     }
@@ -490,7 +490,12 @@ eReturnValues CATA_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint3
         json_push_back(pageInfo, json_new_a("Year of Assembled", "00"));
         json_push_back(pageInfo, json_new_a("Week of Assembled", "00"));
     }
-    set_json_64_bit_With_Status(pageInfo, "Depopulation Head Mask", vFarmFrame.at(page).driveInfo.depopulationHeadMask, false, m_showStatusBits);              //!< Depopulation Head Mask
+
+    // customer wanted to see data in hex
+    temp.str(""); temp.clear();
+    temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(8) << M_DoubleWord0(opensea_parser::check_Status_Strip_Status(vFarmFrame.at(page).driveInfo.depopulationHeadMask));
+    set_json_string_With_Status(pageInfo, "Depopulation Head Mask", temp.str().c_str(), vFarmFrame.at(page).driveInfo.depopulationHeadMask, m_showStatusBits);
+
 
     //version 4.21
 
@@ -795,9 +800,8 @@ eReturnValues CATA_Farm_Log::print_Error_Information(JSONNODE *masterData, uint3
 
         temp.str("");temp.clear();
         temp << "TimeStamp of Event(hours) " << std::dec << loopCount;
-        std::ostringstream temp1;
-        temp1 << std::setprecision(3) << std::setfill('0') << static_cast<double>(M_DoubleWord0(check_Status_Strip_Status(vFarmFrame.at(page).errorPage.timestampForLED[loopCount])) / 3600000) *.001;
-        set_json_string_With_Status(eventInfo, temp.str().c_str(), temp1.str().c_str(), vFarmFrame.at(page).errorPage.timestampForLED[loopCount], m_showStatusBits);//!< Universal Timestamp (us) of last 8 Flash LED (assert) Events, wrapping array
+        double timeStamp = static_cast<double>(check_Status_Strip_Status(vFarmFrame.at(page).errorPage.timestampForLED[loopCount]) / 3600000) * .001;
+        set_json_float_With_Status(eventInfo, temp.str().c_str(), timeStamp, vFarmFrame.at(page).errorPage.timestampForLED[loopCount], m_showStatusBits);//!< Universal Timestamp (us) of last 8 Flash LED (assert) Events, wrapping array
 
         temp.str("");temp.clear();
         temp << "Power Cycle Event " << std::dec << loopCount;
@@ -903,9 +907,8 @@ eReturnValues CATA_Farm_Log::print_Error_Information(JSONNODE *masterData, uint3
 
         temp.str(""); temp.clear();
         temp << "TimeStamp Event (hours)" << std::dec << loopCount;
-        std::ostringstream temp1;
-        temp1 << std::setprecision(3) << std::setfill('0') << static_cast<double>(M_DoubleWord0(check_Status_Strip_Status(vFarmFrame.at(page).errorPage.last8FLEDEvtsAct1[loopCount])) / 3600000) * .001;
-        set_json_string_With_Status(eventInfoact1, temp.str().c_str(), temp1.str().c_str(), vFarmFrame.at(page).errorPage.last8FLEDEvtsAct1[loopCount], m_showStatusBits);        //!< Universal Timestamp (us) of last 8 Flash LED (assert) Events, wrapping array- Actuator 1
+        double timestamp = static_cast<double>(check_Status_Strip_Status(vFarmFrame.at(page).errorPage.last8FLEDEvtsAct1[loopCount]) / 3600000) * .001;
+        set_json_float_With_Status(eventInfoact1, temp.str().c_str(), timestamp, vFarmFrame.at(page).errorPage.last8FLEDEvtsAct1[loopCount], m_showStatusBits);        //!< Universal Timestamp (us) of last 8 Flash LED (assert) Events, wrapping array- Actuator 1
 
         temp.str(""); temp.clear();
         temp << "Power Cycle Event" << std::dec << loopCount;
@@ -1064,7 +1067,7 @@ eReturnValues CATA_Farm_Log::print_Enviroment_Information(JSONNODE *masterData, 
         printf("\tHighest Temperature:                                          %" PRIu64" \n", vFarmFrame.at(page).environmentPage.highestTemp & UINT64_C(0x00FFFFFFFFFFFFFF));      //!< Highest Temperature in Celsius
         printf("\tLowest Temperature:                                           %" PRIu64" \n", vFarmFrame.at(page).environmentPage.lowestTemp & UINT64_C(0x00FFFFFFFFFFFFFF));       //!< Lowest Temperature
         printf("\tAverage Short Term Temperature:                               %" PRIu64" \n", vFarmFrame.at(page).environmentPage.averageTemp & UINT64_C(0x00FFFFFFFFFFFFFF));      //!< Average Short Term Temperature5
-        printf("\tAverage Long Term Temperatures:                               %" PRIu64" \n", vFarmFrame.at(page).environmentPage.averageLongTemp & UINT64_C(0x00FFFFFFFFFFFFFF));  //!< Average Long Term Temperature5
+        printf("\tAverage Long Term Temperature:                                %" PRIu64" \n", vFarmFrame.at(page).environmentPage.averageLongTemp & UINT64_C(0x00FFFFFFFFFFFFFF));  //!< Average Long Term Temperature5
         printf("\tHighest Average Short Term Temperature:                       %" PRIu64" \n", vFarmFrame.at(page).environmentPage.highestShortTemp & UINT64_C(0x00FFFFFFFFFFFFFF)); //!< Highest Average Short Term Temperature5
         printf("\tLowest Average Short Term Temperature:                        %" PRIu64" \n", vFarmFrame.at(page).environmentPage.lowestShortTemp & UINT64_C(0x00FFFFFFFFFFFFFF));  //!< Lowest Average Short Term Temperature5
         printf("\tHighest Average Long Term Temperature:                        %" PRIu64" \n", vFarmFrame.at(page).environmentPage.highestLongTemp & UINT64_C(0x00FFFFFFFFFFFFFF));  //!< Highest Average Long Term Temperature5
@@ -1075,18 +1078,18 @@ eReturnValues CATA_Farm_Log::print_Enviroment_Information(JSONNODE *masterData, 
         printf("\tSpecified Min Operating Temperature:                          %" PRIu64" \n", vFarmFrame.at(page).environmentPage.minTemp & UINT64_C(0x00FFFFFFFFFFFFFF));          //!< Specified Min Operating Temperature
         printf("\tCurrent Relative Humidity:                                    %" PRIu64" \n", vFarmFrame.at(page).environmentPage.humidity & UINT64_C(0x00FFFFFFFFFFFFFF));         //!< Current Relative Humidity (in units of .1%)
         printf("\tCurrent Motor Power:                                          %" PRIu64" \n", vFarmFrame.at(page).environmentPage.currentMotorPower & UINT64_C(0x00FFFFFFFFFFFFFF)); //!< Current Motor Power, value from most recent SMART Summary Frame6 
-        printf("\tCurrent 12 volts:                                             %2.3lf \n", static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.current12v)) * static_cast<double>(.001F));
-        printf("\tMinimum 12 volts:                                             %2.3lf \n", static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.min12v)) * static_cast<double>(.001F));
-        printf("\tMaximum 12 volts:                                             %2.3lf \n", static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.max12v)) * static_cast<double>(.001F));
-        printf("\tCurrent 5 volts:                                              %2.3lf \n", static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.current5v)) * static_cast<double>(.001F));
-        printf("\tMinimum 5 volts:                                              %2.3lf \n", static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.min5v)) * static_cast<double>(.001F));
-        printf("\tMaximum 5 volts:                                              %2.3lf \n", static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.max5v)) * static_cast<double>(.001F));
-        printf("\t12V Power Average:                                            %2.3lf \n", static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.powerAvg12v)) * static_cast<double>(.001L));
-        printf("\t12V Power Minimum:                                            %2.3lf \n", static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.powerMin12v)) * static_cast<double>(.001L));
-        printf("\t12V Power Maximum:                                            %2.3lf \n", static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.powerMax12v)) * static_cast<double>(.001L));
-        printf("\t5V Power Average:                                             %2.3lf \n", static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.powerAvg5v)) * static_cast<double>(.001L));
-        printf("\t5V Power Minimum:                                             %2.3lf \n", static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.powerMin5v)) * static_cast<double>(.001L));
-        printf("\t5V Power Maximum:                                             %2.3lf \n", static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.powerMax5v)) * static_cast<double>(.001L));
+        printf("\tCurrent 12 volts:                                             %2.3lf \n", static_cast<double>(M_Word0(vFarmFrame.at(page).environmentPage.current12v)) * static_cast<double>(.001F));
+        printf("\tMinimum 12 volts:                                             %2.3lf \n", static_cast<double>(M_Word0(vFarmFrame.at(page).environmentPage.min12v)) * static_cast<double>(.001F));
+        printf("\tMaximum 12 volts:                                             %2.3lf \n", static_cast<double>(M_Word0(vFarmFrame.at(page).environmentPage.max12v)) * static_cast<double>(.001F));
+        printf("\tCurrent 5 volts:                                              %2.3lf \n", static_cast<double>(M_Word0(vFarmFrame.at(page).environmentPage.current5v)) * static_cast<double>(.001F));
+        printf("\tMinimum 5 volts:                                              %2.3lf \n", static_cast<double>(M_Word0(vFarmFrame.at(page).environmentPage.min5v)) * static_cast<double>(.001F));
+        printf("\tMaximum 5 volts:                                              %2.3lf \n", static_cast<double>(M_Word0(vFarmFrame.at(page).environmentPage.max5v)) * static_cast<double>(.001F));
+        printf("\t12V Power Average:                                            %2.3lf \n", static_cast<double>(M_Word0(vFarmFrame.at(page).environmentPage.powerAvg12v)) * static_cast<double>(.001L));
+        printf("\t12V Power Minimum:                                            %2.3lf \n", static_cast<double>(M_Word0(vFarmFrame.at(page).environmentPage.powerMin12v)) * static_cast<double>(.001L));
+        printf("\t12V Power Maximum:                                            %2.3lf \n", static_cast<double>(M_Word0(vFarmFrame.at(page).environmentPage.powerMax12v)) * static_cast<double>(.001L));
+        printf("\t5V Power Average:                                             %2.3lf \n", static_cast<double>(M_Word0(vFarmFrame.at(page).environmentPage.powerAvg5v)) * static_cast<double>(.001L));
+        printf("\t5V Power Minimum:                                             %2.3lf \n", static_cast<double>(M_Word0(vFarmFrame.at(page).environmentPage.powerMin5v)) * static_cast<double>(.001L));
+        printf("\t5V Power Maximum:                                             %2.3lf \n", static_cast<double>(M_Word0(vFarmFrame.at(page).environmentPage.powerMax5v)) * static_cast<double>(.001L));
 
     }
     std::ostringstream temp;
@@ -1134,29 +1137,29 @@ eReturnValues CATA_Farm_Log::print_Enviroment_Information(JSONNODE *masterData, 
     set_json_string_With_Status(pageInfo, "Current Relative Humidity", temp.str().c_str(), vFarmFrame.at(page).environmentPage.humidity, m_showStatusBits);
     set_json_int_With_Status(pageInfo, "Current Motor Power", vFarmFrame.at(page).environmentPage.currentMotorPower, m_showStatusBits);                                                //!< Current Motor Power, value from most recent SMART Summary Frame6
     double volts = 0.0;
-    volts = static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.current12v)) *static_cast<double>(.001F);
+    volts = static_cast<double>(M_Word0(vFarmFrame.at(page).environmentPage.current12v)) *static_cast<double>(.001F);
     set_json_float_With_Status(pageInfo, "Current 12 volts", volts, vFarmFrame.at(page).environmentPage.current12v, m_showStatusBits);
-    volts = static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.min12v)) * static_cast<double>(.001F);
+    volts = static_cast<double>(M_Word0(vFarmFrame.at(page).environmentPage.min12v)) * static_cast<double>(.001F);
     set_json_float_With_Status(pageInfo, "Minimum 12 volts", volts, vFarmFrame.at(page).environmentPage.min12v, m_showStatusBits);
-    volts = static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.max12v)) * static_cast<double>(.001F);
+    volts = static_cast<double>(M_Word0(vFarmFrame.at(page).environmentPage.max12v)) * static_cast<double>(.001F);
     set_json_float_With_Status(pageInfo, "Maximum 12 volts", volts, vFarmFrame.at(page).environmentPage.max12v, m_showStatusBits);
-    volts = static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.current5v)) * static_cast<double>(.001F);
+    volts = static_cast<double>(M_Word0(vFarmFrame.at(page).environmentPage.current5v)) * static_cast<double>(.001F);
     set_json_float_With_Status(pageInfo, "Current 5 volts", volts, vFarmFrame.at(page).environmentPage.current5v, m_showStatusBits);
-    volts = static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.min5v)) * static_cast<double>(.001F);
+    volts = static_cast<double>(M_Word0(vFarmFrame.at(page).environmentPage.min5v)) * static_cast<double>(.001F);
     set_json_float_With_Status(pageInfo, "Minimum 5 volts", volts, vFarmFrame.at(page).environmentPage.min5v, m_showStatusBits);
-    volts = static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.max5v)) * static_cast<double>(.001F);
+    volts = static_cast<double>(M_Word0(vFarmFrame.at(page).environmentPage.max5v)) * static_cast<double>(.001F);
     set_json_float_With_Status(pageInfo, "Maximum 5 volts", volts, vFarmFrame.at(page).environmentPage.max5v, m_showStatusBits);
-    volts = static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.powerAvg12v)) * static_cast<double>(.001F);
+    volts = static_cast<double>(M_Word0(vFarmFrame.at(page).environmentPage.powerAvg12v)) * static_cast<double>(.001F);
     set_json_float_With_Status(pageInfo, "12V Power Average", volts, vFarmFrame.at(page).environmentPage.powerAvg12v, m_showStatusBits);
-    volts = static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.powerMin12v)) * static_cast<double>(.001F);
+    volts = static_cast<double>(M_Word0(vFarmFrame.at(page).environmentPage.powerMin12v)) * static_cast<double>(.001F);
     set_json_float_With_Status(pageInfo, "12V Power Minimum", volts, vFarmFrame.at(page).environmentPage.powerMin12v, m_showStatusBits);
-    volts = static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.powerMax12v)) * static_cast<double>(.001F);
+    volts = static_cast<double>(M_Word0(vFarmFrame.at(page).environmentPage.powerMax12v)) * static_cast<double>(.001F);
     set_json_float_With_Status(pageInfo, "12V Power Maximum", volts, vFarmFrame.at(page).environmentPage.powerMax12v, m_showStatusBits);
-    volts = static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.powerAvg5v)) * static_cast<double>(.001F);
+    volts = static_cast<double>(M_Word0(vFarmFrame.at(page).environmentPage.powerAvg5v)) * static_cast<double>(.001F);
     set_json_float_With_Status(pageInfo, "5V Power Average", volts, vFarmFrame.at(page).environmentPage.powerAvg5v, m_showStatusBits);  
-    volts = static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.powerMin5v)) * static_cast<double>(.001F);
+    volts = static_cast<double>(M_Word0(vFarmFrame.at(page).environmentPage.powerMin5v)) * static_cast<double>(.001F);
     set_json_float_With_Status(pageInfo, "5V Power Minimum", volts, vFarmFrame.at(page).environmentPage.powerMin5v, m_showStatusBits);
-    volts = static_cast<double>(M_WordInt0(vFarmFrame.at(page).environmentPage.powerMax5v)) * static_cast<double>(.001F);
+    volts = static_cast<double>(M_Word0(vFarmFrame.at(page).environmentPage.powerMax5v)) * static_cast<double>(.001F);
     set_json_float_With_Status(pageInfo, "5V Power Maximum", volts, vFarmFrame.at(page).environmentPage.powerMax5v, m_showStatusBits);
 
     json_push_back(masterData, pageInfo);
@@ -1299,7 +1302,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
         {
             printf("\tSkip Write Detect Threshold Exceeded by Head %2" PRIu32":              %" PRIu64" \n", loopCount, vFarmFrame.at(page).reliPage.skipWriteDetectThresExceeded[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));  //!< [24] Skip Write Detect Threshold Exceeded Count by Head7
         }
-        if (vFarmFrame.at(page).reliPage.MRHeadResistance[0] & BIT49)
+        if (vFarmFrame.at(page).reliPage.MRHeadResistance[0] & BIT48)
         {
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
@@ -1311,17 +1314,17 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
             // version 4.34 MR Head Resistance became a percentage. Check bit 49 if set then it is a percentage
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
-                int64_t delta = M_IGETBITRANGE((check_Status_Strip_Status(vFarmFrame.at(page).reliPage.MRHeadResistance[loopCount])), 48, 0);
+                int64_t delta = M_IGETBITRANGE((check_Status_Strip_Status(vFarmFrame.at(page).reliPage.MRHeadResistance[loopCount])), 47, 0);
                 whole = M_WordInt2(delta);							                             // get 5:4 whole part of the float
                 double decimal = static_cast<double>(M_DoubleWordInt0(delta));                   // get 3:0 for the Deciaml Part of the float
                 double number = 0.0;
-                if (whole >= 0 && ((vFarmFrame.at(page).reliPage.MRHeadResistance[loopCount] & BIT49) != BIT49))
+                if ((vFarmFrame.at(page).reliPage.MRHeadResistance[loopCount] & BIT49) || (whole <= 0))
                 {
                     number = static_cast<double>(whole) + (decimal * static_cast<double>(.0001F));
                 }
                 else
                 {
-                    number = static_cast<double>(whole) - (decimal * static_cast<double>(.0001F));
+                    number = static_cast<double>(whole) + (decimal * static_cast<double>(.0001F));
                 }
                 printf("\tMR Head Resistance percentage for Head %2" PRIu32":                    %.4lf \n", loopCount, number);       //!< [24] MR Head Resistance from most recent SMART Summary Frame by Head9,10
             }
@@ -1410,10 +1413,34 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
         {
             printf("\tWrite POS On (hrs) by Head %2" PRIu32":                                %0.04lf \n", loopCount, static_cast<double>(M_DoubleWord0(vFarmFrame.at(page).reliPage.writePOH[loopCount])) /3600.0);             //!< [24] write POS in sec value from most recent SMART Frame by head
         }
-        for (loopCount = 0; loopCount < m_heads; ++loopCount)
+        if (vFarmFrame.at(page).reliPage.MRHeadResistance[0] & BIT48)
         {
-            printf("\tSecond MR Head Resistance by Head %2" PRIu32":                         %" PRIi64" \n", loopCount, vFarmFrame.at(page).reliPage.secondMRHeadResistance[loopCount] & INT64_C(0x00FFFFFFFFFFFFFF));
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
+                printf("\tSecond MR Head Resistance by Head %2" PRIu32":                         %" PRIi64" \n", loopCount, vFarmFrame.at(page).reliPage.secondMRHeadResistance[loopCount] & INT64_C(0x00FFFFFFFFFFFFFF));
+            }
         }
+        else
+        {
+            // version 4.34 MR Head Resistance became a percentage. Check bit 49 if set then it is a percentage
+            for (loopCount = 0; loopCount < m_heads; ++loopCount)
+            {
+                int64_t delta = M_IGETBITRANGE((check_Status_Strip_Status(vFarmFrame.at(page).reliPage.secondMRHeadResistance[loopCount])), 47, 0);
+                whole = M_WordInt2(delta);							                             // get 5:4 whole part of the float
+                double decimal = static_cast<double>(M_DoubleWordInt0(delta));                   // get 3:0 for the Deciaml Part of the float
+                double number = 0.0;
+                if ((vFarmFrame.at(page).reliPage.secondMRHeadResistance[loopCount] & BIT49) || (whole <= 0))
+                {
+                    number = static_cast<double>(whole) + (decimal * static_cast<double>(.0001F));
+                }
+                else
+                {
+                    number = static_cast<double>(whole) + (decimal * static_cast<double>(.0001F));
+                }
+                printf("\tSecond MR Head Resistance percentage for Head %2" PRIu32":                    %.4lf \n", loopCount, number);       //!< [24] MR Head Resistance from most recent SMART Summary Frame by Head9,10
+            }
+        }
+
         for (loopCount = 0; loopCount < m_heads; ++loopCount)
         {
             printf("\tLifetime Terabytes Written per Head %2" PRIu32":                       %" PRIi64" \n", loopCount, vFarmFrame.at(page).reliPage.lifetimeWrites[loopCount] & INT64_C(0x00FFFFFFFFFFFFFF));
@@ -1435,10 +1462,10 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
     int_Data(headInfo, "RVGA Skip Write Detect", vFarmFrame.at(page).reliPage.RVGASkipWriteDetect, m_heads, m_showStatusBits, m_showStatic);
     int_Data(headInfo, "FVGA Skip Write Detect", vFarmFrame.at(page).reliPage.FVGASkipWriteDetect, m_heads, m_showStatusBits, m_showStatic);
     int_Data(headInfo, "Skip Write Detect Threshold Exceeded", vFarmFrame.at(page).reliPage.skipWriteDetectThresExceeded, m_heads, m_showStatusBits, m_showStatic);
-    // version 4.34 MR Head Resistance became a percentage. Check bit 49 if set then it is a percentage
-    if (vFarmFrame.at(page).reliPage.MRHeadResistance[0] & BIT49)
+    // version 4.34 MR Head Resistance became a percentage. Check bit 48 if set then it is a percentage
+    if (vFarmFrame.at(page).reliPage.MRHeadResistance[0] & BIT48)
     {
-        int_Data(headInfo, "MR Head Resistance", vFarmFrame.at(page).reliPage.MRHeadResistance, m_heads, m_showStatusBits);
+        int_Data(headInfo, "MR Head Resistance", vFarmFrame.at(page).reliPage.MRHeadResistance, m_heads, m_showStatusBits, m_showStatic);
     }
     else
     {
@@ -1464,7 +1491,14 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
     int_Data(headInfo, "DOS needs to scans count", vFarmFrame.at(page).reliPage.needDOS, m_heads, m_showStatusBits, m_showStatic);
     int_Data(headInfo, "DOS write Fault scans", vFarmFrame.at(page).reliPage.writeDOSFault, m_heads, m_showStatusBits, m_showStatic);
     float_Cal_DoubleWord_Data(headInfo, "Write Power On (hrs)", 3600, vFarmFrame.at(page).reliPage.writePOH, m_heads, m_showStatusBits, m_showStatic);
-	int_Data(headInfo, "Second MR Head Resistance", vFarmFrame.at(page).reliPage.secondMRHeadResistance, m_heads, m_showStatusBits, m_showStatic);
+    if (vFarmFrame.at(page).reliPage.secondMRHeadResistance[0] & BIT48)
+    {
+        int_Data(headInfo, "Second MR Head Resistance", vFarmFrame.at(page).reliPage.secondMRHeadResistance, m_heads, m_showStatusBits, m_showStatic);
+    }
+    else
+    {
+        int_Percent_Dword_Data(headInfo, "Second MR Head Resistance Percentage", vFarmFrame.at(page).reliPage.secondMRHeadResistance, m_heads, m_showStatusBits, m_showStatic);
+    }
     uint_Data(headInfo, "Lifetime Terabytes Written", vFarmFrame.at(page).reliPage.lifetimeWrites, m_heads, m_showStatusBits, m_showStatic);
     int_Dword_Data(headInfo, "Get Physical Element Status", vFarmFrame.at(page).driveInfo.gpes, m_heads, m_showStatusBits, m_showStatic);
 

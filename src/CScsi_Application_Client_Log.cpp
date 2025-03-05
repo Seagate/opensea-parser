@@ -71,7 +71,7 @@ CScsiApplicationLog::CScsiApplicationLog(uint8_t * buffer, size_t bufferSize, ui
 	{
 		printf("%s \n", m_ApplicationName.c_str());
 	}
-	if (buffer != NULL)
+	if (buffer != M_NULLPTR)
 	{
 		m_ApplicationStatus = eReturnValues::IN_PROGRESS;
 	}
@@ -187,7 +187,7 @@ void CScsiApplicationLog::process_Client_Data(JSONNODE *appData)
 eReturnValues CScsiApplicationLog::get_Client_Data(JSONNODE *masterData)
 {
 	eReturnValues retStatus = eReturnValues::IN_PROGRESS;
-	if (pData != NULL)
+	if (pData != M_NULLPTR)
 	{
 		JSONNODE *pageInfo = json_new(JSON_NODE);
 		json_set_name(pageInfo, "Application Client Log - Fh");

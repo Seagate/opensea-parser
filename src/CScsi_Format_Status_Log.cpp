@@ -73,7 +73,7 @@ CScsiFormatStatusLog::CScsiFormatStatusLog(uint8_t * buffer, size_t bufferSize, 
     {
         printf("%s \n", m_FormatName.c_str());
     }
-    if (buffer != NULL)
+    if (buffer != M_NULLPTR)
     {
         m_FormatStatus = eReturnValues::IN_PROGRESS;
     }
@@ -287,7 +287,7 @@ eReturnValues CScsiFormatStatusLog::get_Format_Status_Data(JSONNODE *masterData)
 {
     eReturnValues retStatus = eReturnValues::IN_PROGRESS;
 
-    if (pData != NULL)
+    if (pData != M_NULLPTR)
     {
         JSONNODE *pageInfo = json_new(JSON_NODE);
         json_set_name(pageInfo, "Format Status Log 08h");

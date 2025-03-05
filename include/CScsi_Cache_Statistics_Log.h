@@ -13,7 +13,8 @@
 // \file CScsi_Cache_Statistics_Log.h  Definition of Cache Statistics page for SAS
 #pragma once
 #include <string>
-#include "common.h"
+#include "common_types.h"
+#include "bit_manip.h"
 #include "libjson.h"
 #include "Opensea_Parser_Helper.h"
 

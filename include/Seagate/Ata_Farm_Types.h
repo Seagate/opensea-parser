@@ -56,9 +56,9 @@ typedef struct _sDriveInfo
     uint64_t        timeHeld;                                   //!< time drive is held in staggered spin during the last power on sequence
     uint64_t        modelNumber[10];                            //!< lower 32 Model Number (started support in 2.14 )
     uint64_t        driveRecordingType;                         //!< 0 for SMR and 1 for CMR (started support in 2.15 )
-    uint64_t        depopped;                                   //!< has the drive been depopped  1= depopped and 0 = not depopped(started support in 2.15 )
-    uint64_t        maxNumberForReasign;                        //!< Max Number of Available Sectors for Reassignment – Value in disc sectors(started in 3.3 )
-    uint64_t        dateOfAssembly;                             //!< Date of Assembly in ASCII “YYWW” where YY is the year and WW is the calendar week(started in 4.2)
+    uint64_t        depopped;                                   //!< has the drive been depopped  - 1 = depopped and 0 = not depopped(started support in 2.15 )
+    uint64_t        maxNumberForReasign;                        //!< Max Number of Available Sectors for Reassignment - Value in disc sectors(started in 3.3 )
+    uint64_t        dateOfAssembly;                             //!< Date of Assembly in ASCII "YYWW" where YY is the year and WW is the week(started in 4.2)
     uint64_t        depopulationHeadMask;                       //!< Depopulation Head Mask(started in 4.7)
     uint64_t        headFlightHoursAct1;                        //!< Head Flight Hours, Actuator1
     uint64_t        headLoadEventsAct1;                         //!< Head Load Events, Actuator 1
@@ -287,7 +287,7 @@ typedef struct _sAtaReliabilityStat
     int64_t         diskSlipRecalPerformed;                         //!< Number of disc slip recalibrations performed
     int64_t         gList[MAX_HEAD_COUNT];                          //!< [24] Number of Reallocated Sectors per head
     int64_t         pendingEntries[MAX_HEAD_COUNT];                 //!< [24] Number of Reallocation Candidate Sectors per head
-    int64_t         heliumPresureTrip;                              //!< Helium Pressure Threshold Tripped ( 1- trip, 0 -no trip)
+    int64_t         heliumPresureTrip;                              //!< Helium Pressure Threshold Tripped ( 1- trip, 0 - no trip)
     int64_t         oughtDOS[MAX_HEAD_COUNT];                       //!< [24] DOS Ought to scan count per head
     int64_t         needDOS[MAX_HEAD_COUNT];                        //!< [24] DOS needs to scanns count per head
     int64_t         writeDOSFault[MAX_HEAD_COUNT];                  //!< [24] DOS  write Fault scans per head

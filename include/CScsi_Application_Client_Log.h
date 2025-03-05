@@ -13,7 +13,8 @@
 // \file CScsi_Application_Client_Log.h  Definition of Application Client Log where clients store information
 #pragma once
 #include <string>
-#include "common.h"
+#include "common_types.h"
+#include "bit_manip.h"
 #include "libjson.h"
 #include "Opensea_Parser_Helper.h"
 
@@ -36,7 +37,7 @@ namespace opensea_parser {
             paramCode = 0;
             paramControlByte = 0;
             paramLength = 0;
-            data = NULL;
+            data = M_NULLPTR;
         }
         _sApplicationClientParameters(uint8_t* buffer)
         {

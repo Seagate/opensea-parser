@@ -13,7 +13,7 @@
 // \file CScsi_Temperature_Log.h   Definition of Temperature log
 #pragma once
 #include <string>
-#include "common.h"
+#include "common_types.h"
 #include "libjson.h"
 #include "Opensea_Parser_Helper.h"
 

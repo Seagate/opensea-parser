@@ -70,7 +70,7 @@ CScsiLBAProvisionLog::CScsiLBAProvisionLog(uint8_t * buffer, size_t bufferSize, 
     {
         printf("%s \n", m_LBAName.c_str());
     }
-    if (buffer != NULL)
+    if (buffer != M_NULLPTR)
     {
         m_LBAStatus = eReturnValues::IN_PROGRESS;
     }
@@ -243,7 +243,7 @@ void CScsiLBAProvisionLog::process_LBA_Provision_Data(JSONNODE *lbaData)
 eReturnValues CScsiLBAProvisionLog::get_LBA_Data(JSONNODE *masterData)
 {
     eReturnValues retStatus = eReturnValues::IN_PROGRESS;
-    if (pData != NULL)
+    if (pData != M_NULLPTR)
     {
         JSONNODE *pageInfo = json_new(JSON_NODE);
         json_set_name(pageInfo, "Logical Block Provisioning Log - 0Ch");

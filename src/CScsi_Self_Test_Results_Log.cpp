@@ -66,7 +66,7 @@ CScsi_DST_Results::CScsi_DST_Results(uint8_t * buffer, size_t bufferSize, JSONNO
 	{
 		printf("%s \n", m_DSTName.c_str());
 	}
-	if (buffer != NULL)
+	if (buffer != M_NULLPTR)
 	{
 		m_DSTStatus = parse_Self_Test_Log(buffer, bufferSize, masterData);
 	}
@@ -198,7 +198,7 @@ void CScsi_DST_Results::print_Self_Test_Log(JSONNODE *dstNode, uint16_t run)
 	else
 	{
 		std::string myStr;
-		get_Self_Test_Results_String(myStr, M_GETBITRANGE(m_DST->stCode, 3, 0));
+		get_Self_Test_Results_String(myStr, get_bit_range_uint8(m_DST->stCode, 3, 0));
 		json_push_back(runInfo, json_new_a("Self Test Results Meaning", myStr.c_str()));
 	}
 	json_push_back(runInfo, json_new_i("Self Test Number", static_cast<uint32_t>(m_DST->stNumber)));

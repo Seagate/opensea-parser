@@ -26,7 +26,9 @@
 
 #include <inttypes.h>
 #include <time.h>
-#include "common.h"
+#include "common_types.h"
+#include "bit_manip.h"
+#include "math_utils.h"
 #include "libjson.h"
 #include <limits.h>
 
@@ -40,6 +42,7 @@ extern eVerbosityLevels g_verbosity;
 extern eDataFormat g_dataformat;
 extern bool	g_parseUnknown;
 extern bool g_parseNULL;
+extern bool g_convertHeaderToLowercase;
 extern time_t g_currentTime;
 extern char g_currentTimeString[64];
 extern char *g_currentTimeStringPtr;
@@ -113,7 +116,9 @@ namespace opensea_parser {
 		LOG_PRINT_PROM,
 		LOG_PRINT_TELEMETRY,
 		LOG_PRINT_PYTHON_DICTIONARY,
+		LOG_PRINT_IBT_CSV,
 		LOG_PRINT_FAILURE,
+		LOG_PRINT_TO_SCREEN,
 	};
 
 	enum class eLogTypes
@@ -165,7 +170,7 @@ namespace opensea_parser {
 		explicit _sLogPageStruct() : pageCode(0), subPage(0), pageLength(0) {};
         _sLogPageStruct(uint8_t* buffer)
         {
-            if (buffer != NULL)
+            if (buffer != M_NULLPTR)
             {
                 pageCode = buffer[OFFSETZERO];
                 subPage = buffer[OFFSETONE];
@@ -198,6 +203,55 @@ namespace opensea_parser {
 		eLogPageNames::PROTOCOL_SPECIFIC_PORT, eLogPageNames::POWER_CONDITION_TRANSITIONS , eLogPageNames::INFORMATIONAL_EXCEPTIONS,
 		eLogPageNames::CACHE_STATISTICS, eLogPageNames::SEAGATE_SPECIFIC_LOG, eLogPageNames::FACTORY_LOG,};
 
+	M_NODISCARD static M_INLINE int16_t b_swap_int16(int16_t value)
+	{
+#if defined(HAVE_BUILTIN_BSWAP)
+		return __builtin_bswap16(value);
+#elif defined(HAVE_WIN_BSWAP)
+		return _byteswap_ushort(value);
+#else
+		return (((value & INT16_C(0x00FF)) << 8) | ((value & INT16_C(0xFF00)) >> 8));
+#endif
+	}
+	//-----------------------------------------------------------------------------
+	//
+	//! \fn std_replace_spaces_with_underscore()
+	//
+	//! \brief
+	//!   Description:  Converts all spaces and replaces them with underscores
+	//
+	//  Entry:
+	//! \param myStr  = The string to be converted by replacing all the spaces with underscores
+	//
+	//  Exit:
+	//!   \return void
+	//
+	//---------------------------------------------------------------------------
+	inline void std_replace_spaces_with_underscore(std::string& myStr)
+	{
+		std::replace(myStr.begin(), myStr.end(), ' ', '_');
+	}
+	//-----------------------------------------------------------------------------
+	//
+	//! \fn std_string_to_lowercase()
+	//
+	//! \brief
+	//!   Description:  Converts all characters in a given string to lowercase.
+	//! This function takes a reference to a `std::string` and transforms all of its 
+	//! characters to lowercase using the `std::transform` algorithm and `std::tolower` function.
+	//
+	//  Entry:
+	//! \param stringToLowercase  = The string to be converted to lowercase. The conversion is done in place
+	//
+	//  Exit:
+	//!   \return void
+	//
+	//---------------------------------------------------------------------------
+	inline void std_string_to_lowercase(std::string& stringToLowercase)
+	{
+		std::transform(stringToLowercase.begin(), stringToLowercase.end(), stringToLowercase.begin(),
+			[](unsigned char c) { return static_cast<char>(std::tolower(c)); });
+	}
 	//-----------------------------------------------------------------------------
 	//
 	//! \fn check_For_Active_Status()
@@ -238,7 +292,14 @@ namespace opensea_parser {
 	{
 		if (check_For_Active_Status(&value))
 		{
-			value = value & UINT64_C(0x00FFFFFFFFFFFFFF);
+			if (M_Byte7(value) != UINT8_C(0xFF))
+			{
+				value = value & UINT64_C(0x00FFFFFFFFFFFFFF);
+			}
+			else
+			{
+				value = 0;
+			}
 		}
 		else
 		{
@@ -276,6 +337,35 @@ namespace opensea_parser {
 	}
 	//-----------------------------------------------------------------------------
 	//
+	//! \fn set_json_string_With_Status()
+	//
+	//! \brief
+	//!   Description:  set the json values for a string and will show status bits if the flag is set
+	//
+	//  Entry:
+	//! \param  nowNode = the Json node that the data will be added to
+	//! \param  header = the string data what will be adding to
+	//! \param  strValue = value in a string format
+	//
+	//  Exit:
+	//!   \return void
+	//
+	//-----------------------------------------------------------------------------
+	inline void set_json_string_With_NO_Status(JSONNODE* nowNode, const std::string& header, const std::string& strValue)
+	{
+		if (header.size() != 0 && !strValue.empty())
+		{
+			std::string myStr = header;
+			if (g_convertHeaderToLowercase)
+			{
+				opensea_parser::std_replace_spaces_with_underscore(myStr);
+				opensea_parser::std_string_to_lowercase(myStr);
+			}
+			json_push_back(nowNode, json_new_a(myStr.c_str(), strValue.c_str()));
+		}
+	}
+	//-----------------------------------------------------------------------------
+	//
 	//! \fn set_json_64bit_With_Check_Status()
 	//
 	//! \brief
@@ -283,7 +373,7 @@ namespace opensea_parser {
 	//
 	//  Entry:
 	//! \param  nowNode = the Json node that the data will be added to
-	//! \param  myStr = the string data what will be adding to
+	//! \param  header = the string data what will be adding to
 	//! \param value  =  64 bit value to check to see if the bit is set or not
 	//! \param hexPrint =  if true then print the data in a hex format
 	//
@@ -291,11 +381,17 @@ namespace opensea_parser {
 	//!   \return void
 	//
 	//-----------------------------------------------------------------------------
-    inline void set_json_64bit_With_Check_Status(JSONNODE *nowNode, const std::string & myStr, uint64_t value, bool hexPrint)
+    inline void set_json_64bit_With_Check_Status(JSONNODE *nowNode,const std::string & header, uint64_t value, bool hexPrint)
     {
+		std::string myStr = header;
 		int64_t statusValue = 0;
 		statusValue = check_Status_Strip_Status(value);
         std::ostringstream temp;
+		if (g_convertHeaderToLowercase)
+		{
+			opensea_parser::std_replace_spaces_with_underscore(myStr);
+			opensea_parser::std_string_to_lowercase(myStr);
+		}
         if (hexPrint)
         {
 			if (g_parseNULL && check_For_Active_Status(reinterpret_cast<uint64_t*>(&value)) == false)
@@ -311,10 +407,14 @@ namespace opensea_parser {
         }
         else
         {
-            if ((M_IGETBITRANGE(statusValue, 63, 56) == 0) && check_For_Active_Status(&value) == true)
+            if ((M_IGETBITRANGE(statusValue, 63, 59) == 0) && check_For_Active_Status(&value) == true)
             {
                 json_push_back(nowNode, json_new_i(myStr.c_str(), static_cast<json_int_t>(statusValue)));
             }
+			else if ((M_IGETBITRANGE(statusValue, 63, 59) == 0) && check_Status_Strip_Status(value) == 0)
+			{
+				json_push_back(nowNode, json_new_i(myStr.c_str(), static_cast<json_int_t>(statusValue)));
+			}
             else
             {
 				if (g_parseNULL && check_For_Active_Status(&value) == false)
@@ -323,7 +423,7 @@ namespace opensea_parser {
 				}
 				else
 				{
-					// if the value is greater then a unsigned 48 bit number print it as a string
+					// if the value is greater then a unsigned 56 bit number print it as a string
 					temp << std::dec << statusValue;
 					json_push_back(nowNode, json_new_a(myStr.c_str(), temp.str().c_str()));
 				}
@@ -339,7 +439,7 @@ namespace opensea_parser {
     //
     //  Entry:
     //! \param  nowNode = the Json node that the data will be added to
-    //! \param  myStr = the string data what will be adding to
+    //! \param  header = the string data what will be adding to
     //! \param value  =  64 bit value to check to see if the bit is set or not
     //! \param hexPrint =  if true then print the data in a hex format
     //
@@ -347,9 +447,15 @@ namespace opensea_parser {
     //!   \return void
     //
     //-----------------------------------------------------------------------------
-    inline void set_json_64bit(JSONNODE *nowNode, const std::string & myStr, uint64_t value, bool hexPrint)
+    inline void set_json_64bit(JSONNODE *nowNode, const std::string & header, uint64_t value, bool hexPrint)
     {
+		std::string myStr = header;
         std::ostringstream temp;
+		if (g_convertHeaderToLowercase)
+		{
+			opensea_parser::std_replace_spaces_with_underscore(myStr);
+			opensea_parser::std_string_to_lowercase(myStr);
+		}
         if (hexPrint)
         {
             //json does not support 64 bit numbers. Therefore we will print it as a string
@@ -358,13 +464,13 @@ namespace opensea_parser {
         }
         else
         {
-            if (M_IGETBITRANGE(value,63,48) == 0)
+            if (M_IGETBITRANGE(value,63,59) == 0)
             {
                 json_push_back(nowNode, json_new_i(myStr.c_str(), static_cast<json_int_t>(value)));
             }
             else
             {
-                // if the vale is greater then a unsigned 32 bit number print it as a string
+                // if the vale is greater then a unsigned 59 bit number print it as a string
                 temp << std::dec << value;
                 json_push_back(nowNode, json_new_a(myStr.c_str(), temp.str().c_str()));
             }
@@ -379,20 +485,37 @@ namespace opensea_parser {
 	//
 	//  Entry:
 	//! \param  nowNode = the Json node that the data will be added to
-	//! \param  myStr = the string data what will be adding to
+	//! \param  header = the string data what will be adding to
 	//! \param workingValue  =  boolean value
 	//
 	//  Exit:
 	//!   \return void
 	//
 	//-----------------------------------------------------------------------------
-    inline void set_Json_Bool(JSONNODE *nowNode, const std::string & myStr, bool workingValue)
+    inline void set_Json_Bool(JSONNODE *nowNode, const std::string & header, bool workingValue)
     {
+		std::string myStr = header;
+		if (g_convertHeaderToLowercase)
+		{
+			std_replace_spaces_with_underscore(myStr);
+			std_string_to_lowercase(myStr);
+		}
         if (workingValue)
-            json_push_back(nowNode, json_new_b(myStr.c_str(), true));
+			json_push_back(nowNode, json_new_b(myStr.c_str(), true));
         else
             json_push_back(nowNode, json_new_b(myStr.c_str(), false));
     }
+	
+	inline void set_Json_name(JSONNODE* nowNode, const std::string& header)
+	{
+		std::string myStr = header;
+		if (g_convertHeaderToLowercase)
+		{
+			opensea_parser::std_replace_spaces_with_underscore(myStr);
+			opensea_parser::std_string_to_lowercase(myStr);
+		}
+		json_set_name(nowNode, myStr.c_str());
+	}
 	//-----------------------------------------------------------------------------
 	//
 	//! \fn count_Occurance()
@@ -470,17 +593,7 @@ namespace opensea_parser {
 		if(lastChar != std::string::npos)
 			stringToTrim.erase(lastChar, stringToTrim.size() - lastChar);
     }
-
-    inline void std_string_to_lowercase(std::string &stringToLowercase)
-    {
-		for(size_t iter = 0; iter < stringToLowercase.size(); ++iter)
-		{
-			stringToLowercase.at(iter) = static_cast<char>(std::tolower(stringToLowercase.at(iter)));
-		}
-		//Below is c++11:
-        // std::transform(stringToLowercase.begin(), stringToLowercase.end(), stringToLowercase.begin(),
-        //     [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
-    }
+	
 	inline eReturnValues fill_Log_Params(sLogParams &myStruct, uint8_t *buffer )
 	{
 

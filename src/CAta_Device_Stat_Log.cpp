@@ -43,7 +43,7 @@ CSAtaDevicStatisticsTempLogs::CSAtaDevicStatisticsTempLogs()
 	, m_logSize(0)
 	, m_status(eReturnValues::IN_PROGRESS)
     , m_tempData()
-    , JsonData(NULL)
+    , JsonData(M_NULLPTR)
 {
 }
 //-----------------------------------------------------------------------------
@@ -66,7 +66,7 @@ CSAtaDevicStatisticsTempLogs::CSAtaDevicStatisticsTempLogs(uint8_t *buffer,JSONN
     , m_tempData()
     , JsonData(masterData)
 {
-    if (buffer != NULL)
+    if (buffer != M_NULLPTR)
     {
         m_status = parse_SCT_Temp_Log(buffer);
         m_status = print_SCT_Temp_Log();
@@ -98,7 +98,7 @@ CSAtaDevicStatisticsTempLogs::CSAtaDevicStatisticsTempLogs(const std::string &fi
 	cCLog = new CLog(fileName);
 	if (cCLog->get_Log_Status() == eReturnValues::SUCCESS)
 	{
-		if (cCLog->get_Buffer() != NULL)
+		if (cCLog->get_Buffer() != M_NULLPTR)
 		{
 			m_logSize = cCLog->get_Size();
 			uint8_t* pData = new uint8_t[m_logSize];								// new a buffer to the point				
@@ -239,7 +239,7 @@ eReturnValues CSAtaDevicStatisticsTempLogs::print_SCT_Temp_Log()
 CAtaDeviceStatisticsLogs::CAtaDeviceStatisticsLogs()
     :m_name("Device Stat Log")
     , m_status(eReturnValues::IN_PROGRESS)
-    , pData(NULL)
+    , pData(M_NULLPTR)
     , m_deviceLogSize(0)
     , m_Response()
 {
@@ -268,7 +268,7 @@ CAtaDeviceStatisticsLogs::CAtaDeviceStatisticsLogs(uint32_t logSize, JSONNODE *m
     , m_deviceLogSize(logSize)
     , m_Response()
 {
-    if (pData != NULL)
+    if (pData != M_NULLPTR)
     {
         m_status = ParseSCTDeviceStatLog(masterData);
     }
@@ -303,7 +303,7 @@ CAtaDeviceStatisticsLogs::CAtaDeviceStatisticsLogs(const std::string &fileName, 
 	cCLog = new CLog(fileName);
 	if (cCLog->get_Log_Status() == eReturnValues::SUCCESS)
 	{
-		if (cCLog->get_Buffer() != NULL)
+		if (cCLog->get_Buffer() != M_NULLPTR)
 		{
 			m_deviceLogSize = cCLog->get_Size();
 			pData = new uint8_t[m_deviceLogSize];								// new a buffer to the point				
@@ -324,6 +324,7 @@ CAtaDeviceStatisticsLogs::CAtaDeviceStatisticsLogs(const std::string &fileName, 
 			{
 				m_status = eReturnValues::BAD_PARAMETER;
 			}
+            delete[] pData;
 		}
 		else
 		{
@@ -370,8 +371,8 @@ CAtaDeviceStatisticsLogs::~CAtaDeviceStatisticsLogs()
 //---------------------------------------------------------------------------
 eReturnValues CAtaDeviceStatisticsLogs::ParseSCTDeviceStatLog(JSONNODE *masterData)
 {
-    sHeader *pDeviceHeader = NULL;
-    uint64_t *pLogPage = NULL;
+    sHeader *pDeviceHeader = M_NULLPTR;
+    uint64_t *pLogPage = M_NULLPTR;
     if (eVerbosityLevels::VERBOSITY_DEFAULT < g_verbosity)
     {
         printf("\nStarting Device Statistics Parsing \n");
