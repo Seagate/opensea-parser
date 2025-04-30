@@ -267,7 +267,7 @@ eReturnValues CSCSI_Farm_Log::init_Header_Data(size_t bufferSize)
                 m_MaxHeads = M_DoubleWord0(m_pHeader->farmHeader.headsSupported);
             }
         }
-        m_copies = M_DoubleWord0(m_pHeader->farmHeader.reserved);						// finish up with the number of copies (not supported "YET" in SAS)
+        m_copies = M_DoubleWord0(m_pHeader->farmHeader.historicalCopies);						// finish up with the number of copies (not supported "YET" in SAS)
     }
     return eReturnValues::SUCCESS;
 }
@@ -1158,7 +1158,7 @@ bool CSCSI_Farm_Log::get_sFarmHeader(sScsiFarmHeader* fh, uint8_t* pData, uint64
     fh->farmHeader.logSize = M_BytesTo8ByteValue(pData[offset + 32], pData[offset + 33], pData[offset + 34], pData[offset + 35], pData[offset + 36], pData[offset + 37], pData[offset + 38], pData[offset + 39]);
     fh->farmHeader.pageSize = M_BytesTo8ByteValue(pData[offset + 40], pData[offset + 41], pData[offset + 42], pData[offset + 43], pData[offset + 44], pData[offset + 45], pData[offset + 46], pData[offset + 47]);
     fh->farmHeader.headsSupported = M_BytesTo8ByteValue(pData[offset + 48], pData[offset + 49], pData[offset + 50], pData[offset + 51], pData[offset + 52], pData[offset + 53], pData[offset + 54], pData[offset + 55]);
-    fh->farmHeader.reserved = M_BytesTo8ByteValue(pData[offset + 56], pData[offset + 57], pData[offset + 58], pData[offset + 59], pData[offset + 60], pData[offset + 61], pData[offset + 62], pData[offset + 63]);
+    fh->farmHeader.historicalCopies = M_BytesTo8ByteValue(pData[offset + 56], pData[offset + 57], pData[offset + 58], pData[offset + 59], pData[offset + 60], pData[offset + 61], pData[offset + 62], pData[offset + 63]);
     if (position + 64 <= m_logSize && m_logSize != 0 && m_logSize != UINT16_C(0x00FF))
     {
         fh->farmHeader.reasonForFrameCapture = M_BytesTo8ByteValue(pData[offset + 64], pData[offset + 65], pData[offset + 66], pData[offset + 67], pData[offset + 68], pData[offset + 69], pData[offset + 70], pData[offset + 71]);

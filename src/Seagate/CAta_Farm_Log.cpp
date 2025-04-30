@@ -102,7 +102,7 @@ CATA_Farm_Log::CATA_Farm_Log(uint8_t *bufferData, size_t bufferSize, bool showSt
             m_pageSize = m_pHeader->pageSize & UINT64_C(0x00FFFFFFFFFFFFFF);
             m_heads = m_pHeader->headsSupported & UINT64_C(0x00FFFFFFFFFFFFFF);
             m_MaxHeads = m_pHeader->headsSupported & UINT64_C(0x00FFFFFFFFFFFFFF);
-            m_copies = m_pHeader->reserved & UINT64_C(0x00FFFFFFFFFFFFFF);
+            m_copies = m_pHeader->historicalCopies & UINT64_C(0x00FFFFFFFFFFFFFF);
             m_status = eReturnValues::IN_PROGRESS;
             m_MajorRev = M_DoubleWord0(m_pHeader->majorRev);
             m_MinorRev = M_DoubleWord0(m_pHeader->minorRev);
