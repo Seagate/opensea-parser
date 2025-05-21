@@ -127,7 +127,7 @@ void CAta_Ext_DST_Log::Get_Status_Meaning(std::string &meaning, uint8_t status)
     }
     else if (status == 0x02)
     {
-        meaning = "Was interepted by the host with a hard reset of a soft reset";
+        meaning = "Was interrepted by the host with a hard reset of a soft reset";
     }
     else if (status == 0x03)
     {
@@ -135,7 +135,7 @@ void CAta_Ext_DST_Log::Get_Status_Meaning(std::string &meaning, uint8_t status)
     }
     else if (status == 0x04)
     {
-        meaning = "Completed and has faild and the element is unknown";
+        meaning = "Completed and has failed and the element is unknown";
     }
     else if (status == 0x05)
     {
