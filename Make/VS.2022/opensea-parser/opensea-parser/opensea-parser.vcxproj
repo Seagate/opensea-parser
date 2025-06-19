@@ -358,7 +358,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;SEAPARSER_EXPORTS;STATIC_OPENSEA_COMMON</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;SEAPARSER_EXPORTS;STATIC_OPENSEA_COMMON;SAFE_FREE_BACKWARDS_COMPATIBILITY</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\..\..\include;..\..\..\..\..\libjson;..\..\..\..\..\..\subprojects\opensea-common\include;..\..\..\..\..\..\subprojects\opensea-parser\include;..\..\..\..\..\..\subprojects\opensea-parser\include\Seagate;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
