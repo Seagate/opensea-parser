@@ -229,7 +229,36 @@ namespace opensea_parser {
 	//---------------------------------------------------------------------------
 	inline void std_replace_spaces_with_underscore(std::string& myStr)
 	{
+		// Remove '('
+		myStr.erase(std::remove(myStr.begin(), myStr.end(), '('), myStr.end());
+		// Remove ')'
+		myStr.erase(std::remove(myStr.begin(), myStr.end(), ')'), myStr.end());
+		
+		// Remove '<'
+		myStr.erase(std::remove(myStr.begin(), myStr.end(), '<'), myStr.end());
+		// Remove '>'
+		myStr.erase(std::remove(myStr.begin(), myStr.end(), '>'), myStr.end());
+		// Remove '='
+		myStr.erase(std::remove(myStr.begin(), myStr.end(), '='), myStr.end());
+		// Replace '@' with "at"
+		size_t pos = 0;
+		while ((pos = myStr.find('@', pos)) != std::string::npos) {
+			myStr.replace(pos, 1, "at");
+			pos += 2; // Move past the replaced "at"
+		}
+		pos = 0;
+		while ((pos = myStr.find('%', pos)) != std::string::npos) {
+			myStr.replace(pos, 1, "pct");
+			pos += 2; // Move past the replaced "at"
+		}
+		std::replace(myStr.begin(), myStr.end(), '.', 'd');
+		std::replace(myStr.begin(), myStr.end(), '-', '_');
 		std::replace(myStr.begin(), myStr.end(), ' ', '_');
+		pos = 0;
+		while ((pos = myStr.find("___", pos)) != std::string::npos) {
+			myStr.erase(pos, 1); // Remove one of the consecutive spaces
+			myStr.erase(pos+1, 1); // Remove one of the consecutive spaces
+		}	
 	}
 	//-----------------------------------------------------------------------------
 	//
