@@ -229,6 +229,7 @@ namespace opensea_parser {
 	//---------------------------------------------------------------------------
 	inline void std_replace_spaces_with_underscore(std::string& myStr)
 	{
+		/*
 		// Remove '('
 		myStr.erase(std::remove(myStr.begin(), myStr.end(), '('), myStr.end());
 		// Remove ')'
@@ -255,10 +256,13 @@ namespace opensea_parser {
 		std::replace(myStr.begin(), myStr.end(), '-', '_');
 		std::replace(myStr.begin(), myStr.end(), ' ', '_');
 		pos = 0;
+		*/
+		size_t pos = 0;
 		while ((pos = myStr.find("___", pos)) != std::string::npos) {
 			myStr.erase(pos, 1); // Remove one of the consecutive spaces
 			myStr.erase(pos+1, 1); // Remove one of the consecutive spaces
 		}	
+		
 	}
 	//-----------------------------------------------------------------------------
 	//
@@ -278,8 +282,15 @@ namespace opensea_parser {
 	//---------------------------------------------------------------------------
 	inline void std_string_to_lowercase(std::string& stringToLowercase)
 	{
+		size_t pos= 0;
+		while ((pos = stringToLowercase.find("___", pos)) != std::string::npos) {
+			stringToLowercase.erase(pos, 1); // Remove one of the consecutive spaces
+			stringToLowercase.erase(pos + 1, 1); // Remove one of the consecutive spaces
+		}
+		/*
 		std::transform(stringToLowercase.begin(), stringToLowercase.end(), stringToLowercase.begin(),
 			[](unsigned char c) { return static_cast<char>(std::tolower(c)); });
+			*/
 	}
 	//-----------------------------------------------------------------------------
 	//
@@ -440,7 +451,7 @@ namespace opensea_parser {
             {
                 json_push_back(nowNode, json_new_i(myStr.c_str(), static_cast<json_int_t>(statusValue)));
             }
-			else if ((M_IGETBITRANGE(statusValue, 63, 59) == 0) && check_Status_Strip_Status(value) == 0)
+			else if ((M_IGETBITRANGE(statusValue, 63, 59) == 0) && check_Status_Strip_Status(value) == 0 && !g_parseNULL)
 			{
 				json_push_back(nowNode, json_new_i(myStr.c_str(), static_cast<json_int_t>(statusValue)));
 			}
