@@ -687,6 +687,9 @@ void CFarmCommon::sflyHeight_Node_Data(JSONNODE* Node, const std::string& title,
 			case DWORD0:
 				number = static_cast<double>(M_DoubleWord0(value[loopCount].inner) * calculation);
                 break;
+			case DWORDINT0:
+				number = static_cast<double>(M_DoubleWordInt0(value[loopCount].inner) * calculation);
+				break;
 			default:
 				number = static_cast<double>(M_WordInt0(value[loopCount].inner) * calculation);
                 break;
@@ -705,6 +708,9 @@ void CFarmCommon::sflyHeight_Node_Data(JSONNODE* Node, const std::string& title,
 			case DWORD0:
 				number = static_cast<double>(M_DoubleWord0(value[loopCount].outer) * calculation);
                 break;
+			case DWORDINT0:
+				number = static_cast<double>(M_DoubleWordInt0(value[loopCount].outer) * calculation);
+				break;
 			default:
 				number = static_cast<double>(M_WordInt0(value[loopCount].outer) * calculation);
                 break;
@@ -723,6 +729,9 @@ void CFarmCommon::sflyHeight_Node_Data(JSONNODE* Node, const std::string& title,
 			case DWORD0:
 				number = static_cast<double>(M_DoubleWord0(value[loopCount].middle) * calculation);
                 break;
+			case DWORDINT0:
+				number = static_cast<double>(M_DoubleWordInt0(value[loopCount].middle) * calculation);
+				break;
 			default:
 				number = static_cast<double>(M_WordInt0(value[loopCount].middle) * calculation);
                 break;
@@ -778,6 +787,9 @@ void CFarmCommon::sflyHeight_Array_Data(JSONNODE* Node, const std::string& title
 			case DWORD0:
 				number = static_cast<double>(M_DoubleWord0(value[loopCount].inner) * calculation);
                 break;
+			case DWORDINT0:
+				number = static_cast<double>(M_DoubleWordInt0(value[loopCount].inner) * calculation);
+				break;
 			default:
 				number = static_cast<double>(M_WordInt0(value[loopCount].inner) * calculation);
                 break;
@@ -796,6 +808,9 @@ void CFarmCommon::sflyHeight_Array_Data(JSONNODE* Node, const std::string& title
 			case DWORD0:
 				number = static_cast<double>(M_DoubleWord0(value[loopCount].outer) * calculation);
                 break;
+			case DWORDINT0:
+				number = static_cast<double>(M_DoubleWordInt0(value[loopCount].outer) * calculation);
+				break;
 			default:
 				number = static_cast<double>(M_WordInt0(value[loopCount].outer) * calculation);
                 break;
@@ -814,6 +829,9 @@ void CFarmCommon::sflyHeight_Array_Data(JSONNODE* Node, const std::string& title
 			case DWORD0:
 				number = static_cast<double>(M_DoubleWord0(value[loopCount].middle) * calculation);
                 break;
+			case DWORDINT0:
+				number = static_cast<double>(M_DoubleWordInt0(value[loopCount].middle) * calculation);
+				break;
 			default:
 				number = static_cast<double>(M_WordInt0(value[loopCount].middle) * calculation);
                 break;
