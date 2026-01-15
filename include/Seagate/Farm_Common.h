@@ -40,6 +40,7 @@ namespace opensea_parser {
 #define WORDINT1 4
 #define DWORD0 5
 #define DWORD1 6
+#define DWORDINT0 7
 
 	class CFarmCommon 
 	{
