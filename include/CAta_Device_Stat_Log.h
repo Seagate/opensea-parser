@@ -3,7 +3,7 @@
 //
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2026 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -145,7 +145,7 @@ namespace opensea_parser {
 		DSTempLog							m_tempData;													//!< temp log data
         JSONNODE							*JsonData;                                                  //!< json master data
     public:
-        CSAtaDevicStatisticsTempLogs();
+		explicit CSAtaDevicStatisticsTempLogs();
         CSAtaDevicStatisticsTempLogs(uint8_t* buffer,JSONNODE *masterData);
         CSAtaDevicStatisticsTempLogs(const std::string &fileName, JSONNODE *masterData);
         virtual ~CSAtaDevicStatisticsTempLogs();
@@ -159,7 +159,7 @@ namespace opensea_parser {
     protected:
         std::string                         m_name;                                                     //!< name of the class
 		eReturnValues                       m_status;                                                   //!< holds the status of the class
-        uint8_t                             *pData;                                                     //!< pointer to the data
+		std::vector<uint8_t>                pData;                                                      //!< pointer to the data
         size_t                              m_deviceLogSize;                                            //!< Log size 
         sStatusResponse                     m_Response;                                                 //!< status response
 
@@ -184,9 +184,9 @@ namespace opensea_parser {
         void logPage07(uint64_t *value, JSONNODE *masterData);
 		
     public:
-        CAtaDeviceStatisticsLogs();
-        CAtaDeviceStatisticsLogs(const std::string &fileName, JSONNODE *masterData);
+		explicit CAtaDeviceStatisticsLogs();
         CAtaDeviceStatisticsLogs(uint32_t logSize, JSONNODE *masterData, uint8_t *buffer);
+		CAtaDeviceStatisticsLogs(const std::string& fileName, JSONNODE* masterData);
         virtual ~CAtaDeviceStatisticsLogs();
         eReturnValues get_Device_Stat_Status(){ return m_status; };
     };

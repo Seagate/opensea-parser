@@ -3,7 +3,7 @@
 //
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2026 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -15,15 +15,9 @@
 
 #include <sstream>
 #include <iomanip>
+#include <vector>
 
 using namespace opensea_parser;
-using namespace std;
-
-#define BIT_59_SET (1 << 59)
-#define BIT_60_SET (1 << 60)
-#define BIT_61_SET (1 << 61)
-#define BIT_62_SET (1 << 62)
-#define BIT_63_SET (1 << 63)
 
 //-----------------------------------------------------------------------------
 //
@@ -68,8 +62,15 @@ CSAtaDevicStatisticsTempLogs::CSAtaDevicStatisticsTempLogs(uint8_t *buffer,JSONN
 {
     if (buffer != M_NULLPTR)
     {
-        m_status = parse_SCT_Temp_Log(buffer);
-        m_status = print_SCT_Temp_Log();
+        eReturnValues parseStatus = parse_SCT_Temp_Log(buffer);
+        if (parseStatus == eReturnValues::SUCCESS)
+        {
+            m_status = print_SCT_Temp_Log();
+        }
+        else
+        {
+            m_status = parseStatus;
+        }
     }
 }
 //-----------------------------------------------------------------------------
@@ -98,28 +99,25 @@ CSAtaDevicStatisticsTempLogs::CSAtaDevicStatisticsTempLogs(const std::string &fi
 	cCLog = new CLog(fileName);
 	if (cCLog->get_Log_Status() == eReturnValues::SUCCESS)
 	{
-		if (cCLog->get_Buffer() != M_NULLPTR)
+        m_logSize = cCLog->get_Size();
+		if (m_logSize != 0)
 		{
-			m_logSize = cCLog->get_Size();
-			uint8_t* pData = new uint8_t[m_logSize];								// new a buffer to the point				
-#ifndef __STDC_SECURE_LIB__
-			memcpy(pData, cCLog->get_Buffer(), m_logSize);
-#else
-			memcpy_s(pData, m_logSize, cCLog->get_Buffer(), m_logSize);// copy the buffer data to the class member pBuf
-#endif
+			// create the buffer to the size of the log
+            std::vector<uint8_t> pData(m_logSize);	
+            cCLog->get_vBuffer(pData);
+
 			sLogPageStruct *idCheck;
-			idCheck = reinterpret_cast<sLogPageStruct*>(&pData[0]);
+			idCheck = reinterpret_cast<sLogPageStruct*>(&pData.at(0));
 			byte_Swap_16(&idCheck->pageLength);
 			if (IsScsiLogPage(idCheck->pageLength, idCheck->pageCode) == false)
 			{
 				byte_Swap_16(&idCheck->pageLength);  // now that we know it's not scsi we need to flip the bytes back
-				m_status = parse_SCT_Temp_Log(pData);
+				m_status = parse_SCT_Temp_Log(pData.data());
 			}
 			else
 			{
 				m_status = eReturnValues::BAD_PARAMETER;
 			}
-            delete[] pData;
 		}
 		else
 		{
@@ -166,7 +164,12 @@ CSAtaDevicStatisticsTempLogs::~CSAtaDevicStatisticsTempLogs()
 //---------------------------------------------------------------------------
 eReturnValues CSAtaDevicStatisticsTempLogs::parse_SCT_Temp_Log(uint8_t* pData)
 {
-    //std::string myStr = "Parse SCT Temp Log";
+    if (pData == M_NULLPTR)
+    {
+        return eReturnValues::BAD_PARAMETER;
+    }
+
+    // parse header fields
     m_tempData.version = M_BytesTo2ByteValue(pData[1], pData[0]);
     m_tempData.SamplePeriod = M_BytesTo2ByteValue(pData[3], pData[2]);
     m_tempData.Interval = M_BytesTo2ByteValue(pData[5], pData[4]);
@@ -176,7 +179,16 @@ eReturnValues CSAtaDevicStatisticsTempLogs::parse_SCT_Temp_Log(uint8_t* pData)
     m_tempData.UnderLimit = pData[9];
     m_tempData.CBSize = M_BytesTo2ByteValue(pData[31], pData[30]);
     m_tempData.CBIndex = M_BytesTo2ByteValue(pData[33], pData[32]);
-    m_tempData.Temperature = pData[(34 + m_tempData.CBIndex)];
+    size_t index = static_cast<size_t>(34) + static_cast<size_t>(m_tempData.CBIndex);
+    if (m_logSize > 0)
+    {
+        if (index >= m_logSize)
+        {
+            return eReturnValues::INVALID_LENGTH;
+        }
+    }
+
+    m_tempData.Temperature = pData[index];
     return eReturnValues::SUCCESS;
 }
 
@@ -197,10 +209,10 @@ eReturnValues CSAtaDevicStatisticsTempLogs::print_SCT_Temp_Log()
 #endif
     std::ostringstream temp;
 
-    if (m_logSize > 0 && m_logSize < (static_cast<size_t>(m_tempData.CBIndex) + 34))   // check the size fo the data
+    // Validate buffer length if available. Ensure index (34 + CBIndex) is within m_logSize.
+    if (m_logSize > 0 && (static_cast<size_t>(m_tempData.CBIndex) + 34u) >= m_logSize)
     {
-        json_push_back(JsonData, sctTemp);
-        return static_cast<eReturnValues>(eReturnValues::INVALID_LENGTH);
+        return eReturnValues::INVALID_LENGTH;
     }
 
 
@@ -239,7 +251,7 @@ eReturnValues CSAtaDevicStatisticsTempLogs::print_SCT_Temp_Log()
 CAtaDeviceStatisticsLogs::CAtaDeviceStatisticsLogs()
     :m_name("Device Stat Log")
     , m_status(eReturnValues::IN_PROGRESS)
-    , pData(M_NULLPTR)
+    , pData()
     , m_deviceLogSize(0)
     , m_Response()
 {
@@ -264,11 +276,20 @@ CAtaDeviceStatisticsLogs::CAtaDeviceStatisticsLogs()
 CAtaDeviceStatisticsLogs::CAtaDeviceStatisticsLogs(uint32_t logSize, JSONNODE *masterData, uint8_t *buffer)
     : m_name("Device Stat Log")
     , m_status(eReturnValues::IN_PROGRESS)
-    , pData(buffer)
+    , pData()
     , m_deviceLogSize(logSize)
     , m_Response()
 {
-    if (pData != M_NULLPTR)
+    if (buffer != M_NULLPTR)
+    {
+        std::memcpy(&pData, buffer, m_deviceLogSize);
+    }
+    else
+    {
+                m_status = eReturnValues::BAD_PARAMETER;
+                return;
+    }
+    if (pData.size() != 0)
     {
         m_status = ParseSCTDeviceStatLog(masterData);
     }
@@ -303,28 +324,27 @@ CAtaDeviceStatisticsLogs::CAtaDeviceStatisticsLogs(const std::string &fileName, 
 	cCLog = new CLog(fileName);
 	if (cCLog->get_Log_Status() == eReturnValues::SUCCESS)
 	{
-		if (cCLog->get_Buffer() != M_NULLPTR)
-		{
-			m_deviceLogSize = cCLog->get_Size();
-			pData = new uint8_t[m_deviceLogSize];								// new a buffer to the point				
-#ifndef __STDC_SECURE_LIB__
-			memcpy(pData, cCLog->get_Buffer(), m_deviceLogSize);
-#else
-			memcpy_s(pData, m_deviceLogSize, cCLog->get_Buffer(), m_deviceLogSize);// copy the buffer data to the class member pBuf
-#endif
-			sLogPageStruct *idCheck;
-			idCheck = reinterpret_cast<sLogPageStruct*>(&pData[0]);
-			byte_Swap_16(&idCheck->pageLength);
-			if (IsScsiLogPage(idCheck->pageLength, idCheck->pageCode) == false)
-			{
-				byte_Swap_16(&idCheck->pageLength);  // now that we know it's not scsi we need to flip the bytes back
-				m_status = ParseSCTDeviceStatLog(masterData);
-			}
-			else
-			{
-				m_status = eReturnValues::BAD_PARAMETER;
-			}
-            delete[] pData;
+        cCLog->get_vBuffer(pData);
+        if (pData.size() != 0)                           // if the buffer is null then exit something did not go right
+        {
+            m_deviceLogSize = static_cast<uint64_t>(pData.size());
+            uint8_t offset = 0;
+
+            if (pData.at(offset) != 0x00)
+            {
+                sLogPageStruct* idCheck;
+                idCheck = reinterpret_cast<sLogPageStruct*>(&pData[offset]);
+                byte_Swap_16(&idCheck->pageLength);
+                if (IsScsiLogPage(idCheck->pageLength, idCheck->pageCode) == false)
+                {
+                    byte_Swap_16(&idCheck->pageLength);  // now that we know it's not scsi we need to flip the bytes back
+                    m_status = ParseSCTDeviceStatLog(masterData);
+                }
+                else
+                {
+                    m_status = eReturnValues::BAD_PARAMETER;
+                }
+            }
 		}
 		else
 		{
@@ -353,6 +373,7 @@ CAtaDeviceStatisticsLogs::CAtaDeviceStatisticsLogs(const std::string &fileName, 
 //---------------------------------------------------------------------------
 CAtaDeviceStatisticsLogs::~CAtaDeviceStatisticsLogs()
 {
+
 }
 
 //-----------------------------------------------------------------------------
@@ -387,18 +408,6 @@ eReturnValues CAtaDeviceStatisticsLogs::ParseSCTDeviceStatLog(JSONNODE *masterDa
     {	
         pDeviceHeader = reinterpret_cast<sHeader*>(&pData[offset]);
         pLogPage = reinterpret_cast<uint64_t*>(&pData[offset]);
-
-        //The members of the sHeader were updated - LogPageNum is corrected from uint16_t to uint8_t as per the spec
-        //Nayana Commented the below ifcheck and kept it to know if any such scenario that satisfies this condition
-        //Or is it because the LogPageNum data type was incorrect before
-        
-        /*if (pDeviceHeader->Reserved != 0x0000 && pDeviceHeader->Reserved != 0xffff)
-        {
-	    if (offset != 0)
-            {            
-               pDeviceHeader = (sHeader*)&pData[offset - 16];
-            }
-        }*/
 
         if (pDeviceHeader->RevNum == 0x0001)
         {
@@ -565,9 +574,7 @@ bool CAtaDeviceStatisticsLogs::isBit63Set(uint64_t *value)
 //
 //---------------------------------------------------------------------------
 void CAtaDeviceStatisticsLogs::DeviceStatFlag(uint64_t *value, JSONNODE *masterData)
-{
-    //std::string myStr = "Device stat flag";
-    
+{  
     JSONNODE *sctFlag = json_new(JSON_NODE);
     json_set_name(sctFlag, "Device Statistic Flags");
     //Bit 59 : Monitored Condition
@@ -764,7 +771,7 @@ void CAtaDeviceStatisticsLogs::logPage01(uint64_t *value, JSONNODE *masterData)
     //General Statistics(log page 01) contains general information about the device.
 	sLogPage01 *dsLog;
 	dsLog = reinterpret_cast<sLogPage01*>(&value[0]);
-    //string myStr = "Statistics";
+
     JSONNODE *sctStat = json_new(JSON_NODE);
     json_set_name(sctStat, "General Statistics(log Page 01h)");
 #if defined _DEBUG
@@ -992,9 +999,8 @@ void CAtaDeviceStatisticsLogs::logPage06(uint64_t *value, JSONNODE *masterData)
 {
     //Transport Statistics(log page 06) contains contains interface transport information about the device.
     uint64_t *cData = &value[0];
-sDeviceLog6  m_sSCT6;
+    sDeviceLog6  m_sSCT6;
     sDeviceLog6 *pSCT6 = &m_sSCT6;
-//sDeviceLog6 *pSCT6 = {0};
 
     pSCT6->HwReset = CheckStatusAndValid_32(&cData[1]);
     pSCT6->ASREvent = CheckStatusAndValid_32(&cData[2]);
@@ -1041,7 +1047,6 @@ void CAtaDeviceStatisticsLogs::logPage07(uint64_t *value, JSONNODE *masterData)
 #endif
     json_push_back(sctError, json_new_i("Percentage Used Endurance Indicator", static_cast<uint32_t>(PercentUsed)));
 
-    //DeviceStatFlag(&cData[1]);
     json_push_back(masterData, sctError);
 }
 

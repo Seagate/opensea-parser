@@ -18,9 +18,6 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\include\CAta_Device_Stat_Log.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\include\CAta_Identify_Log.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -142,6 +139,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\include\CScsi_Page_19h_Command_Duration_Limits_Log.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\include\CAta_Device_Stat_Log.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

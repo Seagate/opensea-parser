@@ -274,7 +274,7 @@ eReturnValues CScsiCmdDurationLimitsLog::get_Limits_Data(JSONNODE *masterData)
 {
 
     eReturnValues retStatus = eReturnValues::IN_PROGRESS;
-    if (pData != NULL)
+    if (pData != M_NULLPTR)
     {
         JSONNODE* pageInfo = json_new(JSON_NODE);
         json_set_name(pageInfo, "Command Duration Limits Log - 19h, 21h");

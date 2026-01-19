@@ -44,7 +44,7 @@ CExtComp::CExtComp()
 //
 //---------------------------------------------------------------------------
 CExtComp::CExtComp(uint8_t *buffer, size_t logSize, JSONNODE *masterData)
-    :pData(buffer)
+    :pData()
     , m_logSize(logSize)
     , m_name("Ext Comp Log")
     , m_status(eReturnValues::IN_PROGRESS)
@@ -53,6 +53,7 @@ CExtComp::CExtComp(uint8_t *buffer, size_t logSize, JSONNODE *masterData)
 
     if (buffer != M_NULLPTR)                           // if the buffer is null then exit something did go right
     {
+        std::memcpy(pData.data(), buffer, logSize);
         m_status = eReturnValues::IN_PROGRESS;
         m_status = parse_Ext_Comp_Log(masterData);
     }
@@ -82,15 +83,11 @@ CExtComp::CExtComp(const std::string &fileName, JSONNODE *masterData)
     cCLog = new CLog(fileName);
     if (cCLog->get_Log_Status() == eReturnValues::SUCCESS)
     {
-        if (cCLog->get_Buffer() != M_NULLPTR)
+        cCLog->get_vBuffer(pData);
+        if (pData.size() != 0)
         {
             m_logSize = cCLog->get_Size();
-            pData = new uint8_t[m_logSize];								// new a buffer to the point				
-#ifndef __STDC_SECURE_LIB__
-            memcpy(pData, cCLog->get_Buffer(), m_logSize);
-#else
-            memcpy_s(pData, m_logSize, cCLog->get_Buffer(), m_logSize);// copy the buffer data to the class member pBuf
-#endif
+
             sLogPageStruct *idCheck;
             idCheck = reinterpret_cast<sLogPageStruct*>(&pData[0]);
             byte_Swap_16(&idCheck->pageLength);
@@ -107,7 +104,6 @@ CExtComp::CExtComp(const std::string &fileName, JSONNODE *masterData)
         }
         else
         {
-
             m_status = eReturnValues::FAILURE;
         }
     }
@@ -128,13 +124,7 @@ CExtComp::CExtComp(const std::string &fileName, JSONNODE *masterData)
 //---------------------------------------------------------------------------
 CExtComp::~CExtComp()
 {
-    if (m_fileName)
-    {
-        if (pData != M_NULLPTR)
-        {
-            delete[] pData;
-        }
-    }
+
 }
 //-----------------------------------------------------------------------------
 //

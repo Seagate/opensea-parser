@@ -30,7 +30,7 @@ using namespace opensea_parser;
 //---------------------------------------------------------------------------
 CAta_SMART_Log_Dir::CAta_SMART_Log_Dir()
     : m_name("ATA SMART Log Directory")
-    , pData(NULL)
+    , pData(M_NULLPTR)
     , m_logSize(0)
     , m_status(eReturnValues::IN_PROGRESS)
     , m_freeBuffer(false)
@@ -54,7 +54,7 @@ CAta_SMART_Log_Dir::CAta_SMART_Log_Dir()
 //---------------------------------------------------------------------------
 CAta_SMART_Log_Dir::CAta_SMART_Log_Dir(const std::string &fileName)
     : m_name("ATA SMART Log Directory")
-    , pData(NULL)
+    , pData(M_NULLPTR)
     , m_logSize(0)
     , m_status(eReturnValues::IN_PROGRESS)
     , m_freeBuffer(false)
@@ -65,7 +65,7 @@ CAta_SMART_Log_Dir::CAta_SMART_Log_Dir(const std::string &fileName)
     cCLog = new CLog(fileName);
     if (cCLog->get_Log_Status() == eReturnValues::SUCCESS)
     {
-        if (cCLog->get_Buffer() != NULL)
+        if (cCLog->get_Buffer() != M_NULLPTR)
         {
             size_t bufferSize = cCLog->get_Size();
             pData = new uint8_t[cCLog->get_Size()];								// new a buffer to the point				
@@ -112,7 +112,7 @@ CAta_SMART_Log_Dir::CAta_SMART_Log_Dir(uint8_t *bufferData, size_t logSize)
     , m_hasHostSpecific(false)
     , m_hasVendorSpecific(false)
 {
-    if (bufferData != NULL)
+    if (bufferData != M_NULLPTR)
     {
         m_status = parse_SMART_Log_Dir();
     }
@@ -142,7 +142,7 @@ CAta_SMART_Log_Dir::~CAta_SMART_Log_Dir()
         m_logDetailList.clear();
     }
 
-    if (pData != NULL && m_freeBuffer)
+    if (pData != M_NULLPTR && m_freeBuffer)
     {
         delete[] pData;
     }

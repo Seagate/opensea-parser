@@ -167,7 +167,7 @@ void CScsiOperationLog::get_Background_Operations_status(std::string *status)
 //!   \return none
 //
 //---------------------------------------------------------------------------
-void CScsiOperationLog::process_Background_Operations_Data(JSONNODE *operationData, M_ATTR_UNUSED uint32_t offset)
+void CScsiOperationLog::process_Background_Operations_Data(JSONNODE *operationData)
 {
 	std::string myStr = "";
 #if defined _DEBUG
@@ -220,7 +220,7 @@ eReturnValues CScsiOperationLog::get_Background_Operations_Data(JSONNODE *master
 			if (offset < m_bufferLength && offset < UINT16_MAX)
 			{
 				m_Operation = reinterpret_cast<sOperationParams*>(&pData[offset]);
-				process_Background_Operations_Data(pageInfo,offset);
+				process_Background_Operations_Data(pageInfo);
 				offset += sizeof(sOperationParams);
 			}
 			else
