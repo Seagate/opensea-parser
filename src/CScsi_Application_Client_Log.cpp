@@ -2,7 +2,7 @@
 // CScsi_Application_Client_Log.cpp  Definition of Application Client Log where clients store information
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2026 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -32,7 +32,7 @@ using namespace opensea_parser;
 //
 //---------------------------------------------------------------------------
 CScsiApplicationLog::CScsiApplicationLog()
-	: pData()
+	: v_Buff()
 	, m_ApplicationName("Application Client Log")
 	, m_ApplicationStatus(eReturnValues::IN_PROGRESS)
 	, m_PageLength(0)
@@ -60,7 +60,7 @@ CScsiApplicationLog::CScsiApplicationLog()
 //
 //---------------------------------------------------------------------------
 CScsiApplicationLog::CScsiApplicationLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength)
-	: pData(buffer)
+	: v_Buff()
 	, m_ApplicationName("Application Client Log")
 	, m_ApplicationStatus(eReturnValues::IN_PROGRESS)
 	, m_PageLength(pageLength)
@@ -73,6 +73,7 @@ CScsiApplicationLog::CScsiApplicationLog(uint8_t * buffer, size_t bufferSize, ui
 	}
 	if (buffer != M_NULLPTR)
 	{
+		safe_memcpy(v_Buff.data(), m_bufferLength, buffer, m_bufferLength);
 		m_ApplicationStatus = eReturnValues::IN_PROGRESS;
 	}
 	else
@@ -81,7 +82,48 @@ CScsiApplicationLog::CScsiApplicationLog(uint8_t * buffer, size_t bufferSize, ui
 	}
 
 }
-
+//-----------------------------------------------------------------------------
+//
+//! \fn CScsiApplicationLog()
+//
+//! \brief
+//!   Description: Class constructor for the Application Client
+//
+//  Entry:
+//! \param fileName = the name of the file to read the log data from
+//
+//  Exit:
+//
+//---------------------------------------------------------------------------
+CScsiApplicationLog::CScsiApplicationLog(const std::string& fileName)
+	: v_Buff()
+	, m_ApplicationName("Application Client Log")
+	, m_ApplicationStatus(eReturnValues::IN_PROGRESS)
+	, m_PageLength(0)
+	, m_bufferLength(0)
+	, m_App(0)
+{
+	if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
+	{
+		printf("%s \n", m_ApplicationName.c_str());
+	}
+	CLog* cCLog;
+	cCLog = new CLog(fileName, true);
+	if (cCLog->get_Log_Status() == eReturnValues::SUCCESS)
+	{
+		cCLog->get_vBuffer(v_Buff);
+		if (v_Buff.size() != 0)                           // if the buffer is null then exit something did not go right
+		{
+			m_bufferLength = v_Buff.size();
+			m_ApplicationStatus = eReturnValues::IN_PROGRESS;
+		}
+	}
+	else
+	{
+		m_ApplicationStatus = eReturnValues::FAILURE;
+	}
+	delete (cCLog);
+}
 //-----------------------------------------------------------------------------
 //
 //! \fn CScsiApplicationLog
@@ -187,7 +229,7 @@ void CScsiApplicationLog::process_Client_Data(JSONNODE *appData)
 eReturnValues CScsiApplicationLog::get_Client_Data(JSONNODE *masterData)
 {
 	eReturnValues retStatus = eReturnValues::IN_PROGRESS;
-	if (pData != M_NULLPTR)
+	if (v_Buff.size() != 0)
 	{
 		JSONNODE *pageInfo = json_new(JSON_NODE);
 		json_set_name(pageInfo, "Application Client Log - Fh");
@@ -198,7 +240,7 @@ eReturnValues CScsiApplicationLog::get_Client_Data(JSONNODE *masterData)
 			if (offset+sizeof(sApplicationParams) < m_bufferLength && offset < UINT16_MAX)
 			{
                 l_NumberOfPartitions++;
-                m_App = new sApplicationParams (&pData[offset]);
+                m_App = new sApplicationParams (&v_Buff.at(offset));
                 offset += APP_CLIENT_DATA_LEN + 4;
 				
 				process_Client_Data(pageInfo);

@@ -3,7 +3,7 @@
 //
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2026 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -30,7 +30,7 @@ using namespace opensea_parser;
 //---------------------------------------------------------------------------
 CAta_SMART_Log_Dir::CAta_SMART_Log_Dir()
     : m_name("ATA SMART Log Directory")
-    , pData(M_NULLPTR)
+    , v_Buff()
     , m_logSize(0)
     , m_status(eReturnValues::IN_PROGRESS)
     , m_freeBuffer(false)
@@ -54,7 +54,7 @@ CAta_SMART_Log_Dir::CAta_SMART_Log_Dir()
 //---------------------------------------------------------------------------
 CAta_SMART_Log_Dir::CAta_SMART_Log_Dir(const std::string &fileName)
     : m_name("ATA SMART Log Directory")
-    , pData(M_NULLPTR)
+    , v_Buff()
     , m_logSize(0)
     , m_status(eReturnValues::IN_PROGRESS)
     , m_freeBuffer(false)
@@ -62,19 +62,13 @@ CAta_SMART_Log_Dir::CAta_SMART_Log_Dir(const std::string &fileName)
     , m_hasVendorSpecific(false)
 {
     CLog *cCLog;
-    cCLog = new CLog(fileName);
+    cCLog = new CLog(fileName,true);
     if (cCLog->get_Log_Status() == eReturnValues::SUCCESS)
     {
-        if (cCLog->get_Buffer() != M_NULLPTR)
+        cCLog->get_vBuffer(v_Buff);
+        if (v_Buff.size() != 0)                           // if the buffer is null then exit something did not go right
         {
-            size_t bufferSize = cCLog->get_Size();
-            pData = new uint8_t[cCLog->get_Size()];								// new a buffer to the point				
-#ifndef __STDC_SECURE_LIB__
-            memcpy(pData, cCLog->get_Buffer(), bufferSize);
-#else
-            memcpy_s(pData, bufferSize, cCLog->get_Buffer(), bufferSize);// copy the buffer data to the class member pBuf
-#endif
-            m_logSize = bufferSize;
+            m_logSize = cCLog->get_Size();
             m_status = parse_SMART_Log_Dir();
             m_freeBuffer = true;
         }
@@ -105,7 +99,7 @@ CAta_SMART_Log_Dir::CAta_SMART_Log_Dir(const std::string &fileName)
 //---------------------------------------------------------------------------
 CAta_SMART_Log_Dir::CAta_SMART_Log_Dir(uint8_t *bufferData, size_t logSize)
     : m_name("ATA SMART Log Directory")
-    , pData(bufferData)
+    , v_Buff()
     , m_logSize(logSize)
     , m_status(eReturnValues::IN_PROGRESS)
     , m_freeBuffer(false)
@@ -114,6 +108,7 @@ CAta_SMART_Log_Dir::CAta_SMART_Log_Dir(uint8_t *bufferData, size_t logSize)
 {
     if (bufferData != M_NULLPTR)
     {
+        safe_memcpy(v_Buff.data(),logSize, bufferData, logSize);
         m_status = parse_SMART_Log_Dir();
     }
     else
@@ -141,11 +136,6 @@ CAta_SMART_Log_Dir::~CAta_SMART_Log_Dir()
     {
         m_logDetailList.clear();
     }
-
-    if (pData != M_NULLPTR && m_freeBuffer)
-    {
-        delete[] pData;
-    }
 }
 //-----------------------------------------------------------------------------
 //
@@ -166,7 +156,7 @@ eReturnValues CAta_SMART_Log_Dir::parse_SMART_Log_Dir()
 
     for (uint16_t offset = 2; offset < m_logSize; offset += 2)
     {
-        uint16_t logSize = M_BytesTo2ByteValue(pData[offset + 1], pData[offset]);
+        uint16_t logSize = M_BytesTo2ByteValue(v_Buff.at(offset + 1), v_Buff.at(offset));
         if (logSize != 0)
         {
             sLogDetailStructure logDetails;

@@ -2,7 +2,7 @@
 // CScsi_Format_Status_Log.cpp  Format Status log page reports information about the most recent eReturnValues::SUCCESSful format operation
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2026 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -30,7 +30,7 @@ using namespace opensea_parser;
 //
 //---------------------------------------------------------------------------
 CScsiFormatStatusLog::CScsiFormatStatusLog()
-    : pData()
+    : v_Buff()
     , m_FormatName("Format Status Log")
     , m_FormatStatus(eReturnValues::IN_PROGRESS)
     , m_PageLength(0)
@@ -60,7 +60,7 @@ CScsiFormatStatusLog::CScsiFormatStatusLog()
 //
 //---------------------------------------------------------------------------
 CScsiFormatStatusLog::CScsiFormatStatusLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength)
-    : pData(buffer)
+    : v_Buff()
     , m_FormatName("Format Status Log")
     , m_FormatStatus(eReturnValues::IN_PROGRESS)
     , m_PageLength(pageLength)
@@ -74,6 +74,14 @@ CScsiFormatStatusLog::CScsiFormatStatusLog(uint8_t * buffer, size_t bufferSize, 
         printf("%s \n", m_FormatName.c_str());
     }
     if (buffer != M_NULLPTR)
+    {
+        safe_memcpy(v_Buff.data(), m_bufferLength, buffer, m_bufferLength);
+    }
+    else
+    {
+        m_FormatStatus = eReturnValues::FAILURE;
+    }
+    if (v_Buff.size() != 0)                           // if the buffer is null then exit something did not go right
     {
         m_FormatStatus = eReturnValues::IN_PROGRESS;
     }
@@ -287,7 +295,7 @@ eReturnValues CScsiFormatStatusLog::get_Format_Status_Data(JSONNODE *masterData)
 {
     eReturnValues retStatus = eReturnValues::IN_PROGRESS;
 
-    if (pData != M_NULLPTR)
+    if (v_Buff.size() != 0)
     {
         JSONNODE *pageInfo = json_new(JSON_NODE);
         json_set_name(pageInfo, "Format Status Log 08h");
@@ -296,14 +304,14 @@ eReturnValues CScsiFormatStatusLog::get_Format_Status_Data(JSONNODE *masterData)
         {
             if (offset < m_bufferLength && offset < UINT16_MAX)
             {
-                m_Format = reinterpret_cast<sFormatParams*>(&pData[offset]);
+                m_Format = reinterpret_cast<sFormatParams*>(&v_Buff.at(offset));
                 offset += sizeof(sFormatParams);
                 byte_Swap_16(&m_Format->paramCode);
                 if (m_Format->paramCode == UINT8_C(0x0000) && (m_Format->paramLength > 8))
                 {
                     if ((offset + m_Format->paramLength) < m_bufferLength)
                     {
-                        m_FormatDataOutParamValue = (reinterpret_cast<uint8_t*>(&pData[offset]));
+                        m_FormatDataOutParamValue = (reinterpret_cast<uint8_t*>(&v_Buff.at(offset)));
                         offset += m_Format->paramLength;
                         process_Format_Status_Data_Variable_Length(pageInfo);
                     }
@@ -321,7 +329,7 @@ eReturnValues CScsiFormatStatusLog::get_Format_Status_Data(JSONNODE *masterData)
                     {
                         if ((offset + m_Format->paramLength) < m_bufferLength)
                         {
-                            m_Value = pData[offset];
+                            m_Value = v_Buff.at(offset);
                             offset += m_Format->paramLength;
                         }
                         else
@@ -335,7 +343,7 @@ eReturnValues CScsiFormatStatusLog::get_Format_Status_Data(JSONNODE *masterData)
                     {
                         if ((offset + m_Format->paramLength) < m_bufferLength)
                         {
-                            m_Value = M_BytesTo2ByteValue(pData[offset], pData[offset + 1]);
+                            m_Value = M_BytesTo2ByteValue(v_Buff.at(offset), v_Buff.at(offset + 1));
                             offset += m_Format->paramLength;
                         }
                         else
@@ -349,7 +357,7 @@ eReturnValues CScsiFormatStatusLog::get_Format_Status_Data(JSONNODE *masterData)
                     {
                         if ((offset + m_Format->paramLength) < m_bufferLength)
                         {
-                            m_Value = M_BytesTo4ByteValue(pData[offset], pData[offset + 1], pData[offset + 2], pData[offset + 3]);
+                            m_Value = M_BytesTo4ByteValue(v_Buff.at(offset), v_Buff.at(offset + 1), v_Buff.at(offset + 2), v_Buff.at(offset + 3));
                             offset += m_Format->paramLength;
                         }
                         else
@@ -363,7 +371,7 @@ eReturnValues CScsiFormatStatusLog::get_Format_Status_Data(JSONNODE *masterData)
                     {
                         if ((offset + m_Format->paramLength) < m_bufferLength)
                         {
-                            m_Value = M_BytesTo8ByteValue(pData[offset], pData[offset + 1], pData[offset + 2], pData[offset + 3], pData[offset + 4], pData[offset + 5], pData[offset + 6], pData[offset + 7]);
+                            m_Value = M_BytesTo8ByteValue(v_Buff.at(offset), v_Buff.at(offset + 1), v_Buff.at(offset + 2), v_Buff.at(offset + 3), v_Buff.at(offset + 4), v_Buff.at(offset + 5), v_Buff.at(offset + 6), v_Buff.at(offset + 7));
                             offset += m_Format->paramLength;
                         }
                         else

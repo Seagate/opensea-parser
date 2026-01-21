@@ -77,7 +77,7 @@ CAtaPowerConditionsLog::CAtaPowerConditionsLog(std::string &filename)
 {
 
     CLog *cCLog;
-    cCLog = new CLog(filename,true);
+    cCLog = new CLog(filename, true);
     if (cCLog->get_Log_Status() == eReturnValues::SUCCESS)
     {
         cCLog->get_vBuffer(m_powerConditionLog);

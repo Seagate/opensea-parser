@@ -2,7 +2,7 @@
 // CScsi_Background_Operation_Log.cpp  Definition of Background Operation log page reports parameters that are specific to background operations.
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2026 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -30,7 +30,7 @@ using namespace opensea_parser;
 //
 //---------------------------------------------------------------------------
 CScsiOperationLog::CScsiOperationLog()
-	: pData()
+	: v_Buff()
 	, m_OperationName("Background Operation Log")
 	, m_OperationsStatus(eReturnValues::IN_PROGRESS)
 	, m_PageLength(0)
@@ -57,8 +57,8 @@ CScsiOperationLog::CScsiOperationLog()
 //  Exit:
 //
 //---------------------------------------------------------------------------
-CScsiOperationLog::CScsiOperationLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength)
-	: pData(M_NULLPTR)
+CScsiOperationLog::CScsiOperationLog(uint8_t *buffer, size_t bufferSize, uint16_t pageLength)
+	: v_Buff()
 	, m_OperationName("Background Operation Log")
 	, m_OperationsStatus(eReturnValues::IN_PROGRESS)
 	, m_PageLength(pageLength)
@@ -69,13 +69,15 @@ CScsiOperationLog::CScsiOperationLog(uint8_t * buffer, size_t bufferSize, uint16
 	{
 		printf("%s \n", m_OperationName.c_str());
 	}
-    pData = new uint8_t[pageLength];								// new a buffer to the point				
-#ifndef __STDC_SECURE_LIB__
-    memcpy(pData, buffer, pageLength);
-#else
-    memcpy_s(pData, pageLength, buffer, pageLength);// copy the buffer data to the class member pBuf
-#endif
-	if (pData != M_NULLPTR)
+	if (buffer != M_NULLPTR)
+	{
+		safe_memcpy(v_Buff.data(), bufferSize, buffer, bufferSize);
+	}
+	else
+	{
+		m_OperationsStatus = eReturnValues::FAILURE;
+	}
+	if(v_Buff.size() != 0)                           // if the buffer is null then exit something did not go right
 	{
 		m_OperationsStatus = eReturnValues::IN_PROGRESS;
 	}
@@ -102,11 +104,7 @@ CScsiOperationLog::CScsiOperationLog(uint8_t * buffer, size_t bufferSize, uint16
 //---------------------------------------------------------------------------
 CScsiOperationLog::~CScsiOperationLog()
 {
-    if (pData != M_NULLPTR)
-    {
-        delete[] pData;
-        pData = M_NULLPTR;
-    }
+
 }
 //-----------------------------------------------------------------------------
 //
@@ -210,7 +208,7 @@ void CScsiOperationLog::process_Background_Operations_Data(JSONNODE *operationDa
 eReturnValues CScsiOperationLog::get_Background_Operations_Data(JSONNODE *masterData)
 {
 	eReturnValues retStatus = eReturnValues::IN_PROGRESS;
-	if (pData != M_NULLPTR)
+	if (v_Buff.size() != 0)
 	{
 		JSONNODE *pageInfo = json_new(JSON_NODE);
 		json_set_name(pageInfo, "Background Operation Log - 15h");
@@ -219,7 +217,7 @@ eReturnValues CScsiOperationLog::get_Background_Operations_Data(JSONNODE *master
 		{
 			if (offset < m_bufferLength && offset < UINT16_MAX)
 			{
-				m_Operation = reinterpret_cast<sOperationParams*>(&pData[offset]);
+				m_Operation = reinterpret_cast<sOperationParams*>(&v_Buff.at(offset));
 				process_Background_Operations_Data(pageInfo);
 				offset += sizeof(sOperationParams);
 			}

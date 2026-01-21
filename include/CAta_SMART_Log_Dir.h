@@ -3,7 +3,7 @@
 //
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2026 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -36,7 +36,7 @@ namespace opensea_parser {
 #pragma pack(pop)
 
         std::string                         m_name;                             //!< name of the class
-        uint8_t                             *pData;                             //!< pointer data structure
+        std::vector<uint8_t>                v_Buff;                             //!< vector for holding the buffer data
         size_t                              m_logSize;                          //!< log size
         eReturnValues                       m_status;                           //!< holds the status fo the class
         bool                                m_freeBuffer;
@@ -50,8 +50,8 @@ namespace opensea_parser {
 
     public:
         CAta_SMART_Log_Dir();
-        CAta_SMART_Log_Dir(const std::string &fileName);
-        CAta_SMART_Log_Dir(uint8_t *bufferData, size_t logSize);
+        explicit CAta_SMART_Log_Dir(const std::string &fileName);
+        CAta_SMART_Log_Dir(uint8_t* bufferData, size_t logSize);
         virtual ~CAta_SMART_Log_Dir();
         virtual eReturnValues get_SMART_Log_Dir_Status() { return m_status; };
         virtual eReturnValues print_SMART_Log_Dir(JSONNODE *masterData);
