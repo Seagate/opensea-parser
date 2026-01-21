@@ -3,7 +3,7 @@
 //
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2026 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -55,7 +55,7 @@ namespace opensea_parser {
 	class CAtaPowerConditionsLog 
 	{
 	protected:
-		uint8_t                *m_powerConditionLog;
+		std::vector<uint8_t>   m_powerConditionLog;							//!< vector for holding the buffer data
 		uint8_t                *m_powerFlags;
 		tDataPtr			    Buffer;
 		eReturnValues		    m_status;
