@@ -28,7 +28,7 @@ namespace opensea_parser {
     {
     private:
     protected:			
-        std::vector<uint8_t>                pData;													    //<! pointer to the buffer
+        std::vector<uint8_t>                v_Buff;													    //!< vector for holding the buffer data
 		size_t								m_logSize;													//!< size of the log. 
         std::string                         m_name;                                                     //!< name of the class
         eReturnValues                       m_status;                                                   //!< holds the status of the class

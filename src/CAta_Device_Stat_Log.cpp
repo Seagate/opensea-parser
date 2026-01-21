@@ -96,23 +96,23 @@ CSAtaDevicStatisticsTempLogs::CSAtaDevicStatisticsTempLogs(const std::string &fi
 {
 
 	CLog *cCLog;
-	cCLog = new CLog(fileName);
+	cCLog = new CLog(fileName,true);
 	if (cCLog->get_Log_Status() == eReturnValues::SUCCESS)
 	{
         m_logSize = cCLog->get_Size();
 		if (m_logSize != 0)
 		{
 			// create the buffer to the size of the log
-            std::vector<uint8_t> pData(m_logSize);	
-            cCLog->get_vBuffer(pData);
+            std::vector<uint8_t> v_Buff(m_logSize);	
+            cCLog->get_vBuffer(v_Buff);
 
 			sLogPageStruct *idCheck;
-			idCheck = reinterpret_cast<sLogPageStruct*>(&pData.at(0));
+			idCheck = reinterpret_cast<sLogPageStruct*>(&v_Buff.at(0));
 			byte_Swap_16(&idCheck->pageLength);
 			if (IsScsiLogPage(idCheck->pageLength, idCheck->pageCode) == false)
 			{
 				byte_Swap_16(&idCheck->pageLength);  // now that we know it's not scsi we need to flip the bytes back
-				m_status = parse_SCT_Temp_Log(pData.data());
+				m_status = parse_SCT_Temp_Log(v_Buff.data());
 			}
 			else
 			{
@@ -251,7 +251,7 @@ eReturnValues CSAtaDevicStatisticsTempLogs::print_SCT_Temp_Log()
 CAtaDeviceStatisticsLogs::CAtaDeviceStatisticsLogs()
     :m_name("Device Stat Log")
     , m_status(eReturnValues::IN_PROGRESS)
-    , pData()
+    , v_Buff()
     , m_deviceLogSize(0)
     , m_Response()
 {
@@ -276,20 +276,20 @@ CAtaDeviceStatisticsLogs::CAtaDeviceStatisticsLogs()
 CAtaDeviceStatisticsLogs::CAtaDeviceStatisticsLogs(uint32_t logSize, JSONNODE *masterData, uint8_t *buffer)
     : m_name("Device Stat Log")
     , m_status(eReturnValues::IN_PROGRESS)
-    , pData()
+    , v_Buff()
     , m_deviceLogSize(logSize)
     , m_Response()
 {
     if (buffer != M_NULLPTR)
     {
-        std::memcpy(&pData, buffer, m_deviceLogSize);
+        std::memcpy(&v_Buff, buffer, m_deviceLogSize);
     }
     else
     {
                 m_status = eReturnValues::BAD_PARAMETER;
                 return;
     }
-    if (pData.size() != 0)
+    if (v_Buff.size() != 0)
     {
         m_status = ParseSCTDeviceStatLog(masterData);
     }
@@ -316,24 +316,24 @@ CAtaDeviceStatisticsLogs::CAtaDeviceStatisticsLogs(uint32_t logSize, JSONNODE *m
 CAtaDeviceStatisticsLogs::CAtaDeviceStatisticsLogs(const std::string &fileName, JSONNODE *masterData)
     : m_name("Device Stat Log")
 	, m_status(eReturnValues::IN_PROGRESS)
-	, pData()
+	, v_Buff()
 	, m_deviceLogSize(0)
     , m_Response()
 {
 	CLog *cCLog;
-	cCLog = new CLog(fileName);
+	cCLog = new CLog(fileName,true);
 	if (cCLog->get_Log_Status() == eReturnValues::SUCCESS)
 	{
-        cCLog->get_vBuffer(pData);
-        if (pData.size() != 0)                           // if the buffer is null then exit something did not go right
+        cCLog->get_vBuffer(v_Buff);
+        if (v_Buff.size() != 0)                           // if the buffer is null then exit something did not go right
         {
-            m_deviceLogSize = static_cast<uint64_t>(pData.size());
+            m_deviceLogSize = static_cast<uint64_t>(v_Buff.size());
             uint8_t offset = 0;
 
-            if (pData.at(offset) != 0x00)
+            if (v_Buff.at(offset) != 0x00)
             {
                 sLogPageStruct* idCheck;
-                idCheck = reinterpret_cast<sLogPageStruct*>(&pData[offset]);
+                idCheck = reinterpret_cast<sLogPageStruct*>(&v_Buff.at(offset));
                 byte_Swap_16(&idCheck->pageLength);
                 if (IsScsiLogPage(idCheck->pageLength, idCheck->pageCode) == false)
                 {
@@ -406,8 +406,8 @@ eReturnValues CAtaDeviceStatisticsLogs::ParseSCTDeviceStatLog(JSONNODE *masterDa
     //Define each valid log page.
     for (uint32_t offset = 0; offset < m_deviceLogSize; offset += 512)
     {	
-        pDeviceHeader = reinterpret_cast<sHeader*>(&pData[offset]);
-        pLogPage = reinterpret_cast<uint64_t*>(&pData[offset]);
+        pDeviceHeader = reinterpret_cast<sHeader*>(&v_Buff.at(offset));
+        pLogPage = reinterpret_cast<uint64_t*>(&v_Buff.at(offset));
 
         if (pDeviceHeader->RevNum == 0x0001)
         {

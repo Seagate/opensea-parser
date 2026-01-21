@@ -3,7 +3,7 @@
 //
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2026 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -28,32 +28,31 @@ using namespace opensea_parser;
 //---------------------------------------------------------------------------
 CAta_Ext_DST_Log::CAta_Ext_DST_Log(const std::string &fileName, JSONNODE *masterData)
     :m_name("Ext DST Log")                                         //!< name of the class
-    , pData()
+    , v_Buff()
     , m_logSize(0)
     , m_status(eReturnValues::IN_PROGRESS)
 {
     CLog *cCLog;
-    cCLog = new CLog(fileName);
+    cCLog = new CLog(fileName,true);
     if (cCLog->get_Log_Status() == eReturnValues::SUCCESS)
     {
-        if (cCLog->get_Buffer() != M_NULLPTR)
+        cCLog->get_vBuffer(v_Buff);
+        if (v_Buff.size() != 0)                           // if the buffer is null then exit something did not go right
         {
-            m_logSize = cCLog->get_Size();
-            pData = new uint8_t[m_logSize];								// new a buffer to the point				
-#ifndef __STDC_SECURE_LIB__ 
-            memcpy(pData, cCLog->get_Buffer(), m_logSize);
-#else
-            memcpy_s(pData, m_logSize, cCLog->get_Buffer(), m_logSize);// copy the buffer data to the class member pBuf
-#endif
+            m_logSize = static_cast<uint64_t>(v_Buff.size());
+
             sLogPageStruct *idCheck;
-            idCheck = reinterpret_cast<sLogPageStruct*>(&pData[0]);
+            idCheck = reinterpret_cast<sLogPageStruct*>(&v_Buff.at(0));
             byte_Swap_16(&idCheck->pageLength);
             if (IsScsiLogPage(idCheck->pageLength, idCheck->pageCode) == false)
             {
                 byte_Swap_16(&idCheck->pageLength);  // now that we know it's not scsi we need to flip the bytes back
                 m_status = parse_Ext_Self_Test_Log(masterData);
             }
-            delete[] pData;
+        }
+        else
+        {
+            m_status = eReturnValues::FAILURE;
         }
     }
     else
@@ -75,14 +74,21 @@ CAta_Ext_DST_Log::CAta_Ext_DST_Log(const std::string &fileName, JSONNODE *master
 //  Exit:DST_Enum
 //
 //---------------------------------------------------------------------------
-CAta_Ext_DST_Log::CAta_Ext_DST_Log(uint8_t *pBufferData, JSONNODE *masterData)
+CAta_Ext_DST_Log::CAta_Ext_DST_Log(uint8_t *pBufferData, size_t logSize, JSONNODE *masterData)
     :m_name("Ext DST Log")                                         //!< name of the class
+    , v_Buff()
+    , m_logSize(0)
     , m_status(eReturnValues::IN_PROGRESS)
 {
-    pData = pBufferData;
-    m_logSize = 0;
-    m_status = parse_Ext_Self_Test_Log(masterData);
-    pData = M_NULLPTR;
+    if (pBufferData != M_NULLPTR)
+    {
+        safe_memcpy(v_Buff.data(),logSize, pBufferData, logSize);
+        m_status = parse_Ext_Self_Test_Log(masterData);
+    }
+    else
+    {
+        m_status = eReturnValues::FAILURE;
+    }
 }
 //-----------------------------------------------------------------------------
 //
@@ -192,16 +198,16 @@ eReturnValues CAta_Ext_DST_Log::parse_Ext_Self_Test_Log(JSONNODE *masterData)
     uint64_t LBA = 0;
 
     json_set_name(DstJson, "DST Log");
-    uint16_t index = M_BytesTo2ByteValue(pData[3], pData[2]);
+    uint16_t index = M_BytesTo2ByteValue(v_Buff.at(3), v_Buff.at(2));
 	json_push_back(DstJson, json_new_i("Self Test Index", static_cast<uint32_t>(index)));
     DSTIndex += 4;
     for (int i = 1; i <= 19; i++)
     {
-        StatusByte = pData[DSTIndex + 1];
-        timeStamp = M_BytesTo2ByteValue(pData[DSTIndex + 3], pData[DSTIndex + 2]);
-        compTime = M_BytesTo2ByteValue(pData[DSTIndex + 13], pData[DSTIndex + 12]);
-        checkPointByte = static_cast<int8_t>(pData[DSTIndex + 4]);
-        LBA = M_BytesTo8ByteValue(0,0, pData[DSTIndex + 10], pData[DSTIndex + 9], pData[DSTIndex + 8], pData[DSTIndex + 7], pData[DSTIndex + 6], pData[DSTIndex + 5]);
+        StatusByte = v_Buff.at(DSTIndex + 1);
+        timeStamp = M_BytesTo2ByteValue(v_Buff.at(DSTIndex + 3), v_Buff.at(DSTIndex + 2));
+        compTime = M_BytesTo2ByteValue(v_Buff.at(DSTIndex + 13), v_Buff.at(DSTIndex + 12));
+        checkPointByte = static_cast<int8_t>(v_Buff.at(DSTIndex + 4));
+        LBA = M_BytesTo8ByteValue(0,0, v_Buff.at(DSTIndex + 10), v_Buff.at(DSTIndex + 9), v_Buff.at(DSTIndex + 8), v_Buff.at(DSTIndex + 7), v_Buff.at(DSTIndex + 6), v_Buff.at(DSTIndex + 5));
         JSONNODE *runInfo = json_new(JSON_NODE);
 
         std::ostringstream temp;

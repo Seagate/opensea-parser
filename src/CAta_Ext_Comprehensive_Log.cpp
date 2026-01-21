@@ -26,7 +26,7 @@ using namespace opensea_parser;
 //
 //---------------------------------------------------------------------------
 CExtComp::CExtComp()
-    :pData()
+    :v_Buff()
     , m_logSize(0)
     , m_name("Ext Comp Log")
     , m_status(eReturnValues::IN_PROGRESS)
@@ -44,7 +44,7 @@ CExtComp::CExtComp()
 //
 //---------------------------------------------------------------------------
 CExtComp::CExtComp(uint8_t *buffer, size_t logSize, JSONNODE *masterData)
-    :pData()
+    :v_Buff()
     , m_logSize(logSize)
     , m_name("Ext Comp Log")
     , m_status(eReturnValues::IN_PROGRESS)
@@ -53,7 +53,7 @@ CExtComp::CExtComp(uint8_t *buffer, size_t logSize, JSONNODE *masterData)
 
     if (buffer != M_NULLPTR)                           // if the buffer is null then exit something did go right
     {
-        std::memcpy(pData.data(), buffer, logSize);
+        safe_memcpy(v_Buff.data(),logSize, buffer, logSize);
         m_status = eReturnValues::IN_PROGRESS;
         m_status = parse_Ext_Comp_Log(masterData);
     }
@@ -73,23 +73,23 @@ CExtComp::CExtComp(uint8_t *buffer, size_t logSize, JSONNODE *masterData)
 //
 //---------------------------------------------------------------------------
 CExtComp::CExtComp(const std::string &fileName, JSONNODE *masterData)
-    :pData()
+    :v_Buff()
     , m_logSize()
     , m_name("Ext Comp Log")
     , m_status(eReturnValues::IN_PROGRESS)
     , m_fileName(true)
 {
     CLog *cCLog;
-    cCLog = new CLog(fileName);
+    cCLog = new CLog(fileName,true);
     if (cCLog->get_Log_Status() == eReturnValues::SUCCESS)
     {
-        cCLog->get_vBuffer(pData);
-        if (pData.size() != 0)
+        cCLog->get_vBuffer(v_Buff);
+        if (v_Buff.size() != 0)
         {
             m_logSize = cCLog->get_Size();
 
             sLogPageStruct *idCheck;
-            idCheck = reinterpret_cast<sLogPageStruct*>(&pData[0]);
+            idCheck = reinterpret_cast<sLogPageStruct*>(&v_Buff.at(0));
             byte_Swap_16(&idCheck->pageLength);
             if (IsScsiLogPage(idCheck->pageLength, idCheck->pageCode) == false)
             {
@@ -219,12 +219,12 @@ eReturnValues CExtComp::parse_Ext_Comp_Structure(uint32_t structNumber, uint32_t
 
 	if (sector == 0)
 	{
-		json_push_back(EComp, json_new_i("Ext Comp SMART Log Version", static_cast<int>(pData[0])));
+		json_push_back(EComp, json_new_i("Ext Comp SMART Log Version", static_cast<int>(v_Buff[0])));
 
-		COMPIndex = pData[2];
+		COMPIndex = v_Buff.at(2);
 		json_push_back(EComp, json_new_i("Ext Comp Log Index", static_cast<int>(COMPIndex)));
 
-		deviceErrorCount = pData[500];
+		deviceErrorCount = v_Buff.at(500);
 		json_push_back(EComp, json_new_i("Ext Comp Device Error Count", static_cast<int>(deviceErrorCount)));
 	}
     temp.str("");temp.clear();
@@ -239,16 +239,16 @@ eReturnValues CExtComp::parse_Ext_Comp_Structure(uint32_t structNumber, uint32_t
             temp << "Command Data Structure " << std::dec << cmddata;
 			JSONNODE *cmdNode = json_new(JSON_NODE);
 			json_set_name(cmdNode, temp.str().c_str());
-            deviceControl = pData[wOffset];
-            featureField = pData[wOffset + 1];
-            countField = pData[wOffset + 3];
-            lowLBA = pData[wOffset + 5];
-            midLBA = pData[wOffset + 7];
-            hiLBA = pData[wOffset + 9];
-            deviceHead = pData[wOffset + 11];
-            commandField = pData[wOffset + 12];
+            deviceControl = v_Buff.at(wOffset);
+            featureField = v_Buff.at(wOffset + 1);
+            countField = v_Buff.at(wOffset + 3);
+            lowLBA = v_Buff.at(wOffset + 5);
+            midLBA = v_Buff.at(wOffset + 7);
+            hiLBA = v_Buff.at(wOffset + 9);
+            deviceHead = v_Buff.at(wOffset + 11);
+            commandField = v_Buff.at(wOffset + 12);
             //reserved = pData[wOffset + 13];
-            timeStamp = pData[wOffset + 14];
+            timeStamp = v_Buff.at(wOffset + 14);
             word_Swap_32(&timeStamp);
             wOffset += 18;
 #if defined _DEBUG
@@ -298,15 +298,15 @@ eReturnValues CExtComp::parse_Ext_Comp_Structure(uint32_t structNumber, uint32_t
         }
         //printf("offset = %d \n",wOffset);
         //reserved = pData[wOffset];
-        errorField = pData[wOffset + 1];
-        countField = pData[wOffset + 3];
-        lowLBA = pData[wOffset + 5];
-        midLBA = pData[wOffset + 7];
-        hiLBA = pData[wOffset + 9];
-        deviceHead = pData[wOffset + 10];
-        status = pData[wOffset + 11];
-        state = pData[wOffset + 30];
-        lifeTime = pData[wOffset + 32];
+        errorField = v_Buff.at(wOffset + 1);
+        countField = v_Buff.at(wOffset + 3);
+        lowLBA = v_Buff.at(wOffset + 5);
+        midLBA = v_Buff.at(wOffset + 7);
+        hiLBA = v_Buff.at(wOffset + 9);
+        deviceHead = v_Buff.at(wOffset + 10);
+        status = v_Buff.at(wOffset + 11);
+        state = v_Buff.at(wOffset + 30);
+        lifeTime = v_Buff.at(wOffset + 32);
         LBA = M_WordsTo8ByteValue(0, hiLBA, midLBA, lowLBA);
         byte_Swap_16(&lifeTime);
         wOffset += 34;
