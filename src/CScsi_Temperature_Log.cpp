@@ -30,7 +30,7 @@ using namespace opensea_parser;
 //
 //---------------------------------------------------------------------------
 CScsiTemperatureLog::CScsiTemperatureLog()
-	: pData()
+	: v_Buff()
 	, m_pDataSize(0)
 	, m_Page()
 	, m_TempName("Temperature Log")
@@ -56,7 +56,7 @@ CScsiTemperatureLog::CScsiTemperatureLog()
 //
 //---------------------------------------------------------------------------
 CScsiTemperatureLog::CScsiTemperatureLog(uint8_t * buffer, size_t bufferSize)
-	:pData(buffer)
+	:v_Buff()
 	, m_pDataSize(bufferSize)
 	, m_Page()
 	, m_TempName("Temperature Log")
@@ -69,8 +69,15 @@ CScsiTemperatureLog::CScsiTemperatureLog(uint8_t * buffer, size_t bufferSize)
 	}
 	if (buffer != M_NULLPTR)
 	{
-		pData = buffer;
-		m_Page = reinterpret_cast<sTempLogPageStruct *>(buffer);				// set a buffer to the point to the log page info
+		safe_memcpy(v_Buff.data(), m_pDataSize, buffer, m_pDataSize);
+	}
+	else
+	{
+		m_TempStatus = eReturnValues::FAILURE;
+	}
+	if (v_Buff.size() != 0)                           // if the buffer is null then exit something did not go right
+	{
+		m_Page = reinterpret_cast<sTempLogPageStruct *>(v_Buff.data());				// set a buffer to the point to the log page info
 		m_TempStatus = eReturnValues::SUCCESS;
 	}
 	else
@@ -154,7 +161,7 @@ eReturnValues CScsiTemperatureLog::get_Data(JSONNODE *masterData)
 	eReturnValues retStatus = eReturnValues::IN_PROGRESS;
 
 	size_t tempSize = sizeof(sTempLogPageStruct);
-	if (pData != M_NULLPTR)
+	if (v_Buff.size() != 0)
 	{
 		JSONNODE *pageInfo = json_new(JSON_NODE);
 		json_set_name(pageInfo, "Temperature Log Page - Dh");

@@ -31,7 +31,7 @@ using namespace opensea_parser;
 //
 //---------------------------------------------------------------------------
 CScsiNonMediumErrorCountLog::CScsiNonMediumErrorCountLog()
-	: pData()
+	: v_Buff()
 	, m_NMECName("Non-Medium Error Count Log")
 	, m_NMECStatus(eReturnValues::IN_PROGRESS)
 	, m_PageLength(0)
@@ -60,7 +60,7 @@ CScsiNonMediumErrorCountLog::CScsiNonMediumErrorCountLog()
 //
 //---------------------------------------------------------------------------
 CScsiNonMediumErrorCountLog::CScsiNonMediumErrorCountLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength)
-	: pData(buffer)
+	: v_Buff()
 	, m_NMECName("Non-Medium Error Count Log")
 	, m_NMECStatus(eReturnValues::IN_PROGRESS)
 	, m_PageLength(pageLength)
@@ -73,6 +73,14 @@ CScsiNonMediumErrorCountLog::CScsiNonMediumErrorCountLog(uint8_t * buffer, size_
 		printf("%s \n", m_NMECName.c_str());
 	}
 	if (buffer != M_NULLPTR)
+	{
+		safe_memcpy(v_Buff.data(), m_bufferLength, buffer, m_bufferLength);
+	}
+	else
+	{
+		m_NMECStatus = eReturnValues::FAILURE;
+	}
+	if (v_Buff.size() != 0)                           // if the buffer is null then exit something did not go right
 	{
 		m_NMECStatus = eReturnValues::IN_PROGRESS;
 	}
@@ -163,7 +171,7 @@ void CScsiNonMediumErrorCountLog::process_Non_Medium_Error_Count_Data(JSONNODE* 
 eReturnValues CScsiNonMediumErrorCountLog::get_Non_Medium_Error_Count_Data(JSONNODE *masterData)
 {
 	eReturnValues retStatus = eReturnValues::IN_PROGRESS;
-	if (pData != M_NULLPTR)
+	if (v_Buff.size() != 0)
 	{
 		JSONNODE *pageInfo = json_new(JSON_NODE);
 		json_set_name(pageInfo, "Non-Medium Error Count Log - 6h");
@@ -171,7 +179,7 @@ eReturnValues CScsiNonMediumErrorCountLog::get_Non_Medium_Error_Count_Data(JSONN
 		{
 			if (offset < m_bufferLength && offset < UINT16_MAX)
 			{
-			    m_CountErrors = reinterpret_cast<sLogParams*>(&pData[offset]);
+			    m_CountErrors = reinterpret_cast<sLogParams*>(&v_Buff.at(offset));
 			    offset += PARAMSIZE;
 				switch (m_CountErrors->paramLength)
 				{
@@ -179,7 +187,7 @@ eReturnValues CScsiNonMediumErrorCountLog::get_Non_Medium_Error_Count_Data(JSONN
 				{
 					if ((offset + m_CountErrors->paramLength) <= static_cast<uint32_t>(m_bufferLength))
 					{
-						m_Value = pData[offset];
+						m_Value = v_Buff.at(offset);
 						offset += m_CountErrors->paramLength;
 					}
 					else
@@ -193,7 +201,7 @@ eReturnValues CScsiNonMediumErrorCountLog::get_Non_Medium_Error_Count_Data(JSONN
 				{
 					if ((offset + m_CountErrors->paramLength) <= static_cast<uint32_t>(m_bufferLength))
 					{
-						m_Value = M_BytesTo2ByteValue(pData[offset], pData[offset + 1]);
+						m_Value = M_BytesTo2ByteValue(v_Buff.at(offset), v_Buff.at(offset + 1));
 						offset += m_CountErrors->paramLength;
 					}
 					else
@@ -207,7 +215,7 @@ eReturnValues CScsiNonMediumErrorCountLog::get_Non_Medium_Error_Count_Data(JSONN
 				{
 					if ((offset + m_CountErrors->paramLength) <= static_cast<uint32_t>(m_bufferLength))
 					{
-						m_Value = M_BytesTo4ByteValue(pData[offset], pData[offset + 1], pData[offset + 2], pData[offset + 3]);
+						m_Value = M_BytesTo4ByteValue(v_Buff.at(offset), v_Buff.at(offset + 1), v_Buff.at(offset + 2), v_Buff.at(offset + 3));
 						offset += m_CountErrors->paramLength;
 					}
 					else
@@ -221,7 +229,7 @@ eReturnValues CScsiNonMediumErrorCountLog::get_Non_Medium_Error_Count_Data(JSONN
 				{
 					if ((offset + m_CountErrors->paramLength) <= static_cast<uint32_t>(m_bufferLength))
 					{
-						m_Value = M_BytesTo8ByteValue(pData[offset], pData[offset + 1], pData[offset + 2], pData[offset + 3], pData[offset + 4], pData[offset + 5], pData[offset + 6], pData[offset + 7]);
+						m_Value = M_BytesTo8ByteValue(v_Buff.at(offset), v_Buff.at(offset + 1), v_Buff.at(offset + 2), v_Buff.at(offset + 3), v_Buff.at(offset + 4), v_Buff.at(offset + 5), v_Buff.at(offset + 6), v_Buff.at(offset + 7));
 						offset += m_CountErrors->paramLength;
 					}
 					else

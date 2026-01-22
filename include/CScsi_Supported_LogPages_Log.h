@@ -12,6 +12,7 @@
 
 // \file CScsi_Supported_LogPages_Log.h Definition for parsing the supported log pages 
 #pragma once
+#include <vector>
 #include <string>
 #include "common_types.h"
 #include "libjson.h"
@@ -26,7 +27,7 @@ namespace opensea_parser {
 	private:
 
 	protected:
-		uint8_t						*pData;						//<! pointer to the data
+		std::vector<uint8_t>        v_Buff;                     //<! vector for holding the buffer data
 		std::string					m_SupportedName;			//<! class name	
 		eReturnValues				m_SupportedStatus;		    //<! status of the class
 		uint16_t					m_PageLength;				//<! length of the page
@@ -41,7 +42,7 @@ namespace opensea_parser {
 		eReturnValues get_Supported_Log_Data(JSONNODE *masterData);
 	public:
 		CScsiSupportedLog();
-		CScsiSupportedLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength, bool subPage);
+		explicit CScsiSupportedLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength, bool subPage);
 		virtual ~CScsiSupportedLog();
 		virtual eReturnValues get_Log_Status() { return m_SupportedStatus; };
 		virtual eReturnValues parse_Supported_Log_Pages_Log(JSONNODE *masterData) { return get_Supported_Log_Data(masterData); };

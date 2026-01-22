@@ -30,7 +30,7 @@ using namespace opensea_parser;
 //
 //---------------------------------------------------------------------------
 CScsiPowerConditiontLog::CScsiPowerConditiontLog()
-	: pData()
+	: v_Buff()
 	, m_PowerName("Power Condition Transitions Log")
 	, m_PowerStatus(eReturnValues::IN_PROGRESS)
 	, m_PageLength(0)
@@ -57,7 +57,7 @@ CScsiPowerConditiontLog::CScsiPowerConditiontLog()
 //
 //---------------------------------------------------------------------------
 CScsiPowerConditiontLog::CScsiPowerConditiontLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength)
-	: pData(M_NULLPTR)
+	: v_Buff()
 	, m_PowerName("Power Condition Transitions Log")
 	, m_PowerStatus(eReturnValues::IN_PROGRESS)
 	, m_PageLength(pageLength)
@@ -68,13 +68,15 @@ CScsiPowerConditiontLog::CScsiPowerConditiontLog(uint8_t * buffer, size_t buffer
 	{
 		printf("%s \n", m_PowerName.c_str());
 	}
-    pData = new uint8_t[pageLength];								// new a buffer to the point				
-#ifndef __STDC_SECURE_LIB__
-    memcpy(pData, buffer, pageLength);
-#else
-    memcpy_s(pData, pageLength, buffer, pageLength);// copy the buffer data to the class member pBuf
-#endif
-	if (pData != M_NULLPTR)
+	if (buffer != M_NULLPTR)
+	{
+		safe_memcpy(v_Buff.data(), m_bufferLength, buffer, m_bufferLength);
+	}
+	else
+	{
+		m_PowerStatus = eReturnValues::FAILURE;
+	}
+	if (v_Buff.size() != 0)                           // if the buffer is null then exit something did not go right
 	{
 		m_PowerStatus = eReturnValues::IN_PROGRESS;
 	}
@@ -101,11 +103,7 @@ CScsiPowerConditiontLog::CScsiPowerConditiontLog(uint8_t * buffer, size_t buffer
 //---------------------------------------------------------------------------
 CScsiPowerConditiontLog::~CScsiPowerConditiontLog()
 {
-    if (pData != M_NULLPTR)
-    {
-        delete[] pData;
-        pData = M_NULLPTR;
-    }
+
 }
 //-----------------------------------------------------------------------------
 //
@@ -233,7 +231,7 @@ void CScsiPowerConditiontLog::process_List_Information(JSONNODE *powerData)
 eReturnValues CScsiPowerConditiontLog::get_Data(JSONNODE *masterData)
 {
 	eReturnValues retStatus = eReturnValues::IN_PROGRESS;
-	if (pData != M_NULLPTR)
+	if (v_Buff.size() != 0)
 	{
 		JSONNODE *pageInfo = json_new(JSON_NODE);
 		json_set_name(pageInfo, "Power Conditions Tranistions Log - 1Ah");
@@ -242,7 +240,7 @@ eReturnValues CScsiPowerConditiontLog::get_Data(JSONNODE *masterData)
 		{
 			if (offset < m_bufferLength && offset < UINT16_MAX)
 			{
-				m_PowerParam = reinterpret_cast<sPowerParams*>(&pData[offset]);
+				m_PowerParam = reinterpret_cast<sPowerParams*>(&v_Buff.at(offset));
 				// process the power information
 				process_List_Information(pageInfo);			
 			}

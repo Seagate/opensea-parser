@@ -13,6 +13,7 @@
 // \file CScsi_Solid_State_Drive_Log.h  Definition of Solid State Drive Log
 #pragma once
 #include <string>
+#include <vector>
 #include "common_types.h"
 #include "libjson.h"
 #include "Opensea_Parser_Helper.h"
@@ -25,7 +26,7 @@ namespace opensea_parser {
     {
     private:
     protected:
-        uint8_t						*pData;					//<! pointer to the data
+        std::vector<uint8_t>        v_Buff;                 //<! vector for holding the buffer data
         std::string					m_SSDName;				//<! class name	
         eReturnValues				m_SSDStatus;			//<! status of the class
         uint16_t					m_PageLength;			//<! length of the page
@@ -38,7 +39,7 @@ namespace opensea_parser {
         eReturnValues get_Solid_State_Drive_Data(JSONNODE *masterData);
     public:
         CScsiSolidStateDriveLog();
-        CScsiSolidStateDriveLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength);
+        explicit CScsiSolidStateDriveLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength);
         virtual ~CScsiSolidStateDriveLog();
         virtual eReturnValues get_Solid_State_Drive_Log_Status() { return m_SSDStatus; };
         virtual eReturnValues parse_Solid_State_Drive_Log(JSONNODE *masterData) { return get_Solid_State_Drive_Data(masterData); };

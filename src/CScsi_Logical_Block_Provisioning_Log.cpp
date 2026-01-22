@@ -31,7 +31,7 @@ using namespace opensea_parser;
 //
 //---------------------------------------------------------------------------
 CScsiLBAProvisionLog::CScsiLBAProvisionLog()
-    : pData()
+    : v_Buff()
     , m_LBAName("Logical Block Provisioning Log")
     , m_LBAStatus(eReturnValues::IN_PROGRESS)
     , m_PageLength(0)
@@ -59,7 +59,7 @@ CScsiLBAProvisionLog::CScsiLBAProvisionLog()
 //
 //---------------------------------------------------------------------------
 CScsiLBAProvisionLog::CScsiLBAProvisionLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength)
-    : pData(buffer)
+    : v_Buff()
     , m_LBAName("Logical Block Provisioning Log")
     , m_LBAStatus(eReturnValues::IN_PROGRESS)
     , m_PageLength(pageLength)
@@ -71,6 +71,14 @@ CScsiLBAProvisionLog::CScsiLBAProvisionLog(uint8_t * buffer, size_t bufferSize, 
         printf("%s \n", m_LBAName.c_str());
     }
     if (buffer != M_NULLPTR)
+    {
+        safe_memcpy(v_Buff.data(), m_bufferLength, buffer, m_bufferLength);
+    }
+    else
+    {
+        m_LBAStatus = eReturnValues::FAILURE;
+    }
+    if (v_Buff.size() != 0)                           // if the buffer is null then exit something did not go right
     {
         m_LBAStatus = eReturnValues::IN_PROGRESS;
     }
@@ -243,7 +251,7 @@ void CScsiLBAProvisionLog::process_LBA_Provision_Data(JSONNODE *lbaData)
 eReturnValues CScsiLBAProvisionLog::get_LBA_Data(JSONNODE *masterData)
 {
     eReturnValues retStatus = eReturnValues::IN_PROGRESS;
-    if (pData != M_NULLPTR)
+    if (v_Buff.size() != 0)
     {
         JSONNODE *pageInfo = json_new(JSON_NODE);
         json_set_name(pageInfo, "Logical Block Provisioning Log - 0Ch");
@@ -252,7 +260,7 @@ eReturnValues CScsiLBAProvisionLog::get_LBA_Data(JSONNODE *masterData)
         {
             if (offset < m_bufferLength && offset < UINT16_MAX)
             {
-                m_Provision = reinterpret_cast<sLBA *>(&pData[offset]);
+                m_Provision = reinterpret_cast<sLBA *>(&v_Buff.at(offset));
                 process_LBA_Provision_Data(pageInfo);
                 offset += sizeof(sLBA);
             }

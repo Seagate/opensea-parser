@@ -13,6 +13,7 @@
 // \file CScsi_Logical_Block_Provisioning_Log.h  Definition of Logical Block Provisioning Log page reports the logical block provisioning status 
 //   of the logical
 #pragma once
+#include <vector>
 #include <string>
 #include "common_types.h"
 #include "bit_manip.h"
@@ -38,7 +39,7 @@ namespace opensea_parser {
 	{
 	private:
 	protected:
-		uint8_t						*pData;						//<! pointer to the data
+		std::vector<uint8_t>        v_Buff;                     //<! vector for holding the buffer data
 		std::string					m_LBAName;					//<! class name	
 		eReturnValues				m_LBAStatus;			    //<! status of the class
 		uint16_t					m_PageLength;				//<! length of the page
@@ -51,7 +52,7 @@ namespace opensea_parser {
 		eReturnValues get_LBA_Data(JSONNODE *masterData);
 	public:
 		CScsiLBAProvisionLog();
-		CScsiLBAProvisionLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength);
+		explicit CScsiLBAProvisionLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength);
 		virtual ~CScsiLBAProvisionLog();
 		virtual eReturnValues get_Log_Status() { return m_LBAStatus; };
 		virtual eReturnValues parse_LBA_Provision_Log(JSONNODE *masterData) { return get_LBA_Data(masterData); };

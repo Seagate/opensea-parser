@@ -14,6 +14,7 @@
 // \file CScsi_Start_Stop_Cycle_Counter_Log.h  Definition of Start Stop counter log 
 #pragma once
 #include <string>
+#include <vector>
 #include "common_types.h"
 #include "string_utils.h"
 #include "libjson.h"
@@ -68,7 +69,7 @@ namespace opensea_parser {
 	{
 	private:
 	protected:
-        uint8_t                     *pData;                     //<! pointer to the data buffer
+		std::vector<uint8_t>        v_Buff;                     //<! vector for holding the buffer data
 		std::string					m_SSName;					//<! class name	
 		eReturnValues				m_StartStatus;			    //<! status of the class
 		uint16_t					m_PageLength;				//<! byte swapped length of the page
@@ -81,7 +82,7 @@ namespace opensea_parser {
 		eReturnValues get_Count(JSONNODE *countData, uint16_t param, uint8_t paramlength, uint8_t paramConByte, uint32_t count, const std::string strHeader, const std::string strCount);
 	public:
 		CScsiStartStop();
-		CScsiStartStop(uint8_t *bufferData, size_t bufferSize, JSONNODE *masterData);
+		explicit CScsiStartStop(uint8_t *bufferData, size_t bufferSize, JSONNODE *masterData);
 		virtual ~CScsiStartStop();
 		virtual eReturnValues get_Log_Status() { return m_StartStatus; };
 

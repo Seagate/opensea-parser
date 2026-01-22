@@ -48,7 +48,7 @@ namespace opensea_parser {
 
 #pragma pack(pop)
 
-        uint8_t						            *pData;						    //<! pointer to the data
+        std::vector<uint8_t>                    v_Buff;                         //<! vector for holding the buffer data
         std::string					            m_CMDLimitsName;	            //<! class name
         eReturnValues				            m_LogStatus;			        //<! status of the class
         uint16_t					            m_PageLength;				    //<! length of the page
@@ -66,7 +66,7 @@ namespace opensea_parser {
 
     public:
         CScsiCmdDurationLimitsLog();
-        CScsiCmdDurationLimitsLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength);
+        explicit CScsiCmdDurationLimitsLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength);
         virtual ~CScsiCmdDurationLimitsLog();
         virtual eReturnValues get_Limits_Log_Status() { return m_LogStatus; };
         virtual eReturnValues parse_Limits_Log(JSONNODE *masterData) { return get_Limits_Data(masterData); };

@@ -13,6 +13,7 @@
 
 // \file CScsi_Log.h  Definition of Base class CScsiLog
 #pragma once
+#include <vector>
 #include "CLog.h"
 
 namespace opensea_parser {
@@ -23,7 +24,7 @@ namespace opensea_parser {
 	{
 	private:
     protected:
-		uint8_t						* bufferData;				//<! pointer to the data from the log
+		std::vector<uint8_t>        v_Buff;                     //<! vector for holding the buffer data
 		size_t						m_LogSize;					//<! log size
         std::string					m_name;						//<! class name	
 		eReturnValues				m_ScsiStatus;			    //<! status of the class
@@ -33,7 +34,7 @@ namespace opensea_parser {
 		eReturnValues get_Log_Parsed(JSONNODE *masterData);
 	public:
 		CScsiLog();
-        CScsiLog(const std::string &fileName, JSONNODE *masterData);
+        explicit CScsiLog(const std::string &fileName, JSONNODE *masterData);
 		virtual ~CScsiLog();
         virtual eReturnValues get_Log_Status(){ return m_ScsiStatus; };
 		inline int get_Page_Code() const { return m_Page->pageCode; }
