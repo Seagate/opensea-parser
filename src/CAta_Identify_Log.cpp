@@ -82,8 +82,9 @@ CAta_Identify_log::CAta_Identify_log()
     , v_Buff()
     , m_status(eReturnValues::IN_PROGRESS)
     , m_sDriveInfo()
+    , m_logSize(0)
 {
-    //m_sDriveInfo = {};
+   
 }
 
 //-----------------------------------------------------------------------------
