@@ -47,7 +47,7 @@ namespace opensea_parser {
 	//-----------------------------------------------------------------------------
 	inline void set_json_64_bit_With_Status(JSONNODE *nowNode, const std::string & header, uint64_t value, bool hexPrint, bool showStatusBits)
 	{
-		if (!nowNode) return;  // check for NULL
+		if (nowNode == M_NULLPTR) return;  // check for NULL
 		std::string myStr = header;
 		if (g_convertHeaderToLowercase)
 		{
@@ -114,7 +114,7 @@ namespace opensea_parser {
 	//-----------------------------------------------------------------------------
 	inline void set_json_int_With_Status(JSONNODE *nowNode, const std::string & header, int64_t value, bool showStatusBits)
 	{
-		if (!nowNode) return;  // check for NULL
+		if (nowNode == M_NULLPTR) return;  // check for NULL
 		std::string myStr = header;
 		if (g_convertHeaderToLowercase)
 		{
@@ -170,7 +170,7 @@ namespace opensea_parser {
 	//-----------------------------------------------------------------------------
 	inline void set_json_string_With_Status(JSONNODE* nowNode, const std::string& header, const std::string& strValue, uint64_t value, bool showStatusBits)
 	{
-		if (!nowNode) return;  // check for NULL
+		if (nowNode == M_NULLPTR) return;  // check for NULL
 		std::string myStr = header;
 		if (g_convertHeaderToLowercase)
 		{
@@ -226,7 +226,7 @@ namespace opensea_parser {
 	//-----------------------------------------------------------------------------
 	inline void set_json_float_With_Status(JSONNODE* nowNode, const std::string& header, double value, uint64_t fullValue, bool showStatusBits)
 	{
-		if (!nowNode) return;  // check for NULL
+		if (nowNode == M_NULLPTR) return;  // check for NULL
 		std::string myStr = header;
 		if (g_convertHeaderToLowercase)
 		{
@@ -289,7 +289,7 @@ namespace opensea_parser {
 	//-----------------------------------------------------------------------------
 	inline void set_json_int_Check_Status(JSONNODE* nowNode, const std::string& header, long long value, uint64_t fullValue, bool showStatusBits)
 	{
-		if (!nowNode) return;  // check for NULL
+		if (nowNode == M_NULLPTR) return;  // check for NULL
 		std::string myStr = header;
 		if (g_convertHeaderToLowercase)
 		{
@@ -351,7 +351,7 @@ namespace opensea_parser {
 	//-----------------------------------------------------------------------------
 	inline void set_json_bool_With_Status(JSONNODE* nowNode, const std::string& header, uint64_t value, bool showStatusBits)
 	{
-		if (!nowNode) return;  // check for NULL
+		if (nowNode == M_NULLPTR) return;  // check for NULL
 		std::string myStr = header;
 		if (g_convertHeaderToLowercase)
 		{

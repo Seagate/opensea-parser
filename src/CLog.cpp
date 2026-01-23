@@ -323,12 +323,10 @@ void CLog::read_In_Log()
     }
     if (m_log->secure->error == eSecureFileError::SEC_FILE_SUCCESS)
     {
-        //set the size of the buffer
-        //m_bufferData = static_cast<char*>(safe_calloc(m_log->secure->fileSize, sizeof(char)));
         // now we need to read in the buffer 
         if (m_log->secure->fileSize != 0 && m_logStatus != eReturnValues::FILE_OPEN_ERROR)
         {
-            //set the size of the buffer
+            //set the size of the buffer 
             m_bufferData = static_cast<char*>(safe_calloc(m_log->secure->fileSize, sizeof(char)));
             if (m_bufferData == M_NULLPTR && m_log->secure->fileSize != 0)
             {
@@ -347,16 +345,12 @@ void CLog::read_In_Log()
                 m_logStatus = eReturnValues::SUCCESS;
             }
 
-            if (m_bufferData != M_NULLPTR)
+            if (m_bufferData != M_NULLPTR && m_logStatus == eReturnValues::SUCCESS)
             {
-                v_Buff.assign( &m_bufferData[0], &m_bufferData[m_log->secure->fileSize]);
+                v_Buff.assign(&m_bufferData[0], &m_bufferData[m_log->secure->fileSize]);
                 if (v_Buff.empty())
                 {
                     m_logStatus = eReturnValues::INVALID_LENGTH;
-                }
-                else
-                {
-                    m_logStatus = eReturnValues::SUCCESS;
                 }
             }
 
@@ -365,7 +359,7 @@ void CLog::read_In_Log()
     }
     else
     {
-        free_Secure_File_Info(&m_log->secure);   // also use on the closing of the file    eSecureFileError secure_Close_File(secureFileInfo* fileInfo);
+        free_Secure_File_Info(&m_log->secure);
         m_logStatus = eReturnValues::FILE_OPEN_ERROR;
     }
 }
