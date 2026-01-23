@@ -111,6 +111,7 @@ CAta_Identify_log::CAta_Identify_log(uint8_t *buffer, size_t length)
 {
     if (buffer != M_NULLPTR)
     {
+        v_Buff.resize(m_logSize);  // Resize vector before copying!
         safe_memcpy(v_Buff.data(),m_logSize, buffer, m_logSize);
         if (v_Buff.size() != 0)
         {

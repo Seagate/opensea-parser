@@ -71,6 +71,7 @@ CScsiOperationLog::CScsiOperationLog(uint8_t *buffer, size_t bufferSize, uint16_
 	}
 	if (buffer != M_NULLPTR)
 	{
+		v_Buff.resize(m_PageLength);  // Resize vector before copying!
 		safe_memcpy(v_Buff.data(), bufferSize, buffer, bufferSize);
 	}
 	else

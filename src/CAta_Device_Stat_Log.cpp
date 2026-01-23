@@ -280,22 +280,23 @@ CAtaDeviceStatisticsLogs::CAtaDeviceStatisticsLogs(uint32_t logSize, JSONNODE *m
     , m_deviceLogSize(logSize)
     , m_Response()
 {
-    if (buffer != M_NULLPTR)
+    if (buffer != M_NULLPTR && m_deviceLogSize > 0)
     {
+        v_Buff.resize(m_deviceLogSize);  // Resize vector before copying!
         safe_memcpy(v_Buff.data(), m_deviceLogSize, buffer, m_deviceLogSize);
+        if (!v_Buff.empty())
+        {
+            m_status = ParseSCTDeviceStatLog(masterData);
+        }
+        else
+        {
+            m_status = eReturnValues::BAD_PARAMETER;
+        }
     }
     else
     {
-                m_status = eReturnValues::BAD_PARAMETER;
-                return;
-    }
-    if (v_Buff.size() != 0)
-    {
-        m_status = ParseSCTDeviceStatLog(masterData);
-    }
-    else
-    {
-        m_status = eReturnValues::FAILURE;
+        m_status = eReturnValues::BAD_PARAMETER;
+
     }
 }
 //-----------------------------------------------------------------------------
@@ -325,7 +326,7 @@ CAtaDeviceStatisticsLogs::CAtaDeviceStatisticsLogs(const std::string &fileName, 
 	if (cCLog->get_Log_Status() == eReturnValues::SUCCESS)
 	{
         cCLog->get_vBuffer(v_Buff);
-        if (v_Buff.size() != 0)                           // if the buffer is null then exit something did not go right
+        if (!v_Buff.empty())                           // if the buffer is null then exit something did not go right
         {
             m_deviceLogSize = static_cast<uint64_t>(v_Buff.size());
             uint8_t offset = 0;
@@ -405,7 +406,13 @@ eReturnValues CAtaDeviceStatisticsLogs::ParseSCTDeviceStatLog(JSONNODE *masterDa
 
     //Define each valid log page.
     for (uint32_t offset = 0; offset < m_deviceLogSize; offset += 512)
-    {	
+    {
+        // Bounds check: ensure we have enough data for the header
+        if (offset + sizeof(sHeader) > v_Buff.size())
+        {
+            break;
+        }
+        
         pDeviceHeader = reinterpret_cast<sHeader*>(&v_Buff.at(offset));
         pLogPage = reinterpret_cast<uint64_t*>(&v_Buff.at(offset));
 
@@ -852,10 +859,20 @@ void CAtaDeviceStatisticsLogs::logPage03(uint64_t *value, JSONNODE *masterData)
     sDeviceLog3  m_sSCT3;
     sDeviceLog3 *pSCT3 = &m_sSCT3;
     //Rotating Media Statistics(log page 03)
-    uint64_t *cData = &value[0];
-
-    pSCT3->SpdPoh = static_cast<double>(((CheckStatusAndValid_64(&cData[1]) /1000) /3600.0));   // spec shows hrs. but seagate publishes in microseconds
-    pSCT3->HeadFlyHour = static_cast<double>(((CheckStatusAndValid_64(&cData[2]) / 1000) / 3600.0));   // spec shows hrs. but seagate publishes in microseconds
+    uint64_t data = 0;
+    uint64_t* cData = &data;
+    if (value != M_NULLPTR)
+    {
+        cData = &value[0];
+    }
+    if (cData[1] != 0 ) 
+    {
+        pSCT3->SpdPoh = static_cast<double>(((CheckStatusAndValid_64(&cData[1]) / 1000) / 3600.0));   // spec shows hrs. but seagate publishes in microseconds
+    }
+    if (cData[2] != 0) 
+    {
+        pSCT3->HeadFlyHour = static_cast<double>(((CheckStatusAndValid_64(&cData[2]) / 1000) / 3600.0));   // spec shows hrs. but seagate publishes in microseconds
+    }
     pSCT3->HeadLoadEvent = CheckStatusAndValid_32(&cData[3]);
     pSCT3->ReLogicalSec = CheckStatusAndValid_32(&cData[4]);
     pSCT3->ReadRecAtmp = CheckStatusAndValid_32(&cData[5]);
@@ -1049,5 +1066,6 @@ void CAtaDeviceStatisticsLogs::logPage07(uint64_t *value, JSONNODE *masterData)
 
     json_push_back(masterData, sctError);
 }
+
 
 

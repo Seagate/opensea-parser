@@ -53,6 +53,7 @@ CExtComp::CExtComp(uint8_t *buffer, size_t logSize, JSONNODE *masterData)
 
     if (buffer != M_NULLPTR)                           // if the buffer is null then exit something did go right
     {
+        v_Buff.resize(m_logSize);  // Resize vector before copying!
         safe_memcpy(v_Buff.data(),logSize, buffer, logSize);
         m_status = eReturnValues::IN_PROGRESS;
         m_status = parse_Ext_Comp_Log(masterData);
