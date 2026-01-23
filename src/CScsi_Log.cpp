@@ -800,7 +800,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				if (lpStruct->subPage == FARM_LOG_PAGE)   // Farm Log
 				{
 					CSCSI_Farm_Log* pCFarm;
-					pCFarm = new CSCSI_Farm_Log(v_Buff.data(), (static_cast<size_t>(lpStruct->pageLength) + sizeof(sLogPageStruct)), lpStruct->subPage, false, false);
+					pCFarm = new CSCSI_Farm_Log(v_Buff, (static_cast<size_t>(lpStruct->pageLength) + sizeof(sLogPageStruct)), lpStruct->subPage, false, false);
 					if (pCFarm->get_Log_Status() == eReturnValues::SUCCESS)
 					{
 						try
@@ -827,7 +827,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				else if (lpStruct->subPage == FARM_FACTORY_LOG_PAGE)   // Farm Log
 				{
 					CSCSI_Farm_Log* pCFarm;
-					pCFarm = new CSCSI_Farm_Log(v_Buff.data(), (static_cast<size_t>(lpStruct->pageLength) + sizeof(sLogPageStruct)), lpStruct->subPage,false,false);
+					pCFarm = new CSCSI_Farm_Log(v_Buff, (static_cast<size_t>(lpStruct->pageLength) + sizeof(sLogPageStruct)), lpStruct->subPage,false,false);
 					if (pCFarm->get_Log_Status() == eReturnValues::SUCCESS)
 					{
 						try
@@ -854,7 +854,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				else if (lpStruct->subPage >= FARM_TIME_SERIES_0 && lpStruct->subPage <= FARM_TEMP_TRIGGER_LOG_PAGE)   // FARM log when Temperature exceeds 70 c
 				{
 					CSCSI_Farm_Log* pCFarm;
-					pCFarm = new CSCSI_Farm_Log(v_Buff.data(), (static_cast<size_t>(lpStruct->pageLength) + sizeof(sLogPageStruct)), lpStruct->subPage,false,false);  // issue with the log bufer size
+					pCFarm = new CSCSI_Farm_Log(v_Buff, (static_cast<size_t>(lpStruct->pageLength) + sizeof(sLogPageStruct)), lpStruct->subPage,false,false);  // issue with the log bufer size
 					if (pCFarm->get_Log_Status() == eReturnValues::SUCCESS)
 					{
 						retStatus = pCFarm->get_Log_Status();

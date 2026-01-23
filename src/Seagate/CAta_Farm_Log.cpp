@@ -39,7 +39,7 @@ CATA_Farm_Log::CATA_Farm_Log()
     , m_status(eReturnValues::IN_PROGRESS)
     , m_showStatusBits(false)
     , m_pHeader()
-    , pBuf()
+    , v_Buff()
     , m_MajorRev(0)
     , m_MinorRev(0)
     , m_FrameReason(0)
@@ -63,7 +63,7 @@ CATA_Farm_Log::CATA_Farm_Log()
 //!   \return 
 //
 //---------------------------------------------------------------------------
-CATA_Farm_Log::CATA_Farm_Log(uint8_t *bufferData, size_t bufferSize, bool showStatus, bool showStatic)
+CATA_Farm_Log::CATA_Farm_Log(std::vector<uint8_t>& buff, bool showStatus, bool showStatic)
     : CFarmCommon()
     , m_totalPages(0)
     , m_logSize(0)
@@ -74,29 +74,24 @@ CATA_Farm_Log::CATA_Farm_Log(uint8_t *bufferData, size_t bufferSize, bool showSt
     , m_status(eReturnValues::IN_PROGRESS)
     , m_showStatusBits(showStatus)
     , m_pHeader()
-    , pBuf()
+    , v_Buff(buff)
     , m_MajorRev(0)
     , m_MinorRev(0)
     , m_FrameReason(0)
     , m_ShowAct1(false)
     , m_showStatic(showStatic)
 {
-    pBuf = new uint8_t[bufferSize];                             // new a buffer to the point                
-#ifndef __STDC_SECURE_LIB__
-    memcpy(pBuf, bufferData, bufferSize);
-#else
-    memcpy_s(pBuf, bufferSize, bufferData, bufferSize);         // copy the buffer data to the class member pBuf
-#endif
-    if (pBuf != M_NULLPTR)
+    if (v_Buff.size() != 0)
     {
-        if (bufferSize < sizeof(sFarmHeader) || bufferSize < sizeof(sFarmFrame))
+        m_logSize = v_Buff.size();
+        if (m_logSize < sizeof(sFarmHeader) || m_logSize < sizeof(sFarmFrame))
         {
 
             m_status = eReturnValues::BAD_PARAMETER;
         }
         else
         {
-            m_pHeader = reinterpret_cast<sFarmHeader *>(&pBuf[0]);
+            m_pHeader = reinterpret_cast<sFarmHeader *>(&v_Buff.at(0));
             m_totalPages = m_pHeader->pagesSupported & UINT64_C(0x00FFFFFFFFFFFFFF);
             m_logSize = m_pHeader->logSize & UINT64_C(0x00FFFFFFFFFFFFFF);
             m_pageSize = m_pHeader->pageSize & UINT64_C(0x00FFFFFFFFFFFFFF);
@@ -134,10 +129,6 @@ CATA_Farm_Log::~CATA_Farm_Log()
     if (!vFarmFrame.empty())
     {
         vFarmFrame.clear();                                    // clear the vector
-    }
-    if (pBuf != M_NULLPTR)
-    {
-        delete[] pBuf;
     }
 }
 //-----------------------------------------------------------------------------
@@ -185,7 +176,7 @@ eReturnValues CATA_Farm_Log::parse_Farm_Log()
 {
     eReturnValues retStatus = eReturnValues::FAILURE;
     uint64_t offset = m_pageSize;                                                 // the first page starts at 1* the page size
-    if (pBuf == M_NULLPTR)
+    if (v_Buff.size() == 0)
     {
         return retStatus;
     }
@@ -197,7 +188,13 @@ eReturnValues CATA_Farm_Log::parse_Farm_Log()
         retStatus = eReturnValues::IN_PROGRESS;
         for (uint32_t index = 0; index <= m_copies; ++index)                       // loop for the number of copies. I don't think it's zero base as of now
         {
-            sDriveInfo *idInfo = reinterpret_cast<sDriveInfo*>(&pBuf[offset]);                   // get the id drive information at the time.
+            // TODO : Add in a check to make sure we don't go past the buffer size
+            if ((offset + m_pageSize) > v_Buff.size())
+            {
+                retStatus = eReturnValues::VALIDATION_FAILURE;
+                break;
+            }
+            sDriveInfo *idInfo = reinterpret_cast<sDriveInfo*>(&v_Buff.at(offset));                   // get the id drive information at the time.
             pFarmFrame->driveInfo = *idInfo;
             sStringIdentifyData strIdInfo;
 
@@ -220,7 +217,7 @@ eReturnValues CATA_Farm_Log::parse_Farm_Log()
 
             offset += m_pageSize;
 
-            sWorkLoadStat *pworkLoad = reinterpret_cast<sWorkLoadStat*>(&pBuf[offset]);           // get the work load information
+            sWorkLoadStat *pworkLoad = reinterpret_cast<sWorkLoadStat*>(&v_Buff.at(offset));           // get the work load information
             memcpy(&pFarmFrame->workLoadPage, pworkLoad, sizeof(sWorkLoadStat));
             if (!Check_Page_number(pworkLoad->pageNumber, 2))
             {
@@ -228,7 +225,7 @@ eReturnValues CATA_Farm_Log::parse_Farm_Log()
             }
             offset += m_pageSize;
 
-            sErrorStat *pError = reinterpret_cast<sErrorStat*>(&pBuf[offset]);                    // get the error status
+            sErrorStat *pError = reinterpret_cast<sErrorStat*>(&v_Buff.at(offset));                    // get the error status
             memcpy(&pFarmFrame->errorPage, pError, sizeof(sErrorStat));
             if (!Check_Page_number(pError->pageNumber, 3))
             {
@@ -236,7 +233,7 @@ eReturnValues CATA_Farm_Log::parse_Farm_Log()
             }
             offset += m_pageSize;
 
-            sEnvironementStat *pEnvironment = reinterpret_cast<sEnvironementStat*>(&pBuf[offset]); // get the envirmonent information 
+            sEnvironementStat *pEnvironment = reinterpret_cast<sEnvironementStat*>(&v_Buff.at(offset)); // get the envirmonent information 
             memcpy(&pFarmFrame->environmentPage, pEnvironment, sizeof(sEnvironementStat));
             if (!Check_Page_number(pEnvironment->pageNumber, 4))
             {
@@ -244,7 +241,7 @@ eReturnValues CATA_Farm_Log::parse_Farm_Log()
             }
             offset += m_pageSize;
 
-            sAtaReliabilityStat *pReli = reinterpret_cast<sAtaReliabilityStat*>(&pBuf[offset]);         // get the Reliabliity stat
+            sAtaReliabilityStat *pReli = reinterpret_cast<sAtaReliabilityStat*>(&v_Buff.at(offset));         // get the Reliabliity stat
             memcpy(&pFarmFrame->reliPage, pReli, sizeof(sAtaReliabilityStat));
             if (!Check_Page_number(pReli->pageNumber, 5))
             {
@@ -280,7 +277,7 @@ eReturnValues CATA_Farm_Log::parse_Farm_Log()
 eReturnValues CATA_Farm_Log::print_Header(JSONNODE* masterData)
 {
     JSONNODE* pageInfo = json_new(JSON_NODE);
-    sFarmHeader* header = reinterpret_cast<sFarmHeader*>(&pBuf[0]);                                                                                    // pointer to the header to get the signature
+    sFarmHeader* header = reinterpret_cast<sFarmHeader*>(&v_Buff.at(0));                                                                                    // pointer to the header to get the signature
 
     if (g_verbosity >= eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE)
     {

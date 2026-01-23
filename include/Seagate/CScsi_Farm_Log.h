@@ -44,7 +44,7 @@ namespace opensea_parser {
         uint32_t                    m_copies;                                         //!< Number of Historical Copies
         uint32_t                    m_MajorRev;                                       //!< holds the Major Revision number
 		uint32_t					m_MinorRev;										  //!< minor rev saved off to pick up the changes in the spec
-        uint8_t                     *pBuf;                                            //!< pointer to the buffer data that is the binary of FARM LOG
+        std::vector<uint8_t>        v_Buff;                                           //<! vector for holding the buffer data
         eReturnValues               m_status;                                         //!< status of the class	
         sLogPageStruct              *m_logParam;                                      //!< pointer to the log page param for all of the log
         sLogParams                  *m_pageParam;                                     //!< pointer to the page parameters 
@@ -91,8 +91,8 @@ namespace opensea_parser {
   
     public:
         CSCSI_Farm_Log();
-        CSCSI_Farm_Log(uint8_t* bufferData, size_t bufferSize, uint8_t subPage, bool m_fromScsiLogPages, bool showStatic);
-        CSCSI_Farm_Log(uint8_t *bufferData, size_t bufferSize, uint8_t subpage, bool m_fromScsiLogPages, bool showStatus, bool showStatic);
+        CSCSI_Farm_Log(std::vector<uint8_t>& buffer, size_t bufferSize, uint8_t subPage, bool m_fromScsiLogPages, bool showStatic);
+        explicit CSCSI_Farm_Log(std::vector<uint8_t>& buffer, size_t bufferSize, uint8_t subPage, bool m_fromScsiLogPages, bool showStatus, bool showStatic);
         virtual ~CSCSI_Farm_Log();
         bool strip_Active_Status(uint64_t* value);
         eReturnValues parse_Farm_Log();

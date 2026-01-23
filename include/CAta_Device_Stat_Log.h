@@ -145,9 +145,9 @@ namespace opensea_parser {
 		DSTempLog							m_tempData;													//!< temp log data
         JSONNODE							*JsonData;                                                  //!< json master data
     public:
-		explicit CSAtaDevicStatisticsTempLogs();
+		CSAtaDevicStatisticsTempLogs();
         CSAtaDevicStatisticsTempLogs(uint8_t* buffer,JSONNODE *masterData);
-        CSAtaDevicStatisticsTempLogs(const std::string &fileName, JSONNODE *masterData);
+		explicit CSAtaDevicStatisticsTempLogs(const std::string &fileName, JSONNODE *masterData);
         virtual ~CSAtaDevicStatisticsTempLogs();
 		eReturnValues print_SCT_Temp_Log();
         eReturnValues parse_SCT_Temp_Log(uint8_t* pData);

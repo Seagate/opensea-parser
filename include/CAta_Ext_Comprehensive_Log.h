@@ -39,9 +39,9 @@ namespace opensea_parser {
 		eReturnValues get_State_Meaning(std::string *stateMeaning, uint8_t state);
 		eReturnValues parse_Ext_Comp_Log(JSONNODE *masterData);
     public:
-        explicit CExtComp();
+        CExtComp();
 		CExtComp(uint8_t *buffer, size_t logSize, JSONNODE *masterData);
-        CExtComp(const std::string &fileName, JSONNODE *masterData);
+        explicit CExtComp(const std::string &fileName, JSONNODE *masterData);
         virtual ~CExtComp();
 
         eReturnValues get_EC_Status(){ return m_status; };

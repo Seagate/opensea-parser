@@ -46,7 +46,7 @@ namespace opensea_parser {
             eReturnValues               m_status;                           //!< status of the class
 			bool						m_showStatusBits;					//!< show the status bits of each entry
             sFarmHeader                 *m_pHeader;                         //!< Member pointer to the header of the farm log  
-            uint8_t                     *pBuf;                              //!< pointer to the buffer data that is the binary of FARM LOG
+            std::vector<uint8_t>        v_Buff;                             //!< vector for holding the buffer data
             uint32_t                    m_MajorRev;                         //!< holds the Major Revision number
             uint32_t                    m_MinorRev;                         //!< holds the minor revision number
             uint8_t                     m_FrameReason;                      //!< holds the reason for Frame Capture information
@@ -64,7 +64,7 @@ namespace opensea_parser {
             
         public:
             CATA_Farm_Log();
-            CATA_Farm_Log( uint8_t *bufferData, size_t bufferSize, bool showStatus, bool showStatic);
+            explicit CATA_Farm_Log(std::vector<uint8_t>& buffer, bool showStatus, bool showStatic);
             virtual ~CATA_Farm_Log();
             eReturnValues parse_Farm_Log();
             //void get_Reallocated_Sector_By_Cause(std::string *description, uint64_t readWriteRetry);

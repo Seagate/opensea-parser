@@ -273,7 +273,7 @@ namespace opensea_parser {
         //eReturnValues get_Interface_Type();
         
     public:
-        explicit CAta_Identify_Log_30( const std::string & fileName);
+        CAta_Identify_Log_30( const std::string & fileName);
         explicit CAta_Identify_Log_30(std::vector<uint8_t> BufferData);
         virtual ~CAta_Identify_Log_30();
         eReturnValues get_identify_Status(){ return m_status; };

@@ -247,11 +247,7 @@ void CLog::get_CLog(const uint8_t* pBuf, size_t logSize)
         m_bufferData = static_cast<char*>(safe_calloc(logSize, sizeof(char)));
         if (m_bufferData)
         {
-#ifndef __STDC_SECURE_LIB__ 
-            memcpy(m_bufferData, pBuf, logSize);
-#else
-            memcpy_s(m_bufferData, logSize, pBuf, logSize);
-#endif
+            safe_memcpy(m_bufferData, logSize, pBuf, logSize);
             m_logStatus = eReturnValues::IN_PROGRESS;
         }
         else
@@ -328,7 +324,7 @@ void CLog::read_In_Log()
     if (m_log->secure->error == eSecureFileError::SEC_FILE_SUCCESS)
     {
         //set the size of the buffer
-        m_bufferData = static_cast<char*>(safe_calloc(m_log->secure->fileSize, sizeof(char)));
+        //m_bufferData = static_cast<char*>(safe_calloc(m_log->secure->fileSize, sizeof(char)));
         // now we need to read in the buffer 
         if (m_log->secure->fileSize != 0 && m_logStatus != eReturnValues::FILE_OPEN_ERROR)
         {

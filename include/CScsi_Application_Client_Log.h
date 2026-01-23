@@ -71,8 +71,8 @@ namespace opensea_parser {
 		eReturnValues get_Client_Data(JSONNODE *masterData);
 	public:
 		CScsiApplicationLog();
-		explicit CScsiApplicationLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength);
-		CScsiApplicationLog(const std::string& fileName);
+		CScsiApplicationLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength);
+		 explicit CScsiApplicationLog(const std::string& fileName);
 		virtual ~CScsiApplicationLog();
 		virtual eReturnValues get_Log_Status() { return m_ApplicationStatus; };
 		virtual eReturnValues parse_Application_Client_Log(JSONNODE *masterData) 

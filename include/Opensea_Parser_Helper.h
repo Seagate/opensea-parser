@@ -383,6 +383,7 @@ namespace opensea_parser {
 	//-----------------------------------------------------------------------------
     inline void set_json_64bit_With_Check_Status(JSONNODE *nowNode,const std::string & header, uint64_t value, bool hexPrint)
     {
+        if (!nowNode) return;  // check for NULL
 		std::string myStr = header;
 		int64_t statusValue = 0;
 		statusValue = check_Status_Strip_Status(value);
@@ -449,6 +450,7 @@ namespace opensea_parser {
     //-----------------------------------------------------------------------------
     inline void set_json_64bit(JSONNODE *nowNode, const std::string & header, uint64_t value, bool hexPrint)
     {
+		if (!nowNode) return;  // check for NULL
 		std::string myStr = header;
         std::ostringstream temp;
 		if (g_convertHeaderToLowercase)
@@ -494,6 +496,7 @@ namespace opensea_parser {
 	//-----------------------------------------------------------------------------
     inline void set_Json_Bool(JSONNODE *nowNode, const std::string & header, bool workingValue)
     {
+		if (!nowNode) return;  // check for NULL
 		std::string myStr = header;
 		if (g_convertHeaderToLowercase)
 		{

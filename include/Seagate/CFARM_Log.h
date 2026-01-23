@@ -15,6 +15,7 @@
 #pragma once
 #include "CLog.h"
 #include <string>
+#include <vector>
 #include "common_types.h"
 #include "libjson.h"
 #include "Farm_Helper.h"
@@ -30,12 +31,11 @@ namespace opensea_parser {
     class CFARMLog : public CFarmCommon
     {
     protected:
-        eReturnValues   m_FARMstatus;                       //!< status of the class
-        uint8_t*        bufferData;						    //!< pointer to the buffer	
-        bool            m_bufferdelete;                     //!<  Set true if we need to delete the buffer 
-        size_t			m_LogSize;							//!< size of the log
-        bool            m_showStatusBytes;                  //!< set to true to show the individual fiield status bytes
-		bool            m_showStatic;                        //!< set to true to show all data statically 
+        eReturnValues               m_FARMstatus;                       //!< status of the class
+        std::vector<uint8_t>        v_Buff;                             //<! vector for holding the buffer data	
+        size_t			            m_LogSize;							//!< size of the log
+        bool                        m_showStatusBytes;                  //!< set to true to show the individual fiield status bytes
+		bool                        m_showStatic;                       //!< set to true to show all data statically 
 
     public:
         CFARMLog();
