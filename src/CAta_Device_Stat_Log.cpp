@@ -282,7 +282,7 @@ CAtaDeviceStatisticsLogs::CAtaDeviceStatisticsLogs(uint32_t logSize, JSONNODE *m
 {
     if (buffer != M_NULLPTR)
     {
-        std::memcpy(&v_Buff, buffer, m_deviceLogSize);
+        safe_memcpy(v_Buff.data(), m_deviceLogSize, buffer, m_deviceLogSize);
     }
     else
     {
