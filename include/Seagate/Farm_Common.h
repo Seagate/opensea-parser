@@ -3,7 +3,7 @@
 //
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2026 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -101,6 +101,10 @@ namespace opensea_parser {
 			void int_Cal_Byte_Data(JSONNODE* Node, const std::string& title, int16_t calculation, int64_t* param, uint64_t heads, bool showStatusBits, bool showStatic = false);
 			void int_Cal_Byte_Node_Data(JSONNODE* Node, const std::string& title, int16_t calculation, int64_t* param, uint64_t heads, bool showStatusBits);
 			void int_Cal_Byte_Array_Data(JSONNODE* Node, const std::string& title, int16_t calculation, int64_t* param, uint64_t heads, bool showStatusBits);
+
+			void uint_Cal_Byte_Data(JSONNODE* Node, const std::string& title, uint16_t calculation, uint64_t* param, uint64_t heads, bool showStatusBits, bool showStatic = false);
+			void uint_Cal_Byte_Node_Data(JSONNODE* Node, const std::string& title, uint16_t calculation, uint64_t* param, uint64_t heads, bool showStatusBits);
+			void uint_Cal_Byte_Array_Data(JSONNODE* Node, const std::string& title, uint16_t calculation, uint64_t* param, uint64_t heads, bool showStatusBits);
 
 			void int_Percent_Dword_Data(JSONNODE* Node, const std::string& title, int64_t* param, uint64_t heads, bool showStatusBits, bool showStatic = false);
 			void int_Percent_Dword_Node_Data(JSONNODE* Node, const std::string& title, int64_t* param, uint64_t heads, bool showStatusBits);
