@@ -73,7 +73,12 @@ namespace opensea_parser {
         inline std::string get_File_Name() const { return (m_log ? m_log->fileName : std::string()); }
         inline size_t get_Size() const { return (m_log && m_log->secure) ? m_log->secure->fileSize :0; }
         inline const uint8_t *get_Buffer() const { return reinterpret_cast<const uint8_t*>(m_bufferData); };
-        inline uint8_t* get_Buffer_Offset(const uint32_t offset) { return (m_bufferData ? reinterpret_cast<uint8_t*>(&m_bufferData[offset]) : M_NULLPTR); };
+        inline uint8_t* get_Buffer_Offset(const uint32_t offset) 
+        { 
+            if (!m_bufferData || !m_log || !m_log->secure) return M_NULLPTR;
+            if (offset >= m_log->secure->fileSize) return M_NULLPTR;  // Bounds check
+            return reinterpret_cast<uint8_t*>(&m_bufferData[offset]);
+        };
         inline bool get_vBuffer(std::vector<uint8_t>& buff) const
         {
             if (v_Buff.empty()) return false;
