@@ -1975,6 +1975,94 @@ void CFarmCommon::int_Cal_Byte_Array_Data(JSONNODE* Node, const std::string& tit
 }
 //-----------------------------------------------------------------------------
 //
+//! \fn uint_Cal_Byte_Data()
+//
+//! \brief
+//!   Description:  get the static or dynamic build of the data for uint64_t Dword data information
+//
+//  Entry:
+//! \param Node - JSON Node to add the array of information to
+//! \param title  =  string information for that attribute 
+//! \param calculation = M_Byte0 fo the param times the calculation
+//! \param param = pointer to the frame attribute int64
+//! \param heads = the total number of heads
+//! \param showStatusBits = when set to true the valid and supported bits will be shown
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void CFarmCommon::uint_Cal_Byte_Data(JSONNODE* Node, const std::string& title, uint16_t calculation, uint64_t* param, uint64_t heads, bool showStatusBits, bool showStatic)
+{
+	if (showStatic)
+	{
+		uint_Cal_Byte_Node_Data(Node, title, calculation, param, heads, showStatusBits);
+	}
+	else
+	{
+		uint_Cal_Byte_Array_Data(Node, title, calculation, param, heads, showStatusBits);
+	}
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn uint_Cal_Byte_Node_Data()
+//
+//! \brief
+//!   Description:  get the static build of the data for int64_t Dword data information
+//
+//  Entry:
+//! \param Node - JSON Node to add the array of information to
+//! \param title  =  string information for that attribute 
+//! \param calculation = M_Byte0 fo the param times the calculation
+//! \param param = pointer to the frame attribute int64
+//! \param heads = the total number of heads
+//! \param showStatusBits = when set to true the valid and supported bits will be shown
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void CFarmCommon::uint_Cal_Byte_Node_Data(JSONNODE* Node, const std::string& title, uint16_t calculation, uint64_t* param, uint64_t heads, bool showStatusBits)
+{
+	std::ostringstream myStr;
+	for (uint32_t loopCount = 0; loopCount < heads; ++loopCount)
+	{
+		myStr.str(""); myStr.clear();
+		myStr << title.c_str() << " by Head " << std::dec << loopCount;                    // write out the title plus the Head count
+		set_json_int_Check_Status(Node, myStr.str().c_str(), (static_cast<uint64_t>(get_bit_range_uint64(param[loopCount],56,0)) * calculation), param[loopCount], showStatusBits);
+	}
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn uint_Cal_Byte_Array_Data()
+//
+//! \brief
+//!   Description:  get the static build of the data for int64_t Dword data information
+//
+//  Entry:
+//! \param Node - JSON Node to add the array of information to
+//! \param title  =  string information for that attribute 
+//! \param calculation = M_Byte0 fo the param times the calculation
+//! \param param = pointer to the frame attribute int64
+//! \param heads = the total number of heads
+//! \param showStatusBits = when set to true the valid and supported bits will be shown
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void CFarmCommon::uint_Cal_Byte_Array_Data(JSONNODE* Node, const std::string& title, uint16_t calculation, uint64_t* param, uint64_t heads, bool showStatusBits)
+{
+	JSONNODE* cal = json_new(JSON_ARRAY);
+	opensea_parser::set_Json_name(cal, title.c_str());
+	for (uint32_t loopCount = 0; loopCount < heads; ++loopCount)
+	{
+		set_json_int_Check_Status(cal, title, static_cast<uint64_t>(get_bit_range_uint64(param[loopCount],56,0)) * calculation, param[loopCount], showStatusBits);
+	}
+	json_push_back(Node, cal);
+}
+//-----------------------------------------------------------------------------
+//
 //! \fn int_Percent_Dword_Data()
 //
 //! \brief
