@@ -43,7 +43,7 @@ namespace opensea_parser {
         eReturnValues parse_Device_Info();
     public:
         CAta_Identify_log();
-        explicit CAta_Identify_log(uint8_t *Buffer, size_t length);
+        CAta_Identify_log(uint8_t *Buffer, size_t length);
         explicit CAta_Identify_log(const std::string & fileName);
         ~CAta_Identify_log();
 		eReturnValues get_Identify_Information_Status() { return m_status; };
