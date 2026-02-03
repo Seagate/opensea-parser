@@ -4766,7 +4766,7 @@ eReturnValues CAta_Identify_Log_08::get_Log_Page08(std::vector<uint8_t> lp8pData
 //!  \return NONE
 //
 //---------------------------------------------------------------------------
-CAta_Identify_Log_30::CAta_Identify_Log_30(std::vector<uint8_t> BufferData)
+CAta_Identify_Log_30::CAta_Identify_Log_30(std::vector<uint8_t>& BufferData)
     :v_Buff(BufferData)
     , m_name("log page 30")
     , m_status(eReturnValues::IN_PROGRESS)

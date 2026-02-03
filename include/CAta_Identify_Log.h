@@ -274,7 +274,7 @@ namespace opensea_parser {
         
     public:
         CAta_Identify_Log_30( const std::string & fileName);
-        explicit CAta_Identify_Log_30(std::vector<uint8_t> BufferData);
+        explicit CAta_Identify_Log_30(std::vector<uint8_t>& BufferData);
         virtual ~CAta_Identify_Log_30();
         eReturnValues get_identify_Status(){ return m_status; };
         eReturnValues parse_Identify_Log_30(JSONNODE *masterData);

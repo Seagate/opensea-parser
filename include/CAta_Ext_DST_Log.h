@@ -39,7 +39,7 @@ namespace opensea_parser {
 
     public:
         explicit CAta_Ext_DST_Log(const std::string &fileName, JSONNODE *masterData);
-        CAta_Ext_DST_Log(uint8_t *pBufferData,size_t logSize, JSONNODE *masterData);
+        CAta_Ext_DST_Log(const std::vector<uint8_t>& BufferData, size_t logSize, JSONNODE *masterData);
         ~CAta_Ext_DST_Log();
         eReturnValues get_Status(){ return m_status; };
 

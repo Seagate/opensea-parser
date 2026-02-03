@@ -74,19 +74,25 @@ CAta_Ext_DST_Log::CAta_Ext_DST_Log(const std::string &fileName, JSONNODE *master
 //  Exit:DST_Enum
 //
 //---------------------------------------------------------------------------
-CAta_Ext_DST_Log::CAta_Ext_DST_Log(uint8_t *pBufferData, size_t logSize, JSONNODE *masterData)
+CAta_Ext_DST_Log::CAta_Ext_DST_Log(const std::vector<uint8_t>& BufferData, size_t logSize, JSONNODE *masterData)
     :m_name("Ext DST Log")                                         //!< name of the class
-    , v_Buff()
-    , m_logSize(0)
+    , v_Buff(BufferData)
+    , m_logSize(logSize)
     , m_status(eReturnValues::IN_PROGRESS)
 {
-    if (pBufferData != M_NULLPTR)
-    {
-        safe_memcpy(v_Buff.data(),logSize, pBufferData, logSize);
-        m_status = parse_Ext_Self_Test_Log(masterData);
+    if (logSize > v_Buff.size()) {
+        m_status = eReturnValues::FAILURE;
+        return;
     }
-    else
-    {
+    if (!v_Buff.empty() && masterData != nullptr) {
+        try {
+            m_status = parse_Ext_Self_Test_Log(masterData);
+        }
+        catch (...) {
+            m_status = eReturnValues::FAILURE;
+        }
+    }
+    else {
         m_status = eReturnValues::FAILURE;
     }
 }
