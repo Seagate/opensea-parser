@@ -63,7 +63,7 @@ namespace opensea_parser {
 
         // allow move semantics
         CLog(CLog&&) noexcept = default;
-        CLog& operator=(CLog&&) noexcept = default;
+        CLog& operator=(CLog&&) = default;
 
         eReturnValues get_CLog();
         void get_CLog(const uint8_t* pBuf, size_t logSize);
