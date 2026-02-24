@@ -21,6 +21,7 @@
 #include "Opensea_Parser_Helper.h"
 #include <sstream>
 #include <iomanip>
+#include <cmath>
 
 
 namespace opensea_parser {
