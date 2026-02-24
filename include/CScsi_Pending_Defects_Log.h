@@ -63,7 +63,7 @@ namespace opensea_parser {
 		CScsiPendingDefectsLog();
 		explicit CScsiPendingDefectsLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength);
 		virtual ~CScsiPendingDefectsLog();
-		virtual eReturnValues get_Log_Status() { return m_PlistStatus; };
+		eReturnValues get_Log_Status() { return m_PlistStatus; };
 		virtual eReturnValues parse_Plist_Log(JSONNODE *masterData) 
 		{ 
 			return get_Plist_Data(masterData);
