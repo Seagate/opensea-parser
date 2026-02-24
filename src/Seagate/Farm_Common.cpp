@@ -1294,7 +1294,7 @@ void CFarmCommon::h2sat_Float_Node_Data(JSONNODE* Node, const std::string& title
 			switch (track)
 			{
 			case ZONE0:
-				number = static_cast<double>(check_for_signed_int(M_DoubleWordInt0(check_Status_Strip_Status(value[loopCount].zone0)), 32) * calculation);
+				number = ROUNDF(static_cast<double>(check_for_signed_int(M_DoubleWordInt0(check_Status_Strip_Status(value[loopCount].zone0)), 32) * calculation),2);
 				break;
 			case ZONE1:
 				number = static_cast<double>(check_for_signed_int(M_DoubleWordInt0(check_Status_Strip_Status(value[loopCount].zone1)), 32) * calculation);
@@ -2378,7 +2378,7 @@ void CFarmCommon::float_Cal_DoubleWord_Array_Data(JSONNODE* Node, const std::str
 	opensea_parser::set_Json_name(cal, title.c_str());
 	for (uint32_t loopCount = 0; loopCount < heads; ++loopCount)
 	{
-		set_json_float_With_Status(cal, title, (static_cast<double>(M_DoubleWord0(param[loopCount])) / calculation), param[loopCount], showStatusBits);
+		set_json_float_With_Status(cal, title, roundToDecimalPlaces((static_cast<double>(M_DoubleWord0(param[loopCount])) / calculation),6), param[loopCount], showStatusBits);
 	}
 	json_push_back(Node, cal);
 }

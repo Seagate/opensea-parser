@@ -396,6 +396,19 @@ namespace opensea_parser {
 			}
 		}
 	}
-
+	//-----------------------------------------------------------------------------
+	//! \brief Rounds a floating-point value to a specified number of decimal places.
+	// 
+	//! \tparam T Floating-point type (float or double)
+	//! \param value The value to round
+	//! \param places Number of decimal places to round to
+	//! \return Rounded value
+	//-----------------------------------------------------------------------------
+	inline double roundToDecimalPlaces(double value, int places) 
+	{
+		//static_assert(std::is_floating_point(value), "value must be a double type");
+		double multiplier = static_cast<double>(std::pow(10.0, static_cast<double>(places)));
+		return std::round(value * multiplier) / multiplier;
+	}
 #endif 
 }
