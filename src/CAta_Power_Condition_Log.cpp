@@ -136,7 +136,7 @@ CAtaPowerConditionsLog::CAtaPowerConditionsLog(tDataPtr pData, JSONNODE *masterD
     , conditionFlags()
 {
     m_powerConditionLog.resize(pData.DataLen);  // Resize vector before copying!
-    safe_memcpy(m_powerConditionLog.data(), pData.DataLen, static_cast<uint8_t*>(pData.pData), pData.DataLen);// copy the buffer data to the class member pBuf
+    safe_memmove(m_powerConditionLog.data(), pData.DataLen, static_cast<uint8_t*>(pData.pData), pData.DataLen);// copy the buffer data to the class member pBuf
 
 
     if (m_powerConditionLog.size() != 0)

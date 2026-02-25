@@ -109,7 +109,7 @@ CAta_SMART_Log_Dir::CAta_SMART_Log_Dir(uint8_t *bufferData, size_t logSize)
     if (bufferData != M_NULLPTR)
     {
         v_Buff.resize(m_logSize);  // Resize vector before copying!
-        safe_memcpy(v_Buff.data(),logSize, bufferData, logSize);
+        safe_memmove(v_Buff.data(), m_logSize, bufferData, m_logSize);
         m_status = parse_SMART_Log_Dir();
     }
     else

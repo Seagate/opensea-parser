@@ -65,8 +65,8 @@ CScsiStartStop::CScsiStartStop(uint8_t * buffer, size_t bufferSize, JSONNODE *ma
 {
     if (buffer != M_NULLPTR)
     {
-        v_Buff.resize(m_PageLength);  // Resize vector before copying!
-        safe_memcpy(v_Buff.data(), bufferSize, buffer, bufferSize);
+        v_Buff.resize(bufferSize);  // Resize vector before copying!
+        safe_memmove(v_Buff.data(), bufferSize, buffer, bufferSize);
     }
     else
     {

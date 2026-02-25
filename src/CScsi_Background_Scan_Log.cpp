@@ -75,8 +75,8 @@ CScsiScanLog::CScsiScanLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLen
 	}
 	if (buffer != M_NULLPTR)
 	{
-		v_Data.resize(m_PageLength);  // Resize vector before copying!
-		safe_memcpy(v_Data.data(), bufferSize, buffer, bufferSize);
+		v_Data.resize(m_bufferLength);  // Resize vector before copying!
+		safe_memmove(v_Data.data(), m_bufferLength, buffer, m_bufferLength);
 	}
 	else
 	{

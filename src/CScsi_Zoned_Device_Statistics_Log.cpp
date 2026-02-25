@@ -74,8 +74,8 @@ CScsiZonedDeviceStatisticsLog::CScsiZonedDeviceStatisticsLog(uint8_t * buffer, s
     }
     if (buffer != M_NULLPTR)
     {
-        v_Buff.resize(m_PageLength);  // Resize vector before copying!
-        safe_memcpy(v_Buff.data(), m_bufferLength, buffer, m_bufferLength);
+        v_Buff.resize(m_bufferLength);  // Resize vector before copying!
+        safe_memmove(v_Buff.data(), m_bufferLength, buffer, m_bufferLength);
     }
     else
     {

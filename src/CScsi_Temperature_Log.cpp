@@ -69,8 +69,8 @@ CScsiTemperatureLog::CScsiTemperatureLog(uint8_t * buffer, size_t bufferSize)
 	}
 	if (buffer != M_NULLPTR)
 	{
-		v_Buff.resize(m_PageLength);  // Resize vector before copying!
-		safe_memcpy(v_Buff.data(), m_pDataSize, buffer, m_pDataSize);
+		v_Buff.resize(m_pDataSize);  // Resize vector before copying!
+		safe_memmove(v_Buff.data(), m_pDataSize, buffer, m_pDataSize);
 	}
 	else
 	{
