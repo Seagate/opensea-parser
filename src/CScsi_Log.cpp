@@ -607,7 +607,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 					std::cout << "Protocol Specific Port Log Pages Found" << std::endl;
 				}
 				CScsiProtocolPortLog * cPSP;
-				cPSP = new CScsiProtocolPortLog(&v_Buff.at(4), m_LogSize);
+				cPSP = new CScsiProtocolPortLog(&v_Buff.at(4), m_LogSize, lpStruct->pageLength);
 				//uint16_t l_pageLength = *(reinterpret_cast<uint16_t*>(&bufferData[2]));
 				retStatus = cPSP->get_Log_Status();
 				if (retStatus == eReturnValues::IN_PROGRESS)

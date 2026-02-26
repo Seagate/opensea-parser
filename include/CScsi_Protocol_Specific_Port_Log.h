@@ -94,7 +94,7 @@ namespace opensea_parser {
 		void process_List_Information(JSONNODE *listData);
 	public:
 		CScsiProtocolPortLog();
-		explicit CScsiProtocolPortLog(uint8_t *buffer, size_t bufferSize);
+		explicit CScsiProtocolPortLog(uint8_t *buffer, size_t bufferSize, uint16_t pageLength);
 		virtual ~CScsiProtocolPortLog();
 		virtual eReturnValues get_Log_Status() { return m_PSPStatus; };
 		virtual void set_PSP_Page_Length(uint16_t page) { m_PageLength = page; byte_Swap_16(&m_PageLength); };

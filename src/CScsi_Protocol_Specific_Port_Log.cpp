@@ -57,11 +57,11 @@ CScsiProtocolPortLog::CScsiProtocolPortLog()
 //  Exit:
 //
 //---------------------------------------------------------------------------
-CScsiProtocolPortLog::CScsiProtocolPortLog(uint8_t *buffer, size_t bufferSize)
+CScsiProtocolPortLog::CScsiProtocolPortLog(uint8_t *buffer, size_t bufferSize, uint16_t pageLength)
 	:v_Buff()
 	, m_PSPName("Protocol Port Log")
 	, m_PSPStatus(eReturnValues::IN_PROGRESS)
-	, m_PageLength(0)
+	, m_PageLength(pageLength)
 	, m_bufferLength(bufferSize)
 	, m_List(M_NULLPTR)
 	, m_Descriptor(M_NULLPTR)
