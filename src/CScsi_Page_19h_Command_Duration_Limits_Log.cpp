@@ -76,7 +76,7 @@ CScsiCmdDurationLimitsLog::CScsiCmdDurationLimitsLog(uint8_t * buffer, size_t bu
     if (buffer != M_NULLPTR)
     {
         v_Buff.resize(m_PageLength);  // Resize vector before copying!
-        safe_memcpy(v_Buff.data(), m_bufferLength, buffer, m_bufferLength);
+        safe_memcpy(v_Buff.data(), pageLength, buffer, pageLength);
     }
     else
     {
