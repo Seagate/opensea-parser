@@ -3445,7 +3445,7 @@ CAta_Identify_Log_05::~CAta_Identify_Log_05()
 
 bool CAta_Identify_Log_05::create_Serial_Number()
 {
-    if (m_pLog->serialNumber != M_NULLPTR)
+    if (m_pLog != M_NULLPTR)
     {
         m_pPrintable->serialStr.assign(reinterpret_cast<const char*>(&m_pLog->serialNumber), LOG5_SERIAL_NUMBER);
         byte_swap_std_string(m_pPrintable->serialStr);
@@ -3474,7 +3474,7 @@ bool CAta_Identify_Log_05::create_Serial_Number()
 
 bool CAta_Identify_Log_05::create_Firmware_Rev()
 {
-    if (m_pLog->firmwareRev != M_NULLPTR)
+    if (m_pLog != M_NULLPTR)
     {
         m_pPrintable->firmwareStr.assign(reinterpret_cast<const char*>(&m_pLog->firmwareRev), LOG5_FIRMWARE_REV);
         byte_swap_std_string(m_pPrintable->firmwareStr);
@@ -3504,7 +3504,7 @@ bool CAta_Identify_Log_05::create_Firmware_Rev()
 
 bool CAta_Identify_Log_05::create_Model_Number()
 {
-    if (m_pLog->modelNumber != M_NULLPTR)
+    if (m_pLog != M_NULLPTR)
     {
         m_pPrintable->modelNumberStr.assign(reinterpret_cast<const char*>(&m_pLog->modelNumber), LOG5_MODEL_NUMBER);
         byte_swap_std_string(m_pPrintable->modelNumberStr);
@@ -3533,7 +3533,7 @@ bool CAta_Identify_Log_05::create_Model_Number()
 //---------------------------------------------------------------------------
 bool CAta_Identify_Log_05::create_Product_string()
 {
-    if (m_pLog->productInformation != M_NULLPTR)
+    if (m_pLog != M_NULLPTR)
     {
         m_pPrintable->productStr.assign(reinterpret_cast<const char*>(&m_pLog->productInformation), LOG5_PRODUCT_INFO);
         byte_swap_std_string(m_pPrintable->productStr);
@@ -4903,7 +4903,7 @@ eReturnValues CAta_Identify_Log_30::parse_Identify_Log_30(JSONNODE *masterData)
         CAta_Identify_log *cIdent;
         cIdent = reinterpret_cast<CAta_Identify_log*>(&v_Buff.at(0x200));
         m_status = cIdent->print_Identify_Information(masterData);
-        delete (cIdent);
+
     }
     // Parse the log page 02h
     if (cLogPage00->is_Page_Supported(2))
@@ -4911,7 +4911,6 @@ eReturnValues CAta_Identify_Log_30::parse_Identify_Log_30(JSONNODE *masterData)
         CAta_Identify_Log_02 *cLogPage02;
         cLogPage02 = reinterpret_cast<CAta_Identify_Log_02*>(&v_Buff.at(0x400));
         cLogPage02->get_Log_Page02(v_Buff, masterData);
-        delete (cLogPage02);
     }
     // Parse the log page 03h
     if (cLogPage00->is_Page_Supported(2))
@@ -4919,7 +4918,6 @@ eReturnValues CAta_Identify_Log_30::parse_Identify_Log_30(JSONNODE *masterData)
         CAta_Identify_Log_03 *cLogPage03;
         cLogPage03 = reinterpret_cast<CAta_Identify_Log_03*>(&v_Buff.at(0x600));
         cLogPage03->get_Log_Page03(v_Buff, masterData);
-        delete (cLogPage03);
     }
     // Parse the log page 04h
     if (cLogPage00->is_Page_Supported(4))
@@ -4927,7 +4925,6 @@ eReturnValues CAta_Identify_Log_30::parse_Identify_Log_30(JSONNODE *masterData)
         CAta_Identify_Log_04 *cLogPage04;
         cLogPage04 = reinterpret_cast<CAta_Identify_Log_04*>(&v_Buff.at(0x800));
         cLogPage04->get_Log_Page04(v_Buff, masterData);
-        delete (cLogPage04);
     }
     // Parse the log page 05h
     if (cLogPage00->is_Page_Supported(5))
@@ -4935,7 +4932,6 @@ eReturnValues CAta_Identify_Log_30::parse_Identify_Log_30(JSONNODE *masterData)
         CAta_Identify_Log_05 *cLogPage05;
         cLogPage05 = reinterpret_cast<CAta_Identify_Log_05*>(&v_Buff.at(0xa00));
         cLogPage05->get_Log_Page05(v_Buff, masterData);
-        delete (cLogPage05);
     }
     // Parse the log page 06h
     if (cLogPage00->is_Page_Supported(6))
@@ -4943,7 +4939,6 @@ eReturnValues CAta_Identify_Log_30::parse_Identify_Log_30(JSONNODE *masterData)
         CAta_Identify_Log_06 *cLogPage06;
         cLogPage06 = reinterpret_cast<CAta_Identify_Log_06*>(&v_Buff.at(0xc00));
         cLogPage06->get_Log_Page06(v_Buff, masterData);
-        delete (cLogPage06);
     }
     // Parse the log page 07h
     if (cLogPage00->is_Page_Supported(7))
@@ -4951,19 +4946,15 @@ eReturnValues CAta_Identify_Log_30::parse_Identify_Log_30(JSONNODE *masterData)
         CAta_Identify_Log_07 *cLogPage07;
         cLogPage07 = reinterpret_cast<CAta_Identify_Log_07*>(&v_Buff.at(0xe00));
         cLogPage07->get_Log_Page07(v_Buff, masterData);
-        delete (cLogPage07);
-    }
+     }
     // Parse the log page 08h
     if (cLogPage00->is_Page_Supported(8))
     {
         CAta_Identify_Log_08 *cLogPage08;
         cLogPage08 = reinterpret_cast<CAta_Identify_Log_08*>(&v_Buff.at(0x1000));
         cLogPage08->get_Log_Page08(v_Buff, masterData);
-        delete (cLogPage08);
     }
     //get_Interface_Type();
-
-    delete (cLogPage00);
     return eReturnValues::SUCCESS;
 };
 

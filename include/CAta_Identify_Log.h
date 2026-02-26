@@ -169,7 +169,10 @@ namespace opensea_parser {
             uint8_t             modelNumber[LOG5_MODEL_NUMBER];                     //<! Model Number                                                           48 - 87
             uint8_t             reserved2[LOG5_PRODUCT_INFO];                       //<! reserved                                                               88 - 95
             uint8_t             productInformation[LOG5_PRODUCT_INFO];              //<! streaming Performance Granularity                                      95 - 103
-                
+            _sLogPage05(): header(0), reserved(0) 
+            { memset(serialNumber, 0, LOG5_SERIAL_NUMBER); memset(firmwareRev, 0, LOG5_FIRMWARE_REV); memset(reserved1, 0, LOG5_FIRMWARE_REV);
+            memset(modelNumber, 0, LOG5_MODEL_NUMBER); memset(reserved2, 0, LOG5_PRODUCT_INFO); memset(productInformation, 0, LOG5_PRODUCT_INFO); }
+
         }sLogPage05;
 
 #pragma pack(pop)
