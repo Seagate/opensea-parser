@@ -3628,7 +3628,6 @@ eReturnValues CAta_Identify_Log_05::get_Log_Page05(std::vector<uint8_t> lp5pData
     eReturnValues retStatus = eReturnValues::IN_PROGRESS;
     sLogPage05 logPage;
     m_pLog = &logPage;
-    memset(m_pLog, 0, sizeof(sLogPage05));
     m_pLog = reinterpret_cast<sLogPage05*>(&lp5pData.at(0));
     sPrintablePage05 printLog;
     m_pPrintable = &printLog;
