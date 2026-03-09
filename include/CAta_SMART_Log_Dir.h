@@ -39,7 +39,6 @@ namespace opensea_parser {
         std::vector<uint8_t>                v_Buff;                             //!< vector for holding the buffer data
         size_t                              m_logSize;                          //!< log size
         eReturnValues                       m_status;                           //!< holds the status fo the class
-        bool                                m_freeBuffer;
         bool                                m_hasHostSpecific;
         bool                                m_hasVendorSpecific;
         std::vector<sLogDetailStructure>    m_logDetailList;
