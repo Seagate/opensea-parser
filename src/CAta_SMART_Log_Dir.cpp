@@ -33,7 +33,6 @@ CAta_SMART_Log_Dir::CAta_SMART_Log_Dir()
     , v_Buff()
     , m_logSize(0)
     , m_status(eReturnValues::IN_PROGRESS)
-    , m_freeBuffer(false)
     , m_hasHostSpecific(false)
     , m_hasVendorSpecific(false)
 {
@@ -57,7 +56,6 @@ CAta_SMART_Log_Dir::CAta_SMART_Log_Dir(const std::string &fileName)
     , v_Buff()
     , m_logSize(0)
     , m_status(eReturnValues::IN_PROGRESS)
-    , m_freeBuffer(false)
     , m_hasHostSpecific(false)
     , m_hasVendorSpecific(false)
 {
@@ -70,7 +68,7 @@ CAta_SMART_Log_Dir::CAta_SMART_Log_Dir(const std::string &fileName)
         {
             m_logSize = cCLog->get_Size();
             m_status = parse_SMART_Log_Dir();
-            m_freeBuffer = true;
+
         }
         else
         {
@@ -102,7 +100,6 @@ CAta_SMART_Log_Dir::CAta_SMART_Log_Dir(uint8_t *bufferData, size_t logSize)
     , v_Buff()
     , m_logSize(logSize)
     , m_status(eReturnValues::IN_PROGRESS)
-    , m_freeBuffer(false)
     , m_hasHostSpecific(false)
     , m_hasVendorSpecific(false)
 {
@@ -154,15 +151,16 @@ CAta_SMART_Log_Dir::~CAta_SMART_Log_Dir()
 eReturnValues CAta_SMART_Log_Dir::parse_SMART_Log_Dir()
 {
     eReturnValues ret = eReturnValues::SUCCESS;
-
-    for (uint16_t offset = 2; offset < m_logSize; offset += 2)
+    uint16_t version = M_BytesTo2ByteValue(v_Buff.at(1), v_Buff.at(0));
+    uint8_t logAddress = 1;
+    for (size_t offset = 2; offset < m_logSize; offset ++)
     {
-        uint16_t logSize = M_BytesTo2ByteValue(v_Buff.at(offset + 1), v_Buff.at(offset));
+        uint8_t logSize = M_BytesTo2ByteValue(v_Buff.at(offset + 1), v_Buff.at(offset));
         if (logSize != 0)
         {
             sLogDetailStructure logDetails;
             logDetails.numberOfPages = logSize;
-            logDetails.logAddress = static_cast<uint8_t>(offset / UINT16_C(2));
+            logDetails.logAddress = logAddress;
 
             if (!m_hasHostSpecific && is_Host_Specific_Log(logDetails.logAddress))
             {
@@ -175,6 +173,8 @@ eReturnValues CAta_SMART_Log_Dir::parse_SMART_Log_Dir()
 
             m_logDetailList.push_back(logDetails);
         }
+        offset++;  // no need to get the reserved information
+        logAddress++; // increment the for the next log address
     }
 
     return ret;
