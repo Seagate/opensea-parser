@@ -134,6 +134,7 @@ namespace opensea_parser {
 		LOG_TYPE_POWER_CONDITION_LOG,
 		LOG_TYPE_NCQ_CMD_ERROR_LOG,
 		LOG_TYPE_SCSI_LOG_PAGES,
+		LOG_TYPE_SMART_DIRECTORY,
 
 	};
 	enum class eLogPageNames: int
