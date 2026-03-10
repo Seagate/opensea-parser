@@ -151,11 +151,11 @@ CAta_SMART_Log_Dir::~CAta_SMART_Log_Dir()
 eReturnValues CAta_SMART_Log_Dir::parse_SMART_Log_Dir()
 {
     eReturnValues ret = eReturnValues::SUCCESS;
-    uint16_t version = M_BytesTo2ByteValue(v_Buff.at(1), v_Buff.at(0));
+    //uint16_t version = M_BytesTo2ByteValue(v_Buff.at(1), v_Buff.at(0));
     uint8_t logAddress = 1;
     for (size_t offset = 2; offset < m_logSize; offset ++)
     {
-        uint8_t logSize = M_BytesTo2ByteValue(v_Buff.at(offset + 1), v_Buff.at(offset));
+        uint16_t logSize = M_BytesTo2ByteValue(v_Buff.at(offset + 1), v_Buff.at(offset));
         if (logSize != 0)
         {
             sLogDetailStructure logDetails;
