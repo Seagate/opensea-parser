@@ -12,8 +12,15 @@
 
 // \file CScsi_Temperature_Log.h   Definition of Temperature log
 #pragma once
+#ifdef max
+#undef max
+#endif
 #include <string>
 #include <vector>
+#include <cstdint>
+#include <limits>
+#include <cstddef>
+#include <stdexcept>
 #include "common_types.h"
 #include "libjson.h"
 #include "Opensea_Parser_Helper.h"
@@ -45,6 +52,24 @@ namespace opensea_parser {
 
 		void get_Temp(JSONNODE *tempData);
 		eReturnValues get_Data(JSONNODE *masterData);
+		inline bool safe_add_size_t(size_t a, size_t b, size_t& result) {
+			const size_t max_val = (std::numeric_limits<size_t>::max)(); // works on Win & Linux
+			if (a > max_val - b) {
+				return false; // overflow
+			}
+			result = a + b;
+			return true;
+		}
+
+		inline bool has_enough_data(size_t param, size_t tempSize, size_t structSize, size_t dataSize) {
+			size_t sum1;
+			if (!safe_add_size_t(param, tempSize, sum1)) return false;
+			if (sum1 >= dataSize) return false;
+
+			size_t sum2;
+			if (!safe_add_size_t(param, (2 * tempSize) + structSize, sum2)) return false;
+			return sum2 <= dataSize;
+		}
 	public:
 		CScsiTemperatureLog();
 		explicit CScsiTemperatureLog(uint8_t * buffer, size_t bufferSize);

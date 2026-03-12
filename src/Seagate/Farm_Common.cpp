@@ -95,9 +95,7 @@ bool CFarmCommon::is_Device_Scsi(uint8_t buff0, uint8_t buff1)
 void CFarmCommon::create_Flat_SN(std::string& serialNumberStr, uint64_t* serialNumber, uint64_t* serialNumber2)
 {
 	serialNumberStr.clear();
-	//byte_Swap_64(serialNumber);
 	serialNumberStr.assign(reinterpret_cast<const char*>(serialNumber), SERIAL_NUMBER_LEN);
-	//byte_Swap_64(serialNumber2);
 	serialNumberStr.append(reinterpret_cast<const char*>(serialNumber2), SERIAL_NUMBER_LEN);
 	remove_trailing_whitespace_std_string(serialNumberStr);
 }
@@ -205,7 +203,6 @@ void CFarmCommon::create_Model_Number_String(std::string& modelStr, uint64_t *pr
 //---------------------------------------------------------------------------
 void CFarmCommon::create_Model_Number_String_Flat(std::string& modelStr, uint64_t* productID)
 {
-	//byte_Swap_64(productID);
 	modelStr.append(reinterpret_cast<const char*>(productID), sizeof(uint64_t));
 	remove_trailing_whitespace_std_string(modelStr);
 }
@@ -2137,8 +2134,6 @@ void CFarmCommon::int_Percent_Dword_Node_Data(JSONNODE* Node, const std::string&
 		std::ostringstream value;
 		if ((param[loopCount] & BIT63) == BIT63 && (param[loopCount] & BIT62) == BIT62)
 		{
-			//value.str(""); value.clear();
-			//value << std::setfill('0') << std::setprecision(4) << number;
 			set_json_float_With_Status(Node, myStr.str().c_str(), number, param[loopCount], showStatusBits);
 		}
 		else

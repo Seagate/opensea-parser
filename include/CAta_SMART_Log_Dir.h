@@ -13,16 +13,16 @@
 
 // \file CAta_SMART_Log_Dir.h
 // \brief Defines the function calls and structures for pulling Seagate logs
-
+#pragma once
 #include <vector>
-
 #include "common_types.h"
 #include "bit_manip.h"
 #include "libjson.h"
 #include "CLog.h"
 
 namespace opensea_parser {
-
+#ifndef LOGDIR
+#define LOGDIR
     class CAta_SMART_Log_Dir
     {
     private:
@@ -55,4 +55,6 @@ namespace opensea_parser {
         virtual eReturnValues get_SMART_Log_Dir_Status() { return m_status; };
         virtual eReturnValues print_SMART_Log_Dir(JSONNODE *masterData);
     };
+#endif
 }
+

@@ -124,21 +124,16 @@ CScsiSolidStateDriveLog::~CScsiSolidStateDriveLog()
 bool CScsiSolidStateDriveLog::get_SSD_Parameter_Code_Description(std::string *ssdString)
 {
     bool descriptionFound = false;
-    switch (m_SSDParam->paramCode)
-    {
-    case 0x0001:
+    if (m_SSDParam->paramCode == 0x0001)
     {
         ssdString->assign("Percentage Used Indicator");
         descriptionFound = true;
-        break;
     }
-    default:
+    else
     {
         std::ostringstream temp;
         temp << "Vendor Specific 0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << m_SSDParam->paramCode;
         ssdString->assign(temp.str());
-        break;
-    }
     }
     return descriptionFound;
 }

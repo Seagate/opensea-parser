@@ -160,28 +160,29 @@ void CScsiTemperatureLog::get_Temp(JSONNODE *tempData)
 eReturnValues CScsiTemperatureLog::get_Data(JSONNODE *masterData)
 {
 	eReturnValues retStatus = eReturnValues::IN_PROGRESS;
-
+#ifdef max
+#undef max
+#endif
 	size_t tempSize = sizeof(sTempLogPageStruct);
 	if (v_Buff.size() != 0)
 	{
 		JSONNODE *pageInfo = json_new(JSON_NODE);
 		json_set_name(pageInfo, "Temperature Log Page - Dh");
-		for (size_t param = 0; param < m_PageLength; param += tempSize)
-		{
+		for (size_t param = 0; param < m_PageLength; param += tempSize) {
 			byte_Swap_16(&m_Page->paramCode);
 			get_Temp(pageInfo);
-			// Check to make sure we still have engough data to increment the m_Page
-			if (((param + (2* tempSize) + sizeof(sLogPageStruct)) > m_pDataSize && param + tempSize < m_PageLength) || param > UINT32_MAX)
+
+			if (!has_enough_data(param, tempSize, sizeof(sLogPageStruct), m_pDataSize) ||
+				param > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
 			{
 				json_push_back(masterData, pageInfo);
 				return eReturnValues::BAD_PARAMETER;
 			}
-			else if (param + tempSize < m_PageLength)
-			{
+
+			if (param + tempSize < m_PageLength) {
 				m_Page++;
 			}
-			else
-			{
+			else {
 				break;
 			}
 		}

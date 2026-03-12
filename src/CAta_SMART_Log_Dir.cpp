@@ -151,30 +151,31 @@ CAta_SMART_Log_Dir::~CAta_SMART_Log_Dir()
 eReturnValues CAta_SMART_Log_Dir::parse_SMART_Log_Dir()
 {
     eReturnValues ret = eReturnValues::SUCCESS;
-    //uint16_t version = M_BytesTo2ByteValue(v_Buff.at(1), v_Buff.at(0));
     uint8_t logAddress = 1;
-    for (size_t offset = 2; offset < m_logSize; offset ++)
-    {
+    size_t offset = 2;
+    while (offset < m_logSize) {
+        if (offset + 1 >= v_Buff.size()) {
+            break; // prevent out-of-bounds
+        }
+
         uint16_t logSize = M_BytesTo2ByteValue(v_Buff.at(offset + 1), v_Buff.at(offset));
-        if (logSize != 0)
-        {
+        if (logSize != 0) {
             sLogDetailStructure logDetails;
             logDetails.numberOfPages = logSize;
             logDetails.logAddress = logAddress;
 
-            if (!m_hasHostSpecific && is_Host_Specific_Log(logDetails.logAddress))
-            {
+            if (!m_hasHostSpecific && is_Host_Specific_Log(logDetails.logAddress)) {
                 m_hasHostSpecific = true;
             }
-            else if (!m_hasVendorSpecific && is_Vendor_Specific_Log(logDetails.logAddress))
-            {
+            else if (!m_hasVendorSpecific && is_Vendor_Specific_Log(logDetails.logAddress)) {
                 m_hasVendorSpecific = true;
             }
 
             m_logDetailList.push_back(logDetails);
         }
-        offset++;  // no need to get the reserved information
-        logAddress++; // increment the for the next log address
+
+        offset += 2;  // increment at end (skip reserved)
+        logAddress++;
     }
 
     return ret;
