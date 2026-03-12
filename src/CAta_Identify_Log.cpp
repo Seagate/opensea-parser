@@ -1375,8 +1375,8 @@ eReturnValues CAta_Identify_Log_02::get_Log_Page02(std::vector<uint8_t> lp2pData
 #define LOG_PAGE_02   0x0002
     eReturnValues retStatus = eReturnValues::IN_PROGRESS;
     sLogPage02 logPage02;
+    safe_memcpy(&logPage02, sizeof(sLogPage02), &lp2pData.at(0), sizeof(sLogPage02));
     pCapacity = &logPage02;
-    pCapacity = reinterpret_cast<sLogPage02*>(&lp2pData.at(0));
     uint16_t pageNumber = M_Word1(pCapacity->header);
     uint16_t revision = M_Word0(pCapacity->header);
     if (pageNumber == LOG_PAGE_02)
@@ -2691,8 +2691,8 @@ eReturnValues CAta_Identify_Log_03::get_Log_Page03(std::vector<uint8_t>  lp3pDat
 #define LOG_PAGE_03   0x0003
     eReturnValues retStatus = eReturnValues::IN_PROGRESS;
     sLogPage03 logPage03;
+    safe_memcpy(&logPage03, sizeof(sLogPage03), &lp3pData.at(0), sizeof(sLogPage03));
     m_pCap = &logPage03;
-    m_pCap = reinterpret_cast<sLogPage03 *>(&lp3pData.at(0));
     uint16_t pageNumber = M_Word1(m_pCap->header);
     uint16_t revision = M_Word0(m_pCap->header);
     if (pageNumber == LOG_PAGE_03)
@@ -3338,9 +3338,8 @@ eReturnValues CAta_Identify_Log_04::get_Log_Page04(std::vector<uint8_t> lp4pData
 #define LOG_PAGE_04   0x0004
     eReturnValues retStatus = eReturnValues::IN_PROGRESS;
     sLogPage04 logPage;
+    safe_memcpy(&logPage, sizeof(sLogPage04), &lp4pData.at(0), sizeof(sLogPage04));
     pLog = &logPage;
-    memset(pLog, 0, sizeof(sLogPage04));
-    pLog = reinterpret_cast<sLogPage04 *>(&lp4pData.at(0));
     uint16_t pageNumber = M_Word1(pLog->header);
     uint16_t revision = M_Word0(pLog->header);
     if (pageNumber == LOG_PAGE_04)
@@ -3627,10 +3626,8 @@ eReturnValues CAta_Identify_Log_05::get_Log_Page05(std::vector<uint8_t> lp5pData
 #define LOG_PAGE_05   0x0005
     eReturnValues retStatus = eReturnValues::IN_PROGRESS;
     sLogPage05 logPage;
+    safe_memcpy(&logPage, sizeof(sLogPage05), &lp5pData.at(0), sizeof(sLogPage05));
     m_pLog = &logPage;
-    m_pLog = reinterpret_cast<sLogPage05*>(&lp5pData.at(0));
-    //sPrintablePage05 printLog;
-    //m_pPrintable = &printLog;
     *m_pPrintable = {};
     uint16_t pageNumber = M_Word1(m_pLog->header);
     uint16_t revision = M_Word0(m_pLog->header);
@@ -4081,9 +4078,8 @@ eReturnValues CAta_Identify_Log_06::get_Log_Page06(std::vector<uint8_t> lp6pData
 #define LOG_PAGE_06   0x0006
     eReturnValues retStatus = eReturnValues::IN_PROGRESS;
     sLogPage06 logPage;
+    safe_memcpy(&logPage, sizeof(sLogPage06), &lp6pData.at(0), sizeof(sLogPage06));
     m_pLog = &logPage;
-    memset(m_pLog, 0, sizeof(sLogPage06));
-    m_pLog = reinterpret_cast<sLogPage06 *>(&lp6pData.at(0));
 
     uint16_t pageNumber = M_Word1(m_pLog->header);
     uint16_t revision = M_Word0(m_pLog->header);
@@ -4188,9 +4184,8 @@ eReturnValues CAta_Identify_Log_07::get_Log_Page07(std::vector<uint8_t> lp7pData
 #define LOG_PAGE_07   0x0007
     eReturnValues retStatus = eReturnValues::IN_PROGRESS;
     sLogPage07 logPage;
+    safe_memcpy(&logPage, sizeof(sLogPage07), &lp7pData.at(0), sizeof(sLogPage07));
     m_pLog = &logPage;
-    memset(m_pLog, 0, sizeof(sLogPage07));
-    m_pLog = reinterpret_cast<sLogPage07 *>(&lp7pData.at(0));
 
     uint16_t pageNumber = M_Word1(m_pLog->header);
     uint16_t revision = M_Word0(m_pLog->header);
@@ -4712,9 +4707,8 @@ eReturnValues CAta_Identify_Log_08::get_Log_Page08(std::vector<uint8_t> lp8pData
 #define LOG_PAGE_08   0x0008
     eReturnValues retStatus = eReturnValues::IN_PROGRESS;
     sLogPage08 logPage;
+    safe_memcpy(&logPage, sizeof(sLogPage08), &lp8pData.at(0), sizeof(sLogPage08));
     m_pLog = &logPage;
-    memset(m_pLog, 0, sizeof(sLogPage08));
-    m_pLog = reinterpret_cast<sLogPage08 *>(&lp8pData.at(0));
 
     uint16_t pageNumber = M_Word1(m_pLog->header);
     uint16_t revision = M_Word0(m_pLog->header);
