@@ -132,7 +132,6 @@ namespace opensea_parser {
 			set_Json_Bool(bigBit, "Field Supported", (value & BIT63) == BIT63);
 			set_Json_Bool(bigBit, "Field Valid", (value & BIT62) == BIT62);
 
-			//value = check_Status_Strip_Status(static_cast<uint64_t>(value));
 			int64_t reallo = check_for_signed_int(check_Status_Strip_Status(static_cast<uint64_t>(value)), 8);
 			json_push_back(bigBit, json_new_i(myStr.c_str(), reallo));
 			json_push_back(nowNode, bigBit);
@@ -145,7 +144,6 @@ namespace opensea_parser {
 			}
 			else
 			{
-				//value = check_Status_Strip_Status(static_cast<uint64_t>(value));
 				int64_t reallo = check_for_signed_int(check_Status_Strip_Status(static_cast<uint64_t>(value)), 8);
 				json_push_back(nowNode, json_new_i(myStr.c_str(), reallo));
 			}
@@ -407,7 +405,6 @@ namespace opensea_parser {
 	//-----------------------------------------------------------------------------
 	inline double roundToDecimalPlaces(double value, int places) 
 	{
-		//static_assert(std::is_floating_point(value), "value must be a double type");
 		double multiplier = static_cast<double>(std::pow(10.0, static_cast<double>(places)));
 		return std::round(value * multiplier) / multiplier;
 	}

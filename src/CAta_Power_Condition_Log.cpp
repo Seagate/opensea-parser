@@ -14,10 +14,6 @@
 //
 #include "CAta_Power_Conditions_Log.h"
 
-/*#if !defined BASIC
-#define	BASIC (80)
-#endif*/
-
 using namespace opensea_parser;
 #define OFFSET_IDLE_A      0
 #define OFFSET_IDLE_B     64
@@ -365,12 +361,10 @@ eReturnValues CAtaPowerConditionsLog::printPowerLogDescriptor(JSONNODE *masterDa
 
 #endif
 
-		//json_push_back(masterData, json_new_a("Reserved :", "Reserved"));
         std::ostringstream temp;
         temp << std::hex << static_cast<uint16_t>(logDescriptor->bitFlags);
 		json_push_back(masterData, json_new_a("Power Condition Flags", temp.str().c_str()));
 		printPowerConditionFlag(masterData);
-		//json_push_back(masterData, json_new_a("Reserved :", "Reserved"));
 		json_push_back(masterData, json_new_f("Default Timer Setting Field", static_cast<double>(logDescriptor->defaultTimerSetting) *.1));
 		json_push_back(masterData, json_new_f("Saved Timer Setting Field", static_cast<double>(logDescriptor->savedTimerSetting) * .1));
 		json_push_back(masterData, json_new_f("Current Timer Setting Field", static_cast<double>(logDescriptor->currentTimerSetting) * .1));

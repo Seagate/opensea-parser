@@ -109,13 +109,7 @@ CScsiScanLog::CScsiScanLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLen
 //---------------------------------------------------------------------------
 CScsiScanLog::~CScsiScanLog()
 {
-	/*
-    if (pData != M_NULLPTR)
-    {
-        delete[] pData;
-        pData = M_NULLPTR;
-    }
-	*/
+
 }
 //-----------------------------------------------------------------------------
 //

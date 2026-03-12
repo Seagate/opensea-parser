@@ -1062,7 +1062,6 @@ CAta_Identify_Log_00::CAta_Identify_Log_00(std::vector<uint8_t> Buffer)
     , m_status(eReturnValues::IN_PROGRESS)
     , m_pLog0()
 {
-    //pData = Buffer;
     if (v_Buff.size() != 0)
     {
         m_pLog0 = reinterpret_cast<sLogPage00 *>(v_Buff.at(0));
@@ -4840,49 +4839,6 @@ CAta_Identify_Log_30::~CAta_Identify_Log_30()
 {
 
 }
-//-----------------------------------------------------------------------------
-//
-//! \fn CAta_Identify_Log_30::GetInterfaceType()
-//
-//! \brief
-//!   Description:  parse out the interface Type from the log
-//
-//  Entry:
-//! \param ptr  pointer to the buffer data
-//
-//  Exit:
-//!   \return string the interface type
-//
-//---------------------------------------------------------------------------
-
-/*eReturnValues CAta_Identify_Log_30::get_Interface_Type()
-{
-    std::string interfaceType("unknow");
-    uint16_t interfaceOffset = 0x0180 + 512;
-
-    if (pData[interfaceOffset] == 'S')
-    {
-        interfaceType = "SCSI";
-    }
-    else if (pData[interfaceOffset] == 'A')
-    {
-        interfaceType = "ATA";
-    }
-    else if (pData[interfaceOffset] == 'F')
-    {
-        interfaceType = "FC";
-    }
-    else if (pData[interfaceOffset] == 'U')
-    {
-        interfaceType = "USB";
-    }
-    else
-    {
-        interfaceType = "unknown";
-    }
-
-    return eReturnValues::SUCCESS;
-}*/
 
 eReturnValues CAta_Identify_Log_30::parse_Identify_Log_30(JSONNODE *masterData)
 {

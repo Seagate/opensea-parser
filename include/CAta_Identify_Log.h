@@ -77,8 +77,6 @@ namespace opensea_parser {
 
         bool get_Device_Capacity(JSONNODE *capData);
         bool get_Sector_Size(JSONNODE *sectorData);
-        //bool get_Logical_Sector_Size(JSONNODE *logicalData);
-        //bool get_Normal_Buffer_size(JSONNODE *bufferData);
 
     public:
         explicit CAta_Identify_Log_02(std::vector<uint8_t> Buffer);
@@ -272,8 +270,6 @@ namespace opensea_parser {
         std::vector<uint8_t>                v_Buff;                             //!< vector for holding the buffer data
         std::string                         m_name;                             //<! name of the class
         eReturnValues                       m_status;                           //<! the status of the class   
-
-        //eReturnValues get_Interface_Type();
         
     public:
         CAta_Identify_Log_30( const std::string & fileName);

@@ -335,7 +335,6 @@ eReturnValues CScsiFormatStatusLog::get_Format_Status_Data(JSONNODE *masterData)
                         }
                         else
                         {
-                            //json_push_back(masterData, pageInfo);
                             return eReturnValues::BAD_PARAMETER;
                         }
                         break;
@@ -349,7 +348,6 @@ eReturnValues CScsiFormatStatusLog::get_Format_Status_Data(JSONNODE *masterData)
                         }
                         else
                         {
-                            //json_push_back(masterData, pageInfo);
                             return eReturnValues::BAD_PARAMETER;
                         }
                         break;
@@ -363,7 +361,6 @@ eReturnValues CScsiFormatStatusLog::get_Format_Status_Data(JSONNODE *masterData)
                         }
                         else
                         {
-                            //json_push_back(masterData, pageInfo);
                             return eReturnValues::BAD_PARAMETER;
                         }
                         break;
@@ -377,14 +374,12 @@ eReturnValues CScsiFormatStatusLog::get_Format_Status_Data(JSONNODE *masterData)
                         }
                         else
                         {
-                            //json_push_back(masterData, pageInfo);
                             return eReturnValues::BAD_PARAMETER;
                         }
                         break;
                     }
                     default:
                     {
-                        //json_push_back(masterData, pageInfo);
                         return eReturnValues::BAD_PARAMETER;
                     }
                     }
@@ -393,7 +388,6 @@ eReturnValues CScsiFormatStatusLog::get_Format_Status_Data(JSONNODE *masterData)
             }
             else
             {
-                //json_push_back(masterData, pageInfo);
                 return eReturnValues::BAD_PARAMETER;
             }
         }

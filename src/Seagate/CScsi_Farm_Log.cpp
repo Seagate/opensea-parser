@@ -617,7 +617,6 @@ bool CSCSI_Farm_Log::Get_sDriveInfo(sScsiDriveInfo *di, uint64_t offset)
     if (di->pPageHeader.paramLength > 0xf0)
     {
         di->dateOfAssembly = M_BytesTo8ByteValue(v_Buff.at(offset), v_Buff.at(offset + 1), v_Buff.at(offset + 2), v_Buff.at(offset + 3), v_Buff.at(offset + 4), v_Buff.at(offset + 5), v_Buff.at(offset + 6), v_Buff.at(offset + 7));
-        //offset += SIZEPARAM;
     }
     return true;
 }
@@ -773,8 +772,6 @@ bool CSCSI_Farm_Log::Get_sWorkLoadStat(sScsiWorkLoadStat *wl, uint64_t offset)
         wl->workLoad.numWriteTransferMid2 = M_BytesTo8ByteValue(v_Buff.at(offset), v_Buff.at(offset + 1), v_Buff.at(offset + 2), v_Buff.at(offset + 3), v_Buff.at(offset + 4), v_Buff.at(offset + 5), v_Buff.at(offset + 6), v_Buff.at(offset + 7));
         offset += SIZEPARAM;
         wl->workLoad.numWriteTransferLarge = M_BytesTo8ByteValue(v_Buff.at(offset), v_Buff.at(offset + 1), v_Buff.at(offset + 2), v_Buff.at(offset + 3), v_Buff.at(offset + 4), v_Buff.at(offset + 5), v_Buff.at(offset + 6), v_Buff.at(offset + 7));
-        //offset += SIZEPARAM;
-
     }
     return true;
 }
@@ -859,7 +856,6 @@ bool CSCSI_Farm_Log::Get_sErrorStat(sScsiErrorFrame * es, uint64_t offset)
     offset += SIZEPARAM;
     es->portBPhyResetProblem = M_BytesTo8ByteValue(v_Buff.at(offset), v_Buff.at(offset + 1), v_Buff.at(offset + 2), v_Buff.at(offset + 3), v_Buff.at(offset + 4), v_Buff.at(offset + 5), v_Buff.at(offset + 6), v_Buff.at(offset + 7));
 
-
     return true;
 }
 
@@ -940,7 +936,6 @@ bool CSCSI_Farm_Log::Get_sEnvironmentStat(sScsiEnvironmentStat *es, uint64_t off
         es->min5v = M_BytesTo8ByteValue(v_Buff.at(offset), v_Buff.at(offset + 1), v_Buff.at(offset + 2), v_Buff.at(offset + 3), v_Buff.at(offset + 4), v_Buff.at(offset + 5), v_Buff.at(offset + 6), v_Buff.at(offset + 7));
         offset += SIZEPARAM;
         es->max5v = M_BytesTo8ByteValue(v_Buff.at(offset), v_Buff.at(offset + 1), v_Buff.at(offset + 2), v_Buff.at(offset + 3), v_Buff.at(offset + 4), v_Buff.at(offset + 5), v_Buff.at(offset + 6), v_Buff.at(offset + 7));
-        //offset += SIZEPARAM;
     }
     return true;
 }
@@ -3314,7 +3309,6 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSON
 eReturnValues CSCSI_Farm_Log::print_LUN_Actuator_Information(JSONNODE *LUNData, uint32_t page, uint16_t actNum)
 {
     sLUNStruct *pLUN;
-    //pLUN = &vFarmFrame.at(page).vLUN50;
     if (actNum ==  static_cast<uint16_t>(eSASLogPageTypes::LUN_1_ACTUATOR))
         pLUN = &vFarmFrame.at(page).vLUN60;
     else if (actNum == static_cast<uint16_t>(eSASLogPageTypes::LUN_2_ACTUATOR))

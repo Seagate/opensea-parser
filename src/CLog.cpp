@@ -218,7 +218,7 @@ eReturnValues CLog::get_CLog()
     }
     else
     {
-        free_Secure_File_Info(&m_log->secure);   // also use on the closing of the file    eSecureFileError secure_Close_File(secureFileInfo* fileInfo);
+        free_Secure_File_Info(&m_log->secure);   // also use on the closing of the file   
         retStatus = eReturnValues::FILE_OPEN_ERROR;
         m_logStatus = retStatus;
     }

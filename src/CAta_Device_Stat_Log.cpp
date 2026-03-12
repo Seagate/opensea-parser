@@ -833,10 +833,8 @@ void CAtaDeviceStatisticsLogs::logPage02(uint64_t *value, JSONNODE *masterData)
 
 #endif
     json_push_back(sctFreeFall, json_new_i("Number of Free-Fall Events Detected", FallEventDet));
-    //DeviceStatFlag(&cData[1]);
 
     json_push_back(sctFreeFall, json_new_i("Overlimit Shock Events", OverlimitShock));
-    //DeviceStatFlag(&cData[2]);
 
     json_push_back(masterData, sctFreeFall);
 }
@@ -974,7 +972,6 @@ void CAtaDeviceStatisticsLogs::logPage05(uint64_t *value, JSONNODE *masterData)
     TimeInUndTemp = static_cast<int32_t>(CheckStatusAndValid_32(&cData[12]));
     MinOperTemp = CheckStatusAndValidSigned_8(&cData[13]);
 
-    //string myStr = "Temperature Statistics";
     JSONNODE *sctTemp = json_new(JSON_NODE);
     json_set_name(sctTemp, "Temperature Statistics(log Page 05h)");
 #if defined _DEBUG

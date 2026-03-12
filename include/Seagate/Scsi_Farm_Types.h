@@ -650,8 +650,6 @@ namespace opensea_parser {
 
         std::vector<eSASLogPageTypes>   vFramesFound;
 
-        //_sScsiFarmFrame() : vFramesFound(eSASLogPageTypes::FARM_HEADER_PARAMETER) {};
-
     }sScsiFarmFrame;
 
 
