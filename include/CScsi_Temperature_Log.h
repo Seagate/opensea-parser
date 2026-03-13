@@ -21,6 +21,7 @@
 #include <limits>
 #include <cstddef>
 #include <stdexcept>
+#include <iostream>
 #include "common_types.h"
 #include "libjson.h"
 #include "Opensea_Parser_Helper.h"

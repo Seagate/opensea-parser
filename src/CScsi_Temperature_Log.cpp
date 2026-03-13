@@ -39,7 +39,7 @@ CScsiTemperatureLog::CScsiTemperatureLog()
 {
 	if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
-		printf("%s \n", m_TempName.c_str());
+		std::cout << m_TempName << std::endl;
 	}
 }
 //-----------------------------------------------------------------------------
@@ -65,7 +65,7 @@ CScsiTemperatureLog::CScsiTemperatureLog(uint8_t * buffer, size_t bufferSize)
 {
 	if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
-		printf("%s \n", m_TempName.c_str());
+		std::cout << m_TempName << std::endl;
 	}
 	if (buffer != M_NULLPTR)
 	{
@@ -122,12 +122,13 @@ CScsiTemperatureLog::~CScsiTemperatureLog()
 //---------------------------------------------------------------------------
 void CScsiTemperatureLog::get_Temp(JSONNODE *tempData)
 {
+	std::ostringstream temp;
+	temp << "Parameter Code 0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << m_Page->paramCode;
 #if defined _DEBUG
-	printf("Temperature Log Page \n");
-	printf("\tParameter Code =   0x%04" PRIx16"  \n", m_Page->paramCode);
+    std::cout << "Temperature Log Page \n" << std::endl;
+	std::cout << "\tParameter Code =  " << temp.str() << " \n" << std::endl;
 #endif
-    std::ostringstream temp;
-    temp << "Parameter Code 0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << m_Page->paramCode;
+    
 	JSONNODE *paramInfo = json_new(JSON_NODE);
 	json_set_name(paramInfo, temp.str().c_str());
 
