@@ -73,7 +73,7 @@ CScsiLog::CScsiLog()
 //  Exit:
 //
 //---------------------------------------------------------------------------
-CScsiLog::CScsiLog(const std::string &fileName, JSONNODE *masterData)
+CScsiLog::CScsiLog(const std::string &fileName)
     : v_Buff()
     , m_LogSize(0)
     , m_name("SCSI Log")
