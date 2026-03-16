@@ -314,7 +314,7 @@ CAtaDeviceStatisticsLogs::CAtaDeviceStatisticsLogs(uint32_t logSize, JSONNODE *m
 //!  \return NONE
 //
 //---------------------------------------------------------------------------
-CAtaDeviceStatisticsLogs::CAtaDeviceStatisticsLogs(const std::string &fileName, JSONNODE *masterData)
+CAtaDeviceStatisticsLogs::CAtaDeviceStatisticsLogs(const std::string &fileName)
     : m_name("Device Stat Log")
 	, m_status(eReturnValues::IN_PROGRESS)
 	, v_Buff()
@@ -860,8 +860,7 @@ void CAtaDeviceStatisticsLogs::logPage03(uint64_t *value, JSONNODE *masterData)
     {
         return;
     }
-    uint64_t data = value[0];
-    uint64_t* cData = &data;
+    uint64_t* cData = &value[0];
     if (cData[1] != 0 ) 
     {
         pSCT3->SpdPoh = static_cast<double>(((CheckStatusAndValid_64(&cData[1]) / 1000) / 3600.0));   // spec shows hrs. but seagate publishes in microseconds
