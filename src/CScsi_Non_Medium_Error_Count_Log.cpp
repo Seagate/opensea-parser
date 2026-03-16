@@ -75,7 +75,7 @@ CScsiNonMediumErrorCountLog::CScsiNonMediumErrorCountLog(uint8_t * buffer, size_
 	if (buffer != M_NULLPTR)
 	{
 		v_Buff.resize(m_PageLength);  // Resize vector before copying!
-		safe_memcpy(v_Buff.data(), pageLength, buffer, pageLength);
+		safe_memmove(v_Buff.data(), pageLength, buffer, pageLength);
 	}
 	else
 	{

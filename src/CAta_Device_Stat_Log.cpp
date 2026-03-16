@@ -283,7 +283,7 @@ CAtaDeviceStatisticsLogs::CAtaDeviceStatisticsLogs(uint32_t logSize, JSONNODE *m
     if (buffer != M_NULLPTR && m_deviceLogSize > 0)
     {
         v_Buff.resize(m_deviceLogSize);  // Resize vector before copying!
-        safe_memcpy(v_Buff.data(), m_deviceLogSize, buffer, m_deviceLogSize);
+        safe_memmove(v_Buff.data(), m_deviceLogSize, buffer, m_deviceLogSize);
         if (!v_Buff.empty())
         {
             m_status = ParseSCTDeviceStatLog(masterData);
