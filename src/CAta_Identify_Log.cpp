@@ -1201,7 +1201,7 @@ eReturnValues CAta_Identify_Log_00::get_Log_Page00(JSONNODE *masterData)
 //!  \return NONE
 //
 //---------------------------------------------------------------------------
-CAta_Identify_Log_02::CAta_Identify_Log_02(std::vector<uint8_t>  Buffer)
+CAta_Identify_Log_02::CAta_Identify_Log_02(const std::vector<uint8_t>& Buffer)
     : m_name("ATA Identify Log Page 02")
     , v_Buff(Buffer)
     , m_status(eReturnValues::IN_PROGRESS)
@@ -1376,7 +1376,7 @@ bool CAta_Identify_Log_02::get_Sector_Size(JSONNODE *sectorData)
 //!   \return string the interface type
 //
 //---------------------------------------------------------------------------
-eReturnValues CAta_Identify_Log_02::get_Log_Page02(std::vector<uint8_t> lp2pData, JSONNODE *masterData)
+eReturnValues CAta_Identify_Log_02::get_Log_Page02(const std::vector<uint8_t>& lp2pData, JSONNODE *masterData)
 {
 #define LOG_PAGE_02   0x0002
     eReturnValues retStatus = eReturnValues::IN_PROGRESS;

@@ -227,6 +227,11 @@ eReturnValues CExtComp::parse_Ext_Comp_Structure(uint32_t structNumber, uint32_t
 		json_push_back(EComp, json_new_i("Ext Comp Device Error Count", static_cast<int>(deviceErrorCount)));
 	}
     temp.str("");temp.clear();
+    // Add bounds validation at the start
+    const size_t requiredSize = sector + 4 + (4 * (5 * 18 + 34));  // Calculate required buffer size
+    if (v_Buff.size() < requiredSize) {
+        return eReturnValues::INVALID_LENGTH;
+    }
     for (uint16_t z = 1; z < 5; z++)
     {
         temp << "Opcode Content " << std::dec << (z + (structNumber * 4));

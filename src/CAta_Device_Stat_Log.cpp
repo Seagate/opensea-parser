@@ -856,12 +856,12 @@ void CAtaDeviceStatisticsLogs::logPage03(uint64_t *value, JSONNODE *masterData)
     sDeviceLog3  m_sSCT3;
     sDeviceLog3 *pSCT3 = &m_sSCT3;
     //Rotating Media Statistics(log page 03)
-    uint64_t data = 0;
-    uint64_t* cData = &data;
-    if (value != M_NULLPTR)
+    if (value == M_NULLPTR)
     {
-        cData = &value[0];
+        return;
     }
+    uint64_t data = value[0];
+    uint64_t* cData = &data;
     if (cData[1] != 0 ) 
     {
         pSCT3->SpdPoh = static_cast<double>(((CheckStatusAndValid_64(&cData[1]) / 1000) / 3600.0));   // spec shows hrs. but seagate publishes in microseconds
