@@ -73,7 +73,7 @@ CExtComp::CExtComp(uint8_t *buffer, size_t logSize, JSONNODE *masterData)
 //
 //
 //---------------------------------------------------------------------------
-CExtComp::CExtComp(const std::string &fileName, JSONNODE *masterData)
+CExtComp::CExtComp(const std::string &fileName)
     :v_Buff()
     , m_logSize()
     , m_name("Ext Comp Log")

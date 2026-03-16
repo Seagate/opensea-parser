@@ -40,7 +40,7 @@ namespace opensea_parser {
     public:
         CExtComp();
 		CExtComp(uint8_t *buffer, size_t logSize, JSONNODE *masterData);
-        explicit CExtComp(const std::string &fileName, JSONNODE *masterData);
+        explicit CExtComp(const std::string &fileName);
         virtual ~CExtComp();
 
         eReturnValues get_EC_Status(){ return m_status; };
