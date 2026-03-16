@@ -339,7 +339,6 @@ CAtaDeviceStatisticsLogs::CAtaDeviceStatisticsLogs(const std::string &fileName, 
                 if (IsScsiLogPage(idCheck->pageLength, idCheck->pageCode) == false)
                 {
                     byte_Swap_16(&idCheck->pageLength);  // now that we know it's not scsi we need to flip the bytes back
-                    m_status = ParseSCTDeviceStatLog(masterData);
                 }
                 else
                 {

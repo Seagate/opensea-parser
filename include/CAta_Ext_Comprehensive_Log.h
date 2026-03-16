@@ -33,11 +33,10 @@ namespace opensea_parser {
         std::string                         m_name;                                                     //!< name of the class
         eReturnValues                       m_status;                                                   //!< holds the status of the class
         bool                                m_fileName;                                                 //!< set to true if the file name is set
-
-		
+	
 		eReturnValues parse_Ext_Comp_Structure(uint32_t structNumber, uint32_t sector, JSONNODE *structureData);
 		eReturnValues get_State_Meaning(std::string *stateMeaning, uint8_t state);
-		eReturnValues parse_Ext_Comp_Log(JSONNODE *masterData);
+		
     public:
         CExtComp();
 		CExtComp(uint8_t *buffer, size_t logSize, JSONNODE *masterData);
@@ -45,7 +44,7 @@ namespace opensea_parser {
         virtual ~CExtComp();
 
         eReturnValues get_EC_Status(){ return m_status; };
-
+        eReturnValues parse_Ext_Comp_Log(JSONNODE* masterData);
     };
 #endif  // ATAEXTCOMPLOG
 }

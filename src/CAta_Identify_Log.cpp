@@ -50,7 +50,13 @@ inline std::string ltrim(std::string& s, const char* t = " \t\r\f\v")
 //---------------------------------------------------------------------------
 inline std::string rtrim(std::string& s, const char* t = " \t\r\f\v")
 {
-    s.erase(s.find_last_not_of(t) + 1);
+    size_t endpos = s.find_last_not_of(t);
+    if (endpos != std::string::npos) {
+        s.erase(endpos + 1);
+    }
+    else {
+        s.clear(); // all characters are trim chars
+    }
     return s;
 }
 //-----------------------------------------------------------------------------
@@ -315,7 +321,7 @@ void CAta_Identify_log::create_WWN_Info()
 //! \fn CAta_Identify_log::ParseDeviceInfo()
 //
 //! \brief
-//!   Description:  parse out key items fro mthe identify information
+//!   Description:  takes the parsed infromation in the struct and prints it out into a json object 
 //
 //  Entry:
 //! \param ptr  pointer to the buffer data
@@ -1060,11 +1066,12 @@ CAta_Identify_Log_00::CAta_Identify_Log_00(std::vector<uint8_t> Buffer)
     : m_name("ATA Identify Log Page 00")
     , v_Buff(Buffer)
     , m_status(eReturnValues::IN_PROGRESS)
-    , m_pLog0()
+    , m_pLog0(M_NULLPTR)
 {
     if (v_Buff.size() != 0)
     {
-        m_pLog0 = reinterpret_cast<sLogPage00 *>(v_Buff.at(0));
+        m_pLog0 = new sLogPage00();
+        safe_memmove(m_pLog0, sizeof(sLogPage00), &v_Buff.at(0), sizeof(sLogPage00));
         m_status = eReturnValues::SUCCESS;
     }
     else
@@ -1373,9 +1380,9 @@ eReturnValues CAta_Identify_Log_02::get_Log_Page02(std::vector<uint8_t> lp2pData
 {
 #define LOG_PAGE_02   0x0002
     eReturnValues retStatus = eReturnValues::IN_PROGRESS;
-    sLogPage02 logPage02;
-    safe_memmove(&logPage02, sizeof(sLogPage02), &lp2pData.at(0), sizeof(sLogPage02));
-    pCapacity = &logPage02;
+    sLogPage02* pLogPage02  = new sLogPage02();
+    safe_memmove(pLogPage02, sizeof(sLogPage02), &lp2pData.at(0), sizeof(sLogPage02));
+    pCapacity = pLogPage02;
     uint16_t pageNumber = M_Word1(pCapacity->header);
     uint16_t revision = M_Word0(pCapacity->header);
     if (pageNumber == LOG_PAGE_02)
@@ -2689,9 +2696,9 @@ eReturnValues CAta_Identify_Log_03::get_Log_Page03(std::vector<uint8_t>  lp3pDat
 {
 #define LOG_PAGE_03   0x0003
     eReturnValues retStatus = eReturnValues::IN_PROGRESS;
-    sLogPage03 logPage03;
-    safe_memmove(&logPage03, sizeof(sLogPage03), &lp3pData.at(0), sizeof(sLogPage03));
-    m_pCap = &logPage03;
+    sLogPage03* pLogPage03 = new sLogPage03();
+    safe_memmove(pLogPage03, sizeof(sLogPage03), &lp3pData.at(0), sizeof(sLogPage03));
+    m_pCap = pLogPage03;
     uint16_t pageNumber = M_Word1(m_pCap->header);
     uint16_t revision = M_Word0(m_pCap->header);
     if (pageNumber == LOG_PAGE_03)
@@ -3336,9 +3343,9 @@ eReturnValues CAta_Identify_Log_04::get_Log_Page04(std::vector<uint8_t> lp4pData
 {
 #define LOG_PAGE_04   0x0004
     eReturnValues retStatus = eReturnValues::IN_PROGRESS;
-    sLogPage04 logPage;
-    safe_memmove(&logPage, sizeof(sLogPage04), &lp4pData.at(0), sizeof(sLogPage04));
-    pLog = &logPage;
+    sLogPage04* pLogPage = new sLogPage04();
+    safe_memmove(pLogPage, sizeof(sLogPage04), &lp4pData.at(0), sizeof(sLogPage04));
+    pLog = pLogPage;
     uint16_t pageNumber = M_Word1(pLog->header);
     uint16_t revision = M_Word0(pLog->header);
     if (pageNumber == LOG_PAGE_04)
@@ -3399,7 +3406,7 @@ CAta_Identify_Log_05::CAta_Identify_Log_05(std::vector<uint8_t> Buffer)
     , v_Buff(Buffer)
     , m_status(eReturnValues::IN_PROGRESS)
     , m_pLog()
-    , m_pPrintable()
+    , m_pPrintable(M_NULLPTR)
 {
     if (v_Buff.size() != 0)
     {
@@ -3624,10 +3631,10 @@ eReturnValues CAta_Identify_Log_05::get_Log_Page05(std::vector<uint8_t> lp5pData
 {
 #define LOG_PAGE_05   0x0005
     eReturnValues retStatus = eReturnValues::IN_PROGRESS;
-    sLogPage05 logPage;
-    safe_memmove(&logPage, sizeof(sLogPage05), &lp5pData.at(0), sizeof(sLogPage05));
-    m_pLog = &logPage;
-    *m_pPrintable = {};
+    sLogPage05* pLogPage = new sLogPage05();
+    safe_memmove(pLogPage, sizeof(sLogPage05), &lp5pData.at(0), sizeof(sLogPage05));
+    m_pLog = pLogPage;
+    m_pPrintable = M_NULLPTR;
     uint16_t pageNumber = M_Word1(m_pLog->header);
     uint16_t revision = M_Word0(m_pLog->header);
     if (pageNumber == LOG_PAGE_05)
@@ -4076,9 +4083,9 @@ eReturnValues CAta_Identify_Log_06::get_Log_Page06(std::vector<uint8_t> lp6pData
 {
 #define LOG_PAGE_06   0x0006
     eReturnValues retStatus = eReturnValues::IN_PROGRESS;
-    sLogPage06 logPage;
-    safe_memmove(&logPage, sizeof(sLogPage06), &lp6pData.at(0), sizeof(sLogPage06));
-    m_pLog = &logPage;
+    sLogPage06* pLogPage = new sLogPage06();
+    safe_memmove(pLogPage, sizeof(sLogPage06), &lp6pData.at(0), sizeof(sLogPage06));
+    m_pLog = pLogPage;
 
     uint16_t pageNumber = M_Word1(m_pLog->header);
     uint16_t revision = M_Word0(m_pLog->header);
@@ -4705,9 +4712,9 @@ eReturnValues CAta_Identify_Log_08::get_Log_Page08(std::vector<uint8_t> lp8pData
 {
 #define LOG_PAGE_08   0x0008
     eReturnValues retStatus = eReturnValues::IN_PROGRESS;
-    sLogPage08 logPage;
-    safe_memmove(&logPage, sizeof(sLogPage08), &lp8pData.at(0), sizeof(sLogPage08));
-    m_pLog = &logPage;
+    sLogPage08* pLogPage = new sLogPage08();
+    safe_memmove(pLogPage, sizeof(sLogPage08), &lp8pData.at(0), sizeof(sLogPage08));
+    m_pLog = pLogPage;
 
     uint16_t pageNumber = M_Word1(m_pLog->header);
     uint16_t revision = M_Word0(m_pLog->header);
@@ -4843,15 +4850,15 @@ CAta_Identify_Log_30::~CAta_Identify_Log_30()
 eReturnValues CAta_Identify_Log_30::parse_Identify_Log_30(JSONNODE *masterData)
 {
     // Parse the log page 00.
-    CAta_Identify_Log_00 *cLogPage00;
-    cLogPage00 = reinterpret_cast<CAta_Identify_Log_00*>(&v_Buff.at(0));
+    CAta_Identify_Log_00 *cLogPage00 = new CAta_Identify_Log_00(v_Buff);
+    safe_memmove(cLogPage00, sizeof(CAta_Identify_Log_00), &v_Buff.at(0), sizeof(CAta_Identify_Log_00));
     cLogPage00->get_Log_Page00(masterData);
 
     // Parse the Log page 01h
     if (cLogPage00->is_Page_Supported(1))
     {
-        CAta_Identify_log *cIdent;
-        cIdent = reinterpret_cast<CAta_Identify_log*>(&v_Buff.at(0x200));
+        CAta_Identify_log* cIdent = new CAta_Identify_log();
+        safe_memmove(cIdent, sizeof(CAta_Identify_log), &v_Buff.at(0x200), sizeof(CAta_Identify_log));
         m_status = cIdent->print_Identify_Information(masterData);
 
     }

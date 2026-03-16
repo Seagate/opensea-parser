@@ -95,7 +95,6 @@ CExtComp::CExtComp(const std::string &fileName, JSONNODE *masterData)
             if (IsScsiLogPage(idCheck->pageLength, idCheck->pageCode) == false)
             {
                 byte_Swap_16(&idCheck->pageLength);  // now that we know it's not scsi we need to flip the bytes back
-                m_status = parse_Ext_Comp_Log(masterData);
                 m_status = eReturnValues::SUCCESS;
             }
             else
