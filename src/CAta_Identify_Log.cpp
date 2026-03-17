@@ -4911,7 +4911,6 @@ eReturnValues CAta_Identify_Log_30::parse_Identify_Log_30(JSONNODE *masterData)
         cLogPage08 = reinterpret_cast<CAta_Identify_Log_08*>(&v_Buff.at(0x1000));
         cLogPage08->get_Log_Page08(v_Buff, masterData);
     }
-    //get_Interface_Type();
     return eReturnValues::SUCCESS;
 };
 
