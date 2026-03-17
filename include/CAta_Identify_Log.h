@@ -79,9 +79,9 @@ namespace opensea_parser {
         bool get_Sector_Size(JSONNODE *sectorData);
 
     public:
-        explicit CAta_Identify_Log_02(std::vector<uint8_t> Buffer);
+        explicit CAta_Identify_Log_02(const std::vector<uint8_t>& Buffer);
         ~CAta_Identify_Log_02();
-        eReturnValues get_Log_Page02(std::vector<uint8_t> lp2pData, JSONNODE *masterData);
+        eReturnValues get_Log_Page02(const std::vector<uint8_t>& lp2pData, JSONNODE* masterData);
     };
 
     class CAta_Identify_Log_03

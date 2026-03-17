@@ -150,7 +150,7 @@ CFARMLog::CFARMLog(uint8_t *farmbufferData, size_t bufferSize, bool showStatus, 
 	if (farmbufferData != M_NULLPTR && m_LogSize > 0)
 	{
 		v_Buff.resize(m_LogSize);  // Resize vector before copying!
-		safe_memcpy(v_Buff.data(), m_LogSize, farmbufferData, m_LogSize);
+		safe_memmove(v_Buff.data(), m_LogSize, farmbufferData, m_LogSize);
 		m_FARMstatus = eReturnValues::IN_PROGRESS;
 	}
 	else

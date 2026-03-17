@@ -283,7 +283,7 @@ CAtaDeviceStatisticsLogs::CAtaDeviceStatisticsLogs(uint32_t logSize, JSONNODE *m
     if (buffer != M_NULLPTR && m_deviceLogSize > 0)
     {
         v_Buff.resize(m_deviceLogSize);  // Resize vector before copying!
-        safe_memcpy(v_Buff.data(), m_deviceLogSize, buffer, m_deviceLogSize);
+        safe_memmove(v_Buff.data(), m_deviceLogSize, buffer, m_deviceLogSize);
         if (!v_Buff.empty())
         {
             m_status = ParseSCTDeviceStatLog(masterData);
@@ -314,7 +314,7 @@ CAtaDeviceStatisticsLogs::CAtaDeviceStatisticsLogs(uint32_t logSize, JSONNODE *m
 //!  \return NONE
 //
 //---------------------------------------------------------------------------
-CAtaDeviceStatisticsLogs::CAtaDeviceStatisticsLogs(const std::string &fileName, JSONNODE *masterData)
+CAtaDeviceStatisticsLogs::CAtaDeviceStatisticsLogs(const std::string &fileName)
     : m_name("Device Stat Log")
 	, m_status(eReturnValues::IN_PROGRESS)
 	, v_Buff()
@@ -339,7 +339,6 @@ CAtaDeviceStatisticsLogs::CAtaDeviceStatisticsLogs(const std::string &fileName, 
                 if (IsScsiLogPage(idCheck->pageLength, idCheck->pageCode) == false)
                 {
                     byte_Swap_16(&idCheck->pageLength);  // now that we know it's not scsi we need to flip the bytes back
-                    m_status = ParseSCTDeviceStatLog(masterData);
                 }
                 else
                 {
@@ -857,12 +856,11 @@ void CAtaDeviceStatisticsLogs::logPage03(uint64_t *value, JSONNODE *masterData)
     sDeviceLog3  m_sSCT3;
     sDeviceLog3 *pSCT3 = &m_sSCT3;
     //Rotating Media Statistics(log page 03)
-    uint64_t data = 0;
-    uint64_t* cData = &data;
-    if (value != M_NULLPTR)
+    if (value == M_NULLPTR)
     {
-        cData = &value[0];
+        return;
     }
+    uint64_t* cData = &value[0];
     if (cData[1] != 0 ) 
     {
         pSCT3->SpdPoh = static_cast<double>(((CheckStatusAndValid_64(&cData[1]) / 1000) / 3600.0));   // spec shows hrs. but seagate publishes in microseconds

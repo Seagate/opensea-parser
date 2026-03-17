@@ -73,7 +73,7 @@ CExtComp::CExtComp(uint8_t *buffer, size_t logSize, JSONNODE *masterData)
 //
 //
 //---------------------------------------------------------------------------
-CExtComp::CExtComp(const std::string &fileName, JSONNODE *masterData)
+CExtComp::CExtComp(const std::string &fileName)
     :v_Buff()
     , m_logSize()
     , m_name("Ext Comp Log")
@@ -95,7 +95,6 @@ CExtComp::CExtComp(const std::string &fileName, JSONNODE *masterData)
             if (IsScsiLogPage(idCheck->pageLength, idCheck->pageCode) == false)
             {
                 byte_Swap_16(&idCheck->pageLength);  // now that we know it's not scsi we need to flip the bytes back
-                m_status = parse_Ext_Comp_Log(masterData);
                 m_status = eReturnValues::SUCCESS;
             }
             else
@@ -228,6 +227,11 @@ eReturnValues CExtComp::parse_Ext_Comp_Structure(uint32_t structNumber, uint32_t
 		json_push_back(EComp, json_new_i("Ext Comp Device Error Count", static_cast<int>(deviceErrorCount)));
 	}
     temp.str("");temp.clear();
+    // Add bounds validation at the start
+    const size_t requiredSize = sector + 4 + (4 * (5 * 18 + 34));  // Calculate required buffer size
+    if (v_Buff.size() < requiredSize) {
+        return eReturnValues::INVALID_LENGTH;
+    }
     for (uint16_t z = 1; z < 5; z++)
     {
         temp << "Opcode Content " << std::dec << (z + (structNumber * 4));

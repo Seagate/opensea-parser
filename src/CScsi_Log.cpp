@@ -73,7 +73,7 @@ CScsiLog::CScsiLog()
 //  Exit:
 //
 //---------------------------------------------------------------------------
-CScsiLog::CScsiLog(const std::string &fileName, JSONNODE *masterData)
+CScsiLog::CScsiLog(const std::string &fileName)
     : v_Buff()
     , m_LogSize(0)
     , m_name("SCSI Log")
@@ -89,11 +89,10 @@ CScsiLog::CScsiLog(const std::string &fileName, JSONNODE *masterData)
 		if (v_Buff.size() != 0)                           // if the buffer is null then exit something did not go right
 		{
 			m_LogSize = static_cast<uint64_t>(v_Buff.size());
-            m_ScsiStatus = get_Log_Parsed(masterData);							// init the data for getting the log
+			m_ScsiStatus = eReturnValues::SUCCESS;
         }
         else
         {
-
             m_ScsiStatus = eReturnValues::FAILURE;
         }
     }
@@ -101,6 +100,7 @@ CScsiLog::CScsiLog(const std::string &fileName, JSONNODE *masterData)
     {
         m_ScsiStatus = cCLog->get_Log_Status();
     }
+	m_ScsiStatus = eReturnValues::SUCCESS;
     delete (cCLog);
 }
 

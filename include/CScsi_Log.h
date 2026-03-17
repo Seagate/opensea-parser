@@ -30,15 +30,14 @@ namespace opensea_parser {
 		eReturnValues				m_ScsiStatus;			    //<! status of the class
         sLogPageStruct*				m_Page;						//<! page code for the log lpage format
 
-
-		eReturnValues get_Log_Parsed(JSONNODE *masterData);
 	public:
 		CScsiLog();
-        explicit CScsiLog(const std::string &fileName, JSONNODE *masterData);
+        explicit CScsiLog(const std::string &fileName);
 		virtual ~CScsiLog();
         virtual eReturnValues get_Log_Status(){ return m_ScsiStatus; };
 		inline int get_Page_Code() const { return m_Page->pageCode; }
 		inline int get_Page_Length() const { return m_Page->pageLength; }
+		eReturnValues get_Log_Parsed(JSONNODE* masterData);
 
 	};
 #endif

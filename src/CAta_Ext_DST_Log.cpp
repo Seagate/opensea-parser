@@ -47,7 +47,7 @@ CAta_Ext_DST_Log::CAta_Ext_DST_Log(const std::string &fileName, JSONNODE *master
             if (IsScsiLogPage(idCheck->pageLength, idCheck->pageCode) == false)
             {
                 byte_Swap_16(&idCheck->pageLength);  // now that we know it's not scsi we need to flip the bytes back
-                m_status = parse_Ext_Self_Test_Log(masterData);
+                
             }
         }
         else
@@ -60,6 +60,7 @@ CAta_Ext_DST_Log::CAta_Ext_DST_Log(const std::string &fileName, JSONNODE *master
         m_status = eReturnValues::IN_PROGRESS;
         m_logSize = 0;
     }
+    m_status = eReturnValues::SUCCESS;
     delete (cCLog);
 }
 //-----------------------------------------------------------------------------

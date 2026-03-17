@@ -163,7 +163,7 @@ namespace opensea_parser {
         size_t                              m_deviceLogSize;                                            //!< Log size 
         sStatusResponse                     m_Response;                                                 //!< status response
 
-	eReturnValues ParseSCTDeviceStatLog(JSONNODE *masterData);
+	
         bool isBit63Set(uint64_t *value);
         bool isBit62Set(uint64_t *value);
         bool isBit61Set(uint64_t *value);
@@ -186,9 +186,10 @@ namespace opensea_parser {
     public:
 		explicit CAtaDeviceStatisticsLogs();
         CAtaDeviceStatisticsLogs(uint32_t logSize, JSONNODE *masterData, uint8_t *buffer);
-		CAtaDeviceStatisticsLogs(const std::string& fileName, JSONNODE* masterData);
+		CAtaDeviceStatisticsLogs(const std::string& fileName);
         virtual ~CAtaDeviceStatisticsLogs();
         eReturnValues get_Device_Stat_Status(){ return m_status; };
+		eReturnValues ParseSCTDeviceStatLog(JSONNODE* masterData);
     };
 #endif  //ATADEVICESTAT
 
