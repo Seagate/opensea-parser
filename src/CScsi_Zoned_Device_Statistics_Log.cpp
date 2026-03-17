@@ -2,7 +2,7 @@
 // CScsi_Zoned_Device_Statistics_Log.cpp  
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2026 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -30,7 +30,7 @@ using namespace opensea_parser;
 //
 //---------------------------------------------------------------------------
 CScsiZonedDeviceStatisticsLog::CScsiZonedDeviceStatisticsLog()
-    : pData()
+    : v_Buff()
     , m_ZDSName("Zoned Device Statistics Log")
     , m_ZDSStatus(eReturnValues::IN_PROGRESS)
     , m_PageLength(0)
@@ -60,7 +60,7 @@ CScsiZonedDeviceStatisticsLog::CScsiZonedDeviceStatisticsLog()
 //
 //---------------------------------------------------------------------------
 CScsiZonedDeviceStatisticsLog::CScsiZonedDeviceStatisticsLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength)
-    : pData(buffer)
+    : v_Buff()
     , m_ZDSName("Zoned Device Statistics Log")
     , m_ZDSStatus(eReturnValues::IN_PROGRESS)
     , m_PageLength(pageLength)
@@ -73,6 +73,15 @@ CScsiZonedDeviceStatisticsLog::CScsiZonedDeviceStatisticsLog(uint8_t * buffer, s
         printf("%s \n", m_ZDSName.c_str());
     }
     if (buffer != M_NULLPTR)
+    {
+        v_Buff.resize(m_PageLength);  // Resize vector before copying!
+        safe_memmove(v_Buff.data(), m_PageLength, buffer, m_PageLength);
+    }
+    else
+    {
+        m_ZDSStatus = eReturnValues::FAILURE;
+    }
+    if (v_Buff.size() != 0)                           // if the buffer is null then exit something did not go right
     {
         m_ZDSStatus = eReturnValues::IN_PROGRESS;
     }
@@ -274,7 +283,7 @@ void CScsiZonedDeviceStatisticsLog::process_Zoned_Device_Statistics_Data(JSONNOD
 eReturnValues CScsiZonedDeviceStatisticsLog::get_Zoned_Device_Statistics_Data(JSONNODE *masterData)
 {
     eReturnValues retStatus = eReturnValues::IN_PROGRESS;
-    if (pData != M_NULLPTR)
+    if (v_Buff.size() != 0)
     {
         JSONNODE *pageInfo = json_new(JSON_NODE);
         json_set_name(pageInfo, "Zoned Device Statistics Log - 14h");
@@ -283,7 +292,7 @@ eReturnValues CScsiZonedDeviceStatisticsLog::get_Zoned_Device_Statistics_Data(JS
         {
             if (offset < m_bufferLength && offset < UINT16_MAX)
             {
-                m_ZDSParam = reinterpret_cast<sZDSParams*>(&pData[offset]);
+                m_ZDSParam = reinterpret_cast<sZDSParams*>(&v_Buff.at(offset));
                 offset += sizeof(sZDSParams);
                 switch (m_ZDSParam->paramLength)
                 {
@@ -291,7 +300,7 @@ eReturnValues CScsiZonedDeviceStatisticsLog::get_Zoned_Device_Statistics_Data(JS
                 {
                     if ((offset + m_ZDSParam->paramLength) < m_bufferLength)
                     {
-                        m_ZDSValue = pData[offset];
+                        m_ZDSValue = v_Buff.at(offset);
                         offset += m_ZDSParam->paramLength;
                     }
                     else
@@ -305,7 +314,7 @@ eReturnValues CScsiZonedDeviceStatisticsLog::get_Zoned_Device_Statistics_Data(JS
                 {
                     if ((offset + m_ZDSParam->paramLength) < m_bufferLength)
                     {
-                        m_ZDSValue = M_BytesTo2ByteValue(pData[offset], pData[offset + 1]);
+                        m_ZDSValue = M_BytesTo2ByteValue(v_Buff.at(offset), v_Buff.at(offset + 1));
                         offset += m_ZDSParam->paramLength;
                     }
                     else
@@ -319,7 +328,7 @@ eReturnValues CScsiZonedDeviceStatisticsLog::get_Zoned_Device_Statistics_Data(JS
                 {
                     if ((offset + m_ZDSParam->paramLength) < m_bufferLength)
                     {
-                        m_ZDSValue = M_BytesTo4ByteValue(pData[offset], pData[offset + 1], pData[offset + 2], pData[offset + 3]);
+                        m_ZDSValue = M_BytesTo4ByteValue(v_Buff.at(offset), v_Buff.at(offset + 1), v_Buff.at(offset + 2), v_Buff.at(offset + 3));
                         offset += m_ZDSParam->paramLength;
                     }
                     else
@@ -333,7 +342,7 @@ eReturnValues CScsiZonedDeviceStatisticsLog::get_Zoned_Device_Statistics_Data(JS
                 {
                     if ((offset + m_ZDSParam->paramLength) < m_bufferLength)
                     {
-                        m_ZDSValue = M_BytesTo8ByteValue(pData[offset], pData[offset + 1], pData[offset + 2], pData[offset + 3], pData[offset + 4], pData[offset + 5], pData[offset + 6], pData[offset + 7]);
+                        m_ZDSValue = M_BytesTo8ByteValue(v_Buff.at(offset), v_Buff.at(offset + 1), v_Buff.at(offset + 2), v_Buff.at(offset + 3), v_Buff.at(offset + 4), v_Buff.at(offset + 5), v_Buff.at(offset + 6), v_Buff.at(offset + 7));
                         offset += m_ZDSParam->paramLength;
                     }
                     else

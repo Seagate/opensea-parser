@@ -2,7 +2,7 @@
 // CScsi_Factory_Log.cpp  Definition of Factory Log page for SAS
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2026 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -30,7 +30,7 @@ using namespace opensea_parser;
 //
 //---------------------------------------------------------------------------
 CScsiFactoryLog::CScsiFactoryLog()
-    : pData()
+    : v_Buff()
     , m_FactoryName("Factory Log Page")
     , m_FactoryStatus(eReturnValues::IN_PROGRESS)
     , m_PageLength(0)
@@ -59,7 +59,7 @@ CScsiFactoryLog::CScsiFactoryLog()
 //
 //---------------------------------------------------------------------------
 CScsiFactoryLog::CScsiFactoryLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength)
-    : pData(buffer)
+    : v_Buff()
     , m_FactoryName("Factory Log Page")
     , m_FactoryStatus(eReturnValues::IN_PROGRESS)
     , m_PageLength(pageLength)
@@ -72,6 +72,15 @@ CScsiFactoryLog::CScsiFactoryLog(uint8_t * buffer, size_t bufferSize, uint16_t p
         printf("%s \n", m_FactoryName.c_str());
     }
     if (buffer != M_NULLPTR)
+    { 
+        v_Buff.resize(pageLength);  // Resize vector before copying!
+        safe_memmove(v_Buff.data(), pageLength, buffer, pageLength);
+    }
+    else
+    {
+        m_FactoryStatus = eReturnValues::FAILURE;
+    }
+    if (v_Buff.size() != 0)                           // if the buffer is null then exit something did not go right
     {
         m_FactoryStatus = eReturnValues::IN_PROGRESS;
     }
@@ -167,7 +176,7 @@ void CScsiFactoryLog::process_Factorty_Data(JSONNODE *factoryData)
 eReturnValues CScsiFactoryLog::get_Factory_Data(JSONNODE *masterData)
 {
     eReturnValues retStatus = eReturnValues::IN_PROGRESS;
-    if (pData != M_NULLPTR)
+    if (v_Buff.size() != 0)
     {
         JSONNODE *pageInfo = json_new(JSON_NODE);
         json_set_name(pageInfo, "Factory Log - 3Eh");
@@ -176,7 +185,7 @@ eReturnValues CScsiFactoryLog::get_Factory_Data(JSONNODE *masterData)
         {
             if (offset < m_bufferLength && offset < UINT16_MAX)
             {
-                m_factory = reinterpret_cast<sLogParams*>(&pData[offset]);
+                m_factory = reinterpret_cast<sLogParams*>(&v_Buff.at(offset));
                 offset += LOGPAGESIZE;
                 switch (m_factory->paramLength)
                 {
@@ -184,7 +193,7 @@ eReturnValues CScsiFactoryLog::get_Factory_Data(JSONNODE *masterData)
                 {
                     if ((offset + m_factory->paramLength) <= m_bufferLength)
                     {
-                        m_Value = pData[offset];
+                        m_Value = v_Buff.at(offset);
                         offset += m_factory->paramLength;
                     }
                     else
@@ -198,7 +207,7 @@ eReturnValues CScsiFactoryLog::get_Factory_Data(JSONNODE *masterData)
                 {
                     if ((offset + m_factory->paramLength) <= m_bufferLength)
                     {
-                        m_Value = M_BytesTo2ByteValue(pData[offset], pData[offset + 1]);
+                        m_Value = M_BytesTo2ByteValue(v_Buff.at(offset), v_Buff.at(offset + 1));
                         offset += m_factory->paramLength;
                     }
                     else
@@ -212,7 +221,7 @@ eReturnValues CScsiFactoryLog::get_Factory_Data(JSONNODE *masterData)
                 {
                     if ((offset + m_factory->paramLength) <= m_bufferLength)
                     {
-                        m_Value = M_BytesTo4ByteValue(pData[offset], pData[offset + 1], pData[offset + 2], pData[offset + 3]);
+                        m_Value = M_BytesTo4ByteValue(v_Buff.at(offset), v_Buff.at(offset + 1), v_Buff.at(offset + 2), v_Buff.at(offset + 3));
                         offset += m_factory->paramLength;
                     }
                     else
@@ -226,7 +235,7 @@ eReturnValues CScsiFactoryLog::get_Factory_Data(JSONNODE *masterData)
                 {
                     if ((offset + m_factory->paramLength) <= m_bufferLength)
                     {
-                        m_Value = M_BytesTo8ByteValue(pData[offset], pData[offset + 1], pData[offset + 2], pData[offset + 3], pData[offset + 4], pData[offset + 5], pData[offset + 6], pData[offset + 7]);
+                        m_Value = M_BytesTo8ByteValue(v_Buff.at(offset), v_Buff.at(offset + 1), v_Buff.at(offset + 2), v_Buff.at(offset + 3), v_Buff.at(offset + 4), v_Buff.at(offset + 5), v_Buff.at(offset + 6), v_Buff.at(offset + 7));
                         offset += m_factory->paramLength;
                     }
                     else

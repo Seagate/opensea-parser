@@ -2,7 +2,7 @@
 // CAta_NCQ_Command_Error_Log.cpp
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2026 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -51,20 +51,17 @@ CAta_NCQ_Command_Error_Log::CAta_NCQ_Command_Error_Log(const std::string & fileN
     , m_status(eReturnValues::IN_PROGRESS)
 {
 	CLog *cCLog;
-	cCLog = new CLog(fileName);
+	cCLog = new CLog(fileName,true);
 	if (cCLog->get_Log_Status() == eReturnValues::SUCCESS)
 	{
-		if (cCLog->get_Buffer() != M_NULLPTR)
-		{
+        std::vector<uint8_t> v_Buff;
+        cCLog->get_vBuffer(v_Buff);
+        if (v_Buff.size() != 0)                           // if the buffer is null then exit something did not go right
+        {
 			size_t logSize = cCLog->get_Size();
-			uint8_t *pBuf = new uint8_t[logSize];								// new a buffer to the point				
-#ifndef __STDC_SECURE_LIB__
-			memcpy(pBuf, cCLog->get_Buffer(), logSize);
-#else
-			memcpy_s(pBuf, logSize, cCLog->get_Buffer(), logSize);// copy the buffer data to the class member pBuf
-#endif
+
 			sLogPageStruct *idCheck;
-			idCheck = reinterpret_cast<sLogPageStruct*>(&pBuf[0]);
+			idCheck = reinterpret_cast<sLogPageStruct*>(&v_Buff.at(0));
 			byte_Swap_16(&idCheck->pageLength);
 			if (IsScsiLogPage(idCheck->pageLength, idCheck->pageCode) == false)
 			{
@@ -72,7 +69,7 @@ CAta_NCQ_Command_Error_Log::CAta_NCQ_Command_Error_Log(const std::string & fileN
                 sNCQError* pNCQError;
                 for (size_t offset = 0; offset <= logSize;)
                 {
-                    pNCQError = reinterpret_cast<sNCQError*>(&pBuf[offset]);
+                    pNCQError = reinterpret_cast<sNCQError*>(&v_Buff.at(offset));
                     vNCQFrame.push_back(*pNCQError);
                     offset += sizeof(sNCQError);
                     pNCQError = M_NULLPTR;
@@ -83,7 +80,6 @@ CAta_NCQ_Command_Error_Log::CAta_NCQ_Command_Error_Log(const std::string & fileN
 			{
 				m_status = eReturnValues::BAD_PARAMETER;
 			}
-            delete [] pBuf;
 		}
 		else
 		{

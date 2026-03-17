@@ -1,7 +1,7 @@
 // CScsi_Pending_Defects_Log..cpp  Definition for parsing the pending defecs
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2026 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -30,7 +30,7 @@ using namespace opensea_parser;
 //
 //---------------------------------------------------------------------------
 CScsiPendingDefectsLog::CScsiPendingDefectsLog()
-	: pData()
+	: v_Buff()
 	, m_PlistName("Pending Defect Log")
 	, m_PlistStatus(eReturnValues::IN_PROGRESS)
 	, m_PageLength(0)
@@ -59,8 +59,8 @@ CScsiPendingDefectsLog::CScsiPendingDefectsLog()
 //  Exit:
 //
 //---------------------------------------------------------------------------
-CScsiPendingDefectsLog::CScsiPendingDefectsLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength)
-	: pData(M_NULLPTR)
+CScsiPendingDefectsLog::CScsiPendingDefectsLog(uint8_t *buffer, size_t bufferSize, uint16_t pageLength)
+	: v_Buff()
 	, m_PlistName("Pending Defect Log")
 	, m_PlistStatus(eReturnValues::IN_PROGRESS)
 	, m_PageLength(pageLength)
@@ -73,13 +73,16 @@ CScsiPendingDefectsLog::CScsiPendingDefectsLog(uint8_t * buffer, size_t bufferSi
 	{
 		printf("%s \n", m_PlistName.c_str());
 	}
-    pData = new uint8_t[pageLength];								// new a buffer to the point				
-#ifndef __STDC_SECURE_LIB__
-    memcpy(pData, buffer, pageLength);
-#else
-    memcpy_s(pData, pageLength, buffer, pageLength);// copy the buffer data to the class member pBuf
-#endif
-	if (pData != M_NULLPTR)
+	if (buffer != M_NULLPTR)
+	{
+		v_Buff.resize(pageLength);  // Resize vector before copying!
+		safe_memmove(v_Buff.data(), pageLength, buffer, pageLength);
+	}
+	else
+	{
+		m_PlistStatus = eReturnValues::FAILURE;
+	}
+	if (v_Buff.size() != 0)                           // if the buffer is null then exit something did not go right
 	{
 		m_PlistStatus = eReturnValues::IN_PROGRESS;
 	}
@@ -106,11 +109,7 @@ CScsiPendingDefectsLog::CScsiPendingDefectsLog(uint8_t * buffer, size_t bufferSi
 //---------------------------------------------------------------------------
 CScsiPendingDefectsLog::~CScsiPendingDefectsLog()
 {
-    if (pData != M_NULLPTR)
-    {
-        delete[] pData;
-        pData = M_NULLPTR;
-    }
+
 }
 //-----------------------------------------------------------------------------
 //
@@ -212,11 +211,11 @@ void CScsiPendingDefectsLog::process_PList_Count(JSONNODE *pendingCount)
 eReturnValues CScsiPendingDefectsLog::get_Plist_Data(JSONNODE *masterData)
 {
 	eReturnValues retStatus = eReturnValues::IN_PROGRESS;
-	if (pData != NULL)
+	if (v_Buff.size() != 0)
 	{
 		JSONNODE *pageInfo = json_new(JSON_NODE);
 		json_set_name(pageInfo, "Pending Defect Log - 15h");
-		m_PListCountParam = reinterpret_cast<sPendindDefectCount *>(pData);
+		m_PListCountParam = reinterpret_cast<sPendindDefectCount *>(v_Buff.data());
 		process_PList_Count(pageInfo);
 		if (static_cast<size_t>(m_PageLength) > sizeof(sPendindDefectCount))    // for when there is zero count defects
 		{
@@ -224,7 +223,7 @@ eReturnValues CScsiPendingDefectsLog::get_Plist_Data(JSONNODE *masterData)
 			{
 				if (offset < (m_bufferLength - sizeof(sLogPageStruct)))
 				{
-					m_PlistDefect = reinterpret_cast<sDefect *>(&pData[offset]);
+					m_PlistDefect = reinterpret_cast<sDefect *>(&v_Buff.at(offset));
 					offset += sizeof(sDefect);
 					m_count++;    // defect found add one to the count
 					process_PList_Data(pageInfo);

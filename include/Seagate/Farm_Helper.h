@@ -3,7 +3,7 @@
 //
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2026 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -21,6 +21,7 @@
 #include "Opensea_Parser_Helper.h"
 #include <sstream>
 #include <iomanip>
+#include <cmath>
 
 
 namespace opensea_parser {
@@ -47,6 +48,7 @@ namespace opensea_parser {
 	//-----------------------------------------------------------------------------
 	inline void set_json_64_bit_With_Status(JSONNODE *nowNode, const std::string & header, uint64_t value, bool hexPrint, bool showStatusBits)
 	{
+		if (nowNode == M_NULLPTR) return;  // check for NULL
 		std::string myStr = header;
 		if (g_convertHeaderToLowercase)
 		{
@@ -113,6 +115,7 @@ namespace opensea_parser {
 	//-----------------------------------------------------------------------------
 	inline void set_json_int_With_Status(JSONNODE *nowNode, const std::string & header, int64_t value, bool showStatusBits)
 	{
+		if (nowNode == M_NULLPTR) return;  // check for NULL
 		std::string myStr = header;
 		if (g_convertHeaderToLowercase)
 		{
@@ -129,7 +132,6 @@ namespace opensea_parser {
 			set_Json_Bool(bigBit, "Field Supported", (value & BIT63) == BIT63);
 			set_Json_Bool(bigBit, "Field Valid", (value & BIT62) == BIT62);
 
-			//value = check_Status_Strip_Status(static_cast<uint64_t>(value));
 			int64_t reallo = check_for_signed_int(check_Status_Strip_Status(static_cast<uint64_t>(value)), 8);
 			json_push_back(bigBit, json_new_i(myStr.c_str(), reallo));
 			json_push_back(nowNode, bigBit);
@@ -142,7 +144,6 @@ namespace opensea_parser {
 			}
 			else
 			{
-				//value = check_Status_Strip_Status(static_cast<uint64_t>(value));
 				int64_t reallo = check_for_signed_int(check_Status_Strip_Status(static_cast<uint64_t>(value)), 8);
 				json_push_back(nowNode, json_new_i(myStr.c_str(), reallo));
 			}
@@ -168,7 +169,7 @@ namespace opensea_parser {
 	//-----------------------------------------------------------------------------
 	inline void set_json_string_With_Status(JSONNODE* nowNode, const std::string& header, const std::string& strValue, uint64_t value, bool showStatusBits)
 	{
-		if (!nowNode) return;  // check for NULL
+		if (nowNode == M_NULLPTR) return;  // check for NULL
 		std::string myStr = header;
 		if (g_convertHeaderToLowercase)
 		{
@@ -224,6 +225,7 @@ namespace opensea_parser {
 	//-----------------------------------------------------------------------------
 	inline void set_json_float_With_Status(JSONNODE* nowNode, const std::string& header, double value, uint64_t fullValue, bool showStatusBits)
 	{
+		if (nowNode == M_NULLPTR) return;  // check for NULL
 		std::string myStr = header;
 		if (g_convertHeaderToLowercase)
 		{
@@ -286,6 +288,7 @@ namespace opensea_parser {
 	//-----------------------------------------------------------------------------
 	inline void set_json_int_Check_Status(JSONNODE* nowNode, const std::string& header, long long value, uint64_t fullValue, bool showStatusBits)
 	{
+		if (nowNode == M_NULLPTR) return;  // check for NULL
 		std::string myStr = header;
 		if (g_convertHeaderToLowercase)
 		{
@@ -347,6 +350,7 @@ namespace opensea_parser {
 	//-----------------------------------------------------------------------------
 	inline void set_json_bool_With_Status(JSONNODE* nowNode, const std::string& header, uint64_t value, bool showStatusBits)
 	{
+		if (nowNode == M_NULLPTR) return;  // check for NULL
 		std::string myStr = header;
 		if (g_convertHeaderToLowercase)
 		{
@@ -391,6 +395,18 @@ namespace opensea_parser {
 			}
 		}
 	}
-
+	//-----------------------------------------------------------------------------
+	//! \brief Rounds a floating-point value to a specified number of decimal places.
+	// 
+	//! \tparam T Floating-point type (float or double)
+	//! \param value The value to round
+	//! \param places Number of decimal places to round to
+	//! \return Rounded value
+	//-----------------------------------------------------------------------------
+	inline double roundToDecimalPlaces(double value, int places) 
+	{
+		double multiplier = static_cast<double>(std::pow(10.0, static_cast<double>(places)));
+		return std::round(value * multiplier) / multiplier;
+	}
 #endif 
 }

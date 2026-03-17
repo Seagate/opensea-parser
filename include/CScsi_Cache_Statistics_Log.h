@@ -2,7 +2,7 @@
 //
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2026 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -12,6 +12,7 @@
 
 // \file CScsi_Cache_Statistics_Log.h  Definition of Cache Statistics page for SAS
 #pragma once
+#include <vector>
 #include <string>
 #include "common_types.h"
 #include "bit_manip.h"
@@ -36,7 +37,7 @@ namespace opensea_parser {
 	{
 	private:
 	protected:
-		uint8_t						*pData;						//<! pointer to the data
+		std::vector<uint8_t>        v_Buff;                     //<! vector for holding the buffer data
 		std::string					m_CacheName;				//<! class name	
 		eReturnValues				m_CacheStatus;			    //<! status of the class
 		uint16_t					m_PageLength;				//<! length of the page
@@ -49,7 +50,7 @@ namespace opensea_parser {
 		eReturnValues get_Cache_Data(JSONNODE *masterData);
 	public:
 		CScsiCacheLog();
-		CScsiCacheLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength);
+		explicit CScsiCacheLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength);
 		virtual ~CScsiCacheLog();
 		virtual eReturnValues get_Log_Status() { return m_CacheStatus; };
 		virtual eReturnValues parse_Cache_Statistics_Log(JSONNODE *masterData) { return get_Cache_Data(masterData); };

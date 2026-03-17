@@ -2,7 +2,7 @@
 // CScsiLog.cpp  Implementation of Base class CScsiLog
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2026 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -52,7 +52,7 @@ using namespace opensea_parser;
 //
 //---------------------------------------------------------------------------
 CScsiLog::CScsiLog()
-    : bufferData(M_NULLPTR)
+    : v_Buff()
     , m_LogSize(0)
     , m_name("SCSI Log")
     , m_ScsiStatus(eReturnValues::IN_PROGRESS)
@@ -73,8 +73,8 @@ CScsiLog::CScsiLog()
 //  Exit:
 //
 //---------------------------------------------------------------------------
-CScsiLog::CScsiLog(const std::string &fileName, JSONNODE *masterData)
-    : bufferData(M_NULLPTR)
+CScsiLog::CScsiLog(const std::string &fileName)
+    : v_Buff()
     , m_LogSize(0)
     , m_name("SCSI Log")
     , m_ScsiStatus(eReturnValues::IN_PROGRESS)
@@ -82,23 +82,17 @@ CScsiLog::CScsiLog(const std::string &fileName, JSONNODE *masterData)
 
 {
     CLog *cCLog;
-    cCLog = new CLog(fileName);
+    cCLog = new CLog(fileName,true);
     if (cCLog->get_Log_Status() == eReturnValues::SUCCESS)
     {
-        if (cCLog->get_Buffer() != M_NULLPTR)
-        {
-            m_LogSize = cCLog->get_Size();
-            bufferData = new uint8_t[m_LogSize];								// new a buffer to the point				
-#ifndef __STDC_SECURE_LIB__
-            memcpy(bufferData, cCLog->get_Buffer(), m_LogSize);
-#else
-            memcpy_s(bufferData, m_LogSize, cCLog->get_Buffer(), m_LogSize);// copy the buffer data to the class member pBuf
-#endif
-            m_ScsiStatus = get_Log_Parsed(masterData);							// init the data for getting the log
+		cCLog->get_vBuffer(v_Buff);
+		if (v_Buff.size() != 0)                           // if the buffer is null then exit something did not go right
+		{
+			m_LogSize = static_cast<uint64_t>(v_Buff.size());
+			m_ScsiStatus = eReturnValues::SUCCESS;
         }
         else
         {
-
             m_ScsiStatus = eReturnValues::FAILURE;
         }
     }
@@ -106,6 +100,7 @@ CScsiLog::CScsiLog(const std::string &fileName, JSONNODE *masterData)
     {
         m_ScsiStatus = cCLog->get_Log_Status();
     }
+	m_ScsiStatus = eReturnValues::SUCCESS;
     delete (cCLog);
 }
 
@@ -125,10 +120,7 @@ CScsiLog::CScsiLog(const std::string &fileName, JSONNODE *masterData)
 //---------------------------------------------------------------------------
 CScsiLog::~CScsiLog()
 {
-    if (bufferData != M_NULLPTR)
-    {
-        delete[] bufferData;
-    }
+
 }
 //-----------------------------------------------------------------------------
 //
@@ -147,12 +139,12 @@ CScsiLog::~CScsiLog()
 eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 {
 	eReturnValues retStatus = eReturnValues::IN_PROGRESS;
-	if (bufferData != M_NULLPTR)
+	if (v_Buff.size() != 0)
 	{
 		sLogPageStruct myStr;
 		sLogPageStruct* lpStruct = &myStr;
 
-		lpStruct = reinterpret_cast<sLogPageStruct *>(bufferData);				// set a buffer to the point to the log page info
+		lpStruct = reinterpret_cast<sLogPageStruct *>(v_Buff.data());				// set a buffer to the point to the log page info
 		byte_Swap_16(&lpStruct->pageLength);
 		if (IsScsiLogPage(lpStruct->pageLength, get_bit_range_int8(lpStruct->pageCode, 5, 0)) == true)
 		{
@@ -167,11 +159,11 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				CScsiSupportedLog *cSupport;
 				if (lpStruct->subPage == 00)
 				{
-					cSupport = new CScsiSupportedLog(&bufferData[4], m_LogSize, lpStruct->pageLength, false);
+					cSupport = new CScsiSupportedLog(&v_Buff.at(4), m_LogSize, lpStruct->pageLength, false);
 				}
 				else
 				{
-					cSupport = new CScsiSupportedLog(&bufferData[4], m_LogSize, lpStruct->pageLength, true);
+					cSupport = new CScsiSupportedLog(&v_Buff.at(4), m_LogSize, lpStruct->pageLength, true);
 				}
 				retStatus = cSupport->get_Log_Status();
 				if (retStatus == eReturnValues::IN_PROGRESS)
@@ -204,7 +196,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 					std::cout << "Write Error Counter Log Pages Found" << std::endl;
 				}
 				CScsiErrorCounterLog *cWriteError;
-				cWriteError = new CScsiErrorCounterLog(&bufferData[4], m_LogSize, lpStruct->pageLength, lpStruct->pageCode);
+				cWriteError = new CScsiErrorCounterLog(&v_Buff.at(4), m_LogSize, lpStruct->pageLength, lpStruct->pageCode);
 				retStatus = cWriteError->get_Log_Status();
 				if (retStatus == eReturnValues::IN_PROGRESS)
 				{
@@ -236,7 +228,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 					std::cout << "Read Error Counter Log Pages Found" << std::endl;
 				}
 				CScsiErrorCounterLog *cReadError;
-				cReadError = new CScsiErrorCounterLog(&bufferData[4], m_LogSize, lpStruct->pageLength, lpStruct->pageCode);
+				cReadError = new CScsiErrorCounterLog(&v_Buff.at(4), m_LogSize, lpStruct->pageLength, lpStruct->pageCode);
 				retStatus = cReadError->get_Log_Status();
 				if (retStatus == eReturnValues::IN_PROGRESS)
 				{
@@ -268,7 +260,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 					std::cout << "Verify Error Counter Log Pages Found" << std::endl;
 				}
 				CScsiErrorCounterLog *cVerifyError;
-				cVerifyError = new CScsiErrorCounterLog(&bufferData[4], m_LogSize, lpStruct->pageLength, lpStruct->pageCode);
+				cVerifyError = new CScsiErrorCounterLog(&v_Buff.at(4), m_LogSize, lpStruct->pageLength, lpStruct->pageCode);
 				retStatus = cVerifyError->get_Log_Status();
 				if (retStatus == eReturnValues::IN_PROGRESS)
 				{
@@ -300,7 +292,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 					std::cout << "Non-Medium Error Log Pages Found" << std::endl;
 				}
 				CScsiNonMediumErrorCountLog *cNonMedium;
-				cNonMedium = new CScsiNonMediumErrorCountLog(&bufferData[4], m_LogSize, lpStruct->pageLength);
+				cNonMedium = new CScsiNonMediumErrorCountLog(&v_Buff.at(4), m_LogSize, lpStruct->pageLength);
 				retStatus = cNonMedium->get_Log_Status();
 				if (retStatus == eReturnValues::IN_PROGRESS)
 				{
@@ -333,7 +325,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				}
 
 				CScsiFormatStatusLog *cFormat;
-				cFormat = new CScsiFormatStatusLog(&bufferData[4], m_LogSize, lpStruct->pageLength);
+				cFormat = new CScsiFormatStatusLog(&v_Buff.at(4), m_LogSize, lpStruct->pageLength);
 				retStatus = cFormat->get_Log_Status();
 				if (retStatus == eReturnValues::IN_PROGRESS)
 				{
@@ -365,7 +357,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 					std::cout << "Logical Block Provisioning Log Pages Found" << std::endl;
 				}
 				CScsiLBAProvisionLog *cLBA;
-				cLBA = new CScsiLBAProvisionLog(&bufferData[4], m_LogSize, lpStruct->pageLength);
+				cLBA = new CScsiLBAProvisionLog(&v_Buff.at(4), m_LogSize, lpStruct->pageLength);
 				retStatus = cLBA->get_Log_Status();
 				if (retStatus == eReturnValues::IN_PROGRESS)
 				{
@@ -397,7 +389,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 					std::cout << "Environmental Log Found" << std::endl;
 				}
 				CScsiEnvironmentLog *cEPA;
-				cEPA = new CScsiEnvironmentLog(bufferData, m_LogSize, lpStruct->subPage, masterData);
+				cEPA = new CScsiEnvironmentLog(v_Buff.data(), m_LogSize, lpStruct->subPage, masterData);
 				retStatus = cEPA->get_Log_Status();
 				delete (cEPA);
 			}
@@ -409,7 +401,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 					std::cout << "Start Stop Cycle Log Found" << std::endl;
 				}
 				CScsiStartStop *cSS;
-				cSS = new CScsiStartStop(&bufferData[4], lpStruct->pageLength, masterData);
+				cSS = new CScsiStartStop(&v_Buff.at(4), lpStruct->pageLength, masterData);
 				retStatus = cSS->get_Log_Status();
 				delete(cSS);
 			}
@@ -421,7 +413,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 					std::cout << "Application Client Log Pages Found" << std::endl;
 				}
 				CScsiApplicationLog *cApplicationClient;
-				cApplicationClient = new CScsiApplicationLog(&bufferData[4], m_LogSize, lpStruct->pageLength);
+				cApplicationClient = new CScsiApplicationLog(&v_Buff.at(4), m_LogSize, lpStruct->pageLength);
 				retStatus = cApplicationClient->get_Log_Status();
 				if (retStatus == eReturnValues::IN_PROGRESS)
 				{
@@ -453,7 +445,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 					std::cout << "Self Test Log Found" << std::endl;
 				}
 				CScsi_DST_Results *cSelfTest;
-				cSelfTest = new CScsi_DST_Results(&bufferData[4], m_LogSize, masterData);
+				cSelfTest = new CScsi_DST_Results(&v_Buff.at(4), m_LogSize, masterData);
 				retStatus = cSelfTest->get_Log_Status();
 				delete(cSelfTest);
 			}
@@ -465,7 +457,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
                     std::cout << "Solid State Drive Log Pages Found" << std::endl;
                 }
                 CScsiSolidStateDriveLog *cSSD;
-                cSSD = new CScsiSolidStateDriveLog(&bufferData[4], m_LogSize, lpStruct->pageLength);
+                cSSD = new CScsiSolidStateDriveLog(&v_Buff.at(4), m_LogSize, lpStruct->pageLength);
                 retStatus = cSSD->get_Solid_State_Drive_Log_Status();
                 if (retStatus == eReturnValues::IN_PROGRESS)
                 {
@@ -497,7 +489,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
                     std::cout << "Zoned Device Statistics Log Pages Found" << std::endl;
                 }
                 CScsiZonedDeviceStatisticsLog *cZDS;
-                cZDS = new CScsiZonedDeviceStatisticsLog(&bufferData[4], m_LogSize, lpStruct->pageLength);
+                cZDS = new CScsiZonedDeviceStatisticsLog(&v_Buff.at(4), m_LogSize, lpStruct->pageLength);
                 retStatus = cZDS->get_Zoned_Device_Statistics_Log_Status();
                 if (retStatus == eReturnValues::IN_PROGRESS)
                 {
@@ -527,7 +519,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				if (lpStruct->subPage == 0x00)        // Background Scan
 				{
 					CScsiScanLog *cScan;
-					cScan = new CScsiScanLog(&bufferData[4], m_LogSize, lpStruct->pageLength);
+					cScan = new CScsiScanLog(&v_Buff.at(4), m_LogSize, lpStruct->pageLength);
 					retStatus = cScan->get_Log_Status();
 					if (retStatus == eReturnValues::IN_PROGRESS)
 					{
@@ -554,7 +546,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				else if (lpStruct->subPage == 0x01)   // Pending Defects log
 				{
 					CScsiPendingDefectsLog *cPlist;
-					cPlist = new CScsiPendingDefectsLog(&bufferData[4], m_LogSize, lpStruct->pageLength);
+					cPlist = new CScsiPendingDefectsLog(&v_Buff.at(4), m_LogSize, lpStruct->pageLength);
 					retStatus = cPlist->get_Log_Status();
 					if (retStatus == eReturnValues::IN_PROGRESS)
 					{
@@ -581,7 +573,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				else if (lpStruct->subPage == 0x02)   // Background Operation
 				{
 					CScsiOperationLog *cOperation;
-					cOperation = new CScsiOperationLog(&bufferData[4], m_LogSize, lpStruct->pageLength);
+					cOperation = new CScsiOperationLog(&v_Buff.at(4), m_LogSize, lpStruct->pageLength);
 					retStatus = cOperation->get_Log_Status();
 					if (retStatus == eReturnValues::IN_PROGRESS)
 					{
@@ -615,8 +607,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 					std::cout << "Protocol Specific Port Log Pages Found" << std::endl;
 				}
 				CScsiProtocolPortLog * cPSP;
-				cPSP = new CScsiProtocolPortLog(&bufferData[4], m_LogSize);
-				//uint16_t l_pageLength = *(reinterpret_cast<uint16_t*>(&bufferData[2]));
+				cPSP = new CScsiProtocolPortLog(&v_Buff.at(4), m_LogSize, lpStruct->pageLength);
 				retStatus = cPSP->get_Log_Status();
 				if (retStatus == eReturnValues::IN_PROGRESS)
 				{
@@ -651,7 +642,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 						std::cout << "Cache Memory Statisitics Log Page Found" << std::endl;
 					}
 					CScsiCacheMemStatLog* cCacheLog;
-					cCacheLog = new CScsiCacheMemStatLog(&bufferData[4], m_LogSize, lpStruct->pageLength);
+					cCacheLog = new CScsiCacheMemStatLog(&v_Buff.at(4), m_LogSize, lpStruct->pageLength);
 					retStatus = cCacheLog->get_Cache_Memory_Statistics_Log_Status();
 					if (retStatus == eReturnValues::IN_PROGRESS)
 					{
@@ -682,7 +673,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 						std::cout << "Command Duration Limits Statisitics Log Found" << std::endl;
 					}
 					CScsiCmdDurationLimitsLog* cLimitsLog;
-					cLimitsLog = new CScsiCmdDurationLimitsLog(&bufferData[4], m_LogSize, lpStruct->pageLength);
+					cLimitsLog = new CScsiCmdDurationLimitsLog(&v_Buff.at(4), m_LogSize, lpStruct->pageLength);
 					retStatus = cLimitsLog->get_Limits_Log_Status();
 					if (retStatus == eReturnValues::IN_PROGRESS)
 					{
@@ -715,7 +706,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 					std::cout << "Power Condition Transitions Log Pages Found" << std::endl;
 				}
 				CScsiPowerConditiontLog *cPower;
-				cPower = new CScsiPowerConditiontLog(&bufferData[4], m_LogSize, lpStruct->pageLength);
+				cPower = new CScsiPowerConditiontLog(&v_Buff.at(4), m_LogSize, lpStruct->pageLength);
 				retStatus = cPower->get_Log_Status();
 				if (retStatus == eReturnValues::IN_PROGRESS)
 				{
@@ -747,7 +738,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 					std::cout << "Informational Exceptions Log Pages Found" << std::endl;
 				}
 				CScsiInformationalExeptionsLog *cInfo;
-				cInfo = new CScsiInformationalExeptionsLog(&bufferData[4], m_LogSize, lpStruct->pageLength);
+				cInfo = new CScsiInformationalExeptionsLog(&v_Buff.at(4), m_LogSize, lpStruct->pageLength);
 				retStatus = cInfo->get_Log_Status();
 				if (retStatus == eReturnValues::IN_PROGRESS)
 				{
@@ -779,7 +770,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 					std::cout << "Cache Statistics Log Pages Found" << std::endl;
 				}
 				CScsiCacheLog *cCache;
-				cCache = new CScsiCacheLog(&bufferData[4], m_LogSize, lpStruct->pageLength);
+				cCache = new CScsiCacheLog(&v_Buff.at(4), m_LogSize, lpStruct->pageLength);
 				if (cCache->get_Log_Status() == eReturnValues::SUCCESS)
 				{
 					try
@@ -808,7 +799,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				if (lpStruct->subPage == FARM_LOG_PAGE)   // Farm Log
 				{
 					CSCSI_Farm_Log* pCFarm;
-					pCFarm = new CSCSI_Farm_Log(bufferData, (static_cast<size_t>(lpStruct->pageLength) + sizeof(sLogPageStruct)), lpStruct->subPage,false,false);
+					pCFarm = new CSCSI_Farm_Log(v_Buff, (static_cast<size_t>(lpStruct->pageLength) + sizeof(sLogPageStruct)), lpStruct->subPage, false, false);
 					if (pCFarm->get_Log_Status() == eReturnValues::SUCCESS)
 					{
 						try
@@ -835,7 +826,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				else if (lpStruct->subPage == FARM_FACTORY_LOG_PAGE)   // Farm Log
 				{
 					CSCSI_Farm_Log* pCFarm;
-					pCFarm = new CSCSI_Farm_Log(bufferData, (static_cast<size_t>(lpStruct->pageLength) + sizeof(sLogPageStruct)), lpStruct->subPage,false,false);
+					pCFarm = new CSCSI_Farm_Log(v_Buff, (static_cast<size_t>(lpStruct->pageLength) + sizeof(sLogPageStruct)), lpStruct->subPage,false,false);
 					if (pCFarm->get_Log_Status() == eReturnValues::SUCCESS)
 					{
 						try
@@ -862,7 +853,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 				else if (lpStruct->subPage >= FARM_TIME_SERIES_0 && lpStruct->subPage <= FARM_TEMP_TRIGGER_LOG_PAGE)   // FARM log when Temperature exceeds 70 c
 				{
 					CSCSI_Farm_Log* pCFarm;
-					pCFarm = new CSCSI_Farm_Log(bufferData, (static_cast<size_t>(lpStruct->pageLength) + sizeof(sLogPageStruct)), lpStruct->subPage,false,false);  // issue with the log bufer size
+					pCFarm = new CSCSI_Farm_Log(v_Buff, (static_cast<size_t>(lpStruct->pageLength) + sizeof(sLogPageStruct)), lpStruct->subPage,false,false);  // issue with the log bufer size
 					if (pCFarm->get_Log_Status() == eReturnValues::SUCCESS)
 					{
 						retStatus = pCFarm->get_Log_Status();
@@ -899,7 +890,7 @@ eReturnValues CScsiLog::get_Log_Parsed(JSONNODE *masterData)
 					std::cout << "Factory Log Pages Found" << std::endl;
 				}
 				CScsiFactoryLog *cFactory;
-				cFactory = new CScsiFactoryLog(&bufferData[4], m_LogSize, lpStruct->pageLength);
+				cFactory = new CScsiFactoryLog(&v_Buff.at(4), m_LogSize, lpStruct->pageLength);
 				retStatus = cFactory->get_Log_Status();
 				if (retStatus == eReturnValues::IN_PROGRESS)
 				{

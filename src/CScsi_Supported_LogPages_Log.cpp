@@ -2,7 +2,7 @@
 // CScsi_Supported_LogPages_Log.cpp Definition for parsing the supported log pages 
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2026 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -30,7 +30,7 @@ using namespace opensea_parser;
 //
 //---------------------------------------------------------------------------
 CScsiSupportedLog::CScsiSupportedLog()
-	: pData()
+	: v_Buff()
 	, m_SupportedName("Supported Log Pages Logs")
 	, m_SupportedStatus(eReturnValues::IN_PROGRESS)
 	, m_PageLength(0)
@@ -62,7 +62,7 @@ CScsiSupportedLog::CScsiSupportedLog()
 //
 //---------------------------------------------------------------------------
 CScsiSupportedLog::CScsiSupportedLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength, bool subPage)
-	: pData(buffer)
+	: v_Buff()
 	, m_SupportedName("Supported Log Pages Logs")
 	, m_SupportedStatus(eReturnValues::IN_PROGRESS)
 	, m_PageLength(pageLength)
@@ -77,6 +77,15 @@ CScsiSupportedLog::CScsiSupportedLog(uint8_t * buffer, size_t bufferSize, uint16
 		printf("%s \n", m_SupportedName.c_str());
 	}
 	if (buffer != M_NULLPTR)
+	{
+		v_Buff.resize(m_PageLength);  // Resize vector before copying!
+		safe_memmove(v_Buff.data(), m_PageLength, buffer, m_PageLength);
+	}
+	else
+	{
+		m_SupportedStatus = eReturnValues::FAILURE;
+	}
+	if (v_Buff.size() != 0)                           // if the buffer is null then exit something did not go right
 	{
 		m_SupportedStatus = eReturnValues::IN_PROGRESS;
 	}
@@ -306,7 +315,7 @@ void CScsiSupportedLog::process_Supported_Data(JSONNODE *SupportData)
 eReturnValues CScsiSupportedLog::get_Supported_Log_Data(JSONNODE *masterData)
 {
 	eReturnValues retStatus = eReturnValues::IN_PROGRESS;
-	if (pData != M_NULLPTR)
+	if (v_Buff.size() != 0)
 	{
 		JSONNODE *pageInfo = json_new(JSON_NODE);
 		json_set_name(pageInfo, "Supported Logs");
@@ -315,11 +324,11 @@ eReturnValues CScsiSupportedLog::get_Supported_Log_Data(JSONNODE *masterData)
 		{
 			if (offset < m_bufferLength )
 			{
-				m_Page = static_cast<uint8_t>(pData[offset]);
+				m_Page = static_cast<uint8_t>(v_Buff.at(offset));
 				offset++;
 				if (m_ShowSubPage && (offset +1 ) < m_bufferLength)
 				{
-					m_SubPage = static_cast<uint8_t>(pData[offset]);
+					m_SubPage = static_cast<uint8_t>(v_Buff.at(offset));
 					offset++;
 				}
                 if ((m_Page != 0 || m_SubPage != 0) )

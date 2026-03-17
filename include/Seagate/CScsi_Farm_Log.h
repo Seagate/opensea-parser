@@ -3,7 +3,7 @@
 //
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2026 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -44,7 +44,7 @@ namespace opensea_parser {
         uint32_t                    m_copies;                                         //!< Number of Historical Copies
         uint32_t                    m_MajorRev;                                       //!< holds the Major Revision number
 		uint32_t					m_MinorRev;										  //!< minor rev saved off to pick up the changes in the spec
-        uint8_t                     *pBuf;                                            //!< pointer to the buffer data that is the binary of FARM LOG
+        std::vector<uint8_t>        v_Buff;                                           //<! vector for holding the buffer data
         eReturnValues               m_status;                                         //!< status of the class	
         sLogPageStruct              *m_logParam;                                      //!< pointer to the log page param for all of the log
         sLogParams                  *m_pageParam;                                     //!< pointer to the page parameters 
@@ -91,13 +91,12 @@ namespace opensea_parser {
   
     public:
         CSCSI_Farm_Log();
-        CSCSI_Farm_Log(uint8_t* bufferData, size_t bufferSize, uint8_t subPage, bool m_fromScsiLogPages, bool showStatic);
-        CSCSI_Farm_Log(uint8_t *bufferData, size_t bufferSize, uint8_t subpage, bool m_fromScsiLogPages, bool showStatus, bool showStatic);
+        CSCSI_Farm_Log(std::vector<uint8_t>& buffer, size_t bufferSize, uint8_t subPage, bool m_fromScsiLogPages, bool showStatic);
+        explicit CSCSI_Farm_Log(std::vector<uint8_t>& buffer, size_t bufferSize, uint8_t subPage, bool m_fromScsiLogPages, bool showStatus, bool showStatic);
         virtual ~CSCSI_Farm_Log();
         bool strip_Active_Status(uint64_t* value);
         eReturnValues parse_Farm_Log();
         void print_All_Pages(JSONNODE *masterData);
-        //void print_Page(JSONNODE *masterData, uint32_t page);
         void print_Page_One_Node(JSONNODE *masterData);
         void print_Page_Without_Drive_Info(JSONNODE *masterData, uint32_t page);
         virtual eReturnValues get_Log_Status(){ return m_status; };

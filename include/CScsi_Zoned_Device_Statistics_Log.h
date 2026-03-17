@@ -2,7 +2,7 @@
 //
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2026 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -13,6 +13,7 @@
 // \file CScsi_Zoned_Device_Statistics_Log.h  Definition of Zoned Device Statistics Log
 #pragma once
 #include <string>
+#include <vector>
 #include "common_types.h"
 #include "libjson.h"
 #include "Opensea_Parser_Helper.h"
@@ -35,7 +36,7 @@ namespace opensea_parser {
     {
     private:
     protected:
-        uint8_t						*pData;					//<! pointer to the data
+        std::vector<uint8_t>        v_Buff;                 //<! vector for holding the buffer data
         std::string					m_ZDSName;				//<! class name	
         eReturnValues				m_ZDSStatus;			//<! status of the class
         uint16_t					m_PageLength;			//<! length of the page
@@ -48,7 +49,7 @@ namespace opensea_parser {
         eReturnValues get_Zoned_Device_Statistics_Data(JSONNODE *masterData);
     public:
         CScsiZonedDeviceStatisticsLog();
-        CScsiZonedDeviceStatisticsLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength);
+        explicit CScsiZonedDeviceStatisticsLog(uint8_t *buffer, size_t bufferSize, uint16_t pageLength);
         virtual ~CScsiZonedDeviceStatisticsLog();
         virtual eReturnValues get_Zoned_Device_Statistics_Log_Status() { return m_ZDSStatus; };
         virtual eReturnValues parse_Zoned_Device_Statistics_Log(JSONNODE *masterData) { return get_Zoned_Device_Statistics_Data(masterData); };

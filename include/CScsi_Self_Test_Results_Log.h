@@ -3,7 +3,7 @@
 //
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2026 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -82,7 +82,7 @@ namespace opensea_parser {
 		void byte_Swap_Self_Test();
 	public:
 		CScsi_DST_Results();
-		CScsi_DST_Results(uint8_t *bufferData, size_t bufferSize, JSONNODE *masterJson);
+		explicit CScsi_DST_Results(uint8_t *bufferData, size_t bufferSize, JSONNODE *masterJson);
 		virtual ~CScsi_DST_Results();
 		virtual eReturnValues get_Log_Status() { return m_DSTStatus; };
 		virtual eReturnValues parse_Self_Test_Log(uint8_t* buffer, size_t bufferSize, JSONNODE* masterJson)

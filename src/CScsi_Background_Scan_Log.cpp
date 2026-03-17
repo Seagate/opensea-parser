@@ -2,7 +2,7 @@
 // CScsi_Background_Scan_Log.cpp  Definition of Background Scan Log Page
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2026 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -60,7 +60,7 @@ CScsiScanLog::CScsiScanLog()
 //
 //---------------------------------------------------------------------------
 CScsiScanLog::CScsiScanLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength)
-	: v_Data(&buffer[0], &buffer[bufferSize])
+	: v_Data()
 	, m_ScanName("Background Scan Log")
 	, m_ScanStatus(eReturnValues::IN_PROGRESS)
 	, m_PageLength(pageLength)
@@ -73,14 +73,15 @@ CScsiScanLog::CScsiScanLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLen
 	{
 		printf("%s \n", m_ScanName.c_str());
 	}
-	/*
-    pData = new uint8_t[pageLength];								// new a buffer to the point				
-#ifndef __STDC_SECURE_LIB__
-    memcpy(pData, buffer, pageLength);
-#else
-    memcpy_s(pData, bufferSize, buffer, pageLength);// copy the buffer data to the class member pBuf
-#endif
-*/
+	if (buffer != M_NULLPTR)
+	{
+		v_Data.resize(pageLength);  // Resize vector before copying!
+		safe_memmove(v_Data.data(), pageLength, buffer, pageLength);
+	}
+	else
+	{
+		m_ScanStatus = eReturnValues::FAILURE;
+	}
 	if (v_Data.size() != 0)
 	{
 		m_ScanStatus = eReturnValues::IN_PROGRESS;
@@ -108,13 +109,7 @@ CScsiScanLog::CScsiScanLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLen
 //---------------------------------------------------------------------------
 CScsiScanLog::~CScsiScanLog()
 {
-	/*
-    if (pData != M_NULLPTR)
-    {
-        delete[] pData;
-        pData = M_NULLPTR;
-    }
-	*/
+
 }
 //-----------------------------------------------------------------------------
 //

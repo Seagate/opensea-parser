@@ -2,7 +2,7 @@
 // CAta_Power_Conditions_Log.cpp   Implementation of Base class CAtaLog
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2026 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -13,10 +13,6 @@
 // \file CAta_Power_Conditions_Log.cpp  Implementation of Base class CAta_Power_Conditions_Log
 //
 #include "CAta_Power_Conditions_Log.h"
-
-/*#if !defined BASIC
-#define	BASIC (80)
-#endif*/
 
 using namespace opensea_parser;
 #define OFFSET_IDLE_A      0
@@ -39,7 +35,7 @@ using namespace opensea_parser;
 //
 //---------------------------------------------------------------------------
 CAtaPowerConditionsLog::CAtaPowerConditionsLog()
-    : m_powerConditionLog(M_NULLPTR)
+    : m_powerConditionLog()
     , m_powerFlags(M_NULLPTR)
     , Buffer()
     , m_status(eReturnValues::IN_PROGRESS)
@@ -65,7 +61,7 @@ CAtaPowerConditionsLog::CAtaPowerConditionsLog()
 //
 //---------------------------------------------------------------------------
 CAtaPowerConditionsLog::CAtaPowerConditionsLog(std::string &filename)
-    : m_powerConditionLog(M_NULLPTR)
+    : m_powerConditionLog()
     , m_powerFlags(M_NULLPTR)
     , Buffer()
     , m_status(eReturnValues::IN_PROGRESS)
@@ -77,20 +73,14 @@ CAtaPowerConditionsLog::CAtaPowerConditionsLog(std::string &filename)
 {
 
     CLog *cCLog;
-    cCLog = new CLog(filename);
+    cCLog = new CLog(filename, true);
     if (cCLog->get_Log_Status() == eReturnValues::SUCCESS)
     {
-        if (cCLog->get_Buffer() != M_NULLPTR)
+        cCLog->get_vBuffer(m_powerConditionLog);
+        if (m_powerConditionLog.size() != 0)                           // if the buffer is null then exit something did not go right
         {
-            size_t logSize = cCLog->get_Size();
-            m_powerConditionLog = new uint8_t[logSize];								// new a buffer to the point				
-#ifndef __STDC_SECURE_LIB__
-            memcpy(m_powerConditionLog, cCLog->get_Buffer(), logSize);
-#else
-            memcpy_s(m_powerConditionLog, logSize, cCLog->get_Buffer(), logSize);// copy the buffer data to the class member pBuf
-#endif
             sLogPageStruct *idCheck;
-            idCheck = reinterpret_cast<sLogPageStruct*>(&m_powerConditionLog[0]);
+            idCheck = reinterpret_cast<sLogPageStruct*>(&m_powerConditionLog.at(0));
             byte_Swap_16(&idCheck->pageLength);
             if (IsScsiLogPage(idCheck->pageLength, idCheck->pageCode) == false)
             {
@@ -131,7 +121,7 @@ CAtaPowerConditionsLog::CAtaPowerConditionsLog(std::string &filename)
 //
 //---------------------------------------------------------------------------
 CAtaPowerConditionsLog::CAtaPowerConditionsLog(tDataPtr pData, JSONNODE *masterData)
-    : m_powerConditionLog(M_NULLPTR)
+    : m_powerConditionLog()
     , m_powerFlags(M_NULLPTR)
     , Buffer()
     , m_status(eReturnValues::IN_PROGRESS)
@@ -141,14 +131,11 @@ CAtaPowerConditionsLog::CAtaPowerConditionsLog(tDataPtr pData, JSONNODE *masterD
     , m_conditionFlags(M_NULLPTR)
     , conditionFlags()
 {
-    m_powerConditionLog = new uint8_t[pData.DataLen];								// new a buffer to the point				
-#ifndef __STDC_SECURE_LIB__
-    memcpy(m_powerConditionLog, static_cast<uint8_t*>(pData.pData), pData.DataLen);
-#else
-    memcpy_s(m_powerConditionLog, pData.DataLen, static_cast<uint8_t*>(pData.pData), pData.DataLen);// copy the buffer data to the class member pBuf
-#endif
+    m_powerConditionLog.resize(pData.DataLen);  // Resize vector before copying!
+    safe_memmove(m_powerConditionLog.data(), pData.DataLen, static_cast<uint8_t*>(pData.pData), pData.DataLen);// copy the buffer data to the class member pBuf
 
-    if (m_powerConditionLog != M_NULLPTR)
+
+    if (m_powerConditionLog.size() != 0)
     {
         m_conditionFlags = &conditionFlags;
         get_Power_Condition_Log();
@@ -176,10 +163,7 @@ CAtaPowerConditionsLog::CAtaPowerConditionsLog(tDataPtr pData, JSONNODE *masterD
 //---------------------------------------------------------------------------
 CAtaPowerConditionsLog::~CAtaPowerConditionsLog()
 {
-    if (m_powerConditionLog != M_NULLPTR)
-    {
-        delete[] m_powerConditionLog;
-    }
+
 }
 
 //-----------------------------------------------------------------------------
@@ -201,19 +185,19 @@ eReturnValues CAtaPowerConditionsLog::get_Power_Condition_Log()
 {
 
     //get the idle_a power condition descriptor
-    m_idleAPowerConditions = reinterpret_cast<sPowerLogDescriptor*>(&m_powerConditionLog[OFFSET_IDLE_A]);
+    m_idleAPowerConditions = reinterpret_cast<sPowerLogDescriptor*>(&m_powerConditionLog.at(OFFSET_IDLE_A));
 
     //get the idle_b power condition descriptor
-    m_idleBPowerConditions = reinterpret_cast<sPowerLogDescriptor*>(&m_powerConditionLog[OFFSET_IDLE_B]);
+    m_idleBPowerConditions = reinterpret_cast<sPowerLogDescriptor*>(&m_powerConditionLog.at(OFFSET_IDLE_B));
 
     //get the idle_c power condition descriptor
-    m_idleCPowerConditions = reinterpret_cast<sPowerLogDescriptor*>(&m_powerConditionLog[OFFSET_IDLE_C]);
+    m_idleCPowerConditions = reinterpret_cast<sPowerLogDescriptor*>(&m_powerConditionLog.at(OFFSET_IDLE_C));
 
     //get the standby_y power condition descriptor
-    m_standbyYPowerConditions = reinterpret_cast<sPowerLogDescriptor*>(&m_powerConditionLog[OFFSET_STANDBY_Y]);
+    m_standbyYPowerConditions = reinterpret_cast<sPowerLogDescriptor*>(&m_powerConditionLog.at(OFFSET_STANDBY_Y));
 
     //get the standby_z power condition descriptor
-    m_standbyZPowerConditions = reinterpret_cast<sPowerLogDescriptor*>(&m_powerConditionLog[OFFSET_STANDBY_Z]);
+    m_standbyZPowerConditions = reinterpret_cast<sPowerLogDescriptor*>(&m_powerConditionLog.at(OFFSET_STANDBY_Z));
 
     return eReturnValues::SUCCESS;
 }
@@ -377,12 +361,10 @@ eReturnValues CAtaPowerConditionsLog::printPowerLogDescriptor(JSONNODE *masterDa
 
 #endif
 
-		//json_push_back(masterData, json_new_a("Reserved :", "Reserved"));
         std::ostringstream temp;
         temp << std::hex << static_cast<uint16_t>(logDescriptor->bitFlags);
 		json_push_back(masterData, json_new_a("Power Condition Flags", temp.str().c_str()));
 		printPowerConditionFlag(masterData);
-		//json_push_back(masterData, json_new_a("Reserved :", "Reserved"));
 		json_push_back(masterData, json_new_f("Default Timer Setting Field", static_cast<double>(logDescriptor->defaultTimerSetting) *.1));
 		json_push_back(masterData, json_new_f("Saved Timer Setting Field", static_cast<double>(logDescriptor->savedTimerSetting) * .1));
 		json_push_back(masterData, json_new_f("Current Timer Setting Field", static_cast<double>(logDescriptor->currentTimerSetting) * .1));

@@ -2,7 +2,7 @@
 //
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2026 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -42,7 +42,7 @@ namespace opensea_parser {
 
 #pragma pack(pop)
 
-        uint8_t						            *pData;						    //<! pointer to the data
+        std::vector<uint8_t>                    v_Buff;                         //<! vector for holding the buffer data
         std::string					            m_CacheMemName;             	//<! class name	
         eReturnValues				            m_LogStatus;			        //<! status of the class
         uint16_t					            m_PageLength;				    //<! length of the page
@@ -59,7 +59,7 @@ namespace opensea_parser {
 
     public:
         CScsiCacheMemStatLog();
-        CScsiCacheMemStatLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength);
+        explicit CScsiCacheMemStatLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength);
         virtual ~CScsiCacheMemStatLog();
         virtual eReturnValues get_Cache_Memory_Statistics_Log_Status() { return m_LogStatus; };
         virtual eReturnValues parse_Cache_Memory_Statistics_Log(JSONNODE *masterData) { return get_Cache_Memory_Statistics_Data(masterData); };

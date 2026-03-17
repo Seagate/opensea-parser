@@ -2,7 +2,7 @@
 //
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2026 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -83,7 +83,7 @@ namespace opensea_parser {
 		eReturnValues get_Scan_Data(JSONNODE *masterData);
 	public:
 		CScsiScanLog();
-		CScsiScanLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength);
+		explicit CScsiScanLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength);
 		virtual ~CScsiScanLog();
 		virtual eReturnValues get_Log_Status() { return m_ScanStatus; };
 		virtual eReturnValues parse_Background_Scan_Log(JSONNODE *masterData) { return get_Scan_Data(masterData); };

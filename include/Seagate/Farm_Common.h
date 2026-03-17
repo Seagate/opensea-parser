@@ -40,6 +40,7 @@ namespace opensea_parser {
 #define WORDINT1 4
 #define DWORD0 5
 #define DWORD1 6
+#define DWORDINT0 7
 
 	class CFarmCommon 
 	{
@@ -100,6 +101,10 @@ namespace opensea_parser {
 			void int_Cal_Byte_Data(JSONNODE* Node, const std::string& title, int16_t calculation, int64_t* param, uint64_t heads, bool showStatusBits, bool showStatic = false);
 			void int_Cal_Byte_Node_Data(JSONNODE* Node, const std::string& title, int16_t calculation, int64_t* param, uint64_t heads, bool showStatusBits);
 			void int_Cal_Byte_Array_Data(JSONNODE* Node, const std::string& title, int16_t calculation, int64_t* param, uint64_t heads, bool showStatusBits);
+
+			void uint_Cal_Byte_Data(JSONNODE* Node, const std::string& title, uint16_t calculation, uint64_t* param, uint64_t heads, bool showStatusBits, bool showStatic = false);
+			void uint_Cal_Byte_Node_Data(JSONNODE* Node, const std::string& title, uint16_t calculation, uint64_t* param, uint64_t heads, bool showStatusBits);
+			void uint_Cal_Byte_Array_Data(JSONNODE* Node, const std::string& title, uint16_t calculation, uint64_t* param, uint64_t heads, bool showStatusBits);
 
 			void int_Percent_Dword_Data(JSONNODE* Node, const std::string& title, int64_t* param, uint64_t heads, bool showStatusBits, bool showStatic = false);
 			void int_Percent_Dword_Node_Data(JSONNODE* Node, const std::string& title, int64_t* param, uint64_t heads, bool showStatusBits);

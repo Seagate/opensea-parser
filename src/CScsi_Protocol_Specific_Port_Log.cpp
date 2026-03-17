@@ -2,7 +2,7 @@
 // CScsi_Protocol_Specific_Port_Log.h   Definition of Protocol-Specific Port log page for SAS
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2026 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -30,7 +30,7 @@ using namespace opensea_parser;
 //
 //---------------------------------------------------------------------------
 CScsiProtocolPortLog::CScsiProtocolPortLog()
-	: pData()
+	: v_Buff()
 	, m_PSPName("Protocol Port Log")
 	, m_PSPStatus(eReturnValues::IN_PROGRESS)
 	, m_PageLength(0)
@@ -57,11 +57,11 @@ CScsiProtocolPortLog::CScsiProtocolPortLog()
 //  Exit:
 //
 //---------------------------------------------------------------------------
-CScsiProtocolPortLog::CScsiProtocolPortLog(uint8_t *buffer, size_t bufferSize)
-	:pData()
+CScsiProtocolPortLog::CScsiProtocolPortLog(uint8_t *buffer, size_t bufferSize, uint16_t pageLength)
+	:v_Buff()
 	, m_PSPName("Protocol Port Log")
 	, m_PSPStatus(eReturnValues::IN_PROGRESS)
-	, m_PageLength(0)
+	, m_PageLength(pageLength)
 	, m_bufferLength(bufferSize)
 	, m_List(M_NULLPTR)
 	, m_Descriptor(M_NULLPTR)
@@ -71,13 +71,16 @@ CScsiProtocolPortLog::CScsiProtocolPortLog(uint8_t *buffer, size_t bufferSize)
 	{
 		printf("%s \n", m_PSPName.c_str());
 	}
-    pData = new uint8_t[bufferSize];								// new a buffer to the point				
-#ifndef __STDC_SECURE_LIB__
-    memcpy(pData, buffer, bufferSize);
-#else
-    memcpy_s(pData, bufferSize, buffer, bufferSize);           // copy the buffer data to the class member pBuf
-#endif
-	if (pData != M_NULLPTR)
+	if (buffer != M_NULLPTR)
+	{
+		v_Buff.resize(m_PageLength);  // Resize vector before copying!
+		safe_memmove(v_Buff.data(), m_PageLength, buffer, m_PageLength);
+	}
+	else
+	{
+		m_PSPStatus = eReturnValues::FAILURE;
+	}
+	if (v_Buff.size() != 0)                           // if the buffer is null then exit something did not go right
 	{
 		m_PSPStatus = eReturnValues::IN_PROGRESS;
 	}
@@ -104,11 +107,7 @@ CScsiProtocolPortLog::CScsiProtocolPortLog(uint8_t *buffer, size_t bufferSize)
 //---------------------------------------------------------------------------
 CScsiProtocolPortLog::~CScsiProtocolPortLog()
 {
-    if (pData != M_NULLPTR)
-    {
-        delete[] pData;
-        pData = M_NULLPTR;
-    }
+
 }
 //-----------------------------------------------------------------------------
 //
@@ -749,14 +748,14 @@ eReturnValues CScsiProtocolPortLog::get_Data(JSONNODE *masterData)
 {
 	eReturnValues retStatus = eReturnValues::IN_PROGRESS;
 
-	if (pData != M_NULLPTR)
+	if (v_Buff.size() != 0)
 	{
 		JSONNODE *pageInfo = json_new(JSON_NODE);
 		json_set_name(pageInfo, "Protocol-Specific Port Log Page - 18h");
 
 		for (size_t offset = 0; (offset < m_PageLength && offset < UINT16_MAX);)
 		{
-			m_List = reinterpret_cast<sRelativeTargetPort *>(&pData[offset]);
+			m_List = reinterpret_cast<sRelativeTargetPort *>(&v_Buff.at(offset));
 			// process the List header information
 			byte_Swap_16(&m_List->paramCode);
             std::ostringstream temp;
@@ -765,7 +764,7 @@ eReturnValues CScsiProtocolPortLog::get_Data(JSONNODE *masterData)
 			json_set_name(listInfo, temp.str().c_str());
 			process_List_Information(listInfo);
 			offset += sizeof(sRelativeTargetPort);
-			m_Descriptor = reinterpret_cast<sSASPHYLogDescriptorList *>(&pData[offset]);
+			m_Descriptor = reinterpret_cast<sSASPHYLogDescriptorList *>(&v_Buff.at(offset));
 
 			if((offset + m_Descriptor->phyLength) <= m_bufferLength)
 			{
@@ -782,7 +781,7 @@ eReturnValues CScsiProtocolPortLog::get_Data(JSONNODE *masterData)
 					// check the length to the end of the buffer
 					if ((offset + m_Descriptor->phyEventLength) <= m_bufferLength)
 					{
-						m_Event = reinterpret_cast<sPhyEventDescriptor *>(&pData[offset]);
+						m_Event = reinterpret_cast<sPhyEventDescriptor *>(&v_Buff.at(offset));
 						offset += m_Descriptor->phyEventLength;
 						//process events
 						process_Events_Data(descInfo);

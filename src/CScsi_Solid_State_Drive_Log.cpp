@@ -2,7 +2,7 @@
 // CScsi_Solid_State_Drive_Log.cpp  Definition of Solid State Drive Log
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2026 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -30,7 +30,7 @@ using namespace opensea_parser;
 //
 //---------------------------------------------------------------------------
 CScsiSolidStateDriveLog::CScsiSolidStateDriveLog()
-    : pData()
+    : v_Buff()
     , m_SSDName("Solid State Drive Log")
     , m_SSDStatus(eReturnValues::IN_PROGRESS)
     , m_PageLength(0)
@@ -58,8 +58,8 @@ CScsiSolidStateDriveLog::CScsiSolidStateDriveLog()
 //  Exit:
 //
 //---------------------------------------------------------------------------
-CScsiSolidStateDriveLog::CScsiSolidStateDriveLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength)
-    : pData(buffer)
+CScsiSolidStateDriveLog::CScsiSolidStateDriveLog(uint8_t *buffer, size_t bufferSize, uint16_t pageLength)
+    : v_Buff()
     , m_SSDName("Solid State Drive Log")
     , m_SSDStatus(eReturnValues::IN_PROGRESS)
     , m_PageLength(pageLength)
@@ -72,6 +72,15 @@ CScsiSolidStateDriveLog::CScsiSolidStateDriveLog(uint8_t * buffer, size_t buffer
         printf("%s \n", m_SSDName.c_str());
     }
     if (buffer != M_NULLPTR)
+    {
+        v_Buff.resize(m_PageLength);  // Resize vector before copying!
+        safe_memmove(v_Buff.data(), m_PageLength, buffer, m_PageLength);
+    }
+    else
+    {
+        m_SSDStatus = eReturnValues::FAILURE;
+    }
+    if (v_Buff.size() != 0)                           // if the buffer is null then exit something did not go right
     {
         m_SSDStatus = eReturnValues::IN_PROGRESS;
     }
@@ -115,21 +124,16 @@ CScsiSolidStateDriveLog::~CScsiSolidStateDriveLog()
 bool CScsiSolidStateDriveLog::get_SSD_Parameter_Code_Description(std::string *ssdString)
 {
     bool descriptionFound = false;
-    switch (m_SSDParam->paramCode)
-    {
-    case 0x0001:
+    if (m_SSDParam->paramCode == 0x0001)
     {
         ssdString->assign("Percentage Used Indicator");
         descriptionFound = true;
-        break;
     }
-    default:
+    else
     {
         std::ostringstream temp;
         temp << "Vendor Specific 0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << m_SSDParam->paramCode;
         ssdString->assign(temp.str());
-        break;
-    }
     }
     return descriptionFound;
 }
@@ -211,7 +215,7 @@ void CScsiSolidStateDriveLog::process_Solid_State_Drive_Data(JSONNODE *ssdData)
 eReturnValues CScsiSolidStateDriveLog::get_Solid_State_Drive_Data(JSONNODE *masterData)
 {
     eReturnValues retStatus = eReturnValues::IN_PROGRESS;
-    if (pData != M_NULLPTR)
+    if (v_Buff.size() != 0)
     {
         JSONNODE *pageInfo = json_new(JSON_NODE);
         json_set_name(pageInfo, "Solid State Drive Log - 11h");
@@ -220,7 +224,7 @@ eReturnValues CScsiSolidStateDriveLog::get_Solid_State_Drive_Data(JSONNODE *mast
         {
             if (offset < m_bufferLength && offset < UINT16_MAX)
             {
-                m_SSDParam = reinterpret_cast<sLogParams*>(&pData[offset]);
+                m_SSDParam = reinterpret_cast<sLogParams*>(&v_Buff.at(offset));
                 offset += sizeof(sLogParams);
                 switch (m_SSDParam->paramLength)
                 {
@@ -228,7 +232,7 @@ eReturnValues CScsiSolidStateDriveLog::get_Solid_State_Drive_Data(JSONNODE *mast
                 {
                     if ((offset + m_SSDParam->paramLength) < m_bufferLength)
                     {
-                        m_SSDValue = pData[offset];
+                        m_SSDValue = v_Buff.at(offset);
                         offset += m_SSDParam->paramLength;
                     }
                     else
@@ -242,7 +246,7 @@ eReturnValues CScsiSolidStateDriveLog::get_Solid_State_Drive_Data(JSONNODE *mast
                 {
                     if ((offset + m_SSDParam->paramLength) < m_bufferLength)
                     {
-                        m_SSDValue = M_BytesTo2ByteValue(pData[offset], pData[offset + 1]);
+                        m_SSDValue = M_BytesTo2ByteValue(v_Buff.at(offset), v_Buff.at(offset + 1));
                         offset += m_SSDParam->paramLength;
                     }
                     else
@@ -256,7 +260,7 @@ eReturnValues CScsiSolidStateDriveLog::get_Solid_State_Drive_Data(JSONNODE *mast
                 {
                     if ((offset + m_SSDParam->paramLength) < m_bufferLength)
                     {
-                        m_SSDValue = M_BytesTo4ByteValue(pData[offset], pData[offset + 1], pData[offset + 2], pData[offset + 3]);
+                        m_SSDValue = M_BytesTo4ByteValue(v_Buff.at(offset), v_Buff.at(offset + 1), v_Buff.at(offset + 2), v_Buff.at(offset + 3));
                         offset += m_SSDParam->paramLength;
                     }
                     else
@@ -270,7 +274,7 @@ eReturnValues CScsiSolidStateDriveLog::get_Solid_State_Drive_Data(JSONNODE *mast
                 {
                     if ((offset + m_SSDParam->paramLength) < m_bufferLength)
                     {
-                        m_SSDValue = M_BytesTo8ByteValue(pData[offset], pData[offset + 1], pData[offset + 2], pData[offset + 3], pData[offset + 4], pData[offset + 5], pData[offset + 6], pData[offset + 7]);
+                        m_SSDValue = M_BytesTo8ByteValue(v_Buff.at(offset), v_Buff.at(offset + 1), v_Buff.at(offset + 2), v_Buff.at(offset + 3), v_Buff.at(offset + 4), v_Buff.at(offset + 5), v_Buff.at(offset + 6), v_Buff.at(offset + 7));
                         offset += m_SSDParam->paramLength;
                     }
                     else

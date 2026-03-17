@@ -2,7 +2,7 @@
 //
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2026 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -12,6 +12,7 @@
 
 // \file CScsi_Background_Operation_Log.h  Definition of Background Operation log page reports parameters that are specific to background operations.
 #pragma once
+#include <vector>
 #include <string>
 #include "common_types.h"
 #include "bit_manip.h"
@@ -38,7 +39,7 @@ namespace opensea_parser {
 	{
 	private:
 	protected:
-		uint8_t						*pData;						//<! pointer to the data
+		std::vector<uint8_t>        v_Buff;                     //<! vector for holding the buffer data
 		std::string					m_OperationName;			//<! class name	
 		eReturnValues				m_OperationsStatus;			//<! status of the class
 		uint16_t					m_PageLength;				//<! length of the page
@@ -46,11 +47,11 @@ namespace opensea_parser {
 		sOperationParams			*m_Operation;				//<! operation structure 
 
 		void get_Background_Operations_status(std::string *status);
-		void process_Background_Operations_Data(JSONNODE *operationData,uint32_t offset);
+		void process_Background_Operations_Data(JSONNODE *operationData);
 		eReturnValues get_Background_Operations_Data(JSONNODE *masterData);
 	public:
 		CScsiOperationLog();
-		CScsiOperationLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength);
+		explicit CScsiOperationLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength);
 		virtual ~CScsiOperationLog();
 		virtual eReturnValues get_Log_Status() { return m_OperationsStatus; };
 		virtual eReturnValues parse_Background_Operationss_Log(JSONNODE *masterData) { return get_Background_Operations_Data(masterData); };

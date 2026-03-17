@@ -3,7 +3,7 @@
 //
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2026 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -32,9 +32,10 @@ namespace opensea_parser {
     {
     protected:
         std::string                         m_name;                                                     //!< name of the class
-        uint8_t                             *pData;                                                     //!< pointer to the data
+        std::vector<uint8_t>                v_Buff;                                                     //!< vector for holding the buffer data
         eReturnValues                       m_status;                                                   //!< the status of the class
         sDriveInformation                   m_sDriveInfo;                                               //!< drive information structure
+        size_t                              m_logSize;                                                 //!< size of the log
         void create_Serial_Number(uint16_t offset);
         void create_Firmware_String(uint16_t offset);
         void create_Model_Number( uint16_t offset);
@@ -42,7 +43,7 @@ namespace opensea_parser {
         eReturnValues parse_Device_Info();
     public:
         CAta_Identify_log();
-        explicit CAta_Identify_log(uint8_t *Buffer);
+        CAta_Identify_log(uint8_t *Buffer, size_t length);
         explicit CAta_Identify_log(const std::string & fileName);
         ~CAta_Identify_log();
 		eReturnValues get_Identify_Information_Status() { return m_status; };
@@ -54,11 +55,11 @@ namespace opensea_parser {
 
     protected:
         std::string                         m_name;                                                     //!< name of the class
-        uint8_t                             *pData;                                                     //!< pointer to the data
+        std::vector<uint8_t>                v_Buff;                                                     //!< vector for holding the buffer data
         eReturnValues                       m_status;                                                   //!< the status of the class  
         sLogPage00                          *m_pLog0;  
     public:
-        explicit CAta_Identify_Log_00(uint8_t *Buffer);
+        explicit CAta_Identify_Log_00(std::vector<uint8_t> Buffer);
         ~CAta_Identify_Log_00();
         bool is_Page_Supported(uint8_t pageNumber);
         eReturnValues get_Log_Page00(JSONNODE *masterData);
@@ -70,26 +71,24 @@ namespace opensea_parser {
 
     protected:
         std::string                         m_name;                                                     //!< name of the class
-        uint8_t                             *pData;                                                     //!< pointer to the data
+        std::vector<uint8_t>                v_Buff;                                                     //!< vector for holding the buffer data
         eReturnValues                       m_status;                                                   //!< the status of the class    
         sLogPage02                          *pCapacity;                                                 //!< pointer to the structure
 
         bool get_Device_Capacity(JSONNODE *capData);
         bool get_Sector_Size(JSONNODE *sectorData);
-        //bool get_Logical_Sector_Size(JSONNODE *logicalData);
-        //bool get_Normal_Buffer_size(JSONNODE *bufferData);
 
     public:
-        explicit CAta_Identify_Log_02(uint8_t *Buffer);
+        explicit CAta_Identify_Log_02(const std::vector<uint8_t>& Buffer);
         ~CAta_Identify_Log_02();
-        eReturnValues get_Log_Page02(uint8_t *lp2pData, JSONNODE *masterData);
+        eReturnValues get_Log_Page02(const std::vector<uint8_t>& lp2pData, JSONNODE* masterData);
     };
 
     class CAta_Identify_Log_03
     {
     protected:
         std::string                         m_name;                                             //!< name of the class
-        uint8_t                             *pData;                                             //!< pointer to the data
+        std::vector<uint8_t>                v_Buff;                                             //!< vector for holding the buffer data
         eReturnValues                       m_status;                                           //!< the status of the class    
         sLogPage03                          *m_pCap;                                            //!< structure Capabilites
         sSupportedCapabilities              m_sSupported;                                       //!< structure of supported Capabililities
@@ -119,16 +118,16 @@ namespace opensea_parser {
         bool get_Depopulation_Execution_Time(JSONNODE *depop);
 
     public:
-        explicit CAta_Identify_Log_03(uint8_t *Buffer);
+        explicit CAta_Identify_Log_03(std::vector<uint8_t> Buffer);
         ~CAta_Identify_Log_03();
-        eReturnValues get_Log_Page03(uint8_t *lp3pData, JSONNODE *masterData);
+        eReturnValues get_Log_Page03(std::vector<uint8_t> lp3pData, JSONNODE *masterData);
     };
 
     class CAta_Identify_Log_04 
     {
     protected:
         std::string                         m_name;                             //<! name of the class
-        uint8_t                             *pData;                             //<! pointer to the data
+        std::vector<uint8_t>                v_Buff;                             //!< vector for holding the buffer data
         eReturnValues                       m_status;                           //<! the status of the class    
         sLogPage04                          *pLog;                              //<! pointer to the log page 04
         sCurrentSettingBools                m_CS;                               //<! struct to the current Settings in bool settings
@@ -146,9 +145,9 @@ namespace opensea_parser {
         bool get_Free_Fall_Control(JSONNODE *freeFallData);
         bool get_Device_Maintenance_Schedule(JSONNODE *freeFallData);
     public:
-        explicit CAta_Identify_Log_04(uint8_t *Buffer);
+        explicit CAta_Identify_Log_04(std::vector<uint8_t> Buffer);
         ~CAta_Identify_Log_04();
-        eReturnValues get_Log_Page04(uint8_t *lp4pData, JSONNODE *masterData);
+        eReturnValues get_Log_Page04(std::vector<uint8_t> lp4pData, JSONNODE *masterData);
     };
 
     class CAta_Identify_Log_05
@@ -168,7 +167,10 @@ namespace opensea_parser {
             uint8_t             modelNumber[LOG5_MODEL_NUMBER];                     //<! Model Number                                                           48 - 87
             uint8_t             reserved2[LOG5_PRODUCT_INFO];                       //<! reserved                                                               88 - 95
             uint8_t             productInformation[LOG5_PRODUCT_INFO];              //<! streaming Performance Granularity                                      95 - 103
-                
+            _sLogPage05(): header(0), reserved(0) 
+            { memset(serialNumber, 0, LOG5_SERIAL_NUMBER); memset(firmwareRev, 0, LOG5_FIRMWARE_REV); memset(reserved1, 0, LOG5_FIRMWARE_REV);
+            memset(modelNumber, 0, LOG5_MODEL_NUMBER); memset(reserved2, 0, LOG5_PRODUCT_INFO); memset(productInformation, 0, LOG5_PRODUCT_INFO); }
+
         }sLogPage05;
 
 #pragma pack(pop)
@@ -183,7 +185,7 @@ namespace opensea_parser {
 
     protected:
         std::string                         m_name;                                                     //!< name of the class
-        uint8_t                             *pData;                                                     //!< pointer to the data
+        std::vector<uint8_t>                v_Buff;                                                     //!< vector for holding the buffer data
         eReturnValues                       m_status;                                                   //!< the status of the class    
         sLogPage05                          *m_pLog;
         sPrintablePage05                    *m_pPrintable;
@@ -193,16 +195,16 @@ namespace opensea_parser {
         bool create_Product_string();
         bool get_printables(JSONNODE *masterData);
     public:
-        explicit CAta_Identify_Log_05(uint8_t *Buffer);
+        explicit CAta_Identify_Log_05(std::vector<uint8_t> Buffer);
         ~CAta_Identify_Log_05();
-        eReturnValues get_Log_Page05(uint8_t *lp5pData, JSONNODE *masterData);
+        eReturnValues get_Log_Page05(std::vector<uint8_t> lp5pData, JSONNODE *masterData);
     };
 
     class CAta_Identify_Log_06 
     {
     protected:
         std::string                         m_name;                             //!< name of the class
-        uint8_t                             *pData;                             //!< pointer to the data
+        std::vector<uint8_t>                v_Buff;                             //!< vector for holding the buffer data
         eReturnValues                       m_status;                           //!< the status of the class    
         sLogPage06                          *m_pLog;
         sSecurityCapabilities               m_sSCapabilities;                   //!< structure for the security Capabilities
@@ -217,32 +219,32 @@ namespace opensea_parser {
         bool set_Security_Capabilities();
         bool get_Security_Capabilities(JSONNODE *sCap);
     public:
-        explicit CAta_Identify_Log_06(uint8_t *Buffer);
+        explicit CAta_Identify_Log_06(std::vector<uint8_t> Buffer);
         ~CAta_Identify_Log_06();
-        eReturnValues get_Log_Page06(uint8_t *lp6pData, JSONNODE *masterData);
+        eReturnValues get_Log_Page06(std::vector<uint8_t> lp6pData, JSONNODE *masterData);
     };
 
     class CAta_Identify_Log_07 
     {
     protected:
         std::string                         m_name;                             //<! name of the class
-        uint8_t                             *pData;                             //<! pointer to the data
+        std::vector<uint8_t>                v_Buff;                             //!< vector for holding the buffer data
         eReturnValues                       m_status;                           //<! the status of the class    
         sLogPage07                          *m_pLog;
         sATACapabilites                     m_ATACap;                           //<! structure to the ATA Capabliites
         ATAHardwareResetResult              m_hardwareRR;                       //<! structur to the ATA Hardware Reset Results
 
     public:
-        explicit CAta_Identify_Log_07(uint8_t *Buffer);
+        explicit CAta_Identify_Log_07(std::vector<uint8_t> Buffer);
         ~CAta_Identify_Log_07();
-        eReturnValues get_Log_Page07(uint8_t *lp7pData, JSONNODE *masterData);
+        eReturnValues get_Log_Page07(std::vector<uint8_t> lp7pData, JSONNODE *masterData);
     };
 
     class CAta_Identify_Log_08 
     {
     protected:
         std::string                         m_name;                             //!< name of the class
-        uint8_t                             *pData;                             //!< pointer to the data
+        std::vector<uint8_t>                v_Buff;                             //!< vector for holding the buffer data
         eReturnValues                       m_status;                           //!< the status of the class    
         sLogPage08                          *m_pLog;
         sSATACapabilities                   m_SATACap;                          //!< structure for the sata capablities
@@ -256,24 +258,22 @@ namespace opensea_parser {
         void get_Supported_Hardware(JSONNODE *supported);
         void get_Device_Sleep_Timing_Variables(JSONNODE *sleep);
     public:
-        explicit CAta_Identify_Log_08(uint8_t *Buffer);
+        explicit CAta_Identify_Log_08(std::vector<uint8_t> Buffer);
         ~CAta_Identify_Log_08();
-        eReturnValues get_Log_Page08(uint8_t *pData, JSONNODE *masterData);
+        eReturnValues get_Log_Page08(std::vector<uint8_t> pData, JSONNODE *masterData);
     };
 
     class CAta_Identify_Log_30 
     {
 
     protected:
-		uint8_t								* pData;							//<! pointer to the buffer data
+        std::vector<uint8_t>                v_Buff;                             //!< vector for holding the buffer data
         std::string                         m_name;                             //<! name of the class
         eReturnValues                       m_status;                           //<! the status of the class   
-
-        //eReturnValues get_Interface_Type();
         
     public:
-        explicit CAta_Identify_Log_30( const std::string & fileName);
-        explicit CAta_Identify_Log_30(uint8_t *pBufferData);
+        CAta_Identify_Log_30( const std::string & fileName);
+        explicit CAta_Identify_Log_30(std::vector<uint8_t>& BufferData);
         virtual ~CAta_Identify_Log_30();
         eReturnValues get_identify_Status(){ return m_status; };
         eReturnValues parse_Identify_Log_30(JSONNODE *masterData);

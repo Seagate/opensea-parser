@@ -2,7 +2,7 @@
 // CScsi_Page_19h_Command_Duration_Limits_Log.cpp  
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2015 - 2023 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2015 - 2026 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -30,7 +30,7 @@ using namespace opensea_parser;
 //
 //---------------------------------------------------------------------------
 CScsiCmdDurationLimitsLog::CScsiCmdDurationLimitsLog()
-    : pData()
+    : v_Buff()
     , m_CMDLimitsName("Command Duration Limits Log")
     , m_LogStatus(eReturnValues::IN_PROGRESS)
     , m_PageLength(0)
@@ -60,7 +60,7 @@ CScsiCmdDurationLimitsLog::CScsiCmdDurationLimitsLog()
 //
 //---------------------------------------------------------------------------
 CScsiCmdDurationLimitsLog::CScsiCmdDurationLimitsLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength)
-    : pData(buffer)
+    : v_Buff()
     , m_CMDLimitsName("Command Duration Limits Log")
     , m_LogStatus(eReturnValues::IN_PROGRESS)
     , m_PageLength(pageLength)
@@ -74,6 +74,15 @@ CScsiCmdDurationLimitsLog::CScsiCmdDurationLimitsLog(uint8_t * buffer, size_t bu
         printf("%s \n", m_CMDLimitsName.c_str());
     }
     if (buffer != M_NULLPTR)
+    {
+        v_Buff.resize(m_PageLength);  // Resize vector before copying!
+        safe_memmove(v_Buff.data(), pageLength, buffer, pageLength);
+    }
+    else
+    {
+        m_LogStatus = eReturnValues::FAILURE;
+    }
+    if (v_Buff.size() != 0)                           // if the buffer is null then exit something did not go right
     {
         m_LogStatus = eReturnValues::IN_PROGRESS;
     }
@@ -240,16 +249,16 @@ void CScsiCmdDurationLimitsLog::populate_Generic_Param_Value(uint8_t paramLength
     switch (paramLength)
     {
     case ONE_INT_SIZE:
-        m_Value = pData[offset];
+        m_Value = v_Buff.at(offset);
         break;
     case TWO_INT_SIZE:
-        m_Value = M_BytesTo2ByteValue(pData[offset], pData[offset + 1]);
+        m_Value = M_BytesTo2ByteValue(v_Buff.at(offset), v_Buff.at(offset + 1));
         break;
     case FOUR_INT_SIZE:
-        m_Value = M_BytesTo4ByteValue(pData[offset], pData[offset + 1], pData[offset + 2], pData[offset + 3]);
+        m_Value = M_BytesTo4ByteValue(v_Buff.at(offset), v_Buff.at(offset + 1), v_Buff.at(offset + 2), v_Buff.at(offset + 3));
         break;
     case EIGHT_INT_SIZE:
-        m_Value = M_BytesTo8ByteValue(pData[offset], pData[offset + 1], pData[offset + 2], pData[offset + 3], pData[offset + 4], pData[offset + 5], pData[offset + 6], pData[offset + 7]);
+        m_Value = M_BytesTo8ByteValue(v_Buff.at(offset), v_Buff.at(offset + 1), v_Buff.at(offset + 2), v_Buff.at(offset + 3), v_Buff.at(offset + 4), v_Buff.at(offset + 5), v_Buff.at(offset + 6), v_Buff.at(offset + 7));
         break;
     default:
         m_Value = 0;
@@ -274,7 +283,7 @@ eReturnValues CScsiCmdDurationLimitsLog::get_Limits_Data(JSONNODE *masterData)
 {
 
     eReturnValues retStatus = eReturnValues::IN_PROGRESS;
-    if (pData != NULL)
+    if (v_Buff.size() != 0)
     {
         JSONNODE* pageInfo = json_new(JSON_NODE);
         json_set_name(pageInfo, "Command Duration Limits Log - 19h, 21h");
@@ -282,31 +291,31 @@ eReturnValues CScsiCmdDurationLimitsLog::get_Limits_Data(JSONNODE *masterData)
         {
             if (offset < m_bufferLength && offset < UINT16_MAX)
             {
-                uint16_t paramCode = *(reinterpret_cast<uint16_t*>(&pData[offset]));
+                uint16_t paramCode = *(reinterpret_cast<uint16_t*>(&v_Buff.at(offset)));
                 byte_Swap_16(&paramCode);
                 if (paramCode == 0x0001)
                 {
-                    m_commandLog = reinterpret_cast<sLogParams*>(&pData[offset]);
+                    m_commandLog = reinterpret_cast<sLogParams*>(&v_Buff.at(offset));
                     process_Achievable_Data(pageInfo);
                     offset += m_commandLog->paramLength + LOGPAGESIZE;
                 }
                 else if (paramCode >= 0x0011 && paramCode <= 0x0017)
                 {
 
-                    m_limitsLog = reinterpret_cast<sCommandDurationLimits*>(&pData[offset]);
+                    m_limitsLog = reinterpret_cast<sCommandDurationLimits*>(&v_Buff.at(offset));
                     process_Duration_Limits_Data(pageInfo);
                     offset += m_limitsLog->paramLength + LOGPAGESIZE;
                 }
                 else if (paramCode >= 0x0021 && paramCode <= 0x0027)
                 {
 
-                    m_limitsLog = reinterpret_cast<sCommandDurationLimits*>(&pData[offset]);
+                    m_limitsLog = reinterpret_cast<sCommandDurationLimits*>(&v_Buff.at(offset));
                     process_Duration_Limits_Data(pageInfo);
                     offset += m_limitsLog->paramLength + LOGPAGESIZE;
                 }
                 else
                 {
-                    m_commandLog = reinterpret_cast<sLogParams*>(&pData[offset]);
+                    m_commandLog = reinterpret_cast<sLogParams*>(&v_Buff.at(offset));
                     populate_Generic_Param_Value(m_commandLog->paramLength,offset + LOGPAGESIZE);
                     process_Generic_Data(pageInfo);
                     offset += (m_commandLog->paramLength + LOGPAGESIZE);

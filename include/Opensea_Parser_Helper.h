@@ -3,7 +3,7 @@
 //
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2026 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -134,6 +134,7 @@ namespace opensea_parser {
 		LOG_TYPE_POWER_CONDITION_LOG,
 		LOG_TYPE_NCQ_CMD_ERROR_LOG,
 		LOG_TYPE_SCSI_LOG_PAGES,
+		LOG_TYPE_SMART_DIRECTORY,
 
 	};
 	enum class eLogPageNames: int
@@ -383,6 +384,7 @@ namespace opensea_parser {
 	//-----------------------------------------------------------------------------
     inline void set_json_64bit_With_Check_Status(JSONNODE *nowNode,const std::string & header, uint64_t value, bool hexPrint)
     {
+        if (!nowNode) return;  // check for NULL
 		std::string myStr = header;
 		int64_t statusValue = 0;
 		statusValue = check_Status_Strip_Status(value);
@@ -449,6 +451,7 @@ namespace opensea_parser {
     //-----------------------------------------------------------------------------
     inline void set_json_64bit(JSONNODE *nowNode, const std::string & header, uint64_t value, bool hexPrint)
     {
+		if (!nowNode) return;  // check for NULL
 		std::string myStr = header;
         std::ostringstream temp;
 		if (g_convertHeaderToLowercase)
@@ -494,6 +497,7 @@ namespace opensea_parser {
 	//-----------------------------------------------------------------------------
     inline void set_Json_Bool(JSONNODE *nowNode, const std::string & header, bool workingValue)
     {
+		if (!nowNode) return;  // check for NULL
 		std::string myStr = header;
 		if (g_convertHeaderToLowercase)
 		{

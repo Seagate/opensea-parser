@@ -2,7 +2,7 @@
 // CScsi_Temperature_Log.cpp  Implementation of CScsi Temperature Log class
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2026 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -30,7 +30,7 @@ using namespace opensea_parser;
 //
 //---------------------------------------------------------------------------
 CScsiTemperatureLog::CScsiTemperatureLog()
-	: pData()
+	: v_Buff()
 	, m_pDataSize(0)
 	, m_Page()
 	, m_TempName("Temperature Log")
@@ -39,7 +39,7 @@ CScsiTemperatureLog::CScsiTemperatureLog()
 {
 	if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
-		printf("%s \n", m_TempName.c_str());
+		std::cout << m_TempName << std::endl;
 	}
 }
 //-----------------------------------------------------------------------------
@@ -56,7 +56,7 @@ CScsiTemperatureLog::CScsiTemperatureLog()
 //
 //---------------------------------------------------------------------------
 CScsiTemperatureLog::CScsiTemperatureLog(uint8_t * buffer, size_t bufferSize)
-	:pData(buffer)
+	:v_Buff()
 	, m_pDataSize(bufferSize)
 	, m_Page()
 	, m_TempName("Temperature Log")
@@ -65,12 +65,20 @@ CScsiTemperatureLog::CScsiTemperatureLog(uint8_t * buffer, size_t bufferSize)
 {
 	if (eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE <= g_verbosity)
 	{
-		printf("%s \n", m_TempName.c_str());
+		std::cout << m_TempName << std::endl;
 	}
 	if (buffer != M_NULLPTR)
 	{
-		pData = buffer;
-		m_Page = reinterpret_cast<sTempLogPageStruct *>(buffer);				// set a buffer to the point to the log page info
+		v_Buff.resize(m_pDataSize);  // Resize vector before copying!
+		safe_memmove(v_Buff.data(), m_pDataSize, buffer, m_pDataSize);
+	}
+	else
+	{
+		m_TempStatus = eReturnValues::FAILURE;
+	}
+	if (v_Buff.size() != 0)                           // if the buffer is null then exit something did not go right
+	{
+		m_Page = reinterpret_cast<sTempLogPageStruct *>(v_Buff.data());				// set a buffer to the point to the log page info
 		m_TempStatus = eReturnValues::SUCCESS;
 	}
 	else
@@ -114,12 +122,13 @@ CScsiTemperatureLog::~CScsiTemperatureLog()
 //---------------------------------------------------------------------------
 void CScsiTemperatureLog::get_Temp(JSONNODE *tempData)
 {
+	std::ostringstream temp;
+	temp << "Parameter Code 0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << m_Page->paramCode;
 #if defined _DEBUG
-	printf("Temperature Log Page \n");
-	printf("\tParameter Code =   0x%04" PRIx16"  \n", m_Page->paramCode);
+    std::cout << "Temperature Log Page \n" << std::endl;
+	std::cout << "\tParameter Code =  " << temp.str() << " \n" << std::endl;
 #endif
-    std::ostringstream temp;
-    temp << "Parameter Code 0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(4) << m_Page->paramCode;
+    
 	JSONNODE *paramInfo = json_new(JSON_NODE);
 	json_set_name(paramInfo, temp.str().c_str());
 
@@ -152,28 +161,29 @@ void CScsiTemperatureLog::get_Temp(JSONNODE *tempData)
 eReturnValues CScsiTemperatureLog::get_Data(JSONNODE *masterData)
 {
 	eReturnValues retStatus = eReturnValues::IN_PROGRESS;
-
+#ifdef max
+#undef max
+#endif
 	size_t tempSize = sizeof(sTempLogPageStruct);
-	if (pData != M_NULLPTR)
+	if (v_Buff.size() != 0)
 	{
 		JSONNODE *pageInfo = json_new(JSON_NODE);
 		json_set_name(pageInfo, "Temperature Log Page - Dh");
-		for (size_t param = 0; param < m_PageLength; param += tempSize)
-		{
+		for (size_t param = 0; param < m_PageLength; param += tempSize) {
 			byte_Swap_16(&m_Page->paramCode);
 			get_Temp(pageInfo);
-			// Check to make sure we still have engough data to increment the m_Page
-			if (((param + (2* tempSize) + sizeof(sLogPageStruct)) > m_pDataSize && param + tempSize < m_PageLength) || param > UINT32_MAX)
+
+			if (!has_enough_data(param, tempSize, sizeof(sLogPageStruct), m_pDataSize) ||
+				param > static_cast<size_t>(std::numeric_limits<uint32_t>::max()))
 			{
 				json_push_back(masterData, pageInfo);
 				return eReturnValues::BAD_PARAMETER;
 			}
-			else if (param + tempSize < m_PageLength)
-			{
+
+			if (param + tempSize < m_PageLength) {
 				m_Page++;
 			}
-			else
-			{
+			else {
 				break;
 			}
 		}

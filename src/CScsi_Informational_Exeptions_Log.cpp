@@ -2,7 +2,7 @@
 // CScsi_Informational_Exeptions_Log.cpp  Definition of the Informational Exceptions Log page provides a place for reporting detail about exceptions.
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2026 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -30,7 +30,7 @@ using namespace opensea_parser;
 //
 //---------------------------------------------------------------------------
 CScsiInformationalExeptionsLog::CScsiInformationalExeptionsLog()
-	: pData()
+	: v_Buff()
 	, m_infoName("Informational Exceptions Log")
 	, m_infoStatus(eReturnValues::IN_PROGRESS)
 	, m_PageLength(0)
@@ -58,7 +58,7 @@ CScsiInformationalExeptionsLog::CScsiInformationalExeptionsLog()
 //
 //---------------------------------------------------------------------------
 CScsiInformationalExeptionsLog::CScsiInformationalExeptionsLog(uint8_t * buffer, size_t bufferSize, uint16_t pageLength)
-	: pData(M_NULLPTR)
+	: v_Buff()
 	, m_infoName("Informational Exceptions Log")
 	, m_infoStatus(eReturnValues::IN_PROGRESS)
 	, m_PageLength(pageLength)
@@ -69,13 +69,16 @@ CScsiInformationalExeptionsLog::CScsiInformationalExeptionsLog(uint8_t * buffer,
 	{
 		printf("%s \n", m_infoName.c_str());
 	}
-    pData = new uint8_t[bufferSize];								// new a buffer to the point				
-#ifndef __STDC_SECURE_LIB__
-    memcpy(pData, buffer, bufferSize);
-#else
-    memcpy_s(pData, bufferSize, buffer, bufferSize);// copy the buffer data to the class member pBuf
-#endif
-	if (pData != M_NULLPTR)
+	if (buffer != M_NULLPTR)
+	{
+		v_Buff.resize(pageLength);  // Resize vector before copying!
+		safe_memmove(v_Buff.data(), pageLength, buffer, pageLength);
+	}
+	else
+	{
+		m_infoStatus = eReturnValues::FAILURE;
+	}
+	if (v_Buff.size() != 0)                           // if the buffer is null then exit something did not go right
 	{
 		m_infoStatus = eReturnValues::IN_PROGRESS;
 	}
@@ -102,11 +105,7 @@ CScsiInformationalExeptionsLog::CScsiInformationalExeptionsLog(uint8_t * buffer,
 //---------------------------------------------------------------------------
 CScsiInformationalExeptionsLog::~CScsiInformationalExeptionsLog()
 {
-    if (pData != M_NULLPTR)
-    {
-        delete[] pData;
-        pData = M_NULLPTR;
-    }
+
 }
 //-----------------------------------------------------------------------------
 //
@@ -172,7 +171,7 @@ void CScsiInformationalExeptionsLog::process_Informational_Exceptions_Data(JSONN
 eReturnValues CScsiInformationalExeptionsLog::get_Informational_Exceptions_Data(JSONNODE *masterData)
 {
 	eReturnValues retStatus = eReturnValues::IN_PROGRESS;
-	if (pData != M_NULLPTR)
+	if (v_Buff.size() != 0)
 	{
 		JSONNODE* pageInfo;
 
@@ -185,7 +184,7 @@ eReturnValues CScsiInformationalExeptionsLog::get_Informational_Exceptions_Data(
 			if (offset < m_bufferLength && offset < UINT16_MAX)
 			{
 				number++;
-				m_Exeptions = reinterpret_cast<sExeptionsParams*>(&pData[offset]);
+				m_Exeptions = reinterpret_cast<sExeptionsParams*>(&v_Buff.at(offset));
 				process_Informational_Exceptions_Data(pageInfo, number);
 				offset += sizeof(sExeptionsParams);
 			}

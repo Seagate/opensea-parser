@@ -2,7 +2,7 @@
 // CFARM_Log.cpp   Implementation of class CFARMLog
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2026 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -30,8 +30,7 @@ using namespace opensea_parser;
 //---------------------------------------------------------------------------
 CFARMLog::CFARMLog()
 	:m_FARMstatus(eReturnValues::IN_PROGRESS)
-	, bufferData()
-    , m_bufferdelete(false)
+	, v_Buff()
 	, m_LogSize(0)
 	, m_showStatusBytes(false)
 	, m_showStatic(false)
@@ -55,25 +54,19 @@ CFARMLog::CFARMLog()
 //---------------------------------------------------------------------------
 CFARMLog::CFARMLog(const std::string& fileName, bool showStatus, bool showStatic)
 	: m_FARMstatus(eReturnValues::IN_PROGRESS)
-	, bufferData()
-    , m_bufferdelete(true)
+	, v_Buff()
 	, m_LogSize(0)
 	, m_showStatusBytes(showStatus)
 	, m_showStatic(showStatic)
 {
 	CLog *cCLog;
-	cCLog = new CLog(fileName);
+	cCLog = new CLog(fileName, true);
 	if (cCLog->get_Log_Status() == eReturnValues::SUCCESS)
 	{
-		if (cCLog->get_Buffer() != M_NULLPTR)
+		m_LogSize = cCLog->get_Size();
+		cCLog->get_vBuffer(v_Buff);
+		if (v_Buff.size() != 0)                           // if the buffer is null then exit something did not go right
 		{
-			m_LogSize = cCLog->get_Size();
-			bufferData = new uint8_t[m_LogSize];								// new a buffer to the point				
-#ifndef __STDC_SECURE_LIB__
-			memcpy(bufferData, cCLog->get_Buffer(), m_LogSize);
-#else
-			memcpy_s(bufferData, m_LogSize, cCLog->get_Buffer(), m_LogSize);// copy the buffer data to the class member pBuf
-#endif
 			m_FARMstatus = eReturnValues::IN_PROGRESS;
 		}
 		else
@@ -104,25 +97,19 @@ CFARMLog::CFARMLog(const std::string& fileName, bool showStatus, bool showStatic
 //---------------------------------------------------------------------------
 CFARMLog::CFARMLog(const std::string & fileName)
 	:m_FARMstatus(eReturnValues::IN_PROGRESS)
-	, bufferData()
-    , m_bufferdelete(true)
+	, v_Buff()
 	, m_LogSize(0)
 	, m_showStatusBytes(false)
 	, m_showStatic(false)
 {
 	CLog *cCLog;
-	cCLog = new CLog(fileName);
+	cCLog = new CLog(fileName, true);
 	if (cCLog->get_Log_Status() == eReturnValues::SUCCESS)
 	{
-		if (cCLog->get_Buffer() != M_NULLPTR)
+        m_LogSize = cCLog->get_Size();
+		cCLog->get_vBuffer(v_Buff);
+		if (v_Buff.size() != 0)                           // if the buffer is null then exit something did not go right
 		{
-			m_LogSize = cCLog->get_Size();
-			bufferData = new uint8_t[m_LogSize];								// new a buffer to the point				
-#ifndef __STDC_SECURE_LIB__
-			memcpy(bufferData, cCLog->get_Buffer(), m_LogSize);
-#else
-			memcpy_s(bufferData, m_LogSize, cCLog->get_Buffer(), m_LogSize);// copy the buffer data to the class member pBuf
-#endif
 			m_FARMstatus = eReturnValues::IN_PROGRESS;
 		}
 		else
@@ -155,19 +142,19 @@ CFARMLog::CFARMLog(const std::string & fileName)
 //---------------------------------------------------------------------------
 CFARMLog::CFARMLog(uint8_t *farmbufferData, size_t bufferSize, bool showStatus, bool showStatic)
 	: m_FARMstatus(eReturnValues::IN_PROGRESS)
-	, bufferData(farmbufferData)
-    , m_bufferdelete(false)
+	, v_Buff()
 	, m_LogSize(bufferSize)
 	, m_showStatusBytes(showStatus)
 	, m_showStatic(showStatic)
 {
-	if (farmbufferData != M_NULLPTR)
+	if (farmbufferData != M_NULLPTR && m_LogSize > 0)
 	{
+		v_Buff.resize(m_LogSize);  // Resize vector before copying!
+		safe_memmove(v_Buff.data(), m_LogSize, farmbufferData, m_LogSize);
 		m_FARMstatus = eReturnValues::IN_PROGRESS;
-}
+	}
 	else
 	{
-
 		m_FARMstatus = eReturnValues::FAILURE;
 	}
 }
@@ -186,13 +173,7 @@ CFARMLog::CFARMLog(uint8_t *farmbufferData, size_t bufferSize, bool showStatus, 
 //---------------------------------------------------------------------------
 CFARMLog::~CFARMLog()
 {
-    if (m_bufferdelete)
-    {
-        if (bufferData != M_NULLPTR)
-        {
-            delete[] bufferData;
-        }
-    }
+
 }
 //-----------------------------------------------------------------------------
 //
@@ -210,13 +191,13 @@ CFARMLog::~CFARMLog()
 //---------------------------------------------------------------------------
 eReturnValues CFARMLog::parse_Device_Farm_Log(JSONNODE *masterJson)
 {
-	eReturnValues retStatus = eReturnValues::SUCCESS; // MEMORY_FAILURE;
+	eReturnValues retStatus = eReturnValues::SUCCESS; 
 
-	if (is_Device_Scsi(bufferData[0], bufferData[1]))
+	if (is_Device_Scsi(v_Buff.at(0), v_Buff.at(1)))
 	{
-		uint8_t subpage = bufferData[1];
+		uint8_t subpage = v_Buff.at(1);
 		CSCSI_Farm_Log* pCFarm;
-		pCFarm = new CSCSI_Farm_Log(bufferData, m_LogSize, subpage, false, m_showStatusBytes, m_showStatic);
+		pCFarm = new CSCSI_Farm_Log(v_Buff, m_LogSize, subpage, false, m_showStatusBytes, m_showStatic);
 		if (pCFarm->get_Log_Status() == eReturnValues::SUCCESS)
 		{
 			try
@@ -239,7 +220,7 @@ eReturnValues CFARMLog::parse_Device_Farm_Log(JSONNODE *masterJson)
 	else
 	{
 		CATA_Farm_Log* pCFarm;
-		pCFarm = new CATA_Farm_Log(bufferData, m_LogSize, m_showStatusBytes, m_showStatic);
+		pCFarm = new CATA_Farm_Log(v_Buff, m_showStatusBytes, m_showStatic);
 		if (pCFarm->get_Log_Status() == eReturnValues::IN_PROGRESS)
 		{
 			try

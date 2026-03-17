@@ -3,7 +3,7 @@
 //
 // Do NOT modify or remove this copyright and license
 //
-// Copyright (c) 2014 - 2024 Seagate Technology LLC and/or its Affiliates
+// Copyright (c) 2014 - 2026 Seagate Technology LLC and/or its Affiliates
 //
 // This software is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -57,21 +57,35 @@ namespace opensea_parser {
 		CLog(const uint8_t * pBuf, size_t logSize);
         virtual ~CLog();
 
+        // non-copyable to avoid shallow-copy of internal raw pointers
+        CLog(const CLog&) = delete;
+        CLog& operator=(const CLog&) = delete;
+
+        // allow move semantics
+        CLog(CLog&&) noexcept = default;
+        CLog& operator=(CLog&&) = default;
+
         eReturnValues get_CLog();
         void get_CLog(const uint8_t* pBuf, size_t logSize);
         inline eReturnValues read_In_Buffer();
         void read_In_Log();
         inline std::string get_Name() const { return m_name; }
-        inline std::string get_File_Name() const { return m_log->fileName; }
-        inline size_t get_Size() const { return m_log->secure->fileSize; }
-        inline uint8_t *get_Buffer(){ return reinterpret_cast<uint8_t *>(m_bufferData); };
-        inline uint8_t *get_Buffer_Offset(const uint32_t offset){ return reinterpret_cast<uint8_t*>(&m_bufferData[offset]); };
-        inline bool get_vBuffer(std::vector<uint8_t>& buff)
-        {
-            buff = v_Buff;
-            return !buff.empty(); // Return true if the vector is not empty
+        inline std::string get_File_Name() const { return (m_log ? m_log->fileName : std::string()); }
+        inline size_t get_Size() const { return (m_log && m_log->secure) ? m_log->secure->fileSize :0; }
+        inline const uint8_t *get_Buffer() const { return reinterpret_cast<const uint8_t*>(m_bufferData); };
+        inline uint8_t* get_Buffer_Offset(const uint32_t offset) 
+        { 
+            if (!m_bufferData || !m_log || !m_log->secure) return M_NULLPTR;
+            if (offset >= m_log->secure->fileSize) return M_NULLPTR;  // Bounds check
+            return reinterpret_cast<uint8_t*>(&m_bufferData[offset]);
         };
-        char * get_log() { return m_bufferData; };
+        inline bool get_vBuffer(std::vector<uint8_t>& buff) const
+        {
+            if (v_Buff.empty()) return false;
+            buff = v_Buff;
+            return true; // Return true if the vector is not empty
+        };
+        inline const char * get_log() { return m_bufferData; };
         inline eReturnValues get_Log_Status(){ return m_logStatus; };
         inline void set_Log_Status(eReturnValues status){ m_logStatus = status; };
 	};
