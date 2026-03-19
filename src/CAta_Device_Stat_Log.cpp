@@ -314,7 +314,7 @@ CAtaDeviceStatisticsLogs::CAtaDeviceStatisticsLogs(uint32_t logSize, JSONNODE *m
 //!  \return NONE
 //
 //---------------------------------------------------------------------------
-CAtaDeviceStatisticsLogs::CAtaDeviceStatisticsLogs(const std::string &fileName)
+CAtaDeviceStatisticsLogs::CAtaDeviceStatisticsLogs(const std::string& fileName)
     : m_name("Device Stat Log")
 	, m_status(eReturnValues::IN_PROGRESS)
 	, v_Buff()
@@ -452,7 +452,8 @@ eReturnValues CAtaDeviceStatisticsLogs::ParseSCTDeviceStatLog(JSONNODE *masterDa
 
     }
     json_push_back(masterData, deviceData);
-    return eReturnValues::SUCCESS;
+    m_status = eReturnValues::SUCCESS;
+    return m_status;
 }
 //-----------------------------------------------------------------------------
 //
