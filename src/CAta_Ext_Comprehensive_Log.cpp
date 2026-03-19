@@ -385,6 +385,7 @@ eReturnValues CExtComp::parse_Ext_Comp_Log(JSONNODE *masterData)
         sectorNumber++;
     }
     json_push_back(masterData, ExtCompData);
-    return retStatus;
+    m_status = retStatus;
+    return  retStatus;
 }
 
