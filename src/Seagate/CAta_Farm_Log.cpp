@@ -218,7 +218,7 @@ eReturnValues CATA_Farm_Log::parse_Farm_Log()
             offset += m_pageSize;
 
             sWorkLoadStat *pworkLoad = reinterpret_cast<sWorkLoadStat*>(&v_Buff.at(offset));           // get the work load information
-            memcpy(&pFarmFrame->workLoadPage, pworkLoad, sizeof(sWorkLoadStat));
+            safe_memmove(&pFarmFrame->workLoadPage, sizeof(sWorkLoadStat), pworkLoad, sizeof(sWorkLoadStat));
             if (!Check_Page_number(pworkLoad->pageNumber, 2))
             {
                 retStatus = eReturnValues::VALIDATION_FAILURE;
@@ -226,7 +226,7 @@ eReturnValues CATA_Farm_Log::parse_Farm_Log()
             offset += m_pageSize;
 
             sErrorStat *pError = reinterpret_cast<sErrorStat*>(&v_Buff.at(offset));                    // get the error status
-            memcpy(&pFarmFrame->errorPage, pError, sizeof(sErrorStat));
+            safe_memmove(&pFarmFrame->errorPage, sizeof(sErrorStat), pError, sizeof(sErrorStat));
             if (!Check_Page_number(pError->pageNumber, 3))
             {
                 retStatus = eReturnValues::VALIDATION_FAILURE;
@@ -234,7 +234,7 @@ eReturnValues CATA_Farm_Log::parse_Farm_Log()
             offset += m_pageSize;
 
             sEnvironementStat *pEnvironment = reinterpret_cast<sEnvironementStat*>(&v_Buff.at(offset)); // get the envirmonent information 
-            memcpy(&pFarmFrame->environmentPage, pEnvironment, sizeof(sEnvironementStat));
+            safe_memmove(&pFarmFrame->environmentPage, sizeof(sEnvironementStat), pEnvironment, sizeof(sEnvironementStat));
             if (!Check_Page_number(pEnvironment->pageNumber, 4))
             {
                 retStatus = eReturnValues::VALIDATION_FAILURE;
@@ -242,7 +242,7 @@ eReturnValues CATA_Farm_Log::parse_Farm_Log()
             offset += m_pageSize;
 
             sAtaReliabilityStat *pReli = reinterpret_cast<sAtaReliabilityStat*>(&v_Buff.at(offset));         // get the Reliabliity stat
-            memcpy(&pFarmFrame->reliPage, pReli, sizeof(sAtaReliabilityStat));
+            safe_memmove(&pFarmFrame->reliPage, sizeof(sAtaReliabilityStat), pReli, sizeof(sAtaReliabilityStat));
             if (!Check_Page_number(pReli->pageNumber, 5))
             {
                 retStatus = eReturnValues::VALIDATION_FAILURE;

@@ -264,7 +264,7 @@ eReturnValues CScsiStartStop::week_Year_Print(JSONNODE *data, uint16_t param, ui
     {
         bool validASCII = true;
         char charYear[YEARSIZE + 1] = { 0 };
-        memcpy(&charYear[0], &year, YEARSIZE);
+        safe_memmove(&charYear[0], YEARSIZE, &year, YEARSIZE);
         //Check if all ascii characters or not
         for (uint8_t i = 0; i < YEARSIZE; ++i)
         {
@@ -292,7 +292,7 @@ eReturnValues CScsiStartStop::week_Year_Print(JSONNODE *data, uint16_t param, ui
     {
         bool validASCII = true;
         char charWeek[WEEKSIZE + 1] = { 0 };
-        memcpy(&charWeek[0], &week, WEEKSIZE);
+        safe_memmove(&charWeek[0], WEEKSIZE,  &week, WEEKSIZE);
         //Check if all ascii characters or not
         for (uint8_t i = 0; i < WEEKSIZE; ++i)
         {

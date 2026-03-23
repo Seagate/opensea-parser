@@ -1400,8 +1400,8 @@ bool CSCSI_Farm_Log::Get_Reallocation_Data(sActReallocationData *real, uint64_t 
 //---------------------------------------------------------------------------
 bool CSCSI_Farm_Log::get_Head_Info(sHeadInformation *phead, uint8_t *buffer)
 {
-    memcpy(phead->headValue, reinterpret_cast<sHeadInformation *>(&buffer[4]), (sizeof(uint64_t) * static_cast<size_t>(m_heads)));
-    memcpy(&phead->pageHeader, reinterpret_cast<sLogParams *>(&buffer[0]), sizeof(sLogParams));
+    safe_memmove(phead->headValue, sizeof(uint64_t) * static_cast<size_t>(m_heads), reinterpret_cast<sHeadInformation *>(&buffer[4]), sizeof(uint64_t) * static_cast<size_t>(m_heads));
+    safe_memmove(&phead->pageHeader, sizeof(sLogParams), reinterpret_cast<sLogParams *>(&buffer[0]), sizeof(sLogParams));
     for (uint64_t index = 0; index < m_heads; index++)
     {
         byte_Swap_64(&phead->headValue[index] );
@@ -1484,7 +1484,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     {
                         if (headerAlreadyFound == false)                                    // check to see if we have already found the header
                         {
-                            memcpy(reinterpret_cast<sScsiFarmHeader *>(&pFarmFrame->farmHeader), m_pHeader, static_cast<size_t>(m_pageParam->paramLength) + PARAMSIZE);
+                            safe_memmove(reinterpret_cast<sScsiFarmHeader *>(&pFarmFrame->farmHeader), static_cast<size_t>(m_pageParam->paramLength) + PARAMSIZE, m_pHeader, static_cast<size_t>(m_pageParam->paramLength) + PARAMSIZE);
                             offset += (m_pageParam->paramLength + sizeof(sLogParams));
                             headerAlreadyFound = true;                                      // set the header to true so we will not look at the data a second time
                         }
@@ -1574,7 +1574,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                 {
                     sHeadInformation *pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &v_Buff.at(offset));
-                    memcpy(&pFarmFrame->discSlipPerHead, pHeadInfo, sizeof(*pHeadInfo));
+                    safe_memmove(&pFarmFrame->discSlipPerHead, sizeof(*pHeadInfo), pHeadInfo, sizeof(*pHeadInfo));
                     offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;
                 }
@@ -1583,7 +1583,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                 {
                     sHeadInformation *pHeadInfo = new sHeadInformation(); 
                     get_Head_Info(pHeadInfo, &v_Buff.at(offset));
-                    memcpy(&pFarmFrame->mrHeadResistanceByHead, pHeadInfo, sizeof(*pHeadInfo));
+                    safe_memmove(&pFarmFrame->mrHeadResistanceByHead, sizeof(*pHeadInfo), pHeadInfo, sizeof(*pHeadInfo));
                     offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;  
                 }
@@ -1592,7 +1592,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                 {
                     opensea_parser::sHeadInformation* pHeadInfo = new opensea_parser::sHeadInformation();
                     get_Head_Info(pHeadInfo, &v_Buff.at(offset));
-                    memcpy(&pFarmFrame->numberOfTMDByHead, pHeadInfo, sizeof(opensea_parser::sHeadInformation));
+                    safe_memmove(&pFarmFrame->numberOfTMDByHead, sizeof(opensea_parser::sHeadInformation), pHeadInfo, sizeof(opensea_parser::sHeadInformation));
                     offset += static_cast<size_t>((pHeadInfo->pageHeader.paramLength) + sizeof(opensea_parser::sLogParams));
                     delete pHeadInfo;
                 }
@@ -1601,7 +1601,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                 {
                     opensea_parser::sHeadInformation* pHeadInfo = new opensea_parser::sHeadInformation();
                     get_Head_Info(pHeadInfo, &v_Buff.at(offset));
-                    memcpy(&pFarmFrame->velocityObserverByHead, pHeadInfo, sizeof(opensea_parser::sHeadInformation));
+                    safe_memmove(&pFarmFrame->velocityObserverByHead, sizeof(opensea_parser::sHeadInformation), pHeadInfo, sizeof(opensea_parser::sHeadInformation));
                     offset += static_cast<size_t>((pHeadInfo->pageHeader.paramLength) + sizeof(opensea_parser::sLogParams));
                     delete pHeadInfo;
                 }
@@ -1610,7 +1610,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                 {
                     opensea_parser::sHeadInformation* pHeadInfo = new opensea_parser::sHeadInformation();
                     get_Head_Info(pHeadInfo, &v_Buff.at(offset));
-                    memcpy(&pFarmFrame->numberOfVelocityObservedByHead, pHeadInfo, sizeof(opensea_parser::sHeadInformation));
+                    safe_memmove(&pFarmFrame->numberOfVelocityObservedByHead, sizeof(opensea_parser::sHeadInformation), pHeadInfo, sizeof(opensea_parser::sHeadInformation));
                     offset += static_cast<size_t>((pHeadInfo->pageHeader.paramLength) + sizeof(opensea_parser::sLogParams));
                     delete pHeadInfo;
                 }
@@ -1620,7 +1620,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                 {
                     sHeadInformation *pHeadInfo = new sHeadInformation(); 
                     get_Head_Info(pHeadInfo, &v_Buff.at(offset));
-                    memcpy(&pFarmFrame->currentH2STAmplituedByHead, pHeadInfo, sizeof(*pHeadInfo));
+                    safe_memmove(&pFarmFrame->currentH2STAmplituedByHead, sizeof(*pHeadInfo), pHeadInfo, sizeof(*pHeadInfo));
                     offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;  
                 }
@@ -1629,7 +1629,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                 {
                     sHeadInformation *pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &v_Buff.at(offset));
-                    memcpy(&pFarmFrame->currentH2STAsymmetryByHead, pHeadInfo, sizeof(*pHeadInfo));
+                    safe_memmove(&pFarmFrame->currentH2STAsymmetryByHead, sizeof(*pHeadInfo), pHeadInfo, sizeof(*pHeadInfo));
                     offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;  
                 }
@@ -1638,7 +1638,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                 {
                     sHeadInformation *pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &v_Buff.at(offset));
-                    memcpy(&pFarmFrame->ResidentGlistEntries, pHeadInfo, sizeof(*pHeadInfo));
+                    safe_memmove(&pFarmFrame->ResidentGlistEntries, sizeof(*pHeadInfo), pHeadInfo, sizeof(*pHeadInfo));
                     offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;  
                 }
@@ -1647,7 +1647,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                 {
                     sHeadInformation *pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &v_Buff.at(offset));
-                    memcpy(&pFarmFrame->ResidentPlistEntries, pHeadInfo, sizeof(*pHeadInfo));
+                    safe_memmove(&pFarmFrame->ResidentPlistEntries, sizeof(*pHeadInfo), pHeadInfo, sizeof(*pHeadInfo));
                     offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;  
                 }
@@ -1662,7 +1662,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                 {
                     sHeadInformation *pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &v_Buff.at(offset));
-                    memcpy(&pFarmFrame->writePowerOnHours, pHeadInfo, sizeof(*pHeadInfo));
+                    safe_memmove(&pFarmFrame->writePowerOnHours, sizeof(*pHeadInfo), pHeadInfo, sizeof(*pHeadInfo));
                     offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;  
                 }
@@ -1672,7 +1672,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                 {
                     sHeadInformation *pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &v_Buff.at(offset));
-                    memcpy(&pFarmFrame->cumECCReadRepeat, pHeadInfo, sizeof(*pHeadInfo));
+                    safe_memmove(&pFarmFrame->cumECCReadRepeat, sizeof(*pHeadInfo), pHeadInfo, sizeof(*pHeadInfo));
                     offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;
                 }
@@ -1681,7 +1681,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                 {
                     sHeadInformation *pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &v_Buff.at(offset));
-                    memcpy(&pFarmFrame->cumECCReadUnique, pHeadInfo, sizeof(*pHeadInfo));
+                    safe_memmove(&pFarmFrame->cumECCReadUnique, sizeof(*pHeadInfo), pHeadInfo, sizeof(*pHeadInfo));
                     offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;
                 }
@@ -1697,7 +1697,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                 {
                     sHeadInformation *pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &v_Buff.at(offset));
-                    memcpy(&pFarmFrame->currentH2STTrimmedbyHeadZone0, pHeadInfo, sizeof(*pHeadInfo));
+                    safe_memmove(&pFarmFrame->currentH2STTrimmedbyHeadZone0, sizeof(*pHeadInfo), pHeadInfo, sizeof(*pHeadInfo));
                     offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;  
                 }
@@ -1706,7 +1706,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                 {
                     sHeadInformation *pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &v_Buff.at(offset));
-                    memcpy(&pFarmFrame->currentH2STTrimmedbyHeadZone1, pHeadInfo, sizeof(*pHeadInfo));
+                    safe_memmove(&pFarmFrame->currentH2STTrimmedbyHeadZone1, sizeof(*pHeadInfo), pHeadInfo, sizeof(*pHeadInfo));
                     offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;  
                 }
@@ -1715,7 +1715,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                 {
                     sHeadInformation *pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &v_Buff.at(offset));
-                    memcpy(&pFarmFrame->currentH2STTrimmedbyHeadZone2, pHeadInfo, sizeof(*pHeadInfo));
+                    safe_memmove(&pFarmFrame->currentH2STTrimmedbyHeadZone2, sizeof(*pHeadInfo), pHeadInfo, sizeof(*pHeadInfo));
                     offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;  
                 }
@@ -1724,7 +1724,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                 {
                     sHeadInformation *pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &v_Buff.at(offset));
-                    memcpy(&pFarmFrame->currentH2STIterationsByHeadZone0, pHeadInfo, sizeof(*pHeadInfo));
+                    safe_memmove(&pFarmFrame->currentH2STIterationsByHeadZone0, sizeof(*pHeadInfo), pHeadInfo, sizeof(*pHeadInfo));
                     offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;  
                 }
@@ -1733,7 +1733,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                 {
                     sHeadInformation *pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &v_Buff.at(offset));
-                    memcpy(&pFarmFrame->currentH2STIterationsByHeadZone1, pHeadInfo, sizeof(*pHeadInfo));
+                    safe_memmove(&pFarmFrame->currentH2STIterationsByHeadZone1, sizeof(*pHeadInfo), pHeadInfo, sizeof(*pHeadInfo));
                     offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;  
                 }
@@ -1742,7 +1742,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                 {
                     sHeadInformation *pHeadInfo = new sHeadInformation(); 
                     get_Head_Info(pHeadInfo, &v_Buff.at(offset));
-                    memcpy(&pFarmFrame->currentH2STIterationsByHeadZone2, pHeadInfo, sizeof(*pHeadInfo));
+                    safe_memmove(&pFarmFrame->currentH2STIterationsByHeadZone2, sizeof(*pHeadInfo), pHeadInfo, sizeof(*pHeadInfo));
                     offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;  
                 }
@@ -1765,7 +1765,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                 {
                     sHeadInformation *pHeadInfo = new sHeadInformation();
                     get_Head_Info(pHeadInfo, &v_Buff.at(offset));
-                    memcpy(&pFarmFrame->secondMRHeadResistanceByHead, pHeadInfo, sizeof(*pHeadInfo));
+                    safe_memmove(&pFarmFrame->secondMRHeadResistanceByHead, sizeof(*pHeadInfo), pHeadInfo, sizeof(*pHeadInfo));
                     offset += (pHeadInfo->pageHeader.paramLength + sizeof(sLogParams));
                     delete pHeadInfo;
                 }
@@ -1905,7 +1905,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                 {
                     opensea_parser::sHeadInformation* pHeadInfo = new opensea_parser::sHeadInformation();
                     get_Head_Info(pHeadInfo, &v_Buff.at(offset));
-                    memcpy(&pFarmFrame->lifeTimeWritten, pHeadInfo, sizeof(opensea_parser::sHeadInformation));
+                    safe_memmove(&pFarmFrame->lifeTimeWritten, sizeof(opensea_parser::sHeadInformation), pHeadInfo, sizeof(opensea_parser::sHeadInformation));
                     offset += static_cast<size_t>((pHeadInfo->pageHeader.paramLength) + sizeof(opensea_parser::sLogParams));
                     delete pHeadInfo;
                     //new
@@ -1916,7 +1916,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                 {
                     opensea_parser::sHeadInformation* pHeadInfo = new opensea_parser::sHeadInformation();
                     get_Head_Info(pHeadInfo, &v_Buff.at(offset));
-                    memcpy(&pFarmFrame->uniqueURESince, pHeadInfo, sizeof(opensea_parser::sHeadInformation));
+                    safe_memmove(&pFarmFrame->uniqueURESince, sizeof(opensea_parser::sHeadInformation), pHeadInfo, sizeof(opensea_parser::sHeadInformation));
                     offset += static_cast<size_t>((pHeadInfo->pageHeader.paramLength) + sizeof(opensea_parser::sLogParams));
                     delete pHeadInfo;
                     offset += m_logSize;
@@ -1926,7 +1926,7 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                 {
                     opensea_parser::sHeadInformation* pHeadInfo = new opensea_parser::sHeadInformation();
                     get_Head_Info(pHeadInfo, &v_Buff.at(offset));
-                    memcpy(&pFarmFrame->uniqueUREBetween, pHeadInfo, sizeof(opensea_parser::sHeadInformation));
+                    safe_memmove(&pFarmFrame->uniqueUREBetween, sizeof(opensea_parser::sHeadInformation), pHeadInfo, sizeof(opensea_parser::sHeadInformation));
                     offset += static_cast<size_t>((pHeadInfo->pageHeader.paramLength) + sizeof(opensea_parser::sLogParams));
                     delete pHeadInfo;
                     offset += m_logSize;

@@ -377,7 +377,7 @@ eReturnValues CAta_Identify_log::parse_Device_Info()
         }
     }
 
-    memcpy(&m_sDriveInfo.identRotationRate, &identWordPtr[217], 1);
+    safe_memmove(&m_sDriveInfo.identRotationRate, 1, &identWordPtr[217], 1);
     if (m_sDriveInfo.identRotationRate == 0x0001)
     {
         m_sDriveInfo.isAtaSSD = true;
