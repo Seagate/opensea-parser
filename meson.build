@@ -11,7 +11,7 @@
 # ---------------------------------------------
 
 
-project('opensea-parser', 'cpp')
+project('opensea-parser', 'cpp', version : '1.0.0', default_options : ['cpp_std=gnu++17'] )
 
 
 opensea_src_dir = './src/'
@@ -27,7 +27,7 @@ cxx_flags += ['-pic', '-std=c++11', '-I.']
 
 if cc.get_id().contains('gcc')
   if cc.version().version_compare('<5.0')
-    if cc.has_argument('-std=gnu++11')
+    if cc.has_argument('-std=gnu++17')
       # Add this argument to the list since C++11 is a minimum required C++ compiler standard
       add_project_arguments('-std=gnu++11', language: 'cpp')
     else
