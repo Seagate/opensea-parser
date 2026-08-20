@@ -135,7 +135,7 @@ if cpp.get_id().contains('gcc') or cpp.get_id().contains('clang')
         '-Wcalloc-transposed-args',
         '-Werror=alloca',  # Do not allow use of the alloca function
         '-Wstring-compare',  # Helps detect when strcmp is used when the programmer likely meant to use strncmp
-		'-Wno-template-body'
+		'-Wtemplate-body'
     ]
 
 	if cpp.get_id().contains('gcc') and target_machine.system() == 'windows'
