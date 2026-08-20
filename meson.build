@@ -135,13 +135,17 @@ if cpp.get_id().contains('gcc') or cpp.get_id().contains('clang')
     endif
 
     if target_machine.cpu_family() == 'ppc64'
+		message('ppc64')
         #power pc builds generate a lot of warnings/notes about ABI changes since GCC-5
         #this flag is disabling them because this is way too noisy.
         warning_flags += ['-Wno-psabi']
     elif target_machine.cpu_family() == 'x86_64'
+		message('x86_64')
         warning_flags += ['-fcf-protection=full']        #this may be linux only at this time.
     elif target_machine.cpu_family() == 'aarch64'
+		message('aarch64')
         warning_flags += ['-mbranch-protection=standard']
+		warning_flags += ['-Wno-template-body']
     endif
 
 elif cpp.get_id().contains('msvc')
