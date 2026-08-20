@@ -11,7 +11,7 @@
 # ---------------------------------------------
 
 
-project('opensea-parser', 'cpp',license: 'MPL-2.0', version : '1.0.2', default_options : ['warning_level=2', 'default_library=static','cpp_std=gnu++17'] )
+project('opensea-parser', 'cpp',license: 'MPL-2.0', version : '1.0.2', default_options : ['warning_level=2', 'default_library=static'] )
 message('opensea_parser')
 
 opensea_src_dir = './src/'
@@ -20,6 +20,19 @@ include_dir = ['./include', './include/Seagate']
 cc = meson.get_compiler('cpp')
 
 project_defines = []
+project_args = []
+
+if cpp.has_argument('-std=gnu++17')
+  message('Using GNU++17')
+  project_args += ['-std=gnu++17']
+elif cpp.has_argument('-std=gnu++11')
+  message('Falling back to GNU++11')
+  project_args += ['-std=gnu++11']
+else
+  error('Compiler does not support GNU++11 or GNU++17')
+endif
+
+add_project_arguments(project_args, language : 'cpp')
 
 cpp = meson.get_compiler('cpp')
 cpp_version = cpp.version()
