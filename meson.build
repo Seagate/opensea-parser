@@ -11,7 +11,7 @@
 # ---------------------------------------------
 
 
-project('opensea-parser', 'cpp', version : '1.0.2', default_options : ['cpp_std=gnu++17'] )
+project('opensea-parser', 'cpp',license: 'MPL-2.0', version : '1.0.2', default_options : ['warning_level=2', 'default_library=static','cpp_std=gnu++17'] )
 message('opensea_parser')
 
 opensea_src_dir = './src/'
@@ -282,7 +282,8 @@ libjson = subproject('libjson')
 libjson_dep = libjson.get_variable('libjson_dep')
 
 
-opensea_parser = static_library('opensea_parser', lib_src_files, c_args: cxx_flags, dependencies: [opensea_common_dep,libjson_dep] ,include_directories : include_dir)
+#opensea_parser = static_library('opensea_parser', lib_src_files, c_args: cxx_flags, dependencies: [opensea_common_dep,libjson_dep] ,include_directories : include_dir)
+opensea_parser = static_library('opensea_parser', lib_src_files, c_args: warning_flags, dependencies: [opensea_common_dep,libjson_dep] ,include_directories : include_dir)
 
 opensea_parser_dep = declare_dependency(link_with : opensea_parser, include_directories : include_dir)
 
