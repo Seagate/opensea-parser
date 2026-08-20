@@ -225,19 +225,8 @@ elif cpp.get_id().contains('msvc')
         '/NXCOMPAT',  #data execution prevention
         '/dynamicbase',  #address space randomization
     ]
-
-    #TODO: check compiler version to handle warnings that were off by default in earlier versions
-    #ex: C4431 (level 4)	missing type specifier - int assumed. Note: C no longer supports default-int
-    #    This was off by default in compilers before VS2012.
-elif cpp.get_id().contains('xlc')
-    #This section is for IBM's xlc compiler and warning options it may need.
-    #NOTE: xlcclang should be handled above
-    #See following links:
-    #https://www.ibm.com/docs/en/xl-c-and-cpp-aix/16.1?topic=reference-supported-xl-compiler-options-by-different-invocations
-    #https://www.ibm.com/docs/en/xl-c-and-cpp-aix/16.1?topic=end-mapping-legacy-xl-compiler-options-gcc-options
-    #https://www.ibm.com/docs/en/xl-c-and-cpp-aix/16.1?topic=reference-individual-xl-compiler-option-descriptions
-    warning_flags = []
 endif
+
 
 lib_src_files = files(
    opensea_src_dir+ 'Opensea_Parser_Helper.cpp', opensea_src_dir + 'CLog.cpp' , opensea_src_dir + 'CAta_Ext_DST_Log.cpp', opensea_src_dir + 'CAta_Device_Stat_Log.cpp', opensea_src_dir + 'CAta_Ext_Comprehensive_Log.cpp' , opensea_src_dir + 'CAta_Identify_Log.cpp', opensea_src_dir + 'CAta_Power_Condition_Log.cpp' , 
@@ -275,15 +264,15 @@ opensea_src_dir + 'CScsi_Background_Scan_Log.cpp',
 
 
 # Add more warnings for specific GCC versions
-if cc.get_id() == 'gcc'
-    gcc_ver = cc.version()
-    if gcc_ver.version_compare('>=5.5')
-        cxx_flags += '-Wlogical-not-parentheses'
-    endif
-    if gcc_ver.version_compare('>=6.5')
-        cxx_flags += ['-Wnull-dereference', '-Wduplicated-cond', '-Wshift-overflow=2']
-    endif
-endif
+#if cc.get_id() == 'gcc'
+#    gcc_ver = cc.version()
+#    if gcc_ver.version_compare('>=5.5')
+#        cxx_flags += '-Wlogical-not-parentheses'
+#    endif
+#    if gcc_ver.version_compare('>=6.5')
+#        cxx_flags += ['-Wnull-dereference', '-Wduplicated-cond', '-Wshift-overflow=2']
+#    endif
+#endif
 
 
 opensea_common = subproject('opensea-common')
