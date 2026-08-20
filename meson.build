@@ -17,7 +17,8 @@ message('opensea_parser')
 opensea_src_dir = './src/'
 include_dir = ['./include', './include/Seagate']
 
-cc = meson.get_compiler('cpp')
+cpp = meson.get_compiler('cpp')
+cpp_version = cpp.version()
 
 project_defines = []
 project_args = []
@@ -34,8 +35,7 @@ endif
 
 add_project_arguments(project_args, language : 'cpp')
 
-cpp = meson.get_compiler('cpp')
-cpp_version = cpp.version()
+
 
 machine = target_machine.system()
 architecture = target_machine.cpu_family()
