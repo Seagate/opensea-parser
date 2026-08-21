@@ -300,7 +300,7 @@ libjson_dep = libjson.get_variable('libjson_dep')
 
 
 #opensea_parser = static_library('opensea_parser', lib_src_files, cpp_args: cxx_flags, dependencies: [opensea_common_dep,libjson_dep] ,include_directories : include_dir)
-opensea_parser = static_library('opensea_parser', lib_src_files, cpp_args: warning_flags, dependencies: [opensea_common_dep,libjson_dep] ,include_directories : include_dir)
+opensea_parser = static_library('opensea_parser', lib_src_files, cpp_args: cpp.get_supported_arguments(warning_flags), dependencies: [opensea_common_dep,libjson_dep] ,include_directories : include_dir)
 
 opensea_parser_dep = declare_dependency(link_with : opensea_parser, include_directories : include_dir)
 
