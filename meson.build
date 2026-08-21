@@ -135,7 +135,7 @@ if cpp.get_id().contains('gcc') or cpp.get_id().contains('clang')
         '-Wcalloc-transposed-args',
         '-Werror=alloca',  # Do not allow use of the alloca function
         '-Wstring-compare',  # Helps detect when strcmp is used when the programmer likely meant to use strncmp
-		'-Wtemplate-body'
+		'-Wno-template-body'  # GCC 14+ -Wtemplate-body false-positives/hard-errors in libstdc++ headers (e.g. exception_ptr.h make_exception_ptr); disable on all archs, not just aarch64.
     ]
 
 	if cpp.get_id().contains('gcc') and target_machine.system() == 'windows'
@@ -159,7 +159,6 @@ if cpp.get_id().contains('gcc') or cpp.get_id().contains('clang')
     elif target_machine.cpu_family() == 'aarch64'
 		message('aarch64')
         warning_flags += ['-mbranch-protection=standard']
-		warning_flags += ['-Wno-template-body']
     endif
 
 elif cpp.get_id().contains('msvc')
@@ -300,8 +299,8 @@ libjson = subproject('libjson')
 libjson_dep = libjson.get_variable('libjson_dep')
 
 
-#opensea_parser = static_library('opensea_parser', lib_src_files, c_args: cxx_flags, dependencies: [opensea_common_dep,libjson_dep] ,include_directories : include_dir)
-opensea_parser = static_library('opensea_parser', lib_src_files, c_args: warning_flags, dependencies: [opensea_common_dep,libjson_dep] ,include_directories : include_dir)
+#opensea_parser = static_library('opensea_parser', lib_src_files, cpp_args: cxx_flags, dependencies: [opensea_common_dep,libjson_dep] ,include_directories : include_dir)
+opensea_parser = static_library('opensea_parser', lib_src_files, cpp_args: warning_flags, dependencies: [opensea_common_dep,libjson_dep] ,include_directories : include_dir)
 
 opensea_parser_dep = declare_dependency(link_with : opensea_parser, include_directories : include_dir)
 
