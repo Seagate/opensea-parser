@@ -260,6 +260,11 @@ void CScsiSupportedLog::get_Supported_And_Subpage_Description(std::string *descr
             description->assign("Cache Statistics");
 			break;
 		}
+		case eLogPageNames::SEAGATE_SPECIFIC_LOG:
+		{
+			description->assign("Seagate Specific Log");
+			break;
+		}
 		case eLogPageNames::FACTORY_LOG:
 		{
             description->assign("Factory Log");
