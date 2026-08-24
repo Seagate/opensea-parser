@@ -245,6 +245,11 @@ void CScsiSupportedLog::get_Supported_And_Subpage_Description(std::string *descr
             description->assign("Protocol Specific Port");
 			break;
 		}
+		case eLogPageNames::CACHE_MEMORY_STATISTICES:
+					{
+			description->assign("Cache Memory Statistics");
+			break;
+        }
 		case eLogPageNames::INFORMATIONAL_EXCEPTIONS:
 		{
             description->assign("Informational Exceptions");
