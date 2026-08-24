@@ -1291,7 +1291,7 @@ void CFarmCommon::h2sat_Float_Node_Data(JSONNODE* Node, const std::string& title
 			switch (track)
 			{
 			case ZONE0:
-				number = ROUNDF(static_cast<double>(check_for_signed_int(M_DoubleWordInt0(check_Status_Strip_Status(value[loopCount].zone0)), 32) * calculation),2);
+				number = static_cast<double>(ROUNDF(static_cast<float>(check_for_signed_int(M_DoubleWordInt0(check_Status_Strip_Status(value[loopCount].zone0)), 32) * calculation),2));
 				break;
 			case ZONE1:
 				number = static_cast<double>(check_for_signed_int(M_DoubleWordInt0(check_Status_Strip_Status(value[loopCount].zone1)), 32) * calculation);
