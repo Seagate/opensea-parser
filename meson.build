@@ -35,13 +35,8 @@ endif
 
 add_project_arguments(project_args, language : 'cpp')
 
-
-
 machine = target_machine.system()
 architecture = target_machine.cpu_family()
-
-#cxx_flags = ['-Wall', '-Wextra', '-Werror=old-style-cast', '-Wshadow', '-Wmaybe-uninitialized', '-Wvla', '-Wfloat-equal', '-Wlogical-op', '-Wdouble-promotion', '-Wformat-security']
-#cxx_flags += ['-pic', '-std=c++11', '-I.']
 
 # Keep a small set of project-specific flags per buildtype.
 cpp_args = []
@@ -56,6 +51,10 @@ if cpp.get_id().contains('gcc')
             error('C++11/GNU++11 standard is required but was not able to be set!')
         endif
     endif
+endif
+
+if get_option('debug')
+  add_project_arguments('-D_DEBUG', language : 'c')
 endif
 
 if cpp.get_id().contains('gcc') or cpp.get_id().contains('clang')
@@ -278,28 +277,12 @@ opensea_src_dir + 'CScsi_Background_Scan_Log.cpp',
     opensea_src_dir + '/Seagate/CScsi_Farm_Log.cpp'
 )
 
-
-
-# Add more warnings for specific GCC versions
-#if cc.get_id() == 'gcc'
-#    gcc_ver = cc.version()
-#    if gcc_ver.version_compare('>=5.5')
-#        cxx_flags += '-Wlogical-not-parentheses'
-#    endif
-#    if gcc_ver.version_compare('>=6.5')
-#        cxx_flags += ['-Wnull-dereference', '-Wduplicated-cond', '-Wshift-overflow=2']
-#    endif
-#endif
-
-
 opensea_common = subproject('opensea-common')
 opensea_common_dep = opensea_common.get_variable('opensea_common_dep')
 
 libjson = subproject('libjson')
 libjson_dep = libjson.get_variable('libjson_dep')
 
-
-#opensea_parser = static_library('opensea_parser', lib_src_files, cpp_args: cxx_flags, dependencies: [opensea_common_dep,libjson_dep] ,include_directories : include_dir)
 opensea_parser = static_library('opensea_parser', lib_src_files, cpp_args: cpp.get_supported_arguments(warning_flags), dependencies: [opensea_common_dep,libjson_dep] ,include_directories : include_dir)
 
 opensea_parser_dep = declare_dependency(link_with : opensea_parser, include_directories : include_dir)
