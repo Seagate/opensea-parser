@@ -158,7 +158,7 @@ void CScsiCmdDurationLimitsLog::process_Generic_Data(JSONNODE* genericData)
 {
     std::string myHeader;
 
-#if defined_DEBUG
+#if defined(_DEBUG)
     printf("Genaric Log Description\n");
 #endif
     byte_Swap_16(&m_commandLog->paramCode);
@@ -185,7 +185,7 @@ void CScsiCmdDurationLimitsLog::process_Achievable_Data(JSONNODE * achievableDat
 {
     std::string myHeader;
 
-#if defined_DEBUG
+#if defined(_DEBUG)
     printf("Achievable Latency Target Log Description\n");
 #endif
     byte_Swap_16(&m_commandLog->paramCode);
@@ -213,7 +213,7 @@ void CScsiCmdDurationLimitsLog::process_Duration_Limits_Data(JSONNODE* limitData
 {
     std::string myStr;
 
-#if defined_DEBUG
+#if defined(_DEBUG)
     printf("Command DurationLimits Log Description\n");
 #endif
     byte_Swap_16(&m_limitsLog->paramCode);
