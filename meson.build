@@ -106,7 +106,7 @@ if cpp.get_id().contains('gcc') or cpp.get_id().contains('clang')
         '-Wnewline-eof',
         '-Wno-c23-extensions',  #We do not want this warning since we are already checking for when C23 extensions are available before we use them. If not, we use a compiler specific definition, or make it an empty definition.
         '-Wparentheses',
-        '-Wextra-semi',
+        '-Wno-extra-semi',  # codebase widely uses 'ctor() {};' style; too noisy to be useful here
         '-Wcast-qual',
         '-Werror=sometimes-uninitialized',
         '-Wuninitialized',
