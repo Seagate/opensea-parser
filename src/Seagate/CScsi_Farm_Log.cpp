@@ -3776,6 +3776,7 @@ void CSCSI_Farm_Log::print_All_Pages(JSONNODE *masterData)
                 case eSASLogPageTypes::LUN_REALLOCATION_1:
                     print_LUN_Actuator_Reallocation(masterData, index, static_cast<uint16_t>(eSASLogPageTypes::LUN_REALLOCATION_1));
                     break;
+                case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_61:
                 case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_62:
                 case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_63:
                 case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_64:
