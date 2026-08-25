@@ -1901,6 +1901,26 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     offset += (pFarmFrame->reall82.pageHeader.paramLength + sizeof(sLogParams));
                 }
                 break;
+                case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_101:
+                case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_102:
+                case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_103:
+                case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_104:
+                case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_105:
+                case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_106:
+                case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_107:
+                case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_108:
+                case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_109:
+                case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_110:
+                case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_111:
+                case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_112:
+                case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_113:
+                case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_114:
+                case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_115:
+                case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_116:
+                case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_117:
+                case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_118:  //150
+                case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_119:
+                    break;
                 case eSASLogPageTypes::LIFETIME_TERABYTES_WRITTEN:           // LIFETIME_TERABYTES_WRITTEN
                 {
                     opensea_parser::sHeadInformation* pHeadInfo = new opensea_parser::sHeadInformation();
@@ -1912,6 +1932,13 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     offset += m_logSize;
                     break;
                 }
+                case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_120:
+                case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_121:
+                case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_122:
+                case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_123:
+                case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_124:
+                case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_125:
+                 break;
                 case eSASLogPageTypes::UNIQUE_UNRECOVERABLES_SINCE:
                 {
                     opensea_parser::sHeadInformation* pHeadInfo = new opensea_parser::sHeadInformation();
@@ -1932,6 +1959,15 @@ eReturnValues CSCSI_Farm_Log::parse_Farm_Log()
                     offset += m_logSize;
                 }
                 break;
+                case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_128:
+                case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_129:
+                case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_130:
+                case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_131:
+                case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_132:
+                case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_133:
+                case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_134:
+                case eSASLogPageTypes::MAX_RESERVED_FOR_FUTURE_EXPANSION:
+                    break;
                 default:
                     offset += m_logSize;
                     break;
@@ -3164,6 +3200,18 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSON
                 int_Data(headPage, "Second MR Head Resistance", reinterpret_cast<int64_t*>(vFarmFrame.at(page).secondMRHeadResistanceByHead.headValue), m_heads, m_showStatusBits, m_showStatic);
             }
             break;
+        case eSASLogPageTypes::RESERVED_FOR_FUTURE_HEAD_38:
+        case eSASLogPageTypes::RESERVED_FOR_FUTURE_HEAD_39:
+        case eSASLogPageTypes::RESERVED_FOR_FUTURE_HEAD_40:
+        case eSASLogPageTypes::RESERVED_FOR_FUTURE_HEAD_41:
+        case eSASLogPageTypes::RESERVED_FOR_FUTURE_HEAD_42:
+        case eSASLogPageTypes::RESERVED_FOR_FUTURE_HEAD_43:
+        case eSASLogPageTypes::RESERVED_FOR_FUTURE_HEAD_44:
+        case eSASLogPageTypes::RESERVED_FOR_FUTURE_HEAD_45:
+        case eSASLogPageTypes::RESERVED_FOR_FUTURE_HEAD_46:
+        case eSASLogPageTypes::RESERVED_FOR_FUTURE_HEAD_47:
+        case eSASLogPageTypes::RESERVED_FOR_FUTURE_HEAD_48:
+        case eSASLogPageTypes::RESERVED_FOR_FUTURE_HEAD_49:
         case eSASLogPageTypes::LUN_0_ACTUATOR:
         case eSASLogPageTypes::LUN_0_FLASH_LED:
         case eSASLogPageTypes::LUN_REALLOCATION_0:
@@ -3751,6 +3799,7 @@ void CSCSI_Farm_Log::print_All_Pages(JSONNODE *masterData)
                 case eSASLogPageTypes::LUN_REALLOCATION_2:
                     print_LUN_Actuator_Reallocation(masterData, index, static_cast<uint16_t>(eSASLogPageTypes::LUN_REALLOCATION_2));
                     break;
+                case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_81:
                 case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_82:
                 case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_83:
                 case eSASLogPageTypes::RESERVED_FOR_FUTURE_EXPANSION_84:
