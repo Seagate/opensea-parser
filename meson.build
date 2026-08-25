@@ -110,7 +110,7 @@ if cpp.get_id().contains('gcc') or cpp.get_id().contains('clang')
         '-Werror=sometimes-uninitialized',
         '-Wuninitialized',
         '-Wunevaluated-expression',
-        '-Wunsequenced',
+        '-Wno-unsequenced',
         '-Wvarargs',
         '-Wwrite-strings',
         '-Wrestrict',
@@ -134,7 +134,8 @@ if cpp.get_id().contains('gcc') or cpp.get_id().contains('clang')
         '-Wcalloc-transposed-args',
         '-Werror=alloca',  # Do not allow use of the alloca function
         '-Wstring-compare',  # Helps detect when strcmp is used when the programmer likely meant to use strncmp
-		'-Wno-template-body'  # GCC 14+ -Wtemplate-body false-positives/hard-errors in libstdc++ headers (e.g. exception_ptr.h make_exception_ptr); disable on all archs, not just aarch64.
+		'-Wno-template-body',  # GCC 14+ -Wtemplate-body false-positives/hard-errors in libstdc++ headers (e.g. exception_ptr.h make_exception_ptr); disable on all archs, not just aarch64.
+		'-Wno-attributes'  # code_attributes.h/env_detect.h feature-detection macros trip 'attribute directive ignored' noise
     ]
 
 	if cpp.get_id().contains('gcc') and target_machine.system() == 'windows'
