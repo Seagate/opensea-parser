@@ -1,4 +1,4 @@
-// CScsi_Pending_Defects_Log..cpp  Definition for parsing the pending defecs
+// CScsi_Pending_Defects_Log..cpp  Definition for parsing the pending defects
 // Do NOT modify or remove this copyright and license
 //
 // Copyright (c) 2014 - 2026 Seagate Technology LLC and/or its Affiliates
@@ -9,7 +9,7 @@
 //
 // ******************************************************************************************
 
-// \file CScsi_Pending_Defects_Log..cpp  Definition for parsing the pending defecs
+// \file CScsi_Pending_Defects_Log..cpp  Definition for parsing the pending defects
 //
 #include "CScsi_Pending_Defects_Log.h"
 
@@ -98,7 +98,7 @@ CScsiPendingDefectsLog::CScsiPendingDefectsLog(uint8_t *buffer, size_t bufferSiz
 //! \fn CScsiPendingDefectsLog
 //
 //! \brief
-//!   Description: Class deconstructor 
+//!   Description: Class destructor 
 //
 //  Entry:
 //! \param 
@@ -116,7 +116,7 @@ CScsiPendingDefectsLog::~CScsiPendingDefectsLog()
 //! \fn process_PList_Data
 //
 //! \brief
-//!   Description: parser out the data for each Pending defect in the list
+//!   Description: parse out the data for each Pending defect in the list
 //
 //  Entry:
 //! \param SupportData - Json node that parsed Supported pages
@@ -145,7 +145,7 @@ void CScsiPendingDefectsLog::process_PList_Data(JSONNODE *pendingData)
 	json_push_back(pListInfo, json_new_a("Pending Defect Code", temp.str().c_str()));
     temp.str("");temp.clear();
     temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_PlistDefect->paramControlByte);
-	json_push_back(pListInfo, json_new_a("Pending DefectControl Byte ", temp.str().c_str()));
+	json_push_back(pListInfo, json_new_a("Pending Defect Control Byte ", temp.str().c_str()));
     temp.str("");temp.clear();
     temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_PlistDefect->paramLength);
 	json_push_back(pListInfo, json_new_a("Pending Defect Length ", temp.str().c_str()));
@@ -161,7 +161,7 @@ void CScsiPendingDefectsLog::process_PList_Data(JSONNODE *pendingData)
 //! \fn process_PList_Count
 //
 //! \brief
-//!   Description: parser out the data for the count of the Pending Defect list
+//!   Description: parse out the data for the count of the Pending Defect list
 //
 //  Entry:
 //! \param pendingCount - Json node that parsed Supported pages

@@ -97,7 +97,7 @@ CScsiNonMediumErrorCountLog::CScsiNonMediumErrorCountLog(uint8_t * buffer, size_
 //! \fn CScsiNonMediumErrorCountLog
 //
 //! \brief
-//!   Description: Class deconstructor 
+//!   Description: Class destructor 
 //
 //  Entry:
 //! \param 
@@ -115,7 +115,7 @@ CScsiNonMediumErrorCountLog::~CScsiNonMediumErrorCountLog()
 //! \fn process_Non_Medium_Error_Count_Data
 //
 //! \brief
-//!   Description: parser out the data for Non-Medium Error Count
+//!   Description: parse out the data for Non-Medium Error Count
 //
 //  Entry:
 //! \param eventData - Json node that parsed 
@@ -142,7 +142,7 @@ void CScsiNonMediumErrorCountLog::process_Non_Medium_Error_Count_Data(JSONNODE* 
 	json_push_back(cacheInfo, json_new_a("Non-Medium Error Count Control Byte ", temp.str().c_str()));
     temp.str("");temp.clear();
     temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint16_t>(m_CountErrors->paramLength);
-	json_push_back(cacheInfo, json_new_a("Non-Medium Error CountLength ", temp.str().c_str()));
+	json_push_back(cacheInfo, json_new_a("Non-Medium Error Count Length ", temp.str().c_str()));
 	if (m_CountErrors->paramLength == 8 || m_Value > UINT32_MAX)
 	{
 		set_json_64bit(cacheInfo, "Non-Medium Error Count", m_Value, false);

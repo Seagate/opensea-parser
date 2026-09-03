@@ -133,7 +133,7 @@ CAta_NCQ_Command_Error_Log::CAta_NCQ_Command_Error_Log(uint8_t *buffer, size_t l
 //! \fn ~CAta_NCQ_Command_Error_Log()
 //
 //! \brief
-//!   Description: Class deconstructor 
+//!   Description: Class destructor 
 //
 //  Entry:
 //
@@ -234,7 +234,7 @@ eReturnValues CAta_NCQ_Command_Error_Log::get_NCQ_Command_Error_Log(JSONNODE *ma
             opensea_parser::set_json_64bit(tier1Info, "LBA", create_LBA(&vNCQFrame.at(index)), false);
             json_push_back(tier1Info, json_new_i("Sense Key", static_cast<uint32_t>(vNCQFrame.at(index).senseKey)));
             json_push_back(tier1Info, json_new_i("Sense Code Field", static_cast<uint32_t>(vNCQFrame.at(index).senseCodeField)));
-            json_push_back(tier1Info, json_new_i("Sense code Qualifeir", static_cast<uint32_t>(vNCQFrame.at(index).senseCodeQualifier)));
+            json_push_back(tier1Info, json_new_i("Sense code Qualifier", static_cast<uint32_t>(vNCQFrame.at(index).senseCodeQualifier)));
             opensea_parser::set_json_64bit(tier1Info, "Final LBA in Error", vNCQFrame.at(index).finalLBA, false);
             json_push_back(NCQInfo, tier1Info);
         }

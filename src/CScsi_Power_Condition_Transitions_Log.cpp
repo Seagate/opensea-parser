@@ -1,5 +1,5 @@
 //
-// CScsi_Power_Condition_Transitions_Log.h  Definition of Power Condition Transistions Log Page for SAS
+// CScsi_Power_Condition_Transitions_Log.h  Definition of Power Condition Transitions Log Page for SAS
 // Do NOT modify or remove this copyright and license
 //
 // Copyright (c) 2014 - 2026 Seagate Technology LLC and/or its Affiliates
@@ -10,7 +10,7 @@
 //
 // ******************************************************************************************
 
-// \file CScsi_Power_Condition_Transitions_Log.h  Definition of Power Condition Transistions Log Page for SAS
+// \file CScsi_Power_Condition_Transitions_Log.h  Definition of Power Condition Transitions Log Page for SAS
 //
 #include "CScsi_Power_Condition_Transitions_Log.h"
 
@@ -93,7 +93,7 @@ CScsiPowerConditiontLog::CScsiPowerConditiontLog(uint8_t * buffer, size_t buffer
 //! \fn CScsiPowerConditiontLog
 //
 //! \brief
-//!   Description: Class deconstructor 
+//!   Description: Class destructor 
 //
 //  Entry:
 //! \param 
@@ -111,11 +111,11 @@ CScsiPowerConditiontLog::~CScsiPowerConditiontLog()
 //! \fn get_Power_Mode_Type
 //
 //! \brief
-//!   Description: parser out the data for Power Mode Transition Type Information
+//!   Description: parse out the data for Power Mode Transition Type Information
 //
 //  Entry:
 //! \param power - string to give the Power Mode depending on what the code is
-//! \param code - parameter code holds the value to the discription
+//! \param code - parameter code holds the value to the description
 //
 //  Exit:
 //!   \return void
@@ -175,7 +175,7 @@ bool CScsiPowerConditiontLog::get_Power_Mode_Type(std::string *power, uint16_t c
 //! \fn process_Power_Information
 //
 //! \brief
-//!   Description: parser out the data for Power parameters Information
+//!   Description: parse out the data for Power parameters Information
 //
 //  Entry:
 //! \param ) - Json node that the information will be added to
@@ -220,7 +220,7 @@ void CScsiPowerConditiontLog::process_List_Information(JSONNODE *powerData)
 //! \fn get_Data
 //
 //! \brief
-//!   Description: parser out the data for the Power conditions tranistions Log
+//!   Description: parse out the data for the Power conditions tranistions Log
 //
 //  Entry:
 //! \param masterData - Json node that holds all the data 
@@ -235,7 +235,7 @@ eReturnValues CScsiPowerConditiontLog::get_Data(JSONNODE *masterData)
 	if (v_Buff.size() != 0)
 	{
 		JSONNODE *pageInfo = json_new(JSON_NODE);
-		json_set_name(pageInfo, "Power Conditions Tranistions Log - 1Ah");
+		json_set_name(pageInfo, "Power Conditions Transitions Log - 1Ah");
 
 		for (size_t offset = 0; offset < m_PageLength; offset += sizeof(sPowerParams))
 		{
