@@ -45,7 +45,7 @@ CAta_SMART_Log_Dir::CAta_SMART_Log_Dir()
 //!   Description:  Default Class constructor for the CSeaTreasureLog
 //
 //  Entry:
-//! \parama fileName = the name of the file that we need to open to get the buffer data
+//! \param fileName = the name of the file that we need to open to get the buffer data
 //
 //  Exit:
 //!  \return NONE
