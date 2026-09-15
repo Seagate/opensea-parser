@@ -102,7 +102,7 @@ CAta_Ext_DST_Log::CAta_Ext_DST_Log(const std::vector<uint8_t>& BufferData, size_
 //! \fn   CAta_Ext_DST_Log::~CAta_Ext_DST_Log(
 //
 //! \brief
-//!   Description:  Deconstructor of the Ext DST Log Class
+//!   Description:  Destructor of the Ext DST Log Class
 //
 //  Entry:
 //
@@ -121,8 +121,8 @@ CAta_Ext_DST_Log::~CAta_Ext_DST_Log()
 //!   Description: fill in a string of the meaning of the status data
 //
 //  Entry:
-//! \param meaning - string to fill in the meaing
-//! \param status - the status to fill in the meaing 
+//! \param meaning - string to fill in the meaning
+//! \param status - the status to fill in the meaning 
 //
 //  Exit:
 //!   \return eReturnValues eReturnValues::SUCCESS
@@ -140,7 +140,7 @@ void CAta_Ext_DST_Log::Get_Status_Meaning(std::string &meaning, uint8_t status)
     }
     else if (status == 0x02)
     {
-        meaning = "Was interrepted by the host with a hard reset of a soft reset";
+        meaning = "Was interrupted by the host with a hard reset or a soft reset";
     }
     else if (status == 0x03)
     {
