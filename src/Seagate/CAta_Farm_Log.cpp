@@ -581,6 +581,14 @@ eReturnValues CATA_Farm_Log::print_Work_Load(JSONNODE *masterData, uint32_t page
         printf("\tDither events during current power cycle - Actuator 1         %" PRIu64"  \n", vFarmFrame.at(page).workLoadPage.numDithEvtAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));
         printf("\tDither was held off during random - Actuator 1                %" PRIu64"  \n", vFarmFrame.at(page).workLoadPage.numRandWLDitherHoldOffAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));
         printf("\tDither was held off during sequential - Actuator 1            %" PRIu64" \n", vFarmFrame.at(page).workLoadPage.numSequentialWLDitherHoldOffAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));
+        printf("\tNumber of Read Commands of transfer length bin 4              %" PRIu64"  \n", vFarmFrame.at(page).workLoadPage.numReadTransferBin4ATA & UINT64_C(0x00FFFFFFFFFFFFFF));
+        printf("\tNumber of Read Commands of transfer length bin 5              %" PRIu64"  \n", vFarmFrame.at(page).workLoadPage.numReadTransferBin5ATA & UINT64_C(0x00FFFFFFFFFFFFFF));
+        printf("\tNumber of Read Commands of transfer length bin 6              %" PRIu64"  \n", vFarmFrame.at(page).workLoadPage.numReadTransferBin6ATA & UINT64_C(0x00FFFFFFFFFFFFFF));
+        printf("\tNumber of Read Commands of transfer length bin 7              %" PRIu64"  \n", vFarmFrame.at(page).workLoadPage.numReadTransferBin7ATA & UINT64_C(0x00FFFFFFFFFFFFFF));
+        printf("\tNumber of Write Commands of transfer length bin 4             %" PRIu64"  \n", vFarmFrame.at(page).workLoadPage.numWriteTransferBin4ATA & UINT64_C(0x00FFFFFFFFFFFFFF));
+        printf("\tNumber of Write Commands of transfer length bin 5             %" PRIu64"  \n", vFarmFrame.at(page).workLoadPage.numWriteTransferBin5ATA & UINT64_C(0x00FFFFFFFFFFFFFF));
+        printf("\tNumber of Write Commands of transfer length bin 6             %" PRIu64"  \n", vFarmFrame.at(page).workLoadPage.numWriteTransferBin6ATA & UINT64_C(0x00FFFFFFFFFFFFFF));
+        printf("\tNumber of Write Commands of transfer length bin 7             %" PRIu64"  \n", vFarmFrame.at(page).workLoadPage.numWriteTransferBin7ATA & UINT64_C(0x00FFFFFFFFFFFFFF));
 
     }
     std::ostringstream temp;
@@ -636,6 +644,14 @@ eReturnValues CATA_Farm_Log::print_Work_Load(JSONNODE *masterData, uint32_t page
     set_json_64_bit_With_Status(pageInfo, "dither events - Actuator 1", vFarmFrame.at(page).workLoadPage.numDithEvtAct1, false, m_showStatusBits);
     set_json_64_bit_With_Status(pageInfo, "dither was held off during random workloads - Actuator 1", vFarmFrame.at(page).workLoadPage.numRandWLDitherHoldOffAct1, false, m_showStatusBits);
     set_json_64_bit_With_Status(pageInfo, "dither was held off during sequential workloads - Actuator 1", vFarmFrame.at(page).workLoadPage.numSequentialWLDitherHoldOffAct1, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Read Commands of transfer length bin 4", vFarmFrame.at(page).workLoadPage.numReadTransferBin4ATA, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Read Commands of transfer length bin 5", vFarmFrame.at(page).workLoadPage.numReadTransferBin5ATA, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Read Commands of transfer length bin 6", vFarmFrame.at(page).workLoadPage.numReadTransferBin6ATA, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Read Commands of transfer length bin 7", vFarmFrame.at(page).workLoadPage.numReadTransferBin7ATA, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Write Commands of transfer length bin 4", vFarmFrame.at(page).workLoadPage.numWriteTransferBin4ATA, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Write Commands of transfer length bin 5", vFarmFrame.at(page).workLoadPage.numWriteTransferBin5ATA, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Write Commands of transfer length bin 6", vFarmFrame.at(page).workLoadPage.numWriteTransferBin6ATA, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Write Commands of transfer length bin 7", vFarmFrame.at(page).workLoadPage.numWriteTransferBin7ATA, false, m_showStatusBits);
 
     json_push_back(masterData, pageInfo);
 
