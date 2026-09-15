@@ -1469,6 +1469,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
         int_Percent_Dword_Data(headInfo, "MR Head Resistance Percentage", vFarmFrame.at(page).reliPage.MRHeadResistance, m_heads, m_showStatusBits, m_showStatic);
     }
     int_Data(headInfo, "Velocity Observer", vFarmFrame.at(page).reliPage.velocityObserver, m_heads, m_showStatusBits, m_showStatic);
+    int_Data(headInfo, "Number of Velocity Observer", vFarmFrame.at(page).reliPage.numberOfVelocityObserver, m_heads, m_showStatusBits, m_showStatic);
     sflyHeightData(headInfo,"Fly height clearance delta outer", 0.001, vFarmFrame.at(page).reliPage.flyHeightClearance, OUTER, WORDINT0, m_heads, m_showStatusBits, m_showStatic);
     sflyHeightData(headInfo, "Fly height clearance delta inner", 0.001, vFarmFrame.at(page).reliPage.flyHeightClearance, INNER, WORDINT0, m_heads, m_showStatusBits, m_showStatic);
     sflyHeightData(headInfo, "Fly height clearance delta middle", 0.001, vFarmFrame.at(page).reliPage.flyHeightClearance, MIDDLE, WORDINT0, m_heads, m_showStatusBits, m_showStatic);
