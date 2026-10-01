@@ -321,10 +321,10 @@ typedef struct _sAtaReliabilityStat
     uint64_t        DOSScansAct1;                                   //!< Number of DOS Scans Performed, Actuator 1
     uint64_t        correctedLBAsAct1;                              //!< Number of LBAs Corrected by ISP, Acuator 1
     uint64_t        released42;                                     //!< released 42
-    uint64_t        numberLBACorrectedByParitySectorAct1;           //!< Number of LBAs Corrected by Parity Sector, Actuator 1
+    uint64_t        released43;                                     //!< released 43
     uint64_t        released44;                                     //!< released 44
     uint64_t        released45;                                     //!< released 45                
-    uint64_t        released46;                                     //!< released 46
+    uint64_t        numberLBACorrectedByParitySectorAct1;           //!< Number of LBAs Corrected by Parity Sector, Actuator 1
     uint64_t        released47;                                     //!< released 47
     uint64_t        released48[MAX_HEAD_COUNT];                     //!< Qword[24]	released 48
     H2SAT           released49[MAX_HEAD_COUNT];                     //!< Qword[24][3]	released 49
@@ -374,8 +374,8 @@ typedef struct _sAtaReliabilityStat
         reserved28{ 0 }, reserved29{ }, reserved30{ },
 #endif    
         reserved31(0), reserved32(0), reserved33(0), reserved34(0), reserved35(0), reserved36(0), reserved37(0),
-        reserved38(0), reserved39(0), reserved40(0), DOSScansAct1(0), correctedLBAsAct1(0), released42(0), numberLBACorrectedByParitySectorAct1(0),
-        released44(0), released45(0), released46(0), released47(0),
+        reserved38(0), reserved39(0), reserved40(0), DOSScansAct1(0), correctedLBAsAct1(0), released42(0), released43(0),
+        released44(0), released45(0), numberLBACorrectedByParitySectorAct1(0), released47(0),
 #if defined __cplusplus && __cplusplus >= 201103L
         released48{ 0 }, released49{ }, released50{ }, released51{ },
 #endif
