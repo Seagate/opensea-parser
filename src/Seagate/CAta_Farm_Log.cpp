@@ -1315,7 +1315,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
         {
             printf("\tSkip Write Detect Threshold Exceeded by Head %2" PRIu32":              %" PRIu64" \n", loopCount, vFarmFrame.at(page).reliPage.skipWriteDetectThresExceeded[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));  //!< [24] Skip Write Detect Threshold Exceeded Count by Head7
         }
-        if (vFarmFrame.at(page).reliPage.MRHeadResistance[0] & BIT48)
+        if ((vFarmFrame.at(page).reliPage.MRHeadResistance[0] & BIT48) == 0)
         {
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
@@ -1331,9 +1331,9 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
                 whole = M_WordInt2(delta);							                             // get 5:4 whole part of the float
                 double decimal = static_cast<double>(M_DoubleWordInt0(delta));                   // get 3:0 for the Deciaml Part of the float
                 double number = 0.0;
-                if ((vFarmFrame.at(page).reliPage.MRHeadResistance[loopCount] & BIT49) || (whole <= 0))
+                if ((vFarmFrame.at(page).reliPage.MRHeadResistance[loopCount] & BIT49) || (whole < 0))
                 {
-                    number = static_cast<double>(whole) + (decimal * static_cast<double>(.0001F));
+                    number = static_cast<double>(whole) - (decimal * static_cast<double>(.0001F));
                 }
                 else
                 {
@@ -1426,7 +1426,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
         {
             printf("\tWrite POS On (hrs) by Head %2" PRIu32":                                %0.04lf \n", loopCount, static_cast<double>(M_DoubleWord0(vFarmFrame.at(page).reliPage.writePOH[loopCount])) /3600.0);             //!< [24] write POS in sec value from most recent SMART Frame by head
         }
-        if (vFarmFrame.at(page).reliPage.MRHeadResistance[0] & BIT48)
+        if ((vFarmFrame.at(page).reliPage.secondMRHeadResistance[0] & BIT48) == 0)
         {
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
@@ -1442,9 +1442,9 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
                 whole = M_WordInt2(delta);							                             // get 5:4 whole part of the float
                 double decimal = static_cast<double>(M_DoubleWordInt0(delta));                   // get 3:0 for the Deciaml Part of the float
                 double number = 0.0;
-                if ((vFarmFrame.at(page).reliPage.secondMRHeadResistance[loopCount] & BIT49) || (whole <= 0))
+                if ((vFarmFrame.at(page).reliPage.secondMRHeadResistance[loopCount] & BIT49) || (whole < 0))
                 {
-                    number = static_cast<double>(whole) + (decimal * static_cast<double>(.0001F));
+                    number = static_cast<double>(whole) - (decimal * static_cast<double>(.0001F));
                 }
                 else
                 {
@@ -1476,7 +1476,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
     int_Data(headInfo, "FVGA Skip Write Detect", vFarmFrame.at(page).reliPage.FVGASkipWriteDetect, m_heads, m_showStatusBits, m_showStatic);
     int_Data(headInfo, "Skip Write Detect Threshold Exceeded", vFarmFrame.at(page).reliPage.skipWriteDetectThresExceeded, m_heads, m_showStatusBits, m_showStatic);
     // version 4.34 MR Head Resistance became a percentage. Check bit 48 if set then it is a percentage
-    if (vFarmFrame.at(page).reliPage.MRHeadResistance[0] & BIT48)
+    if ((vFarmFrame.at(page).reliPage.MRHeadResistance[0] & BIT48) == 0)
     {
         int_Data(headInfo, "MR Head Resistance", vFarmFrame.at(page).reliPage.MRHeadResistance, m_heads, m_showStatusBits, m_showStatic);
     }
@@ -1505,7 +1505,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
     int_Data(headInfo, "DOS needs to scans count", vFarmFrame.at(page).reliPage.needDOS, m_heads, m_showStatusBits, m_showStatic);
     int_Data(headInfo, "DOS write Fault scans", vFarmFrame.at(page).reliPage.writeDOSFault, m_heads, m_showStatusBits, m_showStatic);
     float_Cal_DoubleWord_Data(headInfo, "Write Power On (hrs)", 3600, vFarmFrame.at(page).reliPage.writePOH, m_heads, m_showStatusBits, m_showStatic);
-    if (vFarmFrame.at(page).reliPage.secondMRHeadResistance[0] & BIT48)
+    if ((vFarmFrame.at(page).reliPage.secondMRHeadResistance[0] & BIT48) == 0)
     {
         int_Data(headInfo, "Second MR Head Resistance", vFarmFrame.at(page).reliPage.secondMRHeadResistance, m_heads, m_showStatusBits, m_showStatic);
     }
