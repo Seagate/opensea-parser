@@ -499,7 +499,7 @@ eReturnValues CATA_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint3
     set_json_64_bit_With_Status(pageInfo, "Head Flight Hours - Actuator 1", vFarmFrame.at(page).driveInfo.headFlightHoursAct1, false, m_showStatusBits);       //!< Head Flight Hours- Actuator 1
     set_json_64_bit_With_Status(pageInfo, "Head Load Events - Actuator 1", vFarmFrame.at(page).driveInfo.headLoadEventsAct1, false, m_showStatusBits);         //!< Head Load Events- Actuator 1
     set_json_bool_With_Status(pageInfo, "HAMR Data Protect Status", vFarmFrame.at(page).driveInfo.HAMRProtectStatus, m_showStatusBits);
-    set_json_bool_With_Status(pageInfo, "Regen Head Mask", vFarmFrame.at(page).driveInfo.regenHeadMask, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Regen Head Mask", vFarmFrame.at(page).driveInfo.regenHeadMask, true, m_showStatusBits);
     // version 4.41
     set_json_64_bit_With_Status(pageInfo, "POH most recent FARM time series save", vFarmFrame.at(page).driveInfo.POHMostRecentSave, false, m_showStatusBits);
     set_json_64_bit_With_Status(pageInfo, "POH second most recent FARM time series save", vFarmFrame.at(page).driveInfo.POHSecondMostRecentSave, false, m_showStatusBits);
@@ -966,9 +966,9 @@ eReturnValues CATA_Farm_Log::print_Error_Information(JSONNODE *masterData, uint3
             {
                 opensea_parser::set_Json_Bool(pageInfo, "SMART trip Attribute 0x07", true);
             }
-            if (M_Byte4(vFarmFrame.at(page).errorPage.pfaAttribute1) == 0x10)
+            if (M_Byte4(vFarmFrame.at(page).errorPage.pfaAttribute1) == 0x0A)
             {
-                opensea_parser::set_Json_Bool(pageInfo, "SMART trip Attribute 0x10", true);
+                opensea_parser::set_Json_Bool(pageInfo, "SMART trip Attribute 0x0A", true);
             }
             if (M_Byte5(vFarmFrame.at(page).errorPage.pfaAttribute1) == 0x12)
             {
