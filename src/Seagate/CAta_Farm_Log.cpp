@@ -499,7 +499,7 @@ eReturnValues CATA_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint3
     set_json_64_bit_With_Status(pageInfo, "Head Flight Hours - Actuator 1", vFarmFrame.at(page).driveInfo.headFlightHoursAct1, false, m_showStatusBits);       //!< Head Flight Hours- Actuator 1
     set_json_64_bit_With_Status(pageInfo, "Head Load Events - Actuator 1", vFarmFrame.at(page).driveInfo.headLoadEventsAct1, false, m_showStatusBits);         //!< Head Load Events- Actuator 1
     set_json_bool_With_Status(pageInfo, "HAMR Data Protect Status", vFarmFrame.at(page).driveInfo.HAMRProtectStatus, m_showStatusBits);
-    set_json_bool_With_Status(pageInfo, "Regen Head Mask", vFarmFrame.at(page).driveInfo.regenHeadMask, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Regen Head Mask", vFarmFrame.at(page).driveInfo.regenHeadMask, true, m_showStatusBits);
     // version 4.41
     set_json_64_bit_With_Status(pageInfo, "POH most recent FARM time series save", vFarmFrame.at(page).driveInfo.POHMostRecentSave, false, m_showStatusBits);
     set_json_64_bit_With_Status(pageInfo, "POH second most recent FARM time series save", vFarmFrame.at(page).driveInfo.POHSecondMostRecentSave, false, m_showStatusBits);
@@ -581,6 +581,14 @@ eReturnValues CATA_Farm_Log::print_Work_Load(JSONNODE *masterData, uint32_t page
         printf("\tDither events during current power cycle - Actuator 1         %" PRIu64"  \n", vFarmFrame.at(page).workLoadPage.numDithEvtAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));
         printf("\tDither was held off during random - Actuator 1                %" PRIu64"  \n", vFarmFrame.at(page).workLoadPage.numRandWLDitherHoldOffAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));
         printf("\tDither was held off during sequential - Actuator 1            %" PRIu64" \n", vFarmFrame.at(page).workLoadPage.numSequentialWLDitherHoldOffAct1 & UINT64_C(0x00FFFFFFFFFFFFFF));
+        printf("\tNumber of Read Commands of transfer length bin 4              %" PRIu64"  \n", vFarmFrame.at(page).workLoadPage.numReadTransferBin4ATA & UINT64_C(0x00FFFFFFFFFFFFFF));
+        printf("\tNumber of Read Commands of transfer length bin 5              %" PRIu64"  \n", vFarmFrame.at(page).workLoadPage.numReadTransferBin5ATA & UINT64_C(0x00FFFFFFFFFFFFFF));
+        printf("\tNumber of Read Commands of transfer length bin 6              %" PRIu64"  \n", vFarmFrame.at(page).workLoadPage.numReadTransferBin6ATA & UINT64_C(0x00FFFFFFFFFFFFFF));
+        printf("\tNumber of Read Commands of transfer length bin 7              %" PRIu64"  \n", vFarmFrame.at(page).workLoadPage.numReadTransferBin7ATA & UINT64_C(0x00FFFFFFFFFFFFFF));
+        printf("\tNumber of Write Commands of transfer length bin 4             %" PRIu64"  \n", vFarmFrame.at(page).workLoadPage.numWriteTransferBin4ATA & UINT64_C(0x00FFFFFFFFFFFFFF));
+        printf("\tNumber of Write Commands of transfer length bin 5             %" PRIu64"  \n", vFarmFrame.at(page).workLoadPage.numWriteTransferBin5ATA & UINT64_C(0x00FFFFFFFFFFFFFF));
+        printf("\tNumber of Write Commands of transfer length bin 6             %" PRIu64"  \n", vFarmFrame.at(page).workLoadPage.numWriteTransferBin6ATA & UINT64_C(0x00FFFFFFFFFFFFFF));
+        printf("\tNumber of Write Commands of transfer length bin 7             %" PRIu64"  \n", vFarmFrame.at(page).workLoadPage.numWriteTransferBin7ATA & UINT64_C(0x00FFFFFFFFFFFFFF));
 
     }
     std::ostringstream temp;
@@ -636,6 +644,14 @@ eReturnValues CATA_Farm_Log::print_Work_Load(JSONNODE *masterData, uint32_t page
     set_json_64_bit_With_Status(pageInfo, "dither events - Actuator 1", vFarmFrame.at(page).workLoadPage.numDithEvtAct1, false, m_showStatusBits);
     set_json_64_bit_With_Status(pageInfo, "dither was held off during random workloads - Actuator 1", vFarmFrame.at(page).workLoadPage.numRandWLDitherHoldOffAct1, false, m_showStatusBits);
     set_json_64_bit_With_Status(pageInfo, "dither was held off during sequential workloads - Actuator 1", vFarmFrame.at(page).workLoadPage.numSequentialWLDitherHoldOffAct1, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Read Commands of transfer length bin 4", vFarmFrame.at(page).workLoadPage.numReadTransferBin4ATA, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Read Commands of transfer length bin 5", vFarmFrame.at(page).workLoadPage.numReadTransferBin5ATA, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Read Commands of transfer length bin 6", vFarmFrame.at(page).workLoadPage.numReadTransferBin6ATA, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Read Commands of transfer length bin 7", vFarmFrame.at(page).workLoadPage.numReadTransferBin7ATA, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Write Commands of transfer length bin 4", vFarmFrame.at(page).workLoadPage.numWriteTransferBin4ATA, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Write Commands of transfer length bin 5", vFarmFrame.at(page).workLoadPage.numWriteTransferBin5ATA, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Write Commands of transfer length bin 6", vFarmFrame.at(page).workLoadPage.numWriteTransferBin6ATA, false, m_showStatusBits);
+    set_json_64_bit_With_Status(pageInfo, "Write Commands of transfer length bin 7", vFarmFrame.at(page).workLoadPage.numWriteTransferBin7ATA, false, m_showStatusBits);
 
     json_push_back(masterData, pageInfo);
 
@@ -950,9 +966,9 @@ eReturnValues CATA_Farm_Log::print_Error_Information(JSONNODE *masterData, uint3
             {
                 opensea_parser::set_Json_Bool(pageInfo, "SMART trip Attribute 0x07", true);
             }
-            if (M_Byte4(vFarmFrame.at(page).errorPage.pfaAttribute1) == 0x10)
+            if (M_Byte4(vFarmFrame.at(page).errorPage.pfaAttribute1) == 0x0A)
             {
-                opensea_parser::set_Json_Bool(pageInfo, "SMART trip Attribute 0x10", true);
+                opensea_parser::set_Json_Bool(pageInfo, "SMART trip Attribute 0x0A", true);
             }
             if (M_Byte5(vFarmFrame.at(page).errorPage.pfaAttribute1) == 0x12)
             {
@@ -1299,7 +1315,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
         {
             printf("\tSkip Write Detect Threshold Exceeded by Head %2" PRIu32":              %" PRIu64" \n", loopCount, vFarmFrame.at(page).reliPage.skipWriteDetectThresExceeded[loopCount] & UINT64_C(0x00FFFFFFFFFFFFFF));  //!< [24] Skip Write Detect Threshold Exceeded Count by Head7
         }
-        if (vFarmFrame.at(page).reliPage.MRHeadResistance[0] & BIT48)
+        if ((vFarmFrame.at(page).reliPage.MRHeadResistance[0] & BIT48) == 0)
         {
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
@@ -1315,9 +1331,9 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
                 whole = M_WordInt2(delta);							                             // get 5:4 whole part of the float
                 double decimal = static_cast<double>(M_DoubleWordInt0(delta));                   // get 3:0 for the Deciaml Part of the float
                 double number = 0.0;
-                if ((vFarmFrame.at(page).reliPage.MRHeadResistance[loopCount] & BIT49) || (whole <= 0))
+                if ((vFarmFrame.at(page).reliPage.MRHeadResistance[loopCount] & BIT49) || (whole < 0))
                 {
-                    number = static_cast<double>(whole) + (decimal * static_cast<double>(.0001F));
+                    number = static_cast<double>(whole) - (decimal * static_cast<double>(.0001F));
                 }
                 else
                 {
@@ -1410,7 +1426,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
         {
             printf("\tWrite POS On (hrs) by Head %2" PRIu32":                                %0.04lf \n", loopCount, static_cast<double>(M_DoubleWord0(vFarmFrame.at(page).reliPage.writePOH[loopCount])) /3600.0);             //!< [24] write POS in sec value from most recent SMART Frame by head
         }
-        if (vFarmFrame.at(page).reliPage.MRHeadResistance[0] & BIT48)
+        if ((vFarmFrame.at(page).reliPage.secondMRHeadResistance[0] & BIT48) == 0)
         {
             for (loopCount = 0; loopCount < m_heads; ++loopCount)
             {
@@ -1426,9 +1442,9 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
                 whole = M_WordInt2(delta);							                             // get 5:4 whole part of the float
                 double decimal = static_cast<double>(M_DoubleWordInt0(delta));                   // get 3:0 for the Deciaml Part of the float
                 double number = 0.0;
-                if ((vFarmFrame.at(page).reliPage.secondMRHeadResistance[loopCount] & BIT49) || (whole <= 0))
+                if ((vFarmFrame.at(page).reliPage.secondMRHeadResistance[loopCount] & BIT49) || (whole < 0))
                 {
-                    number = static_cast<double>(whole) + (decimal * static_cast<double>(.0001F));
+                    number = static_cast<double>(whole) - (decimal * static_cast<double>(.0001F));
                 }
                 else
                 {
@@ -1460,7 +1476,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
     int_Data(headInfo, "FVGA Skip Write Detect", vFarmFrame.at(page).reliPage.FVGASkipWriteDetect, m_heads, m_showStatusBits, m_showStatic);
     int_Data(headInfo, "Skip Write Detect Threshold Exceeded", vFarmFrame.at(page).reliPage.skipWriteDetectThresExceeded, m_heads, m_showStatusBits, m_showStatic);
     // version 4.34 MR Head Resistance became a percentage. Check bit 48 if set then it is a percentage
-    if (vFarmFrame.at(page).reliPage.MRHeadResistance[0] & BIT48)
+    if ((vFarmFrame.at(page).reliPage.MRHeadResistance[0] & BIT48) == 0)
     {
         int_Data(headInfo, "MR Head Resistance", vFarmFrame.at(page).reliPage.MRHeadResistance, m_heads, m_showStatusBits, m_showStatic);
     }
@@ -1469,6 +1485,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
         int_Percent_Dword_Data(headInfo, "MR Head Resistance Percentage", vFarmFrame.at(page).reliPage.MRHeadResistance, m_heads, m_showStatusBits, m_showStatic);
     }
     int_Data(headInfo, "Velocity Observer", vFarmFrame.at(page).reliPage.velocityObserver, m_heads, m_showStatusBits, m_showStatic);
+    int_Data(headInfo, "Number of Velocity Observer", vFarmFrame.at(page).reliPage.numberOfVelocityObserver, m_heads, m_showStatusBits, m_showStatic);
     sflyHeightData(headInfo,"Fly height clearance delta outer", 0.001, vFarmFrame.at(page).reliPage.flyHeightClearance, OUTER, WORDINT0, m_heads, m_showStatusBits, m_showStatic);
     sflyHeightData(headInfo, "Fly height clearance delta inner", 0.001, vFarmFrame.at(page).reliPage.flyHeightClearance, INNER, WORDINT0, m_heads, m_showStatusBits, m_showStatic);
     sflyHeightData(headInfo, "Fly height clearance delta middle", 0.001, vFarmFrame.at(page).reliPage.flyHeightClearance, MIDDLE, WORDINT0, m_heads, m_showStatusBits, m_showStatic);
@@ -1488,7 +1505,7 @@ eReturnValues CATA_Farm_Log::print_Head_Information(JSONNODE *masterData, uint32
     int_Data(headInfo, "DOS needs to scans count", vFarmFrame.at(page).reliPage.needDOS, m_heads, m_showStatusBits, m_showStatic);
     int_Data(headInfo, "DOS write Fault scans", vFarmFrame.at(page).reliPage.writeDOSFault, m_heads, m_showStatusBits, m_showStatic);
     float_Cal_DoubleWord_Data(headInfo, "Write Power On (hrs)", 3600, vFarmFrame.at(page).reliPage.writePOH, m_heads, m_showStatusBits, m_showStatic);
-    if (vFarmFrame.at(page).reliPage.secondMRHeadResistance[0] & BIT48)
+    if ((vFarmFrame.at(page).reliPage.secondMRHeadResistance[0] & BIT48) == 0)
     {
         int_Data(headInfo, "Second MR Head Resistance", vFarmFrame.at(page).reliPage.secondMRHeadResistance, m_heads, m_showStatusBits, m_showStatic);
     }

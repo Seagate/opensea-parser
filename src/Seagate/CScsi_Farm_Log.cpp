@@ -2946,7 +2946,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSON
                         whole = M_WordInt2(delta);							                             // get 5:4 whole part of the float
                         double decimal = static_cast<double>(M_DoubleWordInt0(delta));                   // get 3:0 for the Deciaml Part of the float
                         double number = 0.0;
-                        if ((vFarmFrame.at(page).mrHeadResistanceByHead.headValue[loopCount] & BIT49) && (whole <= 0))
+                        if ((vFarmFrame.at(page).mrHeadResistanceByHead.headValue[loopCount] & BIT49) || (whole < 0))
                         {
                             number = static_cast<double>(whole) - (decimal * static_cast<double>(.0001F));
                         }
@@ -3163,7 +3163,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSON
         case eSASLogPageTypes::RESERVED_FOR_FUTURE_HEAD_37:
             break;
         case eSASLogPageTypes::SECOND_MR_HEAD_RESISTANCE:
-            if (vFarmFrame.at(page).mrHeadResistanceByHead.headValue[0] & BIT48)
+            if (vFarmFrame.at(page).secondMRHeadResistanceByHead.headValue[0] & BIT48)
             {
                 if (g_verbosity >= eVerbosityLevels::VERBOSITY_COMMAND_VERBOSE)
                 {
@@ -3175,7 +3175,7 @@ eReturnValues CSCSI_Farm_Log::print_Head_Information(eSASLogPageTypes type, JSON
                         double decimal = static_cast<double>(M_DoubleWordInt0(delta));                   // get 3:0 for the Deciaml Part of the float
                         double number = 0.0;
                         // check bit 49 and whole being less then 0
-                        if ((vFarmFrame.at(page).secondMRHeadResistanceByHead.headValue[loopCount] & BIT49) || (whole <= 0))
+                        if ((vFarmFrame.at(page).secondMRHeadResistanceByHead.headValue[loopCount] & BIT49) || (whole < 0))
                         {
                             number = static_cast<double>(whole) - (decimal * static_cast<double>(.0001F));
                         }

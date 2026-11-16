@@ -228,6 +228,14 @@ typedef struct _sWorkLoadStat
     uint64_t        numRandWLDitherHoldOffAct1;                   //!< ATA - Number of times dither was held off during random workloads during current power cycle, Actuator 1
     uint64_t        numSequentialWLDitherHoldOffAct1;             //!< ATA - Number of times dither was held off during sequential workloads during current power cycle, Actuator 1
     uint64_t        reserved[350];
+    uint64_t        numReadTransferBin4ATA;                       //!< ATA - Number of Read Commands of transfer length bin 4 for last 3 SMART Summary Frames
+    uint64_t        numReadTransferBin5ATA;                       //!< ATA - Number of Read Commands of transfer length bin 5 for last 3 SMART Summary Frames
+    uint64_t        numReadTransferBin6ATA;                       //!< ATA - Number of Read Commands of transfer length bin 6 for last 3 SMART Summary Frames
+    uint64_t        numReadTransferBin7ATA;                       //!< ATA - Number of Read Commands of transfer length bin 7 for last 3 SMART Summary Frames
+    uint64_t        numWriteTransferBin4ATA;                      //!< ATA - Number of Write Commands of transfer length bin 4 for last 3 SMART Summary Frames
+    uint64_t        numWriteTransferBin5ATA;                      //!< ATA - Number of Write Commands of transfer length bin 5 for last 3 SMART Summary Frames
+    uint64_t        numWriteTransferBin6ATA;                      //!< ATA - Number of Write Commands of transfer length bin 6 for last 3 SMART Summary Frames
+    uint64_t        numWriteTransferBin7ATA;                      //!< ATA - Number of Write Commands of transfer length bin 7 for last 3 SMART Summary Frames
 
 
 
@@ -241,6 +249,8 @@ typedef struct _sWorkLoadStat
 #if defined __cplusplus && __cplusplus >= 201103L
         ,reserved {0}
 #endif
+        ,numReadTransferBin4ATA(0), numReadTransferBin5ATA(0), numReadTransferBin6ATA(0), numReadTransferBin7ATA(0)
+        ,numWriteTransferBin4ATA(0), numWriteTransferBin5ATA(0), numWriteTransferBin6ATA(0), numWriteTransferBin7ATA(0)
     {};
 }sWorkLoadStat;
 
