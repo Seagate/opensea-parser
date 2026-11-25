@@ -150,6 +150,9 @@
     <ClInclude Include="..\..\..\..\include\Seagate\Scsi_Farm_Types.h">
       <Filter>Header Files\seagate</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\include\Seagate\CAta_sense_code_data.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\src\CAta_Device_Stat_Log.cpp">
@@ -259,6 +262,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\src\Seagate\Farm_Common.cpp">
       <Filter>Source Files\seagate</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\Seagate\CAta_sense_code_data.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
