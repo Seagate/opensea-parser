@@ -2724,4 +2724,206 @@ void CFarmCommon::sas_Head_Double_Float_Array_Data(JSONNODE* Node, const std::st
 	}
 	json_push_back(Node, valueNode);
 }
-
+//-----------------------------------------------------------------------------
+//
+//! \fn gpes_Status_Data()
+//
+//! \brief
+//!   Description:  get the static or dynamic build of the data for Get Physical Element Status (GPES) when it changes information
+//
+//  Entry:
+//! \param Node - JSON Node to add the array of information to
+//! \param title  =  string information for that attribute 
+//! \param param = pointer to the frame attribute uint64 array (e.g. gpesStatus)
+//! \param zoneCount = the total number of zones ( ZONECOUNT )
+//! \param printString = when set to true the byte will be printed as a hex string (e.g. "AFh"), otherwise as a uint8_t
+//! \param showStatusBits = when set to true the valid and supported bits will be shown
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void CFarmCommon::gpes_Status_Data(JSONNODE* Node, const std::string& title, uint64_t* param, uint64_t zoneCount, bool printString, bool showStatusBits, bool showStatic)
+{
+	if (showStatic)
+	{
+		gpes_Status_Node_Data(Node, title, param, zoneCount, printString, showStatusBits);
+	}
+	else
+	{
+		gpes_Status_Array_Data(Node, title, param, zoneCount, printString, showStatusBits);
+	}
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn gpes_Status_Node_Data()
+//
+//! \brief
+//!   Description:  get the static build of the data for Get Physical Element Status (GPES) when it changes information
+//
+//  Entry:
+//! \param Node - JSON Node to add the array of information to
+//! \param title  =  string information for that attribute 
+//! \param param = pointer to the frame attribute uint64 array (e.g. gpesStatus)
+//! \param zoneCount = the total number of zones ( ZONECOUNT )
+//! \param printString = when set to true the byte will be printed as a hex string (e.g. "AFh"), otherwise as a uint8_t
+//! \param showStatusBits = when set to true the valid and supported bits will be shown
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void CFarmCommon::gpes_Status_Node_Data(JSONNODE* Node, const std::string& title, uint64_t* param, uint64_t zoneCount, bool printString, bool showStatusBits)
+{
+	std::ostringstream myStr;
+	for (uint32_t loopCount = 0; loopCount < zoneCount; ++loopCount)
+	{
+		myStr.str(""); myStr.clear(); 
+		myStr << title.c_str() << loopCount;                    // write out the title plus the Zone count
+		uint64_t gpesByte = static_cast<int64_t>(M_Byte0(param[loopCount]));
+		if (printString)
+		{
+			std::ostringstream hexStr;
+			hexStr << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint32_t>(gpesByte) << "h";
+			set_json_string_With_Status(Node, myStr.str().c_str(), hexStr.str(), param[loopCount], showStatusBits);
+		}
+		else
+		{
+			gpesByte = add_Active_Status_Bits(gpesByte, param[loopCount]);
+			set_json_int_With_Status(Node, myStr.str().c_str(), static_cast<int64_t>(gpesByte), showStatusBits);
+		}
+	}
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn gpes_Status_Array_Data()
+//
+//! \brief
+//!   Description:  get the dynamic build of the data for Get Physical Element Status (GPES) when it changes information
+//
+//  Entry:
+//! \param Node - JSON Node to add the array of information to
+//! \param title  =  string information for that attribute 
+//! \param param = pointer to the frame attribute uint64 array (e.g. gpesStatus)
+//! \param zoneCount = the total number of zones ( ZONECOUNT )
+//! \param printString = when set to true the byte will be printed as a hex string (e.g. "AFh"), otherwise as a uint8_t
+//! \param showStatusBits = when set to true the valid and supported bits will be shown
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void CFarmCommon::gpes_Status_Array_Data(JSONNODE* Node, const std::string& title, uint64_t* param, uint64_t zoneCount, bool printString, bool showStatusBits)
+{
+	JSONNODE* gpesArray = json_new(JSON_ARRAY);
+	opensea_parser::set_Json_name(gpesArray, title.c_str());
+	for (uint32_t loopCount = 0; loopCount < zoneCount; ++loopCount)
+	{
+		uint64_t gpesByte = static_cast<int64_t>(M_Byte0(param[loopCount]));
+		if (printString)
+		{
+			std::ostringstream hexStr;
+			hexStr << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<uint32_t>(gpesByte) << "h";
+			set_json_string_With_Status(gpesArray, title, hexStr.str(), param[loopCount], showStatusBits);
+		}
+		else
+		{
+			gpesByte = add_Active_Status_Bits(gpesByte, param[loopCount]);
+			set_json_64_bit_With_Status(gpesArray, title, gpesByte, false, showStatusBits);
+		}
+	}
+	json_push_back(Node, gpesArray);
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn uint_bit_range_Data()
+//
+//! \brief
+//!   Description:  get the static or dynamic build of the data for Timestamp (hours) when GPES changes information
+//
+//  Entry:
+//! \param Node - JSON Node to add the array of information to
+//! \param title  =  string information for that attribute 
+//! \param param = pointer to the frame attribute uint64 array (e.g. gpesStatus)
+//! \param[in] msb most significant bit value
+//! \param[in] lsb least significant bit value
+//! \param zoneCount = the total number of zones ( ZONECOUNT )
+//! \param showStatusBits = when set to true the valid and supported bits will be shown
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void CFarmCommon::uint_bit_range_Data(JSONNODE* Node, const std::string& title, uint64_t* param, uint8_t msb, uint8_t lsb, uint64_t zoneCount, bool showStatusBits, bool showStatic)
+{
+	if (showStatic)
+	{
+		uint_bit_range_Node_Data(Node, title, param, msb, lsb, zoneCount, showStatusBits);
+	}
+	else
+	{
+		uint_bit_range_Array_Data(Node, title, param, msb , lsb, zoneCount, showStatusBits);
+	}
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn uint_bit_range_Node_Data()
+//
+//! \brief
+//!   Description:  get the static build of the data for Timestamp (hours) when GPES changes information
+//
+//  Entry:
+//! \param Node - JSON Node to add the array of information to
+//! \param title  =  string information for that attribute 
+//! \param param = pointer to the frame attribute uint64 array (e.g. gpesStatus)
+//! \param[in] msb most significant bit value
+//! \param[in] lsb least significant bit value
+//! \param zoneCount = the total number of zones ( ZONECOUNT )
+//! \param showStatusBits = when set to true the valid and supported bits will be shown
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void CFarmCommon::uint_bit_range_Node_Data(JSONNODE* Node, const std::string& title, uint64_t* param, uint8_t msb, uint8_t lsb, uint64_t zoneCount, bool showStatusBits)
+{
+	std::ostringstream myStr;
+	for (uint64_t loopCount = 0; loopCount < zoneCount; ++loopCount)
+	{
+		myStr.str(""); myStr.clear();
+		myStr << title.c_str() << loopCount;                    // write out the title plus the Zone count
+		uint64_t gpesTimestamp = add_Active_Status_Bits(get_bit_range_uint64(param[loopCount], msb, lsb), param[loopCount]);
+		set_json_64_bit_With_Status(Node, myStr.str().c_str(), gpesTimestamp, false, showStatusBits);
+	}
+}
+//-----------------------------------------------------------------------------
+//
+//! \fn uint_bit_range_Array_Data()
+//
+//! \brief
+//!   Description:  get the dynamic build of the data for Timestamp (hours) when GPES changes information
+//
+//  Entry:
+//! \param Node - JSON Node to add the array of information to
+//! \param title  =  string information for that attribute 
+//! \param param = pointer to the frame attribute uint64 array (e.g. gpesStatus)
+//! \param[in] msb most significant bit value
+//! \param[in] lsb least significant bit value
+//! \param zoneCount = the total number of zones ( ZONECOUNT )
+//! \param showStatusBits = when set to true the valid and supported bits will be shown
+//
+//  Exit:
+//!   \return void
+//
+//---------------------------------------------------------------------------
+void CFarmCommon::uint_bit_range_Array_Data(JSONNODE* Node, const std::string& title, uint64_t* param, uint8_t msb, uint8_t lsb, uint64_t zoneCount, bool showStatusBits)
+{
+	JSONNODE* gpesArray = json_new(JSON_ARRAY);
+	opensea_parser::set_Json_name(gpesArray, title.c_str());
+	for (uint64_t loopCount = 0; loopCount < zoneCount; ++loopCount)
+	{
+		uint64_t gpesTimestamp = add_Active_Status_Bits(get_bit_range_uint64(param[loopCount], msb, lsb), param[loopCount]);
+		set_json_64_bit_With_Status(gpesArray, title, gpesTimestamp, false, showStatusBits);
+	}
+	json_push_back(Node, gpesArray);
+}

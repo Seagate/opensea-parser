@@ -598,7 +598,7 @@ bool CSCSI_Farm_Log::Get_sDriveInfo(sScsiDriveInfo *di, uint64_t offset)
     offset += SIZEPARAM;  //reserved3
     di->reserved4 = M_BytesTo8ByteValue(v_Buff.at(offset), v_Buff.at(offset + 1), v_Buff.at(offset + 2), v_Buff.at(offset + 3), v_Buff.at(offset + 4), v_Buff.at(offset + 5), v_Buff.at(offset + 6), v_Buff.at(offset + 7));
     offset += SIZEPARAM;  //reserved4
-    di->headLoadEvents = M_BytesTo8ByteValue(v_Buff.at(offset), v_Buff.at(offset + 1), v_Buff.at(offset + 2), v_Buff.at(offset + 3), v_Buff.at(offset + 4), v_Buff.at(offset + 5), v_Buff.at(offset + 6), v_Buff.at(offset + 7));
+    di->reserved5 = M_BytesTo8ByteValue(v_Buff.at(offset), v_Buff.at(offset + 1), v_Buff.at(offset + 2), v_Buff.at(offset + 3), v_Buff.at(offset + 4), v_Buff.at(offset + 5), v_Buff.at(offset + 6), v_Buff.at(offset + 7));
     offset += SIZEPARAM;
     di->powerCycleCount = M_BytesTo8ByteValue(v_Buff.at(offset), v_Buff.at(offset + 1), v_Buff.at(offset + 2), v_Buff.at(offset + 3), v_Buff.at(offset + 4), v_Buff.at(offset + 5), v_Buff.at(offset + 6), v_Buff.at(offset + 7));
     offset += SIZEPARAM;
@@ -756,22 +756,8 @@ bool CSCSI_Farm_Log::Get_sWorkLoadStat(sScsiWorkLoadStat *wl, uint64_t offset)
         wl->workLoad.totalWriteCmdsFromFrames4 = M_BytesTo8ByteValue(v_Buff.at(offset), v_Buff.at(offset + 1), v_Buff.at(offset + 2), v_Buff.at(offset + 3), v_Buff.at(offset + 4), v_Buff.at(offset + 5), v_Buff.at(offset + 6), v_Buff.at(offset + 7));
         offset += SIZEPARAM;
 
-        wl->workLoad.numReadTransferSmall = M_BytesTo8ByteValue(v_Buff.at(offset), v_Buff.at(offset + 1), v_Buff.at(offset + 2), v_Buff.at(offset + 3), v_Buff.at(offset + 4), v_Buff.at(offset + 5), v_Buff.at(offset + 6), v_Buff.at(offset + 7));
-        offset += SIZEPARAM;
-        wl->workLoad.numReadTransferMid1 = M_BytesTo8ByteValue(v_Buff.at(offset), v_Buff.at(offset + 1), v_Buff.at(offset + 2), v_Buff.at(offset + 3), v_Buff.at(offset + 4), v_Buff.at(offset + 5), v_Buff.at(offset + 6), v_Buff.at(offset + 7));
-        offset += SIZEPARAM;
-        wl->workLoad.numReadTransferMid2 = M_BytesTo8ByteValue(v_Buff.at(offset), v_Buff.at(offset + 1), v_Buff.at(offset + 2), v_Buff.at(offset + 3), v_Buff.at(offset + 4), v_Buff.at(offset + 5), v_Buff.at(offset + 6), v_Buff.at(offset + 7));
-        offset += SIZEPARAM;
-        wl->workLoad.numReadTransferLarge = M_BytesTo8ByteValue(v_Buff.at(offset), v_Buff.at(offset + 1), v_Buff.at(offset + 2), v_Buff.at(offset + 3), v_Buff.at(offset + 4), v_Buff.at(offset + 5), v_Buff.at(offset + 6), v_Buff.at(offset + 7));
-        offset += SIZEPARAM;
-
-        wl->workLoad.numWriteTransferSmall = M_BytesTo8ByteValue(v_Buff.at(offset), v_Buff.at(offset + 1), v_Buff.at(offset + 2), v_Buff.at(offset + 3), v_Buff.at(offset + 4), v_Buff.at(offset + 5), v_Buff.at(offset + 6), v_Buff.at(offset + 7));
-        offset += SIZEPARAM;
-        wl->workLoad.numWriteTransferMid1 = M_BytesTo8ByteValue(v_Buff.at(offset), v_Buff.at(offset + 1), v_Buff.at(offset + 2), v_Buff.at(offset + 3), v_Buff.at(offset + 4), v_Buff.at(offset + 5), v_Buff.at(offset + 6), v_Buff.at(offset + 7));
-        offset += SIZEPARAM;
-        wl->workLoad.numWriteTransferMid2 = M_BytesTo8ByteValue(v_Buff.at(offset), v_Buff.at(offset + 1), v_Buff.at(offset + 2), v_Buff.at(offset + 3), v_Buff.at(offset + 4), v_Buff.at(offset + 5), v_Buff.at(offset + 6), v_Buff.at(offset + 7));
-        offset += SIZEPARAM;
-        wl->workLoad.numWriteTransferLarge = M_BytesTo8ByteValue(v_Buff.at(offset), v_Buff.at(offset + 1), v_Buff.at(offset + 2), v_Buff.at(offset + 3), v_Buff.at(offset + 4), v_Buff.at(offset + 5), v_Buff.at(offset + 6), v_Buff.at(offset + 7));
+        wl->workLoad.totalNumberofUnalignedWriteCMDS = M_BytesTo8ByteValue(v_Buff.at(offset), v_Buff.at(offset + 1), v_Buff.at(offset + 2), v_Buff.at(offset + 3), v_Buff.at(offset + 4), v_Buff.at(offset + 5), v_Buff.at(offset + 6), v_Buff.at(offset + 7));
+        
     }
     return true;
 }
@@ -834,10 +820,8 @@ bool CSCSI_Farm_Log::Get_sErrorStat(sScsiErrorFrame * es, uint64_t offset)
     offset += SIZEPARAM; // smartTripParam1
     es->smartTripParam2 = M_BytesTo8ByteValue(v_Buff.at(offset), v_Buff.at(offset + 1), v_Buff.at(offset + 2), v_Buff.at(offset + 3), v_Buff.at(offset + 4), v_Buff.at(offset + 5), v_Buff.at(offset + 6), v_Buff.at(offset + 7));
     offset += SIZEPARAM; //smartTripParam2
-    es->reserved13 = M_BytesTo8ByteValue(v_Buff.at(offset), v_Buff.at(offset + 1), v_Buff.at(offset + 2), v_Buff.at(offset + 3), v_Buff.at(offset + 4), v_Buff.at(offset + 5), v_Buff.at(offset + 6), v_Buff.at(offset + 7));
-    offset += SIZEPARAM; // reserved13
-    es->reserved14 = M_BytesTo8ByteValue(v_Buff.at(offset), v_Buff.at(offset + 1), v_Buff.at(offset + 2), v_Buff.at(offset + 3), v_Buff.at(offset + 4), v_Buff.at(offset + 5), v_Buff.at(offset + 6), v_Buff.at(offset + 7));
-    offset += SIZEPARAM; //reserved14
+    es->reserved11 = M_BytesTo8ByteValue(v_Buff.at(offset), v_Buff.at(offset + 1), v_Buff.at(offset + 2), v_Buff.at(offset + 3), v_Buff.at(offset + 4), v_Buff.at(offset + 5), v_Buff.at(offset + 6), v_Buff.at(offset + 7));
+    offset += SIZEPARAM; // reserved11
     es->FRUCode = M_BytesTo8ByteValue(v_Buff.at(offset), v_Buff.at(offset + 1), v_Buff.at(offset + 2), v_Buff.at(offset + 3), v_Buff.at(offset + 4), v_Buff.at(offset + 5), v_Buff.at(offset + 6), v_Buff.at(offset + 7));
     offset += SIZEPARAM;
     es->portAInvalidDwordCount = M_BytesTo8ByteValue(v_Buff.at(offset), v_Buff.at(offset + 1), v_Buff.at(offset + 2), v_Buff.at(offset + 3), v_Buff.at(offset + 4), v_Buff.at(offset + 5), v_Buff.at(offset + 6), v_Buff.at(offset + 7));
@@ -2081,10 +2065,6 @@ eReturnValues CSCSI_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint
         printf("\tFirmware Rev:                                                 %s         \n", vFarmFrame.at(page).identStringInfo.firmwareRev.c_str());											//!< Firmware Revision [0:3]
         printf("\tRotation Rate:                                                %" PRIu64" \n", vFarmFrame.at(page).driveInfo.rotationRate & UINT64_C(0x00FFFFFFFFFFFFFF));								//!< Rotational Rate of Device 
         printf("\tPower on Hours:                                               %" PRIu64" \n", vFarmFrame.at(page).driveInfo.poh & UINT64_C(0x00FFFFFFFFFFFFFF));											//!< Power-on Hour
-        if (m_MajorRev < MAJORVERSION4)
-        {
-            printf("\tHead Load Events:                                             %" PRIu64" \n", vFarmFrame.at(page).driveInfo.headLoadEvents & UINT64_C(0x00FFFFFFFFFFFFFF));								//!< Head Load Events
-        }
         printf("\tPower Cycle count:                                            %" PRIu64" \n", vFarmFrame.at(page).driveInfo.powerCycleCount & UINT64_C(0x00FFFFFFFFFFFFFF));								//!< Power Cycle Count
         printf("\tHardware Reset count:                                         %" PRIu64" \n", vFarmFrame.at(page).driveInfo.resetCount & UINT64_C(0x00FFFFFFFFFFFFFF));									//!< Hardware Reset Count
         printf("\tNVC Status @ power on:                                        %" PRIu64" \n", vFarmFrame.at(page).driveInfo.NVC_StatusATPowerOn & UINT64_C(0x00FFFFFFFFFFFFFF));							//!< NVC Status on Power-on
@@ -2142,10 +2122,6 @@ eReturnValues CSCSI_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint
 
     set_json_64_bit_With_Status(pageInfo, "Rotation Rate", vFarmFrame.at(page).driveInfo.rotationRate, false, m_showStatusBits);										//!< Rotational Rate of Device (ID Word 217)
     set_json_64_bit_With_Status(pageInfo, "Power on Hour", vFarmFrame.at(page).driveInfo.poh, false, m_showStatusBits);                                                //!< Power-on Hour
-    if (m_MajorRev < MAJORVERSION4)
-    {
-        set_json_64_bit_With_Status(pageInfo, "Head Load Events", vFarmFrame.at(page).driveInfo.headLoadEvents, false, m_showStatusBits);									//!< Head Load Events
-    }
     set_json_64_bit_With_Status(pageInfo, "Power Cycle count", vFarmFrame.at(page).driveInfo.powerCycleCount, false, m_showStatusBits);								//!< Power Cycle Count
     set_json_64_bit_With_Status(pageInfo, "Hardware Reset count", vFarmFrame.at(page).driveInfo.resetCount, false, m_showStatusBits);									//!< Hardware Reset Count
     set_json_64_bit_With_Status(pageInfo, "NVC Status @ power on", vFarmFrame.at(page).driveInfo.NVC_StatusATPowerOn, false, m_showStatusBits);						//!< NVC Status on Power-on
@@ -2379,17 +2355,7 @@ eReturnValues CSCSI_Farm_Log::print_WorkLoad(JSONNODE *masterData, uint32_t page
         printf("\tNumber of Write commands from 3.125-25%% of LBA space          %" PRIu64"  \n", vFarmFrame.at(page).workLoadPage.workLoad.totalWriteCmdsFromFrames2 & UINT64_C(0x00FFFFFFFFFFFFFF));	    //!< Number of Write commands from 3.125-25% of LBA space for last 3 SMART Summary Frames
         printf("\tNumber of Write commands from 25-50%% of LBA space             %" PRIu64"  \n", vFarmFrame.at(page).workLoadPage.workLoad.totalWriteCmdsFromFrames3 & UINT64_C(0x00FFFFFFFFFFFFFF));		//!< Number of Write commands from 25-50% of LBA space for last 3 SMART Summary Frames
         printf("\tNumber of Write commands from 50-100%% of LBA space            %" PRIu64"  \n", vFarmFrame.at(page).workLoadPage.workLoad.totalWriteCmdsFromFrames4 & UINT64_C(0x00FFFFFFFFFFFFFF));		//!< Number of Write commands from 50-100% of LBA space for last 3 SMART Summary Frames
-        //4.21
-        if (m_MajorRev >= 4 && m_MinorRev > 20) {
-            printf("\tNumber of Read Commands of transfer length <=16KB             %" PRIu64"  \n", vFarmFrame.at(page).workLoadPage.workLoad.numReadTransferSmall & UINT64_C(0x00FFFFFFFFFFFFFF));		//!< Number of Read commands from 0-3.125% of LBA space for last 3 SMART Summary Frames
-            printf("\tNumber of Read Commands of transfer length (16KB - 512KB]     %" PRIu64"  \n", vFarmFrame.at(page).workLoadPage.workLoad.numReadTransferMid1 & UINT64_C(0x00FFFFFFFFFFFFFF));		//!< Number of Read commands from 3.125-25% of LBA space for last 3 SMART Summary Frames
-            printf("\tNumber of Read Commands of transfer length (512KB - 2MB]      %" PRIu64"  \n", vFarmFrame.at(page).workLoadPage.workLoad.numReadTransferMid2 & UINT64_C(0x00FFFFFFFFFFFFFF));		//!< Number of Read commands from 25-50% of LBA space for last 3 SMART Summary Frames
-            printf("\tNumber of Read Commands of transfer length > 2MB              %" PRIu64"  \n", vFarmFrame.at(page).workLoadPage.workLoad.numReadTransferLarge & UINT64_C(0x00FFFFFFFFFFFFFF));		//!< Number of Read commands from 50-100% of LBA space for last 3 SMART Summary Frames 
-            printf("\tNumber of Write Commands of transfer length <=16KB            %" PRIu64"  \n", vFarmFrame.at(page).workLoadPage.workLoad.numWriteTransferSmall & UINT64_C(0x00FFFFFFFFFFFFFF));	    //!< Number of Write commands from 0-3.125% of LBA space for last 3 SMART Summary Frames
-            printf("\tNumber of Write Commands of transfer length (16KB - 512KB]    %" PRIu64"  \n", vFarmFrame.at(page).workLoadPage.workLoad.numWriteTransferMid1 & UINT64_C(0x00FFFFFFFFFFFFFF));	    //!< Number of Write commands from 3.125-25% of LBA space for last 3 SMART Summary Frames
-            printf("\tNumber of Write Commands of transfer length (512KB - 2MB]     %" PRIu64"  \n", vFarmFrame.at(page).workLoadPage.workLoad.numWriteTransferMid2 & UINT64_C(0x00FFFFFFFFFFFFFF));		//!< Number of Write commands from 25-50% of LBA space for last 3 SMART Summary Frames
-            printf("\tNumber of Write Commands of transfer length > 2MB             %" PRIu64"  \n", vFarmFrame.at(page).workLoadPage.workLoad.numWriteTransferLarge & UINT64_C(0x00FFFFFFFFFFFFFF));		//!< Number of Write commands from 50-100% of LBA space for last 3 SMART Summary Frames
-        }
+        /// need to add  totalNumberofUnalignedWriteCMDS;        //!< SCSI - Total Number of Unaligned Write Commands (added 4.4)  
     }
 
     JSONNODE* pageInfo = json_new(JSON_NODE);
@@ -2425,19 +2391,7 @@ eReturnValues CSCSI_Farm_Log::print_WorkLoad(JSONNODE *masterData, uint32_t page
         set_json_64_bit_With_Status(pageInfo, "Write commands from 25-50% of LBA space", vFarmFrame.at(page).workLoadPage.workLoad.totalWriteCmdsFromFrames3, false, m_showStatusBits);		//!< Number of Write commands from 25-50% of LBA space for last 3 SMART Summary Frames
         set_json_64_bit_With_Status(pageInfo, "Write commands from 50-100% of LBA space", vFarmFrame.at(page).workLoadPage.workLoad.totalWriteCmdsFromFrames4, false, m_showStatusBits);		//!< Number of Write commands from 50-100% of LBA space for last 3 SMART Summary Frames 
     }
-
-    // 4.21
-    if ((m_MajorRev >= 4 && m_MinorRev >= 19) || m_showStatic == true)
-    {
-        set_json_64_bit_With_Status(pageInfo, "Read Commands of transfer length <4kb", vFarmFrame.at(page).workLoadPage.workLoad.numReadTransferSmall, false, m_showStatusBits);
-        set_json_64_bit_With_Status(pageInfo, "Read Commands of transfer length (4kb - 16kb)", vFarmFrame.at(page).workLoadPage.workLoad.numReadTransferMid1, false, m_showStatusBits);
-        set_json_64_bit_With_Status(pageInfo, "Read Commands of transfer length (16kb - 128kb)", vFarmFrame.at(page).workLoadPage.workLoad.numReadTransferMid2, false, m_showStatusBits);
-        set_json_64_bit_With_Status(pageInfo, "Read Commands of transfer length >= 128kb", vFarmFrame.at(page).workLoadPage.workLoad.numReadTransferLarge, false, m_showStatusBits);
-        set_json_64_bit_With_Status(pageInfo, "Write Commands of transfer length <4kb", vFarmFrame.at(page).workLoadPage.workLoad.numWriteTransferSmall, false, m_showStatusBits);
-        set_json_64_bit_With_Status(pageInfo, "Write Commands of transfer length (4kb - 16kb)", vFarmFrame.at(page).workLoadPage.workLoad.numWriteTransferMid1, false, m_showStatusBits);
-        set_json_64_bit_With_Status(pageInfo, "Write Commands of transfer length (16kb - 128kb)", vFarmFrame.at(page).workLoadPage.workLoad.numWriteTransferMid2, false, m_showStatusBits);
-        set_json_64_bit_With_Status(pageInfo, "Write Commands of transfer length >= 128kb", vFarmFrame.at(page).workLoadPage.workLoad.numWriteTransferLarge, false, m_showStatusBits);
-    }
+    // need to add totalNumberofUnalignedWriteCMDS;        //!< SCSI - Total Number of Unaligned Write Commands (added 4.4)
 
     json_push_back(masterData, pageInfo);
     return eReturnValues::SUCCESS;

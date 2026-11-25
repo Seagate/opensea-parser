@@ -23,6 +23,7 @@
 #include "Farm_Helper.h"
 #include "Farm_Common.h"
 #include "Ata_Farm_Types.h"
+#include "CAta_sense_code_data.h"
 #include <sstream>
 
 namespace opensea_parser {
@@ -57,6 +58,7 @@ namespace opensea_parser {
             eReturnValues print_Header(JSONNODE *masterData);
             eReturnValues print_Drive_Information(JSONNODE *masterData, uint32_t page);
             eReturnValues print_Work_Load(JSONNODE *masterData, uint32_t page);
+            eReturnValues print_Sense_Data(JSONNODE* masterData, uint32_t page);
             eReturnValues print_Error_Information(JSONNODE *masterData, uint32_t page);
             eReturnValues print_Enviroment_Information(JSONNODE *masterData, uint32_t page);
             eReturnValues print_Reli_Information(JSONNODE *masterData, uint32_t page);

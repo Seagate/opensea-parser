@@ -64,7 +64,7 @@ namespace opensea_parser {
 			}
 			else
 			{
-				if (hexPrint)
+				if (hexPrint && check_For_Active_Status(reinterpret_cast<uint64_t*>(&value)) == true)
 				{
 					std::ostringstream temp;
 					temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(8) << static_cast<int32_t>(M_DoubleWord0(value));	
@@ -72,7 +72,11 @@ namespace opensea_parser {
 				}
 				else
 				{
-					json_push_back(nowNode, json_new_i(myStr.c_str(), static_cast<int32_t>(M_DoubleWord0(value))));
+					//set data to JSON_NULL
+					JSONNODE* nullNode = json_new(JSON_NODE);
+					json_set_name(nullNode, myStr.c_str());
+					json_nullify(nullNode);
+					json_push_back(nowNode, nullNode);
 				}
 			}
 			return;
@@ -144,8 +148,19 @@ namespace opensea_parser {
 			}
 			else
 			{
-				int64_t reallo = check_for_signed_int(check_Status_Strip_Status(static_cast<uint64_t>(value)), 8);
-				json_push_back(nowNode, json_new_i(myStr.c_str(), reallo));
+				if (check_For_Active_Status(reinterpret_cast<uint64_t*>(&value)) == false)
+				{
+					//set data to JSON_NULL
+					JSONNODE* nullNode = json_new(JSON_NODE);
+					json_set_name(nullNode, myStr.c_str());
+					json_nullify(nullNode);
+					json_push_back(nowNode, nullNode);
+				}
+				else
+				{
+					int64_t reallo = check_for_signed_int(check_Status_Strip_Status(static_cast<uint64_t>(value)), 8);
+					json_push_back(nowNode, json_new_i(myStr.c_str(), reallo));
+				}
 			}
 		}
 	}
@@ -196,7 +211,11 @@ namespace opensea_parser {
 				}
 				else
 				{
-					json_push_back(nowNode, json_new_f(myStr.c_str(), 0.0));
+					JSONNODE* nullNode = json_new(JSON_NODE);
+					json_set_name(nullNode, myStr.c_str());
+					json_nullify(nullNode);
+					json_push_back(nowNode, nullNode);
+					//json_push_back(nowNode, json_new_f(myStr.c_str(), 0.0));
 				}
 			}
 			else
@@ -259,7 +278,11 @@ namespace opensea_parser {
 				}
 				else
 				{
-					json_push_back(nowNode, json_new_f(myStr.c_str(), 0.0));
+					JSONNODE* nullNode = json_new(JSON_NODE);
+					json_set_name(nullNode, myStr.c_str());
+					json_nullify(nullNode);
+					json_push_back(nowNode, nullNode);
+					//json_push_back(nowNode, json_new_f(myStr.c_str(), 0.0));
 				}
 			}
 			else
@@ -322,7 +345,12 @@ namespace opensea_parser {
 				}
 				else
 				{
-					json_push_back(nowNode, json_new_i(myStr.c_str(), 0));
+					JSONNODE* nullNode = json_new(JSON_NODE);
+					json_set_name(nullNode, myStr.c_str());
+					json_nullify(nullNode);
+					json_push_back(nowNode, nullNode);
+
+					//json_push_back(nowNode, json_new_i(myStr.c_str(), 0));
 				}
 			}
 			else
@@ -407,6 +435,28 @@ namespace opensea_parser {
 	{
 		double multiplier = static_cast<double>(std::pow(10.0, static_cast<double>(places)));
 		return std::round(value * multiplier) / multiplier;
+	}
+	//-----------------------------------------------------------------------------
+	//
+	//! \fn add_Active_Status_Bits()
+	//
+	//! \brief
+	//!   Description:  add back in the active status bits (bit 63 - Field Supported, bit 62 - Field Valid) into a uint64_t value
+	//
+	//  Entry:
+	//! \param value  =  64 bit value to add the active status bits back into
+	//
+	//  Exit:
+	//!   \return uint64_t - the value with bit 63 and bit 62 set
+	//
+	//-----------------------------------------------------------------------------
+	inline uint64_t add_Active_Status_Bits(uint64_t value, uint64_t ogValue)
+	{
+		if (check_For_Active_Status(&ogValue))
+		{
+			return value | BIT63 | BIT62;
+		}
+		return value;
 	}
 #endif 
 }

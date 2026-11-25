@@ -226,11 +226,7 @@ namespace opensea_parser {
         uint64_t            poh;                                        //!< Power-on Hours
         uint64_t            reserved3;									//!< reserved
         uint64_t            reserved4;									//!< reserved
-        union {
-            uint64_t            headLoadEvents;                         //!< Head Load Events
-            uint64_t            reserved5;								//!< reserved
-        };
-
+        uint64_t            reserved5;								    //!< reserved
         uint64_t            powerCycleCount;                            //!< Power Cycle Count
         uint64_t            resetCount;                                 //!< Hardware Reset Count
         uint64_t            reserved6;                                  //!< reserved
@@ -242,16 +238,48 @@ namespace opensea_parser {
         _sScsiDriveInfo() :pageNumber(0), copyNumber(0), serialNumber(0), serialNumber2(0), worldWideName(0), 
             worldWideName2(0), deviceInterface(0), deviceCapacity(0),  psecSize(0), lsecSize(0), deviceBufferSize(0),
             heads(0), factor(0), rotationRate(0), firmware(0), firmwareRev(0), reserved(0), reserved1(0), reserved2(0), 
-            poh(0), reserved3(0), reserved4(0), headLoadEvents(0), powerCycleCount(0), resetCount(0), reserved6(0), 
+            poh(0), reserved3(0), reserved4(0), reserved5(0), powerCycleCount(0), resetCount(0), reserved6(0),
             NVC_StatusATPowerOn(0), timeAvailable(0), firstTimeStamp(0), lastTimeStamp(0), dateOfAssembly(0) {};
     }sScsiDriveInfo;
 
+
+    typedef struct _sSASWorkLoadStat
+    {
+        uint64_t        pageNumber;                                 //!< Page Number = 2
+        uint64_t        copyNumber;                                 //!< Copy Number
+        uint64_t        workloadPercentage;                         //!< rated Workload Percentage
+        uint64_t        totalReadCommands;                          //!< Total Number of Read Commands
+        uint64_t        totalWriteCommands;                         //!< Total Number of Write Commands
+        uint64_t        totalRandomReads;                           //!< Total Number of Random Read Commands
+        uint64_t        totalRandomWrites;                          //!< Total Number of Random Write Commands
+        uint64_t        totalNumberofOtherCMDS;                     //!< Total Number Of Other Commands
+        uint64_t        logicalSecWritten;                          //!< Logical Sectors Written
+        uint64_t        logicalSecRead;                             //!< Logical Sectors Read
+        
+        uint64_t        totalReadCmdsFromFrames1;               //!< SCSI - Number of Read commands from 0-3.125% of LBA space for restricted time range.
+        uint64_t        totalReadCmdsFromFrames2;               //!< SCSI - Number of Read commands from 3.125-25% of LBA space for restricted time range.
+        uint64_t        totalReadCmdsFromFrames3;               //!< SCSI - Number of Read commands from 25-75% of LBA space for restricted time range.
+        uint64_t        totalReadCmdsFromFrames4;               //!< SCSI - Number of Read commands from 75-100% of LBA space for restricted time range.
+        uint64_t        totalWriteCmdsFromFrames1;              //!< SCSI - Number of Write commands from 0-3.125% of LBA space for restricted time range.
+        uint64_t        totalWriteCmdsFromFrames2;              //!< SCSI - Number of Write commands from 3.125-25% of LBA space for restricted time range.
+        uint64_t        totalWriteCmdsFromFrames3;              //!< SCSI - Number of Write commands from 25-50% of LBA space for restricted time range.
+        uint64_t        totalWriteCmdsFromFrames4;              //!< SCSI - Number of Write commands from 50-100% of LBA space for restricted time range.
+        uint64_t        totalNumberofUnalignedWriteCMDS;        //!< SCSI - Total Number of Unaligned Write Commands (added 4.4)
+
+        _sSASWorkLoadStat() : pageNumber(0), copyNumber(0), workloadPercentage(0), totalReadCommands(0), 
+            totalWriteCommands(0), totalRandomReads(0), totalRandomWrites(0), totalNumberofOtherCMDS(0), 
+            logicalSecWritten(0), logicalSecRead(0), totalReadCmdsFromFrames1(0), totalReadCmdsFromFrames2(0), 
+            totalReadCmdsFromFrames3(0), totalReadCmdsFromFrames4(0), totalWriteCmdsFromFrames1(0), 
+            totalWriteCmdsFromFrames2(0), totalWriteCmdsFromFrames3(0), totalWriteCmdsFromFrames4(0) {};
+    }sSASWorkLoadStat;
+
     typedef struct _sScsiWorkLoadStat
     {
-        sLogParams          PageHeader;								//!< pointer the farm header page parameter 
-        sWorkLoadStat		workLoad;									//!< structure of the work load Stat
+        sLogParams          PageHeader;								    //!< pointer the farm header page parameter 
+        sSASWorkLoadStat		workLoad;								//!< structure of the work load Stat
 
     }sScsiWorkLoadStat;
+
 
     typedef struct _sScsiErrorFrame
     {
@@ -269,21 +297,13 @@ namespace opensea_parser {
         uint64_t            reserved5;									//!< Reserved
         uint64_t            reserved6;									//!< Reserved
         uint64_t            reserved7;									//!< Reserved
+        uint64_t            attrIOEDCErrors;							//!< Number of IOEDC Errors 
         uint64_t            reserved8;							        //!< Reserved
         uint64_t            reserved9;									//!< Reserved
         uint64_t            reserved10;									//!< Reserved
-        union
-        {
-            uint64_t            reserved11;								//!< Reserved
-            uint64_t            smartTripParam1;						//!< SMART Trip Parameter 1   added 4.30
-        };
-        union
-        {
-            uint64_t            reserved12;								//!< Reserved
-            uint64_t            smartTripParam2;						//!< SMART Trip Parameter 2  added 4.30
-        };
-        uint64_t            reserved13;									//!< Reserved
-        uint64_t            reserved14;									//!< Reserved
+        uint64_t            smartTripParam1;						    //!< SMART Trip Parameter 1   
+        uint64_t            smartTripParam2;						    //!< SMART Trip Parameter 2  
+        uint64_t            reserved11;									//!< Reserved
         uint64_t            FRUCode;									//!< FRU code if smart trip from most recent SMART Frame (SAS only) 
         uint64_t            portAInvalidDwordCount;                     //!< Invalid DWord Count (Port A)
         uint64_t            portBInvalidDwordCount;                     //!< Invalid DWord Count (Port B)
@@ -295,9 +315,9 @@ namespace opensea_parser {
         uint64_t            portBPhyResetProblem;                       //!< Phy Reset Problem (Port B()
 
         _sScsiErrorFrame() : pageNumber(0), copyNumber(0), totalReadECC(0), totalWriteECC(0), readRecoveryAtt(0), reserved1(0),
-            totalMechanicalFails(0), reserved2(0), reserved3(0), reserved4(0), reserved5(0), reserved6(0),
+            totalMechanicalFails(0), reserved2(0), reserved3(0), reserved4(0), reserved5(0), reserved6(0), attrIOEDCErrors(0),
             reserved7(0), reserved8(0), reserved9(0), reserved10(0), smartTripParam1(0),smartTripParam2(0), 
-            reserved13(0), reserved14(0), FRUCode(0), portAInvalidDwordCount(0), portBInvalidDwordCount(0),
+            reserved11(0), FRUCode(0), portAInvalidDwordCount(0), portBInvalidDwordCount(0),
             portADisparityErrorCount(0), portBDisparityErrorCount(0), portALossDwordSync(0),
             portBLossDwordSync(0), portAPhyResetProblem(0), portBPhyResetProblem(0) {};
     }sScsiErrorFrame;
@@ -363,11 +383,7 @@ namespace opensea_parser {
         uint64_t            reserved15;									 //!< Reserved
         uint64_t            reserved16;									 //!< Reserved
         uint64_t            reserved17;									 //!< Reserved
-        union
-        {
-            uint64_t            reserved18;								 //!< Reserved
-            uint64_t            unloadEvents;							 //!< High Priority Unload Events (Emergency Retracts)   added 4.30
-        };
+        uint64_t            unloadEvents;							        //!< High Priority Unload Events (Emergency Retracts)  
         uint64_t            reserved19;                                  //!< reserved
         uint64_t            diskSlipRecalPerformed;                      //!< Number of disc slip recalibrations performed
         uint64_t            heliumPressuretThreshold;                    //!< helium Pressure Threshold Trip
@@ -420,9 +436,14 @@ namespace opensea_parser {
         uint64_t            average5v;                                  //!< 5V Power Average (mw) - Highest of the last 3 SMART summary frames
         uint64_t            min5v;                                      //!< 5V Power Min(mw) - Lowest of last 3 SMART summary frames
         uint64_t            max5v;                                      //!< 5V Power Max(mw) - Highest of last 3 SMART summary frames
+        uint64_t            min12vMv;                                   //!< Min voltage in mV for the 12V power supply since the last power cycle or pulling of FARM
+        uint64_t            max12vMv;                                   //!< Max voltage in mV for the 12V power supply since the last power cycle or pulling of FARM
+        uint64_t            min5vMv;                                    //!< Min voltage in mV for the 5V power supply since the last power cycle or pulling of FARM
+        uint64_t            max5vMv;                                    //!< Max voltage in mV for the 5V power supply since the last power cycle or pulling of FARM
+        uint64_t            timeSinceLastPowerCycle;                    //!< Time in minutes(rounded down) since the last power cycle or pulling of FARM
 
         _sScsiEnvironmentStatPage07() : pageNumber(0), copyNumber(0), average12v(0), min12v(0),
-            max12v(0), average5v(0), min5v(0), max5v(0) {};
+            max12v(0), average5v(0), min5v(0), max5v(0), min12vMv(0), max12vMv(0), min5vMv(0), max5vMv(0), timeSinceLastPowerCycle(0) {};
     }sScsiEnvStatPage07;
 
     typedef struct _sScsiWorkloadStatPage08
@@ -463,9 +484,21 @@ namespace opensea_parser {
             writeCmdBin7(0) {};
     }sScsiWorkloadStatPage08;
 
+    typedef struct _sScsiGPESData
+    {
+        sLogParams          pageHeader;                                  //!< header page parameters
+        uint64_t            gpesData[ZONECOUNT];                         //!< PARAM [16]  Each Qword Entries carry the following info :
+                                                                         //!< -Status and Valid field[63:56]
+                                                                         //!< - Reserved[55:48]
+                                                                         //!< - Head when GPES changes[47:40]
+                                                                         //!< - Timestamp(hours) when GPES changes[39:8]
+                                                                         //!< - Get Physical Element Status(GPES) when it changes[7:0]
+
+    }sScsiGPESData;
+
     typedef struct _sHeadInformation
     {
-        sLogParams          pageHeader;                                  //!<  header page parameters
+        sLogParams          pageHeader;                                  //!< header page parameters
         uint64_t            headValue[MAX_HEAD_COUNT];                   //!< head information
         
 #if defined __cplusplus && __cplusplus >= 201103L
@@ -477,7 +510,7 @@ namespace opensea_parser {
     typedef struct _sLUNStruct
     {
         sLogParams          pageHeader;                                 //!<  header page parameters
-        uint64_t            pageNumber;                                 //!< Page Number = 5
+        uint64_t            pageNumber;                                 //!< Page Number = 0x50
         uint64_t            copyNumber;                                 //!< Copy Number
         uint64_t            LUNID;                                      //!< LUN ID
         uint64_t            headLoadEvents;                             //!< Head Load Events
@@ -568,6 +601,7 @@ namespace opensea_parser {
         sGeneralDriveInfoPage06 gDPage06;                               //!< Gerneral Drive Information Page 06
         sScsiEnvStatPage07      envStatPage07;                          //!< Environment Stat Page 07
         sScsiWorkloadStatPage08 workloadStatPage08;                     //!< Workload Stat Page 08
+        sScsiGPESData           gpesPage09;                             //!< GPES data page 09
         sHeadInformation        discSlipPerHead;
         sHeadInformation        bitErrorRateByHead;
         sHeadInformation        dosWriteRefreshCountByHead;

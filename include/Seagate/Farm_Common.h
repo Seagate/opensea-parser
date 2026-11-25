@@ -129,6 +129,14 @@ namespace opensea_parser {
 			void sas_Head_Double_Float_Data(JSONNODE* Node, const std::string& title, uint64_t* value, uint64_t heads, bool showStatusBits, bool showStatic = false);
 			void sas_Head_Double_Float_Node_Data(JSONNODE* Node, const std::string& title, uint64_t* value, uint64_t heads, bool showStatusBits);
 			void sas_Head_Double_Float_Array_Data(JSONNODE* Node, const std::string& title, uint64_t* value, uint64_t heads, bool showStatusBits);
+
+			void gpes_Status_Data(JSONNODE* Node, const std::string& title, uint64_t* param, uint64_t zoneCount, bool printString, bool showStatusBits, bool showStatic = false);
+			void gpes_Status_Node_Data(JSONNODE* Node, const std::string& title, uint64_t* param, uint64_t zoneCount, bool printString, bool showStatusBits);
+			void gpes_Status_Array_Data(JSONNODE* Node, const std::string& title, uint64_t* param, uint64_t zoneCount, bool printString, bool showStatusBits);
+
+			void uint_bit_range_Data(JSONNODE* Node, const std::string& title, uint64_t* param, uint8_t msb, uint8_t lsb, uint64_t zoneCount, bool showStatusBits, bool showStatic = false);
+			void uint_bit_range_Node_Data(JSONNODE* Node, const std::string& title, uint64_t* param, uint8_t msb, uint8_t lsb, uint64_t zoneCount, bool showStatusBits);
+			void uint_bit_range_Array_Data(JSONNODE* Node, const std::string& title, uint64_t* param, uint8_t msb, uint8_t lsb, uint64_t zoneCount, bool showStatusBits);
 	};
     
 #endif 
