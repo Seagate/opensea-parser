@@ -106,13 +106,13 @@ typedef struct _sDriveInfo
 #endif
         driveRecordingType(0), depopped(0), maxNumberForReasign(0), dateOfAssembly(0), depopulationHeadMask(0), headFlightHoursAct1(0),
         headLoadEventsAct1(0), ProtectStatus(0), regenHeadMask(0), POHMostRecentSave(0), POHSecondMostRecentSave(0),
-        SeqActiveZone(0), SeqWriteActiveZone(0), numLBA(0)
+        SeqActiveZone(0), SeqWriteActiveZone(0), numLBA(0),
 #if defined __cplusplus && __cplusplus >= 201103L
-        ,gpes{ 0 }, 
+        gpes{ 0 }, 
 #endif
-    reserved2(0), reserved3(0), reserved4(0), reserved5(0), reserved6(0),
+    reserved2(0), reserved3(0), reserved4(0), reserved5(0), reserved6(0)
 #if defined __cplusplus && __cplusplus >= 201103L
-        gpesStatus{ 0 }
+        ,gpesStatus{ 0 }
 #endif
         {};
 }sDriveInfo;
@@ -182,12 +182,11 @@ typedef struct _sWorkLoadStat
 #if defined __cplusplus && __cplusplus >= 201103L
         reserved{ 0 },
 #endif
-        readCmdBin4(0), readCmdBin5(0), readCmdBin6(0), readCmdBin7(0), writeCmdBin4(0), writeCmdBin5(0), writeCmdBin6(0), writeCmdBin7(0),
+        readCmdBin4(0), readCmdBin5(0), readCmdBin6(0), readCmdBin7(0), writeCmdBin4(0), writeCmdBin5(0), writeCmdBin6(0), writeCmdBin7(0)
 #if defined __cplusplus && __cplusplus >= 201103L
-        reserved1{ 0 }, lifeTimeReads{ 0 }, TotalUnalignedWrites(0)
+        ,reserved1{ 0 }, lifeTimeReads{ 0 }, TotalUnalignedWrites(0)
 #endif
-    {
-    };
+    {};
 }sWorkLoadStat;
 
 typedef struct _sSenseData
@@ -277,13 +276,13 @@ typedef struct _sErrorStat
 #endif 
         ,pfaAttribute1(0), pfaAttribute2(0), lastReallocatedSectorsAtc0(0), betweenReallocatedSectorsAct0(0), lastCandidateSectorsAct0(0),
         betweenCandidateSectorsAct0(0), lastReallocatedSectorsAct1(0), betweenReallocatedSectorsAct1(0), lastCandidateSectorsAct1(0), 
-        betweenCandidateSectorsAct1(0)
+        betweenCandidateSectorsAct1(0),
 #if defined __cplusplus && __cplusplus >= 201103L
-        , lastUniqueURE{ 0 }, betweenUniqueURE{ 0 }, VisableReadErrors{ 0 },
+        lastUniqueURE{ 0 }, betweenUniqueURE{ 0 }, VisableReadErrors{ 0 },
 #endif
-        reserved5(0), reserved6(0),
+        reserved5(0), reserved6(0)
 #if defined __cplusplus && __cplusplus >= 201103L
-        reserved7{  }, reserved8{  }, senseData{  }
+        ,reserved7{  }, reserved8{  }, senseData{  }
 #endif
     {};
 }sErrorStat;
