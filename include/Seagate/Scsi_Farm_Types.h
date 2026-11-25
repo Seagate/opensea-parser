@@ -23,175 +23,226 @@ namespace opensea_parser {
 
     enum class eSASLogPageTypes
     {
-        FARM_HEADER_PARAMETER = 0,
-        GENERAL_DRIVE_INFORMATION_PARAMETER = 1,
-        WORKLOAD_STATISTICS_PARAMETER = 2,
-        ERROR_STATISTICS_PARAMETER,
-        ENVIRONMENTAL_STATISTICS_PARAMETER,
-        RELIABILITY_STATISTICS_PARAMETER,
-        GENERAL_DRIVE_INFORMATION_06,
-        ENVIRONMENT_STATISTICS_PAMATER_07,
-        WORKLOAD_STATISTICS_PAMATER_08,
-        RESERVED_FOR_FUTURE_STATISTICS_4,
-        RESERVED_FOR_FUTURE_STATISTICS_5,
-        RESERVED_FOR_FUTURE_STATISTICS_6,
-        RESERVED_FOR_FUTURE_STATISTICS_7,
-        RESERVED_FOR_FUTURE_STATISTICS_8,
-        RESERVED_FOR_FUTURE_STATISTICS_9,
-        RESERVED_FOR_FUTURE_STATISTICS_10,
-        RESERVED_FOR_FUTURE_HEAD_1,
-        RESERVED_FOR_FUTURE_HEAD_2,
-        RESERVED_FOR_FUTURE_HEAD_3,
-        RESERVED_FOR_FUTURE_HEAD_4,
-        RESERVED_FOR_FUTURE_HEAD_5,
-        RESERVED_FOR_FUTURE_HEAD_6,
-        RESERVED_FOR_FUTURE_HEAD_7,
-        RESERVED_FOR_FUTURE_HEAD_8,
-        RESERVED_FOR_FUTURE_HEAD_9,
-        RESERVED_FOR_FUTURE_HEAD_10,
-        MR_HEAD_RESISTANCE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD,        //0x001A
-        NUMBER_OF_TMD_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD,                 // 4.41 0x001B
-        VELOCITY_OBSERVER_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD,             // 4.41 0x001C
-        NUMBER_OF_VELOCITY_OBSERVER_OVER_LAST_3_SMART_SUMMARY_FRAMES_BY_HEAD,   // 4.41 0x001D
-        RESERVED_FOR_FUTURE_HEAD_14,
-        CURRENT_H2SAT_AMPLITUDE_BY_HEAD_AVERAGED_ACROSS_TEST_ZONES, //0x001F
-        CURRENT_H2SAT_ASYMMETRY_BY_HEAD_AVERAGED_ACROSS_TEST_ZONES, //0x0020
-        NUMBER_OF_RESIDENT_GLIST_ENTRIES,
-        NUMBER_OF_PENDING_ENTRIES,
-        RESERVED_FOR_FUTURE_HEAD_15,
-        RESERVED_FOR_FUTURE_HEAD_16,
-        RESERVED_FOR_FUTURE_HEAD_17,
-        WRITE_POWERON_HOURS_FROM_MOST_RECENT_SMART, //0x0036
-        RESERVED_FOR_FUTURE_HEAD_18,
-        CUM_LIFETIME_UNRECOVERALBE_READ_REPET_PER_HEAD,
-        CUM_LIFETIME_UNRECOVERABLE_READ_UNIQUE_PER_HEAD,
-        RESERVED_FOR_FUTURE_HEAD_19,
-        RESERVED_FOR_FUTURE_HEAD_20,
-        RESERVED_FOR_FUTURE_HEAD_21,
-        RESERVED_FOR_FUTURE_HEAD_22,
-        RESERVED_FOR_FUTURE_HEAD_23,
-        RESERVED_FOR_FUTURE_HEAD_24,
-        CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_0,
-        CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_1,
-        CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_2,
-        CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_0,
-        CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_1,
-        CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_2,
-        RESERVED_FOR_FUTURE_HEAD_25,
-        RESERVED_FOR_FUTURE_HEAD_26,
-        RESERVED_FOR_FUTURE_HEAD_27,
-        RESERVED_FOR_FUTURE_HEAD_28,
-        RESERVED_FOR_FUTURE_HEAD_29,
-        RESERVED_FOR_FUTURE_HEAD_30,
-        RESERVED_FOR_FUTURE_HEAD_31,
-        RESERVED_FOR_FUTURE_HEAD_32,
-        RESERVED_FOR_FUTURE_HEAD_33,
-        RESERVED_FOR_FUTURE_HEAD_34,
-        RESERVED_FOR_FUTURE_HEAD_35,
-        RESERVED_FOR_FUTURE_HEAD_36,
-        RESERVED_FOR_FUTURE_HEAD_37,
-        SECOND_MR_HEAD_RESISTANCE,
-        RESERVED_FOR_FUTURE_HEAD_38,
-        RESERVED_FOR_FUTURE_HEAD_39,
-        RESERVED_FOR_FUTURE_HEAD_40,
-        RESERVED_FOR_FUTURE_HEAD_41,
-        RESERVED_FOR_FUTURE_HEAD_42,
-        RESERVED_FOR_FUTURE_HEAD_43,
-        RESERVED_FOR_FUTURE_HEAD_44,
-        RESERVED_FOR_FUTURE_HEAD_45,
-        RESERVED_FOR_FUTURE_HEAD_46,
-        RESERVED_FOR_FUTURE_HEAD_47,
-        RESERVED_FOR_FUTURE_HEAD_48,
-        RESERVED_FOR_FUTURE_HEAD_49,
-        LUN_0_ACTUATOR,
-        LUN_0_FLASH_LED,
-        LUN_REALLOCATION_0,
-        RESERVED_FOR_FUTURE_EXPANSION_42,
-        RESERVED_FOR_FUTURE_EXPANSION_43,
-        RESERVED_FOR_FUTURE_EXPANSION_44,
-        RESERVED_FOR_FUTURE_EXPANSION_45,
-        RESERVED_FOR_FUTURE_EXPANSION_46,
-        RESERVED_FOR_FUTURE_EXPANSION_47,
-        RESERVED_FOR_FUTURE_EXPANSION_48,
-        RESERVED_FOR_FUTURE_EXPANSION_49,
-        RESERVED_FOR_FUTURE_EXPANSION_50,
-        RESERVED_FOR_FUTURE_EXPANSION_51,
-        RESERVED_FOR_FUTURE_EXPANSION_52,
-        RESERVED_FOR_FUTURE_EXPANSION_53,
-        RESERVED_FOR_FUTURE_EXPANSION_54,
-        LUN_1_ACTUATOR,
-        LUN_1_FLASH_LED,
-        LUN_REALLOCATION_1,
-        RESERVED_FOR_FUTURE_EXPANSION_61,
-        RESERVED_FOR_FUTURE_EXPANSION_62,
-        RESERVED_FOR_FUTURE_EXPANSION_63,
-        RESERVED_FOR_FUTURE_EXPANSION_64,
-        RESERVED_FOR_FUTURE_EXPANSION_65,
-        RESERVED_FOR_FUTURE_EXPANSION_66,
-        RESERVED_FOR_FUTURE_EXPANSION_67,
-        RESERVED_FOR_FUTURE_EXPANSION_68,
-        RESERVED_FOR_FUTURE_EXPANSION_69,
-        RESERVED_FOR_FUTURE_EXPANSION_70,
-        RESERVED_FOR_FUTURE_EXPANSION_71,
-        RESERVED_FOR_FUTURE_EXPANSION_72,
-        RESERVED_FOR_FUTURE_EXPANSION_73,
-        RESERVED_FOR_FUTURE_EXPANSION_74,
-        LUN_2_ACTUATOR,
-        LUN_2_FLASH_LED,
-        LUN_REALLOCATION_2,
-        RESERVED_FOR_FUTURE_EXPANSION_81,
-        RESERVED_FOR_FUTURE_EXPANSION_82,
-        RESERVED_FOR_FUTURE_EXPANSION_83,
-        RESERVED_FOR_FUTURE_EXPANSION_84,
-        RESERVED_FOR_FUTURE_EXPANSION_85,
-        RESERVED_FOR_FUTURE_EXPANSION_86,
-        RESERVED_FOR_FUTURE_EXPANSION_87,
-        RESERVED_FOR_FUTURE_EXPANSION_88,
-        RESERVED_FOR_FUTURE_EXPANSION_89,
-        RESERVED_FOR_FUTURE_EXPANSION_90,
-        RESERVED_FOR_FUTURE_EXPANSION_91,
-        RESERVED_FOR_FUTURE_EXPANSION_92,
-        RESERVED_FOR_FUTURE_EXPANSION_93,
-        RESERVED_FOR_FUTURE_EXPANSION_94,
-        LUN_3_ACTUATOR,
-        LUN_3_FLASH_LED,
-        LUN_REALLOCATION_3,
-        RESERVED_FOR_FUTURE_EXPANSION_101,
-        RESERVED_FOR_FUTURE_EXPANSION_102,
-        RESERVED_FOR_FUTURE_EXPANSION_103,
-        RESERVED_FOR_FUTURE_EXPANSION_104,
-        RESERVED_FOR_FUTURE_EXPANSION_105,
-        RESERVED_FOR_FUTURE_EXPANSION_106,
-        RESERVED_FOR_FUTURE_EXPANSION_107,
-        RESERVED_FOR_FUTURE_EXPANSION_108,
-        RESERVED_FOR_FUTURE_EXPANSION_109,
-        RESERVED_FOR_FUTURE_EXPANSION_110,
-        RESERVED_FOR_FUTURE_EXPANSION_111,
-        RESERVED_FOR_FUTURE_EXPANSION_112,
-        RESERVED_FOR_FUTURE_EXPANSION_113,
-        RESERVED_FOR_FUTURE_EXPANSION_114,
-        RESERVED_FOR_FUTURE_EXPANSION_115,
-        RESERVED_FOR_FUTURE_EXPANSION_116,
-        RESERVED_FOR_FUTURE_EXPANSION_117,
-        RESERVED_FOR_FUTURE_EXPANSION_118,  //150
-        RESERVED_FOR_FUTURE_EXPANSION_119,
+        FARM_HEADER_PARAMETER = 0x0000,
+        GENERAL_DRIVE_INFORMATION_PARAMETER = 0x0001,
+        WORKLOAD_STATISTICS_PARAMETER = 0x0002,
+        ERROR_STATISTICS_PARAMETER = 0x0003,
+        ENVIRONMENTAL_STATISTICS_PARAMETER = 0x0004,
+        RELIABILITY_STATISTICS_PARAMETER = 0x0005,
+        GENERAL_DRIVE_INFORMATION_06 = 0x0006,
+        ENVIRONMENT_STATISTICS_PARAMETER_07 = 0x0007,
+        WORKLOAD_STATISTICS_PARAMETER_08 = 0x0008,
+        GPES_FIELD_PARAMETER_09 = 0x0009,
+        RESERVED_FOR_FUTURE_STATISTICS_5 = 0x000A,
+        RESERVED_FOR_FUTURE_STATISTICS_6 = 0x000B,
+        RESERVED_FOR_FUTURE_STATISTICS_7 = 0x000C,
+        RESERVED_FOR_FUTURE_STATISTICS_8 = 0x000D,
+        RESERVED_FOR_FUTURE_STATISTICS_9 = 0x000E,
+        RESERVED_FOR_FUTURE_STATISTICS_10 = 0x000F,
+        RESERVED_FOR_FUTURE_HEAD_1 = 0x0010,
+        RESERVED_FOR_FUTURE_HEAD_2 = 0x0011,
+        RESERVED_FOR_FUTURE_HEAD_3 = 0x0012,
+        RESERVED_FOR_FUTURE_HEAD_4 = 0x0013,
+        RESERVED_FOR_FUTURE_HEAD_5 = 0x0014,
+        RESERVED_FOR_FUTURE_HEAD_6 = 0x0015,
+        RESERVED_FOR_FUTURE_HEAD_7 = 0x0016,
+        RESERVED_FOR_FUTURE_HEAD_8 = 0x0017,
+        RESERVED_FOR_FUTURE_HEAD_9 = 0x0018,
+        RESERVED_FOR_FUTURE_HEAD_10 = 0x0019,
+        MR_HEAD_RESISTANCE_FROM_MOST_RECENT_SMART_SUMMARY_FRAME_BY_HEAD = 0x001A,        //0x001A
+        RESERVED_FOR_FUTURE_HEAD_11 = 0x001B,
+        RESERVED_FOR_FUTURE_HEAD_12 = 0x001C,
+        RESERVED_FOR_FUTURE_HEAD_13 = 0x001D,
+        CURRENT_H2SAT_PERCENTAGE_OF_CODEWORDS_ITERATION_LEVEL_AVERAGED_ACROSS_TEST_ZONES = 0x001E,
+        CURRENT_H2SAT_AMPLITUDE_BY_HEAD_AVERAGED_ACROSS_TEST_ZONES = 0x001F, //0x001F
+        CURRENT_H2SAT_ASYMMETRY_BY_HEAD_AVERAGED_ACROSS_TEST_ZONES = 0x0020, //0x0020
+        NUMBER_OF_RESIDENT_GLIST_ENTRIES = 0x0021,
+        NUMBER_OF_PENDING_ENTRIES = 0x0022,
+        RESERVED_FOR_FUTURE_HEAD_15 = 0x0023,
+        RESERVED_FOR_FUTURE_HEAD_16 = 0x0024,
+        RESERVED_FOR_FUTURE_HEAD_17 = 0x0025,
+        WRITE_POWERON_HOURS_FROM_MOST_RECENT_SMART = 0x0026, 
+        RESERVED_FOR_FUTURE_HEAD_18 = 0x0027,
+        CUM_LIFETIME_UNRECOVERALBE_READ_REPET_PER_HEAD = 0x0028,
+        CUM_LIFETIME_UNRECOVERABLE_READ_UNIQUE_PER_HEAD = 0x0029,
+        RESERVED_FOR_FUTURE_HEAD_19 = 0x002A,
+        RESERVED_FOR_FUTURE_HEAD_20 = 0x002B,
+        RESERVED_FOR_FUTURE_HEAD_21 = 0x002C,
+        RESERVED_FOR_FUTURE_HEAD_22 = 0x002D,
+        RESERVED_FOR_FUTURE_HEAD_23 = 0x002E,
+        RESERVED_FOR_FUTURE_HEAD_24 = 0x002F,
+        CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_0 = 0x0030,
+        CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_1 = 0x0031,
+        CURRENT_H2SAT_TRIMMED_MEAN_BITS_IN_ERROR_BY_HEAD_BY_TEST_ZONE_2 = 0x0032,
+        CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_0 = 0x0033,
+        CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_1 = 0x0034,
+        CURRENT_H2SAT_ITERATIONS_TO_CONVERGE_BY_HEAD_BY_TEST_ZONE_2 = 0x0035,
+        RESERVED_FOR_FUTURE_HEAD_25 = 0x0036,
+        RESERVED_FOR_FUTURE_HEAD_26 = 0x0037,
+        RESERVED_FOR_FUTURE_HEAD_27 = 0x0038,
+        RESERVED_FOR_FUTURE_HEAD_28 = 0x0039,
+        RESERVED_FOR_FUTURE_HEAD_29 = 0x003A,
+        RESERVED_FOR_FUTURE_HEAD_30 = 0x003B,
+        RESERVED_FOR_FUTURE_HEAD_31 = 0x003C,
+        RESERVED_FOR_FUTURE_HEAD_32 = 0x003D,
+        RESERVED_FOR_FUTURE_HEAD_33 = 0x003E,
+        RESERVED_FOR_FUTURE_HEAD_34 = 0x003F,
+        RESERVED_FOR_FUTURE_HEAD_35 = 0x0040,
+        RESERVED_FOR_FUTURE_HEAD_36 = 0x0041,
+        RESERVED_FOR_FUTURE_HEAD_37 = 0x0042,
+        SECOND_MR_HEAD_RESISTANCE = 0x0043,
+        RESERVED_FOR_FUTURE_HEAD_38 = 0x0044,
+        RESERVED_FOR_FUTURE_HEAD_39 = 0x0045,
+        RESERVED_FOR_FUTURE_HEAD_40 = 0x0046,
+        RESERVED_FOR_FUTURE_HEAD_41 = 0x0047,
+        RESERVED_FOR_FUTURE_HEAD_42 = 0x0048,
+        RESERVED_FOR_FUTURE_HEAD_43 = 0x0049,
+        RESERVED_FOR_FUTURE_HEAD_44 = 0x004A,
+        RESERVED_FOR_FUTURE_HEAD_45 = 0x004B,
+        RESERVED_FOR_FUTURE_HEAD_46 = 0x004C,
+        RESERVED_FOR_FUTURE_HEAD_47 = 0x004D,
+        RESERVED_FOR_FUTURE_HEAD_48 = 0x004E,
+        RESERVED_FOR_FUTURE_HEAD_49 = 0x004F,
+        LUN_0_ACTUATOR = 0x0050,
+        LUN_0_FLASH_LED = 0x0051,
+        LUN_REALLOCATION_0 = 0x0052,
+        RESERVED_FOR_FUTURE_EXPANSION_42 = 0x0053,
+        RESERVED_FOR_FUTURE_EXPANSION_43 = 0x0054,
+        RESERVED_FOR_FUTURE_EXPANSION_44 = 0x0055,
+        RESERVED_FOR_FUTURE_EXPANSION_45 = 0x0056,
+        RESERVED_FOR_FUTURE_EXPANSION_46 = 0x0057,
+        RESERVED_FOR_FUTURE_EXPANSION_47 = 0x0058,
+        RESERVED_FOR_FUTURE_EXPANSION_48 = 0x0059,
+        RESERVED_FOR_FUTURE_EXPANSION_49 = 0x005A,
+        RESERVED_FOR_FUTURE_EXPANSION_50 = 0x005B,
+        RESERVED_FOR_FUTURE_EXPANSION_51 = 0x005C,
+        RESERVED_FOR_FUTURE_EXPANSION_52 = 0x005D,
+        RESERVED_FOR_FUTURE_EXPANSION_53 = 0x005E,
+        RESERVED_FOR_FUTURE_EXPANSION_54 = 0x005F,
+        LUN_1_ACTUATOR = 0x0060,
+        LUN_1_FLASH_LED = 0x0061,
+        LUN_REALLOCATION_1 = 0x0062,
+        RESERVED_FOR_FUTURE_EXPANSION_61 = 0x0063,
+        RESERVED_FOR_FUTURE_EXPANSION_62 = 0x0064,
+        RESERVED_FOR_FUTURE_EXPANSION_63 = 0x0065,
+        RESERVED_FOR_FUTURE_EXPANSION_64 = 0x0066,
+        RESERVED_FOR_FUTURE_EXPANSION_65 = 0x0067,
+        RESERVED_FOR_FUTURE_EXPANSION_66 = 0x0068,
+        RESERVED_FOR_FUTURE_EXPANSION_67 = 0x0069,
+        RESERVED_FOR_FUTURE_EXPANSION_68 = 0x006A,
+        RESERVED_FOR_FUTURE_EXPANSION_69 = 0x006B,
+        RESERVED_FOR_FUTURE_EXPANSION_70 = 0x006C,
+        RESERVED_FOR_FUTURE_EXPANSION_71 = 0x006D,
+        RESERVED_FOR_FUTURE_EXPANSION_72 = 0x006E,
+        RESERVED_FOR_FUTURE_EXPANSION_73 = 0x006F,
+        RESERVED_FOR_FUTURE_EXPANSION_74 = 0x0070,
+        LUN_2_ACTUATOR = 0x0071,
+        LUN_2_FLASH_LED = 0x0072,
+        LUN_REALLOCATION_2 = 0x0073,
+        RESERVED_FOR_FUTURE_EXPANSION_81 = 0x0074,
+        RESERVED_FOR_FUTURE_EXPANSION_82 = 0x0075,
+        RESERVED_FOR_FUTURE_EXPANSION_83 = 0x0076,
+        RESERVED_FOR_FUTURE_EXPANSION_84 = 0x0077,
+        RESERVED_FOR_FUTURE_EXPANSION_85 = 0x0078,
+        RESERVED_FOR_FUTURE_EXPANSION_86 = 0x0079,
+        RESERVED_FOR_FUTURE_EXPANSION_87 = 0x007A,
+        RESERVED_FOR_FUTURE_EXPANSION_88 = 0x007B,
+        RESERVED_FOR_FUTURE_EXPANSION_89 = 0x007C,
+        RESERVED_FOR_FUTURE_EXPANSION_90 = 0x007D,
+        RESERVED_FOR_FUTURE_EXPANSION_91 = 0x007E,
+        RESERVED_FOR_FUTURE_EXPANSION_92 = 0x007F,
+        RESERVED_FOR_FUTURE_EXPANSION_93 = 0x0080,
+        RESERVED_FOR_FUTURE_EXPANSION_94 = 0x0081,
+        LUN_3_ACTUATOR = 0x0082,
+        LUN_3_FLASH_LED = 0x0083,
+        LUN_REALLOCATION_3 = 0x0084,
+        RESERVED_FOR_FUTURE_EXPANSION_101 = 0x0085,
+        RESERVED_FOR_FUTURE_EXPANSION_102 = 0x0086,
+        RESERVED_FOR_FUTURE_EXPANSION_103 = 0x0087,
+        RESERVED_FOR_FUTURE_EXPANSION_104 = 0x0088,
+        RESERVED_FOR_FUTURE_EXPANSION_105 = 0x0089,
+        RESERVED_FOR_FUTURE_EXPANSION_106 = 0x008A,
+        RESERVED_FOR_FUTURE_EXPANSION_107 = 0x008B,
+        RESERVED_FOR_FUTURE_EXPANSION_108 = 0x008C,
+        RESERVED_FOR_FUTURE_EXPANSION_109 = 0x008D,
+        RESERVED_FOR_FUTURE_EXPANSION_110 = 0x008E,
+        RESERVED_FOR_FUTURE_EXPANSION_111 = 0x008F,
+        RESERVED_FOR_FUTURE_EXPANSION_112 = 0x0090,
+        RESERVED_FOR_FUTURE_EXPANSION_113 = 0x0091,
+        RESERVED_FOR_FUTURE_EXPANSION_114 = 0x0092,
+        RESERVED_FOR_FUTURE_EXPANSION_115 = 0x0093,
+        RESERVED_FOR_FUTURE_EXPANSION_116 = 0x0094,
+        RESERVED_FOR_FUTURE_EXPANSION_117 = 0x0095,
+        RESERVED_FOR_FUTURE_EXPANSION_118 = 0x0096,  //150
+        RESERVED_FOR_FUTURE_EXPANSION_119 = 0x0097,
         LIFETIME_TERABYTES_WRITTEN = 0x0100,
-        RESERVED_FOR_FUTURE_EXPANSION_120,
-        RESERVED_FOR_FUTURE_EXPANSION_121,
-        RESERVED_FOR_FUTURE_EXPANSION_122,
-        RESERVED_FOR_FUTURE_EXPANSION_123,
-        RESERVED_FOR_FUTURE_EXPANSION_124,
-        RESERVED_FOR_FUTURE_EXPANSION_125,
+        RESERVED_FOR_FUTURE_EXPANSION_120 = 0x0101,
+        RESERVED_FOR_FUTURE_EXPANSION_121 = 0x0102,
+        RESERVED_FOR_FUTURE_EXPANSION_122 = 0x0103,
+        RESERVED_FOR_FUTURE_EXPANSION_123 = 0x0104,
+        RESERVED_FOR_FUTURE_EXPANSION_124 = 0x0105,
+        RESERVED_FOR_FUTURE_EXPANSION_125 = 0x0106,
         UNIQUE_UNRECOVERABLES_SINCE = 0x0107,
         UNIQUE_UNRECOVERALBES_BETWEEN = 0x0108,
-        RESERVED_FOR_FUTURE_EXPANSION_128,
-        RESERVED_FOR_FUTURE_EXPANSION_129,
-        RESERVED_FOR_FUTURE_EXPANSION_130,
-        RESERVED_FOR_FUTURE_EXPANSION_131,
-        RESERVED_FOR_FUTURE_EXPANSION_132,
-        RESERVED_FOR_FUTURE_EXPANSION_133,
-        RESERVED_FOR_FUTURE_EXPANSION_134,
-        MAX_RESERVED_FOR_FUTURE_EXPANSION
+        GET_PHYSICAL_ELLEMENT_STATUS = 0x0109,
+        RESERVED_FOR_FUTURE_EXPANSION_129 = 0x010A,
+        RESERVED_FOR_FUTURE_EXPANSION_130 = 0x010B,
+        RESERVED_FOR_FUTURE_EXPANSION_131 = 0x010C,
+        RESERVED_FOR_FUTURE_EXPANSION_132 = 0x010D,
+        RESERVED_FOR_FUTURE_EXPANSION_133 = 0x010E,
+        RESERVED_FOR_FUTURE_EXPANSION_134 = 0x010F,
+        RESERVED_FOR_FUTURE_EXPANSION_135 = 0x0110,
+        RESERVED_FOR_FUTURE_EXPANSION_136 = 0x0111,
+        RESERVED_FOR_FUTURE_EXPANSION_137 = 0x0112,
+        RESERVED_FOR_FUTURE_EXPANSION_138 = 0x0113,
+        TOTAL_VISIBLE_READ_ERRORS_SEEN = 0x0114,
+        LIFETIME_SECTORS_READ = 0x0115,
+        MAX_RESERVED_FOR_FUTURE_EXPANSION = 0x0116,
+        SENSE_CODE_CLASS_1_0 = 0x0500,
+        SENSE_CODE_CLASS_1_1 = 0x0501,
+        SENSE_CODE_CLASS_1_2 = 0x0502,
+        SENSE_CODE_CLASS_1_3 = 0x0503,
+        SENSE_CODE_CLASS_1_4 = 0x0504,
+        SENSE_CODE_CLASS_1_5 = 0x0505,
+        SENSE_CODE_CLASS_1_6 = 0x0506,
+        SENSE_CODE_CLASS_1_7 = 0x0507,
+        SENSE_CODE_CLASS_1_8 = 0x0508,
+        SENSE_CODE_CLASS_1_9 = 0x0509,
+        SENSE_CODE_CLASS_1_A = 0x050A,
+        SENSE_CODE_CLASS_1_B = 0x050B,
+        SENSE_CODE_CLASS_1_C = 0x050C,
+        SENSE_CODE_CLASS_1_D = 0x050D,
+        SENSE_CODE_CLASS_1_E = 0x050E,
+        SENSE_CODE_CLASS_1_F = 0x050F,
+        SENSE_CODE_CLASS_2_0 = 0x0580,
+        SENSE_CODE_CLASS_2_1 = 0x0581,
+        SENSE_CODE_CLASS_2_2 = 0x0582,
+        SENSE_CODE_CLASS_2_3 = 0x0583,
+        SENSE_CODE_CLASS_2_4 = 0x0584,
+        SENSE_CODE_CLASS_2_5 = 0x0585,
+        SENSE_CODE_CLASS_2_6 = 0x0586,
+        SENSE_CODE_CLASS_2_7 = 0x0587,
+        SENSE_CODE_CLASS_2_8 = 0x0588,
+        SENSE_CODE_CLASS_2_9 = 0x0589,
+        SENSE_CODE_CLASS_2_A = 0x058A,
+        SENSE_CODE_CLASS_2_B = 0x058B,
+        SENSE_CODE_CLASS_2_C = 0x058C,
+        SENSE_CODE_CLASS_2_D = 0x058D,
+        SENSE_CODE_CLASS_2_E = 0x058E,
+        SENSE_CODE_CLASS_2_F = 0x058F,
+        SENSE_CODE_CLASS_3_0 = 0x0600,
+        SENSE_CODE_CLASS_3_1 = 0x0601,
+        SENSE_CODE_CLASS_3_2 = 0x0602,
+        SENSE_CODE_CLASS_3_3 = 0x0603,
+        SENSE_CODE_CLASS_4_0 = 0x0680,
+        SENSE_CODE_CLASS_4_1 = 0x0681,
+        SENSE_CODE_CLASS_4_2 = 0x0682,
+        SENSE_CODE_CLASS_4_3 = 0x0683,
+        SENSE_CODE_CLASS_5_0 = 0x0690,
+        SENSE_CODE_CLASS_5_1 = 0x0691,
+        SENSE_CODE_CLASS_5_2 = 0x0692,
+        SENSE_CODE_CLASS_5_3 = 0x0693,
+
     };
 
 #pragma pack(push, 1)
@@ -264,13 +315,15 @@ namespace opensea_parser {
         uint64_t        totalWriteCmdsFromFrames2;              //!< SCSI - Number of Write commands from 3.125-25% of LBA space for restricted time range.
         uint64_t        totalWriteCmdsFromFrames3;              //!< SCSI - Number of Write commands from 25-50% of LBA space for restricted time range.
         uint64_t        totalWriteCmdsFromFrames4;              //!< SCSI - Number of Write commands from 50-100% of LBA space for restricted time range.
-        uint64_t        totalNumberofUnalignedWriteCMDS;        //!< SCSI - Total Number of Unaligned Write Commands (added 4.4)
 
-        _sSASWorkLoadStat() : pageNumber(0), copyNumber(0), workloadPercentage(0), totalReadCommands(0), 
-            totalWriteCommands(0), totalRandomReads(0), totalRandomWrites(0), totalNumberofOtherCMDS(0), 
-            logicalSecWritten(0), logicalSecRead(0), totalReadCmdsFromFrames1(0), totalReadCmdsFromFrames2(0), 
-            totalReadCmdsFromFrames3(0), totalReadCmdsFromFrames4(0), totalWriteCmdsFromFrames1(0), 
-            totalWriteCmdsFromFrames2(0), totalWriteCmdsFromFrames3(0), totalWriteCmdsFromFrames4(0) {};
+        uint64_t        numberofUnalignedWriteCMDS;        //!< SCSI - Total Number of Unaligned Write Commands (added 4.4)
+
+        _sSASWorkLoadStat() : numberofUnalignedWriteCMDS(0), pageNumber(0), copyNumber(0), workloadPercentage(0), totalReadCommands(0), totalWriteCommands(0),
+            totalRandomReads(0), totalRandomWrites(0), totalNumberofOtherCMDS(0), logicalSecWritten(0), logicalSecRead(0), 
+            totalReadCmdsFromFrames1(0), totalReadCmdsFromFrames2(0),totalReadCmdsFromFrames3(0), totalReadCmdsFromFrames4(0), 
+            totalWriteCmdsFromFrames1(0),totalWriteCmdsFromFrames2(0), totalWriteCmdsFromFrames3(0), totalWriteCmdsFromFrames4(0)
+            {};
+
     }sSASWorkLoadStat;
 
     typedef struct _sScsiWorkLoadStat
@@ -412,7 +465,7 @@ namespace opensea_parser {
         uint64_t            timeToReady;                                 //!< Time to Ready of the last power cycle in milliseconds 
         uint64_t            holdTime;                                    //!< Time the drive is held in staggered spin in milliseconds
         uint64_t            servoSpinUpTime;                             //!< The last servo spin up time in milliseconds
-        uint64_t            writeProtect;                                //!< HAMR Data Protect Status: 1 = Data Protect, 0 = No Data Protect
+        uint64_t            writeProtect;                                //!< Data Protect Status: 1 = Data Protect, 0 = No Data Protect
         uint64_t            regenHeadMask;                               //!< Regen Head Mask: bitmap where 1 = bad head, 0 = good head
         uint64_t            pohFirst;                                    //!< Power - on Hours of the most recent FARM Time series frame save
         uint64_t            pohSecond;                                   //!< Power - on Hours of the second most recent FARM Time series frame save
@@ -493,7 +546,10 @@ namespace opensea_parser {
                                                                          //!< - Head when GPES changes[47:40]
                                                                          //!< - Timestamp(hours) when GPES changes[39:8]
                                                                          //!< - Get Physical Element Status(GPES) when it changes[7:0]
-
+                                                                         //! 
+#if defined __cplusplus && __cplusplus >= 201103L
+        _sScsiGPESData() : gpesData{ 0 } {};
+#endif
     }sScsiGPESData;
 
     typedef struct _sHeadInformation
@@ -537,7 +593,7 @@ namespace opensea_parser {
         uint64_t            reserved17;                                 //!< Reserved
         uint64_t            reserved18;                                 //!< Reserved
         uint64_t            reserved19;                                 //!< Reserved
-        uint64_t            reserved20;                                 //!< WReserved
+        uint64_t            reserved20;                                 //!< Reserved
         uint64_t            reserved21;                                 //!< Reserved
         uint64_t            primarySPCovPercentageCMR;                  //!< Primary Super Parity Coverage Percentage CMR
         uint64_t            primarySPCovPercentageSMR;                  //!< Primary Super Parity Coverage Percentage SMR
@@ -589,6 +645,32 @@ namespace opensea_parser {
        , numReallocatedSince(0), numReallocatedBetween(0), numCandidateSince(0), numCandidateBetween(0) {};
     }sActReallocationData;
 #pragma pack(pop)
+
+    typedef struct _sScsiSenseData
+    {
+        sLogParams          pageHeader;                                 //!< header page parameters (code 0x0500-0x050F, 0x0580-0x058F, 0x0600-0x0603, 0x0680-0x0683, 0x0690-0x0693)
+        uint64_t            senseClass;                                 //!<  Sense Class calculated from the parameter code (code 0x0500-0x050F, 0x0580-0x058F, 0x0600-0x0603, 0x0680-0x0683, 0x0690-0x0693)
+        uint64_t            classCount;                                 //!<  Class Count calculated from the parameter code (code 0x0500-0x050F, 0x0580-0x058F, 0x0600-0x0603, 0x0680-0x0683, 0x0690-0x0693)
+        uint8_t             statusBits;                                 //!< byte 4:  Valid [7], Support [6], Reserved [5:0]
+        uint64_t            cdbOpCode;                                  //!< byte 5:  CDB Operation Code
+        uint64_t            errorCode;                                  //!< byte 8:  Error Code
+        uint64_t            additionalSenseCode;                        //!< byte 9:  Additional Sense Code
+        uint64_t            additionalSenseCodeQualifier;               //!< byte 10: Additional Sense Code Qualifier
+        uint64_t            fruCode;                                    //!< byte 11: Field Replaceable Unit Code
+        uint64_t            lbaStatus;                                  //!< byte 12: Valid [7], Support [6], Reserved [5:0]
+        uint64_t            actuator;                                   //!< byte 13: Actuator [6]
+        uint64_t            head;                                       //!< byte 13: Logical Head[0]
+        uint64_t            errorLBA;                                   //!< bytes 14-19: Error LBA (48 bit, MSB first)
+        uint64_t            powerCycleStatus;                           //!< byte 20: Valid [7], Support [6], Reserved [5:0]
+        uint64_t            powerCycle;                                 //!< bytes 22-23: Power Cycle
+        uint64_t            timeStamp;                                  //!< bytes 24-27: Time Stamp (seconds)
+
+        _sScsiSenseData() :senseClass(0), classCount(0), statusBits(0), cdbOpCode(0), errorCode(0), additionalSenseCode(0), additionalSenseCodeQualifier(0),
+            fruCode(0), lbaStatus(0), actuator(0), head(0), errorLBA(0), powerCycleStatus(0), powerCycle(0), timeStamp(0) {
+        };
+    }sScsiSenseData;
+
+
     typedef struct _sScsiFarmFrame
     {
         sScsiFarmHeader         farmHeader;                             //!< Farm header 
@@ -602,70 +684,7 @@ namespace opensea_parser {
         sScsiEnvStatPage07      envStatPage07;                          //!< Environment Stat Page 07
         sScsiWorkloadStatPage08 workloadStatPage08;                     //!< Workload Stat Page 08
         sScsiGPESData           gpesPage09;                             //!< GPES data page 09
-        sHeadInformation        discSlipPerHead;
-        sHeadInformation        bitErrorRateByHead;
-        sHeadInformation        dosWriteRefreshCountByHead;
-        sHeadInformation        dvgaSkipWriteDetectByHead;
-        sHeadInformation        rvgaSkipWriteDetectByHead;
-        sHeadInformation        fvgaSkipWriteDetectByHead;
-        sHeadInformation        skipWriteDectedThresholdExceededByHead;
-        sHeadInformation        acffSine1xValueByHead;
-        sHeadInformation        acffCosine1xValueByHead;
-        sHeadInformation        pztCalibrationValueByHead;
-        sHeadInformation        mrHeadResistanceByHead;
-        sHeadInformation        numberOfTMDByHead;
-        sHeadInformation        velocityObserverByHead;
-        sHeadInformation        numberOfVelocityObservedByHead;
-        sHeadInformation        currentH2SATPercentagedbyHead;
-        sHeadInformation        currentH2STAmplituedByHead;
-        sHeadInformation        currentH2STAsymmetryByHead;
-        sHeadInformation        ResidentGlistEntries;
-        sHeadInformation        ResidentPlistEntries;
-        sHeadInformation        DOSOoughtToScan;
-        sHeadInformation        DOSNeedToScan;
-        sHeadInformation        DOSWriteFaultScan;
-        sHeadInformation        writePowerOnHours;
-        sHeadInformation		dosWriteCount;
-        sHeadInformation        cumECCReadRepeat;
-        sHeadInformation        cumECCReadUnique;
-        sHeadInformation        totalLaserFieldAdjustIterations;
-        sHeadInformation        totalReaderWriteerOffsetIterationsPerformed;
-        sHeadInformation        pre_lfaZone_0;
-        sHeadInformation        pre_lfaZone_1;
-        sHeadInformation        pre_lfaZone_2;
-        sHeadInformation        zeroPercentShift;
-        sHeadInformation        currentH2STTrimmedbyHeadZone0;
-        sHeadInformation        currentH2STTrimmedbyHeadZone1;
-        sHeadInformation        currentH2STTrimmedbyHeadZone2;
-        sHeadInformation        currentH2STIterationsByHeadZone0;
-        sHeadInformation        currentH2STIterationsByHeadZone1;
-        sHeadInformation        currentH2STIterationsByHeadZone2;
-        sHeadInformation        laser_operatingZone_0;
-        sHeadInformation        laser_operatingZone_1;
-        sHeadInformation        laserOperatingZone_2;
-        sHeadInformation        postLFAOptimalBERZone_0;
-        sHeadInformation        postLFAOptimalBERZone_1;
-        sHeadInformation        postLFAOptimalBERZone_2;
-        sHeadInformation        microJogOffsetZone_0;
-        sHeadInformation        microJogOffsetZone_1;
-        sHeadInformation        microJogOffsetZone_2;
-        sHeadInformation        zeroPercentShiftZone_1;
-        sHeadInformation        appliedFlyHeightByHeadOuter;
-        sHeadInformation        appliedFlyHeightByHeadInner;
-        sHeadInformation        appliedFlyHeightByHeadMiddle;
-        sHeadInformation        secondMRHeadResistanceByHead;
-        sHeadInformation        fafhMeasurementStatus;                  //!< FAFH Measurement Status, bitwise OR across all diameters per head
-        sHeadInformation        fafhRelativeApmlitude;                  //!< FAFH HF / LF Relative Amplitude in tenths, maximum value across all 3 zones per head
-        sHeadInformation        fafh_bit_error_rate_0;                  //!< FAFH Bit Error Rate, write then read BER on reserved tracks Diameter 0: Outer
-        sHeadInformation        fafh_bit_error_rate_1;                  //!< FAFH Bit Error Rate, write then read BER on reserved tracks Diameter 1 : Outer
-        sHeadInformation        fafh_bit_error_rate_2;                  //!< FAFH Bit Error Rate, write then read BER on reserved tracks Diameter 2 : Outer
-        sHeadInformation        fafhLowFrequency_0;                     //!< FAFH Low Frequency Passive Clearance in ADC counts Diameter 0 : outer
-        sHeadInformation        fafhLowFrequency_1;                     //!< FAFH Low Frequency Passive Clearance in ADC counts Diameter 1 : outer
-        sHeadInformation        fafhLowFrequency_2;                     //!< FAFH Low Frequency Passive Clearance in ADC counts Diameter 2 : outer
-        sHeadInformation        fafhHighFrequency_0;                    //!< FAFH High Frequency Passive Clearance in ADC counts Diameter 0 : outer
-        sHeadInformation        fafhHighFrequency_1;                    //!< FAFH High Frequency Passive Clearance in ADC counts Diameter 1 : outer
-        sHeadInformation        fafhHighFrequency_2;                    //!< FAFH High Frequency Passive Clearance in ADC counts Diameter 2 : outer
-        sHeadInformation        zeroPercentShiftZone_2;
+        std::vector<sScsiSenseData> vSenseData;                         //!< sense data entries found
         sLUNStruct              vLUN50;
         sActuatorFLEDInfo       fled51;
         sActReallocationData    reall52;
@@ -678,9 +697,29 @@ namespace opensea_parser {
         sLUNStruct              vLUN80;
         sActuatorFLEDInfo       fled81;
         sActReallocationData    reall82;
+        sHeadInformation        gpesHeadData;
+        sHeadInformation        mrHeadResistanceByHead;
+        sHeadInformation        currentH2SATPercentagedbyHead;
+        sHeadInformation        currentH2STAmplituedByHead;
+        sHeadInformation        currentH2STAsymmetryByHead;
+        sHeadInformation        ResidentGlistEntries;
+        sHeadInformation        ResidentPlistEntries;
+        sHeadInformation        writePowerOnHours;
+        sHeadInformation        cumECCReadRepeat;
+        sHeadInformation        cumECCReadUnique;
+        sHeadInformation        currentH2STTrimmedbyHeadZone0;
+        sHeadInformation        currentH2STTrimmedbyHeadZone1;
+        sHeadInformation        currentH2STTrimmedbyHeadZone2;
+        sHeadInformation        currentH2STIterationsByHeadZone0;
+        sHeadInformation        currentH2STIterationsByHeadZone1;
+        sHeadInformation        currentH2STIterationsByHeadZone2;
+        sHeadInformation        secondMRHeadResistanceByHead;       
         sHeadInformation        lifeTimeWritten;
         sHeadInformation        uniqueURESince;
         sHeadInformation        uniqueUREBetween;
+        sHeadInformation        totalVisibleReadErrorsSeen;
+        sHeadInformation        lifetimeSectorsRead;
+
 
         std::vector<eSASLogPageTypes>   vFramesFound;
 
