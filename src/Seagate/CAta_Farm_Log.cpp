@@ -427,7 +427,7 @@ eReturnValues CATA_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint3
 
     set_json_64_bit_With_Status(pageInfo, "Head Flight Hours - Actuator 1", vFarmFrame.at(page).driveInfo.headFlightHoursAct1, false, m_showStatusBits);       //!< Head Flight Hours- Actuator 1
     set_json_64_bit_With_Status(pageInfo, "Head Load Events - Actuator 1", vFarmFrame.at(page).driveInfo.headLoadEventsAct1, false, m_showStatusBits);         //!< Head Load Events- Actuator 1
-    set_json_bool_With_Status(pageInfo, "Data Protect Status", vFarmFrame.at(page).driveInfo.HAMRProtectStatus, m_showStatusBits);
+    set_json_bool_With_Status(pageInfo, "Data Protect Status", vFarmFrame.at(page).driveInfo.ProtectStatus, m_showStatusBits);
     temp.str(""); temp.clear();
     temp << "0x" << std::hex << std::uppercase << std::setfill('0') << std::setw(8) << M_DoubleWord0(opensea_parser::check_Status_Strip_Status(vFarmFrame.at(page).driveInfo.regenHeadMask));
     set_json_string_With_Status(pageInfo, "Regen Head Mask", temp.str().c_str(), vFarmFrame.at(page).driveInfo.regenHeadMask, m_showStatusBits);
@@ -439,9 +439,6 @@ eReturnValues CATA_Farm_Log::print_Drive_Information(JSONNODE *masterData, uint3
     set_json_64_bit_With_Status(pageInfo, "Number of LBAs (SWR capacity)", vFarmFrame.at(page).driveInfo.numLBA, false, m_showStatusBits);
 
 
-    gpes_Status_Data(pageInfo, "Get Physical Element Status when it Changes", vFarmFrame.at(page).driveInfo.gpesStatus, ZONECOUNT, true, m_showStatusBits, m_showStatic);
-    uint_bit_range_Data(pageInfo, "GPES Timestamp when it Changes", vFarmFrame.at(page).driveInfo.gpesStatus, 39, 8, ZONECOUNT, m_showStatusBits, m_showStatic);
-    uint_bit_range_Data(pageInfo, "GPES Head when it Changed", vFarmFrame.at(page).driveInfo.gpesStatus, 47 , 40, ZONECOUNT, m_showStatusBits, m_showStatic);
 
 
     json_push_back(masterData, pageInfo);

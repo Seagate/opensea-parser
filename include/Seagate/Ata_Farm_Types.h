@@ -80,7 +80,7 @@ typedef struct _sDriveInfo
     uint64_t        depopulationHeadMask;                       //!< Depopulation Head Mask(started in 4.7)
     uint64_t        headFlightHoursAct1;                        //!< Head Flight Hours, Actuator1
     uint64_t        headLoadEventsAct1;                         //!< Head Load Events, Actuator 1
-    uint64_t        HAMRProtectStatus;                          //!< HAMR Data Protect Status: 1 = Data Protect, 0 = No Data Protect
+    uint64_t        ProtectStatus;                              //!< Data Protect Status: 1 = Data Protect, 0 = No Data Protect
     uint64_t        regenHeadMask;                              //!< Regen Head Mask: bitmap where 1 = bad head, 0 = good head
     uint64_t        POHMostRecentSave;                          //!< Power-on Hours of the most recent FARM Time series frame save
     uint64_t        POHSecondMostRecentSave;                    //!< Power-on Hours of the second most recent FARM Time series frame save
@@ -105,7 +105,7 @@ typedef struct _sDriveInfo
         modelNumber{ 0 },
 #endif
         driveRecordingType(0), depopped(0), maxNumberForReasign(0), dateOfAssembly(0), depopulationHeadMask(0), headFlightHoursAct1(0),
-        headLoadEventsAct1(0), HAMRProtectStatus(0), regenHeadMask(0), POHMostRecentSave(0), POHSecondMostRecentSave(0),
+        headLoadEventsAct1(0), ProtectStatus(0), regenHeadMask(0), POHMostRecentSave(0), POHSecondMostRecentSave(0),
         SeqActiveZone(0), SeqWriteActiveZone(0), numLBA(0)
 #if defined __cplusplus && __cplusplus >= 201103L
         ,gpes{ 0 }, 

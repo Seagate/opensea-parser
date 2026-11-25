@@ -34,7 +34,8 @@ namespace opensea_parser {
     {
     protected:
 
-        std::vector <sScsiFarmFrame > vFarmFrame;
+        std::vector <sScsiFarmFrame > vFarmFrame;                                     //!< vector holding all of the parsed information
+        std::vector<eSASLogPageTypes> vPrintSequence;                                 //!< vector holding the print sequence
    
         uint32_t                    m_totalPages;                                     //!< number of pages supported
 		uint16_t                    m_logSize;                                        //!< log size in bytes
@@ -56,8 +57,9 @@ namespace opensea_parser {
         uint8_t                     m_farmSubPage;                                    //!< the subpage for the farm so we know which one it is
         bool                        m_showStatic;                       //!< set to true to show all data statically 
 		
-        
-        
+        bool strip_Active_Status(uint64_t* value);
+        const uint64_t read_Param(uint64_t& offset, bool reverse = false);
+        void read_Head_Page(sHeadInformation& dest, uint64_t& offset);
         bool get_sFarmHeader(sScsiFarmHeader* fh, uint8_t* pData, uint64_t position);
         bool Get_sDriveInfo(sScsiDriveInfo *di, uint64_t offset);
         bool Get_sDrive_Info_Page_06(sGeneralDriveInfoPage06 *gd,uint64_t offset);
@@ -70,20 +72,24 @@ namespace opensea_parser {
         bool Get_sLUNStruct(sLUNStruct *LUN,uint64_t offset);
         bool Get_Flash_LED(sActuatorFLEDInfo *fled, uint64_t offset);
         bool Get_Reallocation_Data(sActReallocationData *real, uint64_t offset);
+        bool get_GPES_Info(sScsiGPESData* gpes, uint8_t* buffer);
         bool get_Head_Info(sHeadInformation *phead, uint8_t *buffer);
         bool set_Head_Header(std::string &headerName, eSASLogPageTypes index);
+        void create_Print_Sequence(size_t vectSize);
+        void read_Sense_Data(std::vector<sScsiSenseData>& dest, uint64_t& offset);
 		
 		eReturnValues init_Header_Data(size_t bufferSize);
         eReturnValues print_Header(JSONNODE *masterData);
         eReturnValues print_Drive_Information(JSONNODE *masterData, uint32_t page);
-        eReturnValues get_Regen_Head_Mask(JSONNODE* headMask, uint64_t mask, bool showStatus);
         eReturnValues print_General_Drive_Information_Continued(JSONNODE *masterData, uint32_t page);
         eReturnValues print_WorkLoad(JSONNODE *masterData, uint32_t page);
         eReturnValues print_Error_Information(JSONNODE *masterData, uint32_t page);
         eReturnValues print_Enviroment_Information(JSONNODE *masterData, uint32_t page);
         eReturnValues print_Enviroment_Statistics_Page_07(JSONNODE *masterData, uint32_t page);
         eReturnValues print_Workload_Statistics_Page_08(JSONNODE *masterData, uint32_t page);
+        eReturnValues print_GPES_Data_Page_09(JSONNODE* masterData, uint32_t page);
         eReturnValues print_Reli_Information(JSONNODE *masterData, uint32_t page);
+        eReturnValues print_Sense_Data(JSONNODE* masterData, uint32_t page);
         eReturnValues print_Head_Information(eSASLogPageTypes type, JSONNODE *masterData, uint32_t page);
         eReturnValues print_LUN_Actuator_Information(JSONNODE * LUNData, uint32_t page, uint16_t actNum);
         eReturnValues print_LUN_Actuator_FLED_Info(JSONNODE * LUNFLED, uint32_t page, uint16_t actNum);
@@ -94,7 +100,6 @@ namespace opensea_parser {
         CSCSI_Farm_Log(std::vector<uint8_t>& buffer, size_t bufferSize, uint8_t subPage, bool m_fromScsiLogPages, bool showStatic);
         explicit CSCSI_Farm_Log(std::vector<uint8_t>& buffer, size_t bufferSize, uint8_t subPage, bool m_fromScsiLogPages, bool showStatus, bool showStatic);
         virtual ~CSCSI_Farm_Log();
-        bool strip_Active_Status(uint64_t* value);
         eReturnValues parse_Farm_Log();
         void print_All_Pages(JSONNODE *masterData);
         void print_Page_One_Node(JSONNODE *masterData);

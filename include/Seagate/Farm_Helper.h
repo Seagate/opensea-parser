@@ -96,7 +96,18 @@ namespace opensea_parser {
 		}
 		else
 		{
-            set_json_64bit_With_Check_Status(nowNode, myStr, value, hexPrint);
+			if (check_For_Active_Status(reinterpret_cast<uint64_t*>(&value)) == true)
+			{
+				set_json_64bit_With_Check_Status(nowNode, myStr, value, hexPrint);
+			}
+			else
+			{
+				//set data to JSON_NULL
+				JSONNODE* nullNode = json_new(JSON_NODE);
+				json_set_name(nullNode, myStr.c_str());
+				json_nullify(nullNode);
+				json_push_back(nowNode, nullNode);
+			}
 		}
 	}
 
@@ -282,7 +293,6 @@ namespace opensea_parser {
 					json_set_name(nullNode, myStr.c_str());
 					json_nullify(nullNode);
 					json_push_back(nowNode, nullNode);
-					//json_push_back(nowNode, json_new_f(myStr.c_str(), 0.0));
 				}
 			}
 			else
@@ -349,8 +359,6 @@ namespace opensea_parser {
 					json_set_name(nullNode, myStr.c_str());
 					json_nullify(nullNode);
 					json_push_back(nowNode, nullNode);
-
-					//json_push_back(nowNode, json_new_i(myStr.c_str(), 0));
 				}
 			}
 			else
